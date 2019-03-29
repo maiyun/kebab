@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "@litert/tls-sni": "^0.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^11.12.1"
+  }
+}
