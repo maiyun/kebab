@@ -1,2 +1,4 @@
-/node_modules/
 /.vscode/
+/conf/cert/default/*
+!/conf/cert/default/cert.nuttom
+/node_modules/
