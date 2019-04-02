@@ -6,3 +6,8 @@ export interface Vhost {
     readonly cert: string;
     readonly key: string;
 }
+
+/** 控制器使用的变量 */
+export interface CtrConst {
+    readonly HTTP_BASE: string;
+}

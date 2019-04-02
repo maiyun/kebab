@@ -151,6 +151,7 @@ import * as abs from "./abstract";
                 pathArr.splice(0, 1);
                 /** 当面检测路径 */
                 let pathNow = "/";
+                // --- 循环从顶层路径开始，一层层判断 ---
                 for (let item of pathArr) {
                     if (item === "" || item === ".") {
                         continue;
@@ -175,19 +176,39 @@ import * as abs from "./abstract";
                         return;
                     }
                     if (stats.isDirectory()) {
+                        // --- 当前是目录，增加 pathNow 定义 ---
                         pathNow += item + "/";
                     } else if (stats.isFile()) {
-                        let content = await Fs.readFile(vhostRoot + pathNow + item);
+                        // --- 当前是文件，则输出文件 ---
                         res.setHeader("Content-Type", mime.get(item));
-                        res.end(content);
+                        res.setHeader("Content-Length", stats.size);
+                        res.writeHead(200);
+                        await Fs.readStream(vhostRoot + pathNow + item, res.stream);
                         return;
                     } else {
+                        // --- 当前有异常，禁止输出 ---
                         res.writeHead(403);
                         res.end("403 Forbidden.");
                         return;
                     }
                 }
-                res.end("test: " + pathNow + "<br><br>" + JSON.stringify(vhost));
+                // --- 一直是目录，会到这里，例如 /test/ ---
+                let item = "index.html";
+                let stats = await Fs.getStats(vhostRoot + pathNow + "index.html");
+                if (stats === undefined) {
+                    item = "index.htm";
+                    stats = await Fs.getStats(vhostRoot + pathNow + "index.htm");
+                    if (stats === undefined) {
+                        res.writeHead(403);
+                        res.end("403 Forbidden.");
+                        return;
+                    }
+                }
+                // --- 读取 html ---
+                res.setHeader("Content-Type", mime.get(item));
+                res.setHeader("Content-Length", stats.size);
+                res.writeHead(200);
+                await Fs.readStream(vhostRoot + pathNow + item, res.stream);
             });
             server.listen(4333);
         }

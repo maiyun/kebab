@@ -68,6 +68,20 @@ export function copyFile(src: fs.PathLike, dest: fs.PathLike): Promise<boolean> 
 }
 
 /**
+ * --- 读取文件流 ---
+ * @param path 文件地址
+ */
+export function readStream(path: fs.PathLike, wr: NodeJS.WritableStream): Promise<void> {
+    return new Promise((resolve, reject) => {
+        let rs = fs.createReadStream(path);
+        rs.on("close", () => {
+            resolve();
+        });
+        rs.pipe(wr);
+    });
+}
+
+/**
  * --- 创建单层目录 ---
  * @param path 要创建的路径
  */
