@@ -3,6 +3,7 @@ import * as cluster from "cluster";
 import * as os from "os";
 import * as url from "url";
 import * as sni from "@litert/tls-sni";
+import * as mime from "@litert/mime-types";
 
 import * as Fs from "./lib/Fs";
 import * as c from "./const";
@@ -88,7 +89,7 @@ import * as abs from "./abstract";
             let server = http2.createSecureServer({
                 SNICallback: SNI_MANAGER.getSNICallback(),
                 ciphers: "ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA:ECDHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA256:DHE-RSA-AES256-SHA:ECDHE-ECDSA-DES-CBC3-SHA:ECDHE-RSA-DES-CBC3-SHA:EDH-RSA-DES-CBC3-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:DES-CBC3-SHA:!DSS"
-            }, (req, res) => {
+            }, async (req, res) => {
                 /**
                  * --- 用以检测 host 是否与 vhost 配置域名相匹配 ---
                  * @param host 要检验的域名
@@ -112,7 +113,7 @@ import * as abs from "./abstract";
                     return -1;
                 };
 
-
+                // --- 开始 ---
                 let [host, port] = (req.headers[":authority"] || "").split(":");
                 let len = VHOSTS.length;
                 let vhostMatch: abs.Vhost[] = [];
@@ -139,8 +140,54 @@ import * as abs from "./abstract";
                         }
                     }
                 }
+                /** 网站实际根目录，末尾不带 / */
+                let vhostRoot = vhost.root.slice(-1) !== "/" ? c.WWW_PATH + vhost.root : c.WWW_PATH + vhost.root.slice(0, -1);
+                /** 请求的 URI 对象 */
                 let uri = url.parse(req.url);
-                res.end("test: " + JSON.stringify(uri));
+                /** 请求的路径部分 */
+                let path = uri.pathname || "/";
+                /** 请求路径的数组分割 */
+                let pathArr = path.split("/");
+                pathArr.splice(0, 1);
+                /** 当面检测路径 */
+                let pathNow = "/";
+                for (let item of pathArr) {
+                    if (item === "" || item === ".") {
+                        continue;
+                    }
+                    if (item === "..") {
+                        if (pathNow === "/") {
+                            // --- 最次返回到网站主目录，做限定，不可能读取网站主目录之上的文件，那不就呵呵哒了么 ---
+                            continue;
+                        } else {
+                            // --- 返回上一层 ---
+                            pathNow = pathNow.slice(0, -1);
+                            pathNow = pathNow.slice(0, pathNow.lastIndexOf("/") + 1);
+                            continue;
+                        }
+                    }
+                    // --- 判断当前是否存在对象，不存在返回 404 ---
+                    let stats = await Fs.getStats(vhostRoot + pathNow + item);
+                    if (stats === undefined) {
+                        // --- 404 ---
+                        res.writeHead(404);
+                        res.end("404 Not Found.");
+                        return;
+                    }
+                    if (stats.isDirectory()) {
+                        pathNow += item + "/";
+                    } else if (stats.isFile()) {
+                        let content = await Fs.readFile(vhostRoot + pathNow + item);
+                        res.setHeader("Content-Type", mime.get(item));
+                        res.end(content);
+                        return;
+                    } else {
+                        res.writeHead(403);
+                        res.end("403 Forbidden.");
+                        return;
+                    }
+                }
+                res.end("test: " + pathNow + "<br><br>" + JSON.stringify(vhost));
             });
             server.listen(4333);
         }

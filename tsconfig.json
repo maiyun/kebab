@@ -8,6 +8,7 @@
         "target": "es2018",
         "strict": true,             // 严格模式
         "declaration": false,        // d.ts
+        "declarationMap": false,
         "newLine": "LF"
     }
 }

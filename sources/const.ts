@@ -11,3 +11,4 @@ export const CERT_PATH = CONF_PATH + "cert/";
 
 export const ROOT_PATH = __dirname + "/";
 export const LIB_PATH = ROOT_PATH + "lib/";
+export const WWW_PATH = ROOT_PATH + "www/";

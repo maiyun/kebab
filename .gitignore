@@ -1,4 +1,5 @@
 /.vscode/
 /conf/cert/default/*
 !/conf/cert/default/cert.nuttom
+/dist/
 /node_modules/
