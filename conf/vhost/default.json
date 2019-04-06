@@ -4,6 +4,7 @@
         "domains": ["*"],
         "root": "default/",
         "cert": "default/tw6sw53y.cer",
-        "key": "default/tw6sw53y.key"
+        "key": "default/tw6sw53y.key",
+        "remark": ""
     }
 ]

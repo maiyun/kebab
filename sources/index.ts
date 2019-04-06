@@ -2,12 +2,15 @@ import * as http2 from "http2";
 import * as cluster from "cluster";
 import * as os from "os";
 import * as url from "url";
+
 import * as sni from "@litert/tls-sni";
 import * as mime from "@litert/mime-types";
 
 import * as Fs from "./lib/Fs";
 import * as c from "./const";
 import * as abs from "./abstract";
+
+import * as Boot from "./sys/Boot";
 
 // --- 初始化 ---
 (async () => {
@@ -46,7 +49,7 @@ import * as abs from "./abstract";
             process.on("message", async (msg) => {
                 switch (msg.action) {
                     case "reload":
-                        await reload();
+                        await Boot.reload(VHOSTS, SNI_MANAGER);
                         break;
                 }
             });
@@ -56,34 +59,8 @@ import * as abs from "./abstract";
             // --- 证书 SNI 管理器 ---
             const SNI_MANAGER = sni.certs.createManager();
 
-            /**
-             * --- 重新加载 vhost 以及证书 ---
-             * --- 需要所有线程同时重新加载 ---
-             */
-            async function reload() {
-                let files = await Fs.readDir(c.VHOST_PATH);
-                VHOSTS = [];
-                for (let file of files) {
-                    let list: abs.Vhost[] = JSON.parse(await Fs.readFile(c.VHOST_PATH + file));
-                    if (!Array.isArray(list)) {
-                        list = [list];
-                    }
-                    for (let vhost of list) {
-                        VHOSTS.push(vhost);
-                    }
-                }
-                // --- 重新加载证书 ---
-                for (let vhost of VHOSTS) {
-                    let cert = await Fs.readFile(c.CERT_PATH + vhost.cert);
-                    let key = await Fs.readFile(c.CERT_PATH + vhost.key);
-                    try {
-                        SNI_MANAGER.use(vhost.name, cert, key);
-                    } catch (e) {
-                        console.log("SNI:" + e);
-                    }
-                }
-            }
-            await reload();
+            // --- 线程启动时加载 VHOST 和证书管理器 ---
+            await Boot.reload(VHOSTS, SNI_MANAGER);
 
             // --- 启动 HTTP 服务器 ---
             let server = http2.createSecureServer({
@@ -178,6 +155,8 @@ import * as abs from "./abstract";
                     if (stats.isDirectory()) {
                         // --- 当前是目录，增加 pathNow 定义 ---
                         pathNow += item + "/";
+                        // --- 判断目录是否是 Nuttom 目录 ---
+
                     } else if (stats.isFile()) {
                         // --- 当前是文件，则输出文件 ---
                         res.setHeader("Content-Type", mime.get(item));
@@ -192,7 +171,10 @@ import * as abs from "./abstract";
                         return;
                     }
                 }
-                // --- 一直是目录，会到这里，例如 /test/ ---
+                // --- 一直是目录，会到这里，例如 /test/，/ 根 ---
+                // --- 先判断是不是 Nuttom 目录，若不是，则是静态目录 ---
+
+                // --- 静态目录，读 index ---
                 let item = "index.html";
                 let stats = await Fs.getStats(vhostRoot + pathNow + "index.html");
                 if (stats === undefined) {
@@ -204,7 +186,7 @@ import * as abs from "./abstract";
                         return;
                     }
                 }
-                // --- 读取 html ---
+                // --- 读取文件 ---
                 res.setHeader("Content-Type", mime.get(item));
                 res.setHeader("Content-Length", stats.size);
                 res.writeHead(200);
