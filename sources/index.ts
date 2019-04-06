@@ -2,15 +2,16 @@ import * as http2 from "http2";
 import * as cluster from "cluster";
 import * as os from "os";
 import * as url from "url";
-
+// --- 第三方 ---
 import * as sni from "@litert/tls-sni";
 import * as mime from "@litert/mime-types";
-
+// --- 库和定义 ---
 import * as Fs from "./lib/Fs";
 import * as c from "./const";
 import * as abs from "./abstract";
-
+// --- 初始化 ---
 import * as Boot from "./sys/Boot";
+import * as Router from "./sys/Route";
 
 // --- 初始化 ---
 (async () => {
@@ -118,7 +119,9 @@ import * as Boot from "./sys/Boot";
                     }
                 }
                 /** 网站实际根目录，末尾不带 / */
-                let vhostRoot = vhost.root.slice(-1) !== "/" ? c.WWW_PATH + vhost.root : c.WWW_PATH + vhost.root.slice(0, -1);
+                let vhostRoot = vhost.root.replace(/\\/g, "/");
+                vhostRoot = Fs.isRealPath(vhostRoot) ? vhostRoot : c.WWW_PATH + vhostRoot;
+                vhostRoot = vhostRoot.slice(-1) !== "/" ? vhostRoot : vhostRoot.slice(0, -1);
                 /** 请求的 URI 对象 */
                 let uri = url.parse(req.url);
                 /** 请求的路径部分 */
@@ -126,10 +129,12 @@ import * as Boot from "./sys/Boot";
                 /** 请求路径的数组分割 */
                 let pathArr = path.split("/");
                 pathArr.splice(0, 1);
+                let pathArrLen = pathArr.length;
                 /** 当面检测路径 */
                 let pathNow = "/";
                 // --- 循环从顶层路径开始，一层层判断 ---
-                for (let item of pathArr) {
+                for (let index = 0; index < pathArrLen; ++index) {
+                    let item = pathArr[index];
                     if (item === "" || item === ".") {
                         continue;
                     }
@@ -156,7 +161,9 @@ import * as Boot from "./sys/Boot";
                         // --- 当前是目录，增加 pathNow 定义 ---
                         pathNow += item + "/";
                         // --- 判断目录是否是 Nuttom 目录 ---
-
+                        if (await Router.run(vhostRoot, pathNow, req, res, pathArr, index)) {
+                            return;
+                        }
                     } else if (stats.isFile()) {
                         // --- 当前是文件，则输出文件 ---
                         res.setHeader("Content-Type", mime.get(item));
@@ -173,7 +180,9 @@ import * as Boot from "./sys/Boot";
                 }
                 // --- 一直是目录，会到这里，例如 /test/，/ 根 ---
                 // --- 先判断是不是 Nuttom 目录，若不是，则是静态目录 ---
-
+                if (await Router.run(vhostRoot, pathNow, req, res)) {
+                    return;
+                }
                 // --- 静态目录，读 index ---
                 let item = "index.html";
                 let stats = await Fs.getStats(vhostRoot + pathNow + "index.html");

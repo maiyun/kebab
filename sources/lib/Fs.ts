@@ -68,7 +68,7 @@ export function copyFile(src: fs.PathLike, dest: fs.PathLike): Promise<boolean> 
 }
 
 /**
- * --- 读取文件流 ---
+ * --- 读取文件流（或直接绑定可写入流） ---
  * @param path 文件地址
  */
 export function readStream(path: fs.PathLike, wr: NodeJS.WritableStream): Promise<void> {
@@ -95,6 +95,18 @@ export function mkdir(path: fs.PathLike): Promise<boolean> {
             }
         });
     });
+}
+
+/**
+ * --- 判断是否是绝对路径，是返回 true，相对路径返回 false ---
+ * @param path 要判断的路径字符串
+ */
+export function isRealPath(path: string): boolean {
+    path = path.replace(/\\/g, "/");
+    if (path.slice(0, 1) === "/") {
+        return true;
+    }
+    return path.split("/")[0].match(/[a-z]+:/i) ? true : false;
 }
 
 /**

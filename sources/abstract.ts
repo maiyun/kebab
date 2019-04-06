@@ -11,3 +11,9 @@ export interface Vhost {
 export interface CtrConst {
     readonly HTTP_BASE: string;
 }
+
+/** 动态目录配置文件 */
+export interface Config {
+    readonly route: any;
+    readonly etc: any;
+}
