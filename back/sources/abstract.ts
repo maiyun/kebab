@@ -8,7 +8,7 @@ export interface Vhost {
 }
 
 /** 控制器使用的变量 */
-export interface CtrConst {
+export interface GlobalConst {
     readonly HTTP_BASE: string;
 }
 

@@ -68,17 +68,11 @@ export function copyFile(src: fs.PathLike, dest: fs.PathLike): Promise<boolean> 
 }
 
 /**
- * --- 读取文件流（或直接绑定可写入流） ---
+ * --- 读取文件流 ---
  * @param path 文件地址
  */
-export function readStream(path: fs.PathLike, wr: NodeJS.WritableStream): Promise<void> {
-    return new Promise((resolve, reject) => {
-        let rs = fs.createReadStream(path);
-        rs.on("close", () => {
-            resolve();
-        });
-        rs.pipe(wr);
-    });
+export function readStream(path: fs.PathLike): fs.ReadStream {
+    return fs.createReadStream(path);
 }
 
 /**
@@ -94,6 +88,28 @@ export function mkdir(path: fs.PathLike): Promise<boolean> {
                 resolve(true);
             }
         });
+    });
+}
+
+/**
+ * --- 只读取一小段文件一次 ---
+ * @param path 路径
+ * @param start 开始时间
+ */
+export function readFileOnce(path: string, options: { encoding?: string; flag?: string; start?: number; end?: number } = {}): Promise<string> {
+    return new Promise(function (resolve, reject) {
+        try {
+            let stream = fs.createReadStream(path, options);
+            let data: string[] = [];
+            stream.on("data", function (chunk: Buffer) {
+                data.push(chunk.toString());
+            });
+            stream.on("close", function() {
+                resolve(data.join());
+            });
+        } catch {
+            resolve("");
+        }
     });
 }
 

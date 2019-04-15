@@ -7,7 +7,7 @@ import * as sni from "@litert/tls-sni";
 import * as mime from "@litert/mime-types";
 // --- 库和定义 ---
 import * as Fs from "./lib/Fs";
-import * as c from "./const";
+import * as Const from "./const";
 import * as abs from "./abstract";
 // --- 初始化 ---
 import * as Boot from "./sys/Boot";
@@ -68,6 +68,9 @@ import * as Router from "./sys/Route";
                 SNICallback: SNI_MANAGER.getSNICallback(),
                 ciphers: "ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA:ECDHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA256:DHE-RSA-AES256-SHA:ECDHE-ECDSA-DES-CBC3-SHA:ECDHE-RSA-DES-CBC3-SHA:EDH-RSA-DES-CBC3-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:DES-CBC3-SHA:!DSS"
             }, async (req, res) => {
+                const START_TIME = (new Date()).getTime();
+                res.setHeader("Server", "Nuttom/" + Const.VER);
+
                 /**
                  * --- 用以检测 host 是否与 vhost 配置域名相匹配 ---
                  * @param host 要检验的域名
@@ -108,6 +111,7 @@ import * as Router from "./sys/Route";
                 }
                 if (vhost === undefined) {
                     if (vhostMatch.length === 0) {
+                        res.writeHead(403);
                         res.end("Nuttom: No permissions.");
                         return;
                     } else {
@@ -120,12 +124,13 @@ import * as Router from "./sys/Route";
                 }
                 /** 网站实际根目录，末尾不带 / */
                 let vhostRoot = vhost.root.replace(/\\/g, "/");
-                vhostRoot = Fs.isRealPath(vhostRoot) ? vhostRoot : c.WWW_PATH + vhostRoot;
+                vhostRoot = Fs.isRealPath(vhostRoot) ? vhostRoot : Const.WWW_PATH + vhostRoot;
                 vhostRoot = vhostRoot.slice(-1) !== "/" ? vhostRoot : vhostRoot.slice(0, -1);
                 /** 请求的 URI 对象 */
                 let uri = url.parse(req.url);
                 /** 请求的路径部分 */
                 let path = uri.pathname || "/";
+
                 /** 请求路径的数组分割 */
                 let pathArr = path.split("/");
                 pathArr.splice(0, 1);
@@ -149,38 +154,38 @@ import * as Router from "./sys/Route";
                             continue;
                         }
                     }
+                    // --- 判断目录是否是 Nuttom 目录 ---
+                    if (await Router.run(req, res, vhostRoot, pathNow, pathArr, index)) {
+                        return;
+                    }
                     // --- 判断当前是否存在对象，不存在返回 404 ---
                     let stats = await Fs.getStats(vhostRoot + pathNow + item);
                     if (stats === undefined) {
                         // --- 404 ---
                         res.writeHead(404);
-                        res.end("404 Not Found.");
+                        res.end("404 Not Found(1).");
                         return;
                     }
                     if (stats.isDirectory()) {
                         // --- 当前是目录，增加 pathNow 定义 ---
                         pathNow += item + "/";
-                        // --- 判断目录是否是 Nuttom 目录 ---
-                        if (await Router.run(vhostRoot, pathNow, req, res, pathArr, index)) {
-                            return;
-                        }
                     } else if (stats.isFile()) {
                         // --- 当前是文件，则输出文件 ---
                         res.setHeader("Content-Type", mime.get(item));
                         res.setHeader("Content-Length", stats.size);
                         res.writeHead(200);
-                        await Fs.readStream(vhostRoot + pathNow + item, res.stream);
+                        Fs.readStream(vhostRoot + pathNow + item).pipe(res.stream);
                         return;
                     } else {
                         // --- 当前有异常，禁止输出 ---
                         res.writeHead(403);
-                        res.end("403 Forbidden.");
+                        res.end("403 Forbidden(1).");
                         return;
                     }
                 }
                 // --- 一直是目录，会到这里，例如 /test/，/ 根 ---
                 // --- 先判断是不是 Nuttom 目录，若不是，则是静态目录 ---
-                if (await Router.run(vhostRoot, pathNow, req, res)) {
+                if (await Router.run(req, res, vhostRoot, pathNow)) {
                     return;
                 }
                 // --- 静态目录，读 index ---
@@ -191,7 +196,7 @@ import * as Router from "./sys/Route";
                     stats = await Fs.getStats(vhostRoot + pathNow + "index.htm");
                     if (stats === undefined) {
                         res.writeHead(403);
-                        res.end("403 Forbidden.");
+                        res.end("403 Forbidden(2).");
                         return;
                     }
                 }
@@ -199,7 +204,7 @@ import * as Router from "./sys/Route";
                 res.setHeader("Content-Type", mime.get(item));
                 res.setHeader("Content-Length", stats.size);
                 res.writeHead(200);
-                await Fs.readStream(vhostRoot + pathNow + item, res.stream);
+                Fs.readStream(vhostRoot + pathNow + item).pipe(res.stream);
             });
             server.listen(4333);
         }

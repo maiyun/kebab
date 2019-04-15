@@ -1,5 +1,5 @@
-import * as Fs from "./lib/Fs";
-import * as c from "./const";
+import * as Fs from "../../back/dist/lib/Fs";
+import * as c from "../../back/dist/const";
 
 /**
  * --- 本文件用于复制静态文件到 dist 目录 ---
@@ -7,7 +7,7 @@ import * as c from "./const";
 
 (async () => {
     let from = c.TOP_PATH + "sources/";
-    let to = c.ROOT_PATH;
+    let to = c.DIST_PATH;
 
     console.log("Processing...");
     await Fs.sync(from, to);

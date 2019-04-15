@@ -11,7 +11,7 @@ import * as abs from "../abstract";
 export async function reload(VHOSTS: abs.Vhost[], SNI_MANAGER: sni.certs.ICertificateManager): Promise<void> {
     // --- 重新加载 VHOST 信息 ---
     let files = await Fs.readDir(c.VHOST_PATH);
-    VHOSTS = [];
+    VHOSTS.splice(0, VHOSTS.length);
     for (let file of files) {
         let list: abs.Vhost[] = JSON.parse(await Fs.readFile(c.VHOST_PATH + file));
         if (!Array.isArray(list)) {
