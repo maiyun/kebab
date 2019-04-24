@@ -165,6 +165,11 @@ interface SyncOptions {
 export async function sync(from: string, to: string, opt: SyncOptions = {}): Promise<void> {
     opt.ignoreExt = opt.ignoreExt || ["ts", "scss"];
 
+    let stats = await getStats(to);
+    if (!stats || !stats.isDirectory()) {
+        await mkdirDeep(to);
+    }
+
     from = from.replace("\\", "/");
     to = to.replace("\\", "/");
     if (from.slice(0, -1) === "/") {

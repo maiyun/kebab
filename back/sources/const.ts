@@ -5,6 +5,7 @@ export const VER = "0.0.1";
 let dirname = __dirname.replace(/\\/g, "/");
 
 export const BACK_PATH = dirname.slice(0, dirname.lastIndexOf("/") + 1);
+export const SOURCES_PATH = BACK_PATH + "sources/";
 export const FRONT_PATH = BACK_PATH.slice(0, -5) + "front/";
 export const CONF_PATH = BACK_PATH + "conf/";
 export const VHOST_PATH = CONF_PATH + "vhost/";

@@ -1,15 +1,15 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-    <title>Mutton Portal</title>
+    <title>Nuttom Portal</title>
     <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no">
-    <link rel="stylesheet" href="/__Nuttom__/panel.css?<%= VER %>">
+    <link rel="stylesheet" href="<%= HTTP_STC %>__Nuttom__/index.css?<%= VER %>">
     <script src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.min.js"></script>
     <script>
-        var tab = <%= hasConfig ? '0' : '2' %>;
-        var HTTP_BASE = '<?nut HTTP_BASE ?>';
+        var tab = <%= hasConfig ? '0' : '3' %>;
+        var HTTP_BASE = '<?php echo HTTP_BASE ?>';
     </script>
-    <script src="<%= HTPP_BASE %>__Nuttom__/index.js?<%= VER %>"></script>
+    <script src="<%= HTTP_STC %>__Nuttom__/index.js?<%= VER %>"></script>
 </head>
 <body>
 <div id="vue">
@@ -76,6 +76,7 @@
                                 <div>Build a ".mblob" file.</div>
                                 <div style="text-align: center; margin-top: 10px;">
                                     <mu-button @click.native="build()">Build</mu-button>
+                                    <mu-button @click.native="build(2)" style="margin-left: 10px;">Build a json</mu-button>
                                     <mu-button @click.native="build(1)" style="margin-left: 10px;">Build to "doc"</mu-button>
                                 </div>
                             </div>

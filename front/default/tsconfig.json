@@ -10,5 +10,7 @@
         "declaration": false, // d.ts
         "newLine": "LF",
         "lib": ["dom", "es5", "scripthost", "es2015.promise"]
-    }
+    },
+    "include": ["*", "stc/**/*", "types/*"],
+    "exclude": []
 }

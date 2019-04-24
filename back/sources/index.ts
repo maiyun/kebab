@@ -2,13 +2,15 @@ import * as http2 from "http2";
 import * as cluster from "cluster";
 import * as os from "os";
 import * as url from "url";
+import * as querystring from "querystring";
 // --- 第三方 ---
 import * as sni from "@litert/tls-sni";
-import * as mime from "@litert/mime-types";
 // --- 库和定义 ---
 import * as Fs from "./lib/Fs";
+import * as View from "./lib/View";
 import * as Const from "./const";
 import * as abs from "./abstract";
+import * as copyfiles from "./copyfiles";
 // --- 初始化 ---
 import * as Boot from "./sys/Boot";
 import * as Router from "./sys/Route";
@@ -17,7 +19,9 @@ import * as Router from "./sys/Route";
 (async () => {
     try {
         if (cluster.isMaster) {
-            // --- [主线程]，启动和 CPU 数量一致的线程 ---
+            // --- [主线程] ---
+            await copyfiles.run();
+            // --- 启动和 CPU 数量一致的线程 ---
             let cpuLen = os.cpus().length;
             let workerList: cluster.Worker[] = [];
             console.log("Master start...");
@@ -128,6 +132,7 @@ import * as Router from "./sys/Route";
                 vhostRoot = vhostRoot.slice(-1) !== "/" ? vhostRoot : vhostRoot.slice(0, -1);
                 /** 请求的 URI 对象 */
                 let uri = url.parse(req.url);
+                let get = uri.query ? querystring.parse(uri.query) : {};
                 /** 请求的路径部分 */
                 let path = uri.pathname || "/";
 
@@ -137,6 +142,16 @@ import * as Router from "./sys/Route";
                 let pathArrLen = pathArr.length;
                 /** 当面检测路径 */
                 let pathNow = "/";
+                /** --- Nu 对象 --- */
+                let nu: abs.Nu = {
+                    const: {},
+                    req: req,
+                    res: res,
+                    uri: uri,
+                    get: get,
+                    post: {},
+                    param: []
+                };
                 // --- 循环从顶层路径开始，一层层判断 ---
                 for (let index = 0; index < pathArrLen; ++index) {
                     let item = pathArr[index];
@@ -155,7 +170,11 @@ import * as Router from "./sys/Route";
                         }
                     }
                     // --- 判断目录是否是 Nuttom 目录 ---
-                    if (await Router.run(req, res, vhostRoot, pathNow, pathArr, index)) {
+                    // --- pathNow 代表的是上一层路径，不是 item ---
+                    nu.const.HTTP_BASE = pathNow;
+                    nu.const.ROOT_PATH = vhostRoot + pathNow;
+                    nu.const.VIEW_PATH = vhostRoot + pathNow + "view/";
+                    if (await Router.run(nu, pathArr, index)) {
                         return;
                     }
                     // --- 判断当前是否存在对象，不存在返回 404 ---
@@ -171,10 +190,7 @@ import * as Router from "./sys/Route";
                         pathNow += item + "/";
                     } else if (stats.isFile()) {
                         // --- 当前是文件，则输出文件 ---
-                        res.setHeader("Content-Type", mime.get(item));
-                        res.setHeader("Content-Length", stats.size);
-                        res.writeHead(200);
-                        Fs.readStream(vhostRoot + pathNow + item).pipe(res.stream);
+                        await View.toResponse(nu, vhostRoot + pathNow + item);
                         return;
                     } else {
                         // --- 当前有异常，禁止输出 ---
@@ -185,7 +201,10 @@ import * as Router from "./sys/Route";
                 }
                 // --- 一直是目录，会到这里，例如 /test/，/ 根 ---
                 // --- 先判断是不是 Nuttom 目录，若不是，则是静态目录 ---
-                if (await Router.run(req, res, vhostRoot, pathNow)) {
+                nu.const.HTTP_BASE = pathNow;
+                nu.const.ROOT_PATH = vhostRoot + pathNow;
+                nu.const.VIEW_PATH = vhostRoot + pathNow + "view/";
+                if (await Router.run(nu)) {
                     return;
                 }
                 // --- 静态目录，读 index ---
@@ -200,11 +219,8 @@ import * as Router from "./sys/Route";
                         return;
                     }
                 }
-                // --- 读取文件 ---
-                res.setHeader("Content-Type", mime.get(item));
-                res.setHeader("Content-Length", stats.size);
-                res.writeHead(200);
-                Fs.readStream(vhostRoot + pathNow + item).pipe(res.stream);
+                // --- 读取并输出文件 ---
+                await View.toResponse(nu, vhostRoot + pathNow + item);
             });
             server.listen(4333);
         }
