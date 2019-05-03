@@ -1,5 +1,5 @@
-import * as Fs from "./lib/Fs";
-import * as c from "./const";
+import * as Fs from "../lib/Fs";
+import * as c from "../const";
 
 /**
  * --- 本文件用于复制 front 静态文件到 dist 目录，sources 里的静态文件到 dist 目录 ---
@@ -20,6 +20,9 @@ export async function run() {
         });
         acList.push({
             from: c.FRONT_PATH + item + "/view/", to: c.WWW_PATH + item + "/view/"
+        });
+        acList.push({
+            from: c.FRONT_PATH + item + "/locale/", to: c.WWW_PATH + item + "/locale/"
         });
     }
 

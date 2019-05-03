@@ -18,6 +18,7 @@ export interface NuConst {
     HTTP_BASE?: string;
     ROOT_PATH?: string;
     VIEW_PATH?: string;
+    DATA_PATH?: string;
 }
 
 /** --- 动态目录配置文件 --- */
@@ -35,4 +36,6 @@ export interface Nu {
     get: querystring.ParsedUrlQuery;
     post: querystring.ParsedUrlQuery;
     param: string[];
+    locale: string;
+    config: Config;
 }

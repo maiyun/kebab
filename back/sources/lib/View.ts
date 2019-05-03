@@ -4,8 +4,42 @@ import * as mime from "@litert/mime-types";
 // --- 库和定义 ---
 import * as Fs from "./Fs";
 import * as Zlib from "./Zlib";
-import * as Crypto from "./Crypto";
 import * as abs from "../abstract";
+
+let _LOCALE_OBJ: any = {
+    "en": {}
+};
+let _LOCALE_PKG: string[] = [];
+
+export async function setLocale(nu: abs.Nu, locale: string, pkg: string = "default"): Promise<boolean> {
+    let lName = locale + "." + pkg;
+    if (_LOCALE_PKG.indexOf(lName) === -1) {
+        try {
+            let loc = JSON.parse(await Fs.readFile(nu.const.ROOT_PATH + "locale/" + lName));
+            if (!_LOCALE_OBJ[locale]) {
+                _LOCALE_OBJ[locale] = {};
+            }
+            Object.assign(_LOCALE_OBJ[locale], _setLocaleDeep(loc));
+            _LOCALE_PKG.push(lName);
+        } catch {
+            return false;
+        }
+    }
+    nu.locale = locale;
+    return true;
+}
+function _setLocaleDeep(loc: any, pre: string = "") {
+    let arr: any = {};
+    for (let k in loc) {
+        let v = loc[k];
+        if (typeof v === "object") {
+            Object.assign(arr, _setLocaleDeep(v, pre + k + "."));
+        } else {
+            arr[pre + k] = v;
+        }
+    }
+    return arr;
+}
 
 /**
  * --- 加载 HTML 文件 ---
@@ -25,6 +59,16 @@ export async function load(nu: abs.Nu, path: string, data: any = {}): Promise<st
     }
     data.HTTP_BASE = nu.const.HTTP_BASE;
     data.HTTP_STC = nu.const.HTTP_BASE + "stc/";
+    // --- 语言包 ---
+    data.l = function(key: string): string {
+        if (!_LOCALE_OBJ[nu.locale]) {
+            return "LocaleError";
+        }
+        if (!_LOCALE_OBJ[nu.locale][key]) {
+            return "LocaleError";
+        }
+        return _LOCALE_OBJ[nu.locale][key];
+    };
     return ejs.render(content, data);
 }
 
@@ -39,7 +83,7 @@ export async function write(nu: abs.Nu, path: string, data?: any): Promise<void>
 }
 
 /**
- * --- 读取任意文件输出到前台 ---
+ * --- 读取任意文件输出到前台（除模板外都是流式输出） ---
  * @param nu Nu 对象
  * @param path 文件绝对路径
  * @param data 是否要模板介入，传入参数，此参数存在，文件不在浏览器端缓存
@@ -72,11 +116,11 @@ export async function toResponse(nu: abs.Nu, path: string, data?: any): Promise<
             let hash = `W/"${stats.size.toString(16)}-${stats.mtime.getTime().toString(16)}"`;
             nu.res.setHeader("ETag", hash);
             nu.res.setHeader("Cache-Control", "public, max-age=600");
-            // --- 判断返回 302 吗 ---
+            // --- 判断返回 304 吗 ---
             let noneMatch = nu.req.headers["if-none-match"];
             let modiSince = nu.req.headers["if-modified-since"];
             if ((hash === noneMatch) && (lastModified === modiSince)) {
-                nu.res.writeHead(304, "Not Modified");
+                nu.res.writeHead(304);
                 nu.res.end();
                 return;
             }

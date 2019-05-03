@@ -4,6 +4,8 @@ export default {
         "article/([0-9]+?)":    "main/article"
     },
     "etc": {
-
+        "__Nuttom__": {
+            "pwd": "123456"
+        }
     }
 };

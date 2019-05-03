@@ -8,7 +8,7 @@ import * as abs from "../abstract";
 // --- 处理路由 ---
 export async function run(nu: abs.Nu, pathArr?: string[], index?: number): Promise<boolean> {
     // --- 判断是否是动态目录 ---
-    let stat = await Fs.getStats(nu.const.ROOT_PATH + "config.json.js");
+    let stat = await Fs.getStats(nu.const.ROOT_PATH + "config.js");
     if (!stat) {
         return false;
     }
@@ -17,7 +17,8 @@ export async function run(nu: abs.Nu, pathArr?: string[], index?: number): Promi
         return false;
     }
     // --- 获取 json 定义文件 ---
-    let json: abs.Config = require(nu.const.ROOT_PATH + "config.json").default;
+    let config: abs.Config = require(nu.const.ROOT_PATH + "config").default;
+    nu.config = config;
     /** --- 余下的相对路径 --- */
     let path = "";
     if (pathArr && (index !== undefined)) {
@@ -45,11 +46,11 @@ export async function run(nu: abs.Nu, pathArr?: string[], index?: number): Promi
     let param: string[] = [];
     let match: RegExpExecArray | null = null;
     let pathLeft: string = "", pathRight: string = "";
-    for (let rule in json.route) {
+    for (let rule in config.route) {
         rule = rule.replace("/", "\\/");
         let reg = new RegExp("^" + rule + "$");
         if (match = reg.exec(path)) {
-            [pathLeft, pathRight] = _getPathLeftRight(json.route[rule]);
+            [pathLeft, pathRight] = _getPathLeftRight(config.route[rule]);
             for (let i = 1; i < match.length; ++i) {
                 param.push(match[i]);
             }

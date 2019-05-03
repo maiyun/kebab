@@ -7,7 +7,7 @@
     <script src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.min.js"></script>
     <script>
         var tab = <%= hasConfig ? '0' : '3' %>;
-        var HTTP_BASE = '<?php echo HTTP_BASE ?>';
+        var HTTP_BASE = '<%= HTTP_BASE %>';
     </script>
     <script src="<%= HTTP_STC %>__Nuttom__/index.js?<%= VER %>"></script>
 </head>
@@ -20,17 +20,17 @@
                 <div class="title">Nuttom Portal</div>
                 <div class="tab">
                     <div class="tab__top">
-                        <div class="tab__top__item" :class="{'selected': tab == 0}" @click="tab = 0"><div class="tab__top__item__in"><?php echo l('Password.title') ?></div></div>
-                        <div class="tab__top__item" :class="{'selected': tab == 1}" @click="tab = 1"><div class="tab__top__item__in"><?php echo l('Check') ?></div></div>
-                        <div class="tab__top__item" :class="{'selected': tab == 2}" @click="tab = 2"><div class="tab__top__item__in"><?php echo l('System') ?></div></div>
-                        <div class="tab__top__item" :class="{'selected': tab == 3}" @click="tab = 3"><div class="tab__top__item__in"><?php echo l('Config') ?></div></div>
+                        <div class="tab__top__item" :class="{'selected': tab == 0}" @click="tab = 0"><div class="tab__top__item__in"><%= l('Password.title') %></div></div>
+                        <div class="tab__top__item" :class="{'selected': tab == 1}" @click="tab = 1"><div class="tab__top__item__in"><%= l('Check') %></div></div>
+                        <div class="tab__top__item" :class="{'selected': tab == 2}" @click="tab = 2"><div class="tab__top__item__in"><%= l('System') %></div></div>
+                        <div class="tab__top__item" :class="{'selected': tab == 3}" @click="tab = 3"><div class="tab__top__item__in"><%= l('Config') %></div></div>
                     </div>
                     <div class="tab__panel">
                         <!-- Password -->
                         <div class="tab__panel__item" v-if="tab == 0">
-                            <div style="padding-bottom: 10px;"><?php echo l('Password.Please enter your password:') ?></div>
+                            <div style="padding-bottom: 10px;"><%= l('Password.Please enter your password:') %></div>
                             <div class="textbox"><input class="textbox__in" type="password" v-model="password"></div>
-                            <div style="padding-top: 10px;"><?php echo l('When the input is complete, you can use other features.') ?></div>
+                            <div style="padding-top: 10px;"><%= l('When the input is complete, you can use other features.') %></div>
                             <mu-line></mu-line>
                             <div style="text-align: center;">
                                 <mu-button @click.native="window.location.href='?l=en'">English</mu-button>
@@ -40,28 +40,28 @@
                         </div>
                         <!-- Check -->
                         <div class="tab__panel__item" v-else-if="tab == 1">
-                            <div style="padding-bottom: 10px;"><?php echo l('Please click "Refresh" and select below:') ?></div>
+                            <div style="padding-bottom: 10px;"><%= l('Please click "Refresh" and select below:') %></div>
                             <mu-list :list="mlist" v-model="mindex"></mu-list>
                             <div style="text-align: center; margin-top: 10px;">
-                                <mu-button @click.native="refresh()"><?php echo l('Refresh') ?></mu-button>
-                                <mu-button @click.native="check()" style="margin-left: 10px;"><?php echo l('Check') ?></mu-button>
-                                <mu-button @click.native="check(1)" style="margin-left: 10px;"><?php echo l('Online') ?></mu-button>
+                                <mu-button @click.native="refresh()"><%= l('Refresh') %></mu-button>
+                                <mu-button @click.native="check()" style="margin-left: 10px;"><%= l('Check') %></mu-button>
+                                <mu-button @click.native="check(1)" style="margin-left: 10px;"><%= l('Online') %></mu-button>
                             </div>
-                            <div style="margin-top: 10px;"><?php echo l('Mismatch file list:') ?></div>
+                            <div style="margin-top: 10px;"><%= l('Mismatch file list:') %></div>
                             <mu-list :list="list"></mu-list>
                         </div>
                         <!-- System -->
                         <div class="tab__panel__item" v-else-if="tab == 2">
                             <div style="display: flex; flex-direction: column; align-items: center;">
                                 <div>
-                                    <?php echo l('Current version:') ?> <?php echo VER ?><br>
-                                    <?php echo l('Latest versions:') ?> {{latestVer}}<br>
+                                    <%= l('Current version:') %> <%= VER %><br>
+                                    <%= l('Latest versions:') %> {{latestVer}}<br>
                                 </div>
-                                <mu-button @click.native="getLatestVer()" style="margin-top: 10px;"><?php echo l('Get latest versions') ?></mu-button>
+                                <mu-button @click.native="getLatestVer()" style="margin-top: 10px;"><%= l('Get latest versions') %></mu-button>
                             </div>
                             <mu-line></mu-line>
                             <div style="display: flex; flex-direction: column;">
-                                <?php echo l('Automatic upgrade (used only on local testing).') ?><br>
+                                <%= l('Automatic upgrade (used only on local testing).') %><br>
                                 <div style="display: flex; margin-top: 10px;">
                                     <mu-list :list="mlist" v-model="updateIndex" style="flex: 1;"></mu-list>
                                     <mu-list :list="updateList" style="margin-left: 10px; flex: 2;"></mu-list>
@@ -83,7 +83,7 @@
                         </div>
                         <!-- Config -->
                         <div class="tab__panel__item" v-else-if="tab == 3">
-                            <div style="padding-bottom: 10px;">Please place the following on "etc/__mutton__.php" to use this portal.</div>
+                            <div style="padding-bottom: 10px;"><%= l('Please set the password in "config.ts" as required below.') %></div>
                             <div class="textbox"><textarea class="textbox__in" rows="10" readonly v-model="configTxt" style="resize: none;"></textarea></div>
                         </div>
                     </div>

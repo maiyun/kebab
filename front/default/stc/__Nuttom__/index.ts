@@ -79,7 +79,7 @@ document.addEventListener("DOMContentLoaded", async function() {
             updateing: false,
             updateIndex: 0,
             // --- Config ---
-            configTxt: "<?php\nconst __MUTTON__PWD = 'Your password';\n\n"
+            configTxt: `"etc": {\n    "__Nuttom__": {\n        "pwd": "Your password"\n    }\n}`
         },
         methods: {
             // --- Check ---
