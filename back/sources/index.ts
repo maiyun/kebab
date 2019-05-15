@@ -7,11 +7,12 @@ import * as Child from "./sys/Child";
 (async () => {
     try {
         if (cluster.isMaster) {
-            Master.run();
+            await Master.run();
         } else {
-            Child.run();
+            await Child.run();
         }
     } catch (e) {
+        console.log("--- [Process fatal Error] ---");
         console.log(e);
     }
 })();

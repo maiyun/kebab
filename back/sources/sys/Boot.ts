@@ -1,5 +1,5 @@
 import * as sni from "@litert/tls-sni";
-
+// --- 库和定义 ---
 import * as Fs from "../lib/Fs";
 import * as c from "../const";
 import * as abs from "../abstract";
@@ -13,7 +13,11 @@ export async function reload(VHOSTS: abs.Vhost[], SNI_MANAGER: sni.certs.ICertif
     let files = await Fs.readDir(c.VHOST_PATH);
     VHOSTS.splice(0, VHOSTS.length);
     for (let file of files) {
-        let list: abs.Vhost[] = JSON.parse(await Fs.readFile(c.VHOST_PATH + file));
+        let fstr = await Fs.readFile(c.VHOST_PATH + file);
+        if (fstr === undefined) {
+            continue;
+        }
+        let list: abs.Vhost[] = JSON.parse(fstr);
         if (!Array.isArray(list)) {
             list = [list];
         }
@@ -26,6 +30,9 @@ export async function reload(VHOSTS: abs.Vhost[], SNI_MANAGER: sni.certs.ICertif
     for (let vhost of VHOSTS) {
         let cert = await Fs.readFile(Fs.isRealPath(vhost.cert) ? vhost.cert : c.CERT_PATH + vhost.cert);
         let key = await Fs.readFile(Fs.isRealPath(vhost.key) ? vhost.key : c.CERT_PATH + vhost.key);
+        if (!cert || !key) {
+            continue;
+        }
         try {
             SNI_MANAGER.use(vhost.name, cert, key);
         } catch (e) {

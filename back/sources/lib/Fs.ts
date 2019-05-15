@@ -6,11 +6,11 @@ import * as Crypto from "./Crypto";
  * @param path 文件路径
  * @param options 编码/选项
  */
-export function readFile(path: fs.PathLike | number, options: { encoding: string; flag?: string; } | string = "utf-8"): Promise<string> {
+export function readFile(path: fs.PathLike | number, options: { encoding: string; flag?: string; } | string = "utf-8"): Promise<string | undefined> {
     return new Promise((resolve, reject) => {
         fs.readFile(path, options, (err, data) => {
             if (err) {
-                reject(err);
+                resolve(undefined);
             } else {
                 resolve(data);
             }
@@ -19,14 +19,30 @@ export function readFile(path: fs.PathLike | number, options: { encoding: string
 }
 
 /**
- * --- 获取文件夹列表 ---
+ * --- 删除一个文件 ---
+ * @param path 要删除的文件路径
+ */
+export function unlinkFile(path: fs.PathLike): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+        fs.unlink(path, function(err) {
+            if (err) {
+                resolve(false);
+            } else {
+                resolve(true);
+            }
+        });
+    });
+}
+
+/**
+ * --- 获取文件夹下文件列表 ---
  * @param path 文件夹路径
  */
 export function readDir(path: fs.PathLike): Promise<string[]> {
     return new Promise((resolve, reject) => {
         fs.readdir(path, (err, files) => {
             if (err) {
-                reject(err);
+                resolve([]);
             } else {
                 resolve(files);
             }
@@ -73,6 +89,14 @@ export function copyFile(src: fs.PathLike, dest: fs.PathLike): Promise<boolean> 
  */
 export function readStream(path: fs.PathLike): fs.ReadStream {
     return fs.createReadStream(path);
+}
+
+/**
+ * --- 写入文件流 ---
+ * @param path 文件地址
+ */
+export function writeStream(path: fs.PathLike): fs.WriteStream {
+    return fs.createWriteStream(path);
 }
 
 /**
@@ -205,8 +229,8 @@ async function _syncSub(from: string, to: string, path: string, opt: SyncOptions
                     continue;
                 }
             }
-            let fmd5 = Crypto.md5(await readFile(from + path + item));
-            let tmd5 = tstats ? Crypto.md5(await readFile(to + path + item)) : "";
+            let fmd5 = Crypto.md5(await readFile(from + path + item) || "");
+            let tmd5 = tstats ? Crypto.md5(await readFile(to + path + item) || "") : "";
             if (fmd5 === tmd5) {
                 continue;
             }

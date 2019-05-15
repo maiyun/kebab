@@ -31,5 +31,7 @@ export async function run() {
         console.log(`From "${item.from}" to "${item.to}"...`);
         await Fs.sync(item.from, item.to);
     }
+
+    await Fs.mkdir(c.FTMP_PATH);
     console.log("Done.");
 }

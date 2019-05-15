@@ -12,5 +12,6 @@ export const VHOST_PATH = CONF_PATH + "vhost/";
 export const CERT_PATH = CONF_PATH + "cert/";
 
 export const DIST_PATH = __dirname + "/";
+export const FTMP_PATH = DIST_PATH + "ftmp/";
 export const LIB_PATH = DIST_PATH + "lib/";
 export const WWW_PATH = DIST_PATH + "www/";

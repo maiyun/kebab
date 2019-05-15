@@ -16,6 +16,7 @@ import * as Router from "../sys/Route";
 /** 当前连接数 */
 let _linkCount: number = 0;
 
+// --- 10 秒往主线程发送一次心跳 ---
 setInterval(function() {
     if (!process.connected) {
         return;

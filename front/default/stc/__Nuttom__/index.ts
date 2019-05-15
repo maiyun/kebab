@@ -85,7 +85,7 @@ document.addEventListener("DOMContentLoaded", async function() {
             // --- Check ---
             refresh: async function (this: any) {
                 this.mask = true;
-                let j = await post(HTTP_BASE + "__Mutton__/apiCheckRefresh", {password: this.password});
+                let j = await post(HTTP_BASE + "__Nuttom__/apiCheckRefresh", {password: this.password});
                 this.mask = false;
                 if (j.result <= 0) {
                     this.alert = j.msg;
@@ -98,7 +98,7 @@ document.addEventListener("DOMContentLoaded", async function() {
                     return;
                 }
                 this.mask = true;
-                let j = await post(HTTP_BASE + "__Mutton__/apiCheck", {password: this.password, ver: this.mlist[this.mindex].value, mode: mode});
+                let j = await post(HTTP_BASE + "__Nuttom__/apiCheck", {password: this.password, ver: this.mlist[this.mindex].value, mode: mode});
                 this.mask = false;
                 if (j.result <= 0) {
                     this.alert = j.msg;
@@ -128,7 +128,7 @@ document.addEventListener("DOMContentLoaded", async function() {
             // --- System ---
             getLatestVer: async function (this: any) {
                 this.mask = true;
-                let j = await post(HTTP_BASE + "__Mutton__/apiGetLatestVer", {password: this.password});
+                let j = await post(HTTP_BASE + "__Nuttom__/apiGetLatestVer", {password: this.password});
                 this.mask = false;
                 if (j.result <= 0) {
                     this.alert = j.msg;
@@ -138,7 +138,7 @@ document.addEventListener("DOMContentLoaded", async function() {
             },
             build: async function (this: any, mode: number = 0) {
                 this.mask = true;
-                let j = await post(HTTP_BASE + "__Mutton__/apiBuild", {password: this.password, mode: mode});
+                let j = await post(HTTP_BASE + "__Nuttom__/apiBuild", {password: this.password, mode: mode});
                 this.mask = false;
                 if (j.result <= 0) {
                     this.alert = j.msg;
@@ -176,7 +176,7 @@ document.addEventListener("DOMContentLoaded", async function() {
                 let version: string = this.mlist[this.updateIndex].value;
                 // --- 获取差异列表 ---
                 this.mask = true;
-                let j = await post(HTTP_BASE + "__Mutton__/apiCheck", {password: this.password, ver: version, mode: "0"}); // mode 0 代表全部，1 代表 online
+                let j = await post(HTTP_BASE + "__Nuttom__/apiCheck", {password: this.password, ver: version, mode: "0"}); // mode 0 代表全部，1 代表 online
                 this.mask = false;
                 if (j.result <= 0) {
                     this.alert = j.msg;
@@ -223,7 +223,7 @@ document.addEventListener("DOMContentLoaded", async function() {
                                     this.updateList.unshift(`Update configuration file "${path}"...`);
                                     break;
                             }
-                            let j2 = await post(HTTP_BASE + "__Mutton__/apiUpdate", {password: this.password, ver: version, mode: lk, path: path, library: JSON.stringify(j.library)});
+                            let j2 = await post(HTTP_BASE + "__Nuttom__/apiUpdate", {password: this.password, ver: version, mode: lk, path: path, library: JSON.stringify(j.library)});
                             if (j2.result <= 0) {
                                 this.updateList.unshift(`Error: ${j2.msg} retry after 2 seconds.`);
                                 await sleep(2000);

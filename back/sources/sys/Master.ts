@@ -1,8 +1,10 @@
 import * as os from "os";
 import * as cluster from "cluster";
-import * as cp from "child_process";
 // --- 库和定义 ---
+import * as Sys from "../lib/Sys";
+import * as Fs from "../lib/Fs";
 import * as CopyFiles from "../sys/CopyFiles";
+import * as c from "../const";
 
 /** 获取 pid 对应的 cpu id */
 let _workerList: any = {};
@@ -13,6 +15,8 @@ setInterval(function() {
     let now = Date.now();
     for (let pid in _workerList) {
         if (now - _workerList[pid].hbtime < 30000) {
+            // --- 距离上次心跳，小于 30 秒，正常 ---
+            // --- 子线程 10 秒发送一次心跳 ---
             continue;
         }
         // --- 异常 ---
@@ -21,7 +25,26 @@ setInterval(function() {
         delete(_workerList[pid]);
         _fork(cpu);
     }
-}, 30000);
+}, 30000);  // 30 秒
+
+// --- 清理超时文件 ---
+async function clearFtmp() {
+    // --- 上传超过两天的算超时文件 ---
+    let fileList = await Fs.readDir(c.FTMP_PATH);
+    let nowTime = (new Date()).getTime();
+    for (let name of fileList) {
+        if (name === "." || name === "..") {
+            continue;
+        }
+        let ftime = (new Date(name.slice(0, 4) + "-" + name.slice(4, 6) + "-" + name.slice(6, 8) + " " + name.slice(8, 10) + ":00:00")).getTime();
+        if (nowTime - ftime > 1000 * 60 * 60 * 24 * 2) {
+            // --- 超过两天，删除文件 ---
+            await Fs.unlinkFile(c.FTMP_PATH + name);
+        }
+    }
+    setTimeout(clearFtmp, 1000 * 60 * 60 * 6);
+}
+clearFtmp();
 
 export async function run() {
     // --- [主线程] ---
@@ -29,17 +52,17 @@ export async function run() {
     // --- 启动和 CPU 数量一致的线程 ---
     console.log("Master start...");
     for (let i = 0; i < _cpuLen; ++i) {
-        _fork(i);
+        await _fork(i);
     }
     cluster.on("listening", function(worker, address) {
         console.log("Listening: worker " + worker.process.pid + ", Address: " + address.address + ":" + address.port + ".");
     });
-    cluster.on("exit", function(worker, code, signal) {
-        // --- 子线程中断连接（可能是因为 restart），需要重新启动一个新的线程 ---
+    cluster.on("exit", async function(worker, code, signal) {
+        // --- 子线程中断连接（可能是因为 restart，也可能因为致命错误），需要重新启动一个新的线程 ---
         console.log("Worker " + worker.process.pid + " died.");
         let cpu = _workerList[worker.process.pid].cpu;
         delete(_workerList[worker.process.pid]);
-        _fork(cpu);
+        await _fork(cpu);
     });
 }
 
@@ -47,14 +70,19 @@ export async function run() {
  * --- 创建一个新的线程 ---
  * @param cpu CPU ID
  */
-function _fork(cpu: number) {
+async function _fork(cpu: number) {
     let worker = cluster.fork();
     _workerList[worker.process.pid] = {
         worker: worker,
         cpu: cpu,
         hbtime: Date.now()
     };
-    cp.exec("taskset -cp " + cpu + " " + worker.process.pid);
+    if (os.type().toLowerCase().indexOf("windows") === -1) {
+        // --- 非 Windows ---
+        let cpr = await Sys.exec("taskset -cp " + cpu + " " + worker.process.pid);
+        console.log(cpr);
+        console.log("Worker " + worker.process.pid + " start on cpu #" + cpu + ".");
+    }
     worker.on("message", function(msg) {
         switch (msg.action) {
             case "reload":

@@ -11,19 +11,25 @@ let _LOCALE_OBJ: any = {
 };
 let _LOCALE_PKG: string[] = [];
 
+/**
+ * --- 设置当前语言 ---
+ * @param nu Nu 对象
+ * @param locale 语言
+ * @param pkg 包
+ */
 export async function setLocale(nu: abs.Nu, locale: string, pkg: string = "default"): Promise<boolean> {
     let lName = locale + "." + pkg;
     if (_LOCALE_PKG.indexOf(lName) === -1) {
-        try {
-            let loc = JSON.parse(await Fs.readFile(nu.const.ROOT_PATH + "locale/" + lName));
-            if (!_LOCALE_OBJ[locale]) {
-                _LOCALE_OBJ[locale] = {};
-            }
-            Object.assign(_LOCALE_OBJ[locale], _setLocaleDeep(loc));
-            _LOCALE_PKG.push(lName);
-        } catch {
+        let fstr = await Fs.readFile(nu.const.ROOT_PATH + "locale/" + lName + ".json");
+        if (fstr === undefined) {
             return false;
         }
+        let loc = JSON.parse(fstr);
+        if (!_LOCALE_OBJ[locale]) {
+            _LOCALE_OBJ[locale] = {};
+        }
+        Object.assign(_LOCALE_OBJ[locale], _setLocaleDeep(loc));
+        _LOCALE_PKG.push(lName);
     }
     nu.locale = locale;
     return true;
@@ -51,10 +57,8 @@ export async function load(nu: abs.Nu, path: string, data: any = {}): Promise<st
     if (!Fs.isRealPath(path)) {
         path = nu.const.VIEW_PATH + path + ".ejs";
     }
-    let content: string;
-    try {
-        content = await Fs.readFile(path);
-    } catch {
+    let content: string = await Fs.readFile(path) || "";
+    if (content === "") {
         return "";
     }
     data.HTTP_BASE = nu.const.HTTP_BASE;
