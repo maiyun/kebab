@@ -1,14 +1,14 @@
 // --- 随机 ---
-const RANDOM_N = "0123456789";
-const RANDOM_U = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-const RANDOM_L = "abcdefghijklmnopqrstuvwxyz";
+export const RANDOM_N = "0123456789";
+export const RANDOM_U = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+export const RANDOM_L = "abcdefghijklmnopqrstuvwxyz";
 
-const RANDOM_UN = RANDOM_U + RANDOM_N;
-const RANDOM_LN = RANDOM_L + RANDOM_N;
-const RANDOM_LU = RANDOM_L + RANDOM_U;
-const RANDOM_LUN = RANDOM_L + RANDOM_U + RANDOM_N;
-const RANDOM_V = "ACEFGHJKLMNPRSTWXY34567";
-const RANDOM_LUNS = RANDOM_LUN + "()`~!@#$%^&*-+=_|{}[]:;\'<>,.?/]";
+export const RANDOM_UN = RANDOM_U + RANDOM_N;
+export const RANDOM_LN = RANDOM_L + RANDOM_N;
+export const RANDOM_LU = RANDOM_L + RANDOM_U;
+export const RANDOM_LUN = RANDOM_L + RANDOM_U + RANDOM_N;
+export const RANDOM_V = "ACEFGHJKLMNPRSTWXY34567";
+export const RANDOM_LUNS = RANDOM_LUN + "()`~!@#$%^&*-+=_|{}[]:;\'<>,.?/]";
 
 /**
  * --- 生成基础的范围随机数

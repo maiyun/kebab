@@ -22,8 +22,8 @@ export async function apiCheckRefresh(nu: abs.Nu) {
         return [0, "Password is incorrect."];
     }
     let res = await Net.get("https://api.github.com/repos/MaiyunNET/Mutton/releases");
-    let content = res.readContent();
-    console.log(content);
+    // let content = res.readContent();
+    // console.log(content);
     /*
     if (!$res->content) {
         return [0, 'Network error, please try again.'];

@@ -10,7 +10,7 @@ import * as c from "../const";
 let _workerList: any = {};
 let _cpuLen = os.cpus().length;
 
-// --- 检测是否有死掉的子进程 ---
+// --- 检测是否有死掉的子进程，复活之 ---
 setInterval(function() {
     let now = Date.now();
     for (let pid in _workerList) {
@@ -27,21 +27,24 @@ setInterval(function() {
     }
 }, 30000);  // 30 秒
 
-// --- 清理超时文件 ---
+/**
+ * --- 清理超时上传文件（1天） ---
+ * --- 理论上请求结束自动清理，但有可能有异常中断 ---
+ */
 async function clearFtmp() {
-    // --- 上传超过两天的算超时文件 ---
     let fileList = await Fs.readDir(c.FTMP_PATH);
     let nowTime = (new Date()).getTime();
     for (let name of fileList) {
         if (name === "." || name === "..") {
             continue;
         }
-        let ftime = (new Date(name.slice(0, 4) + "-" + name.slice(4, 6) + "-" + name.slice(6, 8) + " " + name.slice(8, 10) + ":00:00")).getTime();
-        if (nowTime - ftime > 1000 * 60 * 60 * 24 * 2) {
+        let ftime = (new Date(name.slice(0, 4) + "-" + name.slice(4, 6) + "-" + name.slice(6, 8) + " " + name.slice(8, 10) + ":" + name.slice(10, 12) + ":00")).getTime();
+        if (nowTime - ftime > 1000 * 60 * 60 * 24) {
             // --- 超过两天，删除文件 ---
             await Fs.unlinkFile(c.FTMP_PATH + name);
         }
     }
+    // --- 6 小时做一次检测 ---
     setTimeout(clearFtmp, 1000 * 60 * 60 * 6);
 }
 clearFtmp();

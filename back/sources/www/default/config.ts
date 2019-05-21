@@ -1,7 +1,7 @@
 export default {
     "route": {
         "@":                    "main",
-        "article/([0-9]+?)":    "main/article"
+        "article/([0-9]+?)":    "test/article"
     },
     "etc": {
         "__Nuttom__": {

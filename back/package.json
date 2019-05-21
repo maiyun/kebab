@@ -1,9 +1,11 @@
 {
   "dependencies": {
-    "@litert/mime-types": "0.0.3",
+    "@litert/mime-types": "^0.0.3",
+    "@litert/redis": "^0.1.7",
     "@litert/tls-sni": "^0.3.0",
     "@types/ejs": "^2.6.3",
     "@types/node": "^12.0.0",
-    "ejs": "^2.6.1"
+    "ejs": "^2.6.1",
+    "mysql2": "^1.6.5"
   }
 }

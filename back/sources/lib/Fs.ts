@@ -92,6 +92,21 @@ export function readStream(path: fs.PathLike): fs.ReadStream {
 }
 
 /**
+ * --- 读取文件写入到流，并等待写入完成 ---
+ * @param path 文件地址
+ * @param destination 要写入的流
+ */
+export function pipe<T extends NodeJS.WritableStream>(path: fs.PathLike, destination: T): Promise<void> {
+    return new Promise((resolve, reject) => {
+        let rs = fs.createReadStream(path);
+        rs.on("end", function() {
+            resolve();
+        });
+        rs.pipe(destination, {end: false});
+    });
+}
+
+/**
  * --- 写入文件流 ---
  * @param path 文件地址
  */
@@ -147,6 +162,19 @@ export function isRealPath(path: string): boolean {
         return true;
     }
     return path.split("/")[0].match(/[a-z]+:/i) ? true : false;
+}
+
+/**
+ * --- 获取文件名 ---
+ * @param path 文件路径
+ */
+export function getFilename(path: string): string {
+    path = path.replace(/\\/g, "/");
+    let lio = path.lastIndexOf("/");
+    if (lio === -1) {
+        return path;
+    }
+    return path.slice(lio + 1);
 }
 
 /**

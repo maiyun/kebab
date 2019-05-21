@@ -1,8 +1,6 @@
 import * as http2 from "http2";
 import * as url from "url";
 import * as querystring from "querystring";
-// --- 库和定义 ---
-import * as abs from "./abstract";
 
 // --- 虚拟机配置对象 ---
 export interface Vhost {
@@ -15,10 +13,17 @@ export interface Vhost {
 
 /** --- 控制器使用的常量 --- */
 export interface NuConst {
-    HTTP_BASE?: string;
-    ROOT_PATH?: string;
-    VIEW_PATH?: string;
-    DATA_PATH?: string;
+    VER: string;
+    START_TIME: bigint;
+    URI: string;
+
+    ROOT_PATH: string;
+    VIEW_PATH: string;
+    DATA_PATH: string;
+
+    HTTP_BASE: string;
+    HTTP_HOST: string;
+    HTTP_PATH: string;
 }
 
 /** --- 动态目录配置文件 --- */
@@ -27,15 +32,28 @@ export interface Config {
     readonly etc: any;
 }
 
-/** --- Nu 核心常对象 --- */
+/** --- Nu 核心对象 --- */
 export interface Nu {
-    const: abs.NuConst;
+    const: NuConst;
     readonly req: http2.Http2ServerRequest;
     readonly res: http2.Http2ServerResponse;
     readonly uri: url.UrlWithStringQuery;
     get: querystring.ParsedUrlQuery;
-    post: querystring.ParsedUrlQuery;
+    post: NuPost;
     param: string[];
     locale: string;
     config: Config;
+}
+
+/** --- Nu Post 对象 --- */
+export interface NuPost {
+    [key: string]: NuPostItem | NuPostItem[];
+}
+export type NuPostItem = string | NuPostFile;
+
+/** --- Nu Post File 对象 --- */
+export interface NuPostFile {
+    name: string;
+    size: number;
+    path: string;
 }

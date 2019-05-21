@@ -19,6 +19,8 @@ export async function run(nu: abs.Nu, pathArr?: string[], index?: number): Promi
     if (pathArr && index !== undefined && pathArr[index] === "stc") {
         return false;
     }
+    // --- 设置 nu 常量 ---
+    nu.const.HTTP_PATH += nu.const.HTTP_BASE;
     // --- 获取 json 定义文件 ---
     let config: abs.Config = require(nu.const.ROOT_PATH + "config").default;
     nu.config = config;
@@ -41,6 +43,8 @@ export async function run(nu: abs.Nu, pathArr?: string[], index?: number): Promi
         await View.toResponse(nu, nu.const.ROOT_PATH + path);
         return true;
     }
+    // --- 将虚拟路径放置在 URI 里 ---
+    nu.const.URI = path;
     // --- 如果为空则定义为 @ ---
     if (path === "") {
         path = "@";
@@ -50,10 +54,11 @@ export async function run(nu: abs.Nu, pathArr?: string[], index?: number): Promi
     let match: RegExpExecArray | null = null;
     let pathLeft: string = "", pathRight: string = "";
     for (let rule in config.route) {
+        let ruleVal = config.route[rule];
         rule = rule.replace("/", "\\/");
         let reg = new RegExp("^" + rule + "$");
         if (match = reg.exec(path)) {
-            [pathLeft, pathRight] = _getPathLeftRight(config.route[rule]);
+            [pathLeft, pathRight] = _getPathLeftRight(ruleVal);
             for (let i = 1; i < match.length; ++i) {
                 param.push(match[i]);
             }
@@ -87,7 +92,8 @@ export async function run(nu: abs.Nu, pathArr?: string[], index?: number): Promi
     } catch (e) {
         console.log(e);
         nu.res.writeHead(500);
-        nu.res.end("500 Internal Server Error(Customer code error).");
+        nu.res.end(`500 Internal Server Error(Customer code error).`);
+        await _clearUploadFiles(nu);
         return true;
     }
     if (!rtn) {
@@ -97,10 +103,12 @@ export async function run(nu: abs.Nu, pathArr?: string[], index?: number): Promi
             nu.res.writeHead(500);
             nu.res.end("500 Internal Server Error(Must have a return value).");
         }
+        await _clearUploadFiles(nu);
         return true;
     }
     if (typeof rtn === "string") {
         await View.toResponseByData(nu, rtn, "html");
+        await _clearUploadFiles(nu);
         return true;
     } else if (typeof rtn === "boolean") {
         // --- 返回了 true，无需处理 ---
@@ -130,6 +138,7 @@ export async function run(nu: abs.Nu, pathArr?: string[], index?: number): Promi
             jsonStr = JSON.stringify(rtn);
         }
         await View.toResponseByData(nu, jsonStr, "json");
+        await _clearUploadFiles(nu);
         return true;
     } else {
         // --- 以下可能有异常 ---
@@ -138,6 +147,7 @@ export async function run(nu: abs.Nu, pathArr?: string[], index?: number): Promi
             nu.res.end("500 Internal Server Error(Return type is wrong).");
         }
     }
+    await _clearUploadFiles(nu);
     return true;
 }
 
@@ -151,6 +161,27 @@ function _getPathLeftRight(path: string): string[] {
         return [path, "index"];
     } else {
         return [path.slice(0, pathLio), path.slice(pathLio + 1)];
+    }
+}
+
+/**
+ * --- 删除本次请求所有已上传的文件 ---
+ * @param nu Nu 对象
+ */
+async function _clearUploadFiles(nu: abs.Nu) {
+    for (let key in nu.post) {
+        let item = nu.post[key];
+        if (typeof item !== "string") {
+            if (Array.isArray(item)) {
+                for (let item2 of item) {
+                    if (typeof item2 !== "string") {
+                        await Fs.unlinkFile(item2.path);
+                    }
+                }
+            } else {
+                await Fs.unlinkFile(item.path);
+            }
+        }
     }
 }
 
@@ -178,6 +209,8 @@ function _getPost(req: http2.Http2ServerRequest): Promise<querystring.ParsedUrlQ
             let ftmpname: string = "";
             /** 当前 ftmp 的写入流 */
             let ftmpStream: fs.WriteStream;
+            /** 当前 ftmp 已写入流大小 */
+            let ftmpSize: number = 0;
             /** 临时字符串 */
             let tmp: Buffer = Buffer.from("");
             // --- 简易状态机 ---
@@ -186,11 +219,10 @@ function _getPost(req: http2.Http2ServerRequest): Promise<querystring.ParsedUrlQ
             }
             let state = ESTATE.WAIT;
             req.on("data", function(chunk: Buffer) {
-                console.log(tmp);
                 switch (state) {
                     case ESTATE.WAIT: {
                         // --- 正常模式 ---
-                        tmp = Buffer.concat([tmp, chunk]);
+                        tmp = Buffer.concat([tmp, chunk], tmp.length + chunk.length);
                         let io = tmp.indexOf("\r\n\r\n");
                         if (io === -1) {
                             return;
@@ -212,42 +244,68 @@ function _getPost(req: http2.Http2ServerRequest): Promise<querystring.ParsedUrlQ
                             filename = match[1];
                             // --- 创建文件流 ---
                             let date = new Date();
-                            ftmpname = date.getFullYear().toString() + Text.pad(date.getMonth() + 1) + Text.pad(date.getDate()) + Text.pad(date.getHours()) + "_" + Text.random() + ".ftmp";
+                            ftmpname = date.getFullYear().toString() + Text.pad(date.getMonth() + 1) + Text.pad(date.getDate()) + Text.pad(date.getHours()) + Text.pad(date.getMinutes()) + "_" + Text.random() + ".ftmp";
                             ftmpStream = Fs.writeStream(c.FTMP_PATH + ftmpname);
+                            ftmpSize = 0;
                         }
                         break;
                     }
                     case ESTATE.POST: {
                         // --- POST 模式 ---
-                        tmp = Buffer.concat([tmp, chunk]);
+                        tmp = Buffer.concat([tmp, chunk], tmp.length + chunk.length);
                         let io = tmp.indexOf(`\r\n--` + boundary);
                         if (io === -1) {
                             return;
                         }
-                        // --- 找到结束标语 ---
-                        post[name] = tmp.slice(0, io).toString();
+                        // --- 找到结束标语，写入 POST ---
+                        let val = tmp.slice(0, io).toString();
+                        if (post[name] !== undefined) {
+                            if ((typeof post[name] === "string") || !Array.isArray(post[name])) {
+                                post[name] = [post[name], val];
+                            } else {
+                                post[name].push(val);
+                            }
+                        } else {
+                            post[name] = val;
+                        }
+                        // --- 重置状态机 ---
                         state = ESTATE.WAIT;
                         tmp = tmp.slice(io + 4 + boundary.length);
                         break;
                     }
                     case ESTATE.FILE: {
                         // --- FILE 模式 ---
-                        tmp = Buffer.concat([tmp, chunk]);
+                        tmp = Buffer.concat([tmp, chunk], tmp.length + chunk.length);
                         let io = tmp.indexOf(`\r\n--` + boundary);
                         if (io === -1) {
                             // --- 没找到结束标语，将预留 boundary 长度之前的写入到文件 ---
-                            ftmpStream.write(tmp.slice(0, -boundary.length - 4));
+                            let writeBuffer = tmp.slice(0, -boundary.length - 4);
+                            ftmpStream.write(writeBuffer);
+                            ftmpSize += Buffer.byteLength(writeBuffer);
                             tmp = tmp.slice(-boundary.length - 4);
                             return;
                         }
-                        // --- 找到结束标语，结束标语之前的写入文件，然后断掉 ---
-                        ftmpStream.write(tmp.slice(0, io));
+                        // --- 找到结束标语，结束标语之前的写入文件，之后的重新放回 tmp ---
+                        let writeBuffer = tmp.slice(0, io);
+                        ftmpStream.write(writeBuffer);
+                        ftmpSize += Buffer.byteLength(writeBuffer);
                         ftmpStream.end();
-                        post[name] = {
+                        // --- POST 部分 ---
+                        let fval = {
                             name: filename,
-                            size: ftmpStream.writableLength,
+                            size: ftmpSize,
                             path: c.FTMP_PATH + ftmpname
                         };
+                        if (post[name] !== undefined) {
+                            if ((typeof post[name] === "string") || !Array.isArray(post[name])) {
+                                post[name] = [post[name], fval];
+                            } else {
+                                post[name].push(fval);
+                            }
+                        } else {
+                            post[name] = fval;
+                        }
+                        // --- 重置状态机 ---
                         state = ESTATE.WAIT;
                         tmp = tmp.slice(io + 4 + boundary.length);
                         break;

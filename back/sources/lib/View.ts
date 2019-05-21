@@ -140,7 +140,7 @@ export async function toResponse(nu: abs.Nu, path: string, data?: any): Promise<
         // --- charset 不为空代表是文本，可以压缩 ---
         if (encoding && (charset !== "") && (stats.size >= 1024)) {
             // --- 压缩 ---
-            let compress = Zlib.create(encoding);
+            let compress = Zlib.createCompress(encoding);
             if (compress) {
                 nu.res.setHeader("Content-Encoding", compress.type);
                 nu.res.writeHead(200);
