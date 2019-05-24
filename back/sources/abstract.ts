@@ -40,9 +40,15 @@ export interface Nu {
     readonly uri: url.UrlWithStringQuery;
     get: querystring.ParsedUrlQuery;
     post: NuPost;
+    cookie: NuCookie;
     param: string[];
     locale: string;
     config: Config;
+}
+
+/** Nu Cookie 对象 */
+export interface NuCookie {
+    [key: string]: string;
 }
 
 /** --- Nu Post 对象 --- */

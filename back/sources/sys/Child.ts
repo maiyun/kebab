@@ -10,7 +10,6 @@ import * as Sys from "../lib/Sys";
 import * as Const from "../const";
 import * as abs from "../abstract";
 // --- 初始化 ---
-import * as Boot from "../sys/Boot";
 import * as Router from "../sys/Route";
 
 /** 当前连接数 */
@@ -37,7 +36,7 @@ export async function run() {
     process.on("message", async function(msg) {
         switch (msg.action) {
             case "reload":
-                await Boot.reload(VHOSTS, SNI_MANAGER);
+                await Sys.realReload(VHOSTS, SNI_MANAGER);
                 break;
             case "restart":
                 // --- 需要停止监听，等待已有连接全部断开，然后销毁线程 ---
@@ -49,10 +48,11 @@ export async function run() {
                         break;
                     }
                     // --- 有长连接，等待中 ---
-                    console.log("Worker " + process.pid + " busy.");
+                    console.log("[ Child] Worker " + process.pid + " busy.");
                     await Sys.sleep(10000);
                 }
                 // --- 链接全部断开 ---
+                console.log("[ Child] Worker " + process.pid + " has exited.");
                 process.exit(1);
                 break;
         }
@@ -64,7 +64,7 @@ export async function run() {
     const SNI_MANAGER = sni.certs.createManager();
 
     // --- 线程启动时加载 VHOST 和证书管理器 ---
-    await Boot.reload(VHOSTS, SNI_MANAGER);
+    await Sys.realReload(VHOSTS, SNI_MANAGER);
 
     // --- 启动 HTTP 服务器 ---
     let server = http2.createSecureServer({
@@ -162,6 +162,7 @@ export async function run() {
             uri: uri,
             get: get,
             post: {},
+            cookie: {},
             param: [],
             locale: "en",
             config: {route: {}, etc: {}}

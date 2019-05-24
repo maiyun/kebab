@@ -1,5 +1,6 @@
 import * as fs from "fs";
 import * as Crypto from "./Crypto";
+import * as Sys from "./Sys";
 
 /**
  * --- 读取文件内容 ---
@@ -22,7 +23,17 @@ export function readFile(path: fs.PathLike | number, options: { encoding: string
  * --- 删除一个文件 ---
  * @param path 要删除的文件路径
  */
-export function unlinkFile(path: fs.PathLike): Promise<boolean> {
+export async function unlinkFile(path: fs.PathLike): Promise<boolean> {
+    for (let i = 0; i < 4; ++i) {
+        let bol = await _unlinkFile(path);
+        if (bol) {
+            return true;
+        }
+        await Sys.sleep(250);
+    }
+    return await _unlinkFile(path);
+}
+function _unlinkFile(path: fs.PathLike): Promise<boolean> {
     return new Promise((resolve, reject) => {
         fs.unlink(path, function(err) {
             if (err) {

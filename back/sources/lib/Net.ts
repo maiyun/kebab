@@ -14,6 +14,8 @@ import NetHttp1Response from "./Net/NetHttp1Response";
 import NetHttp2Response from "./Net/NetHttp2Response";
 import * as A from "./Net/Abstract";
 
+export type NetCookie = A.NetCookie;
+
 /** ca 根证书内容 */
 let _ca: string = "";
 
@@ -57,17 +59,27 @@ let _HTTP_LEVEL: any = {};
  * @param opt 配置项
  */
 export async function request(opt: A.Options): Promise<A.NetResponse | undefined> {
+    // --- 加载 ca 证书内容 ---
     if (_ca === "") {
         _ca = await Fs.readFile(Const.LIB_PATH + "Net/cacert.pem") || "";
+    }
+    // --- 定义是否自动追踪（较危险，有可能导致无线追踪，默认关闭） ---
+    if (opt.followLocation === undefined) {
+        opt.followLocation = false;
     }
     // --- 定义基础头部 ---
     opt.headers = opt.headers || {};
     opt.headers["Accept-Encoding"] = "gzip, deflate, br";
     opt.headers["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36";
     // --- 开始正文 ---
-    let uri = url.parse(opt.url);
+    let uri = url.parse(opt.url || "");
     let isSecure = uri.protocol === "http:" ? false : true;
     let host = uri.host || "";
+    // --- cookie ---
+    if (opt.cookie) {
+        opt.headers["Cookie"] = _buildCookieQuery(opt.cookie, uri);
+    }
+    // --- 根据协议判断用 http2 还是 http1 ---
     let levelItem = _HTTP_LEVEL[host];
     if (levelItem) {
         let nowTime = (new Date()).getTime();
@@ -131,7 +143,27 @@ async function _request1(opt: A.Options, config: A.Config): Promise<A.NetRespons
             pdata = await _getPostHeaders(opt.data);
             Object.assign(opt.headers, pdata.headers);
         }
-        let client = protocol.request(opt, function(res: http.IncomingMessage): void {
+        let client = protocol.request(opt, async function(res: http.IncomingMessage) {
+            // --- 处理 cookie ---
+            if (opt.cookie) {
+                _buildCookieObject(opt.cookie, res.headers["set-cookie"] || [], config.uri);
+            }
+            // --- 判断跳转 ---
+            if (opt.followLocation === true) {
+                if (res.headers.location) {
+                    resolve(await request({
+                        url: url.resolve(config.uri.href || "", res.headers.location),
+                        cookie: opt.cookie,
+                        encoding: opt.encoding,
+                        followLocation: opt.followLocation,
+                        timeout: opt.timeout,
+                        headers: {
+                            "Referer": config.uri.href
+                        }
+                    }));
+                    return;
+                }
+            }
             resolve(new NetHttp1Response(opt, config, res));
         });
         client.on("error", function() {
@@ -175,8 +207,28 @@ async function _request2(opt: A.Options, config: A.Config): Promise<A.NetRespons
             };
             resolve(await _request1(opt, config));
         });
-        req.on("response", function(headers: http2.IncomingHttpHeaders & http2.IncomingHttpStatusHeader, flags: number) {
+        req.on("response", async function(headers: http2.IncomingHttpHeaders & http2.IncomingHttpStatusHeader, flags: number) {
             config.headers = headers;
+            // --- 处理 cookie ---
+            if (opt.cookie) {
+                _buildCookieObject(opt.cookie, headers["set-cookie"] || [], config.uri);
+            }
+            // --- 判断跳转 ---
+            if (opt.followLocation === true) {
+                if (headers.location) {
+                    resolve(await request({
+                        url: url.resolve(config.uri.href || "", headers.location),
+                        cookie: opt.cookie,
+                        encoding: opt.encoding,
+                        followLocation: opt.followLocation,
+                        timeout: opt.timeout,
+                        headers: {
+                            "Referer": config.uri.href
+                        }
+                    }));
+                    return;
+                }
+            }
             resolve(new NetHttp2Response(opt, config, req));
         });
         req.on("end", function() {
@@ -296,7 +348,9 @@ async function _getPostHeaders(data: any): Promise<A.BeforePostResult> {
  * @param pdata BPR 对象
  */
 async function _writePost(req: http2.ClientHttp2Stream | http.ClientRequest, pdata: A.BeforePostResult) {
+    // --- 先提交上传或普通 POST 的 content 内容 ---
     req.write(pdata.content);
+    // --- 如果是上传，还需要追加关于上传的部分 ---
     if (pdata.upload) {
         for (let key in pdata.flist) {
             let fpath = pdata.flist[key];
@@ -305,5 +359,166 @@ async function _writePost(req: http2.ClientHttp2Stream | http.ClientRequest, pda
             req.write("\r\n");
         }
         req.write("--" + pdata.boundary + "--");
+    }
+}
+
+/**
+ * --- 根据 Set-Cookie 头部转换到 cookie 对象 ---
+ * @param cookie cookie 对象
+ * @param setCookies 返回头的 set-cookie 数组
+ * @param uri 请求的 URI 对象
+ */
+function _buildCookieObject(cookie: A.NetCookie, setCookies: string[], uri: url.UrlWithStringQuery) {
+    uri.hostname = uri.hostname || "";
+    uri.pathname = uri.pathname || "/";
+    for (let setCookie of setCookies) {
+        let cookieTmp: any = {};
+        let list = setCookie.split(";");
+        let listLength = list.length;
+        // --- 提取 set-cookie 中的定义信息 ---
+        for (let index = 0; index < listLength; ++index) {
+            let item = list[index];
+            let arr = item.split("=");
+            let key = arr[0];
+            let val = arr[1] !== undefined ? arr[1] : "";
+            if (index === 0) {
+                cookieTmp["name"] = key.trim();
+                cookieTmp["value"] = decodeURIComponent(val);
+            } else {
+                cookieTmp[key.trim().toLowerCase()] = val;
+            }
+        }
+        // --- 获取定义的 domain ---
+        let domain = "", domainN = "";
+        if (cookieTmp["domain"] !== undefined) {
+            cookieTmp["domain"] = cookieTmp["domain"].split(":")[0];
+            if (cookieTmp["domain"][0] !== ".") {
+                domain = "." + cookieTmp["domain"];
+                domainN = cookieTmp["domain"];
+            } else {
+                domain = cookieTmp["domain"];
+                domainN = cookieTmp["domain"].slice(1);
+            }
+        } else {
+            domain = "." + uri.hostname;
+            domainN = uri.hostname;
+        }
+        // --- 判断有没有设置 domain 的权限 ---
+        // --- uri.hostname vs  domain(domainN) ---
+        // --- ok.xxx.com   vs  .ok.xxx.com: true ---
+        // --- ok.xxx.com   vs  .xxx.com: true ---
+        // --- z.ok.xxx.com vs  .xxx.com: true ---
+        // --- ok.xxx.com   vs  .zz.ok.xxx.com: false ---
+        if (uri.hostname !== domainN) {
+            let domainSc = domain.split(".").length - 1;
+            if (domainSc <= 1) {
+                // --- .com ---
+                continue;
+            }
+            // --- 判断访问路径 (uri.hostname) 是不是设置域名 (domain) 的孩子，domain 必须是 uriHost 的同级或者父辈 ---
+            if (uri.hostname.split(".").length - 1 < domainSc) {
+                // --- ok.xxx.com (2) < .pp.xxx.com (2): false ---
+                // --- ok.xxx.com < .z.xxx.com: false ---
+                continue;
+            }
+            if (uri.hostname.slice(-domain.length) !== domain) {
+                // --- ok.xxx.com, .ppp.com: false ---
+                continue;
+            }
+        }
+        let cookieKey = cookieTmp["name"] + "-" + domainN;
+        if ((cookieTmp["max-age"] !== undefined) && (cookieTmp["max-age"] <= 0)) {
+            if (cookie[cookieKey] !== undefined) {
+                delete(cookie[cookieKey]);
+                continue;
+            }
+        }
+        let exp = -1992199400000;
+        if (cookieTmp["max-age"] !== undefined) {
+            exp = (new Date()).getTime() + cookieTmp["max-age"] * 1000;
+        }
+        // --- path ---
+        let path = cookieTmp["path"] !== undefined ? cookieTmp["path"] : "";
+        if (path === "") {
+            let srp = uri.pathname.lastIndexOf("/");
+            path = uri.pathname.slice(0, srp + 1);
+        } else if (path[0] !== "/") {
+            path = "/" + path;
+        }
+        cookie[cookieKey] = {
+            "name": cookieTmp["name"],
+            "value": cookieTmp["value"],
+            "exp": exp,
+            "path": path,
+            "domain": domainN,
+            "secure": cookieTmp["secure"] !== undefined ? true : false
+        };
+    }
+}
+
+/**
+ * --- 数组转换为 Cookie ---
+ * @param cookie cookie 对象
+ * @param uri 请求的 URI 对象
+ */
+function _buildCookieQuery(cookie: A.NetCookie, uri: url.UrlWithStringQuery): string {
+    uri.hostname = uri.hostname || "";
+    uri.pathname = uri.pathname || "/";
+    uri.protocol = uri.protocol || "http:";
+    let cookieStr = "";
+    let nowTime = (new Date()).getTime();
+    for (let key in cookie) {
+        let item = cookie[key];
+        if ((item.exp < nowTime) && (item.exp !== -1992199400000)) {
+            delete(cookie[key]);
+            continue;
+        }
+        if (item.secure && (uri.protocol === "http:")) {
+            continue;
+        }
+        // --- 判断 path 是否匹配 ---
+        if (uri.pathname.slice(0, item.path.length) !== item.path) {
+            continue;
+        }
+        let domain = "." + item.domain;
+        // --- 判断 uri.hostname 必须是 domain 的同级或子级 ---
+        // --- uri.hostname     vs      domain ---
+        // --- ok.xxx.com       vs      .ok.xxx.com: true ---
+        // --- ok.xxx.com       vs      .xxx.com: true ---
+        // --- z.ok.xxx.com     vs      .xxx.com: true ---
+        // --- ok.xxx.com       vs      .zz.ok.xxx.com: false ---
+        if ("." + uri.hostname !== domain) {
+            // --- 判断自己是不是孩子 ---
+            if (uri.hostname.split(".").length - 1 < domain.split(".").length - 1) {
+                // --- ok.xxx.com, .zz.ok.xxx.com: false ---
+                // --- pp.ok.xxx.com, .zz.ok.xxx.com: false ---
+                // --- q.b.ok.xx.com, .zz.ok.xxx.com: true ---
+                continue;
+            }
+            if (uri.hostname.slice(-domain.length) !== domain) {
+                // --- q.b.ok.xx.com, .zz.ok.xxx.com: false ---
+                // --- z.ok.xxx.com, .xxx.com: true ---
+                continue;
+            }
+        }
+        cookieStr += item.name + "=" + encodeURIComponent(item.value) + ";";
+    }
+    if (cookieStr !== "") {
+        return cookieStr.slice(0, -1);
+    } else {
+        return "";
+    }
+}
+
+/**
+ * --- 模拟重启浏览器后的状态 ---
+ * @param cookie cookie 对象
+ */
+export function resetCookieSession(cookie: A.NetCookie): void {
+    for (let key in cookie) {
+        let item = cookie[key];
+        if (item.exp === -1992199400000) {
+            delete(cookie[key]);
+        }
     }
 }

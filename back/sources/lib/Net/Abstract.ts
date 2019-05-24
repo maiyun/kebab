@@ -4,10 +4,25 @@ import * as https from "https";
 
 /** 传入的参数 */
 export type Options = https.RequestOptions & {
-    url: string;
+    url?: string;
     encoding?: string;
     data?: any;
+    cookie?: NetCookie;
+    followLocation?: boolean;
 };
+
+/** Net Cookie 对象 */
+export interface NetCookie {
+    [key: string]: NetCookieItem;
+}
+export interface NetCookieItem {
+    "name": string;
+    "value": string;
+    "exp": number;
+    "path": string;
+    "domain": string;
+    "secure": boolean;
+}
 
 /** 内部需要的参数 */
 export type Config = {

@@ -69,6 +69,14 @@ export async function run(nu: abs.Nu, pathArr?: string[], index?: number): Promi
     if (!match) {
         [pathLeft, pathRight] = _getPathLeftRight(path);
     }
+    // --- 加载客户端提交的 cookie ---
+    if (nu.req.headers.cookie) {
+        let cookies = nu.req.headers.cookie.split(";");
+        for (let cookie of cookies) {
+            let co = cookie.split("=");
+            nu.cookie[co[0].trim()] = decodeURIComponent(co[1]);
+        }
+    }
     // --- 加载控制器 ---
     let ctr: any;
     try {
@@ -84,8 +92,9 @@ export async function run(nu: abs.Nu, pathArr?: string[], index?: number): Promi
         nu.res.end("403 Forbidden(5).");
         return true;
     }
-    // --- 执行 action ---
+    // --- 获取 POST 以及文件 ---
     nu.post = await _getPost(nu.req);
+    // --- 执行 action ---
     let rtn;
     try {
         rtn = await ctr[pathRight](nu);
@@ -128,6 +137,7 @@ export async function run(nu: abs.Nu, pathArr?: string[], index?: number): Promi
                     } else {
                         nu.res.writeHead(500);
                         nu.res.end("500 Internal Server Error(Return value is wrong).");
+                        await _clearUploadFiles(nu);
                         return true;
                     }
                 }
