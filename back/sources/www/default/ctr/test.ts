@@ -52,7 +52,7 @@ export function index(nu: abs.Nu) {
         `<br><a href="${nu.const.HTTP_BASE}test/sql?type=select">View "test/sql?type=select"</a>`,
         `<br><a href="${nu.const.HTTP_BASE}test/sql?type=update">View "test/sql?type=update"</a>`,
         `<br><a href="${nu.const.HTTP_BASE}test/sql?type=delete">View "test/sql?type=delete"</a>`,
-        `<br><a href="${nu.const.HTTP_BASE}test/sql?type=where">View "test/sql?type=where"</a>`
+        `<br><a href="${nu.const.HTTP_BASE}test/sql?type=where">View "test/sql?type=where"</a>`,
 
         "<br><br><b>Redis:</b>",
         `<br><br><a href="${nu.const.HTTP_BASE}test/redis_simulator">View "test/redis_simulator"</a>`,
