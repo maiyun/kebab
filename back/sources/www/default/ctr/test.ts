@@ -54,6 +54,9 @@ export function index(nu: abs.Nu) {
         `<br><a href="${nu.const.HTTP_BASE}test/sql?type=delete">View "test/sql?type=delete"</a>`,
         `<br><a href="${nu.const.HTTP_BASE}test/sql?type=where">View "test/sql?type=where"</a>`,
 
+        "<br><br><b>Text:</b>",
+        `<br><br><a href="${nu.const.HTTP_BASE}test/text">View "test/text"</a>`,
+
         "<br><br><b>Redis:</b>",
         `<br><br><a href="${nu.const.HTTP_BASE}test/redis_simulator">View "test/redis_simulator"</a>`,
 
@@ -69,9 +72,6 @@ export function index(nu: abs.Nu) {
         `<br><br><a href="${nu.const.HTTP_BASE}test/storage_oss">View "test/storage_oss"</a>`,
         `<br><a href="${nu.const.HTTP_BASE}test/storage_oss_direct">View "test/storage_oss_direct"</a>`,
         `<br><a href="${nu.const.HTTP_BASE}test/storage_cos">View "test/storage_cos"</a>`,
-
-        "<br><br><b>Text:</b>",
-        `<br><br><a href="${nu.const.HTTP_BASE}test/text">View "test/text"</a>`,
 
         "<br><br><b>Aes:</b>",
         `<br><br><a href="${nu.const.HTTP_BASE}test/aes">View "test/aes"</a>`,
@@ -267,7 +267,6 @@ export async function mysql(nu: abs.Nu) {
 }
 
 export async function sql(nu: abs.Nu) {
-    let pool = Mysql.getPool(nu);
     let echo: string[] = [`<pre>`];
     let sql = Sql.get(nu);
     switch (nu.get.type) {
@@ -419,6 +418,15 @@ export async function sql(nu: abs.Nu) {
     }
     sql.release();
     return echo.join("") + `</pre>` + _getEnd(nu);
+}
+
+export async function text(nu: abs.Nu) {
+    let r = Text.random(16, Text.RANDOM_LUNS);
+    let echo: string[] = [
+        `Text.random(16, Text.RANDOM_LUNS):<br><br>`,
+        Text.htmlescape(r)
+    ];
+    return echo.join("") + `<br><br>` + _getEnd(nu);
 }
 
 export async function reload(nu: abs.Nu) {

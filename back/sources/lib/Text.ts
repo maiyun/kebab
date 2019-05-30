@@ -87,3 +87,11 @@ export function random(length: number = 8, source: string = RANDOM_LN): string {
     }
     return temp;
 }
+
+/**
+ * --- HTML 特殊字符转换为实体字符 ---
+ * @param html 待转换的 HTML
+ */
+export function htmlescape(html: string): string {
+    return html.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/&/g, "&amp;");
+}
