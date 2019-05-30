@@ -4,19 +4,19 @@ import * as querystring from "querystring";
 // --- 第三方 ---
 import * as sni from "@litert/tls-sni";
 // --- 库和定义 ---
-import * as Fs from "../lib/Fs";
-import * as View from "../lib/View";
-import * as Sys from "../lib/Sys";
-import * as Const from "../const";
-import * as abs from "../abstract";
+import * as Fs from "~/lib/Fs";
+import * as View from "~/lib/View";
+import * as Sys from "~/lib/Sys";
+import * as Const from "~/const";
+import * as abs from "~/abstract";
 // --- 初始化 ---
-import * as Router from "../sys/Route";
+import * as Router from "~/sys/Route";
 
 /** 当前连接数 */
 let _linkCount: number = 0;
 
 // --- 10 秒往主线程发送一次心跳 ---
-setInterval(function() {
+let _hbTimer = setInterval(function() {
     if (!process.connected) {
         return;
     }
@@ -35,26 +35,28 @@ export async function run() {
     // --- 接收进程信号，主要用来 reload ---
     process.on("message", async function(msg) {
         switch (msg.action) {
-            case "reload":
+            case "reload": {
                 await Sys.realReload(VHOSTS, SNI_MANAGER);
                 break;
-            case "restart":
-                // --- 需要停止监听，等待已有连接全部断开，然后销毁线程 ---
+            }
+            case "restart": {
+                // --- 需要停止监听，等待已有连接全部断开，然后关闭线程 ---
                 server.close();
-                process.disconnect();
+                clearInterval(_hbTimer);
                 // --- 等待连接全部断开 ---
                 while (true) {
                     if (_linkCount === 0) {
                         break;
                     }
                     // --- 有长连接，等待中 ---
-                    console.log("[ Child] Worker " + process.pid + " busy.");
-                    await Sys.sleep(10000);
+                    console.log(`[ Child] Worker ${process.pid} busy, there are ${_linkCount} connections.`);
+                    await Sys.sleep(5000);
                 }
                 // --- 链接全部断开 ---
-                console.log("[ Child] Worker " + process.pid + " has exited.");
-                process.exit(1);
+                // console.log("[ Child] Worker " + process.pid + " has exited.");
+                process.disconnect();
                 break;
+            }
         }
     });
 
@@ -155,7 +157,7 @@ export async function run() {
                 DATA_PATH: "",
                 HTTP_BASE: "",
                 HTTP_HOST: host,
-                HTTP_PATH: "https://" + req.authority
+                HTTP_PATH: "https://" + req.authority,
             },
             req: req,
             res: res,
@@ -165,7 +167,8 @@ export async function run() {
             cookie: {},
             param: [],
             locale: "en",
-            config: {route: {}, etc: {}}
+            config: {route: {}, etc: {} as any},
+            isNu: true
         };
         // --- 循环从顶层路径开始，一层层判断 ---
         for (let index = 0; index < pathArrLen; ++index) {

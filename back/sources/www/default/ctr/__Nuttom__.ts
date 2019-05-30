@@ -1,8 +1,8 @@
 // --- 库和定义 ---
-import * as View from "../../../lib/View";
-import * as Net from "../../../lib/Net";
-import * as Const from "../../../const";
-import * as abs from "../../../abstract";
+import * as View from "~/lib/View";
+import * as Net from "~/lib/Net";
+import * as Const from "~/const";
+import * as abs from "~/abstract";
 
 export async function index(nu: abs.Nu) {
     let l = <string>nu.get.l || "en";

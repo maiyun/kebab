@@ -1,8 +1,11 @@
 // --- 库和定义 ---
-import * as Net from "../../../lib/Net";
-import * as Sys from "../../../lib/Sys";
-import * as abs from "../../../abstract";
-import * as C from "../../../const";
+import * as Net from "~/lib/Net";
+import * as Sys from "~/lib/Sys";
+import * as Mysql from "~/lib/Mysql";
+import * as Sql from "~/lib/Sql";
+import * as Text from "~/lib/Text";
+import * as abs from "~/abstract";
+import * as C from "~/const";
 
 export function index(nu: abs.Nu) {
     let echo: string[] = [
@@ -41,13 +44,15 @@ export function index(nu: abs.Nu) {
         `<br><a href="${nu.const.HTTP_BASE}test/netUpload">View "test/netUpload"</a>`,
         `<br><a href="${nu.const.HTTP_BASE}test/netCookie">View "test/netCookie"</a>`,
 
+        `<br><br><b>Mysql:</b>`,
+        `<br><br><a href="${nu.const.HTTP_BASE}test/mysql">View "test/mysql"</a>`,
+
         "<br><br><b>Sql:</b>",
         `<br><br><a href="${nu.const.HTTP_BASE}test/sql?type=insert">View "test/sql?type=insert"</a>`,
         `<br><a href="${nu.const.HTTP_BASE}test/sql?type=select">View "test/sql?type=select"</a>`,
         `<br><a href="${nu.const.HTTP_BASE}test/sql?type=update">View "test/sql?type=update"</a>`,
         `<br><a href="${nu.const.HTTP_BASE}test/sql?type=delete">View "test/sql?type=delete"</a>`,
-        `<br><a href="${nu.const.HTTP_BASE}test/sql?type=where">View "test/sql?type=where"</a>`,
-        `<br><a href="${nu.const.HTTP_BASE}test/sql?type=single-mode">View "test/sql?type=single-mode"</a>`,
+        `<br><a href="${nu.const.HTTP_BASE}test/sql?type=where">View "test/sql?type=where"</a>`
 
         "<br><br><b>Redis:</b>",
         `<br><br><a href="${nu.const.HTTP_BASE}test/redis_simulator">View "test/redis_simulator"</a>`,
@@ -151,6 +156,7 @@ export async function netPost(nu: abs.Nu) {
     ];
     if (res) {
         echo.push(await res.readContent());
+        res.release();
     } else {
         echo.push("Error.");
     }
@@ -170,6 +176,7 @@ export async function netUpload(nu: abs.Nu) {
     ];
     if (res) {
         echo.push(await res.readContent());
+        res.release();
     } else {
         echo.push("Error.");
     }
@@ -201,6 +208,7 @@ export async function netCookie(nu: abs.Nu) {
         `JSON.stringify(cookie, null, 2):`,
         `<pre>${JSON.stringify(cookie, null, 2)}</pre>`
     ]);
+    res.release();
 
     res = await Net.get(nu.const.HTTP_PATH + "test/netCookie2", {cookie: cookie});
     echo.push(`res = await Net.get("${nu.const.HTTP_PATH}test/netCookie2", {cookie: cookie});`);
@@ -213,6 +221,7 @@ export async function netCookie(nu: abs.Nu) {
         `<br>await res.readContent():`,
         `<pre>${await res.readContent()}</pre>`
     ]);
+    res.release();
 
     return echo.join("") + _getEnd(nu);
 }
@@ -233,6 +242,183 @@ export async function netCookie1(nu: abs.Nu) {
 }
 export async function netCookie2(nu: abs.Nu) {
     return `JSON.stringify(nu.cookie, null, 2):<br><br>${JSON.stringify(nu.cookie, null, 2)}`;
+}
+
+export async function mysql(nu: abs.Nu) {
+    let pool = Mysql.getPool(nu);
+    let [rows, fields] = await pool.query(`SELECT * FROM \`mu_session\`;`);
+    let echo: string[] = [
+        `<style>td,th{padding:5px;border:solid 1px #000;}</style>`,
+        `<table width="100%"><tr>`
+    ];
+    for (let field of fields) {
+        echo.push(`<th>${field.name}</th>`);
+    }
+    echo.push(`</tr>`);
+    for (let row of rows) {
+        echo.push(`<tr>`);
+        for (let key in row) {
+            echo.push(`<td>${row[key]}</td>`);
+        }
+        echo.push(`</tr>`);
+    }
+    echo.push(`</table><br>`);
+    return echo.join("") + _getEnd(nu);
+}
+
+export async function sql(nu: abs.Nu) {
+    let pool = Mysql.getPool(nu);
+    let echo: string[] = [`<pre>`];
+    let sql = Sql.get(nu);
+    switch (nu.get.type) {
+        case "insert": {
+            let s = sql.insert("user", ["name", "age"], [
+                ["Ah", "16"],
+                ["Bob", "24"]
+            ]).getSql();
+            let sd = sql.getData();
+            echo.push(
+                `sql.insert("user", ["name", "age"], [\n` +
+                `    ["Ah", "16"],\n` +
+                `    ["Bob", "24"]\n` +
+                `]);\n\n` +
+                `<b>getSql() :</b> ${s}\n` +
+                `<b>getData():</b> ${JSON.stringify(sd, null, 4)}\n` +
+                `<b>format() :</b> ${sql.format(s, sd)}\n\n` +
+                `------------------------------\n\n`
+            );
+
+            s = sql.insert("user", ["name", "age"], ["Ah", "16"]).getSql();
+            sd = sql.getData();
+            echo.push(
+                `sql.insert("user", ["name", "age"], ["Ah", "16"]);\n\n` +
+                `<b>getSql() :</b> ${s}\n` +
+                `<b>getData():</b> ${JSON.stringify(sd, null, 4)}\n` +
+                `<b>format() :</b> ${sql.format(s, sd)}\n\n` +
+                `------------------------------\n\n`
+            );
+
+            s = sql.insert("user", {"name": "Bob", "age": "24"}).getSql();
+            sd = sql.getData();
+            echo.push(
+                `sql.insert("user", {"name": "Bob", "age": "24"});\n\n` +
+                `<b>getSql() :</b> ${s}\n` +
+                `<b>getData():</b> ${JSON.stringify(sd, null, 4)}\n` +
+                `<b>format() :</b> ${sql.format(s, sd)}\n\n` +
+                `------------------------------\n\n`
+            );
+
+            s = sql.insert("verify", {"token": "abc", "time_update": "10", x: ["a"]}).onDuplicate([{"time_update": "20"}]).getSql();
+            sd = sql.getData();
+            echo.push(
+                `sql.insert("verify", {"token": "abc", "time_update": "10"}).onDuplicate({"time_update": "20"});\n\n` +
+                `<b>getSql() :</b> ${s}\n` +
+                `<b>getData():</b> ${JSON.stringify(sd, null, 4)}\n` +
+                `<b>format() :</b> ${sql.format(s, sd)}`
+            );
+            break;
+        }
+        case "select": {
+            let s = sql.select("*", "user").getSql();
+            let sd = sql.getData();
+            echo.push(
+                `sql.select("*", "user");\n\n` +
+                `<b>getSql() :</b> ${s}\n` +
+                `<b>getData():</b> ${JSON.stringify(sd, null, 4)}\n` +
+                `<b>format() :</b> ${sql.format(s, sd)}`
+            );
+            break;
+        }
+        case "update": {
+            // --- 1, 2 ---
+
+            let s = sql.update("user", [["age", "+", "1"], {"name": "Serene"}]).where([{"name": "Ah"}]).getSql();
+            let sd = sql.getData();
+            echo.push(
+                `sql.update("user", [["age", "+", "1"], {"name": "Serene"}]).where([{"name": "Ah"}]);\n\n` +
+                `<b>getSql() :</b> ${s}\n` +
+                `<b>getData():</b> ${JSON.stringify(sd, null, 4)}\n` +
+                `<b>format() :</b> ${sql.format(s, sd)}\n\n` +
+                `------------------------------\n\n`
+            );
+
+            // --- 3 ---
+
+            s = sql.update("user", [{"name": "Serene", "type": ["(CASE `id` WHEN '1' THEN ? ELSE ? END)", ["a", "b"]]}]).where([{"name": "Ah"}]).getSql();
+            sd = sql.getData();
+            echo.push(
+                `sql.update("user", [{"name": "Serene", "type": ["(CASE \`id\` WHEN '1' THEN ? ELSE ? END)", ["a", "b"]]}]).where([{"name": "Ah"}]);\n\n` +
+                `<b>getSql() :</b> ${s}\n` +
+                `<b>getData():</b> ${JSON.stringify(sd, null, 4)}\n` +
+                `<b>format() :</b> ${sql.format(s, sd)}`
+            );
+            break;
+        }
+        case "delete": {
+            let s = sql.delete("user").where([{"id": "1"}]).getSql();
+            let sd = sql.getData();
+            echo.push(
+                `sql.delete("user").where([{"id": "1"}]);\n\n` +
+                `<b>getSql() :</b> ${s}\n` +
+                `<b>getData():</b> ${JSON.stringify(sd, null, 4)}\n` +
+                `<b>format() :</b> ${sql.format(s, sd)}`
+            );
+            break;
+        }
+        case "where": {
+            let s = sql.select("*", "user").where([{"city": "la"}, ["age", ">", "10"], ["level", "in", ["1", "2", "3"]]]).getSql();
+            let sd = sql.getData();
+            echo.push(
+                `sql.select("*", "user").where([{"city": "la"}, ["age", ">", "10"], ["level", "in", ["1", "2", "3"]]]);\n\n` +
+                `<b>getSql() :</b> ${s}\n` +
+                `<b>getData():</b> ${JSON.stringify(sd, null, 4)}\n` +
+                `<b>format() :</b> ${sql.format(s, sd)}\n\n` +
+                `------------------------------\n\n`
+            );
+
+            s = sql.update("order", [{"state": "1"}]).where([{
+                "$or": [{
+                    "type": "1"
+                }, {
+                    "type": "2"
+                }]
+            }]).getSql();
+            sd = sql.getData();
+            echo.push(
+                `sql.update("order", [{"state": "1"}]).where([{` +
+                `    "$or": [{\n` +
+                `        "type": "1"\n` +
+                `    }, {\n` +
+                `        "type": "2"\n` +
+                `    }]\n` +
+                `}]);\n\n` +
+                `<b>getSql() :</b> ${s}\n` +
+                `<b>getData():</b> ${JSON.stringify(sd, null, 4)}\n` +
+                `<b>format() :</b> ${sql.format(s, sd)}\n\n` +
+                `------------------------------\n\n`
+            );
+
+            s = sql.update("order", [{"state": "1"}]).where([{
+                "user_id": "2",
+                "state": ["1", "2", "3"],
+                "$or": [{"type": "1"}, {"type": "2"}]
+            }]).getSql();
+            sd = sql.getData();
+            echo.push(
+                `sql.update("order", [{"state": "1"}]).where([{\n` +
+                `    "user_id": "2",\n` +
+                `    "state": ["1", "2", "3"],\n` +
+                `    "$or": [{"type": "1"}, {"type": "2"}]\n` +
+                `}]);\n\n` +
+                `<b>getSql() :</b> ${s}\n` +
+                `<b>getData():</b> ${JSON.stringify(sd, null, 4)}\n` +
+                `<b>format() :</b> ${sql.format(s, sd)}`
+            );
+            break;
+        }
+    }
+    sql.release();
+    return echo.join("") + `</pre>` + _getEnd(nu);
 }
 
 export async function reload(nu: abs.Nu) {

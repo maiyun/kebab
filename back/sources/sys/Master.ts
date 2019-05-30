@@ -5,8 +5,15 @@ import * as Sys from "../lib/Sys";
 import * as CopyFiles from "../sys/CopyFiles";
 
 /** 获取 pid 对应的 cpu id */
-let _workerList: any = {};
+let _workerList: {
+    [key: number]: {
+        worker: cluster.Worker,
+        cpu: number,
+        hbtime: number
+    }
+} = {};
 let _cpuLen = os.cpus().length;
+// let _cpuLen = 1;
 
 // --- 检测是否有死掉的子进程，复活之 ---
 setInterval(function() {
@@ -37,11 +44,17 @@ export async function run() {
         console.log("[Master] Listening: worker " + worker.process.pid + ", Address: " + address.address + ":" + address.port + ".");
     });
     cluster.on("exit", async function(worker, code, signal) {
-        // --- 子线程中断连接（可能是因为 restart，也可能因为致命错误），需要重新启动一个新的线程 ---
-        console.log("[Master] Worker " + worker.process.pid + " died.");
-        let cpu = _workerList[worker.process.pid].cpu;
-        delete(_workerList[worker.process.pid]);
-        await _fork(cpu);
+        // --- 子线程退出 ---
+        if (code === 0) {
+            // --- 正常关闭（子线程 disconnect） ---
+            console.log("[Master] Worker " + worker.process.pid + " has been disconnected.");
+        } else {
+            // --- 中断，致命错误，需要重新启动一个新线程 ---
+            console.log("[Master] Worker " + worker.process.pid + " has collapsed.");
+            let cpu = _workerList[worker.process.pid].cpu;
+            delete(_workerList[worker.process.pid]);
+            await _fork(cpu);
+        }
     });
 }
 
@@ -64,25 +77,39 @@ async function _fork(cpu: number) {
         console.log("[Master] Worker " + worker.process.pid + " start on cpu #" + cpu + ".");
     }
     // --- 监听子线程发来的讯息 ---
-    worker.on("message", function(msg) {
+    worker.on("message", async function(msg) {
         switch (msg.action) {
-            case "reload":
-            case "restart":
-                // --- 为所有子线程发送 reload/restart 信息 ---
+            case "reload": {
+                // --- 为所有子线程发送 reload 信息 ---
                 for (let pid in _workerList) {
                     _workerList[pid].worker.send({
-                        action: msg.action
+                        action: "reload"
                     });
                 }
                 break;
-            case "hbtime":
+            }
+            case "restart": {
+                // --- 为所有子线程发送 restart 信息 ---
+                for (let pid in _workerList) {
+                    _workerList[pid].worker.send({
+                        action: "restart"
+                    });
+                    // --- 开启新线程 ---
+                    await _fork(_workerList[pid].cpu);
+                    // --- 删除记录 ---
+                    delete(_workerList[pid]);
+                }
+                break;
+            }
+            case "hbtime": {
                 if (!_workerList[msg.pid]) {
-                    // --- TODO 线程存在，主进程没找到 ---
+                    // --- 线程存在，主进程没找到 ---
                     console.log("[Master] Worker " + msg.pid + " not found.");
                     break;
                 }
                 _workerList[msg.pid].hbtime = Date.now();
                 break;
+            }
         }
     });
 }

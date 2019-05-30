@@ -1,4 +1,5 @@
 import * as url from "url";
+import * as http from "http";
 import * as http2 from "http2";
 import * as https from "https";
 
@@ -48,9 +49,19 @@ export type BeforePostResult = {
 /** HTTP 响应对象 */
 export interface NetResponse {
     /** 响应方 header 列表 */
-    readonly headers: http2.IncomingHttpHeaders & http2.IncomingHttpStatusHeader;
+    headers: http2.IncomingHttpHeaders & http2.IncomingHttpStatusHeader;
     /** 响应方 Http 版本号 */
-    readonly httpVersion: string;
+    httpVersion: string;
+
+    /**
+     * --- 释放连接到池子 ---
+     */
+    release(): void;
+
+    /**
+     * --- 重置配置信息 ---
+     */
+    reset(opt: Options, config: Config, res: http.IncomingMessage | http2.ClientHttp2Stream): void;
 
     /**
      * --- 读取所有内容到内存 ---

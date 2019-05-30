@@ -9,6 +9,10 @@ import * as Sys from "./Sys";
  */
 export function readFile(path: fs.PathLike | number, options: { encoding: string; flag?: string; } | string = "utf-8"): Promise<string | undefined> {
     return new Promise((resolve, reject) => {
+        if (path.toString().slice(-9) === "config.js") {
+            resolve(undefined);
+            return;
+        }
         fs.readFile(path, options, (err, data) => {
             if (err) {
                 resolve(undefined);
@@ -24,6 +28,9 @@ export function readFile(path: fs.PathLike | number, options: { encoding: string
  * @param path 要删除的文件路径
  */
 export async function unlinkFile(path: fs.PathLike): Promise<boolean> {
+    if (path.toString().slice(-9) === "config.js") {
+        return false;
+    }
     for (let i = 0; i < 4; ++i) {
         let bol = await _unlinkFile(path);
         if (bol) {
@@ -84,6 +91,10 @@ export function getStats(path: fs.PathLike): Promise<fs.Stats | undefined> {
  */
 export function copyFile(src: fs.PathLike, dest: fs.PathLike): Promise<boolean> {
     return new Promise((resolve, reject) => {
+        if (dest.toString().slice(-9) === "config.js") {
+            resolve(false);
+            return;
+        }
         fs.copyFile(src, dest, (err) => {
             if (err) {
                 resolve(false);
@@ -109,6 +120,10 @@ export function readStream(path: fs.PathLike): fs.ReadStream {
  */
 export function pipe<T extends NodeJS.WritableStream>(path: fs.PathLike, destination: T): Promise<void> {
     return new Promise((resolve, reject) => {
+        if (path.toString().slice(-9) === "config.js") {
+            resolve();
+            return;
+        }
         let rs = fs.createReadStream(path);
         rs.on("end", function() {
             resolve();
@@ -148,6 +163,10 @@ export function mkdir(path: fs.PathLike): Promise<boolean> {
  */
 export function readFileOnce(path: string, options: { encoding?: string; flag?: string; start?: number; end?: number } = {}): Promise<string> {
     return new Promise(function (resolve, reject) {
+        if (path.toString().slice(-9) === "config.js") {
+            resolve("");
+            return;
+        }
         try {
             let stream = fs.createReadStream(path, options);
             let data: string[] = [];

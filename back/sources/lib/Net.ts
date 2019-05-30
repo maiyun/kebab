@@ -6,12 +6,12 @@ import * as querystring from "querystring";
 // --- 第三方 ---
 import * as mime from "@litert/mime-types";
 // --- 库和定义 ---
-import * as Fs from "../lib/Fs";
-import * as Text from "../lib/Text";
-import * as Const from "../const";
+import * as Fs from "~/lib/Fs";
+import * as Text from "~/lib/Text";
+import * as Const from "~/const";
 // --- 自己 ---
-import NetHttp1Response from "./Net/NetHttp1Response";
-import NetHttp2Response from "./Net/NetHttp2Response";
+import * as NetHttp1Response from "./Net/NetHttp1Response";
+import * as NetHttp2Response from "./Net/NetHttp2Response";
 import * as A from "./Net/Abstract";
 
 export type NetCookie = A.NetCookie;
@@ -82,11 +82,11 @@ export async function request(opt: A.Options): Promise<A.NetResponse | undefined
     // --- 根据协议判断用 http2 还是 http1 ---
     let levelItem = _HTTP_LEVEL[host];
     if (levelItem) {
-        let nowTime = (new Date()).getTime();
+        let nowTime = Date.now();
         if (nowTime - levelItem.time > 1000 * 60 * 60 * 24) { // --- 缓存 1 天 ---
             delete(_HTTP_LEVEL[host]);
             _HTTP_LEVEL[host] = {
-                time: (new Date()).getTime(),
+                time: Date.now(),
                 level: "2"
             };
             return await _request2(opt, {
@@ -111,7 +111,7 @@ export async function request(opt: A.Options): Promise<A.NetResponse | undefined
         }
     } else {
         _HTTP_LEVEL[host] = {
-            time: (new Date()).getTime(),
+            time: Date.now(),
             level: "2"
         };
         return await _request2(opt, {
@@ -164,7 +164,7 @@ async function _request1(opt: A.Options, config: A.Config): Promise<A.NetRespons
                     return;
                 }
             }
-            resolve(new NetHttp1Response(opt, config, res));
+            resolve(NetHttp1Response.get(opt, config, res));
         });
         client.on("error", function() {
             resolve(undefined);
@@ -202,7 +202,7 @@ async function _request2(opt: A.Options, config: A.Config): Promise<A.NetRespons
         let req = client.request(opt.headers);
         req.on("error", async function(err) {
             _HTTP_LEVEL[config.uri.host || ""] = {
-                time: (new Date()).getTime(),
+                time: Date.now(),
                 level: "1"
             };
             resolve(await _request1(opt, config));
@@ -229,7 +229,7 @@ async function _request2(opt: A.Options, config: A.Config): Promise<A.NetRespons
                     return;
                 }
             }
-            resolve(new NetHttp2Response(opt, config, req));
+            resolve(NetHttp2Response.get(opt, config, req));
         });
         req.on("end", function() {
             client.close();
@@ -435,7 +435,7 @@ function _buildCookieObject(cookie: A.NetCookie, setCookies: string[], uri: url.
         }
         let exp = -1992199400000;
         if (cookieTmp["max-age"] !== undefined) {
-            exp = (new Date()).getTime() + cookieTmp["max-age"] * 1000;
+            exp = Date.now() + cookieTmp["max-age"] * 1000;
         }
         // --- path ---
         let path = cookieTmp["path"] !== undefined ? cookieTmp["path"] : "";
@@ -466,7 +466,7 @@ function _buildCookieQuery(cookie: A.NetCookie, uri: url.UrlWithStringQuery): st
     uri.pathname = uri.pathname || "/";
     uri.protocol = uri.protocol || "http:";
     let cookieStr = "";
-    let nowTime = (new Date()).getTime();
+    let nowTime = Date.now();
     for (let key in cookie) {
         let item = cookie[key];
         if ((item.exp < nowTime) && (item.exp !== -1992199400000)) {

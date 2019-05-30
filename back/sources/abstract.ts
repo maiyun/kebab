@@ -28,8 +28,32 @@ export interface NuConst {
 
 /** --- 动态目录配置文件 --- */
 export interface Config {
-    readonly route: any;
-    readonly etc: any;
+    readonly route: {
+        [key: string]: string;
+    };
+    readonly etc: {
+        [key: string]: string;
+    } & ConfigEtc;
+}
+
+/** --- ETC 配置 --- */
+export interface ConfigEtc {
+    "__Nuttom__": {
+        "pwd": string;
+    };
+    "mysql": ConfigEtcMysql;
+    "sql": ConfigEtcSql;
+}
+export interface ConfigEtcMysql {
+    "host": string;
+    "port": number;
+    "charset": string;
+    "name": string;
+    "username": string;
+    "password": string;
+}
+export interface ConfigEtcSql {
+    "pre": string;
 }
 
 /** --- Nu 核心对象 --- */
@@ -44,6 +68,7 @@ export interface Nu {
     param: string[];
     locale: string;
     config: Config;
+    readonly isNu: boolean;
 }
 
 /** Nu Cookie 对象 */

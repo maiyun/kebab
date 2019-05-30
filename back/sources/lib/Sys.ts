@@ -2,9 +2,9 @@ import * as cp from "child_process";
 // --- 第三方 ---
 import * as sni from "@litert/tls-sni";
 // --- 库和定义 ---
-import * as Fs from "../lib/Fs";
-import * as c from "../const";
-import * as abs from "../abstract";
+import * as Fs from "~/lib/Fs";
+import * as c from "~/const";
+import * as abs from "~/abstract";
 
 /**
  * --- 间隔一段时间 ---
@@ -63,7 +63,7 @@ export function cookie(nu: abs.Nu, name: string, value: string = "", options: Co
     options.secure = options.secure !== undefined ? options.secure : true;
     options.httponly = options.httponly !== undefined ? options.httponly : true;
     // --- 有效期 ---
-    let expires = (new Date((new Date()).getTime() + options.maxAge * 1000)).toUTCString();
+    let expires = (new Date(Date.now() + options.maxAge * 1000)).toUTCString();
     let path = options.path !== "" ? `; path=${options.path}` : "";
     let domain = options.domain ? `; domain=${options.domain}` : "";
     let secure = options.secure ? "; secure" : "";
@@ -127,5 +127,17 @@ export async function realReload(VHOSTS: abs.Vhost[], SNI_MANAGER: sni.certs.ICe
         } catch (e) {
             console.log("SNI: " + e);
         }
+    }
+}
+
+/**
+ * --- 判断是否是 Nu 对象 ---
+ * @param obj 要判断的对象
+ */
+export function isNu(obj: any): obj is abs.Nu {
+    if (obj.isNu) {
+        return true;
+    } else {
+        return false;
     }
 }

@@ -4,16 +4,33 @@ import * as Zlib from "../Zlib";
 // --- 自己 ---
 import * as A from "./Abstract";
 
-export default class NetHttp1Response implements A.NetResponse {
+/** 对象池 */
+let _resList: A.NetResponse[] = [];
+
+class NetHttp1Response implements A.NetResponse {
 
     private _res!: http.IncomingMessage;
     private _opt!: A.Options;
     private _config!: A.Config;
 
-    public readonly headers!: http.IncomingHttpHeaders;
-    public readonly httpVersion!: string;
+    public headers!: http.IncomingHttpHeaders;
+    public httpVersion!: string;
 
     constructor(opt: A.Options, config: A.Config, res: http.IncomingMessage) {
+        this.reset(opt, config, res);
+    }
+
+    /**
+     * --- 释放连接到池子 ---
+     */
+    public release() {
+        _resList.push(this);
+    }
+
+    /**
+     * --- 重置配置信息 ---
+     */
+    public reset(opt: A.Options, config: A.Config, res: http.IncomingMessage) {
         this._res = res;
         this._opt = opt;
         this._config = config;
@@ -66,5 +83,15 @@ export default class NetHttp1Response implements A.NetResponse {
             return this._res.pipe(destination, options);
         }
     }
+}
 
+/** new 或从对象池获取对象 */
+export function get(opt: A.Options, config: A.Config, res: http.IncomingMessage): A.NetResponse {
+    if (_resList[0]) {
+        let ress = _resList[0];
+        _resList.splice(0, 1);
+        ress.reset(opt, config, res);
+        return ress;
+    }
+    return new NetHttp1Response(opt, config, res);
 }

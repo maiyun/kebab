@@ -1,6 +1,7 @@
 {
     "compilerOptions": {
-        "baseUrl": ".",
+        "baseUrl": "sources/",
+        "rootDir": "sources/",
         "module": "commonjs",
         "removeComments": true,
         "preserveConstEnums": true, // 保留const和enum声明
@@ -10,6 +11,11 @@
         "strict": true,             // 严格模式
         "declaration": false,       // d.ts
         "declarationMap": false,
-        "newLine": "LF"
+        "newLine": "LF",
+        "paths": {
+            "~/*": [
+                "*"
+            ]
+        }
     }
 }

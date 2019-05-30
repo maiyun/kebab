@@ -3,9 +3,13 @@
     "@litert/mime-types": "^0.0.3",
     "@litert/redis": "^0.1.7",
     "@litert/tls-sni": "^0.3.0",
-    "@types/ejs": "^2.6.3",
-    "@types/node": "^12.0.0",
     "ejs": "^2.6.1",
-    "mysql2": "^1.6.5"
+    "mysql2": "^1.6.5",
+    "ts-alias-loader": "^0.1.1"
+  },
+  "devDependencies": {
+    "@types/ejs": "^2.6.3",
+    "@types/mysql2": "github:types/mysql2",
+    "@types/node": "^12.0.2"
   }
 }

@@ -2,11 +2,11 @@ import * as http2 from "http2";
 import * as querystring from "querystring";
 import * as fs from "fs";
 // --- 库和定义 ---
-import * as Fs from "../lib/Fs";
-import * as Text from "../lib/Text";
-import * as View from "../lib/View";
-import * as abs from "../abstract";
-import * as c from "../const";
+import * as Fs from "~/lib/Fs";
+import * as Text from "~/lib/Text";
+import * as View from "~/lib/View";
+import * as abs from "~/abstract";
+import * as c from "~/const";
 
 // --- 处理路由 ---
 export async function run(nu: abs.Nu, pathArr?: string[], index?: number): Promise<boolean> {
@@ -22,7 +22,7 @@ export async function run(nu: abs.Nu, pathArr?: string[], index?: number): Promi
     // --- 设置 nu 常量 ---
     nu.const.HTTP_PATH += nu.const.HTTP_BASE;
     // --- 获取 json 定义文件 ---
-    let config: abs.Config = require(nu.const.ROOT_PATH + "config").default;
+    let config: abs.Config = require(nu.const.ROOT_PATH + "config");
     nu.config = config;
     /** --- 余下的相对路径 --- */
     let path = "";
@@ -110,7 +110,7 @@ export async function run(nu: abs.Nu, pathArr?: string[], index?: number): Promi
         if (!nu.res.finished) {
             // --- 有可能是 pipe 或者忘了输出忘了 end，必须错 ---
             nu.res.writeHead(500);
-            nu.res.end("500 Internal Server Error(Must have a return value).");
+            nu.res.end("500 Internal Server Error(Must have a return value, if processed please return true).");
         }
         await _clearUploadFiles(nu);
         return true;
