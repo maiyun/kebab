@@ -4,6 +4,7 @@ import * as Sys from "~/lib/Sys";
 import * as Mysql from "~/lib/Mysql";
 import * as Sql from "~/lib/Sql";
 import * as Text from "~/lib/Text";
+import * as Crypto from "~/lib/Crypto";
 import * as abs from "~/abstract";
 import * as C from "~/const";
 
@@ -57,6 +58,9 @@ export function index(nu: abs.Nu) {
         "<br><br><b>Text:</b>",
         `<br><br><a href="${nu.const.HTTP_BASE}test/text">View "test/text"</a>`,
 
+        "<br><br><b>Aes:</b>",
+        `<br><br><a href="${nu.const.HTTP_BASE}test/aes">View "test/aes"</a>`,
+
         "<br><br><b>Redis:</b>",
         `<br><br><a href="${nu.const.HTTP_BASE}test/redis_simulator">View "test/redis_simulator"</a>`,
 
@@ -72,9 +76,6 @@ export function index(nu: abs.Nu) {
         `<br><br><a href="${nu.const.HTTP_BASE}test/storage_oss">View "test/storage_oss"</a>`,
         `<br><a href="${nu.const.HTTP_BASE}test/storage_oss_direct">View "test/storage_oss_direct"</a>`,
         `<br><a href="${nu.const.HTTP_BASE}test/storage_cos">View "test/storage_cos"</a>`,
-
-        "<br><br><b>Aes:</b>",
-        `<br><br><a href="${nu.const.HTTP_BASE}test/aes">View "test/aes"</a>`,
 
         "<br><br><b>Ssh:</b>",
         `<br><br><a href="${nu.const.HTTP_BASE}test/ssh_sftp">View "test/ssh_sftp"</a>`,
@@ -426,6 +427,99 @@ export async function text(nu: abs.Nu) {
         `Text.random(16, Text.RANDOM_LUNS):<br><br>`,
         Text.htmlescape(r)
     ];
+    return echo.join("") + `<br><br>` + _getEnd(nu);
+}
+
+export async function aes(nu: abs.Nu) {
+    let echo: string[] = ["<b>AES-256-ECB:</b>"];
+
+    let key = "testkeyatestkeyatestkeyatestkeya";
+    let text = Crypto.aesEncrypt("Original text", key);
+    echo.push(
+        `<pre>` +
+        `key = "testkeyatestkeyatestkeyatestkeya";\n` +
+        `Crypto.aesEncrypt("Original text", key);` +
+        `</pre>` +
+        JSON.stringify(text)
+    );
+
+    let orig = Crypto.aesDecrypt(text, key);
+    echo.push(
+        `<pre>` +
+        `Crypto.aesDecrypt(text, key);` +
+        `</pre>` +
+        JSON.stringify(orig)
+    );
+
+    orig = Crypto.aesDecrypt(text, "otherKey");
+    echo.push(
+        `<pre>` +
+        `Crypto.aesDecrypt(text, "otherKey");` +
+        `</pre>` +
+        JSON.stringify(orig)
+    );
+
+    // ----------
+
+    echo.push("<br><br><b>AES-256-CFB:</b>");
+
+    let iv = "iloveuiloveuilov";
+    text = Crypto.aesEncrypt("Original text", key, iv);
+    echo.push(
+        `<pre>` +
+        `key = "testkeyatestkeyatestkeyatestkeya";\n` +
+        `iv = "iloveuiloveuilov";\n` +
+        `Crypto.aesEncrypt("Original text", key, iv);` +
+        `</pre>` +
+        JSON.stringify(text)
+    );
+
+    orig = Crypto.aesDecrypt(text, key, iv);
+    echo.push(
+        `<pre>` +
+        `Crypto.aesDecrypt(text, key, iv);` +
+        `</pre>` +
+        JSON.stringify(orig)
+    );
+
+    orig = Crypto.aesDecrypt(text, key, "otherIv");
+    echo.push(
+        `<pre>` +
+        `Crypto.aesDecrypt(text, key, "otherIv");` +
+        `</pre>` +
+        JSON.stringify(orig)
+    );
+
+    // ----------
+
+    echo.push("<br><br><b>AES-256-CBC:</b>");
+
+    text = Crypto.aesEncrypt("Original text", key, iv, Crypto.AES_256_CBC);
+    echo.push(
+        `<pre>` +
+        `key = "testkeyatestkeyatestkeyatestkeya";\n` +
+        `iv = "iloveuiloveuilov";\n` +
+        `Crypto.aesEncrypt("Original text", key, iv, Crypto.AES_256_CBC);` +
+        `</pre>` +
+        JSON.stringify(text)
+    );
+
+    orig = Crypto.aesDecrypt(text, key, iv, Crypto.AES_256_CBC);
+    echo.push(
+        `<pre>` +
+        `Crypto.aesDecrypt(text, key, iv, Crypto.AES_256_CBC);` +
+        `</pre>` +
+        JSON.stringify(orig)
+    );
+
+    orig = Crypto.aesDecrypt(text, key, "otherIvotherIv11", Crypto.AES_256_CBC);
+    echo.push(
+        `<pre>` +
+        `Crypto.aesDecrypt(text, key, "otherIvotherIv11", Crypto.AES_256_CBC);` +
+        `</pre>` +
+        JSON.stringify(orig)
+    );
+
     return echo.join("") + `<br><br>` + _getEnd(nu);
 }
 
