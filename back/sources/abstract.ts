@@ -43,6 +43,7 @@ export interface ConfigEtc {
     };
     "mysql": ConfigEtcMysql;
     "sql": ConfigEtcSql;
+    "redis": ConfigEtcRedis;
 }
 export interface ConfigEtcMysql {
     "host": string;
@@ -54,6 +55,12 @@ export interface ConfigEtcMysql {
 }
 export interface ConfigEtcSql {
     "pre": string;
+}
+export interface ConfigEtcRedis {
+    "host": string;
+    "port": number;
+    "index": number;
+    "auth": string;
 }
 
 /** --- Nu 核心对象 --- */

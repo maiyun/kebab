@@ -5,6 +5,7 @@ import * as Mysql from "~/lib/Mysql";
 import * as Sql from "~/lib/Sql";
 import * as Text from "~/lib/Text";
 import * as Crypto from "~/lib/Crypto";
+import * as Redis from "~/lib/Redis";
 import * as abs from "~/abstract";
 import * as C from "~/const";
 
@@ -62,7 +63,7 @@ export function index(nu: abs.Nu) {
         `<br><br><a href="${nu.const.HTTP_BASE}test/aes">View "test/aes"</a>`,
 
         "<br><br><b>Redis:</b>",
-        `<br><br><a href="${nu.const.HTTP_BASE}test/redis_simulator">View "test/redis_simulator"</a>`,
+        `<br><br><a href="${nu.const.HTTP_BASE}test/redis">View "test/redis"</a>`,
 
         "<br><br><b>Session:</b>",
         `<br><br><a href="${nu.const.HTTP_BASE}test/session_db">View "test/session_db"</a>`,
@@ -518,6 +519,85 @@ export async function aes(nu: abs.Nu) {
         `Crypto.aesDecrypt(text, key, "otherIvotherIv11", Crypto.AES_256_CBC);` +
         `</pre>` +
         JSON.stringify(orig)
+    );
+
+    return echo.join("") + `<br><br>` + _getEnd(nu);
+}
+
+export async function redis(nu: abs.Nu) {
+    let conn = await Redis.getConnection(nu);
+    let echo: string[] = [];
+
+    let r = await conn.getString("test");
+    echo.push(
+        `<pre>` +
+        `await conn.getString("test");` +
+        `</pre>` +
+        JSON.stringify(r)
+    );
+
+    let rb = await conn.setString("test", "abc");
+    echo.push(
+        `<pre>` +
+        `await conn.setString("test", "abc");` +
+        `</pre>` +
+        JSON.stringify(rb)
+    );
+
+    r = await conn.getString("test");
+    echo.push(
+        `<pre>` +
+        `await conn.getString("test");` +
+        `</pre>` +
+        JSON.stringify(r)
+    );
+
+    rb = await conn.setString("test", "abcm", {flag: "NX"});
+    echo.push(
+        `<pre>` +
+        `await conn.setString("test", "abcm", {flag: "NX"});` +
+        `</pre>` +
+        JSON.stringify(rb)
+    );
+
+    rb = await conn.setString("test", "abcm", {flag: "XX"});
+    echo.push(
+        `<pre>` +
+        `await conn.setString("test", "abcm", {flag: "XX"});` +
+        `</pre>` +
+        JSON.stringify(rb)
+    );
+
+    rb = await conn.setString("test", "hhh", {flag: "XX", ex: 10});
+    echo.push(
+        `<pre>` +
+        `await conn.setString("test", "hhh", {flag: "XX", ex: 10});` +
+        `</pre>` +
+        JSON.stringify(rb)
+    );
+
+    r = await conn.getString("test");
+    echo.push(
+        `<pre>` +
+        `await conn.getString("test");` +
+        `</pre>` +
+        JSON.stringify(r)
+    );
+
+    let rbn = await conn.del("test");
+    echo.push(
+        `<pre>` +
+        `await conn.del("test");` +
+        `</pre>` +
+        JSON.stringify(rbn)
+    );
+
+    r = await conn.getString("test");
+    echo.push(
+        `<pre>` +
+        `await conn.getString("test");` +
+        `</pre>` +
+        JSON.stringify(r)
     );
 
     return echo.join("") + `<br><br>` + _getEnd(nu);

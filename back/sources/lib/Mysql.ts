@@ -4,26 +4,15 @@ import * as mysql2 from "mysql2/promise";
 import * as Sys from "~/lib/Sys";
 import * as abs from "~/abstract";
 
-/** --- 连接池列表项 --- */
-export interface PoolItem {
-    "host": string;
-    "port": number;
-    "charset": string;
-    "name": string;
-    "username": string;
-    "password": string;
-    "pool": Pool;
-}
-
 /** --- 连接池列表 --- */
-let _poolLsit: PoolItem[] = [];
+let _poolList: Pool[] = [];
 
 // --- 计划任务 ---
 // --- 关闭超过1分钟不活动的连接，但至少保持一条连接可用 ---
 async function _clearConnection() {
-    let poolLen: number = _poolLsit.length;
+    let poolLen: number = _poolList.length;
     for (let i = 0; i < poolLen; ++i) {
-        await _poolLsit[i].pool.clearConnection();
+        await _poolList[i].clearConnection();
     }
     await Sys.sleep(30000);
     _clearConnection();
@@ -34,9 +23,9 @@ _clearConnection();
 // --- 是否有忘记关闭的事务（连接一直在占用，却超过 10 分钟没有任何活动） ---
 async function _checkConnection() {
     await Sys.sleep(3600000);
-    let poolLen: number = _poolLsit.length;
+    let poolLen: number = _poolList.length;
     for (let i = 0; i < poolLen; ++i) {
-        await _poolLsit[i].pool.checkConnection();
+        await _poolList[i].checkConnection();
     }
     _checkConnection();
 }
@@ -45,12 +34,12 @@ _checkConnection();
 /** --- 数据库连接池对象 --- */
 class Pool {
     /** 数据库配置信息 */
-    private readonly _etc: abs.ConfigEtcMysql;
+    public readonly etc: abs.ConfigEtcMysql;
     /** 连接池 */
     private _connections: Connection[] = [];
 
     constructor(etc: abs.ConfigEtcMysql) {
-        this._etc = Object.assign({}, etc);
+        this.etc = Object.assign({}, etc);
     }
 
     /**
@@ -170,12 +159,12 @@ class Pool {
         if (conn === undefined) {
             // --- 没有找到合适的连接，创建一个 ---
             let mc = await mysql2.createConnection({
-                host: this._etc.host,
-                port: this._etc.port,
-                user: this._etc.username,
-                password: this._etc.password,
-                database: this._etc.name,
-                charset: this._etc.charset
+                host: this.etc.host,
+                port: this.etc.port,
+                user: this.etc.username,
+                password: this.etc.password,
+                database: this.etc.name,
+                charset: this.etc.charset
             });
             conn = new Connection(mc);
             this._connections.push(conn);
@@ -301,21 +290,13 @@ class Connection {
  */
 export function getPool(etc: abs.Nu | abs.ConfigEtcMysql): Pool {
     let etcMysql: abs.ConfigEtcMysql = Sys.isNu(etc) ? etc.config.etc.mysql : etc;
-    for (let pool of _poolLsit) {
-        if ((pool.host === etcMysql.host) && (pool.port === etcMysql.port) && (pool.charset === etcMysql.charset) && (pool.name === etcMysql.name) && (pool.username === etcMysql.username) && (pool.password === etcMysql.password)) {
-            return pool.pool;
+    for (let pool of _poolList) {
+        if ((pool.etc.host === etcMysql.host) && (pool.etc.port === etcMysql.port) && (pool.etc.charset === etcMysql.charset) && (pool.etc.name === etcMysql.name) && (pool.etc.username === etcMysql.username) && (pool.etc.password === etcMysql.password)) {
+            return pool;
         }
     }
     // --- 要新建连接池了 ---
     let poolObject = new Pool(etcMysql);
-    _poolLsit.push({
-        "host": etcMysql.host,
-        "port": etcMysql.port,
-        "charset": etcMysql.charset,
-        "name": etcMysql.name,
-        "username": etcMysql.username,
-        "password": etcMysql.password,
-        "pool": poolObject
-    });
+    _poolList.push(poolObject);
     return poolObject;
 }
