@@ -69,6 +69,34 @@ export function readDir(path: fs.PathLike): Promise<string[]> {
 }
 
 /**
+ * --- 根据目录深度获取下面的所有文件列表 ---
+ * @param path 目录
+ * @param pre 前导
+ */
+export async function getFileListDeep(path: fs.PathLike, pre: string = ""): Promise<string[]> {
+    return await _getFileListDeep(path, pre);
+}
+async function _getFileListDeep(path: fs.PathLike, pre: string): Promise<string[]> {
+    let list = await readDir(path);
+    let over: string[] = [];
+    for (let item of list) {
+        if (item === "." || item === "..") {
+            continue;
+        }
+        let stat = await getStats(path + item);
+        if (!stat) {
+            continue;
+        }
+        if (stat.isDirectory()) {
+            over = over.concat(await _getFileListDeep(path + item + "/", pre + item + "/"));
+        } else {
+            over.push(pre + item);
+        }
+    }
+    return over;
+}
+
+/**
  * --- 获取对象是否存在，存在则返回 stats 对象，否则返回 undefined ---
  * @param path 对象路径
  */
@@ -234,6 +262,7 @@ async function _mkdirDeepSub(path: string): Promise<boolean> {
     return await mkdir(path);
 }
 
+/** 同步选项 */
 interface SyncOptions {
     ignoreExt?: string[];
 }

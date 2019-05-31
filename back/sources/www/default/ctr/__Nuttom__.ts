@@ -1,6 +1,7 @@
 // --- 库和定义 ---
 import * as View from "~/lib/View";
 import * as Net from "~/lib/Net";
+import * as Fs from "~/lib/Fs";
 import * as Const from "~/const";
 import * as abs from "~/abstract";
 
@@ -17,7 +18,6 @@ export async function index(nu: abs.Nu) {
 }
 
 export async function apiCheckRefresh(nu: abs.Nu) {
-    console.log(nu.post);
     if (nu.post.password !== nu.config.etc.__Nuttom__.pwd) {
         return [0, "Password is incorrect."];
     }
@@ -39,4 +39,12 @@ export async function apiCheckRefresh(nu: abs.Nu) {
     }
     return [1, 'list' => $list];
     */
+}
+
+export async function apiBuild(nu: abs.Nu) {
+    if (nu.post.password !== nu.config.etc.__Nuttom__.pwd) {
+        return [0, "Password is incorrect."];
+    }
+    let list = await Fs.getFileListDeep(Const.LIB_PATH, "back/sources/lib/");
+    console.log(list);
 }

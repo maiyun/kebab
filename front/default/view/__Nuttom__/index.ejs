@@ -4,7 +4,7 @@
     <title>Nuttom Portal</title>
     <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="stylesheet" href="<%= HTTP_STC %>__Nuttom__/index.css?<%= VER %>">
-    <script src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.min.js"></script>
     <script>
         var tab = <%= hasConfig ? '0' : '3' %>;
         var HTTP_BASE = '<%= HTTP_BASE %>';
@@ -72,11 +72,9 @@
                             </div>
                             <mu-line></mu-line>
                             <div style="display: flex; flex-direction: column; align-items: center;">
-                                <div>Build a ".mblob" file.</div>
+                                <div>Build a ".nblob" file.</div>
                                 <div style="text-align: center; margin-top: 10px;">
-                                    <mu-button @click.native="build()">Build</mu-button>
-                                    <mu-button @click.native="build(2)" style="margin-left: 10px;">Build a json</mu-button>
-                                    <mu-button @click.native="build(1)" style="margin-left: 10px;">Build to "doc"</mu-button>
+                                    <mu-button @click.native="build()">Build to "doc"</mu-button>
                                 </div>
                             </div>
                         </div>

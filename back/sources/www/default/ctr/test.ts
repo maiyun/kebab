@@ -59,8 +59,8 @@ export function index(nu: abs.Nu) {
         "<br><br><b>Text:</b>",
         `<br><br><a href="${nu.const.HTTP_BASE}test/text">View "test/text"</a>`,
 
-        "<br><br><b>Aes:</b>",
-        `<br><br><a href="${nu.const.HTTP_BASE}test/aes">View "test/aes"</a>`,
+        "<br><br><b>Crypto:</b>",
+        `<br><br><a href="${nu.const.HTTP_BASE}test/crypto">View "test/crypto"</a>`,
 
         "<br><br><b>Redis:</b>",
         `<br><br><a href="${nu.const.HTTP_BASE}test/redis">View "test/redis"</a>`,
@@ -68,22 +68,6 @@ export function index(nu: abs.Nu) {
         "<br><br><b>Session:</b>",
         `<br><br><a href="${nu.const.HTTP_BASE}test/session_db">View "test/session_db"</a>`,
         `<br><a href="${nu.const.HTTP_BASE}test/session_redis">View "test/session_redis"</a>`,
-
-        "<br><br><b>Captcha:</b>",
-        `<br><br><a href="${nu.const.HTTP_BASE}test/captcha_fastbuild">View "test/captcha_fastbuild"</a>`,
-        `<br><a href="${nu.const.HTTP_BASE}test/captcha_base64">View "test/captcha_base64"</a>`,
-
-        "<br><br><b>Storage:</b>",
-        `<br><br><a href="${nu.const.HTTP_BASE}test/storage_oss">View "test/storage_oss"</a>`,
-        `<br><a href="${nu.const.HTTP_BASE}test/storage_oss_direct">View "test/storage_oss_direct"</a>`,
-        `<br><a href="${nu.const.HTTP_BASE}test/storage_cos">View "test/storage_cos"</a>`,
-
-        "<br><br><b>Ssh:</b>",
-        `<br><br><a href="${nu.const.HTTP_BASE}test/ssh_sftp">View "test/ssh_sftp"</a>`,
-
-        "<br><br><b>Dns:</b>",
-        `<br><br><a href="${nu.const.HTTP_BASE}test/dns_aliyun">View "test/dns_aliyun"</a>`,
-        `<br><a href="${nu.const.HTTP_BASE}test/dns_tencent_cloud">View "test/dns_tencent_cloud"</a>`,
 
         "<br><br><b>System:</b>",
         `<br><br><a href="${nu.const.HTTP_BASE}test/reload">View "reload"</a>`,
@@ -431,7 +415,7 @@ export async function text(nu: abs.Nu) {
     return echo.join("") + `<br><br>` + _getEnd(nu);
 }
 
-export async function aes(nu: abs.Nu) {
+export async function crypto(nu: abs.Nu) {
     let echo: string[] = ["<b>AES-256-ECB:</b>"];
 
     let key = "testkeyatestkeyatestkeyatestkeya";

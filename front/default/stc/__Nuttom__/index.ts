@@ -136,30 +136,15 @@ document.addEventListener("DOMContentLoaded", async function() {
                 }
                 this.latestVer = j.version;
             },
-            build: async function (this: any, mode: number = 0) {
+            build: async function (this: any) {
                 this.mask = true;
-                let j = await post(HTTP_BASE + "__Nuttom__/apiBuild", {password: this.password, mode: mode});
+                let j = await post(HTTP_BASE + "__Nuttom__/apiBuild", {password: this.password});
                 this.mask = false;
                 if (j.result <= 0) {
                     this.alert = j.msg;
                     return;
                 }
-                if (mode === 0 || mode === 2) {
-                    let ext = mode === 0 ? "mblob" : "json";
-                    let bstr = atob(j.blob), n = bstr.length, u8arr = new Uint8Array(n);
-                    while (n--) {
-                        u8arr[n] = bstr.charCodeAt(n);
-                    }
-                    let blob = new Blob([u8arr]);
-                    let a = document.createElement("a");
-                    a.download = j.ver + "." + ext;
-                    a.href = URL.createObjectURL(blob);
-                    let evt = document.createEvent("MouseEvents");
-                    evt.initEvent("click", false, false);
-                    a.dispatchEvent(evt);
-                } else {
-                    this.alert = "Successful.";
-                }
+                this.alert = "Successful.";
             },
             // --- 自动升级 ---
             update: async function (this: any) {

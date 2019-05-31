@@ -216,6 +216,7 @@ function _getPost(req: http2.Http2ServerRequest): Promise<querystring.ParsedUrlQ
             let name: string = "";
             /** 当前 filename */
             let filename: string = "";
+            /** 临时文件名 */
             let ftmpname: string = "";
             /** 当前 ftmp 的写入流 */
             let ftmpStream: fs.WriteStream;
@@ -229,97 +230,107 @@ function _getPost(req: http2.Http2ServerRequest): Promise<querystring.ParsedUrlQ
             }
             let state = ESTATE.WAIT;
             req.on("data", function(chunk: Buffer) {
-                switch (state) {
-                    case ESTATE.WAIT: {
-                        // --- 正常模式 ---
-                        tmp = Buffer.concat([tmp, chunk], tmp.length + chunk.length);
-                        let io = tmp.indexOf("\r\n\r\n");
-                        if (io === -1) {
-                            return;
-                        }
-                        // --- 头部已经读取完毕 ---
-                        let head = tmp.slice(0, io).toString();
-                        // --- 获取 name ---
-                        let match = head.match(/name="(.+?)"/);
-                        name = match ? match[1] : "";
-                        // --- 判断是 post 还是文件 ---
-                        tmp = tmp.slice(io + 4);
-                        match = head.match(/filename="(.+?)"/);
-                        if (!match) {
-                            // --- post ---
-                            state = ESTATE.POST;
-                        } else {
-                            // --- 文件 ---
-                            state = ESTATE.FILE;
-                            filename = match[1];
-                            // --- 创建文件流 ---
-                            let date = new Date();
-                            ftmpname = date.getFullYear().toString() + Text.pad(date.getMonth() + 1) + Text.pad(date.getDate()) + Text.pad(date.getHours()) + Text.pad(date.getMinutes()) + "_" + Text.random() + ".ftmp";
-                            ftmpStream = Fs.writeStream(c.FTMP_PATH + ftmpname);
-                            ftmpSize = 0;
-                        }
-                        break;
-                    }
-                    case ESTATE.POST: {
-                        // --- POST 模式 ---
-                        tmp = Buffer.concat([tmp, chunk], tmp.length + chunk.length);
-                        let io = tmp.indexOf(`\r\n--` + boundary);
-                        if (io === -1) {
-                            return;
-                        }
-                        // --- 找到结束标语，写入 POST ---
-                        let val = tmp.slice(0, io).toString();
-                        if (post[name] !== undefined) {
-                            if ((typeof post[name] === "string") || !Array.isArray(post[name])) {
-                                post[name] = [post[name], val];
-                            } else {
-                                post[name].push(val);
+                let gowhile = 0;
+                while (gowhile >= 0) {
+                    switch (state) {
+                        case ESTATE.WAIT: {
+                            // --- 正常模式 ---
+                            if (gowhile === 0) {
+                                tmp = Buffer.concat([tmp, chunk], tmp.length + chunk.length);
                             }
-                        } else {
-                            post[name] = val;
+                            let io = tmp.indexOf("\r\n\r\n");
+                            if (io === -1) {
+                                return;
+                            }
+                            // --- 头部已经读取完毕 ---
+                            let head = tmp.slice(0, io).toString();
+                            // --- 获取 name ---
+                            let match = head.match(/name="(.+?)"/);
+                            name = match ? match[1] : "";
+                            // --- 判断是 post 还是文件 ---
+                            tmp = tmp.slice(io + 4);
+                            match = head.match(/filename="(.+?)"/);
+                            if (!match) {
+                                // --- post ---
+                                state = ESTATE.POST;
+                            } else {
+                                // --- 文件 ---
+                                state = ESTATE.FILE;
+                                filename = match[1];
+                                // --- 创建文件流 ---
+                                let date = new Date();
+                                ftmpname = date.getFullYear().toString() + Text.pad(date.getMonth() + 1) + Text.pad(date.getDate()) + Text.pad(date.getHours()) + Text.pad(date.getMinutes()) + "_" + Text.random() + ".ftmp";
+                                ftmpStream = Fs.writeStream(c.FTMP_PATH + ftmpname);
+                                ftmpSize = 0;
+                            }
+                            break;
                         }
-                        // --- 重置状态机 ---
-                        state = ESTATE.WAIT;
-                        tmp = tmp.slice(io + 4 + boundary.length);
-                        break;
-                    }
-                    case ESTATE.FILE: {
-                        // --- FILE 模式 ---
-                        tmp = Buffer.concat([tmp, chunk], tmp.length + chunk.length);
-                        let io = tmp.indexOf(`\r\n--` + boundary);
-                        if (io === -1) {
-                            // --- 没找到结束标语，将预留 boundary 长度之前的写入到文件 ---
-                            let writeBuffer = tmp.slice(0, -boundary.length - 4);
+                        case ESTATE.POST: {
+                            // --- POST 模式 ---
+                            if (gowhile === 0) {
+                                tmp = Buffer.concat([tmp, chunk], tmp.length + chunk.length);
+                            }
+                            let io = tmp.indexOf(`\r\n--` + boundary);
+                            if (io === -1) {
+                                return;
+                            }
+                            // --- 找到结束标语，写入 POST ---
+                            let val = tmp.slice(0, io).toString();
+                            if (post[name] !== undefined) {
+                                if ((typeof post[name] === "string") || !Array.isArray(post[name])) {
+                                    post[name] = [post[name], val];
+                                } else {
+                                    post[name].push(val);
+                                }
+                            } else {
+                                post[name] = val;
+                            }
+                            // --- 重置状态机 ---
+                            state = ESTATE.WAIT;
+                            tmp = tmp.slice(io + 4 + boundary.length);
+                            break;
+                        }
+                        case ESTATE.FILE: {
+                            // --- FILE 模式 ---
+                            if (gowhile === 0) {
+                                tmp = Buffer.concat([tmp, chunk], tmp.length + chunk.length);
+                            }
+                            let io = tmp.indexOf(`\r\n--` + boundary);
+                            if (io === -1) {
+                                // --- 没找到结束标语，将预留 boundary 长度之前的写入到文件 ---
+                                let writeBuffer = tmp.slice(0, -boundary.length - 4);
+                                ftmpStream.write(writeBuffer);
+                                ftmpSize += Buffer.byteLength(writeBuffer);
+                                tmp = tmp.slice(-boundary.length - 4);
+                                return;
+                            }
+                            // --- 找到结束标语，结束标语之前的写入文件，之后的重新放回 tmp ---
+                            let writeBuffer = tmp.slice(0, io);
                             ftmpStream.write(writeBuffer);
                             ftmpSize += Buffer.byteLength(writeBuffer);
-                            tmp = tmp.slice(-boundary.length - 4);
-                            return;
-                        }
-                        // --- 找到结束标语，结束标语之前的写入文件，之后的重新放回 tmp ---
-                        let writeBuffer = tmp.slice(0, io);
-                        ftmpStream.write(writeBuffer);
-                        ftmpSize += Buffer.byteLength(writeBuffer);
-                        ftmpStream.end();
-                        // --- POST 部分 ---
-                        let fval = {
-                            name: filename,
-                            size: ftmpSize,
-                            path: c.FTMP_PATH + ftmpname
-                        };
-                        if (post[name] !== undefined) {
-                            if ((typeof post[name] === "string") || !Array.isArray(post[name])) {
-                                post[name] = [post[name], fval];
+                            ftmpStream.end();
+                            // --- POST 部分 ---
+                            let fval = {
+                                name: filename,
+                                size: ftmpSize,
+                                path: c.FTMP_PATH + ftmpname
+                            };
+                            if (post[name] !== undefined) {
+                                if ((typeof post[name] === "string") || !Array.isArray(post[name])) {
+                                    post[name] = [post[name], fval];
+                                } else {
+                                    post[name].push(fval);
+                                }
                             } else {
-                                post[name].push(fval);
+                                post[name] = fval;
                             }
-                        } else {
-                            post[name] = fval;
+                            // --- 重置状态机 ---
+                            state = ESTATE.WAIT;
+                            tmp = tmp.slice(io + 4 + boundary.length);
+                            break;
                         }
-                        // --- 重置状态机 ---
-                        state = ESTATE.WAIT;
-                        tmp = tmp.slice(io + 4 + boundary.length);
-                        break;
                     }
+                    ++gowhile;
                 }
             });
             req.on("end", function() {
