@@ -39,7 +39,7 @@ Create a multi-process model based on the number of CPUS to fully improve CPU ut
 
 ### Global Connection Pool
 
-A process within the same MYSQL, Redis and other connections, sharing a connection pool, improve efficiency.
+Different sites within the same process if connected to the same MYSQL, Redis, etc., then share a connection pool, maximize efficiency and reduce overhead.
 
 ### UI Console
 
