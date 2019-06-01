@@ -1,4 +1,6 @@
 import * as crypto from "crypto";
+// --- 库和定义 ---
+import * as Fs from "~/lib/Fs";
 
 /**
  * --- md5 加密 ---
@@ -6,6 +8,26 @@ import * as crypto from "crypto";
  */
 export function md5(data: crypto.BinaryLike): string {
     return crypto.createHash("md5").update(data).digest("hex");
+}
+
+/**
+ * --- md5 加密文件 ---
+ * @param path 要加密的文件路径
+ */
+export function md5File(path: string): Promise<string> {
+    return new Promise(function (resolve, reject) {
+        try {
+            let s = Fs.readStream(path);
+            let md5hash = crypto.createHash("md5");
+            s.on("data", function (chunk: Buffer) {
+                md5hash.update(chunk);
+            }).on("close", function() {
+                resolve(md5hash.digest("hex"));
+            });
+        } catch {
+            resolve("");
+        }
+    });
 }
 
 /**

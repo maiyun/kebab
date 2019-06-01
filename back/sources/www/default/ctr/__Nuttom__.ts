@@ -45,6 +45,16 @@ export async function apiBuild(nu: abs.Nu) {
     if (nu.post.password !== nu.config.etc.__Nuttom__.pwd) {
         return [0, "Password is incorrect."];
     }
-    let list = await Fs.getFileListDeep(Const.LIB_PATH, "back/sources/lib/");
+    let list = await Fs.getFileListDeep(Const.SOURCES_PATH + "lib/", "back/sources/lib/");
+    list = list.concat(await Fs.getFileListDeep(Const.SOURCES_PATH + "sys/", "back/sources/sys/"));
+    list = list.concat([
+        `back/sources/abstract.ts`,
+        `back/sources/const.ts`,
+        `back/sources/index.ts`,
+        `back/sources/www/default/ctr/__Nuttom__.ts`,
+        `front/default/stc/__Nuttom__/index.ts`,
+        `front/default/stc/__Nuttom__/index.css`,
+        `front/default/view/__Nuttom__/index.ejs`
+    ]);
     console.log(list);
 }
