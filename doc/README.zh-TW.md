@@ -65,7 +65,7 @@ let s = sql.update("user", [["age", "+", "1"], {"name": "Serene"}]).where([{"nam
 
 可以下載後訪問首頁和查看代碼（back/sources/www/default/ctr/test.ts）看更多示例。
 
-## 更新日志
+## 更新日誌
 
 [更新日誌](CHANGELOG.zh-TW.md)
 
