@@ -53,12 +53,6 @@ Net (http2, https and http auto selection), Crypto (md5, sha1, aes...), Fs, Mysq
 let str: string = Text.random(16, Text.RANDOM_N)
 ```
 
-### 生成驗證碼圖片
-
-```php
-Captcha::get(400, 100)->output();
-```
-
 ### Sql
 
 ```typescript
