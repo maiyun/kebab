@@ -29,6 +29,18 @@ Net (http2, https and http auto selection), Crypto (md5, sha1, aes...), Fs, Mysq
 
 Based on the idea of not using the brain, the commonly used and uniform style of the library has been encapsulated.
 
+### Hot update
+
+By calling the Sys.restart method, you can smooth the implementation of hot updates without interrupting any existing business and connections.
+
+### Multi-process
+
+Create a multi-process model based on the number of CPUS to fully improve CPU utilization.
+
+### Global Connection Pool
+
+A process within the same MYSQL, Redis and other connections, sharing a connection pool, improve efficiency.
+
 ### UI Console
 
 A console that contains a UI interface that automatically pairs the latest version of Mutton to detect which files have been modified or need to be upgraded.
