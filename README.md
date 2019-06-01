@@ -43,7 +43,7 @@ Different sites within the same process if connected to the same MYSQL, Redis, e
 
 ### UI Console
 
-A console that contains a UI interface that automatically pairs the latest version of Mutton to detect which files have been modified or need to be upgraded.
+A console that contains a UI interface that automatically pairs the latest version of Nuttom to detect which files have been modified or need to be upgraded.
 
 ### Net Library contains full Cookie implementation
 
@@ -69,7 +69,7 @@ let s = sql.update("user", [["age", "+", "1"], {"name": "Serene"}]).where([{"nam
 
 ## Other demos
 
-You can download and view the home Code (back/sources/www/default/ctr/test.php) to see more examples.
+You can download and view the code (back/sources/www/default/ctr/test.ts) to see more examples.
 
 ## Changelog
 
