@@ -21,7 +21,7 @@ Node 10+
 
 ## Library
 
-Net (http, https, http2), Crypto (md5, sha1, aes), Fs, Mysql, Redis, Sql, Sys, Text, View, Zlib.
+Net (http2, https and http auto selection), Crypto (md5, sha1, aes...), Fs, Mysql, Redis, Sql, Sys, Text, View, Zlib.
 
 ## Features
 
@@ -53,7 +53,7 @@ let str: string = Text.random(16, Text.RANDOM_N)
 let s = sql.update("user", [["age", "+", "1"], {"name": "Serene"}]).where([{"name": "Ah"}]);
 ```
 
-> UPDATE mu_user SET \`age\` = \`age\` + '1', \`name\` = 'Serene' WHERE `name` = 'Ah'
+> UPDATE mu_user SET \`age\` = \`age\` + '1', \`name\` = 'Serene' WHERE \`name\` = 'Ah'
 
 ## Other demos
 
