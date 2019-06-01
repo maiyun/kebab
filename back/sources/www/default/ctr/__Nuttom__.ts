@@ -1,6 +1,8 @@
 // --- 库和定义 ---
 import * as View from "~/lib/View";
 import * as Net from "~/lib/Net";
+import * as Crypto from "~/lib/Crypto";
+import * as Zlib from "~/lib/Zlib";
 import * as Fs from "~/lib/Fs";
 import * as Const from "~/const";
 import * as abs from "~/abstract";
@@ -45,6 +47,10 @@ export async function apiBuild(nu: abs.Nu) {
     if (nu.post.password !== nu.config.etc.__Nuttom__.pwd) {
         return [0, "Password is incorrect."];
     }
+    /** 最终要输出的 */
+    let endJson: any = {
+        "files": {}
+    };
     let list = await Fs.getFileListDeep(Const.SOURCES_PATH + "lib/", "back/sources/lib/");
     list = list.concat(await Fs.getFileListDeep(Const.SOURCES_PATH + "sys/", "back/sources/sys/"));
     list = list.concat([
@@ -56,5 +62,9 @@ export async function apiBuild(nu: abs.Nu) {
         `front/default/stc/__Nuttom__/index.css`,
         `front/default/view/__Nuttom__/index.ejs`
     ]);
-    console.log(list);
+    for (let item of list) {
+        endJson.files[item] = await Crypto.md5File(Const.ROOT_PATH + item);
+    }
+    await Fs.writeFile(Const.ROOT_PATH + "doc/nblob/" + Const.VER + ".nblob", await Zlib.gzip(JSON.stringify(endJson), {level: 9}));
+    return [1];
 }

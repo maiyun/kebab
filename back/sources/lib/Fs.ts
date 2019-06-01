@@ -13,11 +13,29 @@ export function readFile(path: fs.PathLike | number, options: { encoding: string
             resolve(undefined);
             return;
         }
-        fs.readFile(path, options, (err, data) => {
+        fs.readFile(path, options, function(err, data) {
             if (err) {
                 resolve(undefined);
             } else {
                 resolve(data);
+            }
+        });
+    });
+}
+
+/**
+ * --- 写入文件内容 ---
+ * @param path 文件路径
+ * @param data 要写入的内容
+ * @param options 选项
+ */
+export function writeFile(path: fs.PathLike | number, data: any, options: fs.WriteFileOptions = {}) {
+    return new Promise((resolve, reject) => {
+        fs.writeFile(path, data, options, function(err) {
+            if (err) {
+                resolve(false);
+            } else {
+                resolve(true);
             }
         });
     });
