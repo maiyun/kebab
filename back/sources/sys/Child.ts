@@ -9,13 +9,14 @@ import * as sni from "@litert/tls-sni";
 import * as Fs from "~/lib/Fs";
 import * as View from "~/lib/View";
 import * as Sys from "~/lib/Sys";
+import * as Crypto from "~/lib/Crypto";
 import * as Const from "~/const";
 import * as abs from "~/abstract";
 // --- 初始化 ---
 import * as Router from "~/sys/Route";
 
-/** 当前连接数 */
-let _linkCount: number = 0;
+/** --- 当前持续中的连接数 --- */
+let _LINK_COUNT: number = 0;
 
 // --- 10 秒往主线程发送一次心跳 ---
 let _hbTimer = setInterval(function() {
@@ -31,122 +32,52 @@ let _hbTimer = setInterval(function() {
     });
 }, 10000);
 
-export async function run() {
-    // --- [子线程]，主程序内容 ---
+/** --- 当前的虚拟主机配置列表 - 读取于 conf/vhost/*.json --- */
+let _VHOSTS: abs.Vhost[] = [];
+/** --- 当前有虚拟主机的个数 --- */
+let _VHOSTS_LEN: number = 0;
+/** --- 证书 SNI 管理器 --- */
+const _SNI_MANAGER = sni.certs.createManager();
 
-    // --- 接收进程信号，主要用来 reload ---
-    process.on("message", async function(msg) {
-        switch (msg.action) {
-            case "reload": {
-                await Sys.realReload(VHOSTS, SNI_MANAGER);
-                break;
-            }
-            case "restart": {
-                // --- 需要停止监听，等待已有连接全部断开，然后关闭线程 ---
-                server.close();
-                clearInterval(_hbTimer);
-                // --- 等待连接全部断开 ---
-                while (true) {
-                    if (_linkCount === 0) {
-                        break;
-                    }
-                    // --- 有长连接，等待中 ---
-                    console.log(`[ Child] Worker ${process.pid} busy, there are ${_linkCount} connections.`);
-                    await Sys.sleep(5000);
-                }
-                // --- 链接全部断开 ---
-                // console.log("[ Child] Worker " + process.pid + " has exited.");
-                process.disconnect();
-                break;
-            }
-        }
-    });
+// --- 以下为 [子进程] 正戏 ---
+(async function() {
+    // --- 子进程启动时先加载 VHOST 和证书管理器 ---
+    await Sys.realReload(_VHOSTS, _SNI_MANAGER);
+    _VHOSTS_LEN = _VHOSTS.length;
 
-    /** 当前的虚拟主机配置列表 - 读取于 conf/vhost/*.json */
-    let VHOSTS: abs.Vhost[] = [];
-    // --- 证书 SNI 管理器 ---
-    const SNI_MANAGER = sni.certs.createManager();
-
-    // --- 线程启动时加载 VHOST 和证书管理器 ---
-    await Sys.realReload(VHOSTS, SNI_MANAGER);
-
-    // --- 启动 HTTP 服务器 ---
+    // --- 创建服务器并启动特（支持 http2/https/http/websocket） ---
     let server = http2.createSecureServer({
-        SNICallback: SNI_MANAGER.getSNICallback(),
+        SNICallback: _SNI_MANAGER.getSNICallback(),
         ciphers: "ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA:ECDHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA256:DHE-RSA-AES256-SHA:ECDHE-ECDSA-DES-CBC3-SHA:ECDHE-RSA-DES-CBC3-SHA:EDH-RSA-DES-CBC3-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:DES-CBC3-SHA:!DSS",
         allowHTTP1: true
     }, async (req, res) => {
-        ++_linkCount;
+        // --- 普通 HTTP 类请求开始 ---
+        ++_LINK_COUNT;
+        /** --- 本次请求开始时间 --- */
         const START_TIME = process.hrtime.bigint();
+        // --- 设置标准头部 ---
         res.setHeader("Server", "Nuttom/" + Const.VER);
-
-        /**
-         * --- 用以检测 host 是否与 vhost 配置域名相匹配 ---
-         * @param host 要检验的域名
-         * @param vhost 虚拟机配置对象
-         */
-        let checkVhost = function(host: string, vhost: abs.Vhost): number {
-            for (let domain of vhost.domains) {
-                if (domain.indexOf("*") !== -1) {
-                    if (domain === "*") {
-                        return 0;
-                    } else {
-                        domain = domain.replace(/\*/, "^((?!\\.).)+").replace(/\./, "\\.");
-                        if (new RegExp(domain).test(host)) {
-                            return 1;
-                        }
-                    }
-                } else if (domain === host) {
-                    return 2;
-                }
-            }
-            return -1;
-        };
-
-        // --- 开始 ---
-        let [host, port] = (req.headers[":authority"] || "").split(":");
-        let len = VHOSTS.length;
-        let vhostMatch: abs.Vhost[] = [];
-        /** 当前最佳匹配的虚拟机配置 */
-        let vhost!: abs.Vhost;
-        for (let i = 0; i < len; ++i) {
-            let rn = checkVhost(host, VHOSTS[i]);
-            if (rn === 2) {
-                vhost = VHOSTS[i];
-                break;
-            } else if (rn !== -1) {
-                vhostMatch[rn] = VHOSTS[i];
-            }
+        /** --- 格式化的请求 uri 对象 --- */
+        const uri = url.parse((req.headers[":scheme"] || "") + "://" + req.headers[":authority"] + req.headers[":path"]);
+        /** --- 当前匹配的虚拟主机对象 --- */
+        let vhost = _getVhost(uri.hostname || "");
+        if (!vhost) {
+            res.writeHead(403);
+            res.end("Nuttom: No permissions.");
+            --_LINK_COUNT;
+            return;
         }
-        if (vhost === undefined) {
-            if (vhostMatch.length === 0) {
-                res.writeHead(403);
-                res.end("Nuttom: No permissions.");
-                --_linkCount;
-                return;
-            } else {
-                if (vhostMatch[1]) {
-                    vhost = vhostMatch[1];
-                } else {
-                    vhost = vhostMatch[0];
-                }
-            }
-        }
-        /** 网站实际根目录，末尾不带 / */
-        let vhostRoot = vhost.root.replace(/\\/g, "/");
-        vhostRoot = Fs.isRealPath(vhostRoot) ? vhostRoot : Const.WWW_PATH + vhostRoot;
+        /** 网站实绝对根目录，末尾不带 / */
+        let vhostRoot = Fs.isRealPath(vhost.root) ? vhost.root : Const.WWW_PATH + vhost.root;
         vhostRoot = vhostRoot.slice(-1) !== "/" ? vhostRoot : vhostRoot.slice(0, -1);
-        /** 请求的 URI 对象 */
-        let uri = url.parse((req.headers[":scheme"] || "") + "://" + req.headers[":authority"] + req.headers[":path"]);
-        let get = uri.query ? querystring.parse(uri.query) : {};
-        /** 请求的路径部分 */
+        /** --- 请求的路径部分 --- */
         let path = uri.pathname || "/";
-
-        /** 请求路径的数组分割 */
+        path = url.resolve("/", path);
+        /** --- 请求路径的数组分割 --- */
         let pathArr = path.split("/");
         pathArr.splice(0, 1);
         let pathArrLen = pathArr.length;
-        /** 当面检测路径 */
+        /** --- 当前已检测到的路径 --- */
         let pathNow = "/";
         /** --- Nu 对象 --- */
         let nu: abs.Nu = {
@@ -158,13 +89,13 @@ export async function run() {
                 VIEW_PATH: "",
                 DATA_PATH: "",
                 HTTP_BASE: "",
-                HTTP_HOST: host,
+                HTTP_HOST: uri.hostname || "",
                 HTTP_PATH: "https://" + req.authority,
             },
             req: req,
             res: res,
             uri: uri,
-            get: get,
+            get: uri.query ? querystring.parse(uri.query) : {},
             post: {},
             cookie: {},
             param: [],
@@ -175,28 +106,16 @@ export async function run() {
         // --- 循环从顶层路径开始，一层层判断 ---
         for (let index = 0; index < pathArrLen; ++index) {
             let item = pathArr[index];
-            if (item === "" || item === ".") {
+            if (item === "") {
                 continue;
             }
-            if (item === "..") {
-                if (pathNow === "/") {
-                    // --- 最次返回到网站主目录，做限定，不可能读取网站主目录之上的文件，那不就呵呵哒了么 ---
-                    continue;
-                } else {
-                    // --- 返回上一层 ---
-                    pathNow = pathNow.slice(0, -1);
-                    pathNow = pathNow.slice(0, pathNow.lastIndexOf("/") + 1);
-                    continue;
-                }
-            }
             // --- 判断目录是否是 Nuttom 目录 ---
-            // --- pathNow 代表的是上一层路径，不是 item ---
-            nu.const.HTTP_BASE = pathNow;
-            nu.const.ROOT_PATH = vhostRoot + pathNow;
-            nu.const.VIEW_PATH = nu.const.ROOT_PATH + "view/";
-            nu.const.DATA_PATH = nu.const.ROOT_PATH + "data/";
-            if (await Router.run(nu, pathArr, index)) {
-                --_linkCount;
+            if (await Router.run(nu, {
+                leftPathArr: pathArr.slice(index),
+                vhostRoot: vhostRoot,
+                pathNow: pathNow
+            })) {
+                --_LINK_COUNT;
                 return;
             }
             // --- 判断当前是否存在对象，不存在返回 404 ---
@@ -205,7 +124,7 @@ export async function run() {
                 // --- 404 ---
                 res.writeHead(404);
                 res.end("404 Not Found(1).");
-                --_linkCount;
+                --_LINK_COUNT;
                 return;
             }
             if (stats.isDirectory()) {
@@ -214,24 +133,24 @@ export async function run() {
             } else if (stats.isFile()) {
                 // --- 当前是文件，则输出文件 ---
                 await View.toResponse(nu, vhostRoot + pathNow + item);
-                --_linkCount;
+                --_LINK_COUNT;
                 return;
             } else {
                 // --- 当前有异常，禁止输出 ---
                 res.writeHead(403);
                 res.end("403 Forbidden(1).");
-                --_linkCount;
+                --_LINK_COUNT;
                 return;
             }
         }
         // --- 一直是目录，会到这里，例如 /test/，/ 根 ---
         // --- 先判断是不是 Nuttom 目录，若不是，则是静态目录 ---
-        nu.const.HTTP_BASE = pathNow;
-        nu.const.ROOT_PATH = vhostRoot + pathNow;
-        nu.const.VIEW_PATH = nu.const.ROOT_PATH + "view/";
-        nu.const.DATA_PATH = nu.const.ROOT_PATH + "data/";
-        if (await Router.run(nu)) {
-            --_linkCount;
+        if (await Router.run(nu, {
+            leftPathArr: [],
+            vhostRoot: vhostRoot,
+            pathNow: pathNow
+        })) {
+            --_LINK_COUNT;
             return;
         }
         // --- 静态目录，读 index ---
@@ -243,15 +162,90 @@ export async function run() {
             if (stats === undefined) {
                 res.writeHead(403);
                 res.end("403 Forbidden(2).");
-                --_linkCount;
+                --_LINK_COUNT;
                 return;
             }
         }
         // --- 读取并输出文件 ---
         await View.toResponse(nu, vhostRoot + pathNow + item);
-        --_linkCount;
+        --_LINK_COUNT;
     }).on("upgrade", function(req: http.IncomingMessage, socket: tls.TLSSocket) {
-        console.log(req.headers);
+        // --- WebSocket(wss) 连接 ---
+        const swa = Crypto.sha1(req.headers["sec-websocket-key"] + "258EAFA5-E914-47DA-95CA-C5AB0DC85B11", {format: "base64"});
+        const resHeaders: string[] = [
+            `HTTP/${req.httpVersion} 101 Switching Protocols`,
+            `Upgrade: websocket`,
+            `Connection: Upgrade`,
+            `Sec-WebSocket-Version: 13`,
+            `Sec-WebSocket-Accept: ${swa}`,
+            `Sec-WebSocket-Location: wss://${req.headers["host"]}/`
+        ];
+        socket.write(resHeaders.join(`\r\n`) + "\r\n\r\n");
+        // --- 响应 ---
+        socket.on("data", function(chunk: Buffer) {
+            console.log(chunk.toString());
+        });
     });
     server.listen(4333);
+
+    // --- 接收进程信号，主要用来 reload，restart ---
+    process.on("message", async function(msg) {
+        switch (msg.action) {
+            case "reload": {
+                await Sys.realReload(_VHOSTS, _SNI_MANAGER);
+                break;
+            }
+            case "restart": {
+                // --- 需要停止监听，等待已有连接全部断开，然后关闭线程 ---
+                server.close();
+                clearInterval(_hbTimer);
+                // --- 等待连接全部断开 ---
+                while (true) {
+                    if (_LINK_COUNT === 0) {
+                        break;
+                    }
+                    // --- 有长连接，等待中 ---
+                    console.log(`[ Child] Worker ${process.pid} busy, there are ${_LINK_COUNT} connections.`);
+                    await Sys.sleep(5000);
+                }
+                // --- 链接全部断开 ---
+                // console.log("[ Child] Worker " + process.pid + " has exited.");
+                process.disconnect();
+                break;
+            }
+        }
+    });
+})();
+
+/**
+ * --- 获取匹配的 vhost 对象 ---
+ * --- 如果有精准匹配，以精准匹配为准，否则为 2 级泛匹配(v2)，最后全局泛匹配(vg) ---
+ * @param hostname 当前的 hostname，不带端口
+ */
+function _getVhost(hostname: string): abs.Vhost | undefined {
+    let vg!: abs.Vhost, v2!: abs.Vhost;
+    for (let vhost of _VHOSTS) {
+        for (let domain of vhost.domains) {
+            if (domain === "*") {
+                // --- 全局泛匹配 ---
+                vg = vhost;
+            } else if (domain.indexOf("*") !== -1) {
+                // --- 2 级泛匹配 ---
+                domain = domain.replace(/\*/, "^[a-z-]+?").replace(/\./, "\\.");
+                if (new RegExp(domain).test(hostname)) {
+                    v2 = vhost;
+                }
+            } else if (domain === hostname) {
+                // --- 完全匹配 ---
+                return vhost;
+            }
+        }
+    }
+    if (v2) {
+        return v2;
+    }
+    if (vg) {
+        return vg;
+    }
+    return undefined;
 }

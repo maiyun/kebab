@@ -2,11 +2,16 @@ import * as crypto from "crypto";
 // --- 库和定义 ---
 import * as Fs from "~/lib/Fs";
 
+export interface Options {
+    encoding?: crypto.Utf8AsciiLatin1Encoding;
+    format?: crypto.HexBase64Latin1Encoding;
+}
+
 /**
  * --- md5 加密 ---
  * @param data 要加密的数据
  */
-export function md5(data: crypto.BinaryLike): string {
+export function md5(data: string): string {
     return crypto.createHash("md5").update(data).digest("hex");
 }
 
@@ -35,7 +40,7 @@ export function md5File(path: string): Promise<string> {
  * @param data 要加密的数据
  * @param salt 盐值
  */
-export function md5WithSalt(data: crypto.BinaryLike, salt: string): string {
+export function md5WithSalt(data: string, salt: string): string {
     return md5(salt[0] + md5(data) + salt.slice(1));
 }
 
@@ -43,8 +48,13 @@ export function md5WithSalt(data: crypto.BinaryLike, salt: string): string {
  * --- sha1 加密 ---
  * @param data 要加密的数据
  */
-export function sha1(data: crypto.BinaryLike, format: "hex" | "base64" = "hex"): string {
-    return crypto.createHash("sha1").update(data).digest(format);
+export function sha1(data: string, opt: Options = {}): string {
+    opt.format = opt.format || "hex";
+    if (opt.encoding) {
+        return crypto.createHash("sha1").update(data, opt.encoding).digest(opt.format);
+    } else {
+        return crypto.createHash("sha1").update(data).digest(opt.format);
+    }
 }
 
 // --- AES 加/解密 ---

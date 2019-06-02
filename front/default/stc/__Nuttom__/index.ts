@@ -11,11 +11,13 @@ let headElement: HTMLHeadElement;
 document.addEventListener("DOMContentLoaded", async function() {
     // WebSocket 测试 ---
     let ws = new WebSocket("wss://local-test.brc-app.com:4333/echo");
-    ws.onopen = function() {
-        // Web Socket 已连接上，使用 send() 方法发送数据
+    ws.addEventListener("open", function() {
         ws.send("发送数据");
         alert("数据发送中...");
-    };
+    });
+    ws.addEventListener("message", function(ev) {
+        console.log(ev);
+    });
     // --- 结束
     headElement = document.getElementsByTagName("head")[0];
     if (typeof fetch !== "function") {

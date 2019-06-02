@@ -1,21 +1,22 @@
 import * as cluster from "cluster";
 // --- 第三方 ---
 import "ts-alias-loader";
-// --- 库和定义 ---
-import * as Master from "./sys/Master";
-import * as Child from "./sys/Child";
 
 // --- 初始化 ---
-(async () => {
+// --- 一定要分别隔离加载 Master 和 Child 代码，防止执行串了 ---
+if (cluster.isMaster) {
     try {
-        if (cluster.isMaster) {
-            await Master.run();
-        } else {
-            await Child.run();
-        }
+        require("./sys/Master");
     } catch (e) {
-        console.log("--- [Process fatal Error] ---");
+        console.log("[Master] ------ [Process fatal Error] ------");
         console.log(e);
     }
-})();
+} else {
+    try {
+        require("./sys/Child");
+    } catch (e) {
+        console.log("[Child ] ------ [Process fatal Error] ------");
+        console.log(e);
+    }
+}
 

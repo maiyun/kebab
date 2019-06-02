@@ -8,36 +8,34 @@ import * as View from "~/lib/View";
 import * as abs from "~/abstract";
 import * as c from "~/const";
 
+export interface Options {
+    leftPathArr: string[];
+    vhostRoot: string;
+    pathNow: string;
+}
+
 // --- 处理路由 ---
-export async function run(nu: abs.Nu, pathArr?: string[], index?: number): Promise<boolean> {
+export async function run(nu: abs.Nu, opt: Options): Promise<boolean> {
     // --- 判断是否是动态目录 ---
-    let stat = await Fs.getStats(nu.const.ROOT_PATH + "config.js");
+    let stat = await Fs.getStats(opt.vhostRoot + opt.pathNow + "config.js");
     if (!stat) {
         return false;
     }
     // --- 判断是动态目录，但当前目录是否不进行动态化 ---
-    if (pathArr && index !== undefined && pathArr[index] === "stc") {
+    if (opt.leftPathArr[0] === "stc") {
         return false;
     }
-    // --- 设置 nu 常量 ---
+    // --- pathNow 代表的是上一层路径，不是 item ---
+    nu.const.HTTP_BASE = opt.pathNow;
+    nu.const.ROOT_PATH = opt.vhostRoot + opt.pathNow;
+    nu.const.VIEW_PATH = nu.const.ROOT_PATH + "view/";
+    nu.const.DATA_PATH = nu.const.ROOT_PATH + "data/";
     nu.const.HTTP_PATH += nu.const.HTTP_BASE;
     // --- 获取 json 定义文件 ---
     let config: abs.Config = require(nu.const.ROOT_PATH + "config");
     nu.config = config;
     /** --- 余下的相对路径 --- */
-    let path = "";
-    if (pathArr && (index !== undefined)) {
-        let pathArrLen = pathArr.length;
-        for (let i = index; i < pathArrLen; ++i) {
-            if (pathArr[i] === "") {
-                continue;
-            }
-            path += pathArr[i] + "/";
-        }
-        if (path.length > 1 && path.slice(-1) === "/") {
-            path = path.slice(0, -1);
-        }
-    }
+    let path = opt.leftPathArr.join("/").replace(/\/\//g, "");
     // --- 检测 path 是否是静态文件 ---
     if (/favicon.\w+?\??.*|[\w-]+?\.doc\??.*|[\w-]+?\.txt\??.*/.test(path)) {
         await View.toResponse(nu, nu.const.ROOT_PATH + path);

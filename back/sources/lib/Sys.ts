@@ -110,8 +110,8 @@ export async function realReload(VHOSTS: abs.Vhost[], SNI_MANAGER: sni.certs.ICe
         if (!Array.isArray(list)) {
             list = [list];
         }
-        for (let vhost of list) {
-            VHOSTS.push(vhost);
+        for (let item of list) {
+            VHOSTS.push(item);
         }
     }
     // --- 重新加载证书 ---

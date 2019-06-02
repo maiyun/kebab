@@ -9,6 +9,7 @@ export interface Vhost {
     readonly root: string;
     readonly cert: string;
     readonly key: string;
+    readonly remark: string;
 }
 
 /** --- 控制器使用的常量 --- */
