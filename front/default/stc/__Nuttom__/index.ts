@@ -9,6 +9,14 @@ window.onerror = (msg, uri, line, col, err) => {
 /** head 标签 */
 let headElement: HTMLHeadElement;
 document.addEventListener("DOMContentLoaded", async function() {
+    // WebSocket 测试 ---
+    let ws = new WebSocket("wss://local-test.brc-app.com:4333/echo");
+    ws.onopen = function() {
+        // Web Socket 已连接上，使用 send() 方法发送数据
+        ws.send("发送数据");
+        alert("数据发送中...");
+    };
+    // --- 结束
     headElement = document.getElementsByTagName("head")[0];
     if (typeof fetch !== "function") {
         await loadScript(["https://cdn.jsdelivr.net/npm/whatwg-fetch@3.0.0/fetch.min.js"]);
@@ -92,33 +100,21 @@ document.addEventListener("DOMContentLoaded", async function() {
                 }
                 this.mlist = j.list;
             },
-            check: async function (this: any, mode: number = 0) {
+            check: async function (this: any) {
                 if (!this.mlist[this.mindex]) {
                     this.alert = "Please select version.";
                     return;
                 }
                 this.mask = true;
-                let j = await post(HTTP_BASE + "__Nuttom__/apiCheck", {password: this.password, ver: this.mlist[this.mindex].value, mode: mode});
+                let j = await post(HTTP_BASE + "__Nuttom__/apiCheck", {password: this.password, ver: this.mlist[this.mindex].value});
                 this.mask = false;
                 if (j.result <= 0) {
                     this.alert = j.msg;
                     return;
                 }
                 let list = [];
-                for (let v of j.list) {
+                for (let v of j.files) {
                     list.push(`Cannot match "${v}".`);
-                }
-                for (let v of j.qlist) {
-                    list.push(`Does not exist "${v}".`);
-                }
-                for (let v of j.dlist) {
-                    list.push(`Extra "${v}".`);
-                }
-                for (let v of j.qlistConst) {
-                    list.push(`Does not exist const "${v[1]}" on "${v[0]}".`);
-                }
-                for (let v of j.dlistConst) {
-                    list.push(`Extra const "${v[1]}" on "${v[0]}".`);
                 }
                 this.list = list;
                 if (list.length === 0) {
@@ -161,65 +157,15 @@ document.addEventListener("DOMContentLoaded", async function() {
                 let version: string = this.mlist[this.updateIndex].value;
                 // --- 获取差异列表 ---
                 this.mask = true;
-                let j = await post(HTTP_BASE + "__Nuttom__/apiCheck", {password: this.password, ver: version, mode: "0"}); // mode 0 代表全部，1 代表 online
+                let j = await post(HTTP_BASE + "__Nuttom__/apiCheck", {password: this.password, ver: version});
                 this.mask = false;
                 if (j.result <= 0) {
                     this.alert = j.msg;
                     this.updateing = false;
                     return;
                 }
-                // --- 分别下载相关文件，并传入相关地方 ---
-                // --- 可能会有网络波动导致的异常，会需要重试，所以，进行自动网络重试机制 ---
-                // --- 差异，直接替换文件 ---
-                this.updateList = [];
-                let listArr = ["list", "qlist", "dlist", "qdlistConst"];
-                let qdlistConst: any = {};
-                for (let v of j.qlistConst) {
-                    if (!qdlistConst[v[0]]) {
-                        qdlistConst[v[0]] = "";
-                    }
-                }
-                for (let v of j.dlistConst) {
-                    if (!qdlistConst[v[0]]) {
-                        qdlistConst[v[0]] = "";
-                    }
-                }
-                j.qdlistConst = qdlistConst;
-                for (let lk in listArr) {
-                    let ln = listArr[lk];
-                    let list = j[ln];
-                    for (let k in list) {
-                        let v = list[k];
-                        let retry: boolean = true;
-                        while (retry) {
-                            let path = v;
-                            switch (ln) {
-                                case "list":
-                                    this.updateList.unshift(`Replace the file "${path}"...`);
-                                    break;
-                                case "qlist":
-                                    this.updateList.unshift(`Download or create "${path}"...`);
-                                    break;
-                                case "dlist":
-                                    this.updateList.unshift(`Remove the object "${path}"...`);
-                                    break;
-                                case "qdlistConst":
-                                    path = k;
-                                    this.updateList.unshift(`Update configuration file "${path}"...`);
-                                    break;
-                            }
-                            let j2 = await post(HTTP_BASE + "__Nuttom__/apiUpdate", {password: this.password, ver: version, mode: lk, path: path, library: JSON.stringify(j.library)});
-                            if (j2.result <= 0) {
-                                this.updateList.unshift(`Error: ${j2.msg} retry after 2 seconds.`);
-                                await sleep(2000);
-                            } else {
-                                this.updateList.unshift(j2.msg);
-                                retry = false;
-                                await sleep(500);
-                            }
-                        }
-                    }
-                }
+                // --- 建立 WebSocket ---
+                // --- 结束 ---
                 this.alert = "Update completed, please refresh the page.";
                 this.updateing = false;
             }

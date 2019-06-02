@@ -23,31 +23,75 @@ export async function apiCheckRefresh(nu: abs.Nu) {
     if (nu.post.password !== nu.config.etc.__Nuttom__.pwd) {
         return [0, "Password is incorrect."];
     }
-    let res = await Net.get("https://api.github.com/repos/MaiyunNET/Mutton/releases");
-    // let content = res.readContent();
-    // console.log(content);
-    /*
-    if (!$res->content) {
-        return [0, 'Network error, please try again.'];
+    if (nu.config.etc.__Nuttom__.pwd === "123456" && nu.uri.hostname !== "local-test.brc-app.com") {
+        return [0, "Password cannot be 123456."];
     }
-    $json = json_decode($res->content);
-    $list = [];
-    foreach ($json as $item) {
-        preg_match('/[0-9\\.]+/', $item->tag_name, $matches);
-        $list[] = [
-            'value' => $matches[0],
-            'label' => $item->name
-        ];
+    let res = await Net.get("https://api.github.com/repos/MaiyunNET/Nuttom/releases");
+    if (!res) {
+        return [0, "Network error, please try again."];
     }
-    return [1, 'list' => $list];
-    */
+    let content = await res.readContent();
+    let json = JSON.parse(content);
+    let list: any[] = [];
+    for (let item of json) {
+        let matches = item.tag_name.match(/[0-9\.]+/);
+        list.push({
+            "value": matches[0],
+            "label": item.name
+        });
+    }
+    return [1, {"list": list}];
+}
+
+export async function apiCheck(nu: abs.Nu) {
+    if (nu.post.password !== nu.config.etc.__Nuttom__.pwd) {
+        return [0, "Password is incorrect."];
+    }
+    if (nu.config.etc.__Nuttom__.pwd === "123456" && nu.uri.hostname !== "local-test.brc-app.com") {
+        return [0, "Password cannot be 123456."];
+    }
+    let res = await Net.get("https://raw.githubusercontent.com/MaiyunNET/Nuttom/master/doc/nblob/" + nu.post.ver + ".nblob");
+    if (!res) {
+        return [0, "Network error, please try again."];
+    }
+    let content = await res.readContent();
+    let str = await Zlib.gunzip(content);
+    if (!str) {
+        return [0, "Decryption failed."];
+    }
+    let json = JSON.parse(str.toString());
+    if (!json) {
+        return [0, "Decryption failed."];
+    }
+    /** 缺失/有差异的文件 */
+    let files: string[] = [];
+    /** 本地现状 */
+    let nowJson = await _buildList();
+    // --- 对现状做比对 ---
+    for (let file of json.files) {
+        let md5 = json.files[file];
+        if (nowJson[file] === undefined) {
+            files.push(file);
+            continue;
+        }
+        if (md5 !== nowJson[file]) {
+            files.push(file);
+        }
+    }
+    return [1, {files: files}];
 }
 
 export async function apiBuild(nu: abs.Nu) {
     if (nu.post.password !== nu.config.etc.__Nuttom__.pwd) {
         return [0, "Password is incorrect."];
     }
-    /** 最终要输出的 */
+    if (nu.config.etc.__Nuttom__.pwd === "123456" && nu.uri.hostname !== "local-test.brc-app.com") {
+        return [0, "Password cannot be 123456."];
+    }
+    await Fs.writeFile(Const.ROOT_PATH + "doc/nblob/" + Const.VER + ".nblob", await Zlib.gzip(JSON.stringify(await _buildList()), {level: 9}));
+    return [1];
+}
+async function _buildList(): Promise<any> {
     let endJson: any = {
         "files": {}
     };
@@ -65,6 +109,33 @@ export async function apiBuild(nu: abs.Nu) {
     for (let item of list) {
         endJson.files[item] = await Crypto.md5File(Const.ROOT_PATH + item);
     }
-    await Fs.writeFile(Const.ROOT_PATH + "doc/nblob/" + Const.VER + ".nblob", await Zlib.gzip(JSON.stringify(endJson), {level: 9}));
-    return [1];
+    return endJson;
+}
+
+// --- 获取最新版本号 ---
+export async function apiGetLatestVer(nu: abs.Nu) {
+    if (nu.post.password !== nu.config.etc.__Nuttom__.pwd) {
+        return [0, "Password is incorrect."];
+    }
+    if (nu.config.etc.__Nuttom__.pwd === "123456" && nu.uri.hostname !== "local-test.brc-app.com") {
+        return [0, "Password cannot be 123456."];
+    }
+    let res = await Net.get("https://api.github.com/repos/MaiyunNET/Nuttom/releases/latest");
+    if (!res) {
+        return [0, "Network error, please try again."];
+    }
+    let json = JSON.parse(await res.readContent());
+    let matches = json.tag_name.match(/[0-9\.]+/);
+    return [1, {"version": matches[0]}];
+}
+
+// --- 自动升级 ---
+export async function apiUpdate(nu: abs.Nu) {
+    if (nu.post.password !== nu.config.etc.__Nuttom__.pwd) {
+        return [0, "Password is incorrect."];
+    }
+    if (nu.config.etc.__Nuttom__.pwd === "123456" && nu.uri.hostname !== "local-test.brc-app.com") {
+        return [0, "Password cannot be 123456."];
+    }
+    // res = Net::get('https://raw.githubusercontent.com/MaiyunNET/Mutton/v' . $ver . '/' . $path);
 }

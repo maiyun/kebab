@@ -55,7 +55,7 @@ export async function post(url: string, data: any, opt?: A.Options): Promise<A.N
 /** host 对应的 HTTP level 版本缓存 */
 let _HTTP_LEVEL: any = {};
 /**
- * --- 发起一个请求 ---
+ * --- 发起一个请求，从 http2 开始试自动选择 ---
  * @param opt 配置项
  */
 export async function request(opt: A.Options): Promise<A.NetResponse | undefined> {
@@ -63,7 +63,7 @@ export async function request(opt: A.Options): Promise<A.NetResponse | undefined
     if (_ca === "") {
         _ca = await Fs.readFile(Const.LIB_PATH + "Net/cacert.pem") || "";
     }
-    // --- 定义是否自动追踪（较危险，有可能导致无线追踪，默认关闭） ---
+    // --- 定义是否自动追踪（较危险，有可能导致无限追踪，默认关闭） ---
     if (opt.followLocation === undefined) {
         opt.followLocation = false;
     }
@@ -75,9 +75,15 @@ export async function request(opt: A.Options): Promise<A.NetResponse | undefined
     let uri = url.parse(opt.url || "");
     let isSecure = uri.protocol === "http:" ? false : true;
     let host = uri.host || "";
-    // --- cookie ---
+    // --- 是否要管 cookie ---
     if (opt.cookie) {
         opt.headers["Cookie"] = _buildCookieQuery(opt.cookie, uri);
+    }
+    // --- 是否获取头部 ---
+    let pdata!: A.BeforePostResult;
+    if (opt.method === "POST") {
+        pdata = await _getPostHeaders(opt.data);
+        opt.headers = <http.OutgoingHttpHeaders>Object.assign(opt.headers, pdata.headers);
     }
     // --- 根据协议判断用 http2 还是 http1 ---
     let levelItem = _HTTP_LEVEL[host];
@@ -92,6 +98,7 @@ export async function request(opt: A.Options): Promise<A.NetResponse | undefined
             return await _request2(opt, {
                 uri: uri,
                 isSecure: isSecure,
+                pdata: pdata,
                 level: "2"
             });
         } else {
@@ -99,12 +106,14 @@ export async function request(opt: A.Options): Promise<A.NetResponse | undefined
                 return await _request1(opt, {
                     uri: uri,
                     isSecure: isSecure,
+                    pdata: pdata,
                     level: "1"
                 });
             } else {
                 return await _request2(opt, {
                     uri: uri,
                     isSecure: isSecure,
+                    pdata: pdata,
                     level: "2"
                 });
             }
@@ -117,6 +126,7 @@ export async function request(opt: A.Options): Promise<A.NetResponse | undefined
         return await _request2(opt, {
             uri: uri,
             isSecure: isSecure,
+            pdata: pdata,
             level: "2"
         });
     }
@@ -134,15 +144,11 @@ async function _request1(opt: A.Options, config: A.Config): Promise<A.NetRespons
         opt.port = config.uri.port || (config.isSecure ? 443 : 80);
         opt.path = config.uri.path;
         opt.method = opt.method || "GET";
+        // --- https 要导入证书 ---
         if (config.isSecure) {
             opt.ca = _ca;
         }
-        // --- 是不是 POST ---
-        let pdata!: A.BeforePostResult;
-        if (opt.method === "POST") {
-            pdata = await _getPostHeaders(opt.data);
-            Object.assign(opt.headers, pdata.headers);
-        }
+        // --- 发起请求 ---
         let client = protocol.request(opt, async function(res: http.IncomingMessage) {
             // --- 处理 cookie ---
             if (opt.cookie) {
@@ -171,7 +177,7 @@ async function _request1(opt: A.Options, config: A.Config): Promise<A.NetRespons
         });
         // --- POST 还要 write 或 pipe ---
         if (opt.method === "POST") {
-            await _writePost(client, pdata);
+            await _writePost(client, config.pdata);
         }
         client.end();
     });
@@ -190,21 +196,17 @@ async function _request2(opt: A.Options, config: A.Config): Promise<A.NetRespons
         client.on("error", async function() {
             // --- 在 req error 返回了，这里不处理 ---
         });
-        opt.headers = opt.headers || {};
-        opt.headers[":method"] = opt.method || "GET";
-        opt.headers[":path"] = config.uri.path;
-        // --- 是不是 POST ---
-        let pdata!: A.BeforePostResult;
-        if (opt.method === "POST") {
-            pdata = await _getPostHeaders(opt.data);
-            Object.assign(opt.headers, pdata.headers);
-        }
+        (<http.OutgoingHttpHeaders>opt.headers)[":method"] = opt.method || "GET";
+        (<http.OutgoingHttpHeaders>opt.headers)[":path"] = config.uri.path;
+        // --- 发起请求 ---
         let req = client.request(opt.headers);
         req.on("error", async function(err) {
             _HTTP_LEVEL[config.uri.host || ""] = {
                 time: Date.now(),
                 level: "1"
             };
+            delete((<http.OutgoingHttpHeaders>opt.headers)[":method"]);
+            delete((<http.OutgoingHttpHeaders>opt.headers)[":path"]);
             resolve(await _request1(opt, config));
         });
         req.on("response", async function(headers: http2.IncomingHttpHeaders & http2.IncomingHttpStatusHeader, flags: number) {
@@ -236,7 +238,7 @@ async function _request2(opt: A.Options, config: A.Config): Promise<A.NetRespons
         });
         // --- POST 还要 write 或 pipe ---
         if (opt.method === "POST") {
-            await _writePost(req, pdata);
+            await _writePost(req, config.pdata);
         }
         req.end();
     });

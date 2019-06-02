@@ -30,6 +30,7 @@ export type Config = {
     uri: url.UrlWithStringQuery;
     isSecure: boolean;
     level: string;
+    pdata: BeforePostResult;
     headers?: http2.IncomingHttpHeaders & http2.IncomingHttpStatusHeader;
 };
 

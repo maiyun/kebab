@@ -1,6 +1,8 @@
 import * as http2 from "http2";
 import * as url from "url";
+import * as tls from "tls";
 import * as querystring from "querystring";
+import * as http from "http";
 // --- 第三方 ---
 import * as sni from "@litert/tls-sni";
 // --- 库和定义 ---
@@ -135,7 +137,7 @@ export async function run() {
         vhostRoot = Fs.isRealPath(vhostRoot) ? vhostRoot : Const.WWW_PATH + vhostRoot;
         vhostRoot = vhostRoot.slice(-1) !== "/" ? vhostRoot : vhostRoot.slice(0, -1);
         /** 请求的 URI 对象 */
-        let uri = url.parse(req.url);
+        let uri = url.parse((req.headers[":scheme"] || "") + "://" + req.headers[":authority"] + req.headers[":path"]);
         let get = uri.query ? querystring.parse(uri.query) : {};
         /** 请求的路径部分 */
         let path = uri.pathname || "/";
@@ -248,6 +250,8 @@ export async function run() {
         // --- 读取并输出文件 ---
         await View.toResponse(nu, vhostRoot + pathNow + item);
         --_linkCount;
+    }).on("upgrade", function(req: http.IncomingMessage, socket: tls.TLSSocket) {
+        console.log(req.headers);
     });
     server.listen(4333);
 }
