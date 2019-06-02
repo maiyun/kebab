@@ -10,6 +10,7 @@ import * as Fs from "~/lib/Fs";
 import * as View from "~/lib/View";
 import * as Sys from "~/lib/Sys";
 import * as Crypto from "~/lib/Crypto";
+import * as WebSocket from "~/lib/WebSocket";
 import * as Const from "~/const";
 import * as abs from "~/abstract";
 // --- 初始化 ---
@@ -170,7 +171,50 @@ const _SNI_MANAGER = sni.certs.createManager();
         await View.toResponse(nu, vhostRoot + pathNow + item);
         --_LINK_COUNT;
     }).on("upgrade", function(req: http.IncomingMessage, socket: tls.TLSSocket) {
-        // --- WebSocket(wss) 连接 ---
+          // ----------------------------------------- //
+         // ---------- WebSocket(wss) 连接 ---------- //
+        // ----------------------------------------- //
+        ++_LINK_COUNT;
+        socket.on("error", function(e) {
+            // console.log(e);
+            // --- 无视 ---
+        }).on("close", function() {
+            --_LINK_COUNT;
+        });
+        /** --- 获取解析后的 uri 对象 --- */
+        const uri = url.parse("wss://" + req.headers["host"] + req.url);
+        /** --- 当前匹配的虚拟主机对象 --- */
+        let vhost = _getVhost(uri.hostname || "");
+        if (!vhost) {
+            socket.end(`HTTP/${req.httpVersion} 403 No permissions\r\n\r\n`);
+            --_LINK_COUNT;
+            return;
+        }
+        /** 网站实绝对根目录，末尾带 / */
+        let vhostRoot = Fs.isRealPath(vhost.root) ? vhost.root : Const.WWW_PATH + vhost.root;
+        vhostRoot = vhostRoot.slice(-1) !== "/" ? vhostRoot + "/" : vhostRoot;
+        /** --- 请求的路径部分 --- */
+        let path = uri.pathname || "/";
+        path = url.resolve("/", path).slice(1);
+        // --- 获取 action 部分 ---
+        let pathLeft: string = "", pathRight: string = "";
+        [pathLeft, pathRight] = Router.getPathLeftRight(path);
+        // --- 加载 ws 控制器 ---
+        let ctr: any;
+        try {
+            ctr = require(vhostRoot + "ws/" + pathLeft);
+        } catch (e) {
+            socket.end(`HTTP/${req.httpVersion} 403 Forbidden(4)\r\n\r\n`);
+            --_LINK_COUNT;
+            return;
+        }
+        // --- 判断 action 是否存在 ---
+        if (!ctr[pathRight]) {
+            socket.end(`HTTP/${req.httpVersion} 403 Forbidden(5)\r\n\r\n`);
+            --_LINK_COUNT;
+            return;
+        }
+        // --- action 存在，可以握手 ---
         const swa = Crypto.sha1(req.headers["sec-websocket-key"] + "258EAFA5-E914-47DA-95CA-C5AB0DC85B11", {format: "base64"});
         const resHeaders: string[] = [
             `HTTP/${req.httpVersion} 101 Switching Protocols`,
@@ -181,14 +225,19 @@ const _SNI_MANAGER = sni.certs.createManager();
             `Sec-WebSocket-Location: wss://${req.headers["host"]}/`
         ];
         socket.write(resHeaders.join(`\r\n`) + "\r\n\r\n");
-        // --- 响应 ---
+        // --- 处理响应 ---
         socket.on("data", function(chunk: Buffer) {
-            console.log(chunk.toString());
+            console.log(WebSocket.decodeDataFrame(chunk));
+            socket.write(WebSocket.encodeDataFrame({
+                FIN: 1,
+                Opcode: 1,
+                PayloadData: "hahaha"
+            }));
         });
     });
     server.listen(4333);
 
-    // --- 接收进程信号，主要用来 reload，restart ---
+    // --- 接收主进程回传信号，主要用来 reload，restart ---
     process.on("message", async function(msg) {
         switch (msg.action) {
             case "reload": {

@@ -56,7 +56,7 @@ export async function run(nu: abs.Nu, opt: Options): Promise<boolean> {
         rule = rule.replace("/", "\\/");
         let reg = new RegExp("^" + rule + "$");
         if (match = reg.exec(path)) {
-            [pathLeft, pathRight] = _getPathLeftRight(ruleVal);
+            [pathLeft, pathRight] = getPathLeftRight(ruleVal);
             for (let i = 1; i < match.length; ++i) {
                 param.push(match[i]);
             }
@@ -65,7 +65,7 @@ export async function run(nu: abs.Nu, opt: Options): Promise<boolean> {
         }
     }
     if (!match) {
-        [pathLeft, pathRight] = _getPathLeftRight(path);
+        [pathLeft, pathRight] = getPathLeftRight(path);
     }
     // --- 加载客户端提交的 cookie ---
     if (nu.req.headers.cookie) {
@@ -163,7 +163,7 @@ export async function run(nu: abs.Nu, opt: Options): Promise<boolean> {
  * --- 获取控制器 left 和 action ---
  * @param path 相对路径
  */
-function _getPathLeftRight(path: string): string[] {
+export function getPathLeftRight(path: string): string[] {
     let pathLio = path.lastIndexOf("/");
     if (pathLio === -1) {
         return [path, "index"];

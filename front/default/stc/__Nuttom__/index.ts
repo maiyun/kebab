@@ -10,10 +10,9 @@ window.onerror = (msg, uri, line, col, err) => {
 let headElement: HTMLHeadElement;
 document.addEventListener("DOMContentLoaded", async function() {
     // WebSocket 测试 ---
-    let ws = new WebSocket("wss://local-test.brc-app.com:4333/echo");
+    let ws = new WebSocket("wss://local-test.brc-app.com:4333/__Nuttom__");
     ws.addEventListener("open", function() {
         ws.send("发送数据");
-        alert("数据发送中...");
     });
     ws.addEventListener("message", function(ev) {
         console.log(ev);
