@@ -6,7 +6,7 @@
 
 ## 0.0.2
 
-[\*] Fix readContent () a BUG with a return value of Buffer is not recognized.
+[\*] Fix readContent() a BUG with a return value of Buffer is not recognized.
 
 ## 0.0.1
 
