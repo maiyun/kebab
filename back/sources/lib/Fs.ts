@@ -255,6 +255,7 @@ export function getFilename(path: string): string {
 
 /**
  * --- 深度创建多层目录 ---
+ * --- 如果最末目录存在，则自动创建成功 ---
  * @param path 要创建的路径
  */
 export async function mkdirDeep(path: string): Promise<boolean> {

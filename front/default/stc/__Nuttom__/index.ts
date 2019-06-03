@@ -9,15 +9,6 @@ window.onerror = (msg, uri, line, col, err) => {
 /** head 标签 */
 let headElement: HTMLHeadElement;
 document.addEventListener("DOMContentLoaded", async function() {
-    // WebSocket 测试 ---
-    let ws = new WebSocket("wss://local-test.brc-app.com:4333/__Nuttom__");
-    ws.addEventListener("open", function() {
-        ws.send("发送数据");
-    });
-    ws.addEventListener("message", function(ev) {
-        console.log(ev);
-    });
-    // --- 结束
     headElement = document.getElementsByTagName("head")[0];
     if (typeof fetch !== "function") {
         await loadScript(["https://cdn.jsdelivr.net/npm/whatwg-fetch@3.0.0/fetch.min.js"]);
@@ -165,10 +156,34 @@ document.addEventListener("DOMContentLoaded", async function() {
                     this.updateing = false;
                     return;
                 }
+                this.updateList = [];
                 // --- 建立 WebSocket ---
-                // --- 结束 ---
-                this.alert = "Update completed, please refresh the page.";
-                this.updateing = false;
+                let ws = new WebSocket(WS_PATH + HTTP_BASE + "__Nuttom__/update");
+                ws.addEventListener("open", () => {
+                    // --- 先进行 password 认证 ---
+                    ws.send(JSON.stringify({password: this.password, ver: version}));
+                });
+                ws.addEventListener("message", (ev: MessageEvent) => {
+                    let json = JSON.parse(ev.data);
+                    if (json.result <= 0) {
+                        this.alert = json.msg;
+                        this.updateing = false;
+                        return;
+                    } else if (json.result === 1) {
+                        // --- 发送要更新的列表 ---
+                        ws.send(JSON.stringify({files: j.files}));
+                    } else if (json.result === 2) {
+                        this.updateList.unshift(json.msg);
+                    } else {
+                        this.alert = json.msg;
+                    }
+                });
+                ws.addEventListener("close", () => {
+                    // --- 结束 ---
+                    if (this.updateing === true) {
+                        this.updateing = false;
+                    }
+                });
             }
         }
     });

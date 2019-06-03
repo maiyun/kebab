@@ -1,16 +1,28 @@
+// --- 库和定义 ---
+import * as abs from "~/abstract";
+
 export interface OutData {
-    FIN: number;
-    Opcode: number;
-    Mask: number;
-    PayloadLength: number;
-    MaskingKey: number[];
-    PayloadData: any;
+    fin: number;
+    opcode: number;
+    mask: number;
+    payloadLength: number;
+    maskingKey: number[];
+    payloadData: any;
 }
 
 export interface InData {
-    FIN: number;
-    Opcode: number;
-    PayloadData: any;
+    fin: number;
+    opcode: number;
+    payloadData: any;
+}
+
+export interface SendOptions {
+    close?: boolean;
+}
+
+export interface Events {
+    onData?: (data: string) => any;
+    onClose?: () => any;
 }
 
 /**
@@ -20,40 +32,40 @@ export interface InData {
 export function decodeDataFrame(e: Buffer): OutData {
     let i = 0, j, s: any, frame: OutData = {
         // 解析前两个字节的基本数据
-        FIN: e[i] >> 7,
-        Opcode: e[i++] & 15,
-        Mask: e[i] >> 7,
-        MaskingKey: [],
-        PayloadLength: e[i++] & 0x7F,
-        PayloadData: ""
+        fin: e[i] >> 7,
+        opcode: e[i++] & 15,
+        mask: e[i] >> 7,
+        maskingKey: [],
+        payloadLength: e[i++] & 0x7F,
+        payloadData: ""
     };
     // --- 处理特殊长度 126 和 127 ---
-    if (frame.PayloadLength === 126) {
-        frame.PayloadLength = (e[i++] << 8) + e[i++];
+    if (frame.payloadLength === 126) {
+        frame.payloadLength = (e[i++] << 8) + e[i++];
     }
-    if (frame.PayloadLength === 127) {
+    if (frame.payloadLength === 127) {
         i += 4, // 长度一般用四字节的整型，前四个字节通常为长整形留空的
-        frame.PayloadLength = (e[i++] << 24) + (e[i++] << 16) + (e[i++] << 8) + e[i++];
+        frame.payloadLength = (e[i++] << 24) + (e[i++] << 16) + (e[i++] << 8) + e[i++];
     }
     // --- 判断是否使用掩码 ---
-    if (frame.Mask) {
+    if (frame.mask) {
         // 获取掩码实体
-        frame.MaskingKey = [e[i++], e[i++], e[i++], e[i++]];
+        frame.maskingKey = [e[i++], e[i++], e[i++], e[i++]];
         // 对数据和掩码做异或运算
-        for (j = 0, s = []; j < frame.PayloadLength; j++) {
-            s.push(e[i + j] ^ frame.MaskingKey[j % 4]);
+        for (j = 0, s = []; j < frame.payloadLength; j++) {
+            s.push(e[i + j] ^ frame.maskingKey[j % 4]);
         }
     } else {
-        s = e.slice(i, frame.PayloadLength); // 否则直接使用数据
+        s = e.slice(i, frame.payloadLength); // 否则直接使用数据
     }
     // 数组转换成缓冲区来使用
     let ss: any = Buffer.from(s);
     // 如果有必要则把缓冲区转换成字符串来使用
-    if (frame.Opcode === 1) {
+    if (frame.opcode === 1) {
         ss = ss.toString();
     }
     // 设置上数据部分
-    frame.PayloadData = ss;
+    frame.payloadData = ss;
     // 返回数据帧
     return frame;
 }
@@ -63,9 +75,9 @@ export function decodeDataFrame(e: Buffer): OutData {
  * @param e 数据
  */
 export function encodeDataFrame(e: InData): Buffer {
-    let s = [], o = Buffer.from(e.PayloadData), l = o.length;
+    let s = [], o = Buffer.from(e.payloadData), l = o.length;
     // 输入第一个字节
-    s.push((e.FIN << 7) + e.Opcode);
+    s.push((e.fin << 7) + e.opcode);
     // 输入第二个字节，判断它的长度并放入相应的后续长度消息
     // 永远不使用掩码
     if (l < 126) {
@@ -78,4 +90,90 @@ export function encodeDataFrame(e: InData): Buffer {
     }
     // 返回头部分和数据部分的合并缓冲区
     return Buffer.concat([Buffer.from(s), o]);
+}
+
+/**
+ * --- 发送数据 ---
+ * @param nus Nus 对象
+ * @param data 要发送的字符串
+ */
+export function send(nus: abs.Nus, data: any, opt: SendOptions = {}) {
+    opt.close = opt.close === undefined ? false : true;
+    let sendData: string = "";
+    if (typeof data === "string") {
+        sendData = data;
+    } else if (typeof data === "boolean") {
+        // --- 返回了 true，无需处理 ---
+    } else {
+        let json: any = {};
+        if ((data[0] !== undefined) && (typeof data[0] === "number")) {
+            json = {"result": data[0]};
+            if (data[1] !== undefined) {
+                if (typeof data[1] === "object") {
+                    Object.assign(json, data[1]);
+                    sendData = JSON.stringify(json);
+                    if (json.result <= 0) {
+                        opt.close = true;
+                    }
+                } else {
+                    if (data.length === 2) {
+                        json.msg = data[1];
+                        sendData = JSON.stringify(json);
+                        if (json.result <= 0) {
+                            opt.close = true;
+                        }
+                    } else {
+                        sendData = JSON.stringify({"result": 0, "msg": "500 Internal Server Error(Return value is wrong)."});
+                        opt.close = true;
+                    }
+                }
+            } else {
+                sendData = JSON.stringify(json);
+                if (json.result <= 0) {
+                    opt.close = true;
+                }
+            }
+        } else {
+            sendData = JSON.stringify(data);
+            if (data.result !== undefined && data.result <= 0) {
+                opt.close = true;
+            }
+        }
+    }
+    nus.socket.write(encodeDataFrame({
+        fin: 1,
+        opcode: opt.close ? 8 : 1,
+        payloadData: sendData
+    }));
+}
+
+/**
+ * --- 绑定本次连接事件 ---
+ * @param nus Nus 对象
+ * @param events 事件列表
+ */
+export function on(nus: abs.Nus, events: Events = {}) {
+    if (events.onData === undefined) {
+        events.onData = function(data: string) {};
+    }
+    if (events.onClose === undefined) {
+        events.onClose = function() {};
+    }
+    nus.socket.on("data", async function(chunk: Buffer) {
+        let data = decodeDataFrame(chunk);
+        if (data.opcode === 8) {
+            nus.socket.end();
+        } else {
+            if (!events.onData) {
+                return;
+            }
+            let rtn = await events.onData(data.payloadData);
+            if (rtn !== undefined) {
+                send(nus, rtn);
+            }
+        }
+    });
+    nus.socket.on("close", async function() {
+        events.onClose && await events.onClose();
+    });
 }

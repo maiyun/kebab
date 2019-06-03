@@ -35,8 +35,6 @@ let _hbTimer = setInterval(function() {
 
 /** --- 当前的虚拟主机配置列表 - 读取于 conf/vhost/*.json --- */
 let _VHOSTS: abs.Vhost[] = [];
-/** --- 当前有虚拟主机的个数 --- */
-let _VHOSTS_LEN: number = 0;
 /** --- 证书 SNI 管理器 --- */
 const _SNI_MANAGER = sni.certs.createManager();
 
@@ -44,7 +42,6 @@ const _SNI_MANAGER = sni.certs.createManager();
 (async function() {
     // --- 子进程启动时先加载 VHOST 和证书管理器 ---
     await Sys.realReload(_VHOSTS, _SNI_MANAGER);
-    _VHOSTS_LEN = _VHOSTS.length;
 
     // --- 创建服务器并启动特（支持 http2/https/http/websocket） ---
     let server = http2.createSecureServer({
@@ -92,6 +89,7 @@ const _SNI_MANAGER = sni.certs.createManager();
                 HTTP_BASE: "",
                 HTTP_HOST: uri.hostname || "",
                 HTTP_PATH: "https://" + req.authority,
+                WS_PATH: "wss://" + req.authority
             },
             req: req,
             res: res,
@@ -170,7 +168,7 @@ const _SNI_MANAGER = sni.certs.createManager();
         // --- 读取并输出文件 ---
         await View.toResponse(nu, vhostRoot + pathNow + item);
         --_LINK_COUNT;
-    }).on("upgrade", function(req: http.IncomingMessage, socket: tls.TLSSocket) {
+    }).on("upgrade", async function(req: http.IncomingMessage, socket: tls.TLSSocket) {
           // ----------------------------------------- //
          // ---------- WebSocket(wss) 连接 ---------- //
         // ----------------------------------------- //
@@ -225,15 +223,26 @@ const _SNI_MANAGER = sni.certs.createManager();
             `Sec-WebSocket-Location: wss://${req.headers["host"]}/`
         ];
         socket.write(resHeaders.join(`\r\n`) + "\r\n\r\n");
-        // --- 处理响应 ---
-        socket.on("data", function(chunk: Buffer) {
-            console.log(WebSocket.decodeDataFrame(chunk));
-            socket.write(WebSocket.encodeDataFrame({
-                FIN: 1,
-                Opcode: 1,
-                PayloadData: "hahaha"
-            }));
-        });
+        /** --- Nu 对象 --- */
+        let nus: abs.Nus = {
+            const: {
+                VER: Const.VER,
+                START_TIME: process.hrtime.bigint(),
+                ROOT_PATH: "",
+                VIEW_PATH: "",
+                DATA_PATH: ""
+            },
+            req: req,
+            socket: socket,
+            uri: uri,
+            get: uri.query ? querystring.parse(uri.query) : {},
+            cookie: {},
+            locale: "en",
+            config: {route: {}, etc: {} as any},
+            isNus: true
+        };
+        // --- 进入连接执行方法 ---
+        await ctr[pathRight](nus);
     });
     server.listen(4333);
 

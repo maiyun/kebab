@@ -1,6 +1,8 @@
 import * as http2 from "http2";
+import * as http from "http";
 import * as url from "url";
 import * as querystring from "querystring";
+import * as tls from "tls";
 
 // --- 虚拟机配置对象 ---
 export interface Vhost {
@@ -25,6 +27,16 @@ export interface NuConst {
     HTTP_BASE: string;
     HTTP_HOST: string;
     HTTP_PATH: string;
+
+    WS_PATH: string;
+}
+export interface NusConst {
+    VER: string;
+    START_TIME: bigint;
+
+    ROOT_PATH: string;
+    VIEW_PATH: string;
+    DATA_PATH: string;
 }
 
 /** --- 动态目录配置文件 --- */
@@ -77,6 +89,17 @@ export interface Nu {
     locale: string;
     config: Config;
     readonly isNu: boolean;
+}
+export interface Nus {
+    const: NusConst;
+    readonly req: http.IncomingMessage;
+    readonly socket: tls.TLSSocket;
+    readonly uri: url.UrlWithStringQuery;
+    get: querystring.ParsedUrlQuery;
+    cookie: NuCookie;
+    locale: string;
+    config: Config;
+    readonly isNus: boolean;
 }
 
 /** Nu Cookie 对象 */
