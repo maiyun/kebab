@@ -41,7 +41,7 @@ class NetHttp1Response implements A.NetResponse {
     /**
      * --- 读取所有内容到内存 ---
      */
-    public readContent(): Promise<string> {
+    public readContent(): Promise<Buffer> {
         return new Promise((resolve, reject) => {
             let data: Buffer = Buffer.from("");
             if (this._opt.encoding) {
@@ -55,12 +55,12 @@ class NetHttp1Response implements A.NetResponse {
                 if (encoding !== "") {
                     let buf = (await Zlib.decompress(encoding, data)).buf;
                     if (buf) {
-                        resolve(buf.toString());
+                        resolve(buf);
                     } else {
-                        resolve("");
+                        resolve(Buffer.from(""));
                     }
                 } else {
-                    resolve(data.toString());
+                    resolve(data);
                 }
             });
         });

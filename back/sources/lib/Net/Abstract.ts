@@ -67,7 +67,7 @@ export interface NetResponse {
     /**
      * --- 读取所有内容到内存 ---
      */
-    readContent(): Promise<string>;
+    readContent(): Promise<Buffer>;
 
     /**
      * --- 绑定到输入流 ---

@@ -30,7 +30,7 @@ export async function apiCheckRefresh(nu: abs.Nu) {
     if (!res) {
         return [0, "Network error, please try again."];
     }
-    let content = await res.readContent();
+    let content = (await res.readContent()).toString();
     let json = JSON.parse(content);
     let list: any[] = [];
     for (let item of json) {
@@ -57,24 +57,24 @@ export async function apiCheck(nu: abs.Nu) {
     let content = await res.readContent();
     let str = await Zlib.gunzip(content);
     if (!str) {
-        return [0, "Decryption failed."];
+        return [0, "Decryption failed(0)."];
     }
     let json = JSON.parse(str.toString());
     if (!json) {
-        return [0, "Decryption failed."];
+        return [0, "Decryption failed(1)."];
     }
     /** 缺失/有差异的文件 */
     let files: string[] = [];
     /** 本地现状 */
     let nowJson = await _buildList();
     // --- 对现状做比对 ---
-    for (let file of json.files) {
+    for (let file in json.files) {
         let md5 = json.files[file];
-        if (nowJson[file] === undefined) {
+        if (nowJson.files[file] === undefined) {
             files.push(file);
             continue;
         }
-        if (md5 !== nowJson[file]) {
+        if (md5 !== nowJson.files[file]) {
             files.push(file);
         }
     }
@@ -121,22 +121,11 @@ export async function apiGetLatestVer(nu: abs.Nu) {
     if (nu.config.etc.__Nuttom__.pwd === "123456" && nu.uri.hostname !== "local-test.brc-app.com") {
         return [0, "Password cannot be 123456."];
     }
-    let res = await Net.get("https://api.github.com/repos/MaiyunNET/Nuttom/releases/latest");
+    let res = await Net.get("https://api.github.com/repos/MaiyunNET/Nuttom/releases");
     if (!res) {
         return [0, "Network error, please try again."];
     }
-    let json = JSON.parse(await res.readContent());
-    let matches = json.tag_name.match(/[0-9\.]+/);
+    let json = JSON.parse((await res.readContent()).toString());
+    let matches = json[0].tag_name.match(/[0-9\.]+/);
     return [1, {"version": matches[0]}];
-}
-
-// --- 自动升级 ---
-export async function apiUpdate(nu: abs.Nu) {
-    if (nu.post.password !== nu.config.etc.__Nuttom__.pwd) {
-        return [0, "Password is incorrect."];
-    }
-    if (nu.config.etc.__Nuttom__.pwd === "123456" && nu.uri.hostname !== "local-test.brc-app.com") {
-        return [0, "Password cannot be 123456."];
-    }
-    // res = Net::get('https://raw.githubusercontent.com/MaiyunNET/Mutton/v' . $ver . '/' . $path);
 }

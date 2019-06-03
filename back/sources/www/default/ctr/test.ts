@@ -123,7 +123,7 @@ export async function net(nu: abs.Nu) {
             "</pre>",
             "content:" +
             "<pre>",
-            await res.readContent(),
+            (await res.readContent()).toString(),
             "</pre>"
         ]);
     } else {
@@ -141,7 +141,7 @@ export async function netPost(nu: abs.Nu) {
         "<pre>"
     ];
     if (res) {
-        echo.push(await res.readContent());
+        echo.push((await res.readContent()).toString());
         res.release();
     } else {
         echo.push("Error.");
@@ -161,7 +161,7 @@ export async function netUpload(nu: abs.Nu) {
         "<pre>"
     ];
     if (res) {
-        echo.push(await res.readContent());
+        echo.push((await res.readContent()).toString());
         res.release();
     } else {
         echo.push("Error.");

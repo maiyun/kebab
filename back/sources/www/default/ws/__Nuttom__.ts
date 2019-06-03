@@ -37,7 +37,7 @@ export async function update(nus: abs.Nus) {
                                 await Sys.sleep(2000);
                                 continue;
                             }
-                            content = await res.readContent();
+                            content = (await res.readContent()).toString();
                             // --- 添加文件到本地 ---
                             let path = c.ROOT_PATH + file.slice(0, file.lastIndexOf("/") + 1);
                             await Fs.mkdirDeep(path);
