@@ -102,6 +102,7 @@ async function _buildList(): Promise<any> {
         `back/sources/const.ts`,
         `back/sources/index.ts`,
         `back/sources/www/default/ctr/__Nuttom__.ts`,
+        `back/sources/www/default/ws/__Nuttom__.ts`,
         `front/default/stc/__Nuttom__/index.ts`,
         `front/default/stc/__Nuttom__/index.css`,
         `front/default/view/__Nuttom__/index.ejs`
