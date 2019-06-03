@@ -149,6 +149,7 @@ document.addEventListener("DOMContentLoaded", async function() {
                 let version: string = this.mlist[this.updateIndex].value;
                 // --- 获取差异列表 ---
                 this.mask = true;
+                this.updateList = [];
                 let j = await post(HTTP_BASE + "__Nuttom__/apiCheck", {password: this.password, ver: version});
                 this.mask = false;
                 if (j.result <= 0) {
@@ -156,7 +157,6 @@ document.addEventListener("DOMContentLoaded", async function() {
                     this.updateing = false;
                     return;
                 }
-                this.updateList = [];
                 // --- 建立 WebSocket ---
                 let ws = new WebSocket(WS_PATH + HTTP_BASE + "__Nuttom__/update");
                 ws.addEventListener("open", () => {
@@ -175,6 +175,7 @@ document.addEventListener("DOMContentLoaded", async function() {
                     } else if (json.result === 2) {
                         this.updateList.unshift(json.msg);
                     } else {
+                        this.updateList.unshift(json.msg);
                         this.alert = json.msg;
                     }
                 });

@@ -16,10 +16,6 @@ export interface InData {
     payloadData: any;
 }
 
-export interface SendOptions {
-    close?: boolean;
-}
-
 export interface Events {
     onData?: (data: string) => any;
     onClose?: () => any;
@@ -97,8 +93,7 @@ export function encodeDataFrame(e: InData): Buffer {
  * @param nus Nus 对象
  * @param data 要发送的字符串
  */
-export function send(nus: abs.Nus, data: any, opt: SendOptions = {}) {
-    opt.close = opt.close === undefined ? false : true;
+export function send(nus: abs.Nus, data: any) {
     let sendData: string = "";
     if (typeof data === "string") {
         sendData = data;
@@ -112,38 +107,37 @@ export function send(nus: abs.Nus, data: any, opt: SendOptions = {}) {
                 if (typeof data[1] === "object") {
                     Object.assign(json, data[1]);
                     sendData = JSON.stringify(json);
-                    if (json.result <= 0) {
-                        opt.close = true;
-                    }
                 } else {
                     if (data.length === 2) {
                         json.msg = data[1];
                         sendData = JSON.stringify(json);
-                        if (json.result <= 0) {
-                            opt.close = true;
-                        }
                     } else {
                         sendData = JSON.stringify({"result": 0, "msg": "500 Internal Server Error(Return value is wrong)."});
-                        opt.close = true;
                     }
                 }
             } else {
                 sendData = JSON.stringify(json);
-                if (json.result <= 0) {
-                    opt.close = true;
-                }
             }
         } else {
             sendData = JSON.stringify(data);
-            if (data.result !== undefined && data.result <= 0) {
-                opt.close = true;
-            }
         }
     }
     nus.socket.write(encodeDataFrame({
         fin: 1,
-        opcode: opt.close ? 8 : 1,
+        opcode: 1,
         payloadData: sendData
+    }));
+}
+
+/**
+ * --- 给客户端发送关闭消息 ---
+ * @param nus Nus 对象
+ */
+export function close(nus: abs.Nus) {
+    nus.socket.write(encodeDataFrame({
+        fin: 1,
+        opcode: 8,
+        payloadData: ""
     }));
 }
 

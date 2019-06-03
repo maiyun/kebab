@@ -29,23 +29,25 @@ export async function update(nus: abs.Nus) {
                     WebSocket.send(nus, [2, "Start updating..."]);
                     for (let file of <string[]>json.files) {
                         WebSocket.send(nus, [2, `Downloading file "${file}"...`]);
-                        let content = "";
                         while (true) {
-                            let res = await Net.get(`https://raw.githubusercontent.com/MaiyunNET/Mutton/v${ver}/${file}`);
+                            let res = await Net.get(`https://raw.githubusercontent.com/MaiyunNET/Nuttom/v${ver}/${file}`);
                             if (!res) {
                                 WebSocket.send(nus, [2, `File "${file}" download failed, retry after 2 seconds.`]);
                                 await Sys.sleep(2000);
                                 continue;
                             }
-                            content = (await res.readContent()).toString();
+                            WebSocket.send(nus, [2, `The download was successful and the file is being overwritten...`]);
+                            let content = (await res.readContent()).toString();
                             // --- 添加文件到本地 ---
-                            let path = c.ROOT_PATH + file.slice(0, file.lastIndexOf("/") + 1);
-                            await Fs.mkdirDeep(path);
-                            await Fs.writeFile(path + file, content);
+                            let dpath = c.ROOT_PATH + file.slice(0, file.lastIndexOf("/") + 1);
+                            await Fs.mkdirDeep(dpath);
+                            await Fs.writeFile(c.ROOT_PATH + file, content);
+                            WebSocket.send(nus, [2, `The file "${file}" update was successful.`]);
                             break;
                         }
                     }
-                    WebSocket.send(nus, [3, "Update completed, please check the code and restart the service."], {close: true});
+                    WebSocket.send(nus, [3, "Update completed, please check the code and restart the service."]);
+                    WebSocket.close(nus);
                 }
             }
         }

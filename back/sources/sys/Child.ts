@@ -217,7 +217,7 @@ const _SNI_MANAGER = sni.certs.createManager();
                 // --- 加载 ws 控制器 ---
                 let ctr: any;
                 try {
-                    ctr = require(vhostRoot + "ws/" + pathLeft);
+                    ctr = require(vhostRoot + pathNow + "ws/" + pathLeft);
                 } catch (e) {
                     socket.end(`HTTP/${req.httpVersion} 403 Forbidden(4)\r\n\r\n`);
                     --_LINK_COUNT;
@@ -255,7 +255,7 @@ const _SNI_MANAGER = sni.certs.createManager();
                     get: uri.query ? querystring.parse(uri.query) : {},
                     cookie: {},
                     locale: "en",
-                    config: require(vhostRoot + "config"),
+                    config: require(vhostRoot + pathNow + "config"),
                     isNus: true
                 };
                 // --- 进入连接执行方法 ---
