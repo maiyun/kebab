@@ -10,7 +10,6 @@ import * as Fs from "~/lib/Fs";
 import * as View from "~/lib/View";
 import * as Sys from "~/lib/Sys";
 import * as Crypto from "~/lib/Crypto";
-import * as WebSocket from "~/lib/WebSocket";
 import * as Const from "~/const";
 import * as abs from "~/abstract";
 // --- 初始化 ---
@@ -42,6 +41,9 @@ const _SNI_MANAGER = sni.certs.createManager();
 (async function() {
     // --- 子进程启动时先加载 VHOST 和证书管理器 ---
     await Sys.realReload(_VHOSTS, _SNI_MANAGER);
+
+    // --- 加载 config.json ---
+    let config = JSON.parse(await Fs.readFile(Const.CONF_PATH + "config.json") || "{}");
 
     // --- 创建服务器并启动特（支持 http2/https/http/websocket） ---
     let server = http2.createSecureServer({
@@ -244,7 +246,23 @@ const _SNI_MANAGER = sni.certs.createManager();
         // --- 进入连接执行方法 ---
         await ctr[pathRight](nus);
     });
-    server.listen(4333);
+    server.listen(config.httpsPort);
+
+    // --- http: 80 ---
+    http.createServer(function(req: http.IncomingMessage, res: http.ServerResponse) {
+        let [host, port] = (req.headers["host"] || "").split(":");
+        if (config.httpsPort !== 443) {
+            port = ":" + config.httpsPort;
+        } else {
+            port = "";
+        }
+        res.writeHead(301, {
+            "Server": "Nuttom/" + Const.VER,
+            "Cache-Control": "no-cache, must-revalidate",
+            "Location": "https://" + host + port + req.url
+        });
+        res.end();
+    }).listen(config.httpPort);
 
     // --- 接收主进程回传信号，主要用来 reload，restart ---
     process.on("message", async function(msg) {
