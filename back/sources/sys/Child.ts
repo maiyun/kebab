@@ -72,7 +72,7 @@ const _SNI_MANAGER = sni.certs.createManager();
         vhostRoot = vhostRoot.slice(-1) !== "/" ? vhostRoot : vhostRoot.slice(0, -1);
         /** --- 请求的路径部分 --- */
         let path = uri.pathname || "/";
-        path = url.resolve("/", path);
+        path = url.resolve("/", path).replace(/\/\//g, "");
         /** --- 请求路径的数组分割 --- */
         let pathArr = path.split("/");
         pathArr.splice(0, 1);
@@ -107,9 +107,6 @@ const _SNI_MANAGER = sni.certs.createManager();
         // --- 循环从顶层路径开始，一层层判断 ---
         for (let index = 0; index < pathArrLen; ++index) {
             let item = pathArr[index];
-            if (item === "") {
-                continue;
-            }
             // --- 判断目录是否是 Nuttom 目录 ---
             if (await Router.run(nu, {
                 leftPathArr: pathArr.slice(index),
@@ -186,65 +183,107 @@ const _SNI_MANAGER = sni.certs.createManager();
         /** --- 当前匹配的虚拟主机对象 --- */
         let vhost = _getVhost(uri.hostname || "");
         if (!vhost) {
-            socket.end(`HTTP/${req.httpVersion} 403 No permissions\r\n\r\n`);
+            socket.end(`HTTP/${req.httpVersion} 403 No permissions(0)\r\n\r\n`);
             --_LINK_COUNT;
             return;
         }
-        /** 网站实绝对根目录，末尾带 / */
+        /** 网站实绝对根目录，末尾不带 / */
         let vhostRoot = Fs.isRealPath(vhost.root) ? vhost.root : Const.WWW_PATH + vhost.root;
-        vhostRoot = vhostRoot.slice(-1) !== "/" ? vhostRoot + "/" : vhostRoot;
+        vhostRoot = vhostRoot.slice(-1) !== "/" ? vhostRoot : vhostRoot.slice(0, -1);
         /** --- 请求的路径部分 --- */
         let path = uri.pathname || "/";
-        path = url.resolve("/", path).slice(1);
-        // --- 获取 action 部分 ---
-        let pathLeft: string = "", pathRight: string = "";
-        [pathLeft, pathRight] = Router.getPathLeftRight(path);
-        // --- 加载 ws 控制器 ---
-        let ctr: any;
-        try {
-            ctr = require(vhostRoot + "ws/" + pathLeft);
-        } catch (e) {
-            socket.end(`HTTP/${req.httpVersion} 403 Forbidden(4)\r\n\r\n`);
-            --_LINK_COUNT;
-            return;
+        path = url.resolve("/", path).replace(/\/\//g, "");
+        /** --- 请求路径的数组分割 --- */
+        let pathArr = path.split("/");
+        pathArr.splice(0, 1);
+        let pathArrLen = pathArr.length;
+        /** --- 当前已检测到的路径 --- */
+        let pathNow = "/";
+        // --- 循环从顶层路径开始，一层层判断 ---
+        for (let index = 0; index < pathArrLen; ++index) {
+            let item = pathArr[index];
+            let stat = await Fs.getStats(vhostRoot + pathNow + "config.js");
+            if (stat) {
+                // --- 是动态目录 ---
+                // --- 开始处理 ---
+
+                // --- 正戏开始 ---
+
+                let leftPathArr = pathArr.slice(index);
+                let leftPath = leftPathArr.join("/");
+                // --- 获取 action 部分 ---
+                let pathLeft: string = "", pathRight: string = "";
+                [pathLeft, pathRight] = Router.getPathLeftRight(leftPath);
+                // --- 加载 ws 控制器 ---
+                let ctr: any;
+                try {
+                    ctr = require(vhostRoot + "ws/" + pathLeft);
+                } catch (e) {
+                    socket.end(`HTTP/${req.httpVersion} 403 Forbidden(4)\r\n\r\n`);
+                    --_LINK_COUNT;
+                    return;
+                }
+                // --- 判断 action 是否存在 ---
+                if (!ctr[pathRight]) {
+                    socket.end(`HTTP/${req.httpVersion} 403 Forbidden(5)\r\n\r\n`);
+                    --_LINK_COUNT;
+                    return;
+                }
+                // --- action 存在，可以握手 ---
+                const swa = Crypto.sha1(req.headers["sec-websocket-key"] + "258EAFA5-E914-47DA-95CA-C5AB0DC85B11", {format: "base64"});
+                const resHeaders: string[] = [
+                    `HTTP/${req.httpVersion} 101 Switching Protocols`,
+                    `Upgrade: websocket`,
+                    `Connection: Upgrade`,
+                    `Sec-WebSocket-Version: 13`,
+                    `Sec-WebSocket-Accept: ${swa}`,
+                    `Sec-WebSocket-Location: wss://${req.headers["host"]}/`
+                ];
+                socket.write(resHeaders.join(`\r\n`) + "\r\n\r\n");
+                /** --- Nus 对象 --- */
+                let nus: abs.Nus = {
+                    const: {
+                        VER: Const.VER,
+                        START_TIME: process.hrtime.bigint(),
+                        ROOT_PATH: vhostRoot + pathNow,
+                        VIEW_PATH: vhostRoot + pathNow + "view/",
+                        DATA_PATH: vhostRoot + pathNow + "data/"
+                    },
+                    req: req,
+                    socket: socket,
+                    uri: uri,
+                    get: uri.query ? querystring.parse(uri.query) : {},
+                    cookie: {},
+                    locale: "en",
+                    config: require(vhostRoot + "config"),
+                    isNus: true
+                };
+                // --- 进入连接执行方法 ---
+                await ctr[pathRight](nus);
+
+                // --- 正戏结束 ---
+
+                return;
+            }
+            // --- 判断当前是否存在对象，不存在返回 404 ---
+            let stats = await Fs.getStats(vhostRoot + pathNow + item);
+            if (stats === undefined) {
+                socket.end(`HTTP/${req.httpVersion} 404 Not Found\r\n\r\n`);
+                --_LINK_COUNT;
+                return;
+            }
+            if (stats.isDirectory()) {
+                // --- 当前是目录，增加 pathNow 定义 ---
+                pathNow += item + "/";
+            } else {
+                socket.end(`HTTP/${req.httpVersion} 403 No permissions(0)\r\n\r\n`);
+                --_LINK_COUNT;
+                return;
+            }
         }
-        // --- 判断 action 是否存在 ---
-        if (!ctr[pathRight]) {
-            socket.end(`HTTP/${req.httpVersion} 403 Forbidden(5)\r\n\r\n`);
-            --_LINK_COUNT;
-            return;
-        }
-        // --- action 存在，可以握手 ---
-        const swa = Crypto.sha1(req.headers["sec-websocket-key"] + "258EAFA5-E914-47DA-95CA-C5AB0DC85B11", {format: "base64"});
-        const resHeaders: string[] = [
-            `HTTP/${req.httpVersion} 101 Switching Protocols`,
-            `Upgrade: websocket`,
-            `Connection: Upgrade`,
-            `Sec-WebSocket-Version: 13`,
-            `Sec-WebSocket-Accept: ${swa}`,
-            `Sec-WebSocket-Location: wss://${req.headers["host"]}/`
-        ];
-        socket.write(resHeaders.join(`\r\n`) + "\r\n\r\n");
-        /** --- Nu 对象 --- */
-        let nus: abs.Nus = {
-            const: {
-                VER: Const.VER,
-                START_TIME: process.hrtime.bigint(),
-                ROOT_PATH: "",
-                VIEW_PATH: "",
-                DATA_PATH: ""
-            },
-            req: req,
-            socket: socket,
-            uri: uri,
-            get: uri.query ? querystring.parse(uri.query) : {},
-            cookie: {},
-            locale: "en",
-            config: {route: {}, etc: {} as any},
-            isNus: true
-        };
-        // --- 进入连接执行方法 ---
-        await ctr[pathRight](nus);
+        socket.end(`HTTP/${req.httpVersion} 403 No permissions(1)\r\n\r\n`);
+        --_LINK_COUNT;
+        return;
     });
     server.listen(config.httpsPort);
 

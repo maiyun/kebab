@@ -35,7 +35,7 @@ export async function run(nu: abs.Nu, opt: Options): Promise<boolean> {
     let config: abs.Config = require(nu.const.ROOT_PATH + "config");
     nu.config = config;
     /** --- 余下的相对路径 --- */
-    let path = opt.leftPathArr.join("/").replace(/\/\//g, "");
+    let path = opt.leftPathArr.join("/");
     // --- 检测 path 是否是静态文件 ---
     if (/favicon.\w+?\??.*|[\w-]+?\.doc\??.*|[\w-]+?\.txt\??.*/.test(path)) {
         await View.toResponse(nu, nu.const.ROOT_PATH + path);
