@@ -164,6 +164,9 @@ export function on(nus: abs.Nus, events: Events = {}) {
             let rtn = await events.onData(data.payloadData);
             if (rtn !== undefined) {
                 send(nus, rtn);
+                if (rtn.result !== undefined && rtn.result <= 0) {
+                    close(nus);
+                }
             }
         }
     });

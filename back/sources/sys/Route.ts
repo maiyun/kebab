@@ -79,10 +79,17 @@ export async function run(nu: abs.Nu, opt: Options): Promise<boolean> {
     let ctr: any;
     try {
         ctr = require(nu.const.ROOT_PATH + "ctr/" + pathLeft);
-    } catch {
-        nu.res.writeHead(403);
-        nu.res.end("403 Forbidden(4).");
-        return true;
+    } catch (e) {
+        if (e.code === "MODULE_NOT_FOUND") {
+            nu.res.writeHead(403);
+            nu.res.end("403 Forbidden(4).");
+            return true;
+        } else {
+            console.log(e);
+            nu.res.writeHead(500);
+            nu.res.end(`500 Internal Server Error(Customer code error).`);
+            return true;
+        }
     }
     // --- 判断 action 是否存在 ---
     if (!ctr[pathRight]) {

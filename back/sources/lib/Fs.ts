@@ -29,7 +29,7 @@ export function readFile(path: fs.PathLike | number, options: { encoding: string
  * @param data 要写入的内容
  * @param options 选项
  */
-export function writeFile(path: fs.PathLike | number, data: any, options: fs.WriteFileOptions = {}) {
+export function writeFile(path: fs.PathLike | number, data: any, options: fs.WriteFileOptions = {}): Promise<boolean> {
     return new Promise((resolve, reject) => {
         fs.writeFile(path, data, options, function(err) {
             if (err) {

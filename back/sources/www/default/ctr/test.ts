@@ -8,6 +8,10 @@ import * as Crypto from "~/lib/Crypto";
 import * as Redis from "~/lib/Redis";
 import * as abs from "~/abstract";
 import * as C from "~/const";
+// --- 模型 ---
+import Mod from "~/sys/Mod";
+import MSession from "../mod/Session";
+
 
 export function index(nu: abs.Nu) {
     let echo: string[] = [
@@ -48,6 +52,9 @@ export function index(nu: abs.Nu) {
 
         `<br><br><b>Mysql:</b>`,
         `<br><br><a href="${nu.const.HTTP_BASE}test/mysql">View "test/mysql"</a>`,
+
+        `<br><br><b>Mod:</b>`,
+        `<br><br><a href="${nu.const.HTTP_BASE}test/mod">View "test/mod"</a>`,
 
         "<br><br><b>Sql:</b>",
         `<br><br><a href="${nu.const.HTTP_BASE}test/sql?type=insert">View "test/sql?type=insert"</a>`,
@@ -252,6 +259,19 @@ export async function mysql(nu: abs.Nu) {
     return echo.join("") + _getEnd(nu);
 }
 
+export async function mod(nu: abs.Nu) {
+    let pool = Mysql.getPool(nu);
+    let sess = MSession.getCreate(pool, nu);
+    sess.set({
+        "token": "1112",
+        "data": "",
+        "time_update": Math.round(Date.now() / 1000),
+        "time_add": Math.round(Date.now() / 1000)
+    });
+    sess.create(Mod.RELOAD);
+    return _getEnd(nu);
+}
+
 export async function sql(nu: abs.Nu) {
     let echo: string[] = [`<pre>`];
     let sql = Sql.get(nu);
@@ -370,7 +390,7 @@ export async function sql(nu: abs.Nu) {
             }]).getSql();
             sd = sql.getData();
             echo.push(
-                `sql.update("order", [{"state": "1"}]).where([{` +
+                `sql.update("order", [{"state": "1"}]).where([{\n` +
                 `    "$or": [{\n` +
                 `        "type": "1"\n` +
                 `    }, {\n` +

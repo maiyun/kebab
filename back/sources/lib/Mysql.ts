@@ -32,7 +32,7 @@ async function _checkConnection() {
 _checkConnection();
 
 /** --- 数据库连接池对象 --- */
-class Pool {
+export class Pool {
     /** 数据库配置信息 */
     public readonly etc: abs.ConfigEtcMysql;
     /** 连接池 */
@@ -198,7 +198,7 @@ class Pool {
 }
 
 /** --- 数据库连接对象 --- */
-class Connection {
+export class Connection {
     private _conn!: mysql2.Connection;
     public using: boolean = false;
     public time: number = Date.now();

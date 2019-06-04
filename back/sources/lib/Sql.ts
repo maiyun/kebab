@@ -30,12 +30,12 @@ class Sql {
 
     // --- 前导 ---
 
-    public insert(f: string, cs: any = [], vs?: any[]): Sql {
+    public insert(f: string, cs: any = [], vs?: string[] | string[][]): Sql {
         this._data = [];
         let sql = `INSERT INTO ${this._pre + f} (`;
         if (vs) {
-            // --- 'xx', ['id', 'name'], [['1', 'wow'], ['2', 'oh']] ---
-            // --- 'xx', ['id', 'name'], ['1', 'wow'] ---
+            // --- "xx", ["id", "name"], [['1', 'wow'], ['2', 'oh']] ---
+            // --- "xx", ["id", "name"], ["1", "wow"] ---
             for (let i of cs) {
                 sql += this.field(i) + ",";
             }
@@ -44,7 +44,7 @@ class Sql {
             if (Array.isArray(vs[0])) {
                 // --- 多条记录 ---
                 // --- INSERT INTO xx (id, name) VALUES ? ---
-                for (let i in vs[0]) {
+                for (let v of vs[0]) {
                     sql += "(?), ";
                 }
                 sql = sql.slice(0, -2);
@@ -53,14 +53,14 @@ class Sql {
                 // --- 单条记录 ---
                 // --- INSERT INTO xx (id, name) VALUES (?) ---
                 sql += "(";
-                for (let i in vs) {
+                for (let v of vs) {
                     sql += "?, ";
                 }
                 sql = sql.slice(0, -2) + ")";
                 this._data = vs;
             }
         } else {
-            // --- 'xx', ['id' => '1', 'name' => 'wow'] ---
+            // --- "xx", {"id": "1", "name": "wow"} ---
             // --- INSERT INTO xx (id, name) VALUES (?) ---
             let data: any[] = [];
             let values: string = "";
@@ -199,13 +199,13 @@ class Sql {
                     if (k1[0] === "$") {
                         // --- 5 ---
                         sql += this._whereSub(v1, " " + k1.slice(1).toUpperCase() + " ", lev + 1) + type;
-                    } else if (typeof v1 === "string") {
-                        // --- 1 ---
-                        sql += this.field(k1) + " = ?" + type;
-                        this._data.push(v1);
-                    } else {
+                    } else if (Array.isArray(v1)) {
                         // --- 4 ---
                         sql += this.field(k1) + " IN (?)" + type;
+                        this._data.push(v1);
+                    } else {
+                        // --- 1 ---
+                        sql += this.field(k1) + " = ?" + type;
                         this._data.push(v1);
                     }
                 }
