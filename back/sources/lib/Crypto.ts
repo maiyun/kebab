@@ -11,8 +11,16 @@ export interface Options {
  * --- md5 加密 ---
  * @param data 要加密的数据
  */
-export function md5(data: string): string {
+export function md5(data: crypto.BinaryLike): string {
     return crypto.createHash("md5").update(data).digest("hex");
+}
+
+/**
+ * --- md5 加密（16位） ---
+ * @param data 要加密的数据
+ */
+export function md516(data: crypto.BinaryLike): string {
+    return md5(data).substr(8, 16);
 }
 
 /**
