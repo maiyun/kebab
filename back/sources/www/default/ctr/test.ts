@@ -264,12 +264,33 @@ export async function mod(nu: abs.Nu) {
     let sess = MSession.getCreate(pool, nu);
     sess.set({
         "token": "1112",
-        "data": "",
+        "data": "{}",
         "time_update": Math.round(Date.now() / 1000),
         "time_add": Math.round(Date.now() / 1000)
     });
-    sess.create(Mod.RELOAD);
-    return _getEnd(nu);
+    await sess.create(Mod.RELOAD);
+    let json = JSON.stringify(sess.toObject(), null, 4);
+
+    let echo: string[] = [
+        `<pre>` +
+        `let pool = Mysql.getPool(nu);\n`,
+        `let sess = MSession.getCreate(pool, nu);\n`,
+        `sess.set({\n`,
+        `    "token": "1112",\n`,
+        `    "data": "{}",\n`,
+        `    "time_update": Math.round(Date.now() / 1000),\n`,
+        `    "time_add": Math.round(Date.now() / 1000)\n`,
+        `});`,
+        `await sess.create(Mod.RELOAD);`,
+        `</pre>`,
+        `JSON.stringify(sess.toObject(), null, 4):`,
+        `<pre>`,
+        json,
+        `</pre>`,
+        pool.getLength().toString()
+    ];
+
+    return echo.join("") + _getEnd(nu);
 }
 
 export async function sql(nu: abs.Nu) {

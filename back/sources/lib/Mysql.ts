@@ -233,7 +233,16 @@ export class Connection {
         if (!this._transaction) {
             this.using = true;
         }
-        let res = <[any[], mysql2.FieldPacket[]]>(await this._conn.query(sql, values));
+        let res;
+        try {
+            res = <[any[], mysql2.FieldPacket[]]>(await this._conn.query(sql, values));
+        } catch (e) {
+            this.time = Date.now();
+            if (!this._transaction) {
+                this.using = false;
+            }
+            throw e;
+        }
         this.time = Date.now();
         if (!this._transaction) {
             this.using = false;
@@ -251,7 +260,16 @@ export class Connection {
         if (!this._transaction) {
             this.using = true;
         }
-        let res = <[mysql2.OkPacket, mysql2.FieldPacket[]]>(await this._conn.execute(sql, values));
+        let res;
+        try {
+            res = <[mysql2.OkPacket, mysql2.FieldPacket[]]>(await this._conn.execute(sql, values));
+        } catch (e) {
+            this.time = Date.now();
+            if (!this._transaction) {
+                this.using = false;
+            }
+            throw e;
+        }
         this.time = Date.now();
         if (!this._transaction) {
             this.using = false;

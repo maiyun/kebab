@@ -1,3 +1,5 @@
+// --- 第三方 ---
+import * as mysql2 from "mysql2/promise";
 // --- 库和定义 ---
 import * as Sql from "~/lib/Sql";
 import * as Mysql from "~/lib/Mysql";
@@ -165,11 +167,36 @@ export default class Mod {
         let sql = Sql.get(this._etc);
         sql.insert((<any>this.constructor)._table, updates);
 
-        this._lastSqlString = sql.getSql();
-        this._lastSqlData = sql.getData();
-
         try {
-            let rtn = await this._conn.execute(this._lastSqlString, this._lastSqlData);
+            let rtn: mysql2.OkPacket;
+            if ((<any>this.constructor)._key !== "") {
+                while (true) {
+                    updates[(<any>this.constructor)._key] = this._keyGenerator();
+                    sql.insert((<any>this.constructor)._table, updates);
+
+                    this._lastSqlString = sql.getSql();
+                    this._lastSqlData = sql.getData();
+
+                    try {
+                        rtn = await this._conn.execute(this._lastSqlString, this._lastSqlData);
+                        break;
+                    } catch (e) {
+                        if (e.errno === 1062) {
+                            // --- 接着循环 ---
+                            continue;
+                        } else {
+                            sql.release();
+                            console.log(e);
+                            return false;
+                        }
+                    }
+                }
+            } else {
+                this._lastSqlString = sql.getSql();
+                this._lastSqlData = sql.getData();
+
+                rtn = await this._conn.execute(this._lastSqlString, this._lastSqlData);
+            }
             if (rtn.affectedRows > 0) {
                 this._updates = {};
                 this._data[(<any>this.constructor)._primary] = rtn.insertId;
@@ -200,6 +227,24 @@ export default class Mod {
             }
             return false;
         }
+    }
+
+    /**
+     * --- 当 _key 不为空时，则依据继承此方法的方法自动生成填充 key ---
+     */
+    protected _keyGenerator(): string {
+        return "";
+    }
+
+    /**
+     * --- 获取值对象 ---
+     */
+    public toObject() {
+        let o: any = {};
+        for (let k in this._data) {
+            o[k] = this._data[k];
+        }
+        return o;
     }
 
     // --- 以下为静态方法 ---
