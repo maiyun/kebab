@@ -95,7 +95,7 @@ function _fetchData(obj: any) {
 }
 
 export function test() {
-    let socket = net.createConnection(7890, "47.98.114.143", function() {
+    let socket = net.createConnection(0, "x", function() {
         let timestamp = _getTimestamp();
         // --- body ---
         let buf = _getBuf({
