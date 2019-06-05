@@ -102,8 +102,8 @@ export function test() {
             Sequence_Id: 1,
             Command_Id: cmds.id.CMPP_CONNECT
         }, {
-            Source_Addr: "922137",
-            AuthenticatorSource: _getAuthenticatorSource("922137", "922137", timestamp),
+            Source_Addr: "X",
+            AuthenticatorSource: _getAuthenticatorSource("X", "X", timestamp),
             Version: 0x20,
             Timestamp: parseInt(timestamp)
         });
