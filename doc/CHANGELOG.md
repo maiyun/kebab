@@ -4,6 +4,12 @@
 
 [简体中文](./CHANGELOG.zh-CN.md) | [繁體中文](./CHANGELOG.zh-TW.md)
 
+## 0.0.5
+
+[+] Add a model class.  
+[+] Add the Session library.  
+[+] Add the Time library.
+
 ## 0.0.4
 
 [\*] Code optimization.
