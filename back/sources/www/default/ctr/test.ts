@@ -6,6 +6,7 @@ import * as Sql from "~/lib/Sql";
 import * as Text from "~/lib/Text";
 import * as Crypto from "~/lib/Crypto";
 import * as Redis from "~/lib/Redis";
+import * as Session from "~/lib/Session";
 import * as abs from "~/abstract";
 import * as C from "~/const";
 // --- 模型 ---
@@ -73,7 +74,7 @@ export function index(nu: abs.Nu) {
         `<br><br><a href="${nu.const.HTTP_BASE}test/redis">View "test/redis"</a>`,
 
         "<br><br><b>Session:</b>",
-        `<br><br><a href="${nu.const.HTTP_BASE}test/session_db">View "test/session_db"</a>`,
+        `<br><br><a href="${nu.const.HTTP_BASE}test/session_mysql">View "test/session_mysql"</a>`,
         `<br><a href="${nu.const.HTTP_BASE}test/session_redis">View "test/session_redis"</a>`,
 
         "<br><br><b>System:</b>",
@@ -272,6 +273,7 @@ export async function mod(nu: abs.Nu) {
     let json = JSON.stringify(sess.toObject(), null, 4);
 
     let echo: string[] = [
+        `<b style="color: red;">Tips: File "back/sources/www/default/mod/Session.ts" can be deleted.</b>`,
         `<pre>` +
         `let pool = Mysql.getPool(nu);\n`,
         `let sess = MSession.getCreate(pool, nu);\n`,
@@ -626,6 +628,70 @@ export async function redis(nu: abs.Nu) {
     );
 
     return echo.join("") + `<br><br>` + _getEnd(nu);
+}
+
+export async function session_mysql(nu: abs.Nu) {
+    let pool = Mysql.getPool(nu);
+    await Session.start(nu, pool, {
+        exp: 60
+    });
+
+    let echo: string[] = [
+        `<pre>`,
+        `let pool = Mysql.getPool(nu);\n`,
+        `await Session.start(nu, pool, {\n`,
+        `    exp: 60\n`,
+        `});`,
+        `</pre>`,
+        `JSON.stringify(nu.session, null, 4):`,
+        `<pre>`,
+        JSON.stringify(nu.session, null, 4),
+        `</pre>`
+    ];
+
+    nu.session.value = nu.get.value ? nu.get.value : "ok";
+
+    echo.push(
+        `nu.session.value = nu.get.value ? nu.get.value : "ok";<br>` +
+        `JSON.stringify(nu.session, null, 4):` +
+        `<pre>` +
+        JSON.stringify(nu.session, null, 4) +
+        `</pre>`
+    );
+
+    return `<a href="${nu.const.HTTP_BASE}test/session_mysql">Default</a> | <a href="${nu.const.HTTP_BASE}test/session_mysql?value=aaa">Set "aaa"</a> | <a href="${nu.const.HTTP_BASE}test/session_mysql?value=bbb">Set "bbb"</a> | <a href="${nu.const.HTTP_BASE}test">Return</a>` + echo.join("") + _getEnd(nu);
+}
+
+export async function session_redis(nu: abs.Nu) {
+    let redis = await Redis.getConnection(nu);
+    await Session.start(nu, redis, {
+        exp: 60
+    });
+
+    let echo: string[] = [
+        `<pre>`,
+        `let redis = await Redis.getConnection(nu);\n`,
+        `await Session.start(nu, redis, {\n`,
+        `    exp: 60\n`,
+        `});`,
+        `</pre>`,
+        `JSON.stringify(nu.session, null, 4):`,
+        `<pre>`,
+        JSON.stringify(nu.session, null, 4),
+        `</pre>`
+    ];
+
+    nu.session.value = nu.get.value ? nu.get.value : "ok";
+
+    echo.push(
+        `nu.session.value = nu.get.value ? nu.get.value : "ok";<br>` +
+        `JSON.stringify(nu.session, null, 4):` +
+        `<pre>` +
+        JSON.stringify(nu.session, null, 4) +
+        `</pre>`
+    );
+
+    return `<a href="${nu.const.HTTP_BASE}test/session_redis">Default</a> | <a href="${nu.const.HTTP_BASE}test/session_redis?value=aaa">Set "aaa"</a> | <a href="${nu.const.HTTP_BASE}test/session_redis?value=bbb">Set "bbb"</a> | <a href="${nu.const.HTTP_BASE}test">Return</a>` + echo.join("") + _getEnd(nu);
 }
 
 export async function reload(nu: abs.Nu) {

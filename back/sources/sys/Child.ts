@@ -99,6 +99,11 @@ const _SNI_MANAGER = sni.certs.createManager();
             get: uri.query ? querystring.parse(uri.query) : {},
             post: {},
             cookie: {},
+            sessionConfig: {
+                token: "",
+                conn: undefined as any
+            },
+            session: {},
             param: [],
             locale: "en",
             config: {route: {}, etc: {} as any},

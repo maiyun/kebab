@@ -115,7 +115,7 @@ export default class Mod {
             sql.release();
 
             let rtn = await this._conn.execute(this._lastSqlString, this._lastSqlData);
-            if (rtn.affectedRows > 0) {
+            if (rtn && (rtn.affectedRows > 0)) {
                 this._updates = {};
                 return true;
             } else {
@@ -140,7 +140,7 @@ export default class Mod {
         sql.release();
 
         let rtn = await this._conn.execute(this._lastSqlString, this._lastSqlData);
-        if (rtn.affectedRows > 0) {
+        if (rtn && (rtn.affectedRows > 0)) {
             return true;
         } else {
             return false;
@@ -178,24 +178,30 @@ export default class Mod {
                     this._lastSqlData = sql.getData();
 
                     try {
-                        rtn = await this._conn.execute(this._lastSqlString, this._lastSqlData);
-                        break;
-                    } catch (e) {
-                        if (e.errno === 1062) {
+                        let rtnt = await this._conn.execute(this._lastSqlString, this._lastSqlData);
+                        if (rtnt) {
+                            rtn = rtnt;
+                            break;
+                        } else {
                             // --- 接着循环 ---
                             continue;
-                        } else {
-                            sql.release();
-                            console.log(e);
-                            return false;
                         }
+                    } catch (e) {
+                        sql.release();
+                        console.log(e);
+                        return false;
                     }
                 }
             } else {
                 this._lastSqlString = sql.getSql();
                 this._lastSqlData = sql.getData();
 
-                rtn = await this._conn.execute(this._lastSqlString, this._lastSqlData);
+                let rtnt = await this._conn.execute(this._lastSqlString, this._lastSqlData);
+                if (rtnt) {
+                    rtn = rtnt;
+                } else {
+                    throw {errno: 1062};
+                }
             }
             if (rtn.affectedRows > 0) {
                 this._updates = {};
@@ -295,7 +301,7 @@ export default class Mod {
         sql.insert((<any>this.constructor)._table, cs, vs);
         let rtn = await pc.execute(sql.getSql(), sql.getData());
         sql.release();
-        if (rtn.affectedRows > 0) {
+        if (rtn && rtn.affectedRows > 0) {
             return true;
         } else {
             return false;
@@ -410,7 +416,7 @@ export default class Mod {
             sql.where(where);
         }
         let rtn = await pc.execute(sql.getSql(), sql.getData());
-        if (rtn.affectedRows > 0) {
+        if (rtn && rtn.affectedRows > 0) {
             return true;
         } else {
             return false;
@@ -433,7 +439,7 @@ export default class Mod {
             sql.where(where);
         }
         let rtn = await pc.execute(sql.getSql(), sql.getData());
-        if (rtn.affectedRows > 0) {
+        if (rtn && rtn.affectedRows > 0) {
             return true;
         } else {
             return false;

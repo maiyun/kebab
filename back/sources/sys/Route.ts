@@ -5,6 +5,7 @@ import * as fs from "fs";
 import * as Fs from "~/lib/Fs";
 import * as Text from "~/lib/Text";
 import * as View from "~/lib/View";
+import * as Session from "~/lib/Session";
 import * as abs from "~/abstract";
 import * as c from "~/const";
 
@@ -103,6 +104,9 @@ export async function run(nu: abs.Nu, opt: Options): Promise<boolean> {
     let rtn;
     try {
         rtn = await ctr[pathRight](nu);
+        if (nu.sessionConfig.token !== "") {
+            await Session.__update(nu);
+        }
     } catch (e) {
         console.log(e);
         nu.res.writeHead(500);

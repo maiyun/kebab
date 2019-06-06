@@ -23,6 +23,10 @@ export = {
             "port": 6379,
             "index": 0,
             "auth": ""
+        },
+        "session": {
+            "name": "NU_SESSION",
+            "exp": 172800
         }
     }
 };

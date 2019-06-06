@@ -33,7 +33,7 @@ async function _checkConnection() {
 }
 _checkConnection();
 
-class Connection {
+export class Connection {
     /** 配置信息 */
     public readonly etc: abs.ConfigEtcRedis;
     /** Redis 对象 */

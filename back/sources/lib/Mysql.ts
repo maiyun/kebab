@@ -60,7 +60,7 @@ export class Pool {
      * @param sql 要执行的 SQL
      * @param values 要替换的 data 数据
      */
-    public async execute(sql: string, values?: any | any[] | {[param: string]: any}): Promise<mysql2.OkPacket> {
+    public async execute(sql: string, values?: any | any[] | {[param: string]: any}): Promise<mysql2.OkPacket | undefined> {
         let conn = await this._getConnection();
         let res = await conn.execute(sql, values);
         return res;
@@ -256,7 +256,7 @@ export class Connection {
      * @param sql 执行的 SQL 字符串
      * @param values 要替换的 data 数组
      */
-    public async execute(sql: string, values?: any | any[] | {[param: string]: any}): Promise<mysql2.OkPacket> {
+    public async execute(sql: string, values?: any | any[] | {[param: string]: any}): Promise<mysql2.OkPacket | undefined> {
         if (!this._transaction) {
             this.using = true;
         }
@@ -268,7 +268,11 @@ export class Connection {
             if (!this._transaction) {
                 this.using = false;
             }
-            throw e;
+            if (e.errno === 1062) {
+                return undefined;
+            } else {
+                throw e;
+            }
         }
         this.time = Date.now();
         if (!this._transaction) {

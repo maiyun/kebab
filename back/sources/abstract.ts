@@ -3,6 +3,10 @@ import * as http from "http";
 import * as url from "url";
 import * as querystring from "querystring";
 import * as tls from "tls";
+// --- 库和定义 ---
+import * as Mysql from "~/lib/Mysql";
+import * as Redis from "~/lib/Redis";
+import * as Session from "~/lib/Session";
 
 // --- 虚拟机配置对象 ---
 export interface Vhost {
@@ -57,6 +61,7 @@ export interface ConfigEtc {
     "mysql": ConfigEtcMysql;
     "sql": ConfigEtcSql;
     "redis": ConfigEtcRedis;
+    "session": ConfigEtcSession;
 }
 export interface ConfigEtcMysql {
     "host": string;
@@ -75,6 +80,10 @@ export interface ConfigEtcRedis {
     "index": number;
     "auth": string;
 }
+export interface ConfigEtcSession {
+    "name": string;
+    "exp": number;
+}
 
 /** --- Nu 核心对象 --- */
 export interface Nu {
@@ -84,6 +93,8 @@ export interface Nu {
     readonly uri: url.UrlWithStringQuery;
     get: querystring.ParsedUrlQuery;
     post: NuPost;
+    sessionConfig: NuSessionConfig;
+    session: NuSession;
     cookie: NuCookie;
     param: string[];
     locale: string;
@@ -102,6 +113,13 @@ export interface Nus {
     readonly isNus: boolean;
 }
 
+/** --- Session 对象 --- */
+export interface NuSessionConfig {
+    token: string;
+    conn: Mysql.Pool | Mysql.Connection | Redis.Connection;
+    etc?: Session.SessionEtc;
+}
+
 /** Nu Cookie 对象 */
 export interface NuCookie {
     [key: string]: string;
@@ -112,6 +130,11 @@ export interface NuPost {
     [key: string]: NuPostItem | NuPostItem[];
 }
 export type NuPostItem = string | NuPostFile;
+
+/** --- Nu Session 对象 --- */
+export interface NuSession {
+    [key: string]: any;
+}
 
 /** --- Nu Post File 对象 --- */
 export interface NuPostFile {

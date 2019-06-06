@@ -30,6 +30,12 @@ class Sql {
 
     // --- 前导 ---
 
+    /**
+     * --- 插入 ---
+     * @param f 表名
+     * @param cs [] or {}
+     * @param vs [] | [][]
+     */
     public insert(f: string, cs: any = [], vs?: string[] | string[][]): Sql {
         this._data = [];
         let sql = `INSERT INTO ${this._pre + f} (`;
