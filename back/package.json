@@ -5,6 +5,7 @@
     "ejs": "^2.6.1",
     "mysql2": "^1.6.5",
     "redis": "^2.8.0",
+    "svg-captcha": "^1.4.0",
     "ts-alias-loader": "^0.1.1"
   },
   "devDependencies": {

@@ -44,7 +44,7 @@ export function format(f: string, date?: Date): string {
             }
         }
     }
-    return over.join();
+    return over.join("");
 }
 
 /**

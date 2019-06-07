@@ -79,6 +79,10 @@ export async function request(opt: A.Options): Promise<A.NetResponse | undefined
     if (opt.cookie) {
         opt.headers["Cookie"] = _buildCookieQuery(opt.cookie, uri);
     }
+    // --- 超时时间 ---
+    if (opt.timeout === undefined) {
+        opt.timeout = 10;
+    }
     // --- 是否获取头部 ---
     let pdata!: A.BeforePostResult;
     if (opt.method === "POST") {

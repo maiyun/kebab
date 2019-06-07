@@ -7,8 +7,9 @@ import * as Text from "~/lib/Text";
 import * as Crypto from "~/lib/Crypto";
 import * as Redis from "~/lib/Redis";
 import * as Session from "~/lib/Session";
+import * as Captcha from "~/lib/Captcha";
 import * as abs from "~/abstract";
-import * as C from "~/const";
+import * as Const from "~/const";
 // --- 模型 ---
 import Mod from "~/sys/Mod";
 import MSession from "../mod/Session";
@@ -76,6 +77,10 @@ export function index(nu: abs.Nu) {
         "<br><br><b>Session:</b>",
         `<br><br><a href="${nu.const.HTTP_BASE}test/session_mysql">View "test/session_mysql"</a>`,
         `<br><a href="${nu.const.HTTP_BASE}test/session_redis">View "test/session_redis"</a>`,
+
+        "<br><br><b>Captcha:</b>",
+        `<br><br><a href="${nu.const.HTTP_BASE}test/captcha_fastbuild">View "test/captcha_fastbuild"</a>`,
+        `<br><a href="${nu.const.HTTP_BASE}test/captcha_base64">View "test/captcha_base64"</a>`,
 
         "<br><br><b>System:</b>",
         `<br><br><a href="${nu.const.HTTP_BASE}test/reload">View "reload"</a>`,
@@ -162,10 +167,10 @@ export async function netPost1(nu: abs.Nu) {
 }
 
 export async function netUpload(nu: abs.Nu) {
-    let res = await Net.post(nu.const.HTTP_PATH + "test/netUpload1", {a: "1", "file": "@" + C.LIB_PATH + "Net/cacert.pem", "multiple": ["1", "@" + C.LIB_PATH + "Zlib.js"]});
+    let res = await Net.post(nu.const.HTTP_PATH + "test/netUpload1", {a: "1", "file": "@" + Const.LIB_PATH + "Net/cacert.pem", "multiple": ["1", "@" + Const.LIB_PATH + "Zlib.js"]});
     let echo: string[] = [
         `Remote Upload:<br><br>`,
-        `await Net.post(nu.const.HTTP_PATH + "test/netUpload1", {a: "1", "file": "@${C.LIB_PATH}Net/cacert.pem", "multiple": ["1", "@${C.LIB_PATH}Zlib.js"]})`,
+        `await Net.post(nu.const.HTTP_PATH + "test/netUpload1", {a: "1", "file": "@${Const.LIB_PATH}Net/cacert.pem", "multiple": ["1", "@${Const.LIB_PATH}Zlib.js"]})`,
         "<pre>"
     ];
     if (res) {
@@ -692,6 +697,31 @@ export async function session_redis(nu: abs.Nu) {
     );
 
     return `<a href="${nu.const.HTTP_BASE}test/session_redis">Default</a> | <a href="${nu.const.HTTP_BASE}test/session_redis?value=aaa">Set "aaa"</a> | <a href="${nu.const.HTTP_BASE}test/session_redis?value=bbb">Set "bbb"</a> | <a href="${nu.const.HTTP_BASE}test">Return</a>` + echo.join("") + _getEnd(nu);
+}
+
+export async function captcha_fastbuild(nu: abs.Nu) {
+    Captcha.get(400, 100).output(nu);
+    return true;
+}
+
+export async function captcha_base64(nu: abs.Nu) {
+    let cap = Captcha.get(400, 100);
+    let phrase = cap.getPhrase();
+    let base64 = cap.getBase64();
+
+    let echo: string[] = [
+        `let cap = Captcha.get(400, 100);<br>`,
+        `let phrase = cap.getPhrase();<br>`,
+        `let base64 = cap.getBase64();<br>`,
+        `phrase:`,
+        `<pre>${phrase}</pre>`,
+        `base64:`,
+        `<pre style="white-space: pre-wrap; word-wrap: break-word; overflow-y: auto; max-height: 200px;">${base64}</pre>`,
+        `&lt;img src="\${base64}" style="width: 200px; height: 50px;"&gt;`,
+        `<pre><img src="${base64}" style="width: 200px; height: 50px;"></pre>`
+    ];
+
+    return echo.join("") + _getEnd(nu);
 }
 
 export async function reload(nu: abs.Nu) {

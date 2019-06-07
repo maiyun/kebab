@@ -220,7 +220,7 @@ export function readFileOnce(path: string, options: { encoding?: string; flag?: 
                 data.push(chunk.toString());
             });
             stream.on("close", function() {
-                resolve(data.join());
+                resolve(data.join(""));
             });
         } catch {
             resolve("");

@@ -7,7 +7,7 @@ export const RANDOM_UN = RANDOM_U + RANDOM_N;
 export const RANDOM_LN = RANDOM_L + RANDOM_N;
 export const RANDOM_LU = RANDOM_L + RANDOM_U;
 export const RANDOM_LUN = RANDOM_L + RANDOM_U + RANDOM_N;
-export const RANDOM_V = "ACEFGHJKLMNPRSTWXY34567";
+export const RANDOM_V = "ACEFGHJKMNPRTWXYabcdefghkmnpqrtwxy3467";
 export const RANDOM_LUNS = RANDOM_LUN + "()`~!@#$%^&*-+=_|{}[]:;\'<>,.?/]";
 
 /**

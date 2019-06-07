@@ -264,7 +264,7 @@ export default class Mod {
     public static async get(pc: Mysql.Pool | Mysql.Connection, where: any[] | string, opt: {
         etc?: abs.Nu | abs.ConfigEtcSql;
         lock?: boolean;
-    } = {}): Promise<boolean | Mod> {
+    } = {}): Promise<undefined | Mod> {
         let sql = Sql.get(opt.etc);
         sql.select("*", (<any>this.constructor)._table);
         if (typeof where === "string") {
@@ -281,11 +281,11 @@ export default class Mod {
             if (rows.length > 0) {
                 return new this(pc, opt.etc, rows[0]);
             } else {
-                return false;
+                return undefined;
             }
         } catch {
             sql.release();
-            return false;
+            return undefined;
         }
     }
 
