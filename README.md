@@ -59,6 +59,12 @@ Cookies can be obtained directly as an array of variables, which can exist anywh
 let str: string = Text.random(16, Text.RANDOM_N)
 ```
 
+### Generate a verification code picture
+
+```typescript
+Captcha.get(400, 100).output(nu);
+```
+
 ### Sql
 
 ```typescript

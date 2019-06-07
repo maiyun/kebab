@@ -53,6 +53,12 @@ Captcha, Crypto (md5, sha1, aes...), Fs, Mysql, Net (http2, https and http auto 
 let str: string = Text.random(16, Text.RANDOM_N)
 ```
 
+### 生成驗證碼圖片
+
+```typescript
+Captcha.get(400, 100).output(nu);
+```
+
 ### Sql
 
 ```typescript
