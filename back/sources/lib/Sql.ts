@@ -313,3 +313,12 @@ export function get(etc?: abs.Nu | abs.ConfigEtcSql): Sql {
     }
     return new Sql(etc);
 }
+
+/**
+ * --- 返回代入后的完整 SQL 字符串 ---
+ * @param sql SQL 字符串
+ * @param data DATA 数据
+ */
+export function format(sql: string, data: any[]): string {
+    return mysql2.format(sql, data);
+}

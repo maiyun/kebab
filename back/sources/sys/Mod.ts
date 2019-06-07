@@ -236,6 +236,27 @@ export default class Mod {
     }
 
     /**
+     * --- 获取最后执行的 SQL 字串 ---
+     */
+    public getLastSqlString(): string {
+        return this._lastSqlString;
+    }
+
+    /**
+     * --- 获取最后执行的 Data 数据 ---
+     */
+    public getLastSqlData(): any {
+        return this._lastSqlData;
+    }
+
+    /**
+     * --- 获取最后一次完整的 SQL 字符串 ---
+     */
+    public getLastSqlFormat(): string {
+        return Sql.format(this._lastSqlString, this._lastSqlData);
+    }
+
+    /**
      * --- 当 _key 不为空时，则依据继承此方法的方法自动生成填充 key ---
      */
     protected _keyGenerator(): string {
