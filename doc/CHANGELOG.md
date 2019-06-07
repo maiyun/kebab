@@ -6,7 +6,7 @@
 
 ## 0.0.6
 
-[+] Add the Captcha library。
+[+] Add the Captcha library.
 
 ## 0.0.5
 
