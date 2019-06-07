@@ -37,7 +37,7 @@ export async function update(nus: abs.Nus) {
                                 continue;
                             }
                             WebSocket.send(nus, [2, `The download was successful and the file is being overwritten...`]);
-                            let content = (await res.readContent()).toString();
+                            let content = await res.readContent();
                             // --- 添加文件到本地 ---
                             let dpath = c.ROOT_PATH + file.slice(0, file.lastIndexOf("/") + 1);
                             await Fs.mkdirDeep(dpath);
