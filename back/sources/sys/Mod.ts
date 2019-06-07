@@ -261,11 +261,10 @@ export default class Mod {
      * @param where 筛选参数
      * @param opt 选项
      */
-    public static async get(pc: Mysql.Pool | Mysql.Connection, where: any[] | string, opt: {
-        etc?: abs.Nu | abs.ConfigEtcSql;
+    public static async get(pc: Mysql.Pool | Mysql.Connection, where: any[] | string, etc?: abs.Nu | abs.ConfigEtcSql, opt: {
         lock?: boolean;
     } = {}): Promise<undefined | Mod> {
-        let sql = Sql.get(opt.etc);
+        let sql = Sql.get(etc);
         sql.select("*", (<any>this.constructor)._table);
         if (typeof where === "string") {
             sql.append(where);
@@ -279,7 +278,7 @@ export default class Mod {
             let [rows] = await pc.query(sql.getSql(), sql.getData());
             sql.release();
             if (rows.length > 0) {
-                return new this(pc, opt.etc, rows[0]);
+                return new this(pc, etc, rows[0]);
             } else {
                 return undefined;
             }
