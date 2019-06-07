@@ -21,7 +21,7 @@ Node 10+
 
 ## Library
 
-Net (http2, https and http auto selection), Crypto (md5, sha1, aes...), Fs, Mysql, Redis, Sql, Sys, Text, View, Zlib.
+Captcha, Crypto (md5, sha1, aes...), Fs, Mysql, Net (http2, https and http auto selection), Redis, Session, Sql, Sys, Text, Time, View, WebSocket, Zlib.
 
 ## Features
 
