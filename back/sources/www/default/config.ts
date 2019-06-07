@@ -1,12 +1,11 @@
 export = {
     "route": {
-        "@":                    "main",
-        "article/([0-9]+?)":    "test/article"
+        "@":                    "main"
     },
     "etc": {
         "const": {
             "STATIC_PATH": "",
-            "STATIC_VER": "201967162913"
+            "STATIC_VER": "20190607181908"
         },
         "__Nuttom__": {
             "pwd": "123456"

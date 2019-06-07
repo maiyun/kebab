@@ -17,6 +17,7 @@ export async function index(nu: abs.Nu) {
         VER: Const.VER,
         hasConfig: nu.config.etc.__Nuttom__.pwd !== "123456" ? true : false
     });
+    return true;
 }
 
 export async function apiCheckRefresh(nu: abs.Nu) {

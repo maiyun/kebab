@@ -96,7 +96,8 @@ export async function write(nu: abs.Nu, path: string, data?: any): Promise<void>
  * @param data 是否要模板介入，传入参数，此参数存在，文件不在浏览器端缓存
  */
 export async function toResponse(nu: abs.Nu, path: string, data?: any): Promise<void> {
-    if (data) {
+    let ext = path.indexOf(".") === -1 ? "" : path.slice(path.lastIndexOf(".") + 1).toLowerCase();
+    if (ext === "ejs") {
         // --- 模板文本模式 ---
         nu.res.setHeader("Cache-Control", "no-cache, must-revalidate");
         let content = await load(nu, path, data);
@@ -115,7 +116,6 @@ export async function toResponse(nu: abs.Nu, path: string, data?: any): Promise<
         }
         // --- 判断缓存以及 MIME 和编码 ---
         let charset = "";
-        let ext = path.indexOf(".") === -1 ? "" : path.slice(path.lastIndexOf(".") + 1).toLowerCase();
         if (["htm", "html", "css", "js", "txt", "xml", "ejs"].indexOf(ext) !== -1) {
             charset = "; charset=utf-8";
             // --- 这些文件将进行缓存 ---
