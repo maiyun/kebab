@@ -141,3 +141,23 @@ export function isNu(obj: any): obj is abs.Nu {
         return false;
     }
 }
+
+/**
+ * --- 跳转到第三方平台 ---
+ * @param nu Nu 对象
+ * @param url 跳转的网址
+ */
+export function location(nu: abs.Nu, url: string) {
+    nu.res.setHeader("Location", url);
+    nu.res.end();
+}
+
+/**
+ * --- 跳转基于当前站点路径 ---
+ * @param nu Nu 对象
+ * @param url 跳转的路径
+ */
+export function redirect(nu: abs.Nu, url: string = "") {
+    nu.res.setHeader("Location", nu.const.HTTP_BASE + url);
+    nu.res.end();
+}
