@@ -4,6 +4,10 @@ export = {
         "article/([0-9]+?)":    "test/article"
     },
     "etc": {
+        "const": {
+            "STATIC_PATH": "",
+            "STATIC_VER": "201967162913"
+        },
         "__Nuttom__": {
             "pwd": "123456"
         },

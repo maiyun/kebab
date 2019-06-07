@@ -55,6 +55,10 @@ export interface Config {
 
 /** --- ETC 配置 --- */
 export interface ConfigEtc {
+    "const": {
+        "STATIC_PATH": string;
+        "STATIC_VER": string;
+    };
     "__Nuttom__": {
         "pwd": string;
     };

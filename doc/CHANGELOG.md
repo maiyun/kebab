@@ -4,6 +4,10 @@
 
 [简体中文](./CHANGELOG.zh-CN.md) | [繁體中文](./CHANGELOG.zh-TW.md)
 
+## 0.0.8
+
+[+] Add STATIC_PATH, STATIC_VER configuration items.
+
 ## 0.0.7
 
 [\*] Fix the upgrade program.

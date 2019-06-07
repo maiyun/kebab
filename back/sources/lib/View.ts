@@ -64,6 +64,8 @@ export async function load(nu: abs.Nu, path: string, data: any = {}): Promise<st
     data.HTTP_BASE = nu.const.HTTP_BASE;
     data.HTTP_STC = nu.const.HTTP_BASE + "stc/";
     data.WS_PATH = nu.const.WS_PATH;
+    data.STATIC_PATH = nu.config.etc.const.STATIC_PATH && nu.config.etc.const.STATIC_PATH !== "" ? nu.config.etc.const.STATIC_PATH : data.HTTP_STC;
+    data.STATIC_VER = nu.config.etc.const.STATIC_VER;
     // --- 语言包 ---
     data.l = function(key: string): string {
         if (!_LOCALE_OBJ[nu.locale]) {
