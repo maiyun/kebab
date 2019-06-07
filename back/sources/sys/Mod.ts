@@ -286,7 +286,7 @@ export default class Mod {
         lock?: boolean;
     } = {}): Promise<undefined | Mod> {
         let sql = Sql.get(etc);
-        sql.select("*", (<any>this.constructor)._table);
+        sql.select("*", this._table);
         if (typeof where === "string") {
             sql.append(where);
         } else {
@@ -318,7 +318,7 @@ export default class Mod {
      */
     public static async insert(pc: Mysql.Pool | Mysql.Connection, cs: string[], vs?: any[], etc?: abs.Nu | abs.ConfigEtcSql) {
         let sql = Sql.get(etc);
-        sql.insert((<any>this.constructor)._table, cs, vs);
+        sql.insert(this._table, cs, vs);
         let rtn = await pc.execute(sql.getSql(), sql.getData());
         sql.release();
         if (rtn && rtn.affectedRows > 0) {
@@ -336,7 +336,7 @@ export default class Mod {
      */
     public static async getList(pc: Mysql.Pool | Mysql.Connection, opt: GetListOptions = {}, etc?: abs.Nu | abs.ConfigEtcSql): Promise<GetListReturn> {
         let sql = Sql.get(etc);
-        sql.select(opt.select || "*", (<any>this.constructor)._table);
+        sql.select(opt.select || "*", this._table);
         if (opt.where !== undefined) {
             if (typeof opt.where === "string") {
                 sql.append(" WHERE " + opt.where);
@@ -403,7 +403,7 @@ export default class Mod {
      */
     public static async count(pc: Mysql.Pool | Mysql.Connection, opt: CountOptions = {}, etc?: abs.Nu | abs.ConfigEtcSql): Promise<any> {
         let sql = Sql.get(etc);
-        sql.select(opt.select || "COUNT(0) AS count", (<any>this.constructor)._table);
+        sql.select(opt.select || "COUNT(0) AS count", this._table);
         if (opt.where !== undefined) {
             if (typeof opt.where === "string") {
                 sql.append(opt.where);
@@ -429,7 +429,7 @@ export default class Mod {
      */
     public static async removeByWhere(pc: Mysql.Pool | Mysql.Connection, where: any[] | string = "", etc?: abs.Nu | abs.ConfigEtcSql): Promise<boolean> {
         let sql = Sql.get(etc);
-        sql.delete((<any>this.constructor)._table);
+        sql.delete(this._table);
         if (typeof where === "string") {
             sql.append(" WHERE " + where);
         } else {
@@ -452,7 +452,7 @@ export default class Mod {
      */
     public static async updateByWhere(pc: Mysql.Pool | Mysql.Connection, data: any[], where: any[] | string, etc?: abs.Nu | abs.ConfigEtcSql): Promise<boolean> {
         let sql = Sql.get(etc);
-        sql.update((<any>this.constructor)._table, data);
+        sql.update(this._table, data);
         if (typeof where === "string") {
             sql.append(where);
         } else {
