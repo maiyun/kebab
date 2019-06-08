@@ -39,6 +39,45 @@ export function exec(command: string): Promise<string> {
     });
 }
 
+/** 已加载的 DATA 数据 */
+let _LOADED_DATA: any = {};
+
+/**
+ * --- 获取相对路径的 data（本站点的 data/ 目录请别写） ---
+ * @param nu Nu 对象
+ * @param file 文件名
+ */
+export async function loadData(nu: abs.Nu, file: string) {
+    let realPath = nu.const.DATA_PATH + file + ".json";
+    if (_LOADED_DATA[realPath]) {
+        return _LOADED_DATA[realPath];
+    }
+    let content = await Fs.readFile(realPath);
+    if (!content) {
+        return undefined;
+    }
+    let json = JSON.parse(content);
+    _LOADED_DATA[realPath] = json;
+    return json;
+}
+
+/**
+ * --- 发送让所有线程清除 DATA 缓存的指令 ---
+ */
+export function clearDataCache() {
+    process.send && process.send({
+        action: "clearDataCache"
+    });
+}
+
+/**
+ * --- 清除本线程的 DATA 缓存数据 ---
+ * --- 需要所有线程同时执行这个函数以清楚 DATA 缓存 ---
+ */
+export function realClearDataCache() {
+    _LOADED_DATA = {};
+}
+
 /** 设置 cookie 的选项对象 */
 export interface CookieOptions {
     /** 单位为秒 */
@@ -148,7 +187,9 @@ export function isNu(obj: any): obj is abs.Nu {
  * @param url 跳转的网址
  */
 export function location(nu: abs.Nu, url: string) {
-    nu.res.setHeader("Location", url);
+    nu.res.writeHead(302, {
+        location: url
+    });
     nu.res.end();
 }
 
@@ -158,6 +199,8 @@ export function location(nu: abs.Nu, url: string) {
  * @param url 跳转的路径
  */
 export function redirect(nu: abs.Nu, url: string = "") {
-    nu.res.setHeader("Location", nu.const.HTTP_BASE + url);
+    nu.res.writeHead(302, {
+        location: nu.const.HTTP_BASE + url
+    });
     nu.res.end();
 }

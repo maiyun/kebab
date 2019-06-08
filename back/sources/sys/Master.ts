@@ -81,11 +81,12 @@ async function _fork(cpu: number) {
     // --- 监听子进程发来的讯息 ---
     worker.on("message", async function(msg) {
         switch (msg.action) {
-            case "reload": {
-                // --- 为所有子线程发送 reload 信息 ---
+            case "reload":
+            case "clearDataCache": {
+                // --- 为所有子线程发送 reload, clearDataCache 信息 ---
                 for (let pid in _WORKER_LIST) {
                     _WORKER_LIST[pid].worker.send({
-                        action: "reload"
+                        action: msg.action
                     });
                 }
                 break;

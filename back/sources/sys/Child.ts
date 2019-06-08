@@ -315,6 +315,10 @@ const _SNI_MANAGER = sni.certs.createManager();
                 await Sys.realReload(_VHOSTS, _SNI_MANAGER);
                 break;
             }
+            case "clearDataCache": {
+                Sys.realClearDataCache();
+                break;
+            }
             case "restart": {
                 // --- 需要停止监听，等待已有连接全部断开，然后关闭线程 ---
                 server.close();
