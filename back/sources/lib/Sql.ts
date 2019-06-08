@@ -177,6 +177,9 @@ class Sql {
      */
     public where(s: any[]): Sql {
         if (s.length > 0) {
+            if (!Array.isArray(s[0]) && (Object.keys(s[0]).length === 0)) {
+                return this;
+            }
             this._sql.push(" WHERE " + this._whereSub(s));
         }
         return this;
