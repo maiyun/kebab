@@ -53,6 +53,15 @@ export function md5WithSalt(data: string, salt: string): string {
 }
 
 /**
+ * --- md5 加盐加密（16位） ---
+ * @param data 要加密的数据
+ * @param salt 盐值
+ */
+export function md5WithSalt16(data: string, salt: string): string {
+    return md5WithSalt(data, salt).substr(8, 16);
+}
+
+/**
  * --- sha1 加密 ---
  * @param data 要加密的数据
  */
@@ -74,8 +83,8 @@ export const AES_256_CFB = "AES-256-CFB";      // 一般用这个，设置 $iv�
 /**
  * --- AES 加密 ---
  * @param original 原始字符串
- * @param key 密钥
- * @param iv 向量
+ * @param key 密钥 32 字符
+ * @param iv 向量 16 字符
  * @param method 加密方法
  */
 export function aesEncrypt(original: string, key: string, iv: string = "", method: string = "AES-256-ECB"): string {
@@ -91,6 +100,13 @@ export function aesEncrypt(original: string, key: string, iv: string = "", metho
     }
 }
 
+/**
+ * --- AES 解密 ---
+ * @param encrypt 需解密的字符串
+ * @param key 密钥 32 字符
+ * @param iv 向量 16 字符
+ * @param method 加密方法
+ */
 export function aesDecrypt(encrypt: string, key: string, iv: string = "", method: string = "AES-256-ECB"): string {
     try {
         if (iv !== "") {

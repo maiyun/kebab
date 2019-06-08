@@ -269,13 +269,13 @@ export async function getConnection(etc: abs.Nu | abs.ConfigEtcRedis): Promise<C
  */
 function _clearDisconnected() {
     let connLen: number = _connectionList.length;
-        for (let i = 0; i < connLen; ++i) {
-            if (!_connectionList[i]) {
-                continue;
-            }
-            if (_connectionList[i].__disconnected === true) {
-                _connectionList.splice(i, 1);
-                --i;
-            }
+    for (let i = 0; i < connLen; ++i) {
+        if (!_connectionList[i]) {
+            continue;
         }
+        if (_connectionList[i].__disconnected === true) {
+            _connectionList.splice(i, 1);
+            --i;
+        }
+    }
 }

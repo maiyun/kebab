@@ -8,6 +8,7 @@ import * as Crypto from "~/lib/Crypto";
 import * as Redis from "~/lib/Redis";
 import * as Session from "~/lib/Session";
 import * as Captcha from "~/lib/Captcha";
+import * as Ssh from "~/lib/Ssh";
 import * as abs from "~/abstract";
 import * as Const from "~/const";
 // --- 模型 ---
@@ -81,6 +82,9 @@ export function index(nu: abs.Nu) {
         "<br><br><b>Captcha:</b>",
         `<br><br><a href="${nu.const.HTTP_BASE}test/captcha_fastbuild">View "test/captcha_fastbuild"</a>`,
         `<br><a href="${nu.const.HTTP_BASE}test/captcha_base64">View "test/captcha_base64"</a>`,
+
+        "<br><br><b>Ssh:</b>",
+        `<br><br><a href="${nu.const.HTTP_BASE}test/ssh_sftp">View "test/ssh_sftp"</a>`,
 
         "<br><br><b>System:</b>",
         `<br><br><a href="${nu.const.HTTP_BASE}test/reload">View "reload"</a>`,
@@ -722,6 +726,47 @@ export async function captcha_base64(nu: abs.Nu) {
     ];
 
     return echo.join("") + _getEnd(nu);
+}
+
+export async function ssh_sftp(nu: abs.Nu) {
+    let host = "xxx";
+    let user = "root";
+    let pwd = "xxx";
+
+    let echo: string[] = [
+        `<style>
+table {border: solid 1px #e1e4e8; border-bottom: none; border-right: none;}
+table td, table th {border: solid 1px #e1e4e8; border-top: none; border-left: none; padding: 5px;}
+table td {font-size: 12px;}
+table th {background-color: #24292e; color: #FFF; font-size: 14px;}
+table tr:hover td {background-color: #fafbfc;}
+
+.list {margin-top: 10px;}
+.list > div {display: inline-block; border: solid 1px #e1e4e8; margin: 2px 2px 0 0; padding: 10px; font-size: 12px; line-height: 1;}
+.list > div:hover {background-color: #fafbfc;}
+
+.hljs {line-height: 1.7; font-size: 14px; white-space: pre-wrap; border-radius: 5px;}
+</style>`
+    ];
+
+        // --- 创建 ssh 对象 ---
+        let ssh = await Ssh.get({
+            host: host,
+            username: user,
+            password: pwd
+        });
+
+        echo.push(
+            `<pre><code class="typescript">
+let ssh = await Ssh.get({
+    host: "xxx",
+    username: "xxx",
+    password: "xxx"
+});`
+        );
+
+
+
 }
 
 export async function reload(nu: abs.Nu) {
