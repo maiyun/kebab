@@ -24,7 +24,7 @@ export async function setLocale(nu: abs.Nu, locale: string, pkg: string = "defau
         if (fstr === undefined) {
             return false;
         }
-        let loc = JSON.parse(fstr);
+        let loc = JSON.parse(fstr.toString());
         if (!_LOCALE_OBJ[locale]) {
             _LOCALE_OBJ[locale] = {};
         }
@@ -57,8 +57,8 @@ export async function load(nu: abs.Nu, path: string, data: any = {}): Promise<st
     if (!Fs.isRealPath(path)) {
         path = nu.const.VIEW_PATH + path + ".ejs";
     }
-    let content: string = await Fs.readFile(path) || "";
-    if (content === "") {
+    let content = await Fs.readFile(path);
+    if (!content) {
         return "";
     }
     data.HTTP_BASE = nu.const.HTTP_BASE;
@@ -76,7 +76,7 @@ export async function load(nu: abs.Nu, path: string, data: any = {}): Promise<st
         }
         return _LOCALE_OBJ[nu.locale][key];
     };
-    return ejs.render(content, data);
+    return ejs.render(content.toString(), data);
 }
 
 /**

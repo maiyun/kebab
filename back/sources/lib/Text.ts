@@ -95,3 +95,24 @@ export function random(length: number = 8, source: string = RANDOM_LN): string {
 export function htmlescape(html: string): string {
     return html.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/&/g, "&amp;");
 }
+
+/**
+ * --- 显示文件大小格式化 ---
+ * @param size 文件大小
+ * @param spliter 分隔符
+ */
+export function sizeFormat(size: number, spliter: string = " "): string {
+    const units = [
+        "Bytes",
+        "KB",
+        "MB",
+        "GB",
+        "TB",
+        "PB"
+    ];
+    let i = 0;
+    for (; i < 6 && size >= 1024.0; ++i) {
+        size /= 1024.0;
+    }
+    return Math.round(size * 100) / 100 + spliter + units[i];
+}

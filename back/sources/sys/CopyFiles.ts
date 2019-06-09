@@ -19,7 +19,7 @@ export async function run() {
         if (fstr === undefined) {
             continue;
         }
-        let list: abs.Vhost[] = JSON.parse(fstr);
+        let list: abs.Vhost[] = JSON.parse(fstr.toString());
         if (!Array.isArray(list)) {
             list = [list];
         }

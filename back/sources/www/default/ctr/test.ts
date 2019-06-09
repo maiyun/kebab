@@ -9,6 +9,7 @@ import * as Redis from "~/lib/Redis";
 import * as Session from "~/lib/Session";
 import * as Captcha from "~/lib/Captcha";
 import * as Ssh from "~/lib/Ssh";
+import * as Time from "~/lib/Time";
 import * as abs from "~/abstract";
 import * as Const from "~/const";
 // --- 模型 ---
@@ -730,11 +731,14 @@ export async function captcha_base64(nu: abs.Nu) {
 
 export async function ssh_sftp(nu: abs.Nu) {
     let host = "xxx";
-    let user = "root";
+    let user = "xxx";
     let pwd = "xxx";
 
     let echo: string[] = [
-        `<style>
+        `<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.13.1/build/highlight.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/androidstudio.min.css">
+<script>hljs.initHighlightingOnLoad();</script>
+<style>
 table {border: solid 1px #e1e4e8; border-bottom: none; border-right: none;}
 table td, table th {border: solid 1px #e1e4e8; border-top: none; border-left: none; padding: 5px;}
 table td {font-size: 12px;}
@@ -749,24 +753,136 @@ table tr:hover td {background-color: #fafbfc;}
 </style>`
     ];
 
-        // --- 创建 ssh 对象 ---
-        let ssh = await Ssh.get({
-            host: host,
-            username: user,
-            password: pwd
-        });
-
-        echo.push(
-            `<pre><code class="typescript">
-let ssh = await Ssh.get({
+    // --- 创建 ssh 对象 ---
+    echo.push(`<pre><code class="typescript">let ssh = await Ssh.get({
     host: "xxx",
     username: "xxx",
     password: "xxx"
-});`
-        );
+});</code></pre>`);
+    let ssh = await Ssh.get({
+        host: host,
+        username: user,
+        password: pwd
+    });
+    if (!ssh) {
+        echo.push(`Connection failed.<br><br>`);
+        return echo.join("") + _getEnd(nu);
+    }
 
+    // --- 执行一个命令 ---
+    let rtn = await ssh.exec("ls");
+    if (!rtn) {
+        echo.push(`Execution failed.<br><br>`);
+        return echo.join("") + _getEnd(nu);
+    }
 
+    echo.push(
+        `<pre><code class="typescript">let rtn = await ssh.exec("ls");</code></pre>`,
+        "rtn.toString():",
+        `<pre><code class="shell">${rtn.toString()}</code></pre>`
+    );
 
+    // --- 在 shell 里执行多条命令 ---
+    echo.push(`Get shell:<pre><code class="typescript">let shell = await ssh.getShell();</code></pre>`);
+    let shell = await ssh.getShell();
+    if (!shell) {
+        echo.push(`Get failed.<br><br>`);
+        return echo.join("") + _getEnd(nu);
+    }
+
+    echo.push(`Shell:<pre><code class="shell">${await shell.read()}</code></pre>`);
+
+    await shell.writeLine("cd ..");
+    echo.push(`Code:<pre><code class="typescript">await shell.writeLine("cd ..");</code></pre>`);
+    echo.push(`Shell:<pre><code class="shell">${await shell.read()}</code></pre>`);
+
+    await shell.writeLine("ls");
+    echo.push(`Code:<pre><code class="typescript">await shell.writeLine("ls");</code></pre>`);
+    echo.push(`Shell:<pre><code class="shell">${await shell.read()}</code></pre>`);
+
+    await shell.end();
+
+    // --- SFTP ---
+
+    echo.push(`Get sftp:<pre><code class="typescript">let sftp = await ssh.getSftp();</code></pre>`);
+    let sftp = await ssh.getSftp();
+    if (!sftp) {
+        echo.push(`Get failed.<br><br>`);
+        return echo.join("") + _getEnd(nu);
+    }
+
+    // --- 获取详细列表 ---
+
+    let list = await sftp.readDir();
+    echo.push(`<table border="0" cellpadding="0" cellspacing="0" width="100%">
+    <tr><th>Name</th><th>Size</th><th>Uid</th><th>Gid</th><th>PMSN</th><th>Mode</th><th>Atime</th><th>Mtime</th></tr>`);
+    for (let item of list) {
+        echo.push(`<tr><td>${item.filename}</td><td>${Text.sizeFormat(item.attrs.size)}</td><td>${item.attrs.uid}</td><td>${item.attrs.gid}</td><td>${item.attrs.mode}</td><td>${item.attrs.mode.toString(8).slice(-4)}</td><td>${Time.format("Y-m-d H:i:s", new Date(item.attrs.atime * 1000))}</td><td>${Time.format("Y-m-d H:i:s", new Date(item.attrs.mtime * 1000))}</td></tr>`);
+    }
+    echo.push(`</table>`);
+
+    // --- 新建一个 __mutton.txt，并创建一个 __mulink 到 txt 后再获取列表 ---
+
+    let rtnb = await sftp.writeFile("__nuttom.txt", "ok");
+    let rtnb2 = await sftp.symlink("__nuttom.txt", "__nulink");
+    echo.push(`<pre><code class="typescript">let rtnb = await sftp.writeFile("__nuttom.txt", "ok");  // ${JSON.stringify(rtnb)}
+let rtnb2 = await sftp.symlink("__nuttom.txt", "__nulink");  // ${JSON.stringify(rtnb2)}</code></pre>`);
+
+    list = await sftp.readDir();
+    echo.push(`<div class="list">`);
+    for (let item of list) {
+        echo.push(`<div>${item.filename}</div>`);
+    }
+    echo.push(`</div>`);
+
+    // --- 更改权限为 777 ---
+
+    rtnb = await sftp.chmod("__nuttom.txt", "0777");
+    echo.push(`<pre><code class="typescript">rtnb = await sftp.chmod("__nuttom.txt", "0777");  // ${JSON.stringify(rtnb)}</code></pre>`);
+
+    // --- 创建文件夹，并进入，在里面创在文件 ---
+
+    rtnb = await sftp.mkdir("__nuttom", {mode: "0777"});
+    sftp.cd("__nuttom");
+    let rtns = sftp.pwd();
+    await sftp.writeFile("1.txt", "hello");
+    echo.push(`<pre><code class="typescript">rtnb = await sftp.mkdir("__nuttom", {mode: "0777"});
+sftp.cd("__nuttom");
+let rtns = sftp.pwd();  // ${rtns}
+await sftp.writeFile("1.txt", "hello");</code></pre>`);
+
+    list = await sftp.readDir();
+    echo.push(`<div class="list">`);
+    for (let item of list) {
+        echo.push(`<div>${item.filename}</div>`);
+    }
+    echo.push(`</div>`);
+
+    // --- 退回到上级，删除目录，删除 link，删除 txt ---
+
+    sftp.cd("..");
+    rtns = sftp.pwd();
+    rtnb = await sftp.rmdirDeep("__nuttom");
+    rtnb2 = await sftp.unlinkFile("__nulink");
+    let rtnb3 = await sftp.unlinkFile("__nuttom.txt");
+    echo.push(`<pre><code class="typescript">sftp.cd("..");
+rtns = sftp.pwd();  // ${rtns}
+rtnb = await sftp.rmdirDeep("__nuttom");  // ${rtnb}
+rtnb2 = await sftp.unlinkFile("__nulink");  // ${rtnb2}
+let rtnb3 = await sftp.unlinkFile("__nuttom.txt"); // ${rtnb3}</code></pre>`);
+
+    list = await sftp.readDir();
+    echo.push(`<div class="list">`);
+    for (let item of list) {
+        echo.push(`<div>${item.filename}</div>`);
+    }
+    echo.push(`</div>`);
+
+    sftp.end();
+
+    ssh.disconnect();
+
+    return echo.join("") + "<br>" + _getEnd(nu);
 }
 
 export async function reload(nu: abs.Nu) {

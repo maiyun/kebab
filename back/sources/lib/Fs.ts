@@ -7,7 +7,7 @@ import * as Sys from "./Sys";
  * @param path 文件路径
  * @param options 编码/选项
  */
-export function readFile(path: fs.PathLike | number, options: { encoding: string; flag?: string; } | string = "utf-8"): Promise<string | undefined> {
+export function readFile(path: fs.PathLike | number, options: { encoding?: string | null; flag?: string; } | string = "utf-8"): Promise<Buffer | undefined> {
     return new Promise((resolve, reject) => {
         if (path.toString().slice(-9) === "config.js") {
             resolve(undefined);
@@ -17,7 +17,7 @@ export function readFile(path: fs.PathLike | number, options: { encoding: string
             if (err) {
                 resolve(undefined);
             } else {
-                resolve(data);
+                resolve(<Buffer>data);
             }
         });
     });
@@ -91,7 +91,10 @@ export function readDir(path: fs.PathLike): Promise<string[]> {
  * @param path 目录
  * @param pre 前导
  */
-export async function getFileListDeep(path: fs.PathLike, pre: string = ""): Promise<string[]> {
+export async function getFileListDeep(path: string, pre: string = ""): Promise<string[]> {
+    if (path.slice(-1) !== "/") {
+        path += "/";
+    }
     return await _getFileListDeep(path, pre);
 }
 async function _getFileListDeep(path: fs.PathLike, pre: string): Promise<string[]> {
@@ -155,8 +158,17 @@ export function copyFile(src: fs.PathLike, dest: fs.PathLike): Promise<boolean> 
  * --- 读取文件流 ---
  * @param path 文件地址
  */
-export function readStream(path: fs.PathLike): fs.ReadStream {
-    return fs.createReadStream(path);
+export function readStream(path: fs.PathLike, options?: string | {
+    flags?: string;
+    encoding?: string;
+    fd?: number;
+    mode?: number;
+    autoClose?: boolean;
+    start?: number;
+    end?: number;
+    highWaterMark?: number;
+}): fs.ReadStream {
+    return fs.createReadStream(path, options);
 }
 
 /**
@@ -207,24 +219,21 @@ export function mkdir(path: fs.PathLike): Promise<boolean> {
  * @param path 路径
  * @param start 开始时间
  */
-export function readFileOnce(path: string, options: { encoding?: string; flag?: string; start?: number; end?: number } = {}): Promise<string> {
+export function readFileOnce(path: string, options: { encoding?: string; flag?: string; start?: number; end?: number } = {}): Promise<Buffer | undefined> {
     return new Promise(function (resolve, reject) {
         if (path.toString().slice(-9) === "config.js") {
-            resolve("");
+            resolve(undefined);
             return;
         }
-        try {
-            let stream = fs.createReadStream(path, options);
-            let data: string[] = [];
-            stream.on("data", function (chunk: Buffer) {
-                data.push(chunk.toString());
-            });
-            stream.on("close", function() {
-                resolve(data.join(""));
-            });
-        } catch {
-            resolve("");
-        }
+        let stream = fs.createReadStream(path, options);
+        let data: Buffer = Buffer.from("");
+        stream.on("data", function (chunk: Buffer) {
+            data = Buffer.concat([data, chunk], data.length + chunk.length);
+        }).on("close", function() {
+            resolve(data);
+        }).on("error", function() {
+            resolve(undefined);
+        });
     });
 }
 
@@ -267,6 +276,9 @@ export async function mkdirDeep(path: string): Promise<boolean> {
     return await _mkdirDeepSub(path);
 }
 async function _mkdirDeepSub(path: string): Promise<boolean> {
+    if (path === "") {
+        return true;
+    }
     let stats = await getStats(path);
     if (stats !== undefined && stats.isDirectory()) {
         // --- 当前有目录，不用创建直接成功 ---

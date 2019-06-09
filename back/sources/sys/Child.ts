@@ -43,7 +43,9 @@ const _SNI_MANAGER = sni.certs.createManager();
     await Sys.realReload(_VHOSTS, _SNI_MANAGER);
 
     // --- 加载 config.json ---
-    let config = JSON.parse(await Fs.readFile(Const.CONF_PATH + "config.json") || "{}");
+    let configContent = await Fs.readFile(Const.CONF_PATH + "config.json");
+    let config = JSON.parse(configContent ? configContent.toString() : "{}");
+    configContent = undefined;
 
     // --- 创建服务器并启动特（支持 http2/https/http/websocket） ---
     let server = http2.createSecureServer({

@@ -56,7 +56,7 @@ export async function loadData(nu: abs.Nu, file: string) {
     if (!content) {
         return undefined;
     }
-    let json = JSON.parse(content);
+    let json = JSON.parse(content.toString());
     _LOADED_DATA[realPath] = json;
     return json;
 }
@@ -145,7 +145,7 @@ export async function realReload(VHOSTS: abs.Vhost[], SNI_MANAGER: sni.certs.ICe
         if (fstr === undefined) {
             continue;
         }
-        let list: abs.Vhost[] = JSON.parse(fstr);
+        let list: abs.Vhost[] = JSON.parse(fstr.toString());
         if (!Array.isArray(list)) {
             list = [list];
         }

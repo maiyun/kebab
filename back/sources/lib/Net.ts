@@ -61,7 +61,8 @@ let _HTTP_LEVEL: any = {};
 export async function request(opt: A.Options): Promise<A.NetResponse | undefined> {
     // --- 加载 ca 证书内容 ---
     if (_ca === "") {
-        _ca = await Fs.readFile(Const.LIB_PATH + "Net/cacert.pem") || "";
+        let ca = await Fs.readFile(Const.LIB_PATH + "Net/cacert.pem");
+        _ca = ca ? ca.toString() : "";
     }
     // --- 定义是否自动追踪（较危险，有可能导致无限追踪，默认关闭） ---
     if (opt.followLocation === undefined) {
