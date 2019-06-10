@@ -89,7 +89,7 @@ export interface CookieOptions {
 }
 
 /**
- * --- 设置一个 cookie ---
+ * --- 设置一个 cookie（默认开启 secure 和 httponly） ---
  * @param nu Nu 对象
  * @param name cookie 名
  * @param value cookie 值

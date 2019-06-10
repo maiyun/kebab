@@ -76,7 +76,11 @@ export default class Mod {
         return new this(pc, etc);
     }
 
-    /** 设置一个属性 */
+    /**
+     * --- 设置一个/多个属性 ---
+     * @param n 字符串或 {} 键/值
+     * @param v 留空或值内容
+     */
     public set(n: any, v: string | number | boolean = ""): void {
         if (typeof n !== "string") {
             for (let k in n) {
@@ -156,7 +160,7 @@ export default class Mod {
 
     /**
      * --- 创建条目 ---
-     * @param type 创建的类型
+     * @param type 创建的类型，表示创建后是否重新获取值，默认不获取
      */
     public async create(type: number = 0): Promise<boolean> {
         let updates: any = {};

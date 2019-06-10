@@ -92,6 +92,9 @@ export function aesEncrypt(original: string, key: string, iv: string = "", metho
         if (iv !== "") {
             method = method === "AES-256-ECB" ? "AES-256-CFB" : method;
         }
+        if (key.length < 32) {
+            key = md5WithSalt(key, "NuttomSalt");
+        }
         let cip = crypto.createCipheriv(method, key, iv);
         let r = cip.update(original, "utf8", "base64");
         return r + cip.final("base64");
@@ -111,6 +114,9 @@ export function aesDecrypt(encrypt: string, key: string, iv: string = "", method
     try {
         if (iv !== "") {
             method = method === "AES-256-ECB" ? "AES-256-CFB" : method;
+        }
+        if (key.length < 32) {
+            key = md5WithSalt(key, "NuttomSalt");
         }
         let cip = crypto.createDecipheriv(method, key, iv);
         let r = cip.update(encrypt, "base64", "binary");
