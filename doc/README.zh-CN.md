@@ -17,7 +17,7 @@ Node 10+
 
 ## 库
 
-Captcha, Crypto (md5, sha1, aes...), Fs, Mysql, Net (http2, https and http auto selection), Redis, Session, Sql, Sys, Text, Time, View, WebSocket, Zlib.
+Captcha, Crypto (md5, sha1, aes...), Fs, Mysql, Net (http2, https and http auto selection), Redis, Session, Sql, Ssh (Shell, Sftp), Sys, Text, Time, View, WebSocket, Zlib.
 
 ## 部分特性
 
