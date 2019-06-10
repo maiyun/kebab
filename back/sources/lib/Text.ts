@@ -116,3 +116,16 @@ export function sizeFormat(size: number, spliter: string = " "): string {
     }
     return Math.round(size * 100) / 100 + spliter + units[i];
 }
+
+/**
+ * --- 换行替换为别的 ---
+ * @param str 要替换的字符串
+ * @param to 换行替换符
+ */
+export function nlReplace(str: string, to: string = "\n"): string {
+    str = str.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+    if (to !== "\n") {
+        str = str.replace(/\n/g, to);
+    }
+    return str;
+}
