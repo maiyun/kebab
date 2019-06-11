@@ -677,6 +677,9 @@ export async function session_mysql(nu: abs.Nu) {
 
 export async function session_redis(nu: abs.Nu) {
     let redis = await Redis.getConnection(nu);
+    if (!redis) {
+        return `Redis Connection Failed.<br><br>` + _getEnd(nu);
+    }
     await Session.start(nu, redis, {
         exp: 60
     });
