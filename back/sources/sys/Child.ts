@@ -315,10 +315,12 @@ const _SNI_MANAGER = sni.certs.createManager();
         switch (msg.action) {
             case "reload": {
                 await Sys.realReload(_VHOSTS, _SNI_MANAGER);
+                console.log(`[ Child] Worker ${process.pid} reload execution succeeded.`);
                 break;
             }
             case "clearDataCache": {
                 Sys.realClearDataCache();
+                console.log(`[ Child] Worker ${process.pid} clearDataCache execution succeeded.`);
                 break;
             }
             case "restart": {
