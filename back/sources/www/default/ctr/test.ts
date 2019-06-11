@@ -563,6 +563,9 @@ export async function crypto(nu: abs.Nu) {
 
 export async function redis(nu: abs.Nu) {
     let conn = await Redis.getConnection(nu);
+    if (!conn) {
+        return `Redis Connection Failed.<br><br>` + _getEnd(nu);
+    }
     let echo: string[] = [];
 
     let r = await conn.getString("test");

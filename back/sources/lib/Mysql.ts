@@ -49,6 +49,9 @@ export class Pool {
      */
     public async query(sql: string, values?: any | any[] | {[param: string]: any}): Promise<[any[], mysql2.FieldPacket[]]> {
         let conn = await this._getConnection();
+        if (!conn) {
+            return [[], []];
+        }
         // --- 一条连接同时只能执行一条 SQL ---
         let res = await conn.query(sql, values);
         // --- 返回数据 ---
@@ -62,6 +65,9 @@ export class Pool {
      */
     public async execute(sql: string, values?: any | any[] | {[param: string]: any}): Promise<mysql2.OkPacket | undefined> {
         let conn = await this._getConnection();
+        if (!conn) {
+            return undefined;
+        }
         let res = await conn.execute(sql, values);
         return res;
     }
@@ -69,8 +75,11 @@ export class Pool {
     /**
      * --- 开启事务，返回连接对象并锁定连接，别人任何人不可用 ---
      */
-    public async beginTransaction(): Promise<Connection> {
+    public async beginTransaction(): Promise<Connection | undefined> {
         let conn = await this._getConnection();
+        if (!conn) {
+            return undefined;
+        }
         await conn.beginTransaction();
         return conn;
     }
@@ -145,7 +154,7 @@ export class Pool {
     /**
      * --- 获取一个连接 ---
      */
-    private async _getConnection(): Promise<Connection> {
+    private async _getConnection(): Promise<Connection | undefined> {
         let conn!: Connection;
         let connLen: number = this._connections.length;
         for (let i = 0; i < connLen; ++i) {
@@ -158,14 +167,19 @@ export class Pool {
         }
         if (conn === undefined) {
             // --- 没有找到合适的连接，创建一个 ---
-            let mc = await mysql2.createConnection({
-                host: this.etc.host,
-                port: this.etc.port,
-                user: this.etc.username,
-                password: this.etc.password,
-                database: this.etc.name,
-                charset: this.etc.charset
-            });
+            let mc;
+            try {
+                mc = await mysql2.createConnection({
+                    host: this.etc.host,
+                    port: this.etc.port,
+                    user: this.etc.username,
+                    password: this.etc.password,
+                    database: this.etc.name,
+                    charset: this.etc.charset
+                });
+            } catch {
+                return undefined;
+            }
             conn = new Connection(mc);
             this._connections.push(conn);
             mc.on("error", (err) => {
@@ -173,6 +187,8 @@ export class Pool {
                     // --- 连接丢失 ---
                     conn.__disconnected = true;
                     this._clearDisconnected();
+                } else {
+                    console.log(err);
                 }
             });
         }
