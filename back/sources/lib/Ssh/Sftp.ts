@@ -42,7 +42,9 @@ export class Connection {
         return new Promise((resolve, reject) => {
             let opt!: ReadFileOptions;
             if (typeof options === "string") {
-                opt.encoding = options;
+                opt = {
+                    encoding: options
+                };
             } else {
                 opt = options;
             }
