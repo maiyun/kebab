@@ -182,15 +182,16 @@ export class Connection {
      * --- 读取文件写入到流，并等待写入完成 ---
      * @param path 文件地址
      * @param destination 要写入的流
+     * @param options 写入后是否终止写入流，默认终止
      */
-    public pipe<T extends NodeJS.WritableStream>(remotePath: string, destination: T): Promise<void> {
+    public pipe<T extends NodeJS.WritableStream>(remotePath: string, destination: T, options: {end?: boolean; } = {}): Promise<boolean> {
         remotePath = url.resolve(this._path, remotePath);
         return new Promise((resolve, reject) => {
-            let rs = this._client.createReadStream(remotePath);
-            rs.on("end", function() {
-                resolve();
-            });
-            rs.pipe(destination, {end: false});
+            this._client.createReadStream(remotePath).on("error", function() {
+                resolve(false);
+            }).on("end", function() {
+                resolve(true);
+            }).pipe(destination, {end: options.end === undefined ? true : options.end});
         });
     }
 

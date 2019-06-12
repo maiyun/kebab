@@ -175,18 +175,19 @@ export function readStream(path: fs.PathLike, options?: string | {
  * --- 读取文件写入到流，并等待写入完成 ---
  * @param path 文件地址
  * @param destination 要写入的流
+ * @param options 写入后是否终止写入流，默认终止
  */
-export function pipe<T extends NodeJS.WritableStream>(path: fs.PathLike, destination: T): Promise<void> {
+export function pipe<T extends NodeJS.WritableStream>(path: fs.PathLike, destination: T, options: {end?: boolean; } = {}): Promise<boolean> {
     return new Promise((resolve, reject) => {
         if (path.toString().slice(-9) === "config.js") {
             resolve();
             return;
         }
-        let rs = fs.createReadStream(path);
-        rs.on("end", function() {
-            resolve();
-        });
-        rs.pipe(destination, {end: false});
+        fs.createReadStream(path).on("error", function() {
+            resolve(false);
+        }).on("end", function() {
+            resolve(true);
+        }).pipe(destination, {end: options.end === undefined ? true : options.end});
     });
 }
 

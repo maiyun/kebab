@@ -73,19 +73,28 @@ class NetHttp2Response implements A.NetResponse {
     /**
      * --- 绑定到输入流 ---
      * @param destination 输入流
+     * @param options 读完后是否关闭输入流，默认关闭。如果是压缩的网页是否解压，默认解压。
      */
-    public pipe<T extends NodeJS.WritableStream>(destination: T, options?: { end?: boolean; }): T {
-        let encoding = this.headers["content-encoding"] || "";
-        if (encoding !== "") {
-            let decompress = Zlib.createDecompress(encoding);
-            if (decompress) {
-                return this._req.pipe(decompress.obj).pipe(destination, options);
+    public pipe<T extends NodeJS.WritableStream>(destination: T, options: {end?: boolean; gzip?: boolean } = {}): Promise<boolean> {
+        return new Promise((resolve, reject) => {
+            let encoding = this.headers["content-encoding"] || "";
+            let gzip = options.gzip === undefined ? true : false;
+            this._req.on("end", function() {
+                resolve(true);
+            }).on("error", function() {
+                resolve(false);
+            });
+            if (gzip && (encoding !== "")) {
+                let decompress = Zlib.createDecompress(encoding);
+                if (decompress) {
+                    this._req.pipe(decompress.obj).pipe(destination, options);
+                } else {
+                    this._req.pipe(destination, options);
+                }
             } else {
-                return this._req.pipe(destination, options);
+                this._req.pipe(destination, options);
             }
-        } else {
-            return this._req.pipe(destination, options);
-        }
+        });
     }
 }
 

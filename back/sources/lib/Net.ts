@@ -362,7 +362,7 @@ async function _writePost(req: http2.ClientHttp2Stream | http.ClientRequest, pda
         for (let key in pdata.flist) {
             let fpath = pdata.flist[key];
             req.write(pdata.fcontent[key].slice(0, -2));
-            await Fs.pipe(fpath, req);
+            await Fs.pipe(fpath, req, {end: false});
             req.write("\r\n");
         }
         req.write("--" + pdata.boundary + "--");
