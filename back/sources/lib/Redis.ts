@@ -125,7 +125,9 @@ export class Connection {
      * --- 获取 JSON 对象值 ---
      * @param key 要获取的 key
      */
-    public async getJson(key: string): Promise<any> {
+    public async getJson(key: string): Promise<{
+        [key: string]: any;
+    } | undefined> {
         let str = await this.getString(key);
         if (str === undefined) {
             return undefined;
@@ -249,8 +251,12 @@ export async function getConnection(etc: abs.Nu | abs.ConfigEtcRedis): Promise<C
         // --- 连接失败的回调 ---
         let connectFailed = function(err: any) {
             resolve(undefined);
+            return;
         };
         client.on("connect", function() {
+            // --- 连接成功，加入序列 ---
+            let connObject = new Connection(etcRedis, client);
+            _connectionList.push(connObject);
             client.off("error", connectFailed);
             // --- 绑定闪断回调 ---
             client.on("error", function() {
@@ -259,8 +265,6 @@ export async function getConnection(etc: abs.Nu | abs.ConfigEtcRedis): Promise<C
             });
             resolve(connObject);
         }).on("error", connectFailed);
-        let connObject = new Connection(etcRedis, client);
-        _connectionList.push(connObject);
     });
 }
 
