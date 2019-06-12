@@ -316,11 +316,11 @@ export default class Mod {
     /**
      * --- 添加一个序列 ---
      * @param pc 数据库连接/连接池
-     * @param cs 字段列表
+     * @param cs 字段列表 [] or {}
      * @param vs 参数列表
      * @param etc sql 参数
      */
-    public static async insert(pc: Mysql.Pool | Mysql.Connection, cs: string[], vs?: any[], etc?: abs.Nu | abs.ConfigEtcSql) {
+    public static async insert(pc: Mysql.Pool | Mysql.Connection, cs: any = [], vs?: any[] | any[][], etc?: abs.Nu | abs.ConfigEtcSql) {
         let sql = Sql.get(etc);
         sql.insert(this._table, cs, vs);
         let rtn = await pc.execute(sql.getSql(), sql.getData());

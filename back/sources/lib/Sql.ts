@@ -36,7 +36,7 @@ class Sql {
      * @param cs [] or {}
      * @param vs [] | [][]
      */
-    public insert(f: string, cs: any = [], vs?: string[] | string[][]): Sql {
+    public insert(f: string, cs: any = [], vs?: any[] | any[][]): Sql {
         this._data = [];
         let sql = `INSERT INTO ${this._pre + f} (`;
         if (vs) {
