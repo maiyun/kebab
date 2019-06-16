@@ -167,7 +167,6 @@ document.addEventListener("DOMContentLoaded", async function() {
                     let json = JSON.parse(ev.data);
                     if (json.result <= 0) {
                         this.alert = json.msg;
-                        this.updateing = false;
                         return;
                     } else if (json.result === 1) {
                         // --- 发送要更新的列表 ---
