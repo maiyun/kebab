@@ -94,7 +94,6 @@ export function encodeDataFrame(e: InData): Buffer {
  * @param data 要发送的字符串
  */
 export function send(nus: abs.Nus, data: any) {
-    let needClose = false;
     let sendData: string = "";
     if (typeof data === "string") {
         sendData = data;
@@ -106,9 +105,6 @@ export function send(nus: abs.Nus, data: any) {
         let json: any = {};
         if ((data[0] !== undefined) && (typeof data[0] === "number")) {
             json = {"result": data[0]};
-            if (data[0] <= 0) {
-                needClose = true;
-            }
             if (data[1] !== undefined) {
                 if (typeof data[1] === "object") {
                     Object.assign(json, data[1]);
@@ -133,9 +129,6 @@ export function send(nus: abs.Nus, data: any) {
         opcode: 1,
         payloadData: sendData
     }));
-    if (needClose) {
-        close(nus);
-    }
 }
 
 /**
@@ -173,9 +166,7 @@ export function on(nus: abs.Nus, events: Events = {}) {
             let rtn = await events.onData(data.payloadData);
             if (rtn !== undefined) {
                 send(nus, rtn);
-                if (rtn.result !== undefined && rtn.result <= 0) {
-                    close(nus);
-                }
+                close(nus);
             }
         }
     });

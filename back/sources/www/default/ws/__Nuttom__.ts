@@ -19,7 +19,7 @@ export async function update(nus: abs.Nus) {
                 }
                 isPassword = true;
                 ver = json.ver;
-                return [1];
+                WebSocket.send(nus, [1]);
             } else {
                 if (!isPassword) {
                     return [0, "Password is incorrect."];
@@ -47,7 +47,7 @@ export async function update(nus: abs.Nus) {
                         }
                     }
                     WebSocket.send(nus, [3, "Update completed, please check the code and restart the service."]);
-                    WebSocket.close(nus);
+                    return true;
                 }
             }
         }

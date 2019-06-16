@@ -72,7 +72,7 @@ export default class Mod {
     /**
      * --- 获取创建对象，通常用于新建数据库条目 ---
      */
-    public static getCreate(pc: Mysql.Pool | Mysql.Connection, etc?: abs.Nu | abs.ConfigEtcSql) {
+    public static getCreate(pc: Mysql.Pool | Mysql.Connection, etc?: abs.Nu | abs.Nus | abs.ConfigEtcSql) {
         return new this(pc, etc);
     }
 

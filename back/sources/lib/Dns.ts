@@ -253,7 +253,7 @@ export class Dns {
                 let json = JSON.parse((await rtn.readContent()).toString());
                 let r: AddDomainRecordObject = {
                     "success": json.RecordId !== undefined ? true : false,
-                    "id": json.RecordId
+                    "id": json.RecordId || ""
                 };
                 return r;
             }
