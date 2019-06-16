@@ -16,11 +16,29 @@ export function md5(data: crypto.BinaryLike): string {
 }
 
 /**
+ * --- hmac md5 加密 ---
+ * @param data 要加密的数据
+ * @param key 密钥
+ */
+export function hmacMd5(data: crypto.BinaryLike, key: string): string {
+    return crypto.createHmac("md5", key).update(data).digest("hex");
+}
+
+/**
  * --- md5 加密（16位） ---
  * @param data 要加密的数据
  */
 export function md516(data: crypto.BinaryLike): string {
     return md5(data).substr(8, 16);
+}
+
+/**
+ * --- md5 加密（16位） ---
+ * @param data 要加密的数据
+ * @param key 密钥
+ */
+export function hmacMd516(data: crypto.BinaryLike, key: string): string {
+    return hmacMd5(data, key).substr(8, 16);
 }
 
 /**
@@ -44,24 +62,6 @@ export function md5File(path: string): Promise<string> {
 }
 
 /**
- * --- md5 加盐加密 ---
- * @param data 要加密的数据
- * @param salt 盐值
- */
-export function md5WithSalt(data: string, salt: string): string {
-    return md5(salt[0] + md5(data) + salt.slice(1));
-}
-
-/**
- * --- md5 加盐加密（16位） ---
- * @param data 要加密的数据
- * @param salt 盐值
- */
-export function md5WithSalt16(data: string, salt: string): string {
-    return md5WithSalt(data, salt).substr(8, 16);
-}
-
-/**
  * --- sha1 加密 ---
  * @param data 要加密的数据
  */
@@ -71,6 +71,36 @@ export function sha1(data: string, opt: Options = {}): string {
         return crypto.createHash("sha1").update(data, opt.encoding).digest(opt.format);
     } else {
         return crypto.createHash("sha1").update(data).digest(opt.format);
+    }
+}
+
+/**
+ * --- hmacSha1 加密 ---
+ * @param data 要加密的数据
+ * @param key 密钥
+ * @param opt 选项
+ */
+export function hmacSha1(data: string, key: string, opt: Options = {}): string {
+    opt.format = opt.format || "hex";
+    if (opt.encoding) {
+        return crypto.createHmac("sha1", key).update(data, opt.encoding).digest(opt.format);
+    } else {
+        return crypto.createHmac("sha1", key).update(data).digest(opt.format);
+    }
+}
+
+/**
+ * --- hmacSha256 加密 ---
+ * @param data 要加密的数据
+ * @param key 密钥
+ * @param opt 选项
+ */
+export function hmacSha256(data: string, key: string, opt: Options = {}): string {
+    opt.format = opt.format || "hex";
+    if (opt.encoding) {
+        return crypto.createHmac("sha256", key).update(data, opt.encoding).digest(opt.format);
+    } else {
+        return crypto.createHmac("sha256", key).update(data).digest(opt.format);
     }
 }
 
@@ -93,7 +123,7 @@ export function aesEncrypt(original: string, key: string, iv: string = "", metho
             method = method === "AES-256-ECB" ? "AES-256-CFB" : method;
         }
         if (key.length < 32) {
-            key = md5WithSalt(key, "NuttomSalt");
+            key = hmacMd5(key, "NuttomSalt");
         }
         let cip = crypto.createCipheriv(method, key, iv);
         let r = cip.update(original, "utf8", "base64");
@@ -116,7 +146,7 @@ export function aesDecrypt(encrypt: string, key: string, iv: string = "", method
             method = method === "AES-256-ECB" ? "AES-256-CFB" : method;
         }
         if (key.length < 32) {
-            key = md5WithSalt(key, "NuttomSalt");
+            key = hmacMd5(key, "NuttomSalt");
         }
         let cip = crypto.createDecipheriv(method, key, iv);
         let r = cip.update(encrypt, "base64", "binary");

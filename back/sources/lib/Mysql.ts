@@ -326,8 +326,8 @@ export class Connection {
  * --- 根据配置信息获取连接池对象 ---
  * @param etc 配置信息
  */
-export function getPool(etc: abs.Nu | abs.ConfigEtcMysql): Pool {
-    let etcMysql: abs.ConfigEtcMysql = Sys.isNu(etc) ? etc.config.etc.mysql : etc;
+export function getPool(etc: abs.Nu | abs.Nus | abs.ConfigEtcMysql): Pool {
+    let etcMysql: abs.ConfigEtcMysql = Sys.isNu(etc) || Sys.isNus(etc) ? etc.config.etc.mysql : etc;
     for (let pool of _poolList) {
         if ((pool.etc.host === etcMysql.host) && (pool.etc.port === etcMysql.port) && (pool.etc.charset === etcMysql.charset) && (pool.etc.name === etcMysql.name) && (pool.etc.username === etcMysql.username) && (pool.etc.password === etcMysql.password)) {
             return pool;

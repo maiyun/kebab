@@ -232,9 +232,9 @@ export class Connection {
  * --- 根据配置信息获取连接对象 ---
  * @param etc 配置信息
  */
-export async function getConnection(etc: abs.Nu | abs.ConfigEtcRedis): Promise<Connection | undefined> {
+export async function getConnection(etc: abs.Nu | abs.Nus | abs.ConfigEtcRedis): Promise<Connection | undefined> {
     return new Promise(async function(resolve, reject) {
-        let etcRedis: abs.ConfigEtcRedis = Sys.isNu(etc) ? etc.config.etc.redis : etc;
+        let etcRedis: abs.ConfigEtcRedis = Sys.isNu(etc) || Sys.isNus(etc) ? etc.config.etc.redis : etc;
         for (let conn of _connectionList) {
             if ((conn.etc.host === etcRedis.host) && (conn.etc.port === etcRedis.port) && (conn.etc.index === etcRedis.index) && (conn.etc.auth === etcRedis.auth)) {
                 resolve(conn);

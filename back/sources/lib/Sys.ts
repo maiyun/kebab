@@ -180,6 +180,13 @@ export function isNu(obj: any): obj is abs.Nu {
         return false;
     }
 }
+export function isNus(obj: any): obj is abs.Nus {
+    if (obj.isNus) {
+        return true;
+    } else {
+        return false;
+    }
+}
 
 /**
  * --- 跳转到第三方平台 ---
@@ -203,4 +210,21 @@ export function redirect(nu: abs.Nu, url: string = "") {
         location: nu.const.HTTP_BASE + url
     });
     nu.res.end();
+}
+
+/**
+ * --- 对象做字典升序 ---
+ * @param obj 对象
+ */
+export function objectSort(obj: any): any {
+    let newObj: any = {};
+    let keys = Object.keys(obj).sort();
+    for (let key of keys) {
+        if (typeof obj[key] === "object" && !Array.isArray(obj[key])) {
+            newObj[key] = objectSort(obj[key]);
+        } else {
+            newObj[key] = obj[key];
+        }
+    }
+    return newObj;
 }

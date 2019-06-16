@@ -261,10 +261,23 @@ const _SNI_MANAGER = sni.certs.createManager();
                     uri: uri,
                     get: uri.query ? querystring.parse(uri.query) : {},
                     cookie: {},
+                    sessionConfig: {
+                        token: "",
+                        conn: undefined as any
+                    },
+                    session: {},
                     locale: "en",
                     config: require(vhostRoot + pathNow + "config"),
                     isNus: true
                 };
+                // --- 加载客户端提交的 cookie ---
+                if (nus.req.headers.cookie) {
+                    let cookies = nus.req.headers.cookie.split(";");
+                    for (let cookie of cookies) {
+                        let co = cookie.split("=");
+                        nus.cookie[co[0].trim()] = decodeURIComponent(co[1]);
+                    }
+                }
                 // --- 进入连接执行方法 ---
                 await ctr[pathRight](nus);
 

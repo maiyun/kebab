@@ -111,6 +111,8 @@ export interface Nus {
     readonly socket: tls.TLSSocket;
     readonly uri: url.UrlWithStringQuery;
     get: querystring.ParsedUrlQuery;
+    sessionConfig: NuSessionConfig;
+    session: NuSession;
     cookie: NuCookie;
     locale: string;
     config: Config;

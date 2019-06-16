@@ -129,3 +129,28 @@ export function nlReplace(str: string, to: string = "\n"): string {
     }
     return str;
 }
+
+/**
+ * --- 获取顶级域名 ---
+ * @param domain 普通域名
+ */
+export function getHost(domain: string): string {
+    let domainArr = domain.split(".");
+    let count = domainArr.length;
+    // --- 判断是否是双后缀 ---
+    let isDoubleExt = false;
+    let extList = ["com.cn", "net.cn", "org.cn", "gov.cn", "co.jp", "com.tw", "co.kr", "co.hk"];
+    for (let ext of extList) {
+        if (domain.indexOf("." + ext) !== -1) {
+            isDoubleExt = true;
+            break;
+        }
+    }
+    let host;
+    if (isDoubleExt) {
+        host = domainArr[count - 3] + "." + domainArr[count - 2] + "." + domainArr[count - 1];
+    } else {
+        host = domainArr[count - 2] + "." + domainArr[count - 1];
+    }
+    return host;
+}

@@ -54,10 +54,10 @@ export default class Mod {
     protected _lastSqlData: any = {};
 
     /** 构造函数，etc 选项可选 */
-    constructor(pc: Mysql.Pool | Mysql.Connection, etc?: abs.Nu | abs.ConfigEtcSql, row?: any) {
+    constructor(pc: Mysql.Pool | Mysql.Connection, etc?: abs.Nu | abs.Nus | abs.ConfigEtcSql, row?: any) {
         // --- sql 对象配置 ---
         if (etc !== undefined) {
-            this._etc = Sys.isNu(etc) ? etc.config.etc.sql : etc;
+            this._etc = Sys.isNu(etc) || Sys.isNus(etc) ? etc.config.etc.sql : etc;
         }
         // ---- 数据库连接 ---
         this._conn = pc;
@@ -286,7 +286,7 @@ export default class Mod {
      * @param where 筛选参数
      * @param opt 选项
      */
-    public static async get(pc: Mysql.Pool | Mysql.Connection, where: any[] | string, etc?: abs.Nu | abs.ConfigEtcSql, opt: {
+    public static async get(pc: Mysql.Pool | Mysql.Connection, where: any[] | string, etc?: abs.Nu | abs.Nus | abs.ConfigEtcSql, opt: {
         lock?: boolean;
     } = {}): Promise<undefined | Mod> {
         let sql = Sql.get(etc);
@@ -454,7 +454,7 @@ export default class Mod {
      * @param where 筛选条件
      * @param etc etc 对象
      */
-    public static async updateByWhere(pc: Mysql.Pool | Mysql.Connection, data: any[], where: any[] | string, etc?: abs.Nu | abs.ConfigEtcSql): Promise<boolean> {
+    public static async updateByWhere(pc: Mysql.Pool | Mysql.Connection, data: any[], where: any[] | string, etc?: abs.Nu | abs.Nus | abs.ConfigEtcSql): Promise<boolean> {
         let sql = Sql.get(etc);
         sql.update(this._table, data);
         if (typeof where === "string") {

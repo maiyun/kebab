@@ -98,7 +98,7 @@ export class Connection {
     /**
      * --- 直接获取原生 shell stream 对象 ---
      */
-    public getStream() {
+    public getStream(): Promise<ssh2.ClientChannel | undefined> {
         return new Promise((resolve, reject) => {
             this._client.shell(function(err, stream) {
                 if (err) {

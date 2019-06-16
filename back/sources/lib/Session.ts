@@ -12,7 +12,7 @@ import * as abs from "~/abstract";
  * @param nu Nu 对象
  * @param conn 数据库对象
  */
-async function _gc(nu: abs.Nu, conn: Mysql.Pool | Mysql.Connection, etc?: SessionEtc) {
+async function _gc(nu: abs.Nu | abs.Nus, conn: Mysql.Pool | Mysql.Connection, etc?: SessionEtc) {
     if (Text.rand(0, 20) === 10) {
         let exp = etc && etc.exp ? etc.exp : nu.config.etc.session.exp;
         let sql = Sql.get(nu);
@@ -57,7 +57,7 @@ export interface SessionEtc {
  * @param nu Nu 对象
  * @param conn 数据库连接池/连接/Redis连接
  */
-export async function start(nu: abs.Nu, conn: Mysql.Pool | Mysql.Connection | Redis.Connection, etc?: SessionEtc) {
+export async function start(nu: abs.Nu | abs.Nus, conn: Mysql.Pool | Mysql.Connection | Redis.Connection, etc?: SessionEtc) {
     let exp = etc && etc.exp ? etc.exp : nu.config.etc.session.exp;
     let name = etc && etc.name ? etc.name : nu.config.etc.session.name;
 
@@ -124,10 +124,12 @@ export async function start(nu: abs.Nu, conn: Mysql.Pool | Mysql.Connection | Re
         }
     }
 
-    Sys.cookie(nu, name, token, {
-        maxAge: exp,
-        path: "/"
-    });
+    if (Sys.isNu(nu)) {
+        Sys.cookie(nu, name, token, {
+            maxAge: exp,
+            path: "/"
+        });
+    }
 
     nu.sessionConfig.token = token;
     nu.sessionConfig.conn = conn;

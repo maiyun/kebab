@@ -9,16 +9,16 @@ class Sql {
     private _sql: string[] = [];
     private _data: any[] = [];
 
-    constructor(etc?: abs.Nu | abs.ConfigEtcSql) {
+    constructor(etc?: abs.Nu | abs.Nus | abs.ConfigEtcSql) {
         this.reset(etc);
     }
 
-    public reset(etc?: abs.Nu | abs.ConfigEtcSql) {
+    public reset(etc?: abs.Nu | abs.Nus | abs.ConfigEtcSql) {
         if (!etc) {
             this._pre = "";
             return;
         }
-        this._pre = Sys.isNu(etc) ? etc.config.etc.sql.pre : etc.pre;
+        this._pre = Sys.isNu(etc) || Sys.isNus(etc) ? etc.config.etc.sql.pre : etc.pre;
     }
 
     /**
@@ -307,7 +307,7 @@ class Sql {
 /** --- 对象池 --- */
 let _sqlList: Sql[] = [];
 
-export function get(etc?: abs.Nu | abs.ConfigEtcSql): Sql {
+export function get(etc?: abs.Nu | abs.Nus | abs.ConfigEtcSql): Sql {
     if (_sqlList[0]) {
         let sql = _sqlList[0];
         _sqlList.splice(0, 1);
