@@ -145,6 +145,7 @@ export interface NuSession {
 /** --- Nu Post File 对象 --- */
 export interface NuPostFile {
     name: string;
+    rawName: string;
     size: number;
     path: string;
 }

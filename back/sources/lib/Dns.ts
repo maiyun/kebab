@@ -97,6 +97,11 @@ export class Dns {
     }
 
     private async _send(obj: any) {
+        for (let key in obj) {
+            if (!obj[key]) {
+                delete(obj[key]);
+            }
+        }
         let url = "";
         switch (this._opt.supplier) {
             // --- 腾讯云 ---

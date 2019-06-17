@@ -320,7 +320,7 @@ export default class Mod {
      * @param vs 参数列表
      * @param etc sql 参数
      */
-    public static async insert(pc: Mysql.Pool | Mysql.Connection, cs: any = [], vs?: any[] | any[][], etc?: abs.Nu | abs.ConfigEtcSql) {
+    public static async insert(pc: Mysql.Pool | Mysql.Connection, cs: any = [], vs?: any[] | any[][], etc?: abs.Nu | abs.Nus | abs.ConfigEtcSql) {
         let sql = Sql.get(etc);
         sql.insert(this._table, cs, vs);
         let rtn = await pc.execute(sql.getSql(), sql.getData());
@@ -338,7 +338,7 @@ export default class Mod {
      * @param opt 选项
      * @param etc etc 对象
      */
-    public static async getList(pc: Mysql.Pool | Mysql.Connection, opt: GetListOptions = {}, etc?: abs.Nu | abs.ConfigEtcSql): Promise<GetListReturn> {
+    public static async getList(pc: Mysql.Pool | Mysql.Connection, opt: GetListOptions = {}, etc?: abs.Nu | abs.Nus | abs.ConfigEtcSql): Promise<GetListReturn> {
         let sql = Sql.get(etc);
         sql.select(opt.select || "*", this._table);
         if (opt.where !== undefined) {
@@ -405,7 +405,7 @@ export default class Mod {
      * @param opt 选项
      * @param etc etc 对象
      */
-    public static async count(pc: Mysql.Pool | Mysql.Connection, opt: CountOptions = {}, etc?: abs.Nu | abs.ConfigEtcSql): Promise<any> {
+    public static async count(pc: Mysql.Pool | Mysql.Connection, opt: CountOptions = {}, etc?: abs.Nu | abs.Nus | abs.ConfigEtcSql): Promise<any> {
         let sql = Sql.get(etc);
         sql.select(opt.select || "COUNT(0) AS count", this._table);
         if (opt.where !== undefined) {
@@ -431,7 +431,7 @@ export default class Mod {
      * @param where 筛选条件
      * @param etc etc 对象
      */
-    public static async removeByWhere(pc: Mysql.Pool | Mysql.Connection, where: any[] | string = "", etc?: abs.Nu | abs.ConfigEtcSql): Promise<boolean> {
+    public static async removeByWhere(pc: Mysql.Pool | Mysql.Connection, where: any[] | string = "", etc?: abs.Nu | abs.Nus | abs.ConfigEtcSql): Promise<boolean> {
         let sql = Sql.get(etc);
         sql.delete(this._table);
         if (typeof where === "string") {
