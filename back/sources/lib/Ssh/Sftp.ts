@@ -367,6 +367,21 @@ export class Connection {
     }
 
     /**
+     * --- 删除序列中的所有空目录，反向往上找 ---
+     * --- 本目录删了删上级目录（若上级目录为空了），直到上级目录非空则停止 ---
+     * @param remotePath 要反向删除的目录路径
+     */
+    public async rmdirDeepEmpty(remotePath: string) {
+        remotePath = url.resolve(this._path, remotePath);
+        if (remotePath.slice(-1) === "/") {
+            remotePath = remotePath.slice(0, -1);
+        }
+        while (await this.rmdir(remotePath)) {
+            remotePath = remotePath.slice(0, remotePath.lastIndexOf("/"));
+        }
+    }
+
+    /**
      * --- Danger 危险：这特么是个危险函数，尽量不要使用 ---
      * --- This is a very weixian's function, dont to use ---
      * --- 删除一个非空目录 ---
