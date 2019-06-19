@@ -333,6 +333,18 @@ export default class Mod {
     }
 
     /**
+     * --- 获取添加一个序列的模拟 SQL ---
+     * @param cs 字段列表 [] or {}
+     * @param vs 参数列表
+     * @param etc sql 参数
+     */
+    public static insertSql(cs: any = [], vs?: any[] | any[][], etc?: abs.Nu | abs.Nus | abs.ConfigEtcSql) {
+        let sql = Sql.get(etc);
+        sql.insert(this._table, cs, vs);
+        return sql.format();
+    }
+
+    /**
      * --- 获取列表 ---
      * @param pc 数据库连接/连接池
      * @param opt 选项

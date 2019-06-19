@@ -103,6 +103,7 @@ export async function toResponse(nu: abs.Nu, path: string, data?: any): Promise<
         let content = await load(nu, path, data);
         if (content === "") {
             nu.res.writeHead(404);
+            nu.res.setHeader("Content-Length", 14);
             nu.res.end("404 Not Found.");
             return;
         }
@@ -111,6 +112,7 @@ export async function toResponse(nu: abs.Nu, path: string, data?: any): Promise<
         let stats = await Fs.getStats(path);
         if (!stats) {
             nu.res.writeHead(404);
+            nu.res.setHeader("Content-Length", 14);
             nu.res.end("404 Not Found.");
             return;
         }
@@ -137,7 +139,6 @@ export async function toResponse(nu: abs.Nu, path: string, data?: any): Promise<
         }
         // --- 设置头部 ---
         nu.res.setHeader("Content-Type", mime.get(ext === "ejs" ? "html" : path) + charset);
-        nu.res.setHeader("Content-Length", stats.size);
         // --- 判断客户端支持的压缩模式 ---
         let encoding = <string>nu.req.headers["accept-encoding"] || "";
         // --- charset 不为空代表是文本，可以压缩 ---
@@ -151,10 +152,12 @@ export async function toResponse(nu: abs.Nu, path: string, data?: any): Promise<
                 return;
             }
             nu.res.writeHead(200);
+            nu.res.setHeader("Content-Length", stats.size);
             Fs.readStream(path).pipe(nu.res.stream);
         } else {
             // --- 不压缩 ---
             nu.res.writeHead(200);
+            nu.res.setHeader("Content-Length", stats.size);
             Fs.readStream(path).pipe(nu.res.stream);
         }
     }
@@ -171,7 +174,6 @@ export async function toResponseByData(nu: abs.Nu, data: string | Buffer | Uint8
     if (size === undefined) {
         size = Buffer.byteLength(data);
     }
-    nu.res.setHeader("Content-Length", size);
     let ct = mime.get(ext.slice(-4) === ".ejs" ? "html" : ext) + "; charset=utf-8";
     nu.res.setHeader("Content-Type", ct);
     // --- 判断客户端支持的压缩模式 ---
@@ -179,12 +181,15 @@ export async function toResponseByData(nu: abs.Nu, data: string | Buffer | Uint8
     if (encoding && (size >= 1024)) {
         let comp = await Zlib.compress(encoding, data);
         if (comp.buf) {
+            nu.res.setHeader("Content-Length", Buffer.byteLength(comp.buf));
             nu.res.setHeader("Content-Encoding", comp.type);
             nu.res.end(comp.buf);
             return;
         }
+        nu.res.setHeader("Content-Length", Buffer.byteLength(data));
         nu.res.end(data);
     } else {
+        nu.res.setHeader("Content-Length", Buffer.byteLength(data));
         nu.res.end(data);
     }
 }

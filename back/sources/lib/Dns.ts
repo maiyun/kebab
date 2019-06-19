@@ -109,14 +109,22 @@ export class Dns {
                 let stamp = Time.stamp();
                 let getData = Sys.objectSort(Object.assign({
                     "SecretId": this._opt.secretId,
-                    "Region": this._opt.region,
+                    "Region": this._opt.region || "",
                     "Timestamp": stamp,
                     "Nonce": Text.rand(10000, 99999),
                     "SignatureMethod": "HmacSHA256"
                 }, obj));
-                let urlRight = `cns.api.qcloud.com/v2/index.php?${querystring.stringify(getData)}`;
-                let signature = Crypto.hmacSha256(`GET${urlRight}`, this._opt.secretKey, {format: "base64"});
-                url = `https://${urlRight}&Signature=${encodeURIComponent(signature)}`;
+                // --- 对腾讯云的 key 下划线必须替换为 . 做处理 ---
+                let sigData: string[] = [];
+                for (let key in getData) {
+                    if (getData[key] === undefined) {
+                        continue;
+                    }
+                    sigData.push(key.replace(/_/g, ".") + "=" + getData[key]);
+                }
+                let urlRight = `cns.api.qcloud.com/v2/index.php?`;
+                let signature = Crypto.hmacSha256(`GET${urlRight + sigData.join("&")}`, this._opt.secretKey, {format: "base64"});
+                url = `https://${urlRight + querystring.stringify(getData)}&Signature=${encodeURIComponent(signature)}`;
                 break;
             }
             // --- 阿里云 ---
