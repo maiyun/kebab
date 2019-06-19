@@ -102,8 +102,8 @@ export async function toResponse(nu: abs.Nu, path: string, data?: any): Promise<
         nu.res.setHeader("Cache-Control", "no-cache, must-revalidate");
         let content = await load(nu, path, data);
         if (content === "") {
-            nu.res.writeHead(404);
             nu.res.setHeader("Content-Length", 14);
+            nu.res.writeHead(404);
             nu.res.end("404 Not Found.");
             return;
         }
@@ -111,8 +111,8 @@ export async function toResponse(nu: abs.Nu, path: string, data?: any): Promise<
     } else {
         let stats = await Fs.getStats(path);
         if (!stats) {
-            nu.res.writeHead(404);
             nu.res.setHeader("Content-Length", 14);
+            nu.res.writeHead(404);
             nu.res.end("404 Not Found.");
             return;
         }
@@ -151,13 +151,13 @@ export async function toResponse(nu: abs.Nu, path: string, data?: any): Promise<
                 Fs.readStream(path).pipe(compress.obj).pipe(nu.res.stream);
                 return;
             }
-            nu.res.writeHead(200);
             nu.res.setHeader("Content-Length", stats.size);
+            nu.res.writeHead(200);
             Fs.readStream(path).pipe(nu.res.stream);
         } else {
             // --- 不压缩 ---
-            nu.res.writeHead(200);
             nu.res.setHeader("Content-Length", stats.size);
+            nu.res.writeHead(200);
             Fs.readStream(path).pipe(nu.res.stream);
         }
     }
