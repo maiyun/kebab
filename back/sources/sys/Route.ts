@@ -319,13 +319,13 @@ function _getPost(req: http2.Http2ServerRequest): Promise<querystring.ParsedUrlQ
                             ftmpSize += Buffer.byteLength(writeBuffer);
                             ftmpStream.end();
                             // --- POST 部分 ---
-                            let name = filename.replace(/\\/g, "/");
-                            let nlio = name.lastIndexOf("/");
+                            let fname = filename.replace(/\\/g, "/");
+                            let nlio = fname.lastIndexOf("/");
                             if (nlio !== -1) {
-                                name = name.slice(nlio + 1);
+                                fname = fname.slice(nlio + 1);
                             }
                             let fval = {
-                                name: name,
+                                name: fname,
                                 rawName: filename,
                                 size: ftmpSize,
                                 path: c.FTMP_PATH + ftmpname
