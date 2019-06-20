@@ -65,6 +65,7 @@ export default class Mod {
         if (row) {
             for (let k in row) {
                 this._data[k] = row[k];
+                (<any>this)[k] = row[k];
             }
         }
     }
@@ -88,10 +89,12 @@ export default class Mod {
                 // --- 强制更新，因为有的可能就是要强制更新既然设置了 ---
                 this._updates[k] = true;
                 this._data[k] = v;
+                (<any>this)[k] = v;
             }
         } else {
             this._updates[n] = true;
             this._data[n] = v;
+            (<any>this)[n] = v;
         }
     }
 
@@ -210,6 +213,7 @@ export default class Mod {
             if (rtn.affectedRows > 0) {
                 this._updates = {};
                 this._data[(<any>this.constructor)._primary] = rtn.insertId;
+                (<any>this)[(<any>this.constructor)._primary] = rtn.insertId;
                 if (type === 1 || type === 2) {
                     sql.select("*", (<any>this.constructor)._table).where([{
                         [(<any>this.constructor)._primary]: this._data[(<any>this.constructor)._primary]
@@ -221,6 +225,7 @@ export default class Mod {
                     sql.release();
                     for (let k in rows[0]) {
                         this._data[k] = rows[0][k];
+                        (<any>this)[k] = rows[0][k];
                     }
                 } else {
                     sql.release();
