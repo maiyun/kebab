@@ -2,6 +2,7 @@
 import * as redis from "redis";
 // --- 库和定义 ---
 import * as Sys from "~/lib/Sys";
+import * as Time from "~/lib/Time";
 import * as abs from "~/abstract";
 
 /** Set 设置项 */
@@ -12,17 +13,21 @@ export interface Options {
     px?: number;
 }
 
-/** --- 连接列表（同一个 host、port 只有一个连接） --- */
+/** --- 连接列表（同一个 host、port、index、auth 只有一个连接） --- */
 let _connectionList: Connection[] = [];
 
 // --- 每隔 1 小时检查一次连接是否正常活动 ---
 // --- 一般情况下连接异常会触发 error 事件，所以这个检查不用太频繁，主要为了发送个 PING 来保持连接而已 ---
+// --- 还有种情况，连接持续 1 个小时以上没有活跃了，则断开 ---
 async function _checkConnection() {
     await Sys.sleep(3600000);
+    let stamp = Time.stamp();
     let connLen: number = _connectionList.length;
     for (let i = 0; i < connLen; ++i) {
-        if (!_connectionList[i]) {
-            continue;
+        if (_connectionList[i].__lastTime < stamp - 3600) {
+            _connectionList[i].disconnect();
+            _connectionList.splice(i, 1);
+            --i;
         }
         if (!_connectionList[i].ping()) {
             _connectionList.splice(i, 1);
@@ -40,16 +45,20 @@ export class Connection {
     private _client!: redis.RedisClient;
     /** 内部用的，当发生闪断，则从连接池移除连接 */
     public __disconnected: boolean = false;
+    /** 连接最后活跃时间 */
+    public __lastTime!: number;
 
     constructor(etc: abs.ConfigEtcRedis, client: redis.RedisClient) {
         this.etc = Object.assign({}, etc);
         this._client = client;
+        this.__lastTime = Time.stamp();
     }
 
     /**
      * --- 发送 ping 测试连接是否通畅 ---
      */
     public ping(): Promise<boolean> {
+        this.__lastTime = Time.stamp();
         return new Promise((resolve, reject) => {
             this._client.ping(function(err, str) {
                 if (err) {
@@ -70,6 +79,7 @@ export class Connection {
      * @param key 要获取的 key
      */
     public getString(key: string, etc?: abs.Nu | abs.Nus | abs.ConfigEtcRedis): Promise<string | undefined> {
+        this.__lastTime = Time.stamp();
         let pre = etc ? (Sys.isNu(etc) || Sys.isNus(etc) ? etc.config.etc.redis.pre : etc.pre) : "";
         return new Promise((resolve, reject) => {
             this._client.get(pre + key, function(err, str) {
@@ -93,6 +103,7 @@ export class Connection {
      * @param opt 选项
      */
     public setString(key: string, value: string, etc?: abs.Nu | abs.Nus | abs.ConfigEtcRedis, opt: Options = {}): Promise<boolean> {
+        this.__lastTime = Time.stamp();
         let pre = etc ? (Sys.isNu(etc) || Sys.isNus(etc) ? etc.config.etc.redis.pre : etc.pre) : "";
         return new Promise((resolve, reject) => {
             let callback = function(err: Error | null, str: "OK" | undefined) {
@@ -159,6 +170,7 @@ export class Connection {
      * @param num 要自增的数
      */
     public incr(key: string, etc?: abs.Nu | abs.Nus | abs.ConfigEtcRedis, num: number = 1): Promise<number> {
+        this.__lastTime = Time.stamp();
         let pre = etc ? (Sys.isNu(etc) || Sys.isNus(etc) ? etc.config.etc.redis.pre : etc.pre) : "";
         return new Promise((resolve, reject) => {
             let cb = function(err: Error | null, num: number) {
@@ -182,6 +194,7 @@ export class Connection {
      * @param num 要自增的数
      */
     public decr(key: string, etc?: abs.Nu | abs.Nus | abs.ConfigEtcRedis, num: number = 1): Promise<number> {
+        this.__lastTime = Time.stamp();
         let pre = etc ? (Sys.isNu(etc) || Sys.isNus(etc) ? etc.config.etc.redis.pre : etc.pre) : "";
         return new Promise((resolve, reject) => {
             let cb = function(err: Error | null, num: number) {
@@ -204,6 +217,7 @@ export class Connection {
      * @param keys 要删的 key 或 key 数组
      */
     public del(keys: string | string[], etc?: abs.Nu | abs.Nus | abs.ConfigEtcRedis): Promise<number> {
+        this.__lastTime = Time.stamp();
         let pre = etc ? (Sys.isNu(etc) || Sys.isNus(etc) ? etc.config.etc.redis.pre : etc.pre) : "";
         if (pre !== "") {
             if (typeof keys === "string") {
@@ -231,6 +245,7 @@ export class Connection {
      * @param key 要检测的 key
      */
     public exists(key: string, etc?: abs.Nu | abs.Nus | abs.ConfigEtcRedis): Promise<boolean> {
+        this.__lastTime = Time.stamp();
         let pre = etc ? (Sys.isNu(etc) || Sys.isNus(etc) ? etc.config.etc.redis.pre : etc.pre) : "";
         return new Promise((resolve, reject) => {
             this._client.exists(pre + key, function(err, num) {
@@ -241,6 +256,13 @@ export class Connection {
                 }
             });
         });
+    }
+
+    /**
+     * --- 断开此连接 ---
+     */
+    public disconnect() {
+        this._client.end();
     }
 }
 
@@ -253,6 +275,7 @@ export async function getConnection(etc: abs.Nu | abs.Nus | abs.ConfigEtcRedis):
         let etcRedis: abs.ConfigEtcRedis = Sys.isNu(etc) || Sys.isNus(etc) ? etc.config.etc.redis : etc;
         for (let conn of _connectionList) {
             if ((conn.etc.host === etcRedis.host) && (conn.etc.port === etcRedis.port) && (conn.etc.index === etcRedis.index) && (conn.etc.auth === etcRedis.auth)) {
+                conn.__lastTime = Time.stamp();
                 resolve(conn);
                 return;
             }
