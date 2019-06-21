@@ -295,9 +295,12 @@ async function _mkdirDeepSub(path: string): Promise<boolean> {
 }
 
 /** 同步选项 */
-interface SyncOptions {
-    ignoreExt?: string[];
+export interface SyncOptions {
+    ignore?: string[];
 }
+type _SyncOptions = {
+    ignore: string[];
+};
 
 /**
  * --- 从 from 路径同步到 to 路径，to 路径多出的文件不会被移除 ---
@@ -306,54 +309,81 @@ interface SyncOptions {
  * @param opt 选项
  */
 export async function sync(from: string, to: string, opt: SyncOptions = {}): Promise<void> {
-    opt.ignoreExt = opt.ignoreExt || ["ts", "scss"];
+    opt.ignore = opt.ignore || ["*.ts", "*.scss", "tsconfig.json", "tslint.json", "types"];
 
+    // --- 如果源目录不存在，则直接跳出 ---
+    let fstats = await getStats(from);
+    if (!fstats || !fstats.isDirectory()) {
+        return;
+    }
+
+    // --- 创建去目录 ---
     let stats = await getStats(to);
     if (!stats || !stats.isDirectory()) {
         await mkdirDeep(to);
     }
 
+    // --- 源/去目录 cut 掉最后的 / ---
     from = from.replace("\\", "/");
     to = to.replace("\\", "/");
-    if (from.slice(0, -1) === "/") {
+    if (from.slice(-1) === "/") {
         from = from.slice(0, -1);
     }
-    if (to.slice(0, -1) === "/") {
+    if (to.slice(-1) === "/") {
         to = to.slice(0, -1);
     }
-
-    await _syncSub(from, to, "/", opt);
+    await _syncSub(from, to, "/", <_SyncOptions>opt);
 }
-async function _syncSub(from: string, to: string, path: string, opt: SyncOptions) {
+async function _syncSub(from: string, to: string, path: string, opt: _SyncOptions) {
+    // --- 读源路径下面的文件/文件夹 ---
     let list = await readDir(from + path);
     for (let item of list) {
         if (item === "." || item === "..") {
             continue;
         }
+        // --- 判断当前是否要排除 ---
+        if (_isIgnore(item, opt.ignore)) {
+            continue;
+        }
+
+        // --- 当前 item 有异常 ---
         let stats = await getStats(from + path + item);
         if (!stats) {
             continue;
         }
+        // --- 获取去对应的 item ---
         let tstats = await getStats(to + path + item);
         if (stats.isDirectory()) {
+            // --- 源 item 是目录 ---
             if (!tstats || !tstats.isDirectory()) {
+                // --- 去 item 不存在，或去 itme 存在了，但不是个目录 ---
                 await mkdir(to + path + item);
             }
+            // --- 同步去 ---
             await _syncSub(from, to, path + item + "/", opt);
         } else {
-            let lio = item.lastIndexOf(".");
-            if (lio !== -1) {
-                let ext = item.slice(lio + 1);
-                if ((<string[]>opt.ignoreExt).indexOf(ext) !== -1) {
-                    continue;
-                }
-            }
-            let fmd5 = Crypto.md5(await readFile(from + path + item) || "");
-            let tmd5 = tstats ? Crypto.md5(await readFile(to + path + item) || "") : "";
+            let fmd5 = Crypto.md5File(from + path + item);
+            let tmd5 = tstats ? Crypto.md5File(to + path + item) : "";
             if (fmd5 === tmd5) {
                 continue;
             }
             await copyFile(from + path + item, to + path + item);
         }
     }
+}
+/**
+ * --- 此名字是否需要被忽略 ---
+ * @param name 名字
+ * @param ignoreList 忽略数组
+ */
+function _isIgnore(name: string, ignoreList: string[]): boolean {
+    for (let ignore of ignoreList) {
+        let regtx = "^" + ignore.replace(/\./g, "\\.").replace(/\*/g, ".+?") + "$";
+        let reg = new RegExp(regtx);
+        if (reg.test(name)) {
+            // --- 要排除的 ---
+            return true;
+        }
+    }
+    return false;
 }
