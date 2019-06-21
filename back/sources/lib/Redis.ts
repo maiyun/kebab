@@ -69,9 +69,10 @@ export class Connection {
      * --- 获取 Redis 的字符串值 ---
      * @param key 要获取的 key
      */
-    public getString(key: string): Promise<string> {
+    public getString(key: string, etc?: abs.Nu | abs.Nus | abs.ConfigEtcRedis): Promise<string | undefined> {
+        let pre = etc ? (Sys.isNu(etc) || Sys.isNus(etc) ? etc.config.etc.redis.pre : etc.pre) : "";
         return new Promise((resolve, reject) => {
-            this._client.get(key, function(err, str) {
+            this._client.get(pre + key, function(err, str) {
                 if (err) {
                     resolve(undefined);
                 } else {
@@ -91,7 +92,8 @@ export class Connection {
      * @param value 设置的值
      * @param opt 选项
      */
-    public setString(key: string, value: string, opt: Options = {}): Promise<boolean> {
+    public setString(key: string, value: string, etc?: abs.Nu | abs.Nus | abs.ConfigEtcRedis, opt: Options = {}): Promise<boolean> {
+        let pre = etc ? (Sys.isNu(etc) || Sys.isNus(etc) ? etc.config.etc.redis.pre : etc.pre) : "";
         return new Promise((resolve, reject) => {
             let callback = function(err: Error | null, str: "OK" | undefined) {
                 if (err) {
@@ -107,15 +109,15 @@ export class Connection {
             if (opt.ex !== undefined || opt.px !== undefined) {
                 let num: number = opt.ex !== undefined ? opt.ex : <number>opt.px;
                 if (opt.flag === undefined || opt.flag === "") {
-                    this._client.set(key, value, opt.ex !== undefined ? "EX" : "PX", num, callback);
+                    this._client.set(pre + key, value, opt.ex !== undefined ? "EX" : "PX", num, callback);
                 } else {
-                    this._client.set(key, value, opt.ex !== undefined ? "EX" : "PX", num, opt.flag, callback);
+                    this._client.set(pre + key, value, opt.ex !== undefined ? "EX" : "PX", num, opt.flag, callback);
                 }
             } else {
                 if (opt.flag === undefined || opt.flag === "") {
-                    this._client.set(key, value, callback);
+                    this._client.set(pre + key, value, callback);
                 } else {
-                    this._client.set(key, value, opt.flag, callback);
+                    this._client.set(pre + key, value, opt.flag, callback);
                 }
             }
         });
@@ -125,10 +127,10 @@ export class Connection {
      * --- 获取 JSON 对象值 ---
      * @param key 要获取的 key
      */
-    public async getJson(key: string): Promise<{
+    public async getJson(key: string, etc?: abs.Nu | abs.Nus | abs.ConfigEtcRedis): Promise<{
         [key: string]: any;
     } | undefined> {
-        let str = await this.getString(key);
+        let str = await this.getString(key, etc);
         if (str === undefined) {
             return undefined;
         }
@@ -146,9 +148,9 @@ export class Connection {
      * @param value JSON 对象
      * @param opt 选项
      */
-    public async setJson(key: string, value: any, opt: Options = {}): Promise<boolean> {
+    public async setJson(key: string, value: any, etc?: abs.Nu | abs.Nus | abs.ConfigEtcRedis, opt: Options = {}): Promise<boolean> {
         let json = JSON.stringify(value);
-        return await this.setString(key, json, opt);
+        return await this.setString(key, json, etc, opt);
     }
 
     /**
@@ -156,19 +158,20 @@ export class Connection {
      * @param key 要设置的 key
      * @param num 要自增的数
      */
-    public incr(key: string, num: number = 1): Promise<number | false> {
+    public incr(key: string, etc?: abs.Nu | abs.Nus | abs.ConfigEtcRedis, num: number = 1): Promise<number> {
+        let pre = etc ? (Sys.isNu(etc) || Sys.isNus(etc) ? etc.config.etc.redis.pre : etc.pre) : "";
         return new Promise((resolve, reject) => {
             let cb = function(err: Error | null, num: number) {
                 if (err) {
-                    resolve(false);
+                    resolve(0);
                 } else {
                     resolve(num);
                 }
             };
             if (num === 1) {
-                this._client.incr(key, cb);
+                this._client.incr(pre + key, cb);
             } else {
-                this._client.incrby(key, num, cb);
+                this._client.incrby(pre + key, num, cb);
             }
         });
     }
@@ -178,19 +181,20 @@ export class Connection {
      * @param key 要设置的 key
      * @param num 要自增的数
      */
-    public decr(key: string, num: number = 1): Promise<number | false> {
+    public decr(key: string, etc?: abs.Nu | abs.Nus | abs.ConfigEtcRedis, num: number = 1): Promise<number> {
+        let pre = etc ? (Sys.isNu(etc) || Sys.isNus(etc) ? etc.config.etc.redis.pre : etc.pre) : "";
         return new Promise((resolve, reject) => {
             let cb = function(err: Error | null, num: number) {
                 if (err) {
-                    resolve(false);
+                    resolve(0);
                 } else {
                     resolve(num);
                 }
             };
             if (num === 1) {
-                this._client.decr(key, cb);
+                this._client.decr(pre + key, cb);
             } else {
-                this._client.decrby(key, num, cb);
+                this._client.decrby(pre + key, num, cb);
             }
         });
     }
@@ -199,11 +203,22 @@ export class Connection {
      * --- 删除一个或多个 key ---
      * @param keys 要删的 key 或 key 数组
      */
-    public del(keys: string | string[]): Promise<number | boolean> {
+    public del(keys: string | string[], etc?: abs.Nu | abs.Nus | abs.ConfigEtcRedis): Promise<number> {
+        let pre = etc ? (Sys.isNu(etc) || Sys.isNus(etc) ? etc.config.etc.redis.pre : etc.pre) : "";
+        if (pre !== "") {
+            if (typeof keys === "string") {
+                keys = pre + keys;
+            } else {
+                let len = keys.length;
+                for (let i = 0; i < len; ++i) {
+                    keys[i] = pre + keys[i];
+                }
+            }
+        }
         return new Promise((resolve, reject) => {
             this._client.del(keys, function(err, num) {
                 if (err) {
-                    resolve(false);
+                    resolve(0);
                 } else {
                     resolve(num);
                 }
@@ -215,9 +230,10 @@ export class Connection {
      * --- 检测一个 key 是否存在 ---
      * @param key 要检测的 key
      */
-    public exists(key: string): Promise<boolean> {
+    public exists(key: string, etc?: abs.Nu | abs.Nus | abs.ConfigEtcRedis): Promise<boolean> {
+        let pre = etc ? (Sys.isNu(etc) || Sys.isNus(etc) ? etc.config.etc.redis.pre : etc.pre) : "";
         return new Promise((resolve, reject) => {
-            this._client.exists(key, function(err, num) {
+            this._client.exists(pre + key, function(err, num) {
                 if (err) {
                     resolve(false);
                 } else {

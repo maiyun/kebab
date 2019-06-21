@@ -293,7 +293,7 @@ export default class Mod {
      */
     public static async get(pc: Mysql.Pool | Mysql.Connection, where: any[] | string, etc?: abs.Nu | abs.Nus | abs.ConfigEtcSql, opt: {
         lock?: boolean;
-    } = {}): Promise<undefined | Mod> {
+    } = {}) {
         let sql = Sql.get(etc);
         sql.select("*", this._table);
         if (typeof where === "string") {

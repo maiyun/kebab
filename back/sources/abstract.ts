@@ -83,6 +83,7 @@ export interface ConfigEtcRedis {
     "port": number;
     "index": number;
     "auth": string;
+    "pre": string;
 }
 export interface ConfigEtcSession {
     "name": string;

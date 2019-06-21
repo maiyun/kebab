@@ -25,7 +25,8 @@ export = {
             "host": "127.0.0.1",
             "port": 6379,
             "index": 0,
-            "auth": ""
+            "auth": "",
+            "pre": "mu_"
         },
         "session": {
             "name": "NU_SESSION",

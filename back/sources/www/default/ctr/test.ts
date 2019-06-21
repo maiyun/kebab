@@ -568,74 +568,74 @@ export async function redis(nu: abs.Nu) {
     }
     let echo: string[] = [];
 
-    let r = await conn.getString("test");
+    let r = await conn.getString("test", nu);
     echo.push(
         `<pre>` +
-        `await conn.getString("test");` +
+        `await conn.getString("test", nu);` +
         `</pre>` +
         JSON.stringify(r)
     );
 
-    let rb = await conn.setString("test", "abc");
+    let rb = await conn.setString("test", "abc", nu);
     echo.push(
         `<pre>` +
-        `await conn.setString("test", "abc");` +
+        `await conn.setString("test", "abc", nu);` +
         `</pre>` +
         JSON.stringify(rb)
     );
 
-    r = await conn.getString("test");
+    r = await conn.getString("test", nu);
     echo.push(
         `<pre>` +
-        `await conn.getString("test");` +
+        `await conn.getString("test", nu);` +
         `</pre>` +
         JSON.stringify(r)
     );
 
-    rb = await conn.setString("test", "abcm", {flag: "NX"});
+    rb = await conn.setString("test", "abcm", nu, {flag: "NX"});
     echo.push(
         `<pre>` +
-        `await conn.setString("test", "abcm", {flag: "NX"});` +
+        `await conn.setString("test", "abcm", nu, {flag: "NX"});` +
         `</pre>` +
         JSON.stringify(rb)
     );
 
-    rb = await conn.setString("test", "abcm", {flag: "XX"});
+    rb = await conn.setString("test", "abcm", nu, {flag: "XX"});
     echo.push(
         `<pre>` +
-        `await conn.setString("test", "abcm", {flag: "XX"});` +
+        `await conn.setString("test", "abcm", nu, {flag: "XX"});` +
         `</pre>` +
         JSON.stringify(rb)
     );
 
-    rb = await conn.setString("test", "hhh", {flag: "XX", ex: 10});
+    rb = await conn.setString("test", "hhh", nu, {flag: "XX", ex: 10});
     echo.push(
         `<pre>` +
-        `await conn.setString("test", "hhh", {flag: "XX", ex: 10});` +
+        `await conn.setString("test", "hhh", nu, {flag: "XX", ex: 10});` +
         `</pre>` +
         JSON.stringify(rb)
     );
 
-    r = await conn.getString("test");
+    r = await conn.getString("test", nu);
     echo.push(
         `<pre>` +
-        `await conn.getString("test");` +
+        `await conn.getString("test", nu);` +
         `</pre>` +
         JSON.stringify(r)
     );
 
-    let rbn = await conn.del("test");
+    let rbn = await conn.del("test", nu);
     echo.push(
         `<pre>` +
-        `await conn.del("test");` +
+        `await conn.del("test", nu);` +
         `</pre>` +
         JSON.stringify(rbn)
     );
 
-    r = await conn.getString("test");
+    r = await conn.getString("test", nu);
     echo.push(
         `<pre>` +
-        `await conn.getString("test");` +
+        `await conn.getString("test", nu);` +
         `</pre>` +
         JSON.stringify(r)
     );

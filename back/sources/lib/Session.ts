@@ -31,7 +31,7 @@ async function _gc(nu: abs.Nu | abs.Nus, conn: Mysql.Pool | Mysql.Connection, et
 export async function __update(nu: abs.Nu) {
     // --- 写入内存或数据库 ---
     if (nu.sessionConfig.conn instanceof Redis.Connection) {
-        await nu.sessionConfig.conn.setJson("se_" + nu.sessionConfig.token, nu.session, {
+        await nu.sessionConfig.conn.setJson("se_" + nu.sessionConfig.token, nu.session, nu, {
             ex: nu.sessionConfig.etc && nu.sessionConfig.etc.exp ? nu.sessionConfig.etc.exp : nu.config.etc.session.exp
         });
     } else {
@@ -76,7 +76,7 @@ export async function start(nu: abs.Nu | abs.Nus, conn: Mysql.Pool | Mysql.Conne
         // --- 如果启用了内存加速则在内存找 ---
         if (conn instanceof Redis.Connection) {
             // --- Redis ---
-            let data = await conn.getJson("se_" + token);
+            let data = await conn.getJson("se_" + token, nu);
             if (data === undefined) {
                 needInsert = true;
             } else {
@@ -107,7 +107,7 @@ export async function start(nu: abs.Nu | abs.Nus, conn: Mysql.Pool | Mysql.Conne
         if (conn instanceof Redis.Connection) {
             do {
                 token = Text.random(16, Text.RANDOM_LUN);
-            } while (!await conn.setJson("se_" + token, {}, {flag: "NX", ex: exp}));
+            } while (!await conn.setJson("se_" + token, {}, nu, {flag: "NX", ex: exp}));
         } else {
             let sql = Sql.get(nu);
             let stamp = Time.stamp();
