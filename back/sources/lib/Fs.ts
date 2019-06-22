@@ -309,7 +309,7 @@ type _SyncOptions = {
  * @param opt 选项
  */
 export async function sync(from: string, to: string, opt: SyncOptions = {}): Promise<void> {
-    opt.ignore = opt.ignore || ["*.ts", "*.scss", "tsconfig.json", "tslint.json", "types"];
+    opt.ignore = opt.ignore || ["*.ts", "*.scss", "tsconfig.json", "tslint.json", "types", ".*"];
 
     // --- 如果源目录不存在，则直接跳出 ---
     let fstats = await getStats(from);
