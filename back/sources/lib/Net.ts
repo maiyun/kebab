@@ -8,6 +8,8 @@ import * as mime from "@litert/mime-types";
 // --- 库和定义 ---
 import * as Fs from "~/lib/Fs";
 import * as Text from "~/lib/Text";
+import * as DnsSys from "~/lib/DnsSys";
+import * as Socket from "~/lib/Socket";
 import * as Const from "~/const";
 // --- 自己 ---
 import * as NetHttp1Response from "./Net/NetHttp1Response";
@@ -528,4 +530,64 @@ export function resetCookieSession(cookie: A.NetCookie): void {
             delete(cookie[key]);
         }
     }
+}
+
+/**
+ * --- 无需 SMTP 发送邮件 ---
+ * @param server 发送方域名
+ * @param from 发送方邮箱名（不含 @）
+ * @param nickname 发送方昵称
+ * @param to 收件邮箱（含 @）
+ * @param title 标题
+ * @param content 内容
+ */
+export async function mail(server: string, from: string, nickname: string, to: string, title: string, content: string) {
+    let ms = /\w[a-zA-Z0-9\.\-\+]*\@(\w+[a-zA-Z0-9\-\.]+\w)/i.exec(to);
+    if (!ms) {
+        return false;
+    }
+    let mxs = await DnsSys.getMx(ms[1]);
+    if (!mxs) {
+        return false;
+    }
+    let mx = mxs[0];
+
+    const commands = [
+        `HELO ${server}`,
+        `MAIL FROM:<${from}@${server}>`,
+        `RCPT TO:<${to}>`,
+        `DATA`,
+        `content`,
+        `QUIT`
+    ];
+    const contents = [
+        `MIME-Version: 1.0`,
+        `Delivered-To: ${to}`,
+        `Subject: =?UTF-8?B?${Buffer.from(title).toString("base64")}?=`,
+        `From: =?UTF-8?B?${Buffer.from(nickname).toString("base64")}?= <${from}@${server}>`,
+        `To: ${to}`,
+        `Content-Type: text/plain; charset=UTF-8`,
+        `Content-Transfer-Encoding: base64`,
+        ``,
+        Buffer.from(content).toString("base64")
+    ];
+    let fp = await Socket.get({
+        host: mx.exchange,
+        port: 25
+    });
+    if (!fp) {
+        return false;
+    }
+    for (let c of commands) {
+        if (c === "content") {
+            let content = contents.join("\r\n") + "\r\n.\r\n";
+            await fp.write(content);
+        } else {
+            await fp.write(c + "\r\n");
+        }
+        // $r = fgets($fp);
+    }
+    await fp.disconnect();
+    return true;
+
 }
