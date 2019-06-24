@@ -48,6 +48,21 @@ function _setLocaleDeep(loc: any, pre: string = "") {
 }
 
 /**
+ * --- 获取语言 ---
+ * @param locale 语言，如 zh-CN
+ * @param key 语言值
+ */
+export function getText(locale: string, key: string): string {
+    if (!_LOCALE_OBJ[locale]) {
+        return "LocaleError";
+    }
+    if (!_LOCALE_OBJ[locale][key]) {
+        return "LocaleError";
+    }
+    return _LOCALE_OBJ[locale][key];
+}
+
+/**
  * --- 加载 HTML 文件 ---
  * @param Nu 对象
  * @param path 模板文件相对/绝对路径

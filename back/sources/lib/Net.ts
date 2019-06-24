@@ -534,6 +534,7 @@ export function resetCookieSession(cookie: A.NetCookie): void {
 
 /**
  * --- 无需 SMTP 发送邮件 ---
+ * --- 配置 TXT 记录为：v=spf1 ip4:xxx.xxx.xxx.xxx ~all，然后 MX 记录为 IP ---
  * @param server 发送方域名
  * @param from 发送方邮箱名（不含 @）
  * @param nickname 发送方昵称
