@@ -49,17 +49,17 @@ function _setLocaleDeep(loc: any, pre: string = "") {
 
 /**
  * --- 获取语言 ---
- * @param locale 语言，如 zh-CN
+ * @param nu Nu 对象
  * @param key 语言值
  */
-export function getText(locale: string, key: string): string {
-    if (!_LOCALE_OBJ[locale]) {
+export function getText(nu: abs.Nu, key: string): string {
+    if (!_LOCALE_OBJ[nu.locale]) {
         return "LocaleError";
     }
-    if (!_LOCALE_OBJ[locale][key]) {
+    if (!_LOCALE_OBJ[nu.locale][key]) {
         return "LocaleError";
     }
-    return _LOCALE_OBJ[locale][key];
+    return _LOCALE_OBJ[nu.locale][key];
 }
 
 /**
