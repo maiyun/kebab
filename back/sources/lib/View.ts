@@ -17,8 +17,8 @@ let _LOCALE_PKG: string[] = [];
  * @param locale 语言
  * @param pkg 包
  */
-export async function setLocale(nu: abs.Nu, locale: string, pkg: string = "default"): Promise<boolean> {
-    let lName = locale + "." + pkg;
+export async function setLocale(nu: abs.Nu, locale: string, pkg: string = ""): Promise<boolean> {
+    let lName = locale + (pkg !== "" ? "." + pkg : "");
     if (_LOCALE_PKG.indexOf(lName) === -1) {
         let fstr = await Fs.readFile(nu.const.ROOT_PATH + "locale/" + lName + ".json");
         if (fstr === undefined) {
