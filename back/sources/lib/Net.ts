@@ -586,7 +586,7 @@ export async function mail(server: string, from: string, nickname: string, to: s
         } else {
             await fp.write(c + "\r\n");
         }
-        // $r = fgets($fp);
+        // let r = (await fp.read()).toString();
     }
     await fp.disconnect();
     return true;

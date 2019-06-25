@@ -11,6 +11,7 @@ export class Socket {
 
     /** Socket 对象 */
     private _client: net.Socket;
+    private _close: boolean = false;
     /** 获取到的数据 */
     private _data: Buffer = Buffer.from("");
 
@@ -18,6 +19,8 @@ export class Socket {
         this._client = s;
         this._client.on("data", (chunk: Buffer) => {
             this._data = Buffer.concat([this._data, chunk], this._data.length + chunk.length);
+        }).on("close", () => {
+            this._close = true;
         });
     }
 
@@ -42,7 +45,7 @@ export class Socket {
      */
     public async read(): Promise<Buffer> {
         let i = 0;
-        while (this._data.length === 0 && i < 6) {
+        while (this._data.length === 0 && i < 10) {
             await Sys.sleep(50);
             ++i;
         }
@@ -57,11 +60,15 @@ export class Socket {
     /**
      * --- 断开此连接 ---
      */
-    public disconnect() {
+    public disconnect(): Promise<void> {
         return new Promise((resolve, reject) => {
-            this._client.end(function() {
+            if (this._close) {
                 resolve();
-            });
+            } else {
+                this._client.end(function() {
+                    resolve();
+                });
+            }
         });
     }
 
