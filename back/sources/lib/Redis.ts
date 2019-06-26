@@ -361,7 +361,7 @@ export class Connection {
      * @param fields 字段数组
      * @param etc 配置
      */
-    public hmget(key: string, fields: string[], etc?: abs.Nu | abs.Nus | abs.ConfigEtcRedis): Promise<{[key: string]: string} | undefined> {
+    public hmget(key: string, fields: string[], etc?: abs.Nu | abs.Nus | abs.ConfigEtcRedis): Promise<string[] | undefined> {
         this.__lastTime = Time.stamp();
         let pre = etc ? (Sys.isNu(etc) || Sys.isNus(etc) ? etc.config.etc.redis.pre : etc.pre) : "";
         return new Promise((resolve, reject) => {
@@ -369,12 +369,7 @@ export class Connection {
                 if (err) {
                     resolve(undefined);
                 } else {
-                    let o: {[key: string]: string} = {};
-                    let fl = fields.length;
-                    for (let i = 0; i < fl; ++i) {
-                        o[fields[i]] = data[i];
-                    }
-                    resolve(o);
+                    resolve(data);
                 }
             });
         });
