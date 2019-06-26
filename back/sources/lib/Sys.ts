@@ -228,3 +228,24 @@ export function objectSort(obj: any): any {
     }
     return newObj;
 }
+
+/**
+ * --- 获取直连真实 IP ---
+ * @param nu Nu 对象
+ */
+export function getIp(nu: abs.Nu) {
+    let ip = nu.req.socket.remoteAddress || "0.0.0.0";
+    let fa = nu.req.socket.remoteFamily || "IPv4";
+    let match = /^(.+?):([0-9]+?\.[0-9]+?\.[0-9]+?\.[0-9]+?)$/i.exec(ip);
+    if (match) {
+        return {
+            "IPv4": match[1],
+            "IPv6": match[2]
+        };
+    } else {
+        return {
+            "IPv4": fa === "IPv4" ? ip : undefined,
+            "IPv6": fa === "IPv6" ? ip : undefined
+        };
+    }
+}
