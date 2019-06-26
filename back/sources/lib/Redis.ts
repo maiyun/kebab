@@ -13,6 +13,12 @@ export interface Options {
     px?: number;
 }
 
+/** HSet 设置项 */
+export interface HOptions {
+    /** NX: 不存在才设置 */
+    flag?: "" | "NX";
+}
+
 /** --- 连接列表（同一个 host、port、index、auth 只有一个连接） --- */
 let _connectionList: Connection[] = [];
 
@@ -77,6 +83,7 @@ export class Connection {
     /**
      * --- 获取 Redis 的字符串值 ---
      * @param key 要获取的 key
+     * @param etc 配置
      */
     public getString(key: string, etc?: abs.Nu | abs.Nus | abs.ConfigEtcRedis): Promise<string | undefined> {
         this.__lastTime = Time.stamp();
@@ -100,6 +107,7 @@ export class Connection {
      * --- 设置一个字符串 ---
      * @param key 设置的 key
      * @param value 设置的值
+     * @param etc 配置
      * @param opt 选项
      */
     public setString(key: string, value: string, etc?: abs.Nu | abs.Nus | abs.ConfigEtcRedis, opt: Options = {}): Promise<boolean> {
@@ -137,6 +145,7 @@ export class Connection {
     /**
      * --- 获取 JSON 对象值 ---
      * @param key 要获取的 key
+     * @param etc 配置
      */
     public async getJson(key: string, etc?: abs.Nu | abs.Nus | abs.ConfigEtcRedis): Promise<{
         [key: string]: any;
@@ -154,9 +163,10 @@ export class Connection {
     }
 
     /**
-     * --- 设置 JSON
+     * --- 设置 JSON ---
      * @param key 要设置的 key
      * @param value JSON 对象
+     * @param etc 配置
      * @param opt 选项
      */
     public async setJson(key: string, value: any, etc?: abs.Nu | abs.Nus | abs.ConfigEtcRedis, opt: Options = {}): Promise<boolean> {
@@ -167,6 +177,7 @@ export class Connection {
     /**
      * --- 设置自增 ---
      * @param key 要设置的 key
+     * @param etc 配置
      * @param num 要自增的数
      */
     public incr(key: string, etc?: abs.Nu | abs.Nus | abs.ConfigEtcRedis, num: number = 1): Promise<number> {
@@ -191,6 +202,7 @@ export class Connection {
     /**
      * --- 设置自减 ---
      * @param key 要设置的 key
+     * @param etc 配置
      * @param num 要自增的数
      */
     public decr(key: string, etc?: abs.Nu | abs.Nus | abs.ConfigEtcRedis, num: number = 1): Promise<number> {
@@ -215,6 +227,7 @@ export class Connection {
     /**
      * --- 删除一个或多个 key ---
      * @param keys 要删的 key 或 key 数组
+     * @param etc 配置
      */
     public del(keys: string | string[], etc?: abs.Nu | abs.Nus | abs.ConfigEtcRedis): Promise<number> {
         this.__lastTime = Time.stamp();
@@ -243,6 +256,7 @@ export class Connection {
     /**
      * --- 检测一个 key 是否存在 ---
      * @param key 要检测的 key
+     * @param etc 配置
      */
     public exists(key: string, etc?: abs.Nu | abs.Nus | abs.ConfigEtcRedis): Promise<boolean> {
         this.__lastTime = Time.stamp();
@@ -253,6 +267,213 @@ export class Connection {
                     resolve(false);
                 } else {
                     resolve(num === 1 ? true : false);
+                }
+            });
+        });
+    }
+
+    /**
+     * --- 设置哈希表 ---
+     * @param key 要设置的 key
+     * @param field 字段名
+     * @param value 字段值
+     * @param etc 配置
+     */
+    public hset(key: string, field: string, value: string, etc?: abs.Nu | abs.Nus | abs.ConfigEtcRedis, opt: HOptions = {}): Promise<boolean> {
+        this.__lastTime = Time.stamp();
+        let pre = etc ? (Sys.isNu(etc) || Sys.isNus(etc) ? etc.config.etc.redis.pre : etc.pre) : "";
+        return new Promise((resolve, reject) => {
+            if (opt.flag === "NX") {
+                this._client.hsetnx(pre + key, field, value, function(err, num) {
+                    if (err) {
+                        resolve(false);
+                    } else {
+                        if (num === 1) {
+                            resolve(true);
+                        } else {
+                            resolve(false);
+                        }
+                    }
+                });
+            } else {
+                this._client.hset(pre + key, field, value, function(err, num) {
+                    if (err) {
+                        resolve(false);
+                    } else {
+                        resolve(true);
+                    }
+                });
+            }
+        });
+    }
+
+    /**
+     * --- 批量哈希表 ---
+     * @param key 要设置的 key
+     * @param data 键值对 {}
+     * @param etc 配置
+     */
+    public hmset(key: string, data: {[key: string]: string | number}, etc?: abs.Nu | abs.Nus | abs.ConfigEtcRedis): Promise<boolean> {
+        this.__lastTime = Time.stamp();
+        let pre = etc ? (Sys.isNu(etc) || Sys.isNus(etc) ? etc.config.etc.redis.pre : etc.pre) : "";
+        return new Promise((resolve, reject) => {
+            this._client.hmset(pre + key, data, function(err, str) {
+                if (err) {
+                    resolve(false);
+                } else {
+                    if (str === "OK") {
+                        resolve(true);
+                    } else {
+                        resolve(false);
+                    }
+                }
+            });
+        });
+    }
+
+    /**
+     * --- 获取哈希字段值 ---
+     * @param key 要获取的 key
+     * @param field 要获取的字段名
+     * @param etc 配置
+     */
+    public hget(key: string, field: string, etc?: abs.Nu | abs.Nus | abs.ConfigEtcRedis): Promise<string | undefined> {
+        this.__lastTime = Time.stamp();
+        let pre = etc ? (Sys.isNu(etc) || Sys.isNus(etc) ? etc.config.etc.redis.pre : etc.pre) : "";
+        return new Promise((resolve, reject) => {
+            this._client.hget(pre + key, field, function(err, str) {
+                if (err) {
+                    resolve(undefined);
+                } else {
+                    if (str === null) {
+                        resolve(undefined);
+                    } else {
+                        resolve(str);
+                    }
+                }
+            });
+        });
+    }
+
+    /**
+     * --- 批量获取哈希表字段 ---
+     * @param key 哈希 key
+     * @param fields 字段数组
+     * @param etc 配置
+     */
+    public hmget(key: string, fields: string[], etc?: abs.Nu | abs.Nus | abs.ConfigEtcRedis): Promise<{[key: string]: string} | undefined> {
+        this.__lastTime = Time.stamp();
+        let pre = etc ? (Sys.isNu(etc) || Sys.isNus(etc) ? etc.config.etc.redis.pre : etc.pre) : "";
+        return new Promise((resolve, reject) => {
+            this._client.hmget(pre + key, fields, function(err, data) {
+                if (err) {
+                    resolve(undefined);
+                } else {
+                    let o: {[key: string]: string} = {};
+                    let fl = fields.length;
+                    for (let i = 0; i < fl; ++i) {
+                        o[fields[i]] = data[i];
+                    }
+                    resolve(o);
+                }
+            });
+        });
+    }
+
+    /**
+     * --- 获取一个哈希表的所有数据 ---
+     * @param key 哈希 key
+     * @param etc 配置
+     */
+    public hgetall(key: string, etc?: abs.Nu | abs.Nus | abs.ConfigEtcRedis): Promise<{[key: string]: string} | undefined> {
+        this.__lastTime = Time.stamp();
+        let pre = etc ? (Sys.isNu(etc) || Sys.isNus(etc) ? etc.config.etc.redis.pre : etc.pre) : "";
+        return new Promise((resolve, reject) => {
+            this._client.hgetall(pre + key, function(err, data) {
+                if (err) {
+                    resolve(undefined);
+                } else {
+                    resolve(data);
+                }
+            });
+        });
+    }
+
+    /**
+     * --- 删除哈希表的一个或多个字段 ---
+     * @param key 哈希 key
+     * @param fields 字段或字段数组
+     * @param etc 配置
+     */
+    public hdel(key: string, fields: string | string[], etc?: abs.Nu | abs.Nus | abs.ConfigEtcRedis): Promise<number> {
+        this.__lastTime = Time.stamp();
+        let pre = etc ? (Sys.isNu(etc) || Sys.isNus(etc) ? etc.config.etc.redis.pre : etc.pre) : "";
+        return new Promise((resolve, reject) => {
+            this._client.hdel(pre + key, fields, function(err, num) {
+                if (err) {
+                    resolve(0);
+                } else {
+                    resolve(num);
+                }
+            });
+        });
+    }
+
+    /**
+     * --- 检查给定 field 是否存在于哈希表当中 ---
+     * @param key 哈希 key
+     * @param field 字段
+     * @param etc 配置
+     */
+    public hexists(key: string, field: string, etc?: abs.Nu | abs.Nus | abs.ConfigEtcRedis): Promise<boolean> {
+        this.__lastTime = Time.stamp();
+        let pre = etc ? (Sys.isNu(etc) || Sys.isNus(etc) ? etc.config.etc.redis.pre : etc.pre) : "";
+        return new Promise((resolve, reject) => {
+            this._client.hexists(pre + key, field, function(err, num) {
+                if (err) {
+                    resolve(false);
+                } else {
+                    resolve(num === 1 ? true : false);
+                }
+            });
+        });
+    }
+
+    /**
+     * --- 设置哈希自增 ---
+     * @param key 哈希 key
+     * @param field 字段
+     * @param etc 配置
+     * @param increment 要自增的数字（可为负）
+     */
+    public hincr(key: string, field: string, etc?: abs.Nu | abs.Nus | abs.ConfigEtcRedis, increment: number = 1): Promise<number> {
+        this.__lastTime = Time.stamp();
+        let pre = etc ? (Sys.isNu(etc) || Sys.isNus(etc) ? etc.config.etc.redis.pre : etc.pre) : "";
+        return new Promise((resolve, reject) => {
+            this._client.hincrby(pre + key, field, increment, function(err: Error | null, num: number) {
+                if (err) {
+                    resolve(0);
+                } else {
+                    resolve(num);
+                }
+            });
+        });
+    }
+
+    /**
+     * --- 获取一个哈希的所有字段列表 ---
+     * @param key 哈希 key
+     * @param etc 配置
+     */
+    public hkeys(key: string, etc?: abs.Nu | abs.Nus | abs.ConfigEtcRedis): Promise<string[] | undefined> {
+        this.__lastTime = Time.stamp();
+        let pre = etc ? (Sys.isNu(etc) || Sys.isNus(etc) ? etc.config.etc.redis.pre : etc.pre) : "";
+        return new Promise((resolve, reject) => {
+            this._client.hkeys(pre + key, function(err, fields) {
+                if (err) {
+                    resolve(undefined);
+                } else {
+                    resolve(fields);
                 }
             });
         });
