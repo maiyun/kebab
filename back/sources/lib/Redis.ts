@@ -30,6 +30,13 @@ async function _checkConnection() {
     let stamp = Time.stamp();
     let connLen: number = _connectionList.length;
     for (let i = 0; i < connLen; ++i) {
+        if (!_connectionList[i]) {
+            // --- 清除 undefined ---
+            console.log(_connectionList);
+            console.log(i);
+            _connectionList.splice(i, 1);
+            --i;
+        }
         if (_connectionList[i].__lastTime < stamp - 3600) {
             _connectionList[i].disconnect();
             _connectionList.splice(i, 1);
@@ -529,10 +536,7 @@ export async function getConnection(etc: abs.Nu | abs.Nus | abs.ConfigEtcRedis):
 function _clearDisconnected() {
     let connLen: number = _connectionList.length;
     for (let i = 0; i < connLen; ++i) {
-        if (!_connectionList[i]) {
-            continue;
-        }
-        if (_connectionList[i].__disconnected === true) {
+        if (!_connectionList[i] || _connectionList[i].__disconnected === true) {
             _connectionList.splice(i, 1);
             --i;
         }

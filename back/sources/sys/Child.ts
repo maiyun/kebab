@@ -60,7 +60,7 @@ const _SNI_MANAGER = sni.certs.createManager();
         // --- 设置标准头部 ---
         res.setHeader("Server", "Nuttom/" + Const.VER);
         /** --- 格式化的请求 uri 对象 --- */
-        const uri = url.parse((req.headers[":scheme"] || "") + "://" + req.headers[":authority"] + req.headers[":path"]);
+        const uri = url.parse("https://" + (req.headers[":authority"] || req.headers["host"]) + req.url);
         /** --- 当前匹配的虚拟主机对象 --- */
         let vhost = _getVhost(uri.hostname || "");
         if (!vhost) {
