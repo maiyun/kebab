@@ -21,6 +21,13 @@ class Sql {
         this._pre = Sys.isNu(etc) || Sys.isNus(etc) ? etc.config.etc.sql.pre : etc.pre;
     }
 
+    public getPre(): string {
+        return this._pre;
+    }
+    public setPre(pre: string): void {
+        this._pre = pre;
+    }
+
     /**
      * --- 释放连接到池子 ---
      */
@@ -36,10 +43,10 @@ class Sql {
      * @param cs [] or {}
      * @param vs [] | [][]
      */
-    public insert(f: string, cs: any = [], vs?: any[] | any[][]): Sql {
+    public insert(f: string, cs: any = [], vs: any[] | any[][] = []): Sql {
         this._data = [];
         let sql = `INSERT INTO ${this._pre + f} (`;
-        if (vs) {
+        if (vs.length > 0) {
             // --- "xx", ["id", "name"], [['1', 'wow'], ['2', 'oh']] ---
             // --- "xx", ["id", "name"], ["1", "wow"] ---
             for (let i of cs) {
@@ -48,14 +55,16 @@ class Sql {
             sql = sql.slice(0, -1) + `) VALUES `;
             // --- 判断插入单条记录还是多条记录 ---
             if (Array.isArray(vs[0])) {
+                // --- $vs: [["1", "wow"], ["2", "oh"]] ---
                 // --- 多条记录 ---
-                // --- INSERT INTO xx (id, name) VALUES ? ---
+                // --- INSERT INTO xx (id, name) VALUES (?), (?) ---
                 for (let v of vs[0]) {
                     sql += "(?), ";
                 }
                 sql = sql.slice(0, -2);
                 this._data = vs;
             } else {
+                // --- vs: ["1", "wow"] ---
                 // --- 单条记录 ---
                 // --- INSERT INTO xx (id, name) VALUES (?) ---
                 sql += "(";
@@ -67,16 +76,14 @@ class Sql {
             }
         } else {
             // --- "xx", {"id": "1", "name": "wow"} ---
-            // --- INSERT INTO xx (id, name) VALUES (?) ---
-            let data: any[] = [];
+            // --- INSERT INTO xx (id, name) VALUES (?, ?) ---
             let values: string = "";
             for (let k in cs) {
-                sql += this.field(k) + ",";
-                data.push(cs[k]);
-                values += "?,";
+                sql += this.field(k) + ", ";
+                this._data.push(cs[k]);
+                values += "?, ";
             }
-            sql = sql.slice(0, -1) + ") VALUES (" + values.slice(0, -1) + ")";
-            this._data = data;
+            sql = sql.slice(0, -2) + ") VALUES (" + values.slice(0, -2) + ")";
         }
         this._sql = [sql];
         return this;
@@ -95,7 +102,7 @@ class Sql {
     }
 
     /**
-     * --- '*', 'xx' ---
+     * --- "*", "xx" ---
      * @param c 字段
      * @param f 表
      */
@@ -105,6 +112,7 @@ class Sql {
         if (typeof c === "string") {
             sql += c;
         } else {
+            // --- c: ["id", "name"] ---
             for (let i of c) {
                 sql += this.field(i) + ",";
             }
@@ -127,8 +135,15 @@ class Sql {
         return this;
     }
     private _updateSub(s: any[]): string {
-        // --- 例子：      1                 2          3 ---
-        // --- [["total", "+", "1"], {'type': '6', 'str': ['(CASE `id` WHEN 1 THEN ? WHEN 2 THEN ? END)', ['val1', 'val2']]}] ---
+        /*
+        [
+            ["total", "+", "1"],    // 1
+            {
+                "type": "6",        // 2
+                "str": ['(CASE `id` WHEN 1 THEN ? WHEN 2 THEN ? END)', ["val1", "val2"]]    // 3
+            }
+        ]
+        */
         let sql = "";
         for (let v of s) {
             if (Array.isArray(v)) {
@@ -137,6 +152,7 @@ class Sql {
                 this._data.push(v[2]);
             } else {
                 for (let k1 in v) {
+                    // --- v: {} ---
                     let v1 = v[k1];
                     if (Array.isArray(v1)) {
                         // --- 3 ---
@@ -157,7 +173,7 @@ class Sql {
     }
 
     /**
-     * --- 'xx' ---
+     * --- "xx" ---
      * @param f 表名
      */
     public delete(f: string): Sql {
@@ -299,7 +315,7 @@ class Sql {
         if (l[1] === undefined) {
             return "`" + str + "`";
         }
-        return l[0] + "`" + l[1] + "`";
+        return "`" + l[0] + "`.`" + l[1] + "`";
     }
 
 }
