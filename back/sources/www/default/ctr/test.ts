@@ -307,7 +307,9 @@ export async function mod(nu: abs.Nu) {
 
 export async function sql(nu: abs.Nu) {
     let echo: string[] = [`<pre>`];
-    let sql = Sql.get(nu);
+    let sql = Sql.get({
+        "pre": "test_"
+    });
     switch (nu.get.type) {
         case "insert": {
             let s = sql.insert("user", ["name", "age"], [
@@ -346,7 +348,7 @@ export async function sql(nu: abs.Nu) {
                 `------------------------------\n\n`
             );
 
-            s = sql.insert("verify", {"token": "abc", "time_update": "10", x: ["a"]}).onDuplicate([{"time_update": "20"}]).getSql();
+            s = sql.insert("verify", {"token": "abc", "time_update": "10"}).onDuplicate([{"time_update": "20"}]).getSql();
             sd = sql.getData();
             echo.push(
                 `sql.insert("verify", {"token": "abc", "time_update": "10"}).onDuplicate({"time_update": "20"});\n\n` +
@@ -439,14 +441,14 @@ export async function sql(nu: abs.Nu) {
             s = sql.update("order", [{"state": "1"}]).where([{
                 "user_id": "2",
                 "state": ["1", "2", "3"],
-                "$or": [{"type": "1"}, {"type": "2"}]
+                "$or": [{"type": "1", "find": "0"}, {"type": "2", "find": "1"}, ["type", "<", "-1"]]
             }]).getSql();
             sd = sql.getData();
             echo.push(
                 `sql.update("order", [{"state": "1"}]).where([{\n` +
                 `    "user_id": "2",\n` +
                 `    "state": ["1", "2", "3"],\n` +
-                `    "$or": [{"type": "1"}, {"type": "2"}]\n` +
+                `    "$or": [{"type": "1", "find": "0"}, {"type": "2", "find": "1"}, ["type", "<", "-1"]]\n` +
                 `}]);\n\n` +
                 `<b>getSql() :</b> ${s}\n` +
                 `<b>getData():</b> ${JSON.stringify(sd, null, 4)}\n` +

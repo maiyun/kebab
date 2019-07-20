@@ -58,7 +58,7 @@ class Sql {
                 // --- $vs: [["1", "wow"], ["2", "oh"]] ---
                 // --- 多条记录 ---
                 // --- INSERT INTO xx (id, name) VALUES (?), (?) ---
-                for (let v of vs[0]) {
+                for (let v of vs) {
                     sql += "(?), ";
                 }
                 sql = sql.slice(0, -2);
@@ -200,21 +200,18 @@ class Sql {
         }
         return this;
     }
-    private _whereSub(s: any[], type: string = " AND ", lev: number = 0): string {
+    private _whereSub(s: any[]): string {
         let sql = "";
-        if (lev > 0) {
-            sql = "(";
-        }
         for (let v of s) {
             if (Array.isArray(v)) {
                 // --- 2, 3 ---
                 if (Array.isArray(v[2])) {
                     // --- 3 ---
-                    sql += this.field(v[0]) + " " + v[1].toUpperCase() + " (?)" + type;
+                    sql += this.field(v[0]) + " " + v[1].toUpperCase() + " (?) AND ";
                     this._data.push(v[2]);
                 } else {
                     // --- 2 ---
-                    sql += this.field(v[0]) + " " + v[1] + " ?" + type;
+                    sql += this.field(v[0]) + " " + v[1] + " ? AND ";
                     this._data.push(v[2]);
                 }
             } else {
@@ -223,20 +220,34 @@ class Sql {
                     let v1 = v[k1];
                     if (k1[0] === "$") {
                         // --- 5 ---
-                        sql += this._whereSub(v1, " " + k1.slice(1).toUpperCase() + " ", lev + 1) + type;
+                        let sp = " " + k1.slice(1).toUpperCase() + " ";
+                        sql += "(";
+                        for (let k2 in v1) {
+                            let v2 = v1[k2];
+                            if (Array.isArray(v2)) {
+                                sql += this._whereSub([v2]) + sp;
+                            } else {
+                                if (Object.keys(v2).length > 1) {
+                                    sql += "(" + this._whereSub([v2]) + ")" + sp;
+                                } else {
+                                    sql += this._whereSub([v2]) + sp;
+                                }
+                            }
+                        }
+                        sql = sql.slice(0, -sp.length) + ") AND ";
                     } else if (Array.isArray(v1)) {
                         // --- 4 ---
-                        sql += this.field(k1) + " IN (?)" + type;
+                        sql += this.field(k1) + " IN (?) AND ";
                         this._data.push(v1);
                     } else {
                         // --- 1 ---
-                        sql += this.field(k1) + " = ?" + type;
+                        sql += this.field(k1) + " = ? AND ";
                         this._data.push(v1);
                     }
                 }
             }
         }
-        return sql.slice(0, -type.length) + (lev > 0 ? ")" : "");
+        return sql.slice(0, -5);
     }
 
     /**
