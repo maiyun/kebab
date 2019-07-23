@@ -163,17 +163,17 @@ export async function toResponse(nu: abs.Nu, path: string, data?: any): Promise<
             if (compress) {
                 nu.res.setHeader("Content-Encoding", compress.type);
                 nu.res.writeHead(200);
-                Fs.readStream(path).pipe(compress.obj).pipe(nu.res.stream);
+                Fs.readStream(path).pipe(compress.obj).pipe(nu.res.stream || nu.res);
                 return;
             }
             nu.res.setHeader("Content-Length", stats.size);
             nu.res.writeHead(200);
-            Fs.readStream(path).pipe(nu.res.stream);
+            Fs.readStream(path).pipe(nu.res.stream || nu.res);
         } else {
             // --- 不压缩 ---
             nu.res.setHeader("Content-Length", stats.size);
             nu.res.writeHead(200);
-            Fs.readStream(path).pipe(nu.res.stream);
+            Fs.readStream(path).pipe(nu.res.stream || nu.res);
         }
     }
 }
