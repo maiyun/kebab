@@ -1,5 +1,14 @@
 # 更新日志
 
+## 0.1.1
+
+[+] 增加 nlReplace 方法，Text 库。  
+[+] 增加 reload, restart, clearDataCache 的 RPC。  
+[\*] 当 key 小于必须的位数后，则自动进行 md5 补全，aesEncrypt/aesDecrypt 方法，Crypto 库。  
+[\*] 修复 readFile 的相关 bug，Ssh (Sftp) 库。  
+[\*] 优化 Mysql/Redis 库的相关返回值。  
+[\*] 替换 Redis 核心库为 LiteRT 组织的 redis 库。
+
 ## 0.1.0
 
 [+] 新增 Ssh 库，包含 Shell 和 Sftp 子库。  

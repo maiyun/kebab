@@ -39,6 +39,7 @@ export default class Mod {
     protected static _table = "";
     protected static _primary = "id";
     protected static _key = "";
+    protected static _soft = false;
 
     /** 要 update 的内容 */
     protected _updates: any = {};

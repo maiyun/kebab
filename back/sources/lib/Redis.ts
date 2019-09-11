@@ -1,5 +1,5 @@
 // --- 第三方 ---
-import * as redis from "redis";
+import * as redis from "@litert/redis";
 // --- 库和定义 ---
 import * as Sys from "~/lib/Sys";
 import * as Time from "~/lib/Time";
@@ -22,29 +22,24 @@ export interface HOptions {
 /** --- 连接列表（同一个 host、port、index、auth 只有一个连接） --- */
 let _connectionList: Connection[] = [];
 
-// --- 每隔 1 小时检查一次连接是否正常活动 ---
-// --- 一般情况下连接异常会触发 error 事件，所以这个检查不用太频繁，主要为了发送个 PING 来保持连接而已 ---
-// --- 还有种情况，连接持续 1 个小时以上没有活跃了，则断开 ---
+// --- 每隔 30 分钟检查一次连接是否正常活动 ---
+// --- 连接持续 30 分钟以上没有活跃了，则断开 ---
 async function _checkConnection() {
-    await Sys.sleep(3600000);
+    await Sys.sleep(1800000);
     let stamp = Time.stamp();
     let connLen: number = _connectionList.length;
     for (let i = 0; i < connLen; ++i) {
-        if (!_connectionList[i]) {
-            // --- 清除 undefined ---
-            console.log(_connectionList);
-            console.log(i);
-            _connectionList.splice(i, 1);
-            --i;
-        }
-        if (_connectionList[i].__lastTime < stamp - 3600) {
+        if (_connectionList[i].__lastTime < stamp - 1800) {
             _connectionList[i].disconnect();
             _connectionList.splice(i, 1);
             --i;
+            continue;
         }
-        if (!_connectionList[i].ping()) {
+        if (!await _connectionList[i].ping()) {
+            _connectionList[i].disconnect();
             _connectionList.splice(i, 1);
             --i;
+            continue;
         }
     }
     _checkConnection();
@@ -55,13 +50,11 @@ export class Connection {
     /** 配置信息 */
     public readonly etc: abs.ConfigEtcRedis;
     /** Redis 对象 */
-    private _client!: redis.RedisClient;
-    /** 内部用的，当发生闪断，则从连接池移除连接 */
-    public __disconnected: boolean = false;
+    private _client!: redis.ICommandClient;
     /** 连接最后活跃时间 */
     public __lastTime!: number;
 
-    constructor(etc: abs.ConfigEtcRedis, client: redis.RedisClient) {
+    constructor(etc: abs.ConfigEtcRedis, client: redis.ICommandClient) {
         this.etc = Object.assign({}, etc);
         this._client = client;
         this.__lastTime = Time.stamp();
@@ -70,21 +63,18 @@ export class Connection {
     /**
      * --- 发送 ping 测试连接是否通畅 ---
      */
-    public ping(): Promise<boolean> {
+    public async ping() {
         this.__lastTime = Time.stamp();
-        return new Promise((resolve, reject) => {
-            this._client.ping(function(err, str) {
-                if (err) {
-                    resolve(false);
-                } else {
-                    if (str === "PONG") {
-                        resolve(true);
-                    } else {
-                        resolve(false);
-                    }
-                }
-            });
-        });
+        try {
+            let str = await this._client.ping();
+            if (str === "PONG") {
+                return true;
+            } else {
+                return false;
+            }
+        } catch {
+            return false;
+        }
     }
 
     /**
@@ -92,22 +82,19 @@ export class Connection {
      * @param key 要获取的 key
      * @param etc 配置
      */
-    public getString(key: string, etc?: abs.Nu | abs.Nus | abs.ConfigEtcRedis): Promise<string | undefined> {
+    public async getString(key: string, etc?: abs.Nu | abs.Nus | abs.ConfigEtcRedis) {
         this.__lastTime = Time.stamp();
         let pre = etc ? (Sys.isNu(etc) || Sys.isNus(etc) ? etc.config.etc.redis.pre : etc.pre) : "";
-        return new Promise((resolve, reject) => {
-            this._client.get(pre + key, function(err, str) {
-                if (err) {
-                    resolve(undefined);
-                } else {
-                    if (str === null) {
-                        resolve(undefined);
-                    } else {
-                        resolve(str);
-                    }
-                }
-            });
-        });
+        try {
+            let str = await this._client.get(pre + key);
+            if (str === null) {
+                return undefined;
+            } else {
+                return str;
+            }
+        } catch {
+            return undefined;
+        }
     }
 
     /**
@@ -117,36 +104,26 @@ export class Connection {
      * @param etc 配置
      * @param opt 选项
      */
-    public setString(key: string, value: string, etc?: abs.Nu | abs.Nus | abs.ConfigEtcRedis, opt: Options = {}): Promise<boolean> {
+    public async setString(key: string, value: string, etc?: abs.Nu | abs.Nus | abs.ConfigEtcRedis, opt: Options = {}) {
         this.__lastTime = Time.stamp();
         let pre = etc ? (Sys.isNu(etc) || Sys.isNus(etc) ? etc.config.etc.redis.pre : etc.pre) : "";
-        return new Promise((resolve, reject) => {
-            let callback = function(err: Error | null, str: "OK" | undefined) {
-                if (err) {
-                    resolve(false);
-                } else {
-                    if (str === "OK") {
-                        resolve(true);
-                    } else {
-                        resolve(false);
-                    }
-                }
-            };
-            if (opt.ex !== undefined || opt.px !== undefined) {
-                let num: number = opt.ex !== undefined ? opt.ex : <number>opt.px;
-                if (opt.flag === undefined || opt.flag === "") {
-                    this._client.set(pre + key, value, opt.ex !== undefined ? "EX" : "PX", num, callback);
-                } else {
-                    this._client.set(pre + key, value, opt.ex !== undefined ? "EX" : "PX", num, opt.flag, callback);
-                }
+
+        let ttl = opt.ex !== undefined ? opt.ex : opt.px;
+        let rtn: boolean;
+        try {
+            if (opt.flag === undefined || opt.flag === "") {
+                rtn = await this._client.set(pre + key, value, ttl);
             } else {
-                if (opt.flag === undefined || opt.flag === "") {
-                    this._client.set(pre + key, value, callback);
+                if (opt.flag === "NX") {
+                    rtn = await this._client.setNX(pre + key, value, ttl);
                 } else {
-                    this._client.set(pre + key, value, opt.flag, callback);
+                    rtn = await this._client.replace(pre + key, value, ttl);
                 }
             }
-        });
+            return rtn;
+        } catch {
+            return false;
+        }
     }
 
     /**
@@ -187,23 +164,18 @@ export class Connection {
      * @param etc 配置
      * @param num 要自增的数
      */
-    public incr(key: string, etc?: abs.Nu | abs.Nus | abs.ConfigEtcRedis, num: number = 1): Promise<number> {
+    public async incr(key: string, etc?: abs.Nu | abs.Nus | abs.ConfigEtcRedis, num: number = 1) {
         this.__lastTime = Time.stamp();
         let pre = etc ? (Sys.isNu(etc) || Sys.isNus(etc) ? etc.config.etc.redis.pre : etc.pre) : "";
-        return new Promise((resolve, reject) => {
-            let cb = function(err: Error | null, num: number) {
-                if (err) {
-                    resolve(0);
-                } else {
-                    resolve(num);
-                }
-            };
+        try {
             if (num === 1) {
-                this._client.incr(pre + key, cb);
+                return await this._client.incr(pre + key);
             } else {
-                this._client.incrby(pre + key, num, cb);
+                return await this._client.incrByFloat(pre + key, num);
             }
-        });
+        } catch {
+            return 0;
+        }
     }
 
     /**
@@ -212,23 +184,18 @@ export class Connection {
      * @param etc 配置
      * @param num 要自增的数
      */
-    public decr(key: string, etc?: abs.Nu | abs.Nus | abs.ConfigEtcRedis, num: number = 1): Promise<number> {
+    public async decr(key: string, etc?: abs.Nu | abs.Nus | abs.ConfigEtcRedis, num: number = 1) {
         this.__lastTime = Time.stamp();
         let pre = etc ? (Sys.isNu(etc) || Sys.isNus(etc) ? etc.config.etc.redis.pre : etc.pre) : "";
-        return new Promise((resolve, reject) => {
-            let cb = function(err: Error | null, num: number) {
-                if (err) {
-                    resolve(0);
-                } else {
-                    resolve(num);
-                }
-            };
+        try {
             if (num === 1) {
-                this._client.decr(pre + key, cb);
+                return await this._client.decr(pre + key);
             } else {
-                this._client.decrby(pre + key, num, cb);
+                return await this._client.decrByFloat(pre + key, num);
             }
-        });
+        } catch {
+            return 0;
+        }
     }
 
     /**
@@ -236,7 +203,7 @@ export class Connection {
      * @param keys 要删的 key 或 key 数组
      * @param etc 配置
      */
-    public del(keys: string | string[], etc?: abs.Nu | abs.Nus | abs.ConfigEtcRedis): Promise<number> {
+    public async del(keys: string | string[], etc?: abs.Nu | abs.Nus | abs.ConfigEtcRedis) {
         this.__lastTime = Time.stamp();
         let pre = etc ? (Sys.isNu(etc) || Sys.isNus(etc) ? etc.config.etc.redis.pre : etc.pre) : "";
         if (pre !== "") {
@@ -249,15 +216,11 @@ export class Connection {
                 }
             }
         }
-        return new Promise((resolve, reject) => {
-            this._client.del(keys, function(err, num) {
-                if (err) {
-                    resolve(0);
-                } else {
-                    resolve(num);
-                }
-            });
-        });
+        try {
+            return await this._client.del(keys);
+        } catch {
+            return 0;
+        }
     }
 
     /**
@@ -265,18 +228,14 @@ export class Connection {
      * @param key 要检测的 key
      * @param etc 配置
      */
-    public exists(key: string, etc?: abs.Nu | abs.Nus | abs.ConfigEtcRedis): Promise<boolean> {
+    public async exists(key: string, etc?: abs.Nu | abs.Nus | abs.ConfigEtcRedis): Promise<boolean> {
         this.__lastTime = Time.stamp();
         let pre = etc ? (Sys.isNu(etc) || Sys.isNus(etc) ? etc.config.etc.redis.pre : etc.pre) : "";
-        return new Promise((resolve, reject) => {
-            this._client.exists(pre + key, function(err, num) {
-                if (err) {
-                    resolve(false);
-                } else {
-                    resolve(num === 1 ? true : false);
-                }
-            });
-        });
+        try {
+            return await this._client.exists(pre + key);
+        } catch {
+            return false;
+        }
     }
 
     /**
@@ -286,32 +245,18 @@ export class Connection {
      * @param value 字段值
      * @param etc 配置
      */
-    public hset(key: string, field: string, value: string, etc?: abs.Nu | abs.Nus | abs.ConfigEtcRedis, opt: HOptions = {}): Promise<boolean> {
+    public async hset(key: string, field: string, value: string, etc?: abs.Nu | abs.Nus | abs.ConfigEtcRedis, opt: HOptions = {}) {
         this.__lastTime = Time.stamp();
         let pre = etc ? (Sys.isNu(etc) || Sys.isNus(etc) ? etc.config.etc.redis.pre : etc.pre) : "";
-        return new Promise((resolve, reject) => {
+        try {
             if (opt.flag === "NX") {
-                this._client.hsetnx(pre + key, field, value, function(err, num) {
-                    if (err) {
-                        resolve(false);
-                    } else {
-                        if (num === 1) {
-                            resolve(true);
-                        } else {
-                            resolve(false);
-                        }
-                    }
-                });
+                return await this._client.hSetNX(pre + key, field, value);
             } else {
-                this._client.hset(pre + key, field, value, function(err, num) {
-                    if (err) {
-                        resolve(false);
-                    } else {
-                        resolve(true);
-                    }
-                });
+                return await this._client.hSet(pre + key, field, value);
             }
-        });
+        } catch {
+            return false;
+        }
     }
 
     /**
@@ -320,22 +265,15 @@ export class Connection {
      * @param data 键值对 {}
      * @param etc 配置
      */
-    public hmset(key: string, data: {[key: string]: string | number}, etc?: abs.Nu | abs.Nus | abs.ConfigEtcRedis): Promise<boolean> {
+    public async hmset(key: string, data: {[key: string]: string | number}, etc?: abs.Nu | abs.Nus | abs.ConfigEtcRedis) {
         this.__lastTime = Time.stamp();
         let pre = etc ? (Sys.isNu(etc) || Sys.isNus(etc) ? etc.config.etc.redis.pre : etc.pre) : "";
-        return new Promise((resolve, reject) => {
-            this._client.hmset(pre + key, data, function(err, str) {
-                if (err) {
-                    resolve(false);
-                } else {
-                    if (str === "OK") {
-                        resolve(true);
-                    } else {
-                        resolve(false);
-                    }
-                }
-            });
-        });
+        try {
+            await this._client.hMSet(pre + key, data);
+            return true;
+        } catch {
+            return false;
+        }
     }
 
     /**
@@ -344,22 +282,19 @@ export class Connection {
      * @param field 要获取的字段名
      * @param etc 配置
      */
-    public hget(key: string, field: string, etc?: abs.Nu | abs.Nus | abs.ConfigEtcRedis): Promise<string | undefined> {
+    public async hget(key: string, field: string, etc?: abs.Nu | abs.Nus | abs.ConfigEtcRedis): Promise<string | undefined> {
         this.__lastTime = Time.stamp();
         let pre = etc ? (Sys.isNu(etc) || Sys.isNus(etc) ? etc.config.etc.redis.pre : etc.pre) : "";
-        return new Promise((resolve, reject) => {
-            this._client.hget(pre + key, field, function(err, str) {
-                if (err) {
-                    resolve(undefined);
-                } else {
-                    if (str === null) {
-                        resolve(undefined);
-                    } else {
-                        resolve(str);
-                    }
-                }
-            });
-        });
+        try {
+            let str = await this._client.hGet(pre + key, field);
+            if (str === null) {
+                return undefined;
+            } else {
+                return str;
+            }
+        } catch {
+            return undefined;
+        }
     }
 
     /**
@@ -368,18 +303,14 @@ export class Connection {
      * @param fields 字段数组
      * @param etc 配置
      */
-    public hmget(key: string, fields: string[], etc?: abs.Nu | abs.Nus | abs.ConfigEtcRedis): Promise<string[] | undefined> {
+    public async hmget(key: string, fields: string[], etc?: abs.Nu | abs.Nus | abs.ConfigEtcRedis) {
         this.__lastTime = Time.stamp();
         let pre = etc ? (Sys.isNu(etc) || Sys.isNus(etc) ? etc.config.etc.redis.pre : etc.pre) : "";
-        return new Promise((resolve, reject) => {
-            this._client.hmget(pre + key, fields, function(err, data) {
-                if (err) {
-                    resolve(undefined);
-                } else {
-                    resolve(data);
-                }
-            });
-        });
+        try {
+            return await this._client.hMGet(pre + key, fields);
+        } catch {
+            return undefined;
+        }
     }
 
     /**
@@ -387,18 +318,14 @@ export class Connection {
      * @param key 哈希 key
      * @param etc 配置
      */
-    public hgetall(key: string, etc?: abs.Nu | abs.Nus | abs.ConfigEtcRedis): Promise<{[key: string]: string} | undefined> {
+    public async hgetall(key: string, etc?: abs.Nu | abs.Nus | abs.ConfigEtcRedis) {
         this.__lastTime = Time.stamp();
         let pre = etc ? (Sys.isNu(etc) || Sys.isNus(etc) ? etc.config.etc.redis.pre : etc.pre) : "";
-        return new Promise((resolve, reject) => {
-            this._client.hgetall(pre + key, function(err, data) {
-                if (err) {
-                    resolve(undefined);
-                } else {
-                    resolve(data);
-                }
-            });
-        });
+        try {
+            return await this._client.hGetAll(pre + key);
+        } catch {
+            return undefined;
+        }
     }
 
     /**
@@ -407,18 +334,14 @@ export class Connection {
      * @param fields 字段或字段数组
      * @param etc 配置
      */
-    public hdel(key: string, fields: string | string[], etc?: abs.Nu | abs.Nus | abs.ConfigEtcRedis): Promise<number> {
+    public async hdel(key: string, fields: string | string[], etc?: abs.Nu | abs.Nus | abs.ConfigEtcRedis) {
         this.__lastTime = Time.stamp();
         let pre = etc ? (Sys.isNu(etc) || Sys.isNus(etc) ? etc.config.etc.redis.pre : etc.pre) : "";
-        return new Promise((resolve, reject) => {
-            this._client.hdel(pre + key, fields, function(err, num) {
-                if (err) {
-                    resolve(0);
-                } else {
-                    resolve(num);
-                }
-            });
-        });
+        try {
+            return await this._client.hDel(pre + key, fields);
+        } catch {
+            return 0;
+        }
     }
 
     /**
@@ -427,18 +350,14 @@ export class Connection {
      * @param field 字段
      * @param etc 配置
      */
-    public hexists(key: string, field: string, etc?: abs.Nu | abs.Nus | abs.ConfigEtcRedis): Promise<boolean> {
+    public async hexists(key: string, field: string, etc?: abs.Nu | abs.Nus | abs.ConfigEtcRedis) {
         this.__lastTime = Time.stamp();
         let pre = etc ? (Sys.isNu(etc) || Sys.isNus(etc) ? etc.config.etc.redis.pre : etc.pre) : "";
-        return new Promise((resolve, reject) => {
-            this._client.hexists(pre + key, field, function(err, num) {
-                if (err) {
-                    resolve(false);
-                } else {
-                    resolve(num === 1 ? true : false);
-                }
-            });
-        });
+        try {
+            return await this._client.hExists(pre + key, field);
+        } catch {
+            return false;
+        }
     }
 
     /**
@@ -448,18 +367,14 @@ export class Connection {
      * @param etc 配置
      * @param increment 要自增的数字（可为负）
      */
-    public hincr(key: string, field: string, etc?: abs.Nu | abs.Nus | abs.ConfigEtcRedis, increment: number = 1): Promise<number> {
+    public async hincr(key: string, field: string, etc?: abs.Nu | abs.Nus | abs.ConfigEtcRedis, increment: number = 1) {
         this.__lastTime = Time.stamp();
         let pre = etc ? (Sys.isNu(etc) || Sys.isNus(etc) ? etc.config.etc.redis.pre : etc.pre) : "";
-        return new Promise((resolve, reject) => {
-            this._client.hincrby(pre + key, field, increment, function(err: Error | null, num: number) {
-                if (err) {
-                    resolve(0);
-                } else {
-                    resolve(num);
-                }
-            });
-        });
+        try {
+            return await this._client.hIncrByFloat(pre + key, field, increment);
+        } catch {
+            return 0;
+        }
     }
 
     /**
@@ -467,25 +382,21 @@ export class Connection {
      * @param key 哈希 key
      * @param etc 配置
      */
-    public hkeys(key: string, etc?: abs.Nu | abs.Nus | abs.ConfigEtcRedis): Promise<string[] | undefined> {
+    public async hkeys(key: string, etc?: abs.Nu | abs.Nus | abs.ConfigEtcRedis) {
         this.__lastTime = Time.stamp();
         let pre = etc ? (Sys.isNu(etc) || Sys.isNus(etc) ? etc.config.etc.redis.pre : etc.pre) : "";
-        return new Promise((resolve, reject) => {
-            this._client.hkeys(pre + key, function(err, fields) {
-                if (err) {
-                    resolve(undefined);
-                } else {
-                    resolve(fields);
-                }
-            });
-        });
+        try {
+            return await this._client.hKeys(pre + key);
+        } catch {
+            return undefined;
+        }
     }
 
     /**
      * --- 断开此连接 ---
      */
-    public disconnect() {
-        this._client.end();
+    public async disconnect() {
+        await this._client.close();
     }
 }
 
@@ -494,51 +405,36 @@ export class Connection {
  * @param etc 配置信息
  */
 export async function getConnection(etc: abs.Nu | abs.Nus | abs.ConfigEtcRedis): Promise<Connection | undefined> {
-    return new Promise(async function(resolve, reject) {
         let etcRedis: abs.ConfigEtcRedis = Sys.isNu(etc) || Sys.isNus(etc) ? etc.config.etc.redis : etc;
         for (let conn of _connectionList) {
             if ((conn.etc.host === etcRedis.host) && (conn.etc.port === etcRedis.port) && (conn.etc.index === etcRedis.index) && (conn.etc.auth === etcRedis.auth)) {
                 conn.__lastTime = Time.stamp();
-                resolve(conn);
-                return;
+                return conn;
             }
         }
         // --- 要新建连接了 ---
-        let client = redis.createClient({
-            host: etcRedis.host,
-            port: etcRedis.port,
-            auth_pass: etcRedis.auth || undefined,
-            db: etcRedis.index
+        let client = redis.createCommandClient({
+            "host": etcRedis.host,
+            "port": etcRedis.port
         });
-        // --- 连接失败的回调 ---
-        let connectFailed = function(err: any) {
-            resolve(undefined);
-            return;
-        };
-        client.on("connect", function() {
-            // --- 连接成功，加入序列 ---
-            let connObject = new Connection(etcRedis, client);
-            _connectionList.push(connObject);
-            client.off("error", connectFailed);
-            // --- 绑定闪断回调 ---
-            client.on("error", function() {
-                connObject.__disconnected = true;
-                _clearDisconnected();
-            });
-            resolve(connObject);
-        }).on("error", connectFailed);
-    });
-}
-
-/**
- * --- 清除异常连接 ---
- */
-function _clearDisconnected() {
-    let connLen: number = _connectionList.length;
-    for (let i = 0; i < connLen; ++i) {
-        if (!_connectionList[i] || _connectionList[i].__disconnected === true) {
-            _connectionList.splice(i, 1);
-            --i;
+        // --- 开始连接 ---
+        try {
+            await client.connect();
+        } catch {
+            return undefined;
         }
-    }
+        // --- 认证 ---
+        if (etcRedis.auth) {
+            try {
+                await client.auth(etcRedis.auth);
+            } catch {
+                return undefined;
+            }
+        }
+        await client.select(etcRedis.index);
+
+        // --- 连接成功，加入序列 ---
+        let connObject = new Connection(etcRedis, client);
+        _connectionList.push(connObject);
+        return connObject;
 }
