@@ -297,6 +297,15 @@ class Sql {
         return this;
     }
 
+    /**
+     * --- LOCK ---
+     * 用于 select 的锁定
+     */
+    public lock(): Sql {
+        this._sql.push(` FOR UPDATE`);
+        return this;
+    }
+
     // --- 操作 ---
 
     public getSql(): string  {
