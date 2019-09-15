@@ -12,7 +12,7 @@ interface GetListOptions {
     where?: any[];
     limit?: number[];
     by?: any[];
-    groupBy?: string | string[];
+    group?: string | string[];
     key?: string;
     lock?: boolean;
     select?: string;
@@ -396,8 +396,8 @@ export default class Mod {
                 }]);
             }
         }
-        if (opt.groupBy !== undefined) {
-            sql.groupBy(opt.groupBy);
+        if (opt.group !== undefined) {
+            sql.group(opt.group);
         }
         if (opt.by !== undefined) {
             sql.by(opt.by[0], opt.by[1] || "DESC");

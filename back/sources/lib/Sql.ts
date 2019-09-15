@@ -9,10 +9,12 @@ class Sql {
     private _sql: string[] = [];
     private _data: any[] = [];
 
+    // --- 实例化 ---
     constructor(etc?: abs.Nu | abs.Nus | abs.ConfigEtcSql) {
         this.reset(etc);
     }
 
+    // --- 配置项 ---
     public reset(etc?: abs.Nu | abs.Nus | abs.ConfigEtcSql) {
         if (!etc) {
             this._pre = "";
@@ -20,7 +22,6 @@ class Sql {
         }
         this._pre = Sys.isNu(etc) || Sys.isNus(etc) ? etc.config.etc.sql.pre : etc.pre;
     }
-
     public getPre(): string {
         return this._pre;
     }
@@ -273,7 +274,7 @@ class Sql {
      * --- GROUP BY ---
      * @param c 字段字符串或数组
      */
-    public groupBy(c: string | string[]): Sql {
+    public group(c: string | string[]): Sql {
         let sql = " GROUP BY ";
         if (typeof c === "string") {
             sql += c;
