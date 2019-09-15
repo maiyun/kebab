@@ -5,7 +5,7 @@ export = {
     "etc": {
         "const": {
             "STATIC_PATH": "",
-            "STATIC_VER": "20190607181908"
+            "STATIC_VER": "20190911165424"
         },
         "__Nuttom__": {
             "pwd": "123456"
@@ -14,19 +14,19 @@ export = {
             "host": "127.0.0.1",
             "port": 3306,
             "charset": "utf8mb4",
-            "name": "mutton",
+            "name": "nutton",
             "username": "root",
             "password": ""
         },
         "sql": {
-            "pre": "mu_"
+            "pre": "nu_"
         },
         "redis": {
             "host": "127.0.0.1",
             "port": 6379,
             "index": 0,
             "auth": "",
-            "pre": "mu_"
+            "pre": "nu_"
         },
         "session": {
             "name": "NU_SESSION",

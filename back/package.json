@@ -3,9 +3,9 @@
     "@litert/mime-types": "^0.0.3",
     "@litert/redis": "^1.0.1-dev-20190911",
     "@litert/tls-sni": "^0.3.0",
-    "ejs": "^2.6.1",
-    "mysql2": "^1.6.5",
-    "ssh2": "^0.8.4",
+    "ejs": "^2.7.1",
+    "mysql2": "^1.7.0",
+    "ssh2": "^0.8.5",
     "svg-captcha": "^1.4.0",
     "ts-alias-loader": "^0.1.1"
   },

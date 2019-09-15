@@ -4,6 +4,7 @@ import * as mysql2 from "mysql2/promise";
 import * as Sql from "~/lib/Sql";
 import * as Mysql from "~/lib/Mysql";
 import * as Sys from "~/lib/Sys";
+import * as Time from "~/lib/Time";
 import * as abs from "~/abstract";
 
 /** 获取列表的选项对象 */
@@ -15,6 +16,7 @@ interface GetListOptions {
     key?: string;
     lock?: boolean;
     select?: string;
+    raw?: boolean;
 }
 
 /** 列表对象以 key 为 key */
@@ -33,6 +35,7 @@ interface CountOptions {
     where?: any[] | string;
     lock?: boolean;
     select?: string;
+    raw?: boolean;
 }
 
 export default class Mod {
@@ -60,9 +63,9 @@ export default class Mod {
         if (etc !== undefined) {
             this._etc = Sys.isNu(etc) || Sys.isNus(etc) ? etc.config.etc.sql : etc;
         }
-        // ---- 数据库连接 ---
+        // ---- 导入数据库连接 ---
         this._conn = pc;
-        // --- 第三个参数用于内部传导 ---
+        // --- 第三个参数用于内部数据导入，将 data 数据合并到本实例化类 ---
         if (row) {
             for (let k in row) {
                 this._data[k] = row[k];
@@ -139,9 +142,15 @@ export default class Mod {
      */
     public async remove(): Promise<boolean> {
         let sql = Sql.get(this._etc);
-        sql.delete((<any>this.constructor)._table).where([{
-            [(<any>this.constructor)._primary]: this._data[(<any>this.constructor)._primary]
-        }]);
+        if ((<any>this.constructor)._soft) {
+            sql.update((<any>this.constructor)._table, [
+                {"time_remove": Time.stamp()}
+            ]);
+        } else {
+            sql.delete((<any>this.constructor)._table).where([{
+                [(<any>this.constructor)._primary]: this._data[(<any>this.constructor)._primary]
+            }]);
+        }
 
         this._lastSqlString = sql.getSql();
         this._lastSqlData = sql.getData();
@@ -294,9 +303,16 @@ export default class Mod {
      */
     public static async get(pc: Mysql.Pool | Mysql.Connection, where: any[] | string, etc?: abs.Nu | abs.Nus | abs.ConfigEtcSql, opt: {
         lock?: boolean;
+        raw?: boolean;
     } = {}) {
         let sql = Sql.get(etc);
         sql.select("*", this._table);
+        // --- 判断是否筛掉已删除的 ---
+        if ((<any>this.constructor)._soft && (opt.raw !== true)) {
+            sql.where([
+                {"time_remove": "0"}
+            ]);
+        }
         if (typeof where === "string") {
             sql.append(where);
         } else {
@@ -361,9 +377,23 @@ export default class Mod {
         sql.select(opt.select || "*", this._table);
         if (opt.where !== undefined) {
             if (typeof opt.where === "string") {
-                sql.append(" WHERE " + opt.where);
+                sql.append(" WHERE (" + opt.where + ")");
+                if ((<any>this.constructor)._soft && (opt.raw !== true)) {
+                    sql.append(" AND `time_remove` = 0");
+                }
             } else {
+                if ((<any>this.constructor)._soft && (opt.raw !== true)) {
+                    opt.where.push({
+                        "time_remove": "0"
+                    });
+                }
                 sql.where(opt.where);
+            }
+        } else {
+            if ((<any>this.constructor)._soft && (opt.raw !== true)) {
+                sql.where([{
+                    "time_remove": "0"
+                }]);
             }
         }
         if (opt.groupBy !== undefined) {
@@ -428,9 +458,23 @@ export default class Mod {
         sql.select(opt.select || "COUNT(0) AS count", this._table);
         if (opt.where !== undefined) {
             if (typeof opt.where === "string") {
-                sql.append(opt.where);
+                sql.append(" WHERE (" + opt.where + ")");
+                if ((<any>this.constructor)._soft && (opt.raw !== true)) {
+                    sql.append(" AND `time_remove` = 0");
+                }
             } else {
+                if ((<any>this.constructor)._soft && (opt.raw !== true)) {
+                    opt.where.push({
+                        "time_remove": "0"
+                    });
+                }
                 sql.where(opt.where);
+            }
+        } else {
+            if ((<any>this.constructor)._soft && (opt.raw !== true)) {
+                sql.where([{
+                    "time_remove": "0"
+                }]);
             }
         }
         // --- 是否锁定 ---
@@ -449,13 +493,29 @@ export default class Mod {
      * @param where 筛选条件
      * @param etc etc 对象
      */
-    public static async removeByWhere(pc: Mysql.Pool | Mysql.Connection, where: any[] | string = "", etc?: abs.Nu | abs.Nus | abs.ConfigEtcSql): Promise<boolean> {
+    public static async removeByWhere(pc: Mysql.Pool | Mysql.Connection, where: any[] | string, etc?: abs.Nu | abs.Nus | abs.ConfigEtcSql, raw?: boolean): Promise<boolean> {
         let sql = Sql.get(etc);
-        sql.delete(this._table);
-        if (typeof where === "string") {
-            sql.append(" WHERE " + where);
+        if ((<any>this.constructor)._soft && (raw !== true)) {
+            // --- 软删除 ---
+            sql.update(this._table, [{
+                "time_remove": Time.stamp()
+            }]);
+            if (typeof where === "string") {
+                sql.append(" WHERE (" + where + ") AND `time_remove` = 0");
+            } else {
+                where.push({
+                    "time_remove": "0"
+                });
+                sql.where(where);
+            }
         } else {
-            sql.where(where);
+            // --- 真删除 ---
+            sql.delete(this._table);
+            if (typeof where === "string") {
+                sql.append(" WHERE " + where);
+            } else {
+                sql.where(where);
+            }
         }
         let rtn = await pc.execute(sql.getSql(), sql.getData());
         if (rtn && rtn.affectedRows > 0) {
@@ -472,12 +532,20 @@ export default class Mod {
      * @param where 筛选条件
      * @param etc etc 对象
      */
-    public static async updateByWhere(pc: Mysql.Pool | Mysql.Connection, data: any[], where: any[] | string, etc?: abs.Nu | abs.Nus | abs.ConfigEtcSql): Promise<boolean> {
+    public static async updateByWhere(pc: Mysql.Pool | Mysql.Connection, data: any[], where: any[] | string, etc?: abs.Nu | abs.Nus | abs.ConfigEtcSql, raw?: boolean): Promise<boolean> {
         let sql = Sql.get(etc);
         sql.update(this._table, data);
         if (typeof where === "string") {
-            sql.append(where);
+            sql.append(" WHERE (" + where + ")");
+            if ((<any>this.constructor)._soft && (raw !== true)) {
+                sql.append(" AND `time_remove` = 0");
+            }
         } else {
+            if ((<any>this.constructor)._soft && (raw !== true)) {
+                where.push({
+                    "time_remove": "0"
+                });
+            }
             sql.where(where);
         }
         let rtn = await pc.execute(sql.getSql(), sql.getData());

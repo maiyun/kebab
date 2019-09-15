@@ -1,3 +1,13 @@
+/*
+CREATE TABLE `session` (
+  `id` int(10) UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  `token` varchar(255) NOT NULL UNIQUE KEY,
+  `data` text NOT NULL,
+  `time_update` int(10) UNSIGNED NOT NULL,
+  `time_add` int(10) UNSIGNED NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+*/
+
 // --- 库和定义 ---
 import * as Mysql from "~/lib/Mysql";
 import * as Redis from "~/lib/Redis";
