@@ -3,8 +3,8 @@
         "name": "default",
         "domains": ["*"],
         "root": "default/",
-        "cert": "default/fx7ztitb.cer",
-        "key": "default/fx7ztitb.key",
+        "cert": "default/g7syhzh1.cer",
+        "key": "default/g7syhzh1.key",
         "remark": ""
     }
 ]

@@ -113,7 +113,8 @@ export function cookie(nu: abs.Nu, name: string, value: string = "", options: Co
 }
 
 /**
- * --- 向所有进程广播将进行 reload 操作，这会有一定的延迟才能全部 reload 完成 ---
+ * --- 向所有进程广播将进行 reload 操作，对 SSL 和 VHOST 重新加载，但不重启进程 ---
+ * --- 可能导致如果 SSL 证书过期，无法立刻进行更换，因为 http2 有浏览器连接复用 ---
  */
 export function reload(): void {
     process.send && process.send({
