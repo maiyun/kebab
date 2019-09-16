@@ -38,10 +38,15 @@ interface CountOptions {
     raw?: boolean;
 }
 
+/**
+ * --- 开启软更需要在表添加字段：ALTER TABLE `table_name` ADD `time_remove` INT(10) UNSIGNED NOT NULL DEFAULT '0' AFTER `xxx`; ---
+ */
 export default class Mod {
     protected static _table = "";
     protected static _primary = "id";
+    /** 设置后将由 _keyGenerator 函数生成唯一字段 */
     protected static _key = "";
+    /** 可开启软删软更新软新增 */
     protected static _soft = false;
 
     /** 要 update 的内容 */
@@ -229,7 +234,7 @@ export default class Mod {
                         [(<any>this.constructor)._primary]: this._data[(<any>this.constructor)._primary]
                     }]);
                     if (type === 1) {
-                        sql.append(" FOR UPDATE");
+                        sql.lock();
                     }
                     let [rows] = await this._conn.query(sql.getSql(), sql.getData());
                     sql.release();
@@ -319,7 +324,7 @@ export default class Mod {
             sql.where(where);
         }
         if (opt.lock === true) {
-            sql.append(" FOR UPDATE");
+            sql.lock();
         }
         try {
             let [rows] = await pc.query(sql.getSql(), sql.getData());
@@ -417,7 +422,7 @@ export default class Mod {
             }
         }
         if (opt.lock === true) {
-            sql.append(" FOR UPDATE");
+            sql.lock();
         }
 
         // --- 执行查询 ---
@@ -479,7 +484,7 @@ export default class Mod {
         }
         // --- 是否锁定 ---
         if (opt.lock === true) {
-            sql.append(" FOR UPDATE");
+            sql.lock();
         }
         // --- 开始 ---
         let [rows] = await pc.query(sql.getSql(), sql.getData());
