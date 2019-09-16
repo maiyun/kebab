@@ -56,6 +56,7 @@ export default class Mod {
 
     /** 数据库连接对象 */
     protected _conn!: Mysql.Pool | Mysql.Connection;
+    /** etc 配置项，其实就是 Sql 对象的配置项 */
     protected _etc: abs.ConfigEtcSql | undefined;
 
     // --- 最后一次执行的 SQL 内容 ---
@@ -68,7 +69,7 @@ export default class Mod {
         if (etc !== undefined) {
             this._etc = Sys.isNu(etc) || Sys.isNus(etc) ? etc.config.etc.sql : etc;
         }
-        // ---- 导入数据库连接 ---
+        // --- 导入数据库连接 ---
         this._conn = pc;
         // --- 第三个参数用于内部数据导入，将 data 数据合并到本实例化类 ---
         if (row) {
@@ -91,7 +92,7 @@ export default class Mod {
      * @param n 字符串或 {} 键/值
      * @param v 留空或值内容
      */
-    public set(n: any, v: string | number | boolean = ""): void {
+    public set(n: any, v: string | number = ""): void {
         if (typeof n !== "string") {
             for (let k in n) {
                 let v = n[k];
@@ -107,7 +108,10 @@ export default class Mod {
         }
     }
 
-    /** --- 获取一个属性 --- */
+    /**
+     * --- 获取一个字段值
+     * @param n 字段名
+     */
     public get(n: string): any {
         return this._data[n];
     }
@@ -150,7 +154,10 @@ export default class Mod {
         if ((<any>this.constructor)._soft) {
             sql.update((<any>this.constructor)._table, [
                 {"time_remove": Time.stamp()}
-            ]);
+            ]).where([{
+                [(<any>this.constructor)._primary]: this._data[(<any>this.constructor)._primary],
+                "time_remove": "0"
+            }]);
         } else {
             sql.delete((<any>this.constructor)._table).where([{
                 [(<any>this.constructor)._primary]: this._data[(<any>this.constructor)._primary]
