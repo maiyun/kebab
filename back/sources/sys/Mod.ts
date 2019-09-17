@@ -149,9 +149,9 @@ export default class Mod {
     /**
      * --- 移除本条目 ---
      */
-    public async remove(): Promise<boolean> {
+    public async remove(raw?: boolean): Promise<boolean> {
         let sql = Sql.get(this._etc);
-        if ((<any>this.constructor)._soft) {
+        if ((<any>this.constructor)._soft && (raw !== true)) {
             sql.update((<any>this.constructor)._table, [
                 {"time_remove": Time.stamp()}
             ]).where([{
@@ -194,42 +194,26 @@ export default class Mod {
         }
 
         let sql = Sql.get(this._etc);
-        sql.insert((<any>this.constructor)._table, updates);
 
         try {
             let rtn: mysql2.OkPacket;
             if ((<any>this.constructor)._key !== "") {
-                while (true) {
+                do {
                     updates[(<any>this.constructor)._key] = this._keyGenerator();
                     sql.insert((<any>this.constructor)._table, updates);
 
                     this._lastSqlString = sql.getSql();
                     this._lastSqlData = sql.getData();
-
-                    try {
-                        let rtnt = await this._conn.execute(this._lastSqlString, this._lastSqlData);
-                        if (rtnt) {
-                            rtn = rtnt;
-                            break;
-                        } else {
-                            // --- 接着循环 ---
-                            continue;
-                        }
-                    } catch (e) {
-                        sql.release();
-                        console.log(e);
-                        return false;
-                    }
-                }
+                } while(!(rtn = await this._conn.execute(this._lastSqlString, this._lastSqlData) as mysql2.OkPacket))
             } else {
+                sql.insert((<any>this.constructor)._table, updates);
+
                 this._lastSqlString = sql.getSql();
                 this._lastSqlData = sql.getData();
 
-                let rtnt = await this._conn.execute(this._lastSqlString, this._lastSqlData);
-                if (rtnt) {
-                    rtn = rtnt;
-                } else {
-                    throw {errno: 1062};
+                if (!(rtn = await this._conn.execute(this._lastSqlString, this._lastSqlData) as mysql2.OkPacket)) {
+                    sql.release();
+                    return false;
                 }
             }
             if (rtn.affectedRows > 0) {
@@ -259,9 +243,7 @@ export default class Mod {
             }
         } catch (e) {
             sql.release();
-            if (e.errno !== 1062) {
-                console.log(e);
-            }
+            console.log(e);
             return false;
         }
     }
@@ -285,6 +267,13 @@ export default class Mod {
      */
     public getLastSqlFormat(): string {
         return Sql.format(this._lastSqlString, this._lastSqlData);
+    }
+
+    public __setLastSqlString(sql: string): void {
+        this._lastSqlString = sql;
+    }
+    public __setLastSqlData(data: any): void {
+        this._lastSqlData = data;
     }
 
     /**
@@ -311,7 +300,8 @@ export default class Mod {
      * --- 获取一个条目 ---
      * @param pc 数据库连接/连接池
      * @param where 筛选参数
-     * @param opt 选项
+     * @param etc Sql 参数
+     * @param opt 选项 lock: boolean, raw: boolean
      */
     public static async get(pc: Mysql.Pool | Mysql.Connection, where: any[] | string, etc?: abs.Nu | abs.Nus | abs.ConfigEtcSql, opt: {
         lock?: boolean;
@@ -326,7 +316,7 @@ export default class Mod {
             ]);
         }
         if (typeof where === "string") {
-            sql.append(where);
+            sql.append(" WHERE " + where);
         } else {
             sql.where(where);
         }
@@ -352,7 +342,7 @@ export default class Mod {
      * @param pc 数据库连接/连接池
      * @param cs 字段列表 [] or {}
      * @param vs 参数列表
-     * @param etc sql 参数
+     * @param etc Sql 参数
      */
     public static async insert(pc: Mysql.Pool | Mysql.Connection, cs: any = [], vs?: any[] | any[][], etc?: abs.Nu | abs.Nus | abs.ConfigEtcSql) {
         let sql = Sql.get(etc);
@@ -372,7 +362,7 @@ export default class Mod {
      * @param vs 参数列表
      * @param etc sql 参数
      */
-    public static insertSql(cs: any = [], vs?: any[] | any[][], etc?: abs.Nu | abs.Nus | abs.ConfigEtcSql) {
+    public static insertSql(cs: any, vs?: any[] | any[][], etc?: abs.Nu | abs.Nus | abs.ConfigEtcSql) {
         let sql = Sql.get(etc);
         sql.insert(this._table, cs, vs);
         return sql.format();
@@ -381,7 +371,7 @@ export default class Mod {
     /**
      * --- 获取列表 ---
      * @param pc 数据库连接/连接池
-     * @param opt 选项
+     * @param opt where, limit, by, group, key, lock, select, raw
      * @param etc etc 对象
      */
     public static async getList(pc: Mysql.Pool | Mysql.Connection, opt: GetListOptions = {}, etc?: abs.Nu | abs.Nus | abs.ConfigEtcSql): Promise<GetListReturn> {
@@ -418,8 +408,7 @@ export default class Mod {
         if (opt.limit !== undefined) {
             if (opt.limit[2] !== undefined) {
                 // --- 分页 ---
-                let sstr = sql.getSql();
-                sstr = sstr.replace(/SELECT .+? FROM/, "SELECT COUNT(0) AS count FROM");
+                let sstr = sql.getSql().replace(/SELECT .+? FROM/, "SELECT COUNT(0) AS count FROM");
                 let [rows] = await pc.query(sstr, sql.getData());
                 total = rows[0].count;
                 // --- 计算完整 ---
@@ -436,27 +425,27 @@ export default class Mod {
         let [rows] = await pc.query(sql.getSql(), sql.getData());
         sql.release();
 
+        let list: GetListObject | Mod[];
         if (opt.key !== undefined) {
-            let list: GetListObject = {};
-            for (let row of rows) {
-                list[row[opt.key]] = new this(pc, etc, row);
-            }
-            // --- 返回 ---
-            return {
-                "total": total,
-                "list": list
-            };
+            list = {};
         } else {
-            let list: Mod[] = [];
-            for (let row of rows) {
-                list.push(new this(pc, etc, row));
-            }
-            // --- 返回 ---
-            return {
-                "total": total,
-                "list": list
-            };
+            list = [];
         }
+        for (let row of rows) {
+            let obj = new this(pc, etc, row);
+            obj.__setLastSqlString(sql.getSql());
+            obj.__setLastSqlData(sql.getData());
+            if (opt.key !== undefined) {
+                (<GetListObject>list)[row[opt.key]] = obj;
+            } else {
+                (<Mod[]>list).push(obj);
+            }
+        }
+        // --- 返回 ---
+        return {
+            "total": total,
+            "list": list
+        };
     }
 
     /**
@@ -504,6 +493,7 @@ export default class Mod {
      * @param pc 数据库连接/连接池
      * @param where 筛选条件
      * @param etc etc 对象
+     * @param raw 是否真实
      */
     public static async removeByWhere(pc: Mysql.Pool | Mysql.Connection, where: any[] | string, etc?: abs.Nu | abs.Nus | abs.ConfigEtcSql, raw?: boolean): Promise<boolean> {
         let sql = Sql.get(etc);
@@ -543,6 +533,7 @@ export default class Mod {
      * @param data 要更新的数据
      * @param where 筛选条件
      * @param etc etc 对象
+     * @param raw 是否真实
      */
     public static async updateByWhere(pc: Mysql.Pool | Mysql.Connection, data: any[], where: any[] | string, etc?: abs.Nu | abs.Nus | abs.ConfigEtcSql, raw?: boolean): Promise<boolean> {
         let sql = Sql.get(etc);

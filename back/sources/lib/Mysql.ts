@@ -269,6 +269,7 @@ export class Connection {
 
     /**
      * --- 执行一条 SQL 并获得影响行数 ---
+     * --- 返回 undefined 代表冲突，抛出错误代表执行异常 ---
      * @param sql 执行的 SQL 字符串
      * @param values 要替换的 data 数组
      */
