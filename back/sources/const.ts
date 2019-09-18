@@ -1,4 +1,4 @@
-export const VER = "0.1.1";
+export const VER = "0.2.0";
 
 // --- 服务端用的路径 ---
 
