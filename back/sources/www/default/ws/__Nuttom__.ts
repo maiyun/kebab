@@ -30,7 +30,7 @@ export async function update(nus: abs.Nus) {
                     for (let file of <string[]>json.files) {
                         WebSocket.send(nus, [2, `Downloading file "${file}"...`]);
                         while (true) {
-                            let res = await Net.get(`https://raw.githubusercontent.com/MaiyunNET/Nuttom/v${ver}/${file}`);
+                            let res = await Net.get(`https://cdn.jsdelivr.net/gh/MaiyunNET/Nuttom@v${ver}/${file}`);
                             if (!res) {
                                 WebSocket.send(nus, [2, `File "${file}" download failed, retry after 2 seconds.`]);
                                 await Sys.sleep(2000);

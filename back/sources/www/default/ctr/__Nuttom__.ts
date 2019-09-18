@@ -51,7 +51,7 @@ export async function apiCheck(nu: abs.Nu) {
     if (nu.config.etc.__Nuttom__.pwd === "123456" && nu.uri.hostname !== "local-test.brc-app.com") {
         return [0, "Password cannot be 123456."];
     }
-    let res = await Net.get("https://raw.githubusercontent.com/MaiyunNET/Nuttom/master/doc/nblob/" + nu.post.ver + ".nblob");
+    let res = await Net.get("https://cdn.jsdelivr.net/gh/MaiyunNET/Nuttom/doc/nblob/" + nu.post.ver + ".nblob");
     if (!res) {
         return [0, "Network error, please try again."];
     }

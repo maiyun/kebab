@@ -84,7 +84,7 @@ export async function request(opt: A.Options): Promise<A.NetResponse | undefined
     }
     // --- 超时时间 ---
     if (opt.timeout === undefined) {
-        opt.timeout = 10;
+        opt.timeout = 5000;
     }
     // --- 是否获取头部 ---
     let pdata!: A.BeforePostResult;
