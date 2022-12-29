@@ -1,8 +1,7 @@
 .vscode/
 .vs/
+/conf/cert/*
+ftmp/*.ftmp
+log/**/
 node_modules/
-/back/conf/cert/default/*
-/back/conf/__nuttom__.json
-!/back/conf/cert/default/cert.nuttom
-/back/dist/
-/front/**/*.js
+*.js

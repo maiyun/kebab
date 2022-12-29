@@ -1,0 +1,31 @@
+{
+    "compilerOptions": {
+        "module": "CommonJS",
+        "removeComments": true,
+        "preserveConstEnums": true, // 保留 const 和 enum 声明
+        // "outDir": "./dist/",
+        "baseUrl": "./",
+        "rootDir": "./",
+        "sourceMap": false,
+        "target": "ES2021",
+        "strict": true,             // 严格模式
+        "declaration": false,       // d.ts
+        "declarationMap": false,    // d.ts 的 map
+        "newLine": "LF",
+        "paths": {
+            "~/*": ["./*"]
+        },
+        "resolveJsonModule": true,
+        "typeRoots": [
+            "./node_modules/@types",
+            "./node_modules/@litert/loader"
+        ],
+        "esModuleInterop": true
+    },
+    "include": [
+        "./**/*.ts"
+    ],
+    "exclude": [
+        "node_modules"
+    ]
+}

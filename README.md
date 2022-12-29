@@ -1,15 +1,15 @@
 # Nuttom
 
-[![License](https://img.shields.io/github/license/MaiyunNET/Nuttom.svg)](https://github.com/MaiyunNET/Nuttom/blob/master/LICENSE)
-[![GitHub issues](https://img.shields.io/github/issues/MaiyunNET/Nuttom.svg)](https://github.com/MaiyunNET/Nuttom/issues)
-[![GitHub Releases](https://img.shields.io/github/release/MaiyunNET/Nuttom.svg)](https://github.com/MaiyunNET/Nuttom/releases "Stable Release")
-[![GitHub Pre-Releases](https://img.shields.io/github/release/MaiyunNET/Nuttom/all.svg)](https://github.com/MaiyunNET/Nuttom/releases "Pre-Release")
+[![License](https://img.shields.io/github/license/maiyun/kebab.svg)](https://github.com/maiyun/kebab/blob/master/LICENSE)
+[![GitHub issues](https://img.shields.io/github/issues/maiyun/kebab.svg)](https://github.com/maiyun/kebab/issues)
+[![GitHub Releases](https://img.shields.io/github/release/maiyun/kebab.svg)](https://github.com/maiyun/kebab/releases "Stable Release")
+[![GitHub Pre-Releases](https://img.shields.io/github/release/maiyun/kebab/all.svg)](https://github.com/maiyun/kebab/releases "Pre-Release")
 
 Simple, easy to use, full functionality of the Node.js framework.
 
 ## Languages
 
-[简体中文](doc/README.zh-CN.md) | [繁體中文](doc/README.zh-TW.md)
+[简体中文](doc/README.sc.md) | [繁體中文](doc/README.tc.md)
 
 ## Installation
 
@@ -17,7 +17,7 @@ Download the latest release and put it to directory, then to start development.
 
 ## Environment
 
-Node 10+
+Node 16+
 
 ## Library
 

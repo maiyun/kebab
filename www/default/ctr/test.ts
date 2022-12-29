@@ -1,0 +1,2128 @@
+// --- 库和定义 ---
+import * as lCore from '~/lib/core';
+import * as lNet from '~/lib/net';
+import * as lDb from '~/lib/db';
+import * as lText from '~/lib/text';
+import * as lCrypto from '~/lib/crypto';
+import * as lKv from '~/lib/kv';
+import * as lCaptcha from '~/lib/captcha';
+import * as lTime from '~/lib/time';
+import * as lScan from '~/lib/scan';
+import * as lSql from '~/lib/sql';
+import * as lConsistent from '~/lib/consistent';
+import * as sCtr from '~/sys/ctr';
+import * as def from '~/sys/def';
+// --- mod ---
+import mSession from '../mod/session';
+import mTest from '../mod/test';
+import mTestData from '../mod/testdata';
+
+export class Test extends sCtr.Ctr {
+
+    private _internalUrl: string = '';
+
+    public onLoad(): any {
+        if (this._config.const.hostname !== '127.0.0.1' && this._config.const.hostname !== '172.17.0.1' && this._config.const.hostname !== 'local-test.brc-app.com' && !this._config.const.hostname.startsWith('192.168.')) {
+            return [0, 'Please use 127.0.0.1 to access the file.'];
+        }
+        const realIp = lCore.realIP(this);
+        if ((this._config.const.hostname === '127.0.0.1' || this._config.const.hostname === 'localhost') && (realIp === '172.17.0.1')) {
+            this._internalUrl = 'http' + (this._config.const.https ? 's' : '') + '://' + realIp + this._config.const.urlBase;
+        }
+        else {
+            this._internalUrl = this._config.const.urlFull;
+        }
+    }
+
+    public index(): string {
+        const echo: string[] = [
+            'Hello world! Welcome to use <strong>Kebab ' + def.VER + '</strong>!',
+
+            '<br><br>Node Version: ' + process.version,
+            '<br>HOST: ' + this._config.const.host,
+            '<br>HOSTNAME: ' + this._config.const.hostname,
+            '<br>PATH: ' + this._config.const.path,
+            '<br>HTTPS: ' + (this._config.const.https ? 'true' : 'false'),
+
+            '<br><br>MOBILE: ' + (this._config.const.mobile ? 'true' : 'false'),
+            '<br>Real IP: ' + lCore.ip(this),
+            '<br>Client IP: ' + lCore.realIP(this),
+
+            '<br><br>URL_BASE: ' + this._config.const.urlBase,
+            '<br>URL_STC: ' + this._config.const.urlStc,
+            '<br>URL_FULL: ' + this._config.const.urlFull,
+            '<br>_internalUrl: ' + this._internalUrl,
+
+            '<br><br>headers: ' + lText.htmlescape(JSON.stringify(this._headers)),
+
+            '<br><br><b style="color: red;">Tips: The file can be deleted.</b>',
+
+            '<br><br><b>Route (conf/config.json):</b>',
+            `<br><br><a href="${this._config.const.urlBase}article/123">View "article/123"</a>`,
+            `<br><a href="${this._config.const.urlBase}article/456">View "article/456"</a>`,
+
+            '<br><br><b>Query string:</b>',
+            `<br><br><a href="${this._config.const.urlBase}test/qs?a=1&b=2">View "test/qs?a=1&b=2"</a>`,
+
+            '<br><br><b>Return json:</b>',
+            `<br><br><a href="${this._config.const.urlBase}test/json?type=1">View "test/json?type=1"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/json?type=2">View "test/json?type=2"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/json?type=3">View "test/json?type=3"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/json?type=4">View "test/json?type=4"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/json?type=5">View "test/json?type=5"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/json?type=6">View "test/json?type=6"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/json?type=7">View "test/json?type=7"</a>`,
+
+            '<br><br><b>Ctr:</b>',
+            `<br><br><a href="${this._config.const.urlBase}test/ctr-xsrf">View "test/ctr-xsrf"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/ctr-checkinput">View "test/ctr-checkinput"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/ctr-locale">View "test/ctr-locale"</a>`,
+
+            '<br><br><b>Middle:</b>',
+            `<br><br><a href="${this._config.const.urlBase}test/middle">View "test/middle"</a>`,
+
+            '<br><br><b>Model test:</b>',
+
+            '<br><br><b style="color: red;">In a production environment, please delete "mod/session.php", "mod/test.php", "mod/testdata.php" files.</b>',
+            `<br><a href="${this._config.const.urlBase}test/mod-session">Click to see an example of a Session model</a>`,
+            `<br><a href="${this._config.const.urlBase}test/mod-split">View "test/mod-split"</a>`,
+
+            '<br><br><b>Library test:</b>',
+
+            '<br><br><b>Captcha:</b>',
+            `<br><br><a href="${this._config.const.urlBase}test/captcha-fastbuild">View "test/captcha-fastbuild"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/captcha-base64">View "test/captcha-base64"</a>`,
+
+            '<br><br><b>Core:</b>',
+            `<br><br><a href="${this._config.const.urlBase}test/core-random">View "test/core-random"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/core-rand">View "test/core-rand"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/core-convert62">View "test/core-convert62"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/core-muid">View "test/core-muid"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/core-reload">View "test/core-reload"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/core-restart">View "test/core-restart"</a>`,
+
+            '<br><br><b>Crypto:</b>',
+            `<br><br><a href="${this._config.const.urlBase}test/crypto">View "test/crypto"</a>`,
+
+            '<br><br><b>Db:</b>',
+            `<br><br><a href="${this._config.const.urlBase}test/db">View "test/db"</a>`,
+
+            '<br><br><b>Kv:</b>',
+            `<br><br><a href="${this._config.const.urlBase}test/kv">View "test/kv"</a>`,
+
+            '<br><br><b>Net:</b>',
+            `<br><br><a href="${this._config.const.urlBase}test/net">View "test/net"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/net-post">View "test/net-post"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/net-post-string">View "test/net-post-string"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/net-open">View "test/net-open"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/net-form-test">View "test/net-form-test"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/net-upload">View "test/net-upload"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/net-cookie">View "test/net-cookie"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/net-save">View "test/net-save"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/net-follow">View "test/net-follow"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/net-reuse">View "test/net-reuse"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/net-error">View "test/net-error"</a>`,
+
+            '<br><br><b>Scan:</b>',
+            `<br><br><a href="${this._config.const.urlBase}test/scan?s=db">View "test/scan?s=db"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/scan?s=kv">View "test/scan?s=kv"</a>`,
+
+            '<br><br><b>Session:</b>',
+            `<br><br><a href="${this._config.const.urlBase}test/session?s=db">View "test/session?s=db"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/session?s=kv">View "test/session?s=kv"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/session?s=db&auth=1">View "test/session?s=db&auth=1" Header Authorization</a>`,
+            `<br><a href="${this._config.const.urlBase}test/session?s=kv&auth=1">View "test/session?s=kv&auth=1" Header Authorization</a>`,
+
+            '<br><br><b>Sql:</b>',
+            `<br><br><a href="${this._config.const.urlBase}test/sql?type=insert">View "test/sql?type=insert"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/sql?type=select">View "test/sql?type=select"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/sql?type=update">View "test/sql?type=update"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/sql?type=delete">View "test/sql?type=delete"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/sql?type=where">View "test/sql?type=where"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/sql?type=having">View "test/sql?type=having"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/sql?type=by">View "test/sql?type=by"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/sql?type=field">View "test/sql?type=field"</a>`,
+
+            '<br><br><b>Consistent:</b>',
+            `<br><br><a href="${this._config.const.urlBase}test/consistent-hash">View "test/consistent-hash"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/consistent-distributed">View "test/consistent-distributed"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/consistent-migration">View "test/consistent-migration"</a>`,
+
+            '<br><br><b>Text:</b>',
+            `<br><br><a href="${this._config.const.urlBase}test/text">View "test/text"</a>`,
+
+            '<br><br><b>Ssh:</b>',
+            `<br><br><a href="${this._config.const.urlBase}test/ssh_sftp">View "ssh_sftp"</a>`
+        ];
+        echo.push('<br><br>' + this._getEnd());
+
+        return echo.join('');
+    }
+
+    public article(): string {
+        return 'Article ID: ' + lText.htmlescape(this._param[0]) + '<br><br>' + this._getEnd();
+    }
+
+    public qs(): string {
+        return 'JSON.stringify(this._get):<br><br>' + lText.htmlescape(JSON.stringify(this._get)) + '<br><br>' + this._getEnd();
+    }
+
+    public json(): any {
+        switch (this._get.type) {
+            case '1':
+                return [0];
+            case '2':
+                return [0, 'Error message.'];
+            case '3':
+                return [0, { 'line': '2' }];
+            case '4':
+                return [1, 'Successful!'];
+            case '5':
+                return [1, { 'list': [{ 'id': '0' }, { 'id': '1' }, { 'id': '2' }], 'total': '3' }];
+            case '6':
+                return { 'oh': 'yeah', 'sb': 'is me' };
+            case '7':
+                return [1, 'success', { 'list': [1, 2, 3] }];
+            default:
+                return [];
+        }
+    }
+
+    public ctrXsrf(): string {
+        return `XSRF-TOKEN: ${this._xsrf}<br><br>
+<input type="button" value="Post with xsrf token" onclick="document.getElementById('result').innerText='Waiting...';fetch('${this._config.const.urlBase}test/ctr-xsrf1',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'key=val&_xsrf=${this._xsrf}'}).then(function(r){return r.text();}).then(function(t){document.getElementById('result').innerText=t;});">
+<input type='button' value="Post without xsrf token" style="margin-left: 10px;" onclick="document.getElementById('result').innerText='Waiting...';fetch('${this._config.const.urlBase}test/ctr-xsrf1',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'key=val'}).then(function(r){return r.text();}).then(function(t){document.getElementById('result').innerText=t;});"><br><br>
+Result:<pre id="result">Nothing.</pre>${this._getEnd()}`;
+    }
+
+    public ctrXsrf1(): any[] {
+        const retur: any[] = [];
+        if (!this._checkXInput(this._post, {}, retur)) {
+            return retur;
+        }
+        return [1, { 'post': this._post }];
+    }
+
+    public ctrCheckinput(): string {
+        const echo = [`rule:
+<pre>[
+    'he' => ['require', [0, 'The he param does not exist.']],
+    'num' => ['> 10', [0, 'The num param must > 10.']],
+    'reg' => ['/^[A-CX-Z5-7]+$/', [0, 'The reg param is incorrect.']],
+    'arr' => [['a', 'x', 'hehe'], [0, 'The arr param is incorrect.']]
+]</pre>`];
+
+        const post = [
+            {},
+            {
+                'he': 'ok'
+            },
+            {
+                'he': 'ok',
+                'num': '5'
+            },
+            {
+                'he': 'ok',
+                'num': '12',
+                'reg': 'Hello'
+            },
+            {
+                'he': 'ok',
+                'num': '12',
+                'reg': 'BBB6YYY6',
+                'arr': 'heihei'
+            },
+            {
+                'he': 'ok',
+                'num': '12',
+                'reg': 'BBB6YYY6',
+                'arr': 'hehe'
+            }
+        ];
+        for (const item of post) {
+            const p = lText.queryStringify(item);
+            echo.push(`<input type="button" value="Post '${p}'" onclick="post('${p}')"><br>`);
+        }
+
+        echo.push(`<input type="button" value="Post FormData (fd.append('he', 'ho'))" onclick="postFd()"><br>`);
+
+        echo.push(`<script>
+function post(p) {
+    document.getElementById('result').innerText = 'Waiting...';
+    fetch('${this._config.const.urlBase}test/ctr-checkinput1', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: p
+    }).then(function(r) {
+        return r.text();
+    }).then(function(t) {
+        document.getElementById('result').innerText = t;
+    });
+}
+
+function postFd() {
+    var fd = new FormData();
+    fd.append('he', 'ho');
+    document.getElementById('result').innerText = 'Waiting...';
+    fetch('${this._config.const.urlBase}test/ctr-checkinput1', {
+        method: 'POST',
+        body: fd
+    }).then(function(r) {
+        return r.text();
+    }).then(function(t) {
+        document.getElementById('result').innerText = t;
+    });
+}
+</script>
+<br>Result:<pre id="result">Nothing.</pre>`);
+
+        return echo.join('') + this._getEnd();
+    }
+
+    public async ctrCheckinput1(): Promise<any[]> {
+        await this._handleFormData();
+        const retur: any[] = [];
+        if (!this._checkInput(this._post, {
+            'he': ['require', [0, 'The he param does not exist.']],
+            'num': ['> 10', [0, 'The num param must > 10.']],
+            'reg': ['/^[A-CX-Z5-7]+$/', [0, 'The reg param is incorrect.']],
+            'arr': [['a', 'x', 'hehe'], [0, 'The arr param is incorrect.']]
+        }, retur)) {
+            return retur;
+        }
+        return [1, { 'post': this._post }];
+    }
+
+    public async ctrLocale(): Promise<any> {
+        let rtn: any = [];
+        if (!this._checkInput(this._get, {
+            'lang': [['en', 'sc', 'tc', 'ja'], [0, 'Wrong language.']]
+        }, rtn)) {
+            return rtn;
+        }
+
+        const echo = [
+            '<a href="' + this._config.const.urlBase + 'test/ctr-locale">English</a> | ' +
+            '<a href="' + this._config.const.urlBase + 'test/ctr-locale?lang=sc">简体中文</a> | ' +
+            '<a href="' + this._config.const.urlBase + 'test/ctr-locale?lang=tc">繁體中文</a> | ' +
+            '<a href="' + this._config.const.urlBase + 'test/ctr-locale?lang=ja">日本語</a> | ' +
+            '<a href="' + this._config.const.urlBase + 'test">Return</a>'
+        ];
+
+        rtn = await this._loadLocale(this._get['lang'], 'test');
+        echo.push(`<pre>await this._loadLocale(this._get['lang'], 'test');</pre>${rtn ? 'true' : 'false'}`);
+
+        echo.push("<pre>l('hello')</pre>" + this._l('hello'));
+        echo.push("<pre>l('copy')</pre>" + this._l('copy'));
+        echo.push("<pre>l('test', ['a1', 'a2'])</pre>" + this._l('test', ['a1', 'a2']));
+
+        return echo.join('') + '<br><br>' + this._getEnd();
+    }
+
+    public async modSession(): Promise<any> {
+        const retur: any[] = [];
+        if (!(this._checkInput(this._get, {
+            'action': [['', 'remove'], [0, 'Error']]
+        }, retur))) {
+            return retur;
+        }
+
+        const echo = ['<b style="color: red;">In a production environment, please delete the "mod/session.php" file.</b>'];
+
+        const db = lDb.get(this);
+        let stmt = await db.query('SELECT * FROM `m_session` WHERE `token` LIMIT 1;');
+
+        if (!stmt.rows) {
+            return [0, 'Failed("m_session" not found).'];
+        }
+
+        if (this._get['action'] === 'remove') {
+            await mSession.removeByWhere(this, db, [
+                ['token', 'LIKE', 'test_%']
+            ]);
+            return this._location('test/mod-session');
+        }
+        else {
+
+            const time = lTime.stamp();
+            const session = mSession.getCreate<mSession>(this, db);
+            session.set({
+                'data': JSON.stringify({ 'test': lCore.random(4) }),
+                'time_update': time,
+                'time_add': time
+            });
+            const result = await session.create();
+
+            echo.push(`<pre>const time = lTime.stamp();
+const session = mSession.getCreate(this, db);
+session.set({
+    'data': JSON.stringify({'test': lText.random(4)}),
+    'time_update': time,
+    'time_add': time
+});
+const result = await session.create();
+JSON.stringify(result))</pre>` + JSON.stringify(result));
+
+            echo.push('<pre>JSON.stringify(session.toArray());</pre>' + lText.htmlescape(JSON.stringify(session.toArray())));
+
+            echo.push('<br><br>Session table:');
+
+            stmt = await db.query('SELECT * FROM `m_session` WHERE `token` LIKE \'test_%\' ORDER BY `id` ASC;');
+            this._dbTable(stmt, echo);
+
+            // --- explain ---
+
+            const ls = mSession.where<mSession>(this, db, [
+                ['time_update', '>', time - 60 * 5]
+            ]);
+            const r = await ls.explain();
+            echo.push(`<pre>const ls = mSession.where<mSession>(this, db, [
+    ['time_update', '>', time - 60 * 5]
+]);
+const r = await ls.explain();</pre>` + lText.htmlescape(JSON.stringify(r)));
+
+            const r2 = await ls.explain(true);
+            echo.push('<pre>$ls->explain(true);</pre>');
+            if (r2) {
+                echo.push('<table style="width: 100%;">');
+                for (const k in r2) {
+                    const v = r2[k];
+                    echo.push('<tr><th>' + lText.htmlescape(k) + '</th><td>' + (v === null ? 'null' : lText.htmlescape(v.toString())) + '</td></tr>');
+                }
+                echo.push('</table>');
+            }
+            else {
+                echo.push('<div>false</div>');
+            }
+
+            echo.push('<br><a href="' + this._config.const.urlBase + 'test/mod-session?action=remove">Remove all test data</a> | <a href="' + this._config.const.urlBase + 'test">Return</a>');
+
+            return echo.join('') + '<br><br>' + this._getEnd();
+        }
+    }
+
+    public async modSplit(): Promise<string> {
+        const echo = ['<b style="color: red;">In a production environment, please delete "mod/test.php" and "mod/testdata.php" files.</b>'];
+
+        const db = lDb.get(this);
+
+        echo.push(`<br><br>Test SQL:<pre>CREATE TABLE \`m_test\` (
+    \`id\` bigint NOT NULL AUTO_INCREMENT,
+    \`name\` varchar(32) COLLATE ascii_bin NOT NULL,
+    \`time_add\` bigint NOT NULL,
+    PRIMARY KEY (\`id\`)
+) ENGINE=InnoDB DEFAULT CHARSET=ascii COLLATE=ascii_bin;
+CREATE TABLE \`m_test_data_0\` (
+    \`id\` bigint NOT NULL AUTO_INCREMENT,
+    \`test_id\` bigint NOT NULL,
+    \`content\` varchar(128) COLLATE ascii_bin NOT NULL,
+    \`time_add\` bigint NOT NULL,
+    PRIMARY KEY (\`id\`)
+) ENGINE=InnoDB DEFAULT CHARSET=ascii COLLATE=ascii_bin;</pre>m_test_data_0 - m_test_data_4<br><br>`);
+
+        // --- 操作按钮 ---
+
+        echo.push(`<input type="button" value="Create user" onclick="this.value='Waiting...';fetch('${this._config.const.urlBase}test/mod-split1',{method:'GET',headers:{'Content-Type':'application/x-www-form-urlencoded'}}).then(function(r){window.location.href=window.location.href})">
+<input type="button" value="Random post" onclick="this.value='Waiting...';fetch('${this._config.const.urlBase}test/mod-split2',{method:'GET',headers:{'Content-Type':'application/x-www-form-urlencoded'}}).then(function(r){return r.json()}).then(function(j){alert('TESTID:'+j.id+'\\nTABLEINDEX:'+j.index);window.location.href=window.location.href})">`);
+
+        // --- 读取 test 和 test_data 表 ---
+
+        let stmt = await db.query('SELECT * FROM `m_test` ORDER BY `id` DESC LIMIT 0, 20;');
+        echo.push('<br><br><b>m_test</b> table:');
+        this._dbTable(stmt, echo);
+
+        for (let i = 0; i < 5; ++i) {
+            stmt = await db.query('SELECT * FROM `m_test_data_' + i.toString() + '` ORDER BY `id` DESC LIMIT 0, 20;');
+            echo.push('<br><b>m_test_data_' + i.toString() + '</b> table:');
+            this._dbTable(stmt, echo);
+        }
+
+        return echo.join('') + '<br>' + this._getEnd();
+    }
+
+    public async modSplit1(): Promise<void> {
+        const db = lDb.get(this);
+
+        const test = mTest.getCreate(this, db);
+        test.set({
+            'name': lCore.random(lCore.rand(8, 32)),
+            'time_add': lTime.stamp()
+        });
+        await test.create();
+    }
+
+    public async modSplit2(): Promise<any[]> {
+        const db = lDb.get(this);
+
+        const ids: number[] = [];
+        const ls = await mTest.select<mTest>(this, db, ['id']).by('time_add').limit(0, 50).all();
+        if (ls) {
+            for (const item of ls) {
+                if (!item.id) {
+                    continue;
+                }
+                ids.push(item.id);
+            }
+        }
+        if (ids.length === 0) {
+            return [0, 'The "test" table not found.'];
+        }
+        const id = ids[lCore.rand(0, ids.length - 1)];
+
+        // --- 一致性 hash ---
+        const index = lConsistent.fast(id.toString(), ['0', '1', '2', '3', '4']);
+
+        const testData = mTestData.getCreate(this, db, {
+            'index': index ?? ''
+        });
+        testData.set({
+            'test_id': id,
+            'content': lCore.random(lCore.rand(8, 32)),
+            'time_add': lTime.stamp()
+        });
+        await testData.create();
+
+        return [1, { 'id': id, 'index': index }];
+    }
+
+    public captchaFastbuild(): string {
+        return lCaptcha.get(400, 100).getBuffer();
+    }
+
+    public captchaBase64(): string {
+        const echo = [`<pre>const cap = lCaptcha.get(400, 100);
+const phrase = cap.getPhrase();
+const base64 = cap.getBase64();</pre>phrase:`];
+        const cap = lCaptcha.get(400, 100);
+        const phrase = cap.getPhrase();
+        const base64 = cap.getBase64();
+        echo.push('<pre>' + phrase + '</pre>');
+
+        echo.push('base64:');
+        echo.push('<pre style="white-space: pre-wrap; word-wrap: break-word; overflow-y: auto; max-height: 200px;">' + base64 + '</pre>');
+
+        echo.push('&lt;img src="&lt;?php echo $base64 ?&gt;" style="width: 200px; height: 50px;"&gt;');
+        echo.push('<pre><img alt="captcha" src="' + base64 + '" style="width: 200px; height: 50px;"></pre>');
+
+        return echo.join('') + this._getEnd();
+    }
+
+    public coreRandom(): string {
+        return '<pre>lCore.random(16, lCore.RANDOM_LUNS);</pre>' + lText.htmlescape(lCore.random(16, lCore.RANDOM_LUNS)) +
+            '<pre>lCore.random(4, lCore.RANDOM_V);</pre>' + lText.htmlescape(lCore.random(4, lCore.RANDOM_V)) +
+            '<pre>lCore.random(8, lCore.RANDOM_N, \'0349\');</pre>' + lText.htmlescape(lCore.random(8, lCore.RANDOM_N, '0349')) +
+            '<br><br>' + this._getEnd();
+    }
+
+    public coreRand(): string {
+        return '<pre>lCore.rand(1.2, 7.1, 1);</pre>' + lCore.rand(1.2, 7.1, 1).toString() +
+            '<pre>lCore.rand(1.2, 7.1, 5);</pre>' + lCore.rand(1.2, 7.1, 5).toString() +
+            '<pre>lCore.rand(1.298, 7.1891, 2);</pre>' + lCore.rand(1.298, 7.1891, 2).toString() +
+            '<br><br>' + this._getEnd();
+    }
+
+    public coreConvert62(): string {
+        return '<pre>lCore.convert62(10);</pre>' + lCore.convert62(10) +
+            '<pre>lCore.convert62(100);</pre>' + lCore.convert62(100) +
+            '<pre>lCore.convert62(1992199519982001n);</pre>' + lCore.convert62(1992199519982001n) +
+            '<pre>lCore.convert62(9223372036854770000n);</pre>' + lCore.convert62(9223372036854770000n) +
+            '<pre>lCore.convert62(9223372036854775807n);</pre>' + lCore.convert62(9223372036854775807n) +
+
+            '<pre>lCore.unconvert62(\'a\');</pre>' + lCore.unconvert62('a').toString() +
+            '<pre>lCore.unconvert62(\'100\');</pre>' + lCore.unconvert62('100').toString() +
+            '<pre>lCore.unconvert62(\'zzz\');</pre>' + lCore.unconvert62('zzz').toString() +
+            '<pre>lCore.unconvert62(\'ZZZ\');</pre>' + lCore.unconvert62('ZZZ').toString() +
+            '<pre>lCore.unconvert62(\'97HMXKQql\');</pre>' + lCore.unconvert62('97HMXKQql').toString() +
+            '<pre>lCore.unconvert62(\'aZl8N0y57gs\');</pre>' + lCore.unconvert62('aZl8N0y57gs').toString() +
+            '<pre>lCore.unconvert62(\'aZl8N0y58M7\');</pre>' + lCore.unconvert62('aZl8N0y58M7').toString() +
+            '<br><br>' + this._getEnd();
+    }
+
+    public coreMuid(): string {
+        const ac = this._get['ac'] ? this._get['ac'] : '';
+
+        const echo = [
+            '<a href="' + this._config.const.urlBase + 'test/core-muid">Default</a> | ' +
+            '<a href="' + this._config.const.urlBase + 'test/core-muid?ac=big">Big</a> | ' +
+            '<a href="' + this._config.const.urlBase + 'test">Return</a>'
+        ];
+
+        if (ac === '') {
+            let muid = lCore.muid(this);
+            echo.push('<pre>lCore.muid(this);</pre>' + muid + ' (' + muid.length.toString() + ')');
+
+            muid = lCore.muid(this);
+            echo.push('<pre>lCore.muid(this);</pre>' + muid + ' (' + muid.length.toString() + ')');
+
+            muid = lCore.muid(this, { 'bin': false });
+            echo.push(`<pre>lCore.muid(this, { 'bin': false });</pre>` + muid + ' (' + muid.length.toString() + ')');
+
+            muid = lCore.muid(this, { 'len': 16 });
+            echo.push(`<pre>lCore.muid(this, { 'len': 16 });</pre>` + muid + ' (' + muid.length.toString() + ')');
+
+            muid = lCore.muid(this, { 'len': 16, 'bin': false });
+            echo.push(`<pre>lCore.muid(this, { 'len': 16, 'bin': false });</pre>` + muid + ' (' + muid.length.toString() + ')');
+
+            muid = lCore.muid(this, { 'insert': 'Aa', 'len': 32 });
+            echo.push(`<pre>lCore.muid(this, { 'insert': 'Aa', 'len': 32 });</pre>` + muid + ' (' + muid.length.toString() + ')');
+
+            muid = lCore.muid(this, { 'key': 'M' });
+            echo.push(`<pre>lCore.muid(this, { 'key': 'M' });</pre>` + muid + ' (' + muid.length.toString() + ')');
+
+            echo.push('<br><br>');
+        }
+        else {
+            const parr: string[] = [];
+            const oarr: string[] = [];
+            for (let i = 0; i < 30000; ++i) {
+                const muid = lCore.muid(this, { 'insert': '0' });
+                const sp = oarr.indexOf(muid);
+                if (sp > -1) {
+                    parr.push(muid + '[' + sp.toString() + ']' + oarr[sp]);
+                    continue;
+                }
+                oarr.push(muid);
+            }
+            echo.push(`<pre>
+const parr: string[] = [];
+const oarr: string[] = [];
+for (let i = 0; i < 30000; ++i) {
+    const muid = lText.muid(this);
+    const sp = oarr.indexOf(muid);
+    if (sp > -1) {
+        parr.push(muid + '[' + sp.toString() + ']' + oarr[sp]);
+        continue;
+    }
+    oarr.push(muid);
+}</pre>parr length: ${parr.length}<br>oarr length: ${oarr.length}<br><br>parr:<pre>${JSON.stringify(parr)}</pre>oarr:<pre>${JSON.stringify(oarr.slice(0, 100)).slice(0, -1)}...</pre>`);
+        }
+
+        return echo.join('') + this._getEnd();
+    }
+
+    public coreReload(): string {
+        lCore.sendReload();
+        return 'The reload request has been sent, please review the console.<br><br>' + this._getEnd();
+    }
+
+    public coreRestart(): string {
+        lCore.sendRestart();
+        return 'The restart request has been sent, please review the console.<br><br>' + this._getEnd();
+    }
+
+    public crypto(): string {
+        const echo = ['<b>AES-256-ECB:</b>'];
+
+        const key = 'testkeyatestkeyatestkeyatestkeya';
+        let text = lCrypto.aesEncrypt('Original text', key);
+        echo.push(`<pre>const key = 'testkeyatestkeyatestkeyatestkeya';
+const text = lCrypto.aesEncrypt('Original text', key);
+JSON.stringify(text);</pre>${JSON.stringify(text)}`);
+
+        let orig = lCrypto.aesDecrypt(text || '', key);
+        echo.push(`<pre>let orig = lCrypto.aesDecrypt(text || '', key);
+JSON.stringify(orig);</pre>${JSON.stringify(orig)}`);
+
+        orig = lCrypto.aesDecrypt(text || '', 'otherKey');
+        echo.push(`<pre>orig = lCrypto.aesDecrypt(text || '', 'otherKey');
+JSON.stringify(orig);</pre>${JSON.stringify(orig)}`);
+
+        // ----------
+
+        echo.push('<br><br><b>AES-256-CFB:</b>');
+
+        const iv = 'iloveuiloveuilov';
+        text = lCrypto.aesEncrypt('Original text', key, iv);
+        echo.push(`<pre>const iv = 'iloveuiloveuilov';
+text = lCrypto.aesEncrypt('Original text', key, iv);
+JSON.stringify(text);</pre>${JSON.stringify(text)}`);
+
+        orig = lCrypto.aesDecrypt(text || '', key, iv);
+        echo.push(`<pre>orig = lCrypto.aesDecrypt(text || '', key, iv);
+JSON.stringify(orig);</pre>${JSON.stringify(orig)}`);
+
+        orig = lCrypto.aesDecrypt(text || '', key, 'otherIv');
+        echo.push(`<pre>orig = lCrypto.aesDecrypt(text || '', key, 'otherIv');
+orig ? 'true' : 'false';</pre>${orig ? 'true' : 'false'}`);
+
+        // ----------
+
+        echo.push('<br><br><b>AES-256-CBC:</b>');
+
+        text = lCrypto.aesEncrypt('Original text', key, iv, lCrypto.AES_256_CBC);
+        echo.push(`<pre>const key = 'testkeyatestkeyatestkeyatestkeya';
+const text = lCrypto.aesEncrypt('Original text', key);
+text = lCrypto.aesEncrypt('Original text', key, iv, lCrypto.AES_256_CBC);
+JSON.stringify(text);</pre>${JSON.stringify(text)}`);
+
+        orig = lCrypto.aesDecrypt(text || '', key, iv, lCrypto.AES_256_CBC);
+        echo.push(`<pre>orig = lCrypto.aesDecrypt(text || '', key, iv, lCrypto.AES_256_CBC);
+JSON.stringify(orig);</pre>${JSON.stringify(orig)}`);
+
+        orig = lCrypto.aesDecrypt(text || '', key, 'otherIv', lCrypto.AES_256_CBC);
+        echo.push(`<pre>orig = lCrypto.aesDecrypt(text || '', key, 'otherIv', lCrypto.AES_256_CBC);
+JSON.stringify(orig);</pre>${JSON.stringify(orig)}`);
+
+        return echo.join('') + '<br><br>' + this._getEnd();
+    }
+
+    public async db(): Promise<any> {
+        const echo = [(Math.round(this._getRunTime() * 10000000) / 10000).toString()];
+
+        const db = lDb.get(this);
+        // --- 先获取 session 表的情况 ---
+        let stmt = await db.query('SELECT * FROM `m_session` ORDER BY `id` DESC LIMIT 10;');
+        if (!stmt.rows) {
+            return [0, stmt.error ? (stmt.error.message + '(' + stmt.error.errno.toString() + ')') : 'Failed("m_session" not found).'];
+        }
+
+        echo.push(`<pre>const db = lDb.get(this);
+const stmt = await db.query('SELECT * FROM \`m_session\` ORDER BY \`id\` DESC LIMIT 10;');</pre>`);
+
+        this._dbTable(stmt, echo);
+
+        echo.push('<br>ms: ' + (Math.round(this._getRunTime() * 10000000) / 10000).toString());
+
+        // --- 插入 test-token 的条目 ---
+        const time = lTime.stamp().toString();
+        let exec = await db.execute('INSERT INTO `m_session` (`token`, `data`, `time_update`, `time_add`) VALUES (\'test-token\', \'' + JSON.stringify({ 'go': 'ok' }) + '\', \'' + time + '\', \'' + time + '\');');
+        let ms = (Math.round(this._getRunTime() * 10000000) / 10000).toString();
+        let insertId: number = 0;
+        if (exec.error?.errno === 1062) {
+            insertId = (await db.query('SELECT * FROM `m_session` WHERE `token` = \'test-token\';')).rows?.[0].id ?? 0;
+            ms += ', ' + (Math.round(this._getRunTime() * 10000000) / 10000).toString();
+        }
+        else {
+            insertId = exec.packet?.insertId ?? 0;
+        }
+
+        echo.push(`<pre>const time = lTime.stamp().toString();
+const exec = await db.execute('INSERT INTO \`m_session\` (\`token\`, \`data\`, \`time_update\`, \`time_add\`) VALUES (\\'test-token\\', \\'' + JSON.stringify({ 'go': 'ok' }) + '\\', \\'' + time + '\\', \\'' + time + '\\');');
+let insertId: number = 0;
+if (exec.error?.errno === 1062) {
+    insertId = (await db.query('SELECT * FROM \`m_session\` WHERE \`token\` = \\'test-token\\';')).rows?.[0].id ?? 0;
+}
+else {
+    insertId = exec.packet?.insertId ?? 0;
+}</pre>
+exec: ${JSON.stringify(exec)}<br>
+insertId: ${JSON.stringify(insertId)}<br>
+errno: ${JSON.stringify(exec.error?.errno)}<br>
+error: ${JSON.stringify(exec.error)}<br>
+ms: ${ms}<br><br>`);
+
+        // --- 获取最近的一条 ---
+        stmt = await db.query('SELECT * FROM `m_session` ORDER BY `id` DESC LIMIT 1;');
+        this._dbTable(stmt, echo);
+
+        // --- 再次插入 test-token 的条目 ---
+        exec = await db.execute('INSERT INTO `m_session` (`token`, `data`, `time_update`, `time_add`) VALUES (\'test-token\', \'' + JSON.stringify({ 'go': 'ok' }) + '\', \'' + time + '\', \'' + time + '\');');
+        insertId = exec.packet?.insertId ?? 0;
+        echo.push(`<pre>exec = await db.execute('INSERT INTO \`m_session\` (\`token\`, \`data\`, \`time_update\`, \`time_add\`) VALUES (\\'test-token\\', \\'' + JSON.stringify({ 'go': 'ok' }) + '\\', \\'' + time + '\\', \\'' + time + '\\');');
+insertId = exec.packet?.insertId ?? 0;</pre>
+exec: ${JSON.stringify(exec)}<br>
+insertId: ${JSON.stringify(insertId)}<br>
+errno: ${JSON.stringify(exec.error?.errno)}<br>
+error: ${JSON.stringify(exec.error)}<br>
+ms: ${(Math.round(this._getRunTime() * 10000000) / 10000).toString()}<br>`);
+
+        // --- 依据唯一键替换值 ---
+        exec = await db.execute('REPLACE INTO `m_session` (`token`, `data`, `time_update`, `time_add`) VALUES (\'test-token\', \'' + JSON.stringify({ 'go2': 'ok2' }) + '\', \'' + time + '\', \'' + time + '\');');
+        insertId = exec.packet?.insertId ?? 0;
+        echo.push(`<pre>exec = await db.execute('REPLACE INTO \`m_session\` (\`token\`, \`data\`, \`time_update\`, \`time_add\`) VALUES (\\'test-token\\', \\'' + JSON.stringify({ 'go2': 'ok2' }) + '\\', \\'' + time + '\\', \\'' + time + '\\');');
+insertId = exec.packet?.insertId ?? 0;</pre>
+exec: ${JSON.stringify(exec)}<br>
+insertId: ${JSON.stringify(insertId)}<br>
+errno: ${JSON.stringify(exec.error?.errno)}<br>
+error: ${JSON.stringify(exec.error)}<br>
+ms: ${(Math.round(this._getRunTime() * 10000000) / 10000).toString()}<br><br>`);
+
+        // --- 显示近 10 条 ---
+        stmt = await db.query('SELECT * FROM `m_session` ORDER BY `id` DESC LIMIT 10;');
+        this._dbTable(stmt, echo);
+
+        // --- explain 开始 ---
+        const explain = 'EXPLAIN';
+        stmt = await db.query(explain + ' SELECT * FROM `m_session` LIMIT 10;');
+        echo.push(`<pre>stmt = await db.query('${explain} SELECT * FROM \`m_session\` LIMIT 10;');</pre>`);
+        this._dbTable(stmt, echo);
+
+        echo.push('<br>ms: ' + (Math.round(this._getRunTime() * 10000000) / 10000).toString());
+
+        // --- 删除测试添加的 token ---
+        exec = await db.execute('DELETE FROM `m_session` WHERE `token` = \'test-token\';');
+        echo.push(`<pre>exec = await db.execute('DELETE FROM \`m_session\` WHERE \`token\` = \\'test-token\\';');</pre>
+exec: ${JSON.stringify(exec)}<br><br>`);
+
+        stmt = await db.query('SELECT * FROM `m_session` ORDER BY `id` DESC LIMIT 10;');
+        this._dbTable(stmt, echo);
+
+        return echo.join('') + '<br>queries: ' + db.getQueries().toString() + '<br>' + this._getEnd();
+    }
+
+    private _dbTable(stmt: lDb.IData, echo: any[]): void {
+        echo.push('<table style="width: 100%;"><tr>');
+        if (stmt.rows) {
+            for (const item of stmt.fields) {
+                echo.push('<th>' + lText.htmlescape(item.name) + '</th>');
+            }
+            echo.push('</tr>');
+
+            for (const row of stmt.rows) {
+                echo.push('<tr>');
+                for (const key in row) {
+                    const val = row[key];
+                    echo.push('<td>' + (val === null ? 'null' : lText.htmlescape(val.toString())) + '</td>');
+                }
+                echo.push('</tr>');
+            }
+        }
+        else {
+            echo.push('<th>No data</th></tr>');
+        }
+        echo.push('</table>');
+    }
+
+    public async kv(): Promise<any> {
+        const kv = lKv.get(this);
+        if (!await kv.ping()) {
+            return [0, 'Failed.'];
+        }
+        const value = this._get['value'] ?? '';
+        const ac = this._get['ac'] ?? '';
+
+        const echo = [`<pre>const kv = lKv.get(this);
+if (!await kv.ping()) {
+    return [0, 'Failed.'];
+}
+JSON.stringify(await kv.ping());</pre>${JSON.stringify(await kv.ping())}`];
+
+        if (ac == 'delete') {
+            echo.push("<pre>JSON.stringify(await kv.get('test'));</pre>" + JSON.stringify(await kv.get('test')));
+
+            echo.push("<pre>JSON.stringify(await kv.del('test'));</pre>" + JSON.stringify(await kv.del('test')));
+
+            echo.push("<pre>JSON.stringify(await kv.get('test'));</pre>" + JSON.stringify(await kv.get('test')));
+        }
+        else if (ac === 'ttl') {
+            echo.push("<pre>JSON.stringify(await kv.ttl('test'));</pre>" + JSON.stringify(await kv.ttl('test')));
+            echo.push("<pre>JSON.stringify(await kv.pttl('test'));</pre>" + JSON.stringify(await kv.pttl('test')));
+            echo.push("<pre>JSON.stringify(await kv.set('test', 'ttl', 10));</pre>" + JSON.stringify(await kv.set('test', 'ttl', 10)));
+            echo.push("<pre>JSON.stringify(await kv.ttl('test'));</pre>" + JSON.stringify(await kv.ttl('test')));
+            echo.push("<pre>JSON.stringify(await kv.pttl('test'));</pre>" + JSON.stringify(await kv.pttl('test')));
+        }
+        else if (ac == 'incr-decr-replace') {
+            echo.push("<pre>JSON.stringify(await kv.del('test'));</pre>" + JSON.stringify(await kv.del('test')));
+
+            echo.push("<pre>JSON.stringify(await kv.replace('test', 'QAQ'));</pre>" + JSON.stringify(await kv.replace('test', 'QAQ')));
+
+            echo.push("<pre>JSON.stringify(await kv.incr('test'));</pre>" + JSON.stringify(await kv.incr('test')));
+
+            echo.push("<pre>JSON.stringify(await kv.get('test'));</pre>" + JSON.stringify(await kv.get('test')));
+
+            echo.push("<pre>JSON.stringify(await kv.set('test', 666));</pre>" + JSON.stringify(await kv.set('test', 666)));
+
+            echo.push("<pre>JSON.stringify(await kv.incr('test'));</pre>" + JSON.stringify(await kv.incr('test')));
+
+            echo.push("<pre>JSON.stringify(await kv.get('test'));</pre>" + JSON.stringify(await kv.get('test')));
+
+            echo.push("<pre>JSON.stringify(await kv.decr('test', 10));</pre>" + JSON.stringify(await kv.decr('test', 10)));
+
+            echo.push("<pre>JSON.stringify(await kv.get('test'));</pre>" + JSON.stringify(await kv.get('test')));
+
+            echo.push("<pre>JSON.stringify(await kv.replace('test', 111));</pre>" + JSON.stringify(await kv.replace('test', 111)));
+
+            echo.push("<pre>JSON.stringify(await kv.get('test'));</pre>" + JSON.stringify(await kv.get('test')));
+
+            echo.push("<pre>JSON.stringify(await kv.replace('test', 'QAQ'));</pre>" + JSON.stringify(await kv.replace('test', 'QAQ')));
+
+            echo.push("<pre>SON.stringify(await kv.incr('test', 10));</pre>" + JSON.stringify(await kv.incr('test', 10)));
+
+            echo.push("<pre>JSON.stringify(await kv.get('test'));</pre>" + JSON.stringify(await kv.get('test')));
+        }
+        else if (ac === 'append-prepend') {
+            echo.push("<pre>SON.stringify(await kv.prepend('test', '0'));</pre>" + JSON.stringify(await kv.prepend('test', '0')));
+
+            echo.push("<pre>JSON.stringify(await kv.get('test'));</pre>" + JSON.stringify(await kv.get('test')));
+
+            echo.push("<pre>JSON.stringify(await kv.set('test', 'bbb'));</pre>" + JSON.stringify(await kv.set('test', 'bbb')));
+
+            echo.push("<pre>JSON.stringify(await kv.append('test', 'end'));</pre>" + JSON.stringify(await kv.append('test', 'end')));
+
+            echo.push("<pre>JSON.stringify(await kv.get('test'));</pre>" + JSON.stringify(await kv.get('test')));
+
+            echo.push("<pre>JSON.stringify(await kv.prepend('test', 'pre'));</pre>" + JSON.stringify(await kv.prepend('test', 'pre')));
+
+            echo.push("<pre>JSON.stringify(await kv.get('test'));</pre>" + JSON.stringify(await kv.get('test')));
+
+            echo.push("<pre>JSON.stringify(await kv.add('test', 'aaa'));</pre>" + JSON.stringify(await kv.add('test', 'aaa')));
+
+            echo.push("<pre>JSON.stringify(await kv.append('tmp_test', 'hehe'));</pre>" + JSON.stringify(await kv.append('tmp_test', 'hehe')));
+
+            echo.push("<pre>JSON.stringify(await kv.get('tmp_test'));</pre>" + JSON.stringify(await kv.get('tmp_test')));
+
+            echo.push("<pre>JSON.stringify(await kv.del('tmp_test'));</pre>" + JSON.stringify(await kv.del('tmp_test')));
+        }
+        else if (ac === 'hash') {
+            echo.push("<pre>JSON.stringify(await kv.hSet('hTest', 'name', 'Cheng Xin'));</pre>" + JSON.stringify(await kv.hSet('hTest', 'name', 'Cheng Xin')));
+
+            echo.push("<pre>JSON.stringify(await kv.hSet('hTest', 'age', '16', 'nx'));</pre>" + JSON.stringify(await kv.hSet('hTest', 'age', '16', 'nx')));
+
+            echo.push(`<pre>JSON.stringify(await kv.hMSet('hTest', {
+    'age': '16',
+    'sex': 'female'
+}));</pre>`);
+            echo.push(JSON.stringify(await kv.hMSet('hTest', {
+                'age': '16',
+                'sex': 'female'
+            })));
+
+            echo.push("<pre>JSON.stringify(await kv.hSet('hTest', 'age', '16', 'nx'));</pre>" + JSON.stringify(await kv.hSet('hTest', 'age', '16', 'nx')));
+
+            echo.push("<pre>JSON.stringify(await kv.hGet('hTest', 'name'));</pre>" + JSON.stringify(await kv.hGet('hTest', 'name')));
+
+            echo.push("<pre>JSON.stringify(await kv.hDel('hTest', 'name'));</pre>" + JSON.stringify(await kv.hDel('hTest', 'name')));
+
+            echo.push(`<pre>JSON.stringify(await kv.hMSet('hTest', {
+    'ok1': 'bye',
+    'ok2': [
+        '1', '2', '5', '8', '0'
+    ]
+}));</pre>`);
+            echo.push(JSON.stringify(await kv.hMSet('hTest', {
+                'ok1': 'bye',
+                'ok2': [
+                    '1', '2', '5', '8', '0'
+                ]
+            })));
+
+            echo.push("<pre>JSON.stringify(await kv.hSet('hTest', 'ok1', ['a', 'b']));</pre>" + JSON.stringify(await kv.hSet('hTest', 'ok1', ['a', 'b'])));
+
+            echo.push("<pre>JSON.stringify(await kv.hGetAll('hTest'));</pre>" + JSON.stringify(await kv.hGetAll('hTest')));
+
+            echo.push("<pre>JSON.stringify(await kv.hGetJson('hTest', 'ok1'));</pre>" + JSON.stringify(await kv.hGetJson('hTest', 'ok1')));
+
+            echo.push("<pre>JSON.stringify(await kv.hKeys('hTest'));</pre>" + JSON.stringify(await kv.hKeys('hTest')));
+
+            echo.push("<pre>JSON.stringify(await kv.hExists('hTest', 'age'));</pre>" + JSON.stringify(await kv.hExists('hTest', 'age')));
+
+            echo.push("<pre>SON.stringify(await kv.hMGet('hTest', ['age', 'sex', 'school']));</pre>" + JSON.stringify(await kv.hMGet('hTest', ['age', 'sex', 'school'])));
+
+            echo.push("<pre>JSON.stringify(await kv.del('hTest'));</pre>" + JSON.stringify(await kv.del('hTest')));
+
+            echo.push("<pre>JSON.stringify(await kv.hGet('hTest', 'name'));</pre>" + JSON.stringify(await kv.hGet('hTest', 'name')));
+
+            echo.push("<pre>JSON.stringify(await kv.hGetAll('hTest'));</pre>" + JSON.stringify(await kv.hGetAll('hTest')));
+        }
+        else if (ac === 'other') {
+            echo.push(`<pre>for (let i = 0; i < 50; ++i) {
+    await kv.add('t' + i.toString(), i, 10);
+}
+echo.push('Added.');</pre>`);
+            for (let i = 0; i < 50; ++i) {
+                await kv.add('t' + i.toString(), i, 10);
+            }
+            echo.push('Added.');
+
+            echo.push("<pre>JSON.stringify(await kv.keys('t*'));</pre>" + JSON.stringify(await kv.keys('t*')));
+
+            echo.push('<pre>JSON.stringify(await kv.scan());</pre>' + JSON.stringify(await kv.scan()));
+
+            echo.push(`<pre>let cursor = 0;
+while (true) {
+    echo.push('WHILE (' + JSON.stringify(cursor) + ')&lt;br&gt;');
+    const r = await kv.scan(cursor, '*2*', 5);
+    if (r === false || r.nextCursor === 0) {
+        echo.push('DONE&lt;br&gt;');
+        break;
+    }
+    echo.push(JSON.stringify(r.items) + '&lt;br&gt;');
+    cursor = r.nextCursor;
+}
+echo[echo.length - 1] = echo[echo.length - 1].slice(0, -4);</pre>`);
+            let cursor = 0;
+            while (true) {
+                echo.push('WHILE (' + JSON.stringify(cursor) + ')<br>');
+                const r = await kv.scan(cursor, '*2*', 5);
+                if (r === false || r.nextCursor === 0) {
+                    echo.push('DONE<br>');
+                    break;
+                }
+                echo.push(JSON.stringify(r.items) + '<br>');
+                cursor = r.nextCursor;
+            }
+            echo[echo.length - 1] = echo[echo.length - 1].slice(0, -4);
+        }
+        else {
+            // --- default ---
+            echo.push("<pre>JSON.stringify(await kv.exists(['test', 'heheda']));</pre>" + JSON.stringify(await kv.exists(['test', 'heheda'])));
+
+            echo.push("<pre>JSON.stringify(await kv.mGet(['test', 'heheda']));</pre>" + JSON.stringify(await kv.mGet(['test', 'heheda'])));
+
+            echo.push("<pre>JSON.stringify(await kv.get('test'));</pre>" + JSON.stringify(await kv.get('test')));
+
+            echo.push("<pre>JSON.stringify(await kv.set('test', $value ? $value : 'ok'));</pre>" + JSON.stringify(await kv.set('test', value ? value : 'ok')));
+
+            echo.push("<pre>JSON.stringify(await kv.get('test'));</pre>" + JSON.stringify(await kv.get('test')));
+        }
+
+        return '<a href="' + this._config.const.urlBase + 'test/kv">Default</a> | ' +
+            '<a href="' + this._config.const.urlBase + 'test/kv?value=aaa">Set "aaa"</a> | ' +
+            '<a href="' + this._config.const.urlBase + 'test/kv?value=bbb">Set "bbb"</a> | ' +
+            '<a href="' + this._config.const.urlBase + 'test/kv?ac=delete">Delete</a> | ' +
+            '<a href="' + this._config.const.urlBase + 'test/kv?ac=ttl">ttl</a> | ' +
+            '<a href="' + this._config.const.urlBase + 'test/kv?ac=incr-decr-replace">Incr/Decr/Replace</a> | ' +
+            '<a href="' + this._config.const.urlBase + 'test/kv?ac=append-prepend">Append/Prepend</a> | ' +
+            '<a href="' + this._config.const.urlBase + 'test/kv?ac=hash">Hash</a> | ' +
+            '<a href="' + this._config.const.urlBase + 'test/kv?ac=other">Other</a> | ' +
+            '<a href="' + this._config.const.urlBase + 'test">Return</a>' + echo.join('') + '<br><br>' + this._getEnd();
+    }
+
+    public async net(): Promise<any> {
+        const echo = [];
+
+        const res = await lNet.get('https://cdn.jsdelivr.net/npm/deskrt/package.json');
+        echo.push(`<pre>Net::get('https://cdn.jsdelivr.net/npm/deskrt/package.json');</pre>
+headers: <pre>${JSON.stringify(res.headers, null, 4)}</pre>
+content: <pre>${(await res.getContent())?.toString()}</pre>
+error: ${JSON.stringify(res.error)}`);
+
+        return echo.join('') + '<br><br>' + this._getEnd();
+    }
+
+    public async netPost(): Promise<any> {
+        const echo = [];
+
+        const res = await lNet.post(this._internalUrl + 'test/netPost1', { 'a': '1', 'b': '2', 'c': ['1', '2', '3'] });
+        echo.push(`<pre>lNet.post('${this._internalUrl}test/netPost1', { 'a': '1', 'b': '2', 'c': ['1', '2', '3'] });</pre>
+headers: <pre>${JSON.stringify(res.headers, null, 4)}</pre>
+content: <pre>${(await res.getContent())?.toString()}</pre>
+error: ${JSON.stringify(res.error)}`);
+
+        return echo.join('') + '<br><br>' + this._getEnd();
+    }
+
+    public netPost1(): string {
+        return `_post:\n\n${JSON.stringify(this._post)}\n\nRequest headers:\n\n${JSON.stringify(this._headers, null, 4)}\n\nIP: ${this._req.socket.remoteAddress ?? ''}`;
+    }
+
+    public async netPostString(): Promise<string> {
+        const echo = [];
+
+        const res = await lNet.post(this._internalUrl + 'test/netPostString1', 'HeiHei');
+        echo.push(`<pre>lNet.post('${this._internalUrl}test/netPostString1', 'HeiHei');</pre>
+headers: <pre>${JSON.stringify(res.headers, null, 4)}</pre>
+content: <pre>${(await res.getContent())?.toString()}</pre>
+error: ${JSON.stringify(res.error)}`);
+
+        return echo.join('') + '<br><br>' + this._getEnd();
+    }
+
+    public netPostString1(): any[] {
+        return [1, this._input];
+    }
+
+    public async netOpen(): Promise<any> {
+        const echo = [];
+
+        const res = await lNet.open(this._internalUrl + 'test/netPost1').post().data({ 'a': '2', 'b': '0', 'c': ['0', '1', '3'] }).request();
+        echo.push(`<pre>lNet.open('${this._internalUrl}test/netPost1').post().data({ 'a': '2', 'b': '0', 'c': ['0', '1', '3'] }).request();</pre>
+headers: <pre>${JSON.stringify(res.headers, null, 4)}</pre>
+content: <pre>${(await res.getContent())?.toString()}</pre>
+error: ${JSON.stringify(res.error)}`);
+
+        return echo.join('') + this._getEnd();
+    }
+
+    public async netFormTest(): Promise<string> {
+        await this._handleFormData();
+        const echo = [
+            '<pre>',
+            JSON.stringify(this._post, null, 4),
+            '\n-----\n',
+            JSON.stringify(this._files, null, 4),
+            '</pre>'
+        ];
+        echo.push(`<form enctype="multipart/form-data" method="post">
+    text a: <input type="text" name="a" value="a1"> <input type="text" name="a" value="a2"><br>
+    file b: <input type="file" name="b"><br>
+    file c: <input type="file" name="c"><input type="file" name="c"><br>
+    fi d[]: <input type="file" name="d[]"><input type="file" name="d[]"><br>
+    <input type="submit" value="Upload">
+</form>
+<hr>
+<form method="post">
+    name a: <input type="text" name="a" value="a&1"> <input type="text" name="a" value="a&2"><br>
+    na b[]: <input type="text" name="b[]" value="b1"> <input type="text" name="b[]" value="b2"><br>
+    name d: <input type="text" name="d" value="d"><br>
+    <input type="submit" value="Default post">
+</form>`);
+
+        return echo.join('') + this._getEnd();
+    }
+
+    public async netUpload(): Promise<string> {
+        const echo = [];
+
+        const fd = lNet.getFormData();
+        fd.putString('a', '1');
+        await fd.putFile('file', def.LIB_PATH + 'net/cacert.pem');
+        await fd.putFile('multiple', def.LIB_PATH + 'net/cacert.pem');
+        await fd.putFile('multiple', def.LIB_PATH + 'net/cacert.pem');
+        const res = await lNet.post(this._internalUrl + 'test/net-upload1', fd);
+        echo.push(`<pre>const fd = lNet.getFormData();
+fd.putString('a', '1');
+await fd.putFile('file', def.LIB_PATH + 'net/cacert.pem');
+await fd.putFile('multiple', def.LIB_PATH + 'net/cacert.pem');
+await fd.putFile('multiple', def.LIB_PATH + 'net/cacert.pem');
+lNet.post('${this._internalUrl}test/net-upload1', fd);</pre>
+headers: <pre>${JSON.stringify(res.headers, null, 4)}</pre>
+content: <pre>${(await res.getContent())?.toString()}</pre>
+error: ${JSON.stringify(res.error)}`);
+
+        return echo.join('') + '<br><br>' + this._getEnd();
+    }
+
+    public async netUpload1(): Promise<string> {
+        await this._handleFormData();
+        return JSON.stringify(this._post, null, 4) + '\n\n' + JSON.stringify(this._files, null, 4);
+    }
+
+    public async netCookie(): Promise<string> {
+        const echo = [];
+
+        const cookie = {};
+        let res = await lNet.get(this._internalUrl + 'test/net-cookie1', {
+            'cookie': cookie
+        });
+        echo.push(`<pre>const cookie = {};
+lNet.get(this._internalUrl + 'test/net-cookie1', {
+    'cookie': cookie
+});</pre>
+headers: <pre>${JSON.stringify(res.headers, null, 4)}</pre>
+content: <pre>${(await res.getContent())?.toString()}</pre>
+cookie: <pre>${JSON.stringify(cookie, null, 4)}</pre><hr>`);
+
+        res = await lNet.get(this._internalUrl + 'test/net-cookie2', {
+            'cookie': cookie
+        });
+        echo.push(`<pre>lNet.get(this._internalUrl + 'test/net-cookie2', {
+    'cookie': cookie
+});</pre>
+headers: <pre>${JSON.stringify(res.headers, null, 4)}</pre>
+content: <pre>${(await res.getContent())?.toString()}</pre>`);
+
+        return echo.join('') + this._getEnd();
+    }
+
+    public netCookie1(): string {
+        lCore.setCookie(this, 'test1', 'normal', {
+            'ttl': 10
+        });
+        lCore.setCookie(this, 'test2', 'baidu.com', {
+            'ttl': 20,
+            'path': '/',
+            'domain': 'baidu.com'
+        });
+        lCore.setCookie(this, 'test3', this._config.const.hostname, {
+            'ttl': 30,
+            'path': '/',
+            'domain': this._config.const.hostname
+        });
+        lCore.setCookie(this, 'test4', '/ok/', {
+            'ttl': 40,
+            'path': '/ok/'
+        });
+        lCore.setCookie(this, 'test5', 'secure', {
+            'ttl': 50,
+            'ssl': true
+        });
+        lCore.setCookie(this, 'test6', '0.1', {
+            'ttl': 40,
+            'path': '/',
+            'domain': '0.1'
+        });
+        lCore.setCookie(this, 'test7', 'localhost', {
+            'ttl': 30,
+            'path': '/',
+            'domain': 'localhost'
+        });
+        lCore.setCookie(this, 'test8', 'com', {
+            'ttl': 20,
+            'path': '/',
+            'domain': 'com'
+        });
+        lCore.setCookie(this, 'test9', 'com.cn', {
+            'ttl': 10,
+            'path': '/',
+            'domain': 'com.cn'
+        });
+        lCore.setCookie(this, 'test10', 'httponly', {
+            'ttl': 60,
+            'httponly': true
+        });
+        return `lCore.setCookie(this, 'test1', 'normal', {
+    'ttl': 10
+});
+lCore.setCookie(this, 'test2', 'baidu.com', {
+    'ttl': 20,
+    'path': '/',
+    'domain': 'baidu.com'
+});
+lCore.setCookie(this, 'test3', this._config.const.hostname, {
+    'ttl': 30,
+    'path': '/',
+    'domain': this._config.const.hostname
+});
+lCore.setCookie(this, 'test4', '/ok/', {
+    'ttl': 40,
+    'path': '/ok/'
+});
+lCore.setCookie(this, 'test5', 'secure', {
+    'ttl': 50,
+    'ssl': true
+});
+lCore.setCookie(this, 'test6', '0.1', {
+    'ttl': 40,
+    'path': '/',
+    'domain': '0.1'
+});
+lCore.setCookie(this, 'test7', 'localhost', {
+    'ttl': 30,
+    'path': '/',
+    'domain': 'localhost'
+});
+lCore.setCookie(this, 'test8', 'com', {
+    'ttl': 20,
+    'path': '/',
+    'domain': 'com'
+});
+lCore.setCookie(this, 'test9', 'com.cn', {
+    'ttl': 10,
+    'path': '/',
+    'domain': 'com.cn'
+});
+lCore.setCookie(this, 'test10', 'httponly', {
+    'ttl': 60,
+    'httponly': true
+});`;
+    }
+
+    public netCookie2(): string {
+        return 'this._cookie: \n\n' + JSON.stringify(this._cookie, null, 4);
+    }
+
+    public async netSave(): Promise<string> {
+        const echo = [];
+
+        const res = await lNet.get('https://cdn.jsdelivr.net/npm/deskrt/package.json', {
+            'follow': 5,
+            'save': def.LOG_PATH + 'test-must-remove.json'
+        });
+        echo.push(`<pre>lNet.get('https://cdn.jsdelivr.net/npm/deskrt/package.json', {
+    'follow': 5,
+    'save': def.LOG_PATH + 'test-must-remove.json'
+});</pre>
+headers: <pre>${JSON.stringify(res.headers, null, 4)}</pre>
+content: <pre>${(await res.getContent())?.toString()}</pre>
+error: ${JSON.stringify(res.error)}</pre>`);
+
+        return echo.join('') + this._getEnd();
+    }
+
+    public async netFollow(): Promise<string> {
+        const echo = [];
+
+        const res = await lNet.post(this._internalUrl + 'test/net-follow1', {
+            'a': '1',
+            'b': '2'
+        }, {
+            'follow': 5
+        });
+        echo.push(`<pre>lNet.post(this._internalUrl + 'test/net-follow1', {
+    'a': '1',
+    'b': '2'
+}, {
+    'follow': 5
+});</pre>
+headers: <pre>${JSON.stringify(res.headers, null, 4)}</pre>
+content: <pre>${(await res.getContent())?.toString()}</pre>
+error: ${JSON.stringify(res.error)}</pre>`);
+
+        return echo.join('') + this._getEnd();
+    }
+
+    public netFollow1(): void {
+        this._location('test/net-follow2');
+    }
+
+    public netFollow2(): any {
+        return [1, { 'post': (this._post['a'] as string) + ',' + (this._post['b'] as string) }];
+    }
+
+    public async netReuse(): Promise<string> {
+        const echo = [];
+
+        echo.push('<strong>Reuse:</strong>');
+
+        let time0 = Date.now();
+        await lNet.get('https://cdn.jsdelivr.net/npm/deskrt@2.0.10/package.json');
+        let time1 = Date.now();
+        echo.push("<pre>lNet.get('https://cdn.jsdelivr.net/npm/deskrt@2.0.10/package.json');</pre>" + Math.round(time1 - time0).toString() + 'ms.');
+
+        time0 = Date.now();
+        await lNet.get('https://cdn.jsdelivr.net/npm/deskrt@2.0.10/README.md');
+        time1 = Date.now();
+        echo.push("<pre>lNet.get('https://cdn.jsdelivr.net/npm/deskrt@2.0.10/README.md');</pre>" + Math.round(time1 - time0).toString() + 'ms.');
+
+        time0 = Date.now();
+        await lNet.get('https://cdn.jsdelivr.net/npm/deskrt@2.0.10/LICENSE');
+        time1 = Date.now();
+        echo.push("<pre>lNet.get('https://cdn.jsdelivr.net/npm/deskrt@2.0.10/LICENSE');</pre>" + Math.round(time1 - time0).toString() + 'ms.<hr>');
+
+        return echo.join('') + this._getEnd();
+    }
+
+    public async netError(): Promise<string> {
+        const echo = [];
+
+        const res = await lNet.get('https://192.111.000.222/xxx.zzz');
+        echo.push(`<pre>lNet.get('https://192.111.000.222/xxx.zzz');</pre>
+headers: <pre>${JSON.stringify(res.headers, null, 4)}</pre>
+content: <pre>${(await res.getContent())?.toString()}</pre>
+error: <pre>${JSON.stringify(res.error, null, 4)}</pre>`);
+
+        return echo.join('') + this._getEnd();
+    }
+
+    public async scan(): Promise<any> {
+        const link = await this._scanLink();
+        if (!link) {
+            return [0, 'Failed, link can not be connected.'];
+        }
+        const s = this._get['s'] ?? 'db';
+
+        const echo = [];
+        const scan = await lScan.get(this, link, undefined, { 'ttl': 30 });
+        const token = scan.getToken();
+        echo.push(`<pre>const scan = await lScan.get(this, link, undefined, { 'ttl': 30 });
+const token = scan.getToken();</pre>
+token: ${token}<br><br>
+Scan status: <b id="status" style="color: red;">Waiting...</b><br>
+Poll count: <span id="count">0</span>, expiration date: <span id="exp"></span><br><br>
+Simulated scan URL: http://www.test.simu/scan?token=${token} (QR Code can be generated)<br><br>
+<input type="button" value="Visit the simulated URL" onclick="this.disabled=true;document.getElementById('url').innerText='http://www.test.simu/scan?token=${token}';visit();"><br><br>
+<div style="border: solid 1px rgba(0,0,0,.3); box-shadow: 0 5px 20px rgba(0, 0, 0, .25); width: 90%; margin: auto;">
+    <div id="url" style="background: rgba(0,0,0,.07); border-bottom: solid 1px rgba(0,0,0,.3); padding: 10px;">about:blank</div>
+    <div id="content" style="height: 200px; font-size: 16px; display: flex; justify-content: center; align-items: center; flex-direction: column;"></div>
+</div>
+<script>
+var token = '${token}';
+var count = 0;
+function poll() {
+    fetch('${this._config.const.urlBase}test/scan1?s=${s}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: 'token=${token}'
+    }).then(function(r) {
+        return r.json();
+    }).then(function(j) {
+        ++count;
+        document.getElementById('status').innerText = j.msg;
+        document.getElementById('count').innerText = count;
+        if (j.result > 0) {
+            document.getElementById('exp').innerText = j.exp;
+            setTimeout(poll, 1000);
+        }
+    }).catch(function(e) {
+        ++count;
+        document.getElementById('status').innerText = 'Network error.';
+        document.getElementById('count').innerText = count;
+        setTimeout(poll, 1000);
+    });
+}
+poll();
+
+function visit() {
+    document.getElementById('content').innerText = 'Loading...';
+    fetch('${this._config.const.urlBase}test/scan2?s=${s}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: 'token=${token}'
+    }).then(function(r) {
+        return r.json();
+    }).then(function(j) {
+        if (j.result > 0) {
+            document.getElementById('content').innerHTML = 'Are you sure logged in the computer?<br><br><button id="confirm" style="padding: 10px 20px;" onclick="this.disabled=true;confirm()">Confirm</button>';
+        }
+        else {
+            document.getElementById('content').innerText = j.msg;
+        }
+    });
+}
+
+function confirm() {
+    fetch('${this._config.const.urlBase}test/scan3?s=${s}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: 'token=${token}'
+    }).then(function(r) {
+        return r.json();
+    }).then(function(j) {
+        if (j.result > 0) {
+            document.getElementById('content').innerText = 'Finish the operation!';
+        }
+        else {
+            document.getElementById('content').innerText = j.msg;
+        }
+    });
+}
+</script>`);
+
+        return '<a href="' + this._config.const.urlBase + 'test/scan?s=db">db</a> | ' +
+        '<a href="' + this._config.const.urlBase + 'test/scan?s=kv">kv</a> | ' +
+        '<a href="' + this._config.const.urlBase + 'test">Return</a>' + echo.join('') + '<br>' + this._getEnd();
+    }
+
+    public async scan1(): Promise<any> {
+        const link = await this._scanLink();
+        if (!link) {
+            return [0, 'Failed, link can not be connected.'];
+        }
+
+        const scan = await lScan.get(this, link, this._post['token']);
+        const rtn = await scan.poll();
+        switch (rtn) {
+            case -3: {
+                return [0, 'System error.'];
+            }
+            case -2: {
+                return [0, 'Token has expired.'];
+            }
+            case -1: {
+                return [1, 'Waiting...', { 'exp': scan.getTimeLeft() }];
+            }
+            case 0: {
+                return [1, 'Scanned, waiting for confirmation...', { 'exp': scan.getTimeLeft() }];
+            }
+        }
+        return [0, 'Scan result: ' + JSON.stringify(rtn)];
+    }
+
+    public async scan2(): Promise<any> {
+        const link = await this._scanLink();
+        if (!link) {
+            return [0, 'Failed, link can not be connected.'];
+        }
+        if (!await lScan.scanned(this, link, this._post['token'])) {
+            return [0, 'Token has expired.'];
+        }
+        return [1];
+    }
+
+    public async scan3(): Promise<any> {
+        const link = await this._scanLink();
+        if (!link) {
+            return [0, 'Failed, link can not be connected.'];
+        }
+        if (!await lScan.setData(this, link, this._post['token'], {
+            'uid': '5'
+        })) {
+            return [0, 'Token has expired.'];
+        }
+        return [1];
+    }
+
+    private async _scanLink(): Promise<any> {
+        const s = this._get['s'] ?? 'db';
+        let link: lDb.Pool | lKv.Pool;
+        if (s === 'db') {
+            const db = lDb.get(this);
+            link = db;
+        }
+        else {
+            const kv = lKv.get(this);
+            if (!await kv.ping()) {
+                return false;
+            }
+            link = kv;
+        }
+        return link;
+    }
+
+    public async session(): Promise<string | any[]> {
+        const retur: any[] = [];
+        if (!(this._checkInput(this._get, {
+            's': ['require', ['db', 'kv'], [0, 'Object not found.']],
+            'auth': [['', '1'], [0, 'Bad request.']],
+            'value': []
+        }, retur))) {
+            return retur;
+        }
+
+        const echo = ['<pre>'];
+
+        let link: lDb.Pool | lKv.Pool;
+        if (this._get['s'] === 'db') {
+            link = lDb.get(this);
+            echo.push('link = lDb.get(this);\n');
+        }
+        else {
+            link = lKv.get(this);
+            if (!await link.ping()) {
+                return [0, 'Failed, Redis can not be connected.'];
+            }
+            echo.push('link = lKv.get(this);\n');
+        }
+
+        if (this._get['auth'] === '') {
+            await this._startSession(link, false, { 'ttl': 60 });
+            echo.push(`await this._startSession(link, false, {'ttl': 60});
+JSON.stringify(this._session);</pre>` + lText.htmlescape(JSON.stringify(this._session)));
+
+            this._session['value'] = this._get['value'] ? this._get['value'] : 'ok';
+            echo.push(`<pre>this._session['value'] = '${this._get['value'] ? this._get['value'] : 'ok'}';
+JSON.stringify(this._session);</pre>` + lText.htmlescape(JSON.stringify(this._session)));
+
+            return '<a href="' + this._config.const.urlBase + 'test/session?s=' + this._get['s'] + '">Default</a> | ' +
+                '<a href="' + this._config.const.urlBase + 'test/session?s=' + this._get['s'] + '&value=aaa">Set "aaa"</a> | ' +
+                '<a href="' + this._config.const.urlBase + 'test/session?s=' + this._get['s'] + '&value=bbb">Set "bbb"</a> | ' +
+                '<a href="' + this._config.const.urlBase + 'test">Return</a>' + echo.join('') + '<br><br>' + this._getEnd();
+        }
+        else {
+            // --- AUTH 模式 ---
+            await this._startSession(link, true, { 'ttl': 60 });
+            if (Object.keys(this._post).length > 0) {
+                if (this._session['count'] === undefined) {
+                    this._session['count'] = 1;
+                }
+                else {
+                    ++this._session['count'];
+                }
+                return [1, { 'txt': 'this._session: ' + JSON.stringify(this._session) + '\nToken: ' + this._sess!.getToken(), 'token': this._sess?.getToken(), '_auth': this._getBasicAuth('token', this._sess!.getToken()) }];
+            }
+            else {
+                echo.push(`await this._startSession(link, true, {'ttl': 60});
+JSON.stringify(this._session));</pre>` + lText.htmlescape(JSON.stringify(this._session)));
+
+                this._session['value'] = lTime.format('H:i:s', this);
+                echo.push(`<pre>this._session['value'] = '${lTime.format('H:i:s', this)}';
+JSON.stringify(this._session);</pre>` + lText.htmlescape(JSON.stringify(this._session)));
+
+                echo.push(`<br><br><input type="button" value="Post with header" onclick="document.getElementById('result').innerText='Waiting...';fetch('${this._config.const.urlBase}test/session?s=${this._get['s']}&auth=1',{method:'POST',credentials:'omit',headers:{'Authorization':document.getElementById('_auth').innerText,'content-type':'application/x-www-form-urlencoded'},body:'key=val'}).then(function(r){return r.json();}).then(function(j){document.getElementById('result').innerText=j.txt;document.getElementById('token').innerText=j.token;document.getElementById('_auth').innerText=j._auth;});"><input type='button' value="Post without header" style="margin-left: 10px;" onclick="document.getElementById('result').innerText='Waiting...';fetch('${this._config.const.urlBase}test/session?s=${this._get['s']}&auth=1',{method:'POST',credentials:'omit',headers:{'content-type':'application/x-www-form-urlencoded'},body:'key=val'}).then(function(r){return r.json();}).then(function(j){document.getElementById('result').innerText=j.txt;});"><br><br>
+Token: <span id="token">${this._sess!.getToken()}</span><br>
+Post Authorization header: <span id="_auth">${this._getBasicAuth('token', this._sess!.getToken())}</span><br><br>
+Result:<pre id="result">Nothing.</pre>`);
+
+                return '<a href="' + this._config.const.urlBase + 'test">Return</a>' + echo.join('') + this._getEnd();
+            }
+        }
+    }
+
+    public sql(): string {
+        const echo: string[] = [];
+        const sql = lSql.get(this, 'test_');
+        switch (this._get['type']) {
+            case 'insert': {
+                let s = sql.insert('user').values(['name', 'age'], [
+                    ['Ah', '16'],
+                    ['Bob', '24']
+                ]).getSql();
+                let sd = sql.getData();
+                echo.push(`<pre>sql.insert('user').values(['name', 'age'], [
+    ['Ah', '16'],
+    ['Bob', '24']
+]);</pre>
+<b>getSql() :</b> ${s}<br>
+<b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
+<b>format() :</b> ${sql.format(s, sd)}<hr>`);
+
+                s = sql.insert('user').values(['name', 'age'], ['Ah', '16']).getSql();
+                sd = sql.getData();
+                echo.push(`<pre>sql.insert('user').values(['name', 'age'], ['Ah', '16']);</pre>
+<b>getSql() :</b> ${s}<br>
+<b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
+<b>format() :</b> ${sql.format(s, sd)}<hr>`);
+
+                s = sql.insert('user').values({ 'name': 'Bob', 'age': '24' }).getSql();
+                sd = sql.getData();
+                echo.push(`<pre>sql.insert('user').values({ 'name': 'Bob', 'age': '24' });</pre>
+<b>getSql() :</b> ${s}<br>
+<b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
+<b>format() :</b> ${sql.format(s, sd)}<hr>`);
+
+                s = sql.replace('user').values({ 'token': '20200202', 'name': 'Bob' }).getSql();
+                sd = sql.getData();
+                echo.push(`<pre>sql.replace('user').values({ 'token': '20200202', 'name': 'Bob' });</pre>
+<b>getSql() :</b> ${s}<br>
+<b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
+<b>format() :</b> ${sql.format(s, sd)}<hr>`);
+
+                s = sql.insert('order').notExists('order', { 'name': 'Amy', 'age': '16', 'time_add': lTime.stamp() }, { 'name': 'Amy' }).getSql();
+                sd = sql.getData();
+                echo.push(`<pre>sql.insert('order').notExists('order', { 'name': 'Amy', 'age': '16', 'time_add': lTime.stamp() }, { 'name': 'Amy' });</pre>
+<b>getSql() :</b> ${s}<br>
+<b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
+<b>format() :</b> ${sql.format(s, sd)}<hr>`);
+
+                s = sql.insert('verify').values({ 'token': 'abc', 'time_update': '10' }).duplicate({ 'time_update': ['CONCAT(`time_update`, ?)', ['01']] }).getSql();
+                sd = sql.getData();
+                echo.push(`<pre>sql.insert('verify').values({ 'token': 'abc', 'time_update': '10' }).duplicate({ 'time_update': ['CONCAT(\`time_update\`, ?)', ['01']] });</pre>
+<b>getSql() :</b> ${s}<br>
+<b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
+<b>format() :</b> ${sql.format(s, sd)}`);
+                break;
+            }
+            case 'select': {
+                let s = sql.select('*', 'user').getSql();
+                let sd = sql.getData();
+                echo.push(`<pre>sql.select('*', 'user');</pre>
+<b>getSql() :</b> ${s}<br>
+<b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
+<b>format() :</b> ${sql.format(s, sd)}<hr>`);
+
+                s = sql.select(['id', 'name'], 'user').getSql();
+                sd = sql.getData();
+                echo.push(`<pre>sql.select(['id', 'name'], 'user');</pre>
+<b>getSql() :</b> ${s}<br>
+<b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
+<b>format() :</b> ${sql.format(s, sd)}<hr>`);
+
+                s = sql.select('*', ['user', 'order']).getSql();
+                sd = sql.getData();
+                echo.push(`<pre>sql.select('*', ['user', 'order']);</pre>
+<b>getSql() :</b> ${s}<br>
+<b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
+<b>format() :</b> ${sql.format(s, sd)}<hr>`);
+
+                s = sql.select('*', ['db1.user', 'db2.user']).getSql();
+                sd = sql.getData();
+                echo.push(`<pre>sql.select('*', ['db1.user', 'db2.user']);</pre>
+<b>getSql() :</b> ${s}<br>
+<b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
+<b>format() :</b> ${sql.format(s, sd)}<hr>`);
+
+                s = sql.select(['order.no', 'user.nick'], ['order']).leftJoin('user', { 'order.user_id': '#user.id', 'state': '1' }).getSql();
+                sd = sql.getData();
+                echo.push(`<pre>sql.select(['order.no', 'user.nick'], ['order']).leftJoin('user', { 'order.user_id': '#user.id', 'state': '1' });</pre>
+<b>getSql() :</b> ${s}<br>
+<b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
+<b>format() :</b> ${sql.format(s, sd)}<hr>`);
+
+                s = sql.select(['o.*', 'u.nick as unick'], ['order o']).leftJoin('`user` AS u', { 'o.user_id': '#u.id', 'state': '1' }).getSql();
+                sd = sql.getData();
+                echo.push(`<pre>sql.select(['o.*', 'u.nick as unick'], ['order o']).leftJoin('\`user\` AS u', { 'o.user_id': '#u.id', 'state': '1' });</pre>
+<b>getSql() :</b> ${s}<br>
+<b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
+<b>format() :</b> ${sql.format(s, sd)}<hr>`);
+
+                s = sql.select(['SUM(user.age) age'], 'order').leftJoin('user', { 'order.user_id': '#user.id' }).getSql();
+                sd = sql.getData();
+                echo.push(`<pre>sql.select(['SUM(user.age) age'], 'order').leftJoin('user', { 'order.user_id': '#user.id' });</pre>
+<b>getSql() :</b> ${s}<br>
+<b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
+<b>format() :</b> ${sql.format(s, sd)}`);
+                break;
+            }
+            case 'update': {
+                // --- 1, 2 ---
+
+                let s = sql.update('user', [['age', '+', '1'], { 'name': 'Serene', 'nick': '#name' }, ['year', '+', '#age']]).where({ 'name': 'Ah' }).getSql();
+                let sd = sql.getData();
+                echo.push(`<pre>sql.update('user', [['age', '+', '1'], { 'name': 'Serene', 'nick': '#name' }, ['year', '+', '#age']]).where({ 'name': 'Ah' });</pre>
+<b>getSql() :</b> ${s}<br>
+<b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
+<b>format() :</b> ${sql.format(s, sd)}<hr>`);
+
+                // --- 3 ---
+
+                s = sql.update('user', { 'name': 'Serene', 'type': ['(CASE `id` WHEN 1 THEN ? WHEN 2 THEN ? END)', ['val1', 'val2']] }).where({ 'name': 'Ah' }).getSql();
+                sd = sql.getData();
+                echo.push(`<pre>sql.update('user', { 'name': 'Serene', 'type': ['(CASE \`id\` WHEN 1 THEN ? WHEN 2 THEN ? END)', ['val1', 'val2']] }).where({ 'name': 'Ah' });</pre>
+<b>getSql() :</b> ${s}<br>
+<b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
+<b>format() :</b> ${sql.format(s, sd)}<hr>`);
+
+                // --- # ---
+
+                s = sql.update('user', { 'age': '#age_verify', 'date': '##', 'he': ['he2'] }).where({ 'date_birth': '2001' }).getSql();
+                sd = sql.getData();
+                echo.push(`<pre>sql.update('user', { 'age': '#age_verify', 'date': '##', 'he': ['he2'] }).where({ 'date_birth': '2001' });</pre>
+<b>getSql() :</b> ${s}<br>
+<b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
+<b>format() :</b> ${sql.format(s, sd)}`);
+
+                break;
+            }
+            case 'delete': {
+                const s = sql.delete('user').where({ 'id': '1' }).getSql();
+                const sd = sql.getData();
+                echo.push(`<pre>sql.delete('user').where({ 'id': '1' });</pre>
+<b>getSql() :</b> ${s}<br>
+<b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
+<b>format() :</b> ${sql.format(s, sd)}`);
+                break;
+            }
+            case 'where': {
+                let s = sql.select('*', 'user').where([{ 'city': 'la' }, ['age', '>', '10'], ['level', 'in', ['1', '2', '3']]]).getSql();
+                let sd = sql.getData();
+                echo.push(`<pre>sql.select('*', 'user').where([{ 'city': 'la' }, ['age', '>', '10'], ['level', 'in', ['1', '2', '3']]]);</pre>
+<b>getSql() :</b> ${s}<br>
+<b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
+<b>format() :</b> ${sql.format(s, sd)}<hr>`);
+
+                s = sql.update('order', { 'state': '1' }).where({
+                    '$or': [{
+                        'type': '1'
+                    }, {
+                        'type': '2'
+                    }]
+                }).getSql();
+                sd = sql.getData();
+                echo.push(`<pre>sql.update('order', { 'state': '1' }).where({
+    '$or': [{
+        'type': '1'
+    }, {
+        'type': '2'
+    }]
+});</pre>
+<b>getSql() :</b> ${s}<br>
+<b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
+<b>format() :</b> ${sql.format(s, sd)}<hr>`);
+
+                s = sql.update('order', { 'state': '1' }).where({
+                    'user_id': '2',
+                    'state': ['1', '2', '3'],
+                    '$or': [{ 'type': '1', 'find': '0' }, { 'type': '2', 'find': '1' }, [['type', '<', '-1']]]
+                }).getSql();
+                sd = sql.getData();
+                echo.push(`<pre>sql.update('order', { 'state': '1' }).where({
+    'user_id': '2',
+    'state': ['1', '2', '3'],
+    '$or': [{ 'type': '1', 'find': '0' }, { 'type': '2', 'find': '1' }, [['type', '<', '-1']]]
+});</pre>
+<b>getSql() :</b> ${s}<br>
+<b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
+<b>format() :</b> ${sql.format(s, sd)}<hr>`);
+
+                s = sql.select('*', 'user').where({
+                    'time_verify': '#time_add'
+                }).getSql();
+                sd = sql.getData();
+                echo.push(`<pre>sql.select('*', 'user').where({
+    'time_verify': '#time_add'
+});</pre>
+<b>getSql() :</b> ${s}<br>
+<b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
+<b>format() :</b> ${sql.format(s, sd)}`);
+                break;
+            }
+            case 'having': {
+                const s = sql.select(['id', 'name', '(6371 * ACOS(COS(RADIANS(31.239845)) * COS(RADIANS(`lat`)) * COS(RADIANS(`lng`) - RADIANS(121.499662)) + SIN(RADIANS(31.239845)) * SIN(RADIANS(`lat`)))) AS distance'], 'location').having([
+                    ['distance', '<', '2']
+                ]).getSql();
+                const sd = sql.getData();
+                echo.push(`<pre>sql.select(['id', 'name', '(6371 * ACOS(COS(RADIANS(31.239845)) * COS(RADIANS(\`lat\`)) * COS(RADIANS(\`lng\`) - RADIANS(121.499662)) + SIN(RADIANS(31.239845)) * SIN(RADIANS(\`lat\`)))) AS distance'], 'location').having([
+    ['distance', '<', '2']
+]);</pre>
+<b>getSql() :</b> ${s}<br>
+<b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
+<b>format() :</b> ${sql.format(s, sd)}`);
+                break;
+            }
+            case 'by': {
+                let s = sql.select('*', 'test').by('id').getSql();
+                let sd = sql.getData();
+                echo.push(`<pre>sql.select('*', 'test').by('id');</pre>
+<b>getSql() :</b> ${s}<br>
+<b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
+<b>format() :</b> ${sql.format(s, sd)}<hr>`);
+
+                s = sql.select('*', 'test').by(['index', 'id']).getSql();
+                sd = sql.getData();
+                echo.push(`<pre>sql.select('*', 'test').by(['index', 'id']);</pre>
+<b>getSql() :</b> ${s}<br>
+<b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
+<b>format() :</b> ${sql.format(s, sd)}<hr>`);
+
+                s = sql.select('*', 'test').by(['index', ['id', 'ASC']], 'DESC').getSql();
+                sd = sql.getData();
+                echo.push(`<pre>sql.select('*', 'test').by(['index', ['id', 'ASC']], 'DESC');</pre>
+<b>getSql() :</b> ${s}<br>
+<b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
+<b>format() :</b> ${sql.format(s, sd)}`);
+                break;
+            }
+            case 'field': {
+                echo.push(`<pre>sql.field('abc');</pre>` + sql.field('abc'));
+                echo.push(`<pre>sql.field('abc', 'a_');</pre>` + sql.field('abc', 'a_'));
+                echo.push(`<pre>sql.field('x.abc');</pre>` + sql.field('x.abc'));
+                echo.push(`<pre>sql.field('def f');</pre>` + sql.field('def f'));
+                echo.push(`<pre>sql.field('def \`f\`', 'a_');</pre>` + sql.field('def `f`', 'a_'));
+                echo.push(`<pre>sql.field('x.def f');</pre>` + sql.field('x.def f'));
+                echo.push(`<pre>sql.field('x.def as f');</pre>` + sql.field('x.def as f'));
+                echo.push(`<pre>sql.field('SUM(num) all');</pre>` + sql.field('SUM(num) all'));
+                echo.push(`<pre>sql.field('SUM(x.num) all');</pre>` + sql.field('SUM(x.num) all'));
+                echo.push(`<pre>sql.field('SUM(x.\`num\`) all');</pre>` + sql.field('SUM(x.`num`) all'));
+                echo.push(`<pre>sql.field('FROM_UNIXTIME(time, \\'%Y-%m-%d\\') time');</pre>` + sql.field('FROM_UNIXTIME(time, \'%Y-%m-%d\') time'));
+                echo.push(`<pre>sql.field('(6371 * ACOS(COS(RADIANS(31.239845)) * COS(RADIANS(lat)) * COS(RADIANS(\`lng\`) - RADIANS(121.499662)) + SIN(RADIANS(31.239845)) * SIN(RADIANS(\`lat\`))))');</pre>` + sql.field('(6371 * ACOS(COS(RADIANS(31.239845)) * COS(RADIANS(lat)) * COS(RADIANS(`lng`) - RADIANS(121.499662)) + SIN(RADIANS(31.239845)) * SIN(RADIANS(`lat`))))'));
+                break;
+            }
+        }
+        return echo.join('') + '<br><br>' + this._getEnd();
+    }
+
+    public consistentHash(): string {
+        const echo: string[] = [];
+
+        echo.push(`<pre>lConsistent.hash('abc');</pre>` + lConsistent.hash('abc').toString());
+        echo.push(`<pre>lConsistent.hash('thisisnone');</pre>` + lConsistent.hash('thisisnone').toString());
+        echo.push(`<pre>lConsistent.hash('haha');</pre>` + lConsistent.hash('haha').toString());
+
+        return echo.join('') + '<br><br>' + this._getEnd();
+    }
+
+    public consistentDistributed(): string {
+        const echo: string[] = [];
+
+        const servers = ['srv-sh.test.simu', 'srv-cd.test.simu', 'srv-tk.test.simu'];
+        const files = [8, 12, 18, 32, 89, 187, 678, 1098, 3012, 8901, 38141, 76291, 99981];
+        const map: Record<string, string | null> = {};
+        const cons = lConsistent.get();
+        cons.add(servers);
+        for (const file of files) {
+            map[file] = cons.find(file);
+        }
+        echo.push(`<pre>const servers = ['srv-sh.test.simu', 'srv-cd.test.simu', 'srv-tk.test.simu'];
+const files = [8, 12, 18, 32, 89, 187, 678, 1098, 3012, 8901, 38141, 76291, 99981];
+const map: Record<string, string | null> = {};
+const cons = lConsistent.get();
+cons.add(servers);
+for (const file of files) {
+    map[file] = cons.find(file);
+}</pre>`);
+        echo.push('<table style="width: 100%;">');
+        for (const k in map) {
+            const v = map[k];
+            echo.push('<tr><th>' + lText.htmlescape(k) + '</th><td>' + lText.htmlescape(v ?? 'null') + ' (' + lConsistent.hash(k).toString() + ')</td></tr>');
+        }
+        echo.push('</table>');
+
+        cons.add('srv-sg.test.simu');
+        const file = files[lCore.rand(0, files.length - 1)];
+        // const file = files[3];
+        const oldSrv = map[file];
+        const newSrv = cons.find(file);
+        echo.push(`<pre>cons.add('srv-sg.test.simu');
+const file = files[lText.rand(0, files.length - 1)];
+const oldSrv = map[file];
+const newSrv = cons.find(file);</pre>`);
+        echo.push(`<table style="width: 100%;">
+    <tr><th>File</th><td>${file}</td></tr>
+    <tr><th>Old</th><td>${oldSrv}</td></tr>
+    <tr><th>New</th><td>${newSrv}</td></tr>
+    <tr><th>State</th><td>${((oldSrv === newSrv) ? '<b>Hit</b>' : 'Miss')}</td></tr>
+</table>`);
+
+        return echo.join('') + '<br>' + this._getEnd();
+    }
+
+    public consistentMigration(): string {
+        const echo: string[] = [];
+
+        // --- 生成初始数据，5000 条数据分 5 长表 ---
+        const tables = ['table-0', 'table-1', 'table-2', 'table-3', 'table-4'];
+        const rows: number[] = [];
+        for (let i = 1; i <= 5000; ++i) {
+            rows.push(i);
+        }
+        const cons = lConsistent.get();
+        cons.add(tables);
+
+        echo.push('Row length: ' + rows.length.toString() + '<br>Old tables:');
+        for (const table of tables) {
+            echo.push(' ' + table);
+        }
+
+        echo.push(`<pre>const newTables = ['table-5', 'table-6', 'table-7', 'table-8', 'table-9'];
+const rtn = cons.migration(rows, newTables);</pre>`);
+
+        // --- 即将增长到 10000 条数据，然后先模拟 5 表拆分为 10 表，再查看要迁移哪些数据，迁移量有多少 ---
+        const newTables = ['table-5', 'table-6', 'table-7', 'table-8', 'table-9'];
+        const rtn = cons.migration(rows, newTables);
+
+        const count = Object.keys(rtn).length;
+        echo.push('Migration length: ' + count.toString() + '<br>Added new tables: ');
+        for (const table of newTables) {
+            echo.push(' ' + table);
+        }
+        echo.push('<br><br>');
+
+        let i = 0;
+        echo.push('<table style="width: 100%;">');
+        for (const key in rtn) {
+            const item = rtn[key];
+            echo.push('<tr><th>' + key + '</th><td>' + item.old + '</td><td>' + item.new + '</td></tr>');
+            if (i === 199) {
+                break;
+            }
+            ++i;
+        }
+        echo.push('</table>');
+
+        return echo.join('') + '... More ' + (count - 200).toString() + ' ...<br><br>' + this._getEnd();
+    }
+
+    public text(): string {
+        const echo = `<pre>json_encode(Text::parseUrl('HtTp://uSer:pAss@sUBDom.TopdOm23.CoM:29819/Adm@xw2Ksiz/dszas?Mdi=KdiMs1&a=JDd#hehHe'))</pre>
+${lText.htmlescape(JSON.stringify(lText.parseUrl('HtTp://uSer:pAss@sUBDom.TopdOm23.CoM:29819/Adm@xw2Ksiz/dszas?Mdi=KdiMs1&a=JDd#hehHe')))}
+<pre>json_encode(Text::parseUrl('HtTp://uSer@sUBDom.TopdOm23.CoM/Admx%20w2Ksiz/dszas'))</pre>
+${lText.htmlescape(JSON.stringify(lText.parseUrl('HtTp://uSer@sUBDom.TopdOm23.CoM/Admx%20w2Ksiz/dszas')))}
+<pre>json_encode(Text::parseUrl('C:\\Windows\\Mi@sc'))</pre>
+${lText.htmlescape(JSON.stringify(lText.parseUrl('C:\\Windows\\Mi@sc')))}
+<pre>json_encode(Text::parseUrl('../../abc?q=e'))</pre>
+${lText.htmlescape(JSON.stringify(lText.parseUrl('../../abc?q=e')))}
+<pre>Text::urlResolve('/', 'path?id=1');</pre>
+${lText.htmlescape(lText.urlResolve('/', 'path?id=1'))}
+<pre>Text::urlResolve('https://www.url.com/view/path', 'find');</pre>
+${lText.htmlescape(lText.urlResolve('https://www.url.com/view/path', 'find'))}
+<pre>Text::urlResolve('https://www.url.com/view/path', '/');</pre>
+${lText.htmlescape(lText.urlResolve('https://www.url.com/view/path', '/'))}
+<pre>Text::urlResolve('https://www.url.com/view/path/oh', '../ok/./index.js');</pre>
+${lText.htmlescape(lText.urlResolve('https://www.url.com/view/path/oh', '../ok/./index.js'))}
+<pre>Text::urlResolve('https://www.url.com/view/path/oh', '../hah/../dodo/../112/666/777/../en');</pre>
+${lText.htmlescape(lText.urlResolve('https://www.url.com/view/path/oh', '../hah/../dodo/../112/666/777/../en'))}
+<pre>Text::urlResolve('/hehe/ooo/', '../../../../../index.html');</pre>
+${lText.htmlescape(lText.urlResolve('/hehe/ooo/', '../../../../../index.html'))}
+<pre>Text::urlResolve('https://www.url.com/view/path', '/xxx/yyy');</pre>
+${lText.htmlescape(lText.urlResolve('https://www.url.com/view/path', '/xxx/yyy'))}
+<pre>Text::urlResolve('/', '//www.url.com/path');</pre>
+${lText.htmlescape(lText.urlResolve('/', '//www.url.com/path'))}
+<pre>Text::urlResolve('http://www.url.com/path', 'hTtps://www.url.com/path');</pre>
+${lText.htmlescape(lText.urlResolve('http://www.url.com/path', 'hTtps://www.url.com/path'))}
+<pre>Text::urlResolve('hTtp://www.url.com/path?ok=b', '?do=some');</pre>
+${lText.htmlescape(lText.urlResolve('hTtp://www.url.com/path?ok=b', '?do=some'))}
+<pre>Text::urlResolve('/', 'C:\\Windows\\Boot');</pre>
+${lText.htmlescape(lText.urlResolve('/', 'C:\\Windows\\Boot'))}
+<pre>Text::urlResolve('C:\\Windows\\Misc', '/');</pre>
+${lText.htmlescape(lText.urlResolve('C:\\Windows\\Misc', '/'))}
+<pre>Text::urlResolve('C:\\Windows\\Misc', '/xxx/yyy');</pre>
+${lText.htmlescape(lText.urlResolve('C:\\Windows\\Misc', '/xxx/yyy'))}
+<pre>Text::urlResolve('/abc/def/', '');</pre>
+${lText.htmlescape(lText.urlResolve('/abc/def/', ''))}
+<pre>Text::isEMail('test@gmail.com');</pre>
+${JSON.stringify(lText.isEMail('test@gmail.com'))}
+<pre>Text::isEMail('test@x');</pre>
+${JSON.stringify(lText.isEMail('test@x'))}
+<pre>Text::isIPv4('192.168.0.1');</pre>
+${JSON.stringify(lText.isIPv4('192.168.0.1'))}
+<pre>Text::isIPv4('192.168.0');</pre>
+${JSON.stringify(lText.isIPv4('192.168.0'))}
+<pre>Text::isIPv6(':');</pre>
+${JSON.stringify(lText.isIPv6(':'))}
+<pre>Text::isIPv6('::');</pre>
+${JSON.stringify(lText.isIPv6('::'))}
+<pre>Text::isIPv6('::1');</pre>
+${JSON.stringify(lText.isIPv6('::1'))}
+<pre>Text::isIPv6('::FFFF:C0A8:0201');</pre>
+${JSON.stringify(lText.isIPv6('::FFFF:C0A8:0201'))}
+<pre>Text::isIPv6('2031:0000:1F1F:0000:0000:0100:11A0:ADDF');</pre>
+${JSON.stringify(lText.isIPv6('2031:0000:1F1F:0000:0000:0100:11A0:ADDF'))}
+<pre>Text::isIPv6('2031:0000:1F1F:0000:0000:0100:11A0:ADDF:AZ');</pre>
+${JSON.stringify(lText.isIPv6('2031:0000:1F1F:0000:0000:0100:11A0:ADDF:AZ'))}
+<pre>Text::isIPv6('::FFFF:192.168.0.1');</pre>
+${JSON.stringify(lText.isIPv6('::FFFF:192.168.0.1'))}
+<pre>Text::isDomain('::FFFF:192.168.0.1');</pre>
+${JSON.stringify(lText.isDomain('::FFFF:192.168.0.1'))}
+<pre>Text::isDomain('www.xxx.com.cn');</pre>
+${JSON.stringify(lText.isDomain('www.xxx.com.cn'))}
+<pre>Text::isDomain('com');</pre>
+${JSON.stringify(lText.isDomain('com'))}
+<pre>Text::parseDomain('www.xxx.com.cn');</pre>
+${JSON.stringify(lText.parseDomain('www.xxx.com.cn'))}
+<pre>Text::parseDomain('www.xxx.us');</pre>
+${JSON.stringify(lText.parseDomain('www.xxx.us'))}
+<pre>Text::parseDomain('xxx.co.jp');</pre>
+${JSON.stringify(lText.parseDomain('xxx.co.jp'))}
+<pre>Text::parseDomain('js.cn');</pre>
+${JSON.stringify(lText.parseDomain('js.cn'))}
+<pre>Text::parseDomain('xxx.cn');</pre>
+${JSON.stringify(lText.parseDomain('xxx.cn'))}`;
+        return echo + '<br><br>' + this._getEnd();
+    }
+
+    /**
+     * --- END ---
+     */
+    private _getEnd(): string {
+        const rt = this._getRunTime();
+        return 'Processed in ' + rt.toString() + ' second(s), ' + (Math.round(rt * 10000000) / 10000).toString() + 'ms, ' + (Math.round(this._getMemoryUsage() / 1024 * 100) / 100).toString() + ' K.<style>*{font-family:Consolas,"Courier New",Courier,FreeMono,monospace;line-height: 1.5;font-size:12px;}pre{padding:10px;background-color:rgba(0,0,0,.07);white-space:pre-wrap;word-break:break-all;}hr{margin:20px 0;border-color:#000;border-style:dashed;border-width:1px 0 0 0;}td,th{padding:5px;border:solid 1px #000;}</style><meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no">';
+    }
+
+}
+
+/*
+export async function ssh_sftp(nu: abs.Nu) {
+    let host = 'xxx';
+    let user = 'xxx';
+    let pwd = 'xxx';
+
+    let echo: string[] = [
+        `<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.13.1/build/highlight.min.js"></script>
+<link rel="stylesheet' href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/androidstudio.min.css">
+<script>hljs.initHighlightingOnLoad();</script>
+<style>
+table {border: solid 1px #e1e4e8; border-bottom: none; border-right: none;}
+table td, table th {border: solid 1px #e1e4e8; border-top: none; border-left: none; padding: 5px;}
+table td {font-size: 12px;}
+table th {background-color: #24292e; color: #FFF; font-size: 14px;}
+table tr:hover td {background-color: #fafbfc;}
+
+.list {margin-top: 10px;}
+.list > div {display: inline-block; border: solid 1px #e1e4e8; margin: 2px 2px 0 0; padding: 10px; font-size: 12px; line-height: 1;}
+.list > div:hover {background-color: #fafbfc;}
+
+.hljs {line-height: 1.7; font-size: 14px; white-space: pre-wrap; border-radius: 5px;}
+</style>`
+    ];
+
+    // --- 创建 ssh 对象 ---
+    echo.push(`<pre><code class="typescript">let ssh = await Ssh.get({
+    host: 'xxx',
+    username: 'xxx',
+    password: 'xxx'
+});</code></pre>`);
+    let ssh = await Ssh.get({
+        host: host,
+        username: user,
+        password: pwd
+    });
+    if (!ssh) {
+        echo.push(`Connection failed.<br><br>`);
+        return echo.join('') + _getEnd(nu);
+    }
+
+    // --- 执行一个命令 ---
+    let rtn = await ssh.exec('ls');
+    if (!rtn) {
+        echo.push(`Execution failed.<br><br>`);
+        return echo.join('') + _getEnd(nu);
+    }
+
+    echo.push(
+        `<pre><code class="typescript">let rtn = await ssh.exec('ls');</code></pre>`,
+        'rtn.toString():',
+        `<pre><code class="shell">${rtn.toString()}</code></pre>`
+    );
+
+    // --- 在 shell 里执行多条命令 ---
+    echo.push(`Get shell:<pre><code class="typescript">let shell = await ssh.getShell();</code></pre>`);
+    let shell = await ssh.getShell();
+    if (!shell) {
+        echo.push(`Get failed.<br><br>`);
+        return echo.join('') + _getEnd(nu);
+    }
+
+    echo.push(`Shell:<pre><code class="shell">${await shell.read()}</code></pre>`);
+
+    await shell.writeLine('cd ..');
+    echo.push(`Code:<pre><code class="typescript">await shell.writeLine('cd ..');</code></pre>`);
+    echo.push(`Shell:<pre><code class="shell">${await shell.read()}</code></pre>`);
+
+    await shell.writeLine('ls');
+    echo.push(`Code:<pre><code class="typescript">await shell.writeLine('ls');</code></pre>`);
+    echo.push(`Shell:<pre><code class="shell">${await shell.read()}</code></pre>`);
+
+    await shell.end();
+
+    // --- SFTP ---
+
+    echo.push(`Get sftp:<pre><code class="typescript">let sftp = await ssh.getSftp();</code></pre>`);
+    let sftp = await ssh.getSftp();
+    if (!sftp) {
+        echo.push(`Get failed.<br><br>`);
+        return echo.join('') + _getEnd(nu);
+    }
+
+    // --- 获取详细列表 ---
+
+    let list = await sftp.readDir();
+    echo.push(`<table border="0' cellpadding="0' cellspacing="0' width="100%">
+    <tr><th>Name</th><th>Size</th><th>Uid</th><th>Gid</th><th>PMSN</th><th>Mode</th><th>Atime</th><th>Mtime</th></tr>`);
+    for (let item of list) {
+        echo.push(`<tr><td>${item.filename}</td><td>${Text.sizeFormat(item.attrs.size)}</td><td>${item.attrs.uid}</td><td>${item.attrs.gid}</td><td>${item.attrs.mode}</td><td>${item.attrs.mode.toString(8).slice(-4)}</td><td>${Time.format('Y-m-d H:i:s', new Date(item.attrs.atime * 1000))}</td><td>${Time.format('Y-m-d H:i:s', new Date(item.attrs.mtime * 1000))}</td></tr>`);
+    }
+    echo.push(`</table>`);
+
+    // --- 新建一个 __mutton.txt，并创建一个 __mulink 到 txt 后再获取列表 ---
+
+    let rtnb = await sftp.writeFile('__nuttom.txt', 'ok');
+    let rtnb2 = await sftp.symlink('__nuttom.txt', '__nulink');
+    echo.push(`<pre><code class="typescript">let rtnb = await sftp.writeFile('__nuttom.txt', 'ok');  // ${JSON.stringify(rtnb)}
+let rtnb2 = await sftp.symlink('__nuttom.txt', '__nulink');  // ${JSON.stringify(rtnb2)}</code></pre>`);
+
+    list = await sftp.readDir();
+    echo.push(`<div class="list">`);
+    for (let item of list) {
+        echo.push(`<div>${item.filename}</div>`);
+    }
+    echo.push(`</div>`);
+
+    // --- 更改权限为 777 ---
+
+    rtnb = await sftp.chmod('__nuttom.txt', '0777');
+    echo.push(`<pre><code class="typescript">rtnb = await sftp.chmod('__nuttom.txt', '0777');  // ${JSON.stringify(rtnb)}</code></pre>`);
+
+    // --- 创建文件夹，并进入，在里面创在文件 ---
+
+    rtnb = await sftp.mkdir('__nuttom', {mode: '0777'});
+    sftp.cd('__nuttom');
+    let rtns = sftp.pwd();
+    await sftp.writeFile('1.txt', 'hello');
+    echo.push(`<pre><code class="typescript">rtnb = await sftp.mkdir('__nuttom', {mode: '0777'});
+sftp.cd('__nuttom');
+let rtns = sftp.pwd();  // ${rtns}
+await sftp.writeFile('1.txt', 'hello');</code></pre>`);
+
+    list = await sftp.readDir();
+    echo.push(`<div class="list">`);
+    for (let item of list) {
+        echo.push(`<div>${item.filename}</div>`);
+    }
+    echo.push(`</div>`);
+
+    // --- 退回到上级，删除目录，删除 link，删除 txt ---
+
+    sftp.cd('..');
+    rtns = sftp.pwd();
+    rtnb = await sftp.rmdirDeep('__nuttom');
+    rtnb2 = await sftp.unlinkFile('__nulink');
+    let rtnb3 = await sftp.unlinkFile('__nuttom.txt');
+    echo.push(`<pre><code class="typescript">sftp.cd('..');
+rtns = sftp.pwd();  // ${rtns}
+rtnb = await sftp.rmdirDeep('__nuttom');  // ${rtnb}
+rtnb2 = await sftp.unlinkFile('__nulink');  // ${rtnb2}
+let rtnb3 = await sftp.unlinkFile('__nuttom.txt'); // ${rtnb3}</code></pre>`);
+
+    list = await sftp.readDir();
+    echo.push(`<div class="list">`);
+    for (let item of list) {
+        echo.push(`<div>${item.filename}</div>`);
+    }
+    echo.push(`</div>`);
+
+    sftp.end();
+
+    ssh.disconnect();
+
+    return echo.join('') + '<br>' + _getEnd(nu);
+}
+*/

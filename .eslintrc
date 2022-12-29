@@ -1,0 +1,12 @@
+{
+    "extends": [
+        "plugin:@litert/rules/typescript"
+    ],
+    "parserOptions": {
+        "project": "./tsconfig.json"
+    },
+    "plugins": [
+        "@litert/rules"
+    ],
+    "rules": {}
+}
