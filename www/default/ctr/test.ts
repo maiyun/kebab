@@ -205,12 +205,12 @@ Result:<pre id="result">Nothing.</pre>${this._getEnd()}`;
 
     public ctrCheckinput(): string {
         const echo = [`rule:
-<pre>[
-    'he' => ['require', [0, 'The he param does not exist.']],
-    'num' => ['> 10', [0, 'The num param must > 10.']],
-    'reg' => ['/^[A-CX-Z5-7]+$/', [0, 'The reg param is incorrect.']],
-    'arr' => [['a', 'x', 'hehe'], [0, 'The arr param is incorrect.']]
-]</pre>`];
+<pre>{
+    'he': ['require', [0, 'The he param does not exist.']],
+    'num': ['> 10', [0, 'The num param must > 10.']],
+    'reg': ['/^[A-CX-Z5-7]+$/', [0, 'The reg param is incorrect.']],
+    'arr': [['a', 'x', 'hehe'], [0, 'The arr param is incorrect.']]
+}</pre>`];
 
         const post = [
             {},

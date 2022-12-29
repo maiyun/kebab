@@ -7,23 +7,27 @@
 
 簡單，易用，功能完整開袋即食的 Node.js 框架。
 
-## 安裝
+## 語言
 
-下載最新的 release 版，隨即開始做你想做的。
+[English](../README.md) | [简体中文](README.sc.md)
 
 ## 環境
 
 Node 16+
 
+## 安装
+
+下載最新的發行包，解壓后即可開始開發，開啟 TypeScript 編譯並執行 `node ./index` 可運行網站。
+
 ## 庫
 
-Captcha, Crypto (md5, sha1, aes...), Fs, Mysql, Net (http2, https and http auto selection), Redis, Session, Sql, Ssh (Shell, Sftp), Sys, Text, Time, View, WebSocket, Zlib.
+Captcha, Consistent, Crypto, Db (MySQL), Dns (DNSPod, Alibaba Cloud), Fs, Kv (Redis), Net, Scan, Session, Sql, Ssh (Shell, Sftp), Text, Time, Ws, Zlib.
 
 ## 部分特性
 
-### 兩眼發黑
+### 開袋即食
 
-基於兩眼發黑的原則，無需動腦子，官方封裝了擁有統一代碼風格常用庫，可直接食用。
+秉承開袋即食的原則，封裝統一風格的常用類庫。
 
 ### 熱更新
 
@@ -35,50 +39,157 @@ Captcha, Crypto (md5, sha1, aes...), Fs, Mysql, Net (http2, https and http auto 
 
 ### 全域連接池
 
-同一進程中的不同站點如果連接到同一個 Mysql、Redis 等伺服器，則共用同一個連接池，最大限度地提高效率並減少開銷。
+同一進程中的不同站點如果連接到同一個 Db、Kv 等伺服器，則共用同一個連接池，最大限度地提高效率並減少開銷。
 
-### UI 主控台
+### 超好用 Net 庫
 
-包含了一個 UI 介面的主控台，可對 Nuttom 的最新版本進行自動比對，檢測哪些檔案被修改或需要更新。
+可以這樣用：
 
-### Net 類庫包含完整 Cookie 實現
+```typescript
+const res = await lNet.open('https://xxx/test').post().data({ 'a': '1', 'b': '2' }).request();
+```
 
-可將 Cookie 直接獲取為一個變數陣列，可存在資料庫、記憶體等任何地方。
+也可以這樣用：
+
+```typescript
+const res = await lNet.get('https://xxx/test');
+```
+
+可以設置自訂的解析結果：
+
+```typescript
+const res = await lNet.get('https://xxx/test', {
+    'hosts': {
+        'xxx': '111.111.111.111'
+    }
+});
+```
+
+也可以選擇本地的其他網卡來訪問：
+
+```typescript
+const res = await lNet.get('https://xxx/test', {
+    'local': '123.123.123.123'
+});
+```
+
+更擁有完整的 Cookie 管理器，可以輕鬆將 Cookie 獲取並存在任何地方，發送請求時，系統也會根據 Cookie 設置的功能變數名稱、路徑等來選擇發送，並且 Set-Cookie 如果有非法跨域設置，也會被捨棄不會被記錄，就像真正的瀏覽器一樣：
+
+```typescript
+const res1 = await lNet.get('https://xxx1.xxx/test1', { 'cookie': cookie });
+const res2 = await lNet.get('https://xxx2.xxx/test2', { 'cookie': cookie });
+```
+
+### 好用的 Db 庫
+
+擁有大量好用的介面，可以輕鬆的從資料庫篩選出需要的資料：
+
+```typescript
+const ls = Order.where<Order>(this, db, {
+    'state': '1'
+}).by('id', 'DESC').page(10, 1);
+const list = await ls.all();
+const count = await ls.count();
+const total = await ls.total();
+```
+
+獲取一個使用者：
+
+```typescript
+const user = await User.select<User>(this, db, ['id', 'user']).filter([
+    ['time_add', '>=', '1583405134']
+]).first();
+```
+
+### XSRF 檢測
+
+使用 checkXInput 方法，可以進行 XSRF 檢測，防止惡意訪問。
+
+### 扫码登录
+
+借助 Scan 庫可以輕鬆實現掃碼登入的功能。
+
+#### 還有更多特性等你探索
 
 ## 代碼演示
 
 ### 生成 16 位亂數
 
 ```typescript
-let str: string = Text.random(16, Text.RANDOM_N)
+let str: string = Core.random(16, Core.RANDOM_N)
 ```
 
 ### 生成驗證碼圖片
 
 ```typescript
-Captcha.get(400, 100).output(nu);
+Captcha.get(400, 100).getBuffer();
 ```
 
-### Sql
+### 獲取一個清單
 
 ```typescript
-let s = sql.update("user", [["age", "+", "1"], {"name": "Serene"}]).where([{"name": "Ah"}]);
+const userList = await User.where<User>(this, db, [
+    ['state', '!=', '0'],
+    {
+        'type': ['1', '2', '3'],
+        'is_lock': '0'
+    }
+]).all();
 ```
 
-> UPDATE mu_user SET \`age\` = \`age\` + '1', \`name\` = 'Serene' WHERE \`name\` = 'Ah'
+### Sql 庫自動增加表前綴和包裹字元「`」”
+
+```typescript
+ssql.select(['SUM(user.age) age'], 'order').leftJoin('user', {'order.user_id': '#user.id'});
+```
+
+將輸出：
+
+```sql
+SELECT SUM(`test_user`.`age`) AS `age` FROM `test_order` LEFT JOIN `test_user` ON `test_order`.`user_id` = `test_user`.`id`
+```
+
+寫起來好輕鬆！
+
+### 本地化
+
+```typescript
+await this._loadLocale(this._get['lang'], 'test');
+return this._l('copy');
+```
+
+根據 lang 值不同，將輸出：Copy、复制、複製、コピー等，在網站目錄 /data/locale/ 中配置。
+
+### 数据校验
+
+根據字串、數位、比對大小甚至是正則，對提交的數據進行直接校驗，方便！
+
+```typescript
+{
+    'he': ['require', [0, 'The he param does not exist.']],
+    'num': ['> 10', [0, 'The num param must > 10.']],
+    'reg': ['/^[A-CX-Z5-7]+$/', [0, 'The reg param is incorrect.']],
+    'arr': [['a', 'x', 'hehe'], [0, 'The arr param is incorrect.']]
+}
+```
+
+參見：/test/ctr-checkinput
 
 ### 其他演示
 
-可以下載後訪問首頁和查看代碼（back/sources/www/default/ctr/test.ts）看更多示例。
+你可以訪問 /test/ 來查看更多示例。
 
 ## 更新日誌
 
-[更新日誌](CHANGELOG.zh-TW.md)
+[更新日誌](CHANGELOG.tc.md)
 
 ## 許可
 
 本框架基於 [Apache-2.0](../LICENSE) 許可。
 
-## 名字含義
+## 參與翻譯
 
-羊肉真香 XD，Mutton 的 M 和 N 的調換。
+我們工作基於中文語言環境，若對本專案感興趣並對除中文簡體、中文繁體之外語種熟悉的朋友，歡迎一起參與翻譯工作，感興趣的朋友可以加入以下群組。
+
+Telegram 群：[https://t.me/maiyunlocale](https://t.me/maiyunlocale)  
+QQ 群：24158113

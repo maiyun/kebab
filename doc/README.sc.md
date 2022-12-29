@@ -1,23 +1,27 @@
-# Mutton
+# Kebab
 
-[![License](https://img.shields.io/github/license/MaiyunNET/Nuttom.svg)](https://github.com/MaiyunNET/Nuttom/blob/master/LICENSE)
-[![GitHub issues](https://img.shields.io/github/issues/MaiyunNET/Nuttom.svg)](https://github.com/MaiyunNET/Nuttom/issues)
-[![GitHub Releases](https://img.shields.io/github/release/MaiyunNET/Nuttom.svg)](https://github.com/MaiyunNET/Nuttom/releases "Stable Release")
-[![GitHub Pre-Releases](https://img.shields.io/github/release/MaiyunNET/Nuttom/all.svg)](https://github.com/MaiyunNET/Nuttom/releases "Pre-Release")
+[![License](https://img.shields.io/github/license/maiyun/kebab.svg)](https://github.com/maiyun/kebab/blob/master/LICENSE)
+[![GitHub issues](https://img.shields.io/github/issues/maiyun/kebab.svg)](https://github.com/maiyun/kebab/issues)
+[![GitHub Releases](https://img.shields.io/github/release/maiyun/kebab.svg)](https://github.com/maiyun/kebab/releases "Stable Release")
+[![GitHub Pre-Releases](https://img.shields.io/github/release/maiyun/kebab/all.svg)](https://github.com/maiyun/kebab/releases "Pre-Release")
 
 简单，易用，功能完整开袋即食的 Node.js 框架。
 
-## 安装
+## 语言
 
-下载最新的 release 版，放在网站目录下，即可开始开发。
+[English](../README.md) | [繁體中文](README.tc.md)
 
 ## 环境
 
-Node 16+
+Node 16 +
+
+## 安装
+
+下载最新的发行包，解压后即可开始开发，开启 TypeScript 编译并执行 `node ./index` 可运行网站。
 
 ## 库
 
-Captcha, Crypto (md5, sha1, aes...), Fs, Mysql, Net (http2, https and http auto selection), Redis, Session, Sql, Ssh (Shell, Sftp), Sys, Text, Time, View, WebSocket, Zlib.
+Captcha, Consistent, Crypto, Db (MySQL), Dns (DNSPod, Alibaba Cloud), Fs, Kv (Redis), Net, Scan, Session, Sql, Ssh (Shell, Sftp), Text, Time, Ws, Zlib.
 
 ## 部分特性
 
@@ -27,7 +31,7 @@ Captcha, Crypto (md5, sha1, aes...), Fs, Mysql, Net (http2, https and http auto 
 
 ### 热更新
 
-通过调用 Sys.restart 方法, 您可以在不中断任何现有业务和连接的情况下平滑的实现新旧代码交替热更新。
+通过调用 Core.sendRestart 方法, 您可以在不中断任何现有业务和连接的情况下平滑的实现新旧代码交替热更新。
 
 ### 多进程支持
 
@@ -35,50 +39,155 @@ Captcha, Crypto (md5, sha1, aes...), Fs, Mysql, Net (http2, https and http auto 
 
 ### 全局连接池
 
-同一进程中的不同站点如果连接到同一个 Mysql、Redis 等服务器, 则共享同一个连接池, 最大限度地提高效率并减少开销。
+同一进程中的不同站点如果连接到同一个 Db、Kv 等服务器, 则共享同一个连接池, 最大限度地提高效率并减少开销。
 
-### UI 控制台
+### 超好用 Net 库
 
-包含了一个 UI 界面的控制台，可对 Nuttom 的最新版本进行自动比对，检测哪些文件被修改或需要升级。
+```typescript
+const res = await lNet.open('https://xxx/test').post().data({ 'a': '1', 'b': '2' }).request();
+```
 
-### Net 类库包含完整 Cookie 实现
+也可以这样用：
 
-可将 Cookie 直接获取为一个变量数组，可存在数据库、内存等任何地方。
+```typescript
+const res = await lNet.get('https://xxx/test');
+```
+
+可以设置自定义的解析结果：
+
+```typescript
+const res = await lNet.get('https://xxx/test', {
+    'hosts': {
+        'xxx': '111.111.111.111'
+    }
+});
+```
+
+也可以选择本地的其他网卡来访问：
+
+```typescript
+const res = await lNet.get('https://xxx/test', {
+    'local': '123.123.123.123'
+});
+```
+
+更拥有完整的 Cookie 管理器，可以轻松将 Cookie 获取并存在任何地方，发送请求时，系统也会根据 Cookie 设置的域名、路径等来选择发送，并且 Set-Cookie 如果有非法跨域设置，也会被舍弃不会被记录，就像真正的浏览器一样：
+
+```typescript
+const res1 = await lNet.get('https://xxx1.xxx/test1', { 'cookie': cookie });
+const res2 = await lNet.get('https://xxx2.xxx/test2', { 'cookie': cookie });
+```
+
+### 好用的 Db 库
+
+拥有大量好用的接口，可以轻松的从数据库筛选出需要的数据：
+
+```typescript
+const ls = Order.where<Order>(this, db, {
+    'state': '1'
+}).by('id', 'DESC').page(10, 1);
+const list = await ls.all();
+const count = await ls.count();
+const total = await ls.total();
+```
+
+获取一个用户：
+
+```typescript
+const user = await User.select<User>(this, db, ['id', 'user']).filter([
+    ['time_add', '>=', '1583405134']
+]).first();
+```
+
+### XSRF 检测
+
+使用 checkXInput 方法，可以进行 XSRF 检测，防止恶意访问。
+
+### 扫码登录
+
+借助 Scan 库可以轻松实现扫码登录的功能。
+
+#### 还有更多特性等你探索
 
 ## 代码演示
 
 ### 生成 16 位随机数
 
 ```typescript
-let str: string = Text.random(16, Text.RANDOM_N)
+let str: string = Core.random(16, Core.RANDOM_N)
 ```
 
 ### 生成验证码图片
 
 ```typescript
-Captcha.get(400, 100).output(nu);
+Captcha.get(400, 100).getBuffer();
 ```
 
-### Sql
+### 获取一个列表
 
 ```typescript
-let s = sql.update("user", [["age", "+", "1"], {"name": "Serene"}]).where([{"name": "Ah"}]);
+const userList = await User.where<User>(this, db, [
+    ['state', '!=', '0'],
+    {
+        'type': ['1', '2', '3'],
+        'is_lock': '0'
+    }
+]).all();
 ```
 
-> UPDATE mu_user SET \`age\` = \`age\` + '1', \`name\` = 'Serene' WHERE \`name\` = 'Ah'
+### Sql 库自动增加表前缀和包裹字符“`”
+
+```typescript
+ssql.select(['SUM(user.age) age'], 'order').leftJoin('user', {'order.user_id': '#user.id'});
+```
+
+将输出：
+
+```sql
+SELECT SUM(`test_user`.`age`) AS `age` FROM `test_order` LEFT JOIN `test_user` ON `test_order`.`user_id` = `test_user`.`id`
+```
+
+写起来好轻松！
+
+### 本地化
+
+```typescript
+await this._loadLocale(this._get['lang'], 'test');
+return this._l('copy');
+```
+
+根据 lang 值不同，将输出：Copy、复制、複製、コピー等，在站点目录 /data/locale/ 中配置。
+
+### 数据校验
+
+根据字符串、数字、比对大小甚至是正则，对提交的数据进行直接校验，方便！
+
+```typescript
+{
+    'he': ['require', [0, 'The he param does not exist.']],
+    'num': ['> 10', [0, 'The num param must > 10.']],
+    'reg': ['/^[A-CX-Z5-7]+$/', [0, 'The reg param is incorrect.']],
+    'arr': [['a', 'x', 'hehe'], [0, 'The arr param is incorrect.']]
+}
+```
+
+参见：/test/ctr-checkinput
 
 ### 其他演示
 
-可以下载后访问首页和查看代码（back/sources/www/default/ctr/test.ts）看更多示例。
+你可以访问 /test/ 来查看更多示例。
 
 ## 更新日志
 
-[更新日志](CHANGELOG.zh-CN.md)
+[更新日志](CHANGELOG.sc.md)
 
 ## 许可
 
 本框架基于 [Apache-2.0](../LICENSE) 许可。
 
-## 名字含义
+## 参与翻译
 
-Mutton 的镜像名字。
+我们工作基于中文语言环境，若对本项目感兴趣并对除中文简体、中文繁体之外语种熟悉的朋友，欢迎一起参与翻译工作，感兴趣的朋友可以加入以下群组。
+
+Telegram 群：[https://t.me/maiyunlocale](https://t.me/maiyunlocale)  
+QQ 群：24158113
