@@ -89,7 +89,7 @@ export class Time {
      * @param zone 时区小时，如 8
      */
     public format(f: string, zone?: number): string {
-        return format(f, zone, this._date);
+        return format(zone ?? 0, f, this._date);
     }
 
     /**
@@ -123,20 +123,23 @@ export function stamp(date?: Date): number {
 
 /**
  * --- 将时间对象转换为时间字符串 ---
+ * @param zone 时区小时或 ctr 对象，如 8，设置 null 则以系统时区为准
  * @param f 转换格式
- * @param zone 时区小时或 ctr 对象，如 8
  * @param date 时间对象
  */
-export function format(f: string, zone?: number | sCtr.Ctr, date?: Date): string {
+export function format(zone: number | sCtr.Ctr | null, f: string, date?: Date | number): string {
     const over: string[] = [];
-    if (!date) {
+    if (date === undefined) {
         date = new Date();
     }
-    if (zone instanceof sCtr.Ctr) {
-        zone = zone.getPrototype('_config').set.timezone;
+    else if (typeof date === 'number') {
+        date = new Date(date);
     }
-    if (zone === undefined) {
+    if (zone === null) {
         zone = (-date.getTimezoneOffset()) / 60;
+    }
+    else if (zone instanceof sCtr.Ctr) {
+        zone = zone.getPrototype('_config').set.timezone;
     }
     if (zone !== 0) {
         date = new Date(date.getTime() + zone * 60 * 60 * 1000);

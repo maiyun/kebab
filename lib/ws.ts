@@ -1,7 +1,7 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2019-6-2 20:42
- * Last: 2020-4-9 22:33:11, 2022-09-13 13:32:01
+ * Last: 2020-4-9 22:33:11, 2022-09-13 13:32:01, 2022-12-30 19:13:07
  */
 import * as stream from 'stream';
 
@@ -11,13 +11,13 @@ interface IOutData {
     'mask': number;
     'payloadLength': number;
     'maskingKey': number[];
-    'payloadData': any;
+    'payloadData': Buffer | string;
 }
 
 interface IInData {
     'fin': number;
     'opcode': number;
-    'payloadData': any;
+    'payloadData': Buffer | string;
 }
 
 /**
@@ -25,7 +25,7 @@ interface IInData {
  * @param e 要解密的 Buffer
  */
 export function decodeDataFrame(e: Buffer): IOutData {
-    let i = 0, j, s: any;
+    let i = 0, j, s: number[];
     const frame: IOutData = {
         // 解析前两个字节的基本数据
         'fin': e[i] >> 7,
@@ -44,6 +44,7 @@ export function decodeDataFrame(e: Buffer): IOutData {
         i += 4;
         frame.payloadLength = (e[i++] << 24) + (e[i++] << 16) + (e[i++] << 8) + e[i++];
     }
+    let ss: Buffer | string;
     // --- 判断是否使用掩码 ---
     if (frame.mask) {
         // 获取掩码实体
@@ -52,12 +53,12 @@ export function decodeDataFrame(e: Buffer): IOutData {
         for (j = 0, s = []; j < frame.payloadLength; j++) {
             s.push(e[i + j] ^ frame.maskingKey[j % 4]);
         }
+        // 数组转换成缓冲区来使用
+        ss = Buffer.from(s);
     }
     else {
-        s = e.subarray(i, frame.payloadLength); // 否则直接使用数据
+        ss = e.subarray(i, frame.payloadLength); // 否则直接使用数据
     }
-    // 数组转换成缓冲区来使用
-    let ss: any = Buffer.from(s);
     // 如果有必要则把缓冲区转换成字符串来使用
     if (frame.opcode === 1) {
         ss = ss.toString();
@@ -73,7 +74,7 @@ export function decodeDataFrame(e: Buffer): IOutData {
  * @param e 数据
  */
 export function encodeDataFrame(e: IInData): Buffer {
-    const s = [], o = Buffer.from(e.payloadData), l = o.length;
+    const s = [], o = typeof e.payloadData === 'string' ? Buffer.from(e.payloadData) : e.payloadData, l = o.length;
     // 输入第一个字节
     s.push((e.fin << 7) + e.opcode);
     // 输入第二个字节，判断它的长度并放入相应的后续长度消息

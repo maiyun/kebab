@@ -10,6 +10,7 @@ import * as lTime from '~/lib/time';
 import * as lScan from '~/lib/scan';
 import * as lSql from '~/lib/sql';
 import * as lConsistent from '~/lib/consistent';
+import * as lSsh from '~/lib/ssh';
 import * as sCtr from '~/sys/ctr';
 import * as def from '~/sys/def';
 // --- mod ---
@@ -17,7 +18,7 @@ import mSession from '../mod/session';
 import mTest from '../mod/test';
 import mTestData from '../mod/testdata';
 
-export class Test extends sCtr.Ctr {
+export default class extends sCtr.Ctr {
 
     private _internalUrl: string = '';
 
@@ -151,8 +152,15 @@ export class Test extends sCtr.Ctr {
             '<br><br><b>Text:</b>',
             `<br><br><a href="${this._config.const.urlBase}test/text">View "test/text"</a>`,
 
+            '<br><br><b>Time:</b>',
+            `<br><br><a href="${this._config.const.urlBase}test/time">View "test/time"</a>`,
+
+            '<br><br><b>Ws:</b>',
+            `<br><br><a href="${this._config.const.urlBase}test/ws">View "test/ws"</a>`,
+
             '<br><br><b>Ssh:</b>',
-            `<br><br><a href="${this._config.const.urlBase}test/ssh_sftp">View "ssh_sftp"</a>`
+            `<br><br><a href="${this._config.const.urlBase}test/ssh?type=shell">View "test/ssh?type=shell"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/ssh?type=sftp">View "test/ssh?type=sftp"</a>`
         ];
         echo.push('<br><br>' + this._getEnd());
 
@@ -1513,8 +1521,8 @@ JSON.stringify(this._session);</pre>` + lText.htmlescape(JSON.stringify(this._se
                 echo.push(`await this._startSession(link, true, {'ttl': 60});
 JSON.stringify(this._session));</pre>` + lText.htmlescape(JSON.stringify(this._session)));
 
-                this._session['value'] = lTime.format('H:i:s', this);
-                echo.push(`<pre>this._session['value'] = '${lTime.format('H:i:s', this)}';
+                this._session['value'] = lTime.format(this, 'H:i:s');
+                echo.push(`<pre>this._session['value'] = '${lTime.format(this, 'H:i:s')}';
 JSON.stringify(this._session);</pre>` + lText.htmlescape(JSON.stringify(this._session)));
 
                 echo.push(`<br><br><input type="button" value="Post with header" onclick="document.getElementById('result').innerText='Waiting...';fetch('${this._config.const.urlBase}test/session?s=${this._get['s']}&auth=1',{method:'POST',credentials:'omit',headers:{'Authorization':document.getElementById('_auth').innerText,'content-type':'application/x-www-form-urlencoded'},body:'key=val'}).then(function(r){return r.json();}).then(function(j){document.getElementById('result').innerText=j.txt;document.getElementById('token').innerText=j.token;document.getElementById('_auth').innerText=j._auth;});"><input type='button' value="Post without header" style="margin-left: 10px;" onclick="document.getElementById('result').innerText='Waiting...';fetch('${this._config.const.urlBase}test/session?s=${this._get['s']}&auth=1',{method:'POST',credentials:'omit',headers:{'content-type':'application/x-www-form-urlencoded'},body:'key=val'}).then(function(r){return r.json();}).then(function(j){document.getElementById('result').innerText=j.txt;});"><br><br>
@@ -1959,6 +1967,174 @@ ${JSON.stringify(lText.parseDomain('xxx.cn'))}`;
         return echo + '<br><br>' + this._getEnd();
     }
 
+    public time(): string {
+        const echo = `<pre>lTime.format(this, 'Y-m-d H:i:s');</pre>
+${lTime.format(this, 'Y-m-d H:i:s')}
+<pre>lTime.format(0, 'Y-m-d H:i:s');</pre>
+${lTime.format(0, 'Y-m-d H:i:s')}
+<pre>lTime.format(null, 'Y-m-d H:i:s');</pre>
+${lTime.format(null, 'Y-m-d H:i:s')}
+<pre>lTime.format(9, 'Y-m-d H:i:s');</pre>
+${lTime.format(9, 'Y-m-d H:i:s')}
+<pre>lTime.format(9.5, 'Y-m-d H:i:s');</pre>
+${lTime.format(9.5, 'Y-m-d H:i:s')}
+<pre>lTime.format(null, 'Y|y|F|M|m|L|l|D|d|H|h|i|s');</pre>
+${lTime.format(null, 'Y|y|F|M|m|L|l|D|d|H|h|i|s')}`;
+        return echo + '<br><br>' + this._getEnd();
+    }
+
+    public ws(): string {
+        const echo = `Nick: <input id="nick"> <input id="btn" type="button" value="Enter" onclick="enter()"> <input id="stop" type="button" value="Stop" onclick="stop()" disabled>
+<div id="list" style="border: solid 1px #000; line-height: 1.5; height: 300px; overflow-y: scroll; margin-top: 10px; padding: 10px;"></div>
+<div style="margin-top: 10px; display: flex;">
+    <input id="text" style="flex: 1;">
+    <input id="send" type="button" value="Send" onclick="send()" disabled style="margin-left: 10px;">
+</div>
+<script>
+var ws = null;
+var nickEl = document.getElementById('nick');
+var listEl = document.getElementById('list');
+var btnEl = document.getElementById('btn');
+var stopEl = document.getElementById('stop');
+
+var textEl = document.getElementById('text');
+var sendEl = document.getElementById('send');
+function enter() {
+    var nick = nickEl.value.trim();
+    if (nick === '') {
+        alert('Must input nick.');
+        return;
+    }
+    nickEl.disabled = true;
+    btnEl.disabled = true;
+    listEl.insertAdjacentHTML('afterbegin', '<div>Connecting...</div>');
+    ws = new WebSocket('ws${this._config.const.https ? 's' : ''}://${this._config.const.host}/test');
+    ws.onopen = function() {
+        listEl.insertAdjacentHTML('afterbegin', '<div>Event: onOpen.</div>');
+        ws.send('Hello: ' + nick);
+        listEl.insertAdjacentHTML('afterbegin', '<div>Client: send "Hello: ' + nick + '".</div>');
+        stopEl.disabled = false;
+        sendEl.disabled = false;
+    };
+    ws.onmessage = function(ev) {
+        listEl.insertAdjacentHTML('afterbegin', '<div>Server: ' + ev.data + '.</div>');
+    };
+    ws.onclose = function() {
+        listEl.insertAdjacentHTML('afterbegin', '<div>Event: onClose.</div>');
+        nickEl.disabled = false;
+        btnEl.disabled = false;
+        stopEl.disabled = true;
+        sendEl.disabled = true;
+    };
+    ws.onerror = function(ev) {
+        listEl.insertAdjacentHTML('afterbegin', '<div>Event: onError.</div>');
+        nickEl.disabled = false;
+        btnEl.disabled = false;
+        stopEl.disabled = true;
+        sendEl.disabled = true;
+    };
+}
+function stop() {
+    ws.close();
+    ws = null;
+}
+function send() {
+    ws.send(textEl.value);
+    textEl.value = '';
+}
+</script>`;
+        return echo + '<br>' + this._getEnd();
+    }
+
+    public async ssh(): Promise<string | any[]> {
+        const retur: any[] = [];
+        if (!(this._checkInput(this._get, {
+            'type': ['require', ['shell', 'sftp'], [0, 'Type not found.']]
+        }, retur))) {
+            return retur;
+        }
+
+        const host = '192.168.31.102';
+        const user = 'yunboo';
+        const pwd = '2001';
+
+        // --- 连接 ssh 服务器 ---
+        let ms = Date.now();
+        const ssh = await lSsh.get({
+            'host': host,
+            'username': user,
+            'password': pwd
+        });
+        const echo: string[] = [
+            `<pre>const ssh = await lSsh.get({
+    'host': host,
+    'username': user,
+    'password': pwd
+});</pre>`
+        ];
+        if (!ssh) {
+            echo.push('Connection failed.');
+            return echo.join('') + '<br><br>' + this._getEnd();
+        }
+        echo.push(`Connection successful, ${Date.now() - ms}ms.`);
+
+        // --- 执行一个命令 ---
+        echo.push(`<pre>const rtn = await ssh.exec('ls');</pre>`);
+        const rtn = await ssh.exec('ls');
+        if (!rtn) {
+            echo.push('Execution failed.');
+            return echo.join('') + '<br><br>' + this._getEnd();
+        }
+        echo.push(lText.htmlescape(rtn.toString()));
+
+        if (this._get['type'] === 'shell') {
+            // --- 获取 shell ---
+            ms = Date.now();
+            const shell = await ssh.getShell();
+            echo.push(`<pre>const shell = await ssh.getShell();</pre>`);
+            if (!shell) {
+                echo.push(`Get failed.`);
+                return echo.join('') + '<br><br>' + this._getEnd();
+            }
+            echo.push(`Get successful, ${Date.now() - ms}ms:<pre>${lText.htmlescape((await shell.getContent()).toString())}</pre>`);
+
+            // --- 执行一些命令 ---
+            ms = Date.now();
+            await shell.sendLine('cd ../../');
+            echo.push(`await shell.sendLine('cd ../../'), ${Date.now() - ms}ms:<pre>${lText.htmlescape((await shell.getContent()).toString())}</pre>`);
+
+            await shell.sendLine('ls');
+            ms = Date.now();
+            echo.push(`await shell.sendLine('ls'), ${Date.now() - ms}ms:<pre>${lText.htmlescape((await shell.getContent()).toString())}</pre>`);
+
+            await shell.close();
+        }
+        else {
+            // --- 获取 sftp ---
+            ms = Date.now();
+            const sftp = await ssh.getSftp();
+            echo.push(`<pre>const sftp = await ssh.getSftp();</pre>`);
+            if (!sftp) {
+                echo.push(`Get failed.`);
+                return echo.join('') + '<br><br>' + this._getEnd();
+            }
+            echo.push(`Get successful, ${Date.now() - ms}ms, ${sftp.pwd()}:`);
+            const list = await sftp.readDir('./');
+            echo.push(`<table width="100%">
+            <tr><th>Name</th><th>Size</th><th>Uid</th><th>Gid</th><th>PMSN</th><th>Mode</th><th>Atime</th><th>Mtime</th></tr>`);
+            for (const item of list) {
+                echo.push(`<tr><td>${item.filename}</td><td>${lText.sizeFormat(item.attrs.size)}</td><td>${item.attrs.uid}</td><td>${item.attrs.gid}</td><td>${item.attrs.mode}</td><td>${item.attrs.mode.toString(8).slice(-4)}</td><td>${lTime.format(this, 'Y-m-d H:i:s', new Date(item.attrs.atime * 1000))}</td><td>${lTime.format(this, 'Y-m-d H:i:s', new Date(item.attrs.mtime * 1000))}</td></tr>`);
+            }
+            echo.push(`</table><br>`);
+        }
+
+        ssh.disconnect();
+
+        return '<a href="' + this._config.const.urlBase + 'test/ssh?type=shell">shell</a> | ' +
+        '<a href="' + this._config.const.urlBase + 'test/ssh?type=sftp">sftp</a> | ' +
+        '<a href="' + this._config.const.urlBase + 'test">Return</a>' + echo.join('') + this._getEnd();
+    }
+
     /**
      * --- END ---
      */
@@ -1968,161 +2144,3 @@ ${JSON.stringify(lText.parseDomain('xxx.cn'))}`;
     }
 
 }
-
-/*
-export async function ssh_sftp(nu: abs.Nu) {
-    let host = 'xxx';
-    let user = 'xxx';
-    let pwd = 'xxx';
-
-    let echo: string[] = [
-        `<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.13.1/build/highlight.min.js"></script>
-<link rel="stylesheet' href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/androidstudio.min.css">
-<script>hljs.initHighlightingOnLoad();</script>
-<style>
-table {border: solid 1px #e1e4e8; border-bottom: none; border-right: none;}
-table td, table th {border: solid 1px #e1e4e8; border-top: none; border-left: none; padding: 5px;}
-table td {font-size: 12px;}
-table th {background-color: #24292e; color: #FFF; font-size: 14px;}
-table tr:hover td {background-color: #fafbfc;}
-
-.list {margin-top: 10px;}
-.list > div {display: inline-block; border: solid 1px #e1e4e8; margin: 2px 2px 0 0; padding: 10px; font-size: 12px; line-height: 1;}
-.list > div:hover {background-color: #fafbfc;}
-
-.hljs {line-height: 1.7; font-size: 14px; white-space: pre-wrap; border-radius: 5px;}
-</style>`
-    ];
-
-    // --- 创建 ssh 对象 ---
-    echo.push(`<pre><code class="typescript">let ssh = await Ssh.get({
-    host: 'xxx',
-    username: 'xxx',
-    password: 'xxx'
-});</code></pre>`);
-    let ssh = await Ssh.get({
-        host: host,
-        username: user,
-        password: pwd
-    });
-    if (!ssh) {
-        echo.push(`Connection failed.<br><br>`);
-        return echo.join('') + _getEnd(nu);
-    }
-
-    // --- 执行一个命令 ---
-    let rtn = await ssh.exec('ls');
-    if (!rtn) {
-        echo.push(`Execution failed.<br><br>`);
-        return echo.join('') + _getEnd(nu);
-    }
-
-    echo.push(
-        `<pre><code class="typescript">let rtn = await ssh.exec('ls');</code></pre>`,
-        'rtn.toString():',
-        `<pre><code class="shell">${rtn.toString()}</code></pre>`
-    );
-
-    // --- 在 shell 里执行多条命令 ---
-    echo.push(`Get shell:<pre><code class="typescript">let shell = await ssh.getShell();</code></pre>`);
-    let shell = await ssh.getShell();
-    if (!shell) {
-        echo.push(`Get failed.<br><br>`);
-        return echo.join('') + _getEnd(nu);
-    }
-
-    echo.push(`Shell:<pre><code class="shell">${await shell.read()}</code></pre>`);
-
-    await shell.writeLine('cd ..');
-    echo.push(`Code:<pre><code class="typescript">await shell.writeLine('cd ..');</code></pre>`);
-    echo.push(`Shell:<pre><code class="shell">${await shell.read()}</code></pre>`);
-
-    await shell.writeLine('ls');
-    echo.push(`Code:<pre><code class="typescript">await shell.writeLine('ls');</code></pre>`);
-    echo.push(`Shell:<pre><code class="shell">${await shell.read()}</code></pre>`);
-
-    await shell.end();
-
-    // --- SFTP ---
-
-    echo.push(`Get sftp:<pre><code class="typescript">let sftp = await ssh.getSftp();</code></pre>`);
-    let sftp = await ssh.getSftp();
-    if (!sftp) {
-        echo.push(`Get failed.<br><br>`);
-        return echo.join('') + _getEnd(nu);
-    }
-
-    // --- 获取详细列表 ---
-
-    let list = await sftp.readDir();
-    echo.push(`<table border="0' cellpadding="0' cellspacing="0' width="100%">
-    <tr><th>Name</th><th>Size</th><th>Uid</th><th>Gid</th><th>PMSN</th><th>Mode</th><th>Atime</th><th>Mtime</th></tr>`);
-    for (let item of list) {
-        echo.push(`<tr><td>${item.filename}</td><td>${Text.sizeFormat(item.attrs.size)}</td><td>${item.attrs.uid}</td><td>${item.attrs.gid}</td><td>${item.attrs.mode}</td><td>${item.attrs.mode.toString(8).slice(-4)}</td><td>${Time.format('Y-m-d H:i:s', new Date(item.attrs.atime * 1000))}</td><td>${Time.format('Y-m-d H:i:s', new Date(item.attrs.mtime * 1000))}</td></tr>`);
-    }
-    echo.push(`</table>`);
-
-    // --- 新建一个 __mutton.txt，并创建一个 __mulink 到 txt 后再获取列表 ---
-
-    let rtnb = await sftp.writeFile('__nuttom.txt', 'ok');
-    let rtnb2 = await sftp.symlink('__nuttom.txt', '__nulink');
-    echo.push(`<pre><code class="typescript">let rtnb = await sftp.writeFile('__nuttom.txt', 'ok');  // ${JSON.stringify(rtnb)}
-let rtnb2 = await sftp.symlink('__nuttom.txt', '__nulink');  // ${JSON.stringify(rtnb2)}</code></pre>`);
-
-    list = await sftp.readDir();
-    echo.push(`<div class="list">`);
-    for (let item of list) {
-        echo.push(`<div>${item.filename}</div>`);
-    }
-    echo.push(`</div>`);
-
-    // --- 更改权限为 777 ---
-
-    rtnb = await sftp.chmod('__nuttom.txt', '0777');
-    echo.push(`<pre><code class="typescript">rtnb = await sftp.chmod('__nuttom.txt', '0777');  // ${JSON.stringify(rtnb)}</code></pre>`);
-
-    // --- 创建文件夹，并进入，在里面创在文件 ---
-
-    rtnb = await sftp.mkdir('__nuttom', {mode: '0777'});
-    sftp.cd('__nuttom');
-    let rtns = sftp.pwd();
-    await sftp.writeFile('1.txt', 'hello');
-    echo.push(`<pre><code class="typescript">rtnb = await sftp.mkdir('__nuttom', {mode: '0777'});
-sftp.cd('__nuttom');
-let rtns = sftp.pwd();  // ${rtns}
-await sftp.writeFile('1.txt', 'hello');</code></pre>`);
-
-    list = await sftp.readDir();
-    echo.push(`<div class="list">`);
-    for (let item of list) {
-        echo.push(`<div>${item.filename}</div>`);
-    }
-    echo.push(`</div>`);
-
-    // --- 退回到上级，删除目录，删除 link，删除 txt ---
-
-    sftp.cd('..');
-    rtns = sftp.pwd();
-    rtnb = await sftp.rmdirDeep('__nuttom');
-    rtnb2 = await sftp.unlinkFile('__nulink');
-    let rtnb3 = await sftp.unlinkFile('__nuttom.txt');
-    echo.push(`<pre><code class="typescript">sftp.cd('..');
-rtns = sftp.pwd();  // ${rtns}
-rtnb = await sftp.rmdirDeep('__nuttom');  // ${rtnb}
-rtnb2 = await sftp.unlinkFile('__nulink');  // ${rtnb2}
-let rtnb3 = await sftp.unlinkFile('__nuttom.txt'); // ${rtnb3}</code></pre>`);
-
-    list = await sftp.readDir();
-    echo.push(`<div class="list">`);
-    for (let item of list) {
-        echo.push(`<div>${item.filename}</div>`);
-    }
-    echo.push(`</div>`);
-
-    sftp.end();
-
-    ssh.disconnect();
-
-    return echo.join('') + '<br>' + _getEnd(nu);
-}
-*/

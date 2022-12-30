@@ -1,5 +1,10 @@
 import * as sCtr from '~/sys/ctr';
 
-export class Middle extends sCtr.Ctr {
+export default class extends sCtr.Ctr {
+
+    public onLoad(): boolean {
+        console.log('WebSocket middle.');
+        return true;
+    }
 
 }

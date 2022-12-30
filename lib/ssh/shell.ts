@@ -1,11 +1,11 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2019-6-8 22:13
- * Last: 2020-4-10 16:08:32
+ * Last: 2020-4-10 16:08:32, 2022-12-30 00:03:40
  */
 import * as ssh2 from 'ssh2';
 import * as stream from 'stream';
-import * as lSys from '~/lib/core';
+import * as lCore from '~/lib/core';
 
 export class Connection extends stream.Duplex {
 
@@ -66,7 +66,7 @@ export class Connection extends stream.Duplex {
 
     /**
      * --- 获取返回值 ---
-     * @param tryCount 如果无知重试次数，1 次为 100 毫秒 ---
+     * @param tryCount 如果无知重试次数，1 次为 10 毫秒 ---
      */
     public async getContent(tryCount: number = 10): Promise<Buffer> {
         let nowCount: number = 0;
@@ -82,7 +82,7 @@ export class Connection extends stream.Duplex {
                 if (nowCount === tryCount) {
                     break;
                 }
-                await lSys.sleep(100);
+                await lCore.sleep(10);
             }
         }
         return data;
@@ -117,9 +117,7 @@ export class Connection extends stream.Duplex {
      * @param cb 回调
      */
     // eslint-disable-next-line @typescript-eslint/naming-convention
-    public _final(chunk?: any, encoding?: BufferEncoding, cb?: () => void): void {
-        console.log('[ABCABC]', chunk, encoding, cb);
-        // --- TODO 检查参数 ---
+    public _final(chunk?: object, encoding?: BufferEncoding, cb?: () => void): void {
         this._client.end(chunk, encoding, cb);
     }
 

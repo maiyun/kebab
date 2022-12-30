@@ -12,7 +12,7 @@ import * as stream from 'stream';
 import * as sni from '@litert/tls-sni';
 // --- 库和定义 ---
 import * as fs from '~/lib/fs';
-import * as lSys from '~/lib/core';
+import * as lCore from '~/lib/core';
 import * as lText from '~/lib/text';
 import * as def from '~/sys/def';
 import * as ctr from '~/sys/ctr';
@@ -173,7 +173,7 @@ async function requestHandler(
                         }
                     }
                     catch (e: any) {
-                        await lSys.log({
+                        await lCore.log({
                             'path': path.slice(('/' + pathList.slice(0, i).join('/')).length + 1),
                             'urlFull': (uri.protocol ?? '') + '//' + (uri.host ?? '') + '/' + now,
                             'hostname': uri.hostname ?? '',
@@ -220,7 +220,7 @@ async function requestHandler(
                     }
                 }
                 catch (e: any) {
-                    await lSys.log({
+                    await lCore.log({
                         'path': path.slice(1),
                         'urlFull': (uri.protocol ?? '') + '//' + (uri.host ?? '') + '/' + now,
                         'hostname': uri.hostname ?? '',
@@ -335,7 +335,7 @@ async function upgradeHandler(req: http.IncomingMessage, socket: stream.Duplex, 
                     'uri': uri,
                     'rootPath': rootPath + now,
                     'urlBase': '/' + now,
-                    'path': ''
+                    'path': path.slice(1)
                 })) {
                     return;
                 }
@@ -406,7 +406,7 @@ process.on('message', function(msg: any) {
                     }
                     // --- 有长连接，等待中 ---
                     console.log(`[child] Worker ${process.pid} busy, there are ${linkCount} connections.`);
-                    await lSys.sleep(5000);
+                    await lCore.sleep(5000);
                 }
                 // --- 链接全部断开 ---
                 console.log(`[child] Worker ${process.pid} has run disconnect().`);

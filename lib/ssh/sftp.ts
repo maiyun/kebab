@@ -180,6 +180,7 @@ export class Connection {
         return this._unlink(path);
     }
 
+    /** --- unlink 的删除的 promise 实现 --- */
     private _unlink(path: string): Promise<boolean> {
         return new Promise((resolve) => {
             this._client.unlink(path, function(err) {

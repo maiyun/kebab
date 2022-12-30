@@ -337,7 +337,7 @@ export async function log(opt: sCtr.Ctr | ILogOptions, msg: string, fend: string
     const realIp = req.socket.remoteAddress ?? '';
     const clientIp = ip(headers, req);
 
-    const [y, m, d, h] = lTime.format('Y-m-d-H').split('-');
+    const [y, m, d, h] = lTime.format(null, 'Y-m-d-H').split('-');
     let path = def.LOG_PATH + hostname + '/' + y + '/' + m + '/' + d + '/';
     const rtn = await lFs.mkdir(path, 0o777);
     if (!rtn) {
@@ -353,7 +353,7 @@ export async function log(opt: sCtr.Ctr | ILogOptions, msg: string, fend: string
         }
     }
     await lFs.putContent(path, '"' +
-        lTime.format('H:i:s') + '","' +
+        lTime.format(null, 'H:i:s') + '","' +
         lTime.stamp().toString() + '","' +
         urlFull + wpath + (Object.keys(get).length ? '?' + lText.queryStringify(get).replace(/"/g, '""') : '') + '","' +
         input.replace(/"/g, '""') + '","' +

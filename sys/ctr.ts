@@ -139,8 +139,23 @@ export class Ctr {
     /**
      * --- 实例化后会执行的方法，可重写此方法 ---
      */
-    public onLoad(): boolean {
+    public onLoad(): boolean | Promise<boolean> {
         return true;
+    }
+
+    public onData(val: string): string | Promise<string>;
+    /**
+     * --- WebSocket 下会自动被调用的事件，可重写此方法 ---
+     */
+    public onData(): string {
+        return '';
+    }
+
+    /**
+     * --- WebSocket 下连接被终止后会自动被调用的事件，可重写此方法 ---
+     */
+    public onClose(): void | Promise<void> {
+        return;
     }
 
     /**

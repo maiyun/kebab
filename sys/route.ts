@@ -11,6 +11,7 @@ import * as stream from 'stream';
 // --- 库和定义 ---
 import * as lFs from '~/lib/fs';
 import * as lCore from '~/lib/core';
+import * as lCrypto from '~/lib/crypto';
 import * as lText from '~/lib/text';
 import * as lWs from '~/lib/ws';
 import * as lTime from '~/lib/time';
@@ -48,10 +49,20 @@ export async function run(data: {
     if (/^(stc\/.*|favicon.\w+?\??.*|apple[\w-]+?\.png\??.*|[\w-]+?\.txt\??.*)/.test(data.path)) {
         return false;
     }
-    // --- 先设置没有缓存 ---
+    // --- 根据 res 还是 socket 进行初始化设置 ---
     if (data.res) {
         data.res.setHeader('expires', 'Mon, 26 Jul 1994 05:00:00 GMT');
         data.res.setHeader('cache-control', 'no-store');
+    }
+    else {
+        // --- socket 要发送成功的消息(握手) ---
+        const swa = lCrypto.hashHmac('sha1', (data.req.headers['sec-websocket-key'] ?? '') + '258EAFA5-E914-47DA-95CA-C5AB0DC85B11', undefined, 'base64');
+        data.socket!.write([
+            `HTTP/${data.req.httpVersion} 101 Switching Protocols`,
+            `upgrade: websocket`,
+            `connection: upgrade`,
+            `sec-webSocket-accept: ${swa}`
+        ].join('\r\n') + '\r\n\r\n');
     }
     // --- 判断 config 是否已经读取过 ---
     let configData: any;
@@ -161,7 +172,7 @@ export async function run(data: {
         return true;
     }
     // --- 加载中间控制器 ---
-    const middleCtr = (await import((data.res ? config.const.ctrPath : config.const.wsPath) + 'middle')).Middle as typeof sCtr.Ctr;
+    const middleCtr = (await import((data.res ? config.const.ctrPath : config.const.wsPath) + 'middle')).default as typeof sCtr.Ctr;
     const middle: sCtr.Ctr = new middleCtr(config, data.req, data.res ?? data.socket!);
     // --- 对信息进行初始化 ---
     // --- 路由定义的参数序列 ---
@@ -235,7 +246,7 @@ export async function run(data: {
     if (rtn === undefined || rtn === true) {
         // --- 只有不返回或返回 true 时才加载控制文件 ---
         // --- 判断真实控制器文件是否存在 ---
-        const filePath = config.const.ctrPath + pathLeft + '.js';
+        const filePath = (data.res ? config.const.ctrPath : config.const.wsPath) + pathLeft + '.js';
         if (!await lFs.isFile(filePath)) {
             const text = '[Error] Controller not found, path: ' + data.path + '.';
             if (data.res) {
@@ -245,17 +256,13 @@ export async function run(data: {
                 data.res.end(text);
             }
             else {
-                data.socket!.end(text);
+                lWs.send(data.socket!, text);
+                data.socket!.end();
             }
             return true;
         }
         // --- 加载控制器文件 ---
-        let ctrName = pathLeft;
-        const lio = ctrName.lastIndexOf('/');
-        if (lio !== -1) {
-            ctrName = ctrName.slice(lio + 1);
-        }
-        const ctrCtr: typeof sCtr.Ctr = (await import(filePath))[ctrName[0].toUpperCase() + ctrName.slice(1)];
+        const ctrCtr: typeof sCtr.Ctr = (await import(filePath)).default;
         const cctr: sCtr.Ctr = new ctrCtr(config, data.req, data.res ?? data.socket!);
         // --- 对信息进行初始化 ---
         // --- 路由定义的参数序列 ---
@@ -288,7 +295,7 @@ export async function run(data: {
                 return true;
             }
             // --- 检测 action 是否存在 ---
-            if (pathRight.startsWith('_') || pathRight === 'onLoad' || pathRight === 'setPrototype' || pathRight === 'getPrototype' || pathRight === 'getAuthorization') {
+            if (pathRight.startsWith('_') || pathRight === 'onLoad' || pathRight === 'onData' || pathRight === 'onClose' || pathRight === 'setPrototype' || pathRight === 'getPrototype' || pathRight === 'getAuthorization') {
                 const text = '[Error] Action not found, path: ' + data.path + '.';
                 data.res.setHeader('content-type', 'text/html; charset=utf-8');
                 data.res.setHeader('content-length', Buffer.byteLength(text));
@@ -321,7 +328,7 @@ export async function run(data: {
                 // --- 在返回值输出之前，设置缓存 ---
                 const cacheTTL = cctr.getPrototype('_cacheTTL') as number;
                 if (cacheTTL > 0) {
-                    data.res.setHeader('expires', lTime.format('D, d M Y H:i:s') + ' GMT');
+                    data.res.setHeader('expires', lTime.format(0, 'D, d M Y H:i:s', Date.now() + cacheTTL * 1000) + ' GMT');
                     data.res.setHeader('cache-control', 'max-age=' + cacheTTL.toString());
                 }
             }
@@ -355,14 +362,17 @@ export async function run(data: {
                                 data.socket!.end();
                             }
                             else {
-                                lWs.send(data.socket!, await (cctr as any)['ondata'](da.payloadData));
+                                const wrtn = await (cctr as any)['onData'](da.payloadData);
+                                if (wrtn) {
+                                    lWs.send(data.socket!, wrtn);
+                                }
                             }
                         })().catch(async (e) => {
                             await lCore.log(cctr, JSON.stringify((e.stack as string)).slice(1, -1), '-error');
                         });
                     }).on('close', function() {
                         (async function() {
-                            await (cctr as any)['onclose']();
+                            await (cctr as any)['onClose']();
                             resolve();
                         })().catch(async (e) => {
                             await lCore.log(cctr, JSON.stringify((e.stack as string)).slice(1, -1), '-error');

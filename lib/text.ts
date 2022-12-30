@@ -460,6 +460,10 @@ export function pad(input: string | number, length: number = 2, pad: string = '0
  * @param html 待转换的 HTML
  */
 export function htmlescape(html: string): string {
+    const type = typeof html;
+    if (type !== 'string') {
+        return '[' + type + ']';
+    }
     return html.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/'/g, '&quot;').replace(/&/g, '&amp;');
 }
 
