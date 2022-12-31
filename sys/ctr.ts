@@ -139,7 +139,7 @@ export class Ctr {
     /**
      * --- 实例化后会执行的方法，可重写此方法 ---
      */
-    public onLoad(): boolean | Promise<boolean> {
+    public onLoad(): boolean | string | Promise<boolean | string> {
         return true;
     }
 

@@ -1,8 +1,4 @@
 {
-    "route": {
-        "@": "main",
-        "article\\/([0-9]+?)": "test/article"
-    },
     "set": {
         "staticVer": "20200314174905",
         "timezone": 8,

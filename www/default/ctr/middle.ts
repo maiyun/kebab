@@ -2,7 +2,7 @@ import * as ctr from '~/sys/ctr';
 
 export default class extends ctr.Ctr {
 
-    public onLoad(): any {
+    public onLoad(): string | boolean {
         if (this._config.const.path !== 'test/middle') {
             return true;
         }

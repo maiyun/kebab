@@ -81,6 +81,10 @@ export async function run(data: {
         }
         vhostConfigs[data.rootPath + 'config.json'] = JSON.parse(configContent);
         configData = vhostConfigs[data.rootPath + 'config.json'];
+        const routeContent = await lFs.getContent(data.rootPath + 'route.json', 'utf8');
+        if (routeContent) {
+            configData.route = JSON.parse(routeContent);
+        }
     }
     else {
         configData = vhostConfigs[data.rootPath + 'config.json'];
