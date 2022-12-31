@@ -12,6 +12,15 @@ import * as lText from '~/lib/text';
 import * as lCrypto from '~/lib/crypto';
 import * as sCtr from '~/sys/ctr';
 import * as def from '~/sys/def';
+import * as types from '~/types';
+
+/** --- 全局参数 --- */
+export const config: types.IConfig & {
+    'httpPort': number;
+    'httpsPort': number;
+} = {
+    'httpPort': 0
+} as any;
 
 /** --- Cookie 设置的选项 --- */
 export interface ICookieOptions {

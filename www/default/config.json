@@ -1,9 +1,9 @@
 {
     "set": {
-        "staticVer": "20200314174905",
         "timezone": 8,
         "mustHttps": false,
         "cacheTtl": 0,
+        "staticVer": "20200314174905",
         "staticPath": ""
     },
     "db": {

@@ -20,13 +20,14 @@ import * as def from '~/sys/def';
 import * as types from '~/types';
 
 /** --- 虚拟主机 config.json 缓存 --- */
-let vhostConfigs: Record<string, string> = {};
+let vhostConfigs: Record<string, types.IConfig> = {};
 
 /**
  * --- 清除已经加载的虚拟主机配置文件 ---
  */
 export function clearVhostConfigs(): void {
     vhostConfigs = {};
+    lCore.config.httpPort = 0;
 }
 
 /**
@@ -64,8 +65,18 @@ export async function run(data: {
             `sec-webSocket-accept: ${swa}`
         ].join('\r\n') + '\r\n\r\n');
     }
+    // --- 判断全局 config 是否已经加载过读取过 ---
+    if (lCore.config.httpPort === 0) {
+        const configContent = await lFs.getContent(def.CONF_PATH + 'config.json', 'utf8');
+        if (configContent) {
+            /** --- 系统 config.json --- */
+            const coreConfig = JSON.parse(configContent);
+            for (const name in coreConfig) {
+                lCore.config[name] = coreConfig[name];
+            }
+        }
+    }
     // --- 判断 config 是否已经读取过 ---
-    let configData: any;
     if (!vhostConfigs[data.rootPath + 'config.json']) {
         const configContent = await lFs.getContent(data.rootPath + 'config.json', 'utf8');
         if (!configContent) {
@@ -80,15 +91,29 @@ export async function run(data: {
             return true;
         }
         vhostConfigs[data.rootPath + 'config.json'] = JSON.parse(configContent);
-        configData = vhostConfigs[data.rootPath + 'config.json'];
         const routeContent = await lFs.getContent(data.rootPath + 'route.json', 'utf8');
         if (routeContent) {
-            configData.route = JSON.parse(routeContent);
+            vhostConfigs[data.rootPath + 'config.json'].route = JSON.parse(routeContent);
+        }
+        // --- 将全局的项目应用到 vhostConfigs 里，但当 vhostConfigs 有项，则不应用 ---
+        for (const name in lCore.config) {
+            if (typeof lCore.config[name] !== 'object') {
+                if (vhostConfigs[data.rootPath + 'config.json'][name] === undefined) {
+                    vhostConfigs[data.rootPath + 'config.json'][name] = lCore.config[name];
+                }
+                continue;
+            }
+            for (const name2 in lCore.config[name]) {
+                if (vhostConfigs[data.rootPath + 'config.json'][name] === undefined) {
+                    vhostConfigs[data.rootPath + 'config.json'][name] = {};
+                }
+                if (vhostConfigs[data.rootPath + 'config.json'][name][name2] === undefined) {
+                    vhostConfigs[data.rootPath + 'config.json'][name][name2] = lCore.config[name][name2];
+                }
+            }
         }
     }
-    else {
-        configData = vhostConfigs[data.rootPath + 'config.json'];
-    }
+    const configData = vhostConfigs[data.rootPath + 'config.json'];
     /** --- 虚拟主机 config --- */
     const config: types.IConfig = {
         'route': configData.route,

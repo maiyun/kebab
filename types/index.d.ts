@@ -26,25 +26,27 @@ export interface IPostFile {
 
 /** --- 动态目录配置文件 --- */
 export interface IConfig {
-    readonly 'const': IConfigConst;
-    readonly 'db': IConfigDb;
-    readonly 'kv': IConfigKv;
-    readonly 'route': Record<string, string>;
-    readonly 'session': {
-        'name': string;
-        'ttl': number;
-        'ssl': boolean;
-    };
-    readonly 'set': {
+    'set': {
         'timezone': number;
         'mustHttps': boolean;
         'cacheTtl': number;
 
         'staticVer': string;
         'staticPath': string;
+
+        [key: string]: any;
     };
-    readonly 'sql': IConfigSql;
-    readonly 'dns': IConfigDns;
+    'const': IConfigConst;
+    'db': IConfigDb;
+    'kv': IConfigKv;
+    'route': Record<string, string>;
+    'session': {
+        'name': string;
+        'ttl': number;
+        'ssl': boolean;
+    };
+    'sql': IConfigSql;
+    'dns': IConfigDns;
     [key: string]: Record<string, any>;
 }
 

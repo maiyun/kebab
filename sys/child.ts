@@ -49,16 +49,16 @@ async function run(): Promise<void> {
     // --- 加载 vhosts、sni 证书 ---
     await reload();
 
-    // --- 加载系统 config.json ---
+    // --- 加载系统全局 config.json ---
     const configContent = await fs.getContent(def.CONF_PATH + 'config.json', 'utf8');
     if (!configContent) {
         throw `File '${def.CONF_PATH}config.json' not found.`;
     }
     /** --- 系统 config.json --- */
-    const config: {
-        'httpPort': number;
-        'httpsPort': number;
-    } = JSON.parse(configContent);
+    const config = JSON.parse(configContent);
+    for (const name in config) {
+        lCore.config[name] = config[name];
+    }
 
     // --- 创建服务器并启动（支持 http2/https/http/websocket） ---
     http2Server = http2.createSecureServer({

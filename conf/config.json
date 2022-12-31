@@ -1,4 +1,40 @@
 {
     "httpPort": 8080,
-    "httpsPort": 4333
+    "httpsPort": 4333,
+
+    "set": {
+        "timezone": 8,
+        "mustHttps": false,
+        "cacheTtl": 0,
+        "staticVer": "20200314174905",
+        "staticPath": ""
+    },
+    "db": {
+        "host": "127.0.0.1",
+        "port": 3306,
+        "charset": "utf8mb4",
+        "name": "test",
+        "user": "root",
+        "pwd": "DashAdmin"
+    },
+    "dns": {
+        "sid": "",
+        "skey": ""
+    },
+    "kv": {
+        "host": "127.0.0.1",
+        "port": 6379,
+        "index": 0,
+        "pre": "m_",
+        "user": "",
+        "pwd": ""
+    },
+    "session": {
+        "name": "KE_SESSION",
+        "exp": 172800,
+        "ssl": false
+    },
+    "sql": {
+        "pre": "m_"
+    }
 }
