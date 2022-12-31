@@ -412,9 +412,9 @@ export class Pool {
                 return null;
             }
             // --- 认证 ---
-            if (this._etc.user) {
+            if (this._etc.user || this._etc.pwd) {
                 try {
-                    await link.auth(this._etc.user + ':' + this._etc.pwd);
+                    await link.auth(this._etc.user + this._etc.pwd);
                 }
                 catch {
                     return null;
