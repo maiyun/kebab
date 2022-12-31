@@ -65,6 +65,9 @@ export default class extends sCtr.Ctr {
             '<br><br><b>Query string:</b>',
             `<br><br><a href="${this._config.const.urlBase}test/qs?a=1&b=2">View "test/qs?a=1&b=2"</a>`,
 
+            '<br><br><b>View:</b>',
+            `<br><br><a href="${this._config.const.urlBase}test/view">View "test/view"</a>`,
+
             '<br><br><b>Return json:</b>',
             `<br><br><a href="${this._config.const.urlBase}test/json?type=1">View "test/json?type=1"</a>`,
             `<br><a href="${this._config.const.urlBase}test/json?type=2">View "test/json?type=2"</a>`,
@@ -173,6 +176,12 @@ export default class extends sCtr.Ctr {
 
     public qs(): string {
         return 'JSON.stringify(this._get):<br><br>' + lText.htmlescape(JSON.stringify(this._get)) + '<br><br>' + this._getEnd();
+    }
+
+    public view(): Promise<string> {
+        return this._loadView('test', {
+            'test': 'ok'
+        });
     }
 
     public json(): any {
