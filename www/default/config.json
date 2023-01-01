@@ -3,8 +3,7 @@
         "timezone": 8,
         "mustHttps": false,
         "cacheTtl": 0,
-        "staticVer": "20200314174905",
-        "staticPath": ""
+        "staticVer": "20200314174905"
     },
     "db": {
         "host": "127.0.0.1",

@@ -113,45 +113,40 @@ export async function run(data: {
             }
         }
     }
+    // --- 加载 vhost config ---
+    const config: types.IConfig = {} as any;
     const configData = vhostConfigs[data.rootPath + 'config.json'];
-    /** --- 虚拟主机 config --- */
-    const config: types.IConfig = {
-        'route': configData.route,
-        'const': {
-            'path': data.path,
-            'startTime': process.hrtime.bigint(),
-            'startMemory': process.memoryUsage().rss,
+    for (const name in configData) {
+        config[name] = configData[name];
+    }
+    config.const = {
+        'path': data.path,
+        'startTime': process.hrtime.bigint(),
+        'startMemory': process.memoryUsage().rss,
 
-            // --- 环境判断 ---
+        // --- 环境判断 ---
 
-            'mobile': data.req.headers['user-agent'] ? data.req.headers['user-agent'].includes('mobile') : false,
-            'wechat': data.req.headers['user-agent'] ? data.req.headers['user-agent'].includes('micromessenger') : false,
-            'https': data.uri.protocol === 'https' ? true : false,
-            'host': data.uri.host ?? '',
-            'hostname': data.uri.hostname ?? '',
-            'uri': data.uri,
+        'mobile': data.req.headers['user-agent'] ? data.req.headers['user-agent'].includes('mobile') : false,
+        'wechat': data.req.headers['user-agent'] ? data.req.headers['user-agent'].includes('micromessenger') : false,
+        'https': data.uri.protocol === 'https' ? true : false,
+        'host': data.uri.host ?? '',
+        'hostname': data.uri.hostname ?? '',
+        'uri': data.uri,
 
-            // --- 服务端用的路径 ---
+        // --- 服务端用的路径 ---
 
-            'rootPath': data.rootPath,
-            'ctrPath': data.rootPath + 'ctr/',
-            'viewPath': data.rootPath + 'view/',
-            'dataPath': data.rootPath + 'data/',
-            'modPath': data.rootPath + 'mod/',
-            'wsPath': data.rootPath + 'ws/',
+        'rootPath': data.rootPath,
+        'ctrPath': data.rootPath + 'ctr/',
+        'viewPath': data.rootPath + 'view/',
+        'dataPath': data.rootPath + 'data/',
+        'modPath': data.rootPath + 'mod/',
+        'wsPath': data.rootPath + 'ws/',
 
-            // --- 前端用的路径 ---
+        // --- 前端用的路径 ---
 
-            'urlBase': data.urlBase,
-            'urlStc': data.urlBase + 'stc/',
-            'urlFull': (data.uri.protocol ?? '') + '//' + (data.uri.host ?? '') + data.urlBase
-        },
-        'set': configData.set,
-        'db': configData.db,
-        'dns': configData.dns,
-        'kv': configData.kv,
-        'session': configData.session,
-        'sql': configData.sql
+        'urlBase': data.urlBase,
+        'urlStc': data.urlBase + 'stc/',
+        'urlFull': (data.uri.protocol ?? '') + '//' + (data.uri.host ?? '') + data.urlBase
     };
     // --- data.path 是安全的，不会是 ../../ 来访问到了外层，已经做过处理 ---
     let path = data.path;
@@ -432,7 +427,9 @@ export async function run(data: {
     if (typeof rtn === 'string') {
         // --- 返回的是纯字符串，直接输出 ---
         if (data.res) {
-            data.res.setHeader('content-type', 'text/html; charset=utf-8');
+            if (!data.res.getHeader('content-type')) {
+                data.res.setHeader('content-type', 'text/html; charset=utf-8');
+            }
             data.res.writeHead(200);
             data.res.end(rtn);
         }
