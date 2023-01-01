@@ -144,6 +144,8 @@ export async function request(
     // --- 发起请求 ---
     let req: hc.IResponse;
     try {
+        // --- 重定义 IP ---
+        const host = uri.hostname?.toLowerCase() ?? '';
         req = await hcli.request({
             'url': u,
             'method': method,
@@ -151,7 +153,10 @@ export async function request(
             'headers': headers,
             'timeout': timeout * 1000,
             'localAddress': local,
-            'ca': ca
+            'ca': ca,
+            'connectionOptions': {
+                'remoteHost': hosts[host] ? hosts[host] : undefined
+            }
         });
     }
     catch (err: any) {

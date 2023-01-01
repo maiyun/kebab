@@ -126,6 +126,7 @@ export default class extends sCtr.Ctr {
             `<br><a href="${this._config.const.urlBase}test/net-follow">View "test/net-follow"</a>`,
             `<br><a href="${this._config.const.urlBase}test/net-reuse">View "test/net-reuse"</a>`,
             `<br><a href="${this._config.const.urlBase}test/net-error">View "test/net-error"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/net-hosts">View "test/net-hosts"</a>`,
 
             '<br><br><b>Scan:</b>',
             `<br><br><a href="${this._config.const.urlBase}test/scan?s=db">View "test/scan?s=db"</a>`,
@@ -1309,6 +1310,26 @@ error: ${JSON.stringify(res.error)}</pre>`);
         echo.push(`<pre>lNet.get('https://192.111.000.222/xxx.zzz');</pre>
 headers: <pre>${JSON.stringify(res.headers, null, 4)}</pre>
 content: <pre>${(await res.getContent())?.toString()}</pre>
+error: <pre>${JSON.stringify(res.error, null, 4)}</pre>`);
+
+        return echo.join('') + this._getEnd();
+    }
+
+    public async netHosts(): Promise<string> {
+        const echo = [];
+
+        const res = await lNet.get('http://nodejs.org:' + lCore.config.httpPort.toString() + '/en/', {
+            'hosts': {
+                'nodejs.org': '127.0.0.1'
+            }
+        });
+        echo.push(`<pre>lNet.get('http://nodejs.org:${lCore.config.httpPort.toString()}/en/', {
+    'hosts': {
+        'nodejs.org': '127.0.0.1'
+    }
+});</pre>
+headers: <pre>${JSON.stringify(res.headers, null, 4)}</pre>
+content: <pre>${lText.htmlescape((await res.getContent())?.toString() ?? '')}</pre>
 error: <pre>${JSON.stringify(res.error, null, 4)}</pre>`);
 
         return echo.join('') + this._getEnd();
