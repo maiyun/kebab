@@ -121,9 +121,10 @@ async function requestHandler(
     /** --- 当前的 vhost 配置文件 --- */
     const vhost = getVhostByHostname(uri.hostname ?? '');
     if (!vhost) {
-        res.setHeader('content-length', 30);
+        const text = '<h1>Kebab: No permissions</h1>host: ' + (req.headers[':authority'] as string | undefined ?? req.headers['host'] ?? '') + '<br>url: ' + (lText.htmlescape(req.url ?? ''));
+        res.setHeader('content-length', Buffer.byteLength(text));
         res.writeHead(403);
-        res.end('<h1>Kebab: No permissions</h1>');
+        res.end(text);
         return;
     }
     /** --- 网站绝对根目录，末尾带 / --- */

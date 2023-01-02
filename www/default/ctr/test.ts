@@ -24,7 +24,7 @@ export default class extends sCtr.Ctr {
 
     public onLoad(): any {
         if (this._config.const.hostname !== '127.0.0.1' && this._config.const.hostname !== '172.17.0.1' && this._config.const.hostname !== 'local-test.brc-app.com' && !this._config.const.hostname.startsWith('192.168.')) {
-            return [0, 'Please use 127.0.0.1 to access the file.'];
+            return [0, 'Please use 127.0.0.1 to access the file (' + this._config.const.host + ').'];
         }
         const realIp = lCore.realIP(this);
         if ((this._config.const.hostname === '127.0.0.1' || this._config.const.hostname === 'localhost') && (realIp === '172.17.0.1')) {
@@ -42,6 +42,7 @@ export default class extends sCtr.Ctr {
             '<br><br>Node Version: ' + process.version,
             '<br>HOST: ' + this._config.const.host,
             '<br>HOSTNAME: ' + this._config.const.hostname,
+            '<br>HOSTPORT: ' + this._config.const.hostport.toString(),
             '<br>PATH: ' + this._config.const.path,
             '<br>HTTPS: ' + (this._config.const.https ? 'true' : 'false'),
 
@@ -1318,12 +1319,12 @@ error: <pre>${JSON.stringify(res.error, null, 4)}</pre>`);
     public async netHosts(): Promise<string> {
         const echo = [];
 
-        const res = await lNet.get('http://nodejs.org:' + lCore.config.httpPort.toString() + '/en/', {
+        const res = await lNet.get('http://nodejs.org:' + this._config.const.hostport.toString() + this._config.const.urlBase + 'test', {
             'hosts': {
                 'nodejs.org': '127.0.0.1'
             }
         });
-        echo.push(`<pre>lNet.get('http://nodejs.org:${lCore.config.httpPort.toString()}/en/', {
+        echo.push(`<pre>lNet.get('http://nodejs.org:${this._config.const.hostport.toString() + this._config.const.urlBase}test', {
     'hosts': {
         'nodejs.org': '127.0.0.1'
     }

@@ -96,6 +96,7 @@ export interface IConfigConst {
     'https': boolean;
     'host': string;
     'hostname': string;
+    'hostport': number;
     'uri': url.UrlWithStringQuery;
 
     // --- 服务端用的路径 ---
