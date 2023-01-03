@@ -464,7 +464,7 @@ export function htmlescape(html: string): string {
     if (type !== 'string') {
         return '[' + type + ']';
     }
-    return html.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/'/g, '&quot;').replace(/&/g, '&amp;');
+    return html.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/'/g, '&quot;');
 }
 
 /**
