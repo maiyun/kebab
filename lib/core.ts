@@ -142,6 +142,18 @@ export function unconvert62(n: string): bigint {
 }
 
 /**
+ * --- 去除 html 的空白符、换行以及注释 ---
+ * @param text 要纯净的字符串
+ */
+export function purify(text: string): string {
+    text = '>' + text + '<';
+    text = text.replace(/<!--([\s\S]*?)-->/g, '').replace(/>([\s\S]*?)</g, function(t: string, t1: string) {
+        return '>' + t1.replace(/\t|\r\n| {2}/g, '').replace(/\n|\r/g, '') + '<';
+    });
+    return text.slice(1, -1);
+}
+
+/**
  * --- 获取 MUID ---
  * @param ctr Ctr 对象
  * @param opt len: 8 - 32, 默认 8; bin: 是否含有大小写, 默认 true; key: 多样性混合, 默认空; insert: 插入指定字符, 不超过 2 字符，默认空

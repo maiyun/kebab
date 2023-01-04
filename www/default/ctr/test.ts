@@ -102,6 +102,7 @@ export default class extends sCtr.Ctr {
             `<br><br><a href="${this._config.const.urlBase}test/core-random">View "test/core-random"</a>`,
             `<br><a href="${this._config.const.urlBase}test/core-rand">View "test/core-rand"</a>`,
             `<br><a href="${this._config.const.urlBase}test/core-convert62">View "test/core-convert62"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/core-purify">View "test/core-purify"</a>`,
             `<br><a href="${this._config.const.urlBase}test/core-muid">View "test/core-muid"</a>`,
             `<br><a href="${this._config.const.urlBase}test/core-reload">View "test/core-reload"</a>`,
             `<br><a href="${this._config.const.urlBase}test/core-restart">View "test/core-restart"</a>`,
@@ -557,6 +558,20 @@ const base64 = cap.getBase64();</pre>phrase:`];
             '<pre>lCore.unconvert62(\'aZl8N0y57gs\');</pre>' + lCore.unconvert62('aZl8N0y57gs').toString() +
             '<pre>lCore.unconvert62(\'aZl8N0y58M7\');</pre>' + lCore.unconvert62('aZl8N0y58M7').toString() +
             '<br><br>' + this._getEnd();
+    }
+
+    public corePurify(): string {
+        const html = `<html>
+    <head>
+        <title>Title</title>
+    </head>
+    <body>
+        <!-- h1 -->
+        <h1>Hello</h1>
+        <h2>World</h2>
+    </body>
+</html>`;
+        return '<pre>lCore.purify(`' + lText.htmlescape(html) + '`);</pre>' + lText.htmlescape(lCore.purify(html)) + '<br><br>' + this._getEnd();
     }
 
     public coreMuid(): string {

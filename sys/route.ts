@@ -149,6 +149,9 @@ export async function run(data: {
         'urlStc': data.urlBase + 'stc/',
         'urlFull': (data.uri.protocol ?? '') + '//' + (data.uri.host ?? '') + data.urlBase
     };
+    if (config.set.staticPath === '') {
+        config.set.staticPath = config.const.urlStc;
+    }
     // --- data.path 是安全的，不会是 ../../ 来访问到了外层，已经做过处理 ---
     let path = data.path;
     // --- 如果为空则定义为 @ ---
