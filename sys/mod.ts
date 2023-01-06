@@ -299,7 +299,7 @@ export default class Mod {
         db: db.Pool | db.Connection,
         c: string | string[],
         opt: { 'pre'?: string; 'index'?: string; } = {}
-    ): T {
+    ): T & Record<string, any> {
         return new this(ctr, {
             'db': db,
             'pre': opt.pre,
@@ -822,7 +822,7 @@ export default class Mod {
      * @param s 筛选条件数组或字符串
      * @param raw 是否包含已被软删除的数据
      */
-    public filter(s: string | any[], raw: boolean = false): this {
+    public filter(s: string | any[] | Record<string, any>, raw: boolean = false): this {
         const cstr = this.constructor as any;
         if (cstr._soft && !raw) {
             if (typeof s === 'string') {
