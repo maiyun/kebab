@@ -7,6 +7,7 @@ import * as http from 'http';
 import * as http2 from 'http2';
 import * as ejs from 'ejs';
 import * as stream from 'stream';
+import * as core from '../lib/core';
 import * as fs from '../lib/fs';
 import * as crypto from '../lib/crypto';
 import * as session from '../lib/session';
@@ -191,7 +192,7 @@ export class Ctr {
         data.l = (key: string, data?: string[]): string => {
             return this._l(key, data);
         };
-        return ejs.render(content, data);
+        return core.purify(ejs.render(content, data));
     }
 
     /**
