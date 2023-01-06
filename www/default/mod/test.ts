@@ -1,6 +1,6 @@
 import sMod from '~/sys/mod';
 
-export default class Test extends sMod {
+export default class extends sMod {
 
     protected static _$table = 'test';
 

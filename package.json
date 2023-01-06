@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "@litert/http-client": "^1.0.3",
+    "@litert/http-client": "^1.0.4",
     "@litert/mime": "^0.1.1",
     "@litert/redis": "^1.2.4",
     "@litert/tls-sni": "^1.0.0",

@@ -3,7 +3,7 @@ import * as lCore from '~/lib/core';
 // --- 模型 ---
 import sMod from '~/sys/mod';
 
-export default class Session extends sMod {
+export default class extends sMod {
 
     protected static _$table = 'session';
 
