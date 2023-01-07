@@ -6,6 +6,7 @@
 import * as sql from '~/lib/sql';
 import * as db from '~/lib/db';
 import * as time from '~/lib/time';
+import * as core from '~/lib/core';
 import * as ctr from '~/sys/ctr';
 
 /** --- 模型的数据值 --- */
@@ -670,6 +671,7 @@ export default class Mod {
     public async all(key?: string): Promise<false | this[] | Record<string, this>> {
         const r = await this._db.query(this._sql.getSql(), this._sql.getData());
         if (r.rows === null) {
+            await core.log(this._ctr, '[all, mod] ' + JSON.stringify(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
             return false;
         }
         if (key) {
