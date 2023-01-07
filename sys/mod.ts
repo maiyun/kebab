@@ -57,7 +57,7 @@ export default class Mod {
         'index'?: string;
         'row'?: TData;
         'select'?: string | string[];
-        'where'?: string | any[];
+        'where'?: string | any[] | Record<string, any>;
         'raw'?: boolean;
         'pre'?: string;
     }) {
@@ -87,8 +87,13 @@ export default class Mod {
                 if (typeof opt.where === 'string') {
                     opt.where = '(' + opt.where + ') AND `time_remove` = 0';
                 }
+                else if (Array.isArray(opt.where)) {
+                    opt.where.push({
+                        'time_remove': 0
+                    });
+                }
                 else {
-                    opt.where.push({ 'time_remove': 0 });
+                    opt.where['time_remove'] = 0;
                 }
             }
             this._sql.where(opt.where);
@@ -183,7 +188,7 @@ export default class Mod {
     public static async removeByWhere(
         ctr: ctr.Ctr,
         db: db.Pool | db.Connection,
-        where: string | any[],
+        where: string | any[] | Record<string, any>,
         opt: { 'raw'?: boolean; 'pre'?: string; 'index'?: string; } = {}
     ): Promise<boolean | null> {
         const tim = time.stamp();
@@ -196,10 +201,13 @@ export default class Mod {
             if (typeof where === 'string') {
                 where = '(' + where + ') AND `time_remove` = 0';
             }
-            else {
+            else if (Array.isArray(where)) {
                 where.push({
                     'time_remove': 0
                 });
+            }
+            else {
+                where['time_remove'] = 0;
             }
         }
         else {
@@ -231,7 +239,7 @@ export default class Mod {
         ctr: ctr.Ctr,
         db: db.Pool | db.Connection,
         data: any[],
-        where: string | any[],
+        where: string | any[] | Record<string, any>,
         opt: { 'raw'?: boolean; 'pre'?: string; 'index'?: string; } = {}
     ): Promise<boolean | null> {
         const sq = sql.get(ctr, opt.pre);
@@ -240,10 +248,13 @@ export default class Mod {
             if (typeof where === 'string') {
                 where = '(' + where + ') AND `time_remove` = 0';
             }
-            else {
+            else if (Array.isArray(where)) {
                 where.push({
                     'time_remove': 0
                 });
+            }
+            else {
+                where['time_remove'] = 0;
             }
         }
         sq.where(where);
@@ -269,7 +280,7 @@ export default class Mod {
     public static updateByWhereSql(
         ctr: ctr.Ctr,
         data: any[],
-        where: string | any[],
+        where: string | any[] | Record<string, any>,
         opt: { 'raw'?: boolean; 'pre'?: string; 'index'?: string; } = {}
     ): sql.Sql {
         const sq = sql.get(ctr, opt.pre);
@@ -278,10 +289,13 @@ export default class Mod {
             if (typeof where === 'string') {
                 where = '(' + where + ') AND `time_remove` = 0';
             }
-            else {
+            else if (Array.isArray(where)) {
                 where.push({
                     'time_remove': 0
                 });
+            }
+            else {
+                where['time_remove'] = 0;
             }
         }
         sq.where(where);
@@ -319,7 +333,7 @@ export default class Mod {
     public static where<T extends Mod>(
         ctr: ctr.Ctr,
         db: db.Pool | db.Connection,
-        s: string | any[] = '',
+        s: string | any[] | Record<string, any> = '',
         opt: { 'raw'?: boolean; 'pre'?: string; 'index'?: string; } = {}
     ): T {
         return new this(ctr, {
@@ -385,7 +399,7 @@ export default class Mod {
     public static one<T extends Mod>(
         ctr: ctr.Ctr,
         db: db.Pool | db.Connection,
-        s: string | any[],
+        s: string | any[] | Record<string, any>,
         opt: { 'raw'?: boolean; 'pre'?: string; 'index'?: string; } = {}
     ): Promise<false | null | T> {
         return (new this(ctr, {
@@ -407,7 +421,7 @@ export default class Mod {
     public static async primarys(
         ctr: ctr.Ctr,
         db: db.Pool | db.Connection,
-        where: string | any[] = '',
+        where: string | any[] | Record<string, any> = '',
         opt: { 'raw'?: boolean; 'pre'?: string; 'index'?: string; } = {}
     ): Promise<any[] | false> {
         const sq = sql.get(ctr, opt.pre);
@@ -418,10 +432,13 @@ export default class Mod {
                     where = '(' + where + ') AND `time_remove` = 0';
                 }
             }
-            else {
+            else if (Array.isArray(where)) {
                 where.push({
                     'time_remove': 0
                 });
+            }
+            else {
+                where['time_remove'] = 0;
             }
         }
         sq.select(this._$primary, this._$table + (opt.index ? ('_' + opt.index) : '')).where(where);
