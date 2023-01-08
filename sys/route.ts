@@ -245,13 +245,6 @@ export async function run(data: {
         }
         middle.setPrototype('_cookie', cookies);
     }
-    // --- 设置 XSRF 值 ---
-    if (cookies['XSRF-TOKEN'] === undefined) {
-        middle.setPrototype('_xsrf', lCore.random(16, lCore.RANDOM_LUN));
-    }
-    else {
-        middle.setPrototype('_xsrf', cookies['XSRF-TOKEN']);
-    }
 
     // --- 执行中间控制器的 _load ---
     let rtn: any;

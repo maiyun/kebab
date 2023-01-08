@@ -209,6 +209,7 @@ export default class extends sCtr.Ctr {
     }
 
     public ctrXsrf(): string {
+        this._enabledXsrf();
         return `XSRF-TOKEN: ${this._xsrf}<br><br>
 <input type="button" value="Post with xsrf token" onclick="document.getElementById('result').innerText='Waiting...';fetch('${this._config.const.urlBase}test/ctr-xsrf1',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'key=val&_xsrf=${this._xsrf}'}).then(function(r){return r.text();}).then(function(t){document.getElementById('result').innerText=t;});">
 <input type='button' value="Post without xsrf token" style="margin-left: 10px;" onclick="document.getElementById('result').innerText='Waiting...';fetch('${this._config.const.urlBase}test/ctr-xsrf1',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'key=val'}).then(function(r){return r.text();}).then(function(t){document.getElementById('result').innerText=t;});"><br><br>

@@ -224,7 +224,7 @@ export class Ctr {
                 return false;
             }
             for (let k = 0; k < lastK; ++k) {
-                const v = val[k];
+                const v = val[k] ?? '';
                 if (Array.isArray(v)) {
                     if (v.length === 0) {
                         rtn[0] = val[lastK][0];
@@ -351,6 +351,26 @@ export class Ctr {
             rule['_xsrf'] = ['require', this._cookie['XSRF-TOKEN'], [0, 'Bad request, no permission.']];
         }
         return this._checkInput(input, rule, rtn);
+    }
+
+    /**
+     * --- 当前页面开启 XSRF 支持（主要检测 cookie 是否存在） ---
+     * --- 如果当前页面有 CDN，请不要使用 ---
+     */
+    protected _enabledXsrf(): void {
+        // --- 设置 XSRF 值 ---
+        if (this._cookie['XSRF-TOKEN'] === undefined) {
+            const xsrf = core.random(16, core.RANDOM_LUN);
+            this._xsrf = xsrf;
+            core.setCookie(this, 'XSRF-TOKEN', xsrf, {
+                'path': '/',
+                'httponly': true
+            });
+            this._cookie['XSRF-TOKEN'] = xsrf;
+        }
+        else {
+            this._xsrf = this._cookie['XSRF-TOKEN'];
+        }
     }
 
     /**

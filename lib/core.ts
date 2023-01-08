@@ -36,24 +36,27 @@ export interface ICookieOptions {
  * @param ctr ctr 实例
  * @param name 名
  * @param value 值
- * @param opt 选项
+ * @param opt 选项，ttl, 默认和 undefined 为关闭浏览器失效
  */
 export function setCookie(ctr: sCtr.Ctr, name: string, value: string, opt: ICookieOptions = {}): void {
     const res = ctr.getPrototype('_res');
     if (!res) {
         return;
     }
-    const ttl = opt.ttl === undefined ? 0 : opt.ttl;
 
-    const expires = lTime.get(ctr, {
+    /*
+    const expires =  lTime.get(ctr, {
         'data': lTime.stamp() + ttl
     }).toUTCString();
+    */
+    const maxAge = opt.ttl === undefined ? '' : `; Max-Age=${opt.ttl}`;
     const path = `; path=${opt.path ?? '/'}`;
     const domain = opt.domain ? `; domain=${opt.domain}` : '';
     const secure = opt.ssl ? '; secure' : '';
     const httpOnly = opt.httponly ? '; HttpOnly' : '';
     const cookies: string[] = res.getHeader('set-cookie') as string[] | undefined ?? [];
-    cookies.push(`${name}=${encodeURIComponent(value)}; expires=${expires}; Max-Age=${ttl}${path}${domain}${secure}${httpOnly}`);
+    // cookies.push(`${name}=${encodeURIComponent(value)}; expires=${expires}; Max-Age=${ttl}${path}${domain}${secure}${httpOnly}`);
+    cookies.push(`${name}=${encodeURIComponent(value)}${maxAge}${path}${domain}${secure}${httpOnly}`);
     res.setHeader('set-cookie', cookies);
 }
 
