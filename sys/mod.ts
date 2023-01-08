@@ -335,7 +335,7 @@ export default class Mod {
         db: db.Pool | db.Connection,
         s: string | any[] | Record<string, any> = '',
         opt: { 'raw'?: boolean; 'pre'?: string; 'index'?: string; } = {}
-    ): T {
+    ): T & Record<string, any> {
         return new this(ctr, {
             'db': db,
             'pre': opt.pre,
@@ -377,7 +377,7 @@ export default class Mod {
         val: string | number | null,
         lock: boolean = false,
         opt: { 'raw'?: boolean; 'pre'?: string; 'index'?: string; } = {}
-    ): Promise<false | null | T> {
+    ): Promise<false | null | (T & Record<string, any>)> {
         return (new this(ctr, {
             'db': db,
             'pre': opt.pre,
@@ -401,7 +401,7 @@ export default class Mod {
         db: db.Pool | db.Connection,
         s: string | any[] | Record<string, any>,
         opt: { 'raw'?: boolean; 'pre'?: string; 'index'?: string; } = {}
-    ): Promise<false | null | T> {
+    ): Promise<false | null | (T & Record<string, any>)> {
         return (new this(ctr, {
             'db': db,
             'pre': opt.pre,
