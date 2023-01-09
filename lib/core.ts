@@ -150,8 +150,11 @@ export function unconvert62(n: string): bigint {
  */
 export function purify(text: string): string {
     text = '>' + text + '<';
-    text = text.replace(/<!--([\s\S]*?)-->/g, '').replace(/>([\s\S]*?)</g, function(t: string, t1: string) {
-        return '>' + t1.replace(/\t|\r\n| {2}/g, '').replace(/\n|\r/g, '') + '<';
+    text = text.replace(/<!--([\s\S]*?)-->/g, '').replace(/>([\s\S]*?)<(\/?\w+)/g, function(t: string, t1: string, t2: string) {
+        if (t2.toLowerCase() === '/script') {
+            return t;
+        }
+        return '>' + t1.replace(/\t|\r\n| {2}/g, '').replace(/\n|\r/g, '') + '<' + t2;
     });
     return text.slice(1, -1);
 }

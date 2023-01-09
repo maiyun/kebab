@@ -570,6 +570,17 @@ const base64 = cap.getBase64();</pre>phrase:`];
         <!-- h1 -->
         <h1>Hello</h1>
         <h2>World</h2>
+        <div>// abc</div>
+        <script>
+        // --- test ---
+        if (a) {
+           alert('zzz');
+        }
+        /* --- test 2 --- */
+        if (b) {
+           alert('zzz');
+        }
+        </script>
     </body>
 </html>`;
         return '<pre>lCore.purify(`' + lText.htmlescape(html) + '`);</pre>' + lText.htmlescape(lCore.purify(html)) + '<br><br>' + this._getEnd();
