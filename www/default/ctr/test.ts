@@ -466,7 +466,7 @@ CREATE TABLE \`m_test_data_0\` (
     public async modSplit1(): Promise<void> {
         const db = lDb.get(this);
 
-        const test = mTest.getCreate(this, db);
+        const test = mTest.getCreate<mTest>(this, db);
         test.set({
             'name': lCore.random(lCore.rand(8, 32)),
             'time_add': lTime.stamp()
@@ -495,7 +495,7 @@ CREATE TABLE \`m_test_data_0\` (
         // --- 一致性 hash ---
         const index = lConsistent.fast(id.toString(), ['0', '1', '2', '3', '4']);
 
-        const testData = mTestData.getCreate(this, db, {
+        const testData = mTestData.getCreate<mTestData>(this, db, {
             'index': index ?? ''
         });
         testData.set({

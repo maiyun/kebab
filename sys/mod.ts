@@ -9,9 +9,6 @@ import * as time from '~/lib/time';
 import * as core from '~/lib/core';
 import * as ctr from '~/sys/ctr';
 
-/** --- 模型的数据值 --- */
-export type TData = Record<string, string | number | null>;
-
 /**
  * --- 开启软更需要在表添加字段：ALTER TABLE `table_name` ADD `time_remove` bigint NOT NULL DEFAULT '0' AFTER `xxx`; ---
  */
@@ -33,7 +30,7 @@ export default class Mod {
     protected _updates: Record<string, boolean> = {};
 
     /** --- 模型获取的属性 --- */
-    protected _data: TData = {};
+    protected _data: Record<string, any> = {};
 
     /** --- 当前选择的分表 _ 后缀 --- */
     protected _index: string | null = null;
@@ -55,7 +52,7 @@ export default class Mod {
     public constructor(ctr: ctr.Ctr, opt: {
         'db': db.Pool | db.Connection;
         'index'?: string;
-        'row'?: TData;
+        'row'?: Record<string, any>;
         'select'?: string | string[];
         'where'?: string | any[] | Record<string, any>;
         'raw'?: boolean;
@@ -455,13 +452,15 @@ export default class Mod {
 
     // --- 动态方法 ---
 
+    public set<T extends this, TK extends keyof T>(n: Record<TK, T[TK]>): void;
+    public set<T extends this, TK extends keyof T>(n: TK, v: T[TK]): void;
     /**
      * --- 设置一个/多个属性 ---
      * @param n 字符串或键/值
      * @param v 可能是数字
      */
-    public set(n: string | TData, v: string | number | null = ''): void {
-        if (typeof n !== 'string') {
+    public set<T extends this, TK extends keyof T>(n: TK | Record<TK, any>, v?: T[TK]): void {
+        if (typeof n === 'object') {
             for (const k in n) {
                 const v = n[k];
                 // --- 强制更新，因为有的可能就是要强制更新既然设置了 ---
@@ -471,6 +470,9 @@ export default class Mod {
             }
         }
         else {
+            if (typeof n !== 'string') {
+                return;
+            }
             this._updates[n] = true;
             this._data[n] = v;
             (this as any)[n] = v;
@@ -492,7 +494,7 @@ export default class Mod {
      */
     public async create(notWhere?: any[], table?: string): Promise<boolean> {
         const cstr: any = this.constructor as any;
-        const updates: TData = {};
+        const updates: Record<string, any> = {};
         for (const k in this._updates) {
             updates[k] = this._data[k];
         }
@@ -556,7 +558,7 @@ export default class Mod {
      */
     public async replace(): Promise<boolean> {
         const cstr = this.constructor as any;
-        const updates: TData = {};
+        const updates: Record<string, any> = {};
         for (const k in this._updates) {
             updates[k] = this._data[k];
         }
@@ -606,7 +608,7 @@ export default class Mod {
      */
     public async save(): Promise<boolean> {
         const cstr = this.constructor as any;
-        const updates: TData = {};
+        const updates: Record<string, any> = {};
         for (const k in this._updates) {
             updates[k] = this._data[k];
         }
@@ -940,7 +942,7 @@ export default class Mod {
     /**
      * --- 获取值对象 ---
      */
-    public toArray(): TData {
+    public toArray(): Record<string, any> {
         return this._data;
     }
 

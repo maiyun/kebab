@@ -6,11 +6,14 @@ export default class extends sMod {
 
     protected static _$primary = 'id';
 
+    /* eslint-disable @typescript-eslint/naming-convention */
+
     public id?: number;
 
     public name?: string;
 
-    // eslint-disable-next-line @typescript-eslint/naming-convention
     public time_add?: number;
+
+    /* eslint-enable */
 
 }
