@@ -77,6 +77,9 @@ export class Ctr {
     /** --- XSRF TOKEN 值 --- */
     protected _xsrf: string = '';
 
+    /** --- 自定义 http code --- */
+    protected _httpCode: number = 0;
+
     // --- Kebab: true，Mutton: false，全局常量等对象 ---
 
     /** --- 当前语言名 --- */

@@ -35,6 +35,12 @@ export default class extends sCtr.Ctr {
         }
     }
 
+    public notfound(): string {
+        // --- Set on route.php ---
+        this._httpCode = 404;
+        return 'Custom 404 page.';
+    }
+
     public index(): string {
         const echo: string[] = [
             'Hello world! Welcome to use <strong>Kebab ' + def.VER + '</strong>!',
@@ -82,6 +88,8 @@ export default class extends sCtr.Ctr {
             `<br><br><a href="${this._config.const.urlBase}test/ctr-xsrf">View "test/ctr-xsrf"</a>`,
             `<br><a href="${this._config.const.urlBase}test/ctr-checkinput">View "test/ctr-checkinput"</a>`,
             `<br><a href="${this._config.const.urlBase}test/ctr-locale">View "test/ctr-locale"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/ctr-cachettl">View "test/ctr-cachettl"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/ctr-httpcode">View "test/ctr-httpcode"</a>`,
 
             '<br><br><b>Middle:</b>',
             `<br><br><a href="${this._config.const.urlBase}test/middle">View "test/middle"</a>`,
@@ -340,6 +348,16 @@ function postFd() {
         echo.push("<pre>l('test', ['a1', 'a2'])</pre>" + this._l('test', ['a1', 'a2']));
 
         return echo.join('') + '<br><br>' + this._getEnd();
+    }
+
+    public ctrCachettl(): string {
+        this._cacheTTL = 60;
+        return 'This page is cache ttl is 60s.';
+    }
+
+    public ctrHttpcode(): string {
+        this._httpCode = 404;
+        return 'This page is a custom httpcode (404).';
     }
 
     public async modSession(): Promise<any> {

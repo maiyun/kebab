@@ -189,6 +189,12 @@ export async function run(data: {
     if (pathLeft.startsWith('middle')) {
         const text = '[Error] Controller not found, path: ' + data.path + '.';
         if (data.res) {
+            if (config.route['#404']) {
+                data.res.setHeader('location', lText.urlResolve(config.const.urlBase, config.route['#404']));
+                data.res.writeHead(302);
+                data.res.end('');
+                return true;
+            }
             data.res.setHeader('content-type', 'text/html; charset=utf-8');
             data.res.setHeader('content-length', Buffer.byteLength(text));
             data.res.writeHead(404);
@@ -264,13 +270,22 @@ export async function run(data: {
         }
         return true;
     }
+    let cacheTTL: number = middle.getPrototype('_cacheTTL');
+    let httpCode: number = middle.getPrototype('_httpCode');
     if (rtn === undefined || rtn === true) {
         // --- 只有不返回或返回 true 时才加载控制文件 ---
         // --- 判断真实控制器文件是否存在 ---
         const filePath = (data.res ? config.const.ctrPath : config.const.wsPath) + pathLeft + '.js';
         if (!await lFs.isFile(filePath)) {
+            // --- 指定的控制器不存在 ---
             const text = '[Error] Controller not found, path: ' + data.path + '.';
             if (data.res) {
+                if (config.route['#404']) {
+                    data.res.setHeader('location', lText.urlResolve(config.const.urlBase, config.route['#404']));
+                    data.res.writeHead(302);
+                    data.res.end('');
+                    return true;
+                }
                 data.res.setHeader('content-type', 'text/html; charset=utf-8');
                 data.res.setHeader('content-length', Buffer.byteLength(text));
                 data.res.writeHead(404);
@@ -305,6 +320,7 @@ export async function run(data: {
 
         cctr.setPrototype('_cacheTTL', middle.getPrototype('_cacheTTL'));
         cctr.setPrototype('_xsrf', middle.getPrototype('_xsrf'));
+        cctr.setPrototype('_httpCode', middle.getPrototype('_httpCode'));
 
         await lCore.log(cctr, '', '-visit');
 
@@ -315,8 +331,15 @@ export async function run(data: {
                 data.res.writeHead(302);
                 return true;
             }
-            // --- 检测 action 是否存在 ---
+            // --- 检测 action 是否存在，以及排除内部方法 ---
             if (pathRight.startsWith('_') || pathRight === 'onLoad' || pathRight === 'onData' || pathRight === 'onClose' || pathRight === 'setPrototype' || pathRight === 'getPrototype' || pathRight === 'getAuthorization') {
+                // --- _ 开头的 action 是内部方法，不允许访问 ---
+                if (config.route['#404']) {
+                    data.res.setHeader('location', lText.urlResolve(config.const.urlBase, config.route['#404']));
+                    data.res.writeHead(302);
+                    data.res.end('');
+                    return true;
+                }
                 const text = '[Error] Action not found, path: ' + data.path + '.';
                 data.res.setHeader('content-type', 'text/html; charset=utf-8');
                 data.res.setHeader('content-length', Buffer.byteLength(text));
@@ -328,6 +351,12 @@ export async function run(data: {
                 return t1.toUpperCase();
             });
             if ((cctr as any)[pathRight] === undefined) {
+                if (config.route['#404']) {
+                    data.res.setHeader('location', lText.urlResolve(config.const.urlBase, config.route['#404']));
+                    data.res.writeHead(302);
+                    data.res.end('');
+                    return true;
+                }
                 const text = '[Error] Action not found, path: ' + data.path + '.';
                 data.res.setHeader('content-type', 'text/html; charset=utf-8');
                 data.res.setHeader('content-length', Buffer.byteLength(text));
@@ -338,6 +367,7 @@ export async function run(data: {
             // --- 执行 onLoad 方法 ---
             try {
                 rtn = await (cctr.onLoad() as any);
+                // --- 执行 action ---
                 if (rtn === undefined || rtn === true) {
                     rtn = await (cctr as any)[pathRight]();
                     await unlinkUploadFiles(cctr);
@@ -346,12 +376,9 @@ export async function run(data: {
                         await sess.update();
                     }
                 }
-                // --- 在返回值输出之前，设置缓存 ---
-                const cacheTTL = cctr.getPrototype('_cacheTTL') as number;
-                if (cacheTTL > 0) {
-                    data.res.setHeader('expires', lTime.format(0, 'D, d M Y H:i:s', Date.now() + cacheTTL * 1000) + ' GMT');
-                    data.res.setHeader('cache-control', 'max-age=' + cacheTTL.toString());
-                }
+                // --- 获取 ctr 设置的 cache 和 hcode ---
+                cacheTTL = cctr.getPrototype('_cacheTTL');
+                httpCode = cctr.getPrototype('_httpCode');
             }
             catch (e: any) {
                 await lCore.log(cctr, '(E04)' + JSON.stringify(e.stack).slice(1, -1), '-error');
@@ -405,6 +432,15 @@ export async function run(data: {
             // --- socket 断开后才会继续往下执行 ---
         }
     }
+    // --- 设置缓存 ---
+    if (data.res && (cacheTTL > 0)) {
+        data.res.setHeader('expires', lTime.format(0, 'D, d M Y H:i:s', Date.now() + cacheTTL * 1000) + ' GMT');
+        data.res.setHeader('cache-control', 'max-age=' + cacheTTL.toString());
+    }
+    // --- 设置自定义 hcode ---
+    if (httpCode === 0) {
+        httpCode = 200;
+    }
     // --- 判断返回值 ---
     if (rtn === undefined || typeof rtn === 'boolean' || rtn === null) {
         if (data.res) {
@@ -412,7 +448,7 @@ export async function run(data: {
                 data.res.writeHead(302);
             }
             else {
-                data.res.writeHead(200);
+                data.res.writeHead(httpCode);
             }
             data.res.end('');
         }
@@ -427,7 +463,7 @@ export async function run(data: {
             if (!data.res.getHeader('content-type')) {
                 data.res.setHeader('content-type', 'text/html; charset=utf-8');
             }
-            data.res.writeHead(200);
+            data.res.writeHead(httpCode);
             data.res.end(rtn);
         }
         else {
@@ -438,7 +474,7 @@ export async function run(data: {
         // --- 返回的是数组，那么代表是 JSON，以 JSON 形式输出 ---
         if (data.res) {
             data.res.setHeader('content-type', 'application/json; charset=utf-8');
-            data.res.writeHead(200);
+            data.res.writeHead(httpCode);
         }
         if (Array.isArray(rtn)) {
             // --- [0, 'xxx'] 模式 ---

@@ -4,8 +4,6 @@
         "removeComments": true,
         "preserveConstEnums": true, // 保留 const 和 enum 声明
         // "outDir": "./dist/",
-        "baseUrl": "./",
-        "rootDir": "./",
         "sourceMap": false,
         "target": "ES2021",
         "strict": true,             // 严格模式
@@ -20,7 +18,9 @@
             "./node_modules/@types",
             "./node_modules/@litert/loader"
         ],
-        "esModuleInterop": true
+        "esModuleInterop": true,
+        "baseUrl": "./",
+        "rootDir": "./"
     },
     "include": [
         "./**/*.ts"

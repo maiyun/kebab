@@ -178,7 +178,7 @@ export async function stats(path: string): Promise<fs.Stats | null> {
  */
 export async function isDir(path: string): Promise<fs.Stats | false> {
     const pstats = await stats(path);
-    if (!pstats || !pstats.isDirectory()) {
+    if (!pstats?.isDirectory()) {
         return false;
     }
     return pstats;
@@ -190,7 +190,7 @@ export async function isDir(path: string): Promise<fs.Stats | false> {
  */
 export async function isFile(path: string): Promise<fs.Stats | false> {
     const pstats = await stats(path);
-    if (!pstats || !pstats.isFile()) {
+    if (!pstats?.isFile()) {
         return false;
     }
     return pstats;
