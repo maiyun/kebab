@@ -1,4 +1,4 @@
-# Kebab
+<p align="center"><img src="./icon.svg" width="68" height="68" alt="Kebab"></p>
 
 [![License](https://img.shields.io/github/license/maiyun/kebab.svg)](https://github.com/maiyun/kebab/blob/master/LICENSE)
 [![GitHub issues](https://img.shields.io/github/issues/maiyun/kebab.svg)](https://github.com/maiyun/kebab/issues)

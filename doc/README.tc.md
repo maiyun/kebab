@@ -1,4 +1,4 @@
-# Mutton
+<p align="center"><img src="./icon.svg" width="68" height="68" alt="Kebab"></p>
 
 [![License](https://img.shields.io/github/license/MaiyunNET/Nuttom.svg)](https://github.com/MaiyunNET/Nuttom/blob/master/LICENSE)
 [![GitHub issues](https://img.shields.io/github/issues/MaiyunNET/Nuttom.svg)](https://github.com/MaiyunNET/Nuttom/issues)
