@@ -85,7 +85,7 @@ export class Ctr {
     /** --- 当前语言名 --- */
     private _locale: string = 'en';
 
-    /** --- vhost 的 config.json 以及全局常量 --- */
+    /** --- vhost 的 kebab.json 以及全局常量 --- */
     protected readonly _config!: types.IConfig;
 
     protected readonly _req!: http2.Http2ServerRequest | http.IncomingMessage;

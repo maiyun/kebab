@@ -65,7 +65,7 @@ export default class extends sCtr.Ctr {
 
             '<br><br><b style="color: red;">Tips: The file can be deleted.</b>',
 
-            '<br><br><b>Route (conf/config.json):</b>',
+            '<br><br><b>Route (route.json):</b>',
             `<br><br><a href="${this._config.const.urlBase}article/123">View "article/123"</a>`,
             `<br><a href="${this._config.const.urlBase}article/456">View "article/456"</a>`,
 

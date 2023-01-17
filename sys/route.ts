@@ -19,19 +19,18 @@ import * as sCtr from './ctr';
 import * as def from '~/sys/def';
 import * as types from '~/types';
 
-/** --- 虚拟主机 config.json 缓存 --- */
-let vhostConfigs: Record<string, types.IConfig> = {};
+/** --- 动态层 kebab.json 缓存（文件路径: 最终合并值） --- */
+let kebabConfigs: Record<string, types.IConfig> = {};
 
 /**
  * --- 清除已经加载的虚拟主机配置文件 ---
  */
-export function clearVhostConfigs(): void {
-    vhostConfigs = {};
-    lCore.config.httpPort = 0;
+export function clearKebabConfigs(): void {
+    kebabConfigs = {};
 }
 
 /**
- * --- 若为动态路径则执行此函数，此函数不进行判断 config.json 是否存在 ---
+ * --- 若为动态路径则执行此函数，此函数不进行判断 kebab.json 是否存在 ---
  * @param data 传导的数据
  */
 export async function run(data: {
@@ -66,19 +65,19 @@ export async function run(data: {
         ].join('\r\n') + '\r\n\r\n');
     }
     // --- 判断全局 config 是否已经加载过读取过 ---
-    if (lCore.config.httpPort === 0) {
+    if (lCore.globalConfig.httpPort === undefined) {
         const configContent = await lFs.getContent(def.CONF_PATH + 'config.json', 'utf8');
         if (configContent) {
             /** --- 系统 config.json --- */
-            const coreConfig = JSON.parse(configContent);
-            for (const name in coreConfig) {
-                lCore.config[name] = coreConfig[name];
+            const config = JSON.parse(configContent);
+            for (const name in config) {
+                lCore.globalConfig[name] = config[name];
             }
         }
     }
-    // --- 判断 config 是否已经读取过 ---
-    if (!vhostConfigs[data.rootPath + 'config.json']) {
-        const configContent = await lFs.getContent(data.rootPath + 'config.json', 'utf8');
+    // --- 判断 kebab config 是否已经读取过 ---
+    if (!kebabConfigs[data.rootPath + 'kebab.json']) {
+        const configContent = await lFs.getContent(data.rootPath + 'kebab.json', 'utf8');
         if (!configContent) {
             if (data.res) {
                 data.res.setHeader('content-length', 45);
@@ -90,32 +89,32 @@ export async function run(data: {
             }
             return true;
         }
-        vhostConfigs[data.rootPath + 'config.json'] = JSON.parse(configContent);
+        kebabConfigs[data.rootPath + 'kebab.json'] = JSON.parse(configContent);
         const routeContent = await lFs.getContent(data.rootPath + 'route.json', 'utf8');
         if (routeContent) {
-            vhostConfigs[data.rootPath + 'config.json'].route = JSON.parse(routeContent);
+            kebabConfigs[data.rootPath + 'kebab.json'].route = JSON.parse(routeContent);
         }
         // --- 将全局的项目应用到 vhostConfigs 里，但当 vhostConfigs 有项，则不应用 ---
-        for (const name in lCore.config) {
-            if (typeof lCore.config[name] !== 'object') {
-                if (vhostConfigs[data.rootPath + 'config.json'][name] === undefined) {
-                    vhostConfigs[data.rootPath + 'config.json'][name] = lCore.config[name];
+        for (const name in lCore.globalConfig) {
+            if (typeof lCore.globalConfig[name] !== 'object') {
+                if (kebabConfigs[data.rootPath + 'kebab.json'][name] === undefined) {
+                    kebabConfigs[data.rootPath + 'kebab.json'][name] = lCore.globalConfig[name];
                 }
                 continue;
             }
-            for (const name2 in lCore.config[name]) {
-                if (vhostConfigs[data.rootPath + 'config.json'][name] === undefined) {
-                    vhostConfigs[data.rootPath + 'config.json'][name] = {};
+            for (const name2 in lCore.globalConfig[name]) {
+                if (kebabConfigs[data.rootPath + 'kebab.json'][name] === undefined) {
+                    kebabConfigs[data.rootPath + 'kebab.json'][name] = {};
                 }
-                if (vhostConfigs[data.rootPath + 'config.json'][name][name2] === undefined) {
-                    vhostConfigs[data.rootPath + 'config.json'][name][name2] = lCore.config[name][name2];
+                if (kebabConfigs[data.rootPath + 'kebab.json'][name][name2] === undefined) {
+                    kebabConfigs[data.rootPath + 'kebab.json'][name][name2] = lCore.globalConfig[name][name2];
                 }
             }
         }
     }
-    // --- 加载 vhost config ---
+    // --- 加载 kebab config ---
     const config: types.IConfig = {} as any;
-    const configData = vhostConfigs[data.rootPath + 'config.json'];
+    const configData = kebabConfigs[data.rootPath + 'kebab.json'];
     for (const name in configData) {
         config[name] = configData[name];
     }
@@ -459,6 +458,19 @@ export async function run(data: {
     }
     if (typeof rtn === 'string') {
         // --- 返回的是纯字符串，直接输出 ---
+        if (data.res) {
+            if (!data.res.getHeader('content-type')) {
+                data.res.setHeader('content-type', 'text/html; charset=utf-8');
+            }
+            data.res.writeHead(httpCode);
+            data.res.end(rtn);
+        }
+        else {
+            data.socket!.end(rtn);
+        }
+    }
+    else if (rtn instanceof Buffer) {
+        // --- 返回的是个 buffer ---
         if (data.res) {
             if (!data.res.getHeader('content-type')) {
                 data.res.setHeader('content-type', 'text/html; charset=utf-8');

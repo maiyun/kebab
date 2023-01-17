@@ -15,12 +15,10 @@ import * as def from '~/sys/def';
 import * as types from '~/types';
 
 /** --- 全局参数 --- */
-export const config: types.IConfig & {
+export const globalConfig: types.IConfig & {
     'httpPort': number;
     'httpsPort': number;
-} = {
-    'httpPort': 0
-} as any;
+} = {} as any;
 
 /** --- Cookie 设置的选项 --- */
 export interface ICookieOptions {

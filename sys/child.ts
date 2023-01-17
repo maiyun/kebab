@@ -8,8 +8,6 @@ import * as url from 'url';
 import * as tls from 'tls';
 import * as http from 'http';
 import * as stream from 'stream';
-// --- 第三方 ---
-import * as sni from '@litert/tls-sni';
 // --- 库和定义 ---
 import * as fs from '~/lib/fs';
 import * as lCore from '~/lib/core';
@@ -31,14 +29,18 @@ const hbTimer = setInterval(function() {
     });
 }, 10000);
 
+/** --- 已加载的证书列表（name: ctx） --- */
+let certList: Record<string, tls.SecureContext> = {};
+
 /** --- 当前的虚拟主机配置列表 - 读取于 conf/vhost/*.json --- */
 let vhosts: types.IVhost[] = [];
-/** --- 证书 SNI 管理器 --- */
-const sniManager = sni.certs.createManager();
+
 /** --- http 服务器 --- */
 let httpServer: http.Server;
+
 /** --- http2 服务器 --- */
 let http2Server: http2.Http2SecureServer;
+
 /** --- 当前使用中的连接 --- */
 let linkCount: number = 0;
 
@@ -56,13 +58,42 @@ async function run(): Promise<void> {
     }
     /** --- 系统 config.json --- */
     const config = JSON.parse(configContent);
-    for (const name in config) {
-        lCore.config[name] = config[name];
+    for (const key in config) {
+        lCore.globalConfig[key] = config[key];
     }
 
     // --- 创建服务器并启动（支持 http2/https/http/websocket） ---
     http2Server = http2.createSecureServer({
-        'SNICallback': sniManager.getSNICallback(),
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        'SNICallback': (servername, cb) => {
+            (async () => {
+                // --- 查找 servername ---
+                for (const vhost of vhosts) {
+                    if (!vhost.domains.includes('*') && !vhost.domains.includes(servername)) {
+                        continue;
+                    }
+                    // --- 找到 ---
+                    if (certList[vhost.name]) {
+                        cb(null, certList[vhost.name]);
+                        return;
+                    }
+                    // --- 没找到 ---
+                    const key = await fs.getContent(lText.isRealPath(vhost.key) ? vhost.key : def.CERT_PATH + vhost.key, 'utf8');
+                    const cert = await fs.getContent(lText.isRealPath(vhost.cert) ? vhost.cert : def.CERT_PATH + vhost.cert, 'utf8');
+                    if (!cert || !key) {
+                        return;
+                    }
+                    const ctx = tls.createSecureContext({
+                        'key': key,
+                        'cert': cert
+                    });
+                    certList[vhost.name] = ctx;
+                    cb(null, ctx);
+                }
+            })().catch((e) => {
+                console.log('child.run', e);
+            });
+        },
         'ciphers': 'ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA:ECDHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA256:DHE-RSA-AES256-SHA:ECDHE-ECDSA-DES-CBC3-SHA:ECDHE-RSA-DES-CBC3-SHA:EDH-RSA-DES-CBC3-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:DES-CBC3-SHA:!DSS',
         'allowHTTP1': true
     }, function(req: http2.Http2ServerRequest, res: http2.Http2ServerResponse): void {
@@ -158,7 +189,7 @@ async function requestHandler(
             if (stat.isDirectory()) {
                 now += item + '/';
                 // --- 判断是不是动态层 ---
-                stat = await fs.stats(rootPath + now + 'config.json');
+                stat = await fs.stats(rootPath + now + 'kebab.json');
                 if (stat) {
                     // --- 动态层，交给 Route 处理器 ---
                     try {
@@ -205,7 +236,7 @@ async function requestHandler(
                 break;
             }
             // --- 本层是根，判断根是不是动态层 ---
-            const stat = await fs.stats(rootPath + now + 'config.json');
+            const stat = await fs.stats(rootPath + now + 'kebab.json');
             if (stat) {
                 // --- 动态层，交给 Route 处理器 ---
                 try {
@@ -300,7 +331,7 @@ async function upgradeHandler(req: http.IncomingMessage, socket: stream.Duplex, 
             if (stat.isDirectory()) {
                 now += item + '/';
                 // --- 判断是不是动态层 ---
-                stat = await fs.stats(rootPath + now + 'config.json');
+                stat = await fs.stats(rootPath + now + 'kebab.json');
                 if (stat) {
                     // --- 动态层，交给 Route 处理器 ---
                     if (await route.run({
@@ -327,7 +358,7 @@ async function upgradeHandler(req: http.IncomingMessage, socket: stream.Duplex, 
                 break;
             }
             // --- 判断根是不是动态层 ---
-            const stat = await fs.stats(rootPath + now + 'config.json');
+            const stat = await fs.stats(rootPath + now + 'kebab.json');
             if (stat) {
                 // --- 动态层，交给 Route 处理器 ---
                 if (await route.run({
@@ -348,10 +379,14 @@ async function upgradeHandler(req: http.IncomingMessage, socket: stream.Duplex, 
 }
 
 /**
- * --- 加载/重载 vhosts 信息、sni 信息。（清除动态 config.json 信息、data 信息、语言包信息） ---
+ * --- 加载/重载 vhosts 信息、清空证书信息、清空全局 config。（清除动态 kebab.json 信息、data 信息、语言包信息） ---
  */
 async function reload(): Promise<void> {
-    // --- 重新加载 VHOST 信息 ---
+    // --- 清除全局 config，下次 run 时就会重新加载了（/conf/config.json） ---
+    for (const key in lCore.globalConfig) {
+        delete lCore.globalConfig[key];
+    }
+    // --- 重新加载 VHOST 信息（/conf/vhost/） ---
     const files = await fs.readDir(def.VHOST_PATH);
     vhosts = [];
     for (const file of files) {
@@ -367,21 +402,11 @@ async function reload(): Promise<void> {
             vhosts.push(item);
         }
     }
-    // --- 重新加载证书 ---
-    sniManager.clear();
-    for (const vhost of vhosts) {
-        const cert = await fs.getContent(lText.isRealPath(vhost.cert) ? vhost.cert : def.CERT_PATH + vhost.cert, 'utf8');
-        const key = await fs.getContent(lText.isRealPath(vhost.key) ? vhost.key : def.CERT_PATH + vhost.key, 'utf8');
-        if (!cert || !key) {
-            continue;
-        }
-        try {
-            sniManager.use(vhost.name, cert, key);
-        }
-        catch (e) {
-            console.log('[child] [reload]', e);
-        }
-    }
+    // --- 重新加载证书对（清空，下次会自动加载新的） ---
+    certList = {};
+    // --- 其他操作 ---
+    route.clearKebabConfigs();
+    ctr.clearLocaleData();
 }
 
 // --- 接收主进程回传信号，主要用来 reload，restart ---
@@ -390,8 +415,6 @@ process.on('message', function(msg: any) {
         switch (msg.action) {
             case 'reload': {
                 await reload();
-                route.clearVhostConfigs();
-                ctr.clearLocaleData();
                 console.log(`[child] Worker ${process.pid} reload execution succeeded.`);
                 break;
             }
