@@ -1,5 +1,13 @@
 # 更新日誌
 
+## Languages
+
+[简体中文](./CHANGELOG.sc.md) | [English](./CHANGELOG.md)
+
+## 1.0.0
+
+[\*] 大量優化。
+
 ## 0.2.0
 
 [+] 增加 nlReplace 方法，Text 庫。  

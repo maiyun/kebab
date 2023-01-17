@@ -9,7 +9,7 @@
 
 ## 語言
 
-[English](../README.md) | [简体中文](README.sc.md)
+[简体中文](README.sc.md) | [English](../README.md)
 
 ## 環境
 

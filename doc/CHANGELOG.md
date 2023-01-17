@@ -4,6 +4,10 @@
 
 [简体中文](./CHANGELOG.sc.md) | [繁體中文](./CHANGELOG.tc.md)
 
+## 1.0.0
+
+[\*] Lots of optimizations.
+
 ## 0.2.0
 
 [+] Add the nlReplace method, the Text library.  
