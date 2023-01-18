@@ -189,6 +189,7 @@ export class Ctr {
             return '';
         }
         data._urlBase = this._config.const.urlBase;
+        data._urlFull = this._config.const.urlFull;
         data._staticVer = this._config.set.staticVer;
         data._staticPath = this._config.set.staticPath;
         // --- 语言包 ---
