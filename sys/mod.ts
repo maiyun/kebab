@@ -235,7 +235,7 @@ export default class Mod {
     public static async updateByWhere(
         ctr: ctr.Ctr,
         db: db.Pool | db.Connection,
-        data: any[],
+        data: any[] | Record<string, any>,
         where: string | any[] | Record<string, any>,
         opt: { 'raw'?: boolean; 'pre'?: string; 'index'?: string; } = {}
     ): Promise<boolean | null> {
