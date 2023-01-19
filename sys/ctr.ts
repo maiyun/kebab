@@ -265,6 +265,14 @@ export class Ctr {
                             }
                             break;
                         }
+                        case 'array': {
+                            if (input[key] !== null && !Array.isArray(input[key])) {
+                                rtn[0] = val[lastK][0];
+                                rtn[1] = val[lastK][1];
+                                return false;
+                            }
+                            break;
+                        }
                         default: {
                             let match: RegExpExecArray | null;
                             if (input[key] !== null) {
