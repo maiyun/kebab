@@ -216,6 +216,33 @@ export async function request(
     });
 }
 
+export function setCookie(cookie: Record<string, types.INetCookie>, name: string, value: string, domain: string, opt: {
+    'ttl'?: number;
+    'path'?: string;
+    'ssl'?: boolean;
+    'httponly'?: boolean;
+} = {}): void {
+    const tim = time.stamp();
+    const ttl = !opt.ttl ? 0 : opt['ttl'];
+    domain = domain.split(':')[0];
+    const domainN = domain.startsWith('.') ? domain.slice(1) : domain;
+
+    let exp = -1992199400;
+    if (ttl) {
+        exp = tim + ttl;
+    }
+
+    cookie[name + '-' + domainN] = {
+        'name': name,
+        'value': value,
+        'exp': exp,
+        'path': opt['path'] ?? '/',
+        'domain': domainN,
+        'secure': opt['ssl'] ? true : false,
+        'httponly': opt['httponly'] ? true : false
+    };
+}
+
 /**
  * --- 根据 Set-Cookie 头部转换到 cookie 对象 ---
  * @param cookie cookie 对象
@@ -318,7 +345,8 @@ async function buildCookieObject(
             'exp': exp,
             'path': path,
             'domain': domainN,
-            'secure': cookieTmp['secure'] !== undefined ? true : false
+            'secure': cookieTmp['secure'] !== undefined ? true : false,
+            'httponly': cookieTmp['httponly'] !== undefined ? true : false
         };
     }
 }
@@ -369,7 +397,7 @@ function buildCookieQuery(cookie: Record<string, types.INetCookie>, uri: url.Url
         cookieStr += item.name + '=' + encodeURIComponent(item.value) + '; ';
     }
     if (cookieStr !== '') {
-        return cookieStr.slice(0, -1);
+        return cookieStr.slice(0, -2);
     }
     else {
         return '';

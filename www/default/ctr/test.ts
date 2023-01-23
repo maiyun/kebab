@@ -1178,10 +1178,24 @@ cookie: <pre>${JSON.stringify(cookie, null, 4)}</pre><hr>`);
 headers: <pre>${JSON.stringify(res.headers, null, 4)}</pre>
 content: <pre>${(await res.getContent())?.toString()}</pre>`);
 
+        lNet.setCookie(cookie, 'custom1', 'abc1', this._config.const.host);
+        lNet.setCookie(cookie, 'custom2', 'abc2', '172.17.0.1');
+        res = await lNet.get(this._internalUrl + 'test/net-cookie2', {
+            'cookie': cookie
+        });
+        echo.push(`<pre>lNet.setCookie(cookie, 'custom1', 'abc1', ${this._config.const.host});
+lNet.setCookie(cookie, 'custom2', 'abc2', '172.17.0.1');
+lNet.get(this._internalUrl + 'test/net-cookie2', {
+    'cookie': cookie
+});</pre>
+headers: <pre>${JSON.stringify(res.headers, null, 4)}</pre>
+content: <pre>${(await res.getContent())?.toString()}</pre>`);
+
         return echo.join('') + this._getEnd();
     }
 
     public netCookie1(): string {
+        lCore.setCookie(this, 'test0', 'session');
         lCore.setCookie(this, 'test1', 'normal', {
             'ttl': 10
         });
@@ -1227,7 +1241,8 @@ content: <pre>${(await res.getContent())?.toString()}</pre>`);
             'ttl': 60,
             'httponly': true
         });
-        return `lCore.setCookie(this, 'test1', 'normal', {
+        return `lCore.setCookie(this, 'test0', 'session');
+lCore.setCookie(this, 'test1', 'normal', {
     'ttl': 10
 });
 lCore.setCookie(this, 'test2', 'baidu.com', {

@@ -131,6 +131,7 @@ export interface INetCookie {
     'path': string;
     'domain': string;
     'secure': boolean;
+    'httponly': boolean;
 }
 
 /** --- 请求的传入参数选项 --- */
