@@ -258,7 +258,7 @@ export class Ctr {
                         }
                         case 'num':
                         case 'number': {
-                            if (input[key] !== null && (typeof input[key] !== 'number') && !/^[0-9]+\.?[0-9]*$/.test(input[key])) {
+                            if (input[key] && (typeof input[key] !== 'number') && !/^[0-9]+\.?[0-9]*$/.test(input[key])) {
                                 rtn[0] = val[lastK][0];
                                 rtn[1] = val[lastK][1];
                                 return false;
@@ -275,7 +275,7 @@ export class Ctr {
                         }
                         default: {
                             let match: RegExpExecArray | null;
-                            if (input[key] !== null) {
+                            if (input[key]) {
                                 if (v[0] === '/') {
                                     // --- 正则 ---
                                     if (!(new RegExp(v.slice(1, -1))).test(input[key])) {
