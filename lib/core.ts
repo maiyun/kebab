@@ -165,19 +165,21 @@ export function purify(text: string): string {
 /**
  * --- 获取 MUID ---
  * @param ctr Ctr 对象
- * @param opt len: 8 - 32, 默认 8; bin: 是否含有大小写, 默认 true; key: 多样性混合, 默认空; insert: 插入指定字符, 不超过 2 字符，默认空
+ * @param opt len: 8 - 32, 默认 8; bin: 是否含有大小写, 默认 true; key: 多样性混合, 默认空; insert: 插入指定字符, 最好不超过 2 字符，默认空，num: 是否含有数字，默认 true
  */
 export function muid(ctr: sCtr.Ctr, opt: {
     'len'?: number;
     'bin'?: boolean;
     'key'?: string;
     'insert'?: string;
+    'num'?: boolean;
 } = {}): string {
     const len = opt.len ?? 8;
     const bin = opt.bin ?? true;
     const key = opt.key ?? '';
     const insert = opt.insert ?? '';
     const ilen = insert.length;
+    const num = opt.num ?? true;
 
     const headers = ctr.getPrototype('_headers');
     const req = ctr.getPrototype('_req');
@@ -192,7 +194,7 @@ export function muid(ctr: sCtr.Ctr, opt: {
     }
 
     // --- 生成随机数 ---
-    const over = random(len - 1 - ilen, bin ? RANDOM_LUN : RANDOM_LN) + char[20];
+    const over = random(len - 1 - ilen, bin ? (num ? RANDOM_LUN : RANDOM_LU) : (num ? RANDOM_LN : RANDOM_L)) + char[20];
     return over[0] + insert + over.slice(1);
 }
 
