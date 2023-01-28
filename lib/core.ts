@@ -318,7 +318,7 @@ export interface ILogOptions {
     'path': string;
     'urlFull': string;
     'hostname': string;
-    'req': http2.Http2ServerRequest | http.IncomingMessage;
+    'req': http2.Http2ServerRequest | http.IncomingMessage | null;
     'get': Record<string, any>;
     'post': Record<string, any>;
     'cookie': Record<string, string>;
@@ -333,7 +333,7 @@ export interface ILogOptions {
  * @param opt 选项
  */
 export async function log(opt: sCtr.Ctr | ILogOptions, msg: string, fend: string = ''): Promise<void> {
-    let req: http2.Http2ServerRequest | http.IncomingMessage;
+    let req: http2.Http2ServerRequest | http.IncomingMessage | null;
     let headers: http.IncomingHttpHeaders;
     let get: Record<string, any>;
     let post: Record<string, any>;
@@ -366,8 +366,8 @@ export async function log(opt: sCtr.Ctr | ILogOptions, msg: string, fend: string
         hostname = opt.hostname;
     }
 
-    const realIp = req.socket.remoteAddress ?? '';
-    const clientIp = ip(headers, req);
+    const realIp = req?.socket.remoteAddress ?? '';
+    const clientIp = req ? ip(headers, req) : '';
 
     const [y, m, d, h] = lTime.format(null, 'Y-m-d-H').split('-');
     let path = def.LOG_PATH + hostname + '/' + y + '/' + m + '/' + d + '/';

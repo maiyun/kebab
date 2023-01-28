@@ -10,6 +10,7 @@
 import * as mysql2 from 'mysql2/promise';
 // --- 库和定义 ---
 import * as time from '~/lib/time';
+import * as core from '~/lib/core';
 import * as ctr from '~/sys/ctr';
 import * as types from '~/types';
 
@@ -197,23 +198,39 @@ export class Pool {
         }
         if (!conn) {
             // --- 没有找到合适的连接，创建一个 ---
-            const link = await mysql2.createConnection({
-                'host': this._etc.host,
-                'port': this._etc.port,
-                'charset': this._etc.charset,
-                'database': this._etc.name,
-                'user': this._etc.user,
-                'password': this._etc.pwd
-            });
-            conn = new Connection(this._etc, link);
-            conn.using();
-            link.on('error', function(err: mysql2.QueryError): void {
-                conn.setLost();
-                if (err.code !== 'PROTOCOL_CONNECTION_LOST') {
-                    console.log(err);
-                }
-            });
-            connections.push(conn);
+            try {
+                const link = await mysql2.createConnection({
+                    'host': this._etc.host,
+                    'port': this._etc.port,
+                    'charset': this._etc.charset,
+                    'database': this._etc.name,
+                    'user': this._etc.user,
+                    'password': this._etc.pwd,
+                    'connectTimeout': 5000
+                });
+                conn = new Connection(this._etc, link);
+                conn.using();
+                link.on('error', function(err: mysql2.QueryError): void {
+                    conn.setLost();
+                    if (err.code !== 'PROTOCOL_CONNECTION_LOST') {
+                        console.log(err);
+                    }
+                });
+                connections.push(conn);
+            }
+            catch (e: any) {
+                await core.log({
+                    'path': '',
+                    'urlFull': '',
+                    'hostname': '',
+                    'req': null,
+                    'get': {},
+                    'post': {},
+                    'cookie': {},
+                    'headers': {},
+                    'input': ''
+                }, '(db._getConnection)' + JSON.stringify(e.stack).slice(1, -1), '-error');
+            }
         }
         return conn;
     }
