@@ -17,6 +17,13 @@
         "user": "root",
         "pwd": "DashAdmin"
     },
+    "jwt": {
+        "name": "KE_JWT",
+        "ttl": 172800,
+        "ssl": false,
+        "secret": "MUSTCHANGE",
+        "auth": false
+    },
     "dns": {
         "sid": "",
         "skey": ""

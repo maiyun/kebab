@@ -38,6 +38,7 @@ export interface IConfig {
     };
     'const': IConfigConst;
     'db': IConfigDb;
+    'jwt': IConfigJwt;
     'kv': IConfigKv;
     'route': Record<string, string>;
     'session': {
@@ -59,6 +60,15 @@ export interface IConfigDb {
 
     'user': string;
     'pwd': string;
+}
+
+/** --- Jwt 信息 --- */
+export interface IConfigJwt {
+    'name': string;
+    'ttl': number;
+    'ssl': boolean;
+    'secret': string;
+    'auth': boolean;
 }
 
 /** --- DNS --- */

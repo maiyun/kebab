@@ -65,6 +65,9 @@ export class Ctr {
     /** --- Cookie 数组 --- */
     protected _cookie: Record<string, string> = {};
 
+    /** --- Jwt 数组 --- */
+    protected _jwt: Record<string, any> = {};
+
     /** --- Session 数组 --- */
     protected _session: Record<string, any> = {};
 
@@ -398,9 +401,9 @@ export class Ctr {
     private _authorization: { 'user': string; 'pwd': string; } | null = null;
 
     /**
-     * --- 通过 header 或 _auth 获取鉴权信息 ---
+     * --- 通过 header 或 _auth 获取鉴权信息或 JWT 信息（不解析） ---
      */
-    public getAuthorization(): { 'user': string; 'pwd': string; } | false {
+    public getAuthorization(): { 'user': string; 'pwd': string; } | false | string {
         if (this._authorization !== null) {
             return this._authorization;
         }
@@ -417,6 +420,10 @@ export class Ctr {
         let authArr = auth.split(' ');
         if (authArr[1] === undefined) {
             return false;
+        }
+        if (authArr[1].includes('.')) {
+            // --- 不解析，解析使用 JWT 类解析 ---
+            return authArr[1];
         }
         if (!(auth = crypto.base64Decode(authArr[1]))) {
             return false;

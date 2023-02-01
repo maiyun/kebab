@@ -276,6 +276,24 @@ export function objectSort(o: Record<string, any>): any {
 }
 
 /**
+ * --- 将对象的所有属性清除包括键，不会破坏引用关系 ---
+ * @param obj 要清除的对象
+ * @patam deep 也将子项都清空，如果子项有独立引用的话也要清空的话则要设置为 true
+ */
+export function emptyObject(obj: Record<string, any>, deep: boolean = false): void {
+    const keys = Object.keys(obj);
+    for (const key of keys) {
+        if (deep) {
+            const value = obj[key];
+            if (typeof value === 'object') {
+                emptyObject(value);
+            }
+        }
+        delete obj[key];
+    }
+}
+
+/**
  * --- 执行命令行 ---
  * @param command 命令字符串
  */

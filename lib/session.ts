@@ -42,7 +42,7 @@ export class Session {
     private _sql!: sql.Sql;
 
     /** --- session 在前端或 Kv 中储存的名前缀 --- */
-    private _name: string = '';
+    private _name!: string;
 
     /** --- 当前 Session 的 token --- */
     private _token: string = '';
@@ -76,7 +76,7 @@ export class Session {
 
         if (auth) {
             const a = ctr.getAuthorization();
-            if (a && (a.user === 'token')) {
+            if (a && typeof a !== 'string' && (a.user === 'token')) {
                 this._token = a.pwd;
             }
         }
@@ -133,8 +133,13 @@ export class Session {
         // --- 如果不存在不允许加新则返回错误 ---
         if (needInsert) {
             if (this._link instanceof kv.Pool) {
+                let count = 0;
                 do {
+                    if (count === 5) {
+                        return false;
+                    }
                     this._token = core.random(16, core.RANDOM_LUN);
+                    ++count;
                 } while (!await this._link.set(this._name + '_' + this._token, [], this._ttl, 'nx'));
             }
             else {

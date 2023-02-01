@@ -11,6 +11,7 @@ import * as lScan from '~/lib/scan';
 import * as lSql from '~/lib/sql';
 import * as lConsistent from '~/lib/consistent';
 import * as lSsh from '~/lib/ssh';
+import * as lJwt from '~/lib/jwt';
 import * as sCtr from '~/sys/ctr';
 import * as def from '~/sys/def';
 // --- mod ---
@@ -147,6 +148,11 @@ export default class extends sCtr.Ctr {
             `<br><a href="${this._config.const.urlBase}test/session?s=kv">View "test/session?s=kv"</a>`,
             `<br><a href="${this._config.const.urlBase}test/session?s=db&auth=1">View "test/session?s=db&auth=1" Header Authorization</a>`,
             `<br><a href="${this._config.const.urlBase}test/session?s=kv&auth=1">View "test/session?s=kv&auth=1" Header Authorization</a>`,
+
+            '<br><br><b>Jwt:</b>',
+            `<br><br><a href="${this._config.const.urlBase}test/jwt">View "test/jwt"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/jwt?type=kv">View "test/jwt?type=kv"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/jwt?type=auth">View "test/jwt?type=auth" Header Authorization</a>`,
 
             '<br><br><b>Sql:</b>',
             `<br><br><a href="${this._config.const.urlBase}test/sql?type=insert">View "test/sql?type=insert"</a>`,
@@ -1624,6 +1630,74 @@ Result:<pre id="result">Nothing.</pre>`);
                 return '<a href="' + this._config.const.urlBase + 'test">Return</a>' + echo.join('') + this._getEnd();
             }
         }
+    }
+
+    public async jwt(): Promise<string | any[]> {
+        const retur: any[] = [];
+        if (!(this._checkInput(this._get, {
+            'type': [['', 'kv', 'auth'], [0, 'Bad request.']]
+        }, retur))) {
+            return retur;
+        }
+
+        const echo: string[] = ['<pre>'];
+        let link: lKv.Pool | undefined = undefined;
+        if (this._get['type'] === 'kv') {
+            link = lKv.get(this);
+            echo.push('link = lKv.get(this);\n');
+        }
+
+        const origin = lJwt.getOrigin(this);
+        echo.push(`const origin = lJwt.getOrigin(this);
+JSON.stringify(origin);</pre>`);
+        echo.push(JSON.stringify(origin));
+
+        // --- 创建 jwt 对象 ---
+        const jwt = await lJwt.get(this, {}, link);
+        echo.push(`<pre>const jwt = lJwt.get(this, {}, ${link ? 'link' : 'undefined'});
+JSON.stringify(this._jwt);</pre>`);
+        echo.push(JSON.stringify(this._jwt));
+
+        this._jwt['test'] = 'a';
+        jwt.renew();
+        echo.push(`<pre>this._jwt['test'] = 'a';
+jwt.renew();
+JSON.stringify(this._jwt);</pre>`);
+        echo.push(JSON.stringify(this._jwt));
+
+        const token = this._jwt['token'];
+        const rtn = await jwt.destory();
+        echo.push(`<pre>const token = this._jwt['token'];
+const rtn = await jwt.destory();
+JSON.stringify(rtn);</pre>`);
+        echo.push(JSON.stringify(rtn));
+
+        echo.push('<pre>JSON.stringify(this._jwt);</pre>');
+        echo.push(JSON.stringify(this._jwt));
+
+        const rtn2 = await lJwt.decode(this, origin, link);
+        echo.push(`<pre>const rtn2 = await lJwt.decode(this, origin, ${link ? 'link' : 'undefined'});
+JSON.stringify(rtn2);</pre>`);
+        echo.push(JSON.stringify(rtn2));
+
+        if (this._get['type'] === 'auth') {
+            echo.push(`<br><br><input type="button" value="Post with header" onclick="document.getElementById('result').innerText='Waiting...';fetch('${this._config.const.urlBase}test/jwt1',{method:'POST',credentials:'omit',headers:{'Authorization':document.getElementById('_auth').innerText,'content-type':'application/x-www-form-urlencoded'},body:'key=val'}).then(function(r){return r.json();}).then(function(j){document.getElementById('result').innerText=j.txt;});"><input type='button' value="Post without header" style="margin-left: 10px;" onclick="document.getElementById('result').innerText='Waiting...';fetch('${this._config.const.urlBase}test/jwt1',{method:'POST',credentials:'omit',headers:{'content-type':'application/x-www-form-urlencoded'},body:'key=val'}).then(function(r){return r.json();}).then(function(j){document.getElementById('result').innerText=j.txt;});"><br><br>
+Token: <span id="token">${token}</span><br>
+Post Authorization header: <span id="_auth">Bearer ${origin}</span><br><br>
+Result:<pre id="result">Nothing.</pre>`);
+        }
+        else {
+            echo.push('<br><br>');
+        }
+
+        return echo.join('') + this._getEnd();
+    }
+
+    public async jwt1(): Promise<any[]>  {
+        await lJwt.get(this, {
+            'auth': true
+        });
+        return [1, { 'txt': JSON.stringify(this._jwt) }];
     }
 
     public sql(): string {
