@@ -699,7 +699,8 @@ export default class Mod {
                 const obj = new (this.constructor as any)(this._ctr, {
                     'db': this._db,
                     'pre': this._sql.getPre(),
-                    'row': row
+                    'row': row,
+                    'index': this._index
                 });
                 list[row[key]] = obj;
             }
@@ -711,7 +712,8 @@ export default class Mod {
                 const obj = new (this.constructor as any)(this._ctr, {
                     'db': this._db,
                     'pre': this._sql.getPre(),
-                    'row': row
+                    'row': row,
+                    'index': this._index
                 });
                 list.push(obj);
             }
