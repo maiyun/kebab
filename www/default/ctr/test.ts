@@ -51,6 +51,7 @@ export default class extends sCtr.Ctr {
             '<br>HOSTNAME: ' + this._config.const.hostname,
             '<br>HOSTPORT: ' + this._config.const.hostport.toString(),
             '<br>PATH: ' + this._config.const.path,
+            '<br>QS: ' + this._config.const.qs,
             '<br>HTTPS: ' + (this._config.const.https ? 'true' : 'false'),
 
             '<br><br>MOBILE: ' + (this._config.const.mobile ? 'true' : 'false'),

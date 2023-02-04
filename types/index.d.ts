@@ -96,6 +96,7 @@ export interface IConfigSql {
 /** --- 动配常量 --- */
 export interface IConfigConst {
     'path': string;
+    'qs': string;
     'startTime': bigint;
     'startMemory': number;
 

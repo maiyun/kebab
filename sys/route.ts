@@ -120,6 +120,7 @@ export async function run(data: {
     }
     config.const = {
         'path': data.path,
+        'qs': data.uri.query ?? '',
         'startTime': process.hrtime.bigint(),
         'startMemory': process.memoryUsage().rss,
 
