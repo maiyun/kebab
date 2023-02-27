@@ -147,10 +147,15 @@ export async function run(data: {
 
         'urlBase': data.urlBase,
         'urlStc': data.urlBase + 'stc/',
-        'urlFull': (data.uri.protocol ?? '') + '//' + (data.uri.host ?? '') + data.urlBase
+        'urlFull': (data.uri.protocol ?? '') + '//' + (data.uri.host ?? '') + data.urlBase,
+        'urlStcFull': ''
     };
-    if (config.set.staticPath === '') {
+    config.const.urlStcFull = config.const.urlFull + 'stc/';
+    if (!config.set.staticPath) {
         config.set.staticPath = config.const.urlStc;
+    }
+    if (!config.set.staticPathFull) {
+        config.set.staticPathFull = config.const.urlStcFull;
     }
     // --- data.path 是安全的，不会是 ../../ 来访问到了外层，已经做过处理 ---
     let path = data.path;

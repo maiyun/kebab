@@ -193,8 +193,10 @@ export class Ctr {
         }
         data._urlBase = this._config.const.urlBase;
         data._urlFull = this._config.const.urlFull;
+        data._urlStcFill = this._config.const.urlStcFull;
         data._staticVer = this._config.set.staticVer;
         data._staticPath = this._config.set.staticPath;
+        data._staticPathFull = this._config.set.staticPathFull;
         // --- 语言包 ---
         data.l = (key: string, data?: string[]): string => {
             return this._l(key, data);

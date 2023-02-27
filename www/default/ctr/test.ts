@@ -61,6 +61,8 @@ export default class extends sCtr.Ctr {
             '<br><br>URL_BASE: ' + this._config.const.urlBase,
             '<br>URL_STC: ' + this._config.const.urlStc,
             '<br>URL_FULL: ' + this._config.const.urlFull,
+            '<br>STATIC_PATH: ' + this._config.set.staticPath,
+            '<br>STATIC_PATH_FULL: ' + this._config.set.staticPathFull,
             '<br>_internalUrl: ' + this._internalUrl,
 
             '<br><br>headers: ' + lText.htmlescape(JSON.stringify(this._headers)),

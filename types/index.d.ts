@@ -33,6 +33,7 @@ export interface IConfig {
 
         'staticVer': string;
         'staticPath': string;
+        'staticPathFull': string;
 
         [key: string]: any;
     };
@@ -124,6 +125,7 @@ export interface IConfigConst {
     'urlBase': string;
     'urlStc': string;
     'urlFull': string;
+    'urlStcFull': string;
 }
 
 /** --- http headers --- */
