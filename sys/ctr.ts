@@ -1,7 +1,7 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2020-3-14 17:24:38
- * Last: 2020-3-30 15:31:40, 2022-07-22 16:59:00, 2022-09-12 23:51:56, 2022-09-23 15:53:58, 2022-12-29 01:18:08
+ * Last: 2020-3-30 15:31:40, 2022-07-22 16:59:00, 2022-09-12 23:51:56, 2022-09-23 15:53:58, 2022-12-29 01:18:08, 2023-2-28 20:07:57
  */
 import * as http from 'http';
 import * as http2 from 'http2';
@@ -272,6 +272,16 @@ export class Ctr {
                         }
                         case 'array': {
                             if (input[key] !== null && !Array.isArray(input[key])) {
+                                rtn[0] = val[lastK][0];
+                                rtn[1] = val[lastK][1];
+                                return false;
+                            }
+                            break;
+                        }
+                        case 'bool':
+                        case 'boolean': {
+                            if (input[key] !== null && (typeof input[key] !== 'boolean')) {
+                                // --- 如果不是 bool 直接失败，字符串的 true, false 也会失败 ---
                                 rtn[0] = val[lastK][0];
                                 rtn[1] = val[lastK][1];
                                 return false;
