@@ -38,7 +38,7 @@
     },
     "session": {
         "name": "KE_SESSION",
-        "exp": 172800,
+        "ttl": 172800,
         "ssl": false
     },
     "sql": {
