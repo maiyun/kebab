@@ -1,9 +1,16 @@
 <p align="center"><img src="./icon.svg" width="68" height="68" alt="Kebab"></p>
-
-[![License](https://img.shields.io/github/license/MaiyunNET/Nuttom.svg)](https://github.com/MaiyunNET/Nuttom/blob/master/LICENSE)
-[![GitHub issues](https://img.shields.io/github/issues/MaiyunNET/Nuttom.svg)](https://github.com/MaiyunNET/Nuttom/issues)
-[![GitHub Releases](https://img.shields.io/github/release/MaiyunNET/Nuttom.svg)](https://github.com/MaiyunNET/Nuttom/releases "Stable Release")
-[![GitHub Pre-Releases](https://img.shields.io/github/release/MaiyunNET/Nuttom/all.svg)](https://github.com/MaiyunNET/Nuttom/releases "Pre-Release")
+<p align="center">
+    <a href="https://github.com/maiyun/kebab/blob/master/LICENSE">
+        <img alt="License" src="https://img.shields.io/github/license/maiyun/kebab?color=blue" />
+    </a>
+    <a href="https://github.com/maiyun/kebab/releases">
+        <img alt="GitHub releases" src="https://img.shields.io/github/v/release/maiyun/kebab?color=brightgreen&logo=github" />
+        <img alt="GitHub pre-releases" src="https://img.shields.io/github/v/release/maiyun/kebab?color=yellow&logo=github&include_prereleases" />
+    </a>
+    <a href="https://github.com/maiyun/kebab/issues">
+        <img alt="GitHub issues" src="https://img.shields.io/github/issues/maiyun/kebab?color=blue&logo=github" />
+    </a>
+</p>
 
 簡單，易用，功能完整開袋即食的 Node.js 框架。
 
@@ -80,6 +87,8 @@ const res1 = await lNet.get('https://xxx1.xxx/test1', { 'cookie': cookie });
 const res2 = await lNet.get('https://xxx2.xxx/test2', { 'cookie': cookie });
 ```
 
+> 提示：Net 庫同時支援傳入 options 和 open 鏈式操作，如 await lNet.open('xxx').follow().timeout(60).save(this._config.const.rootPath + 'doc/test.txt').request();
+
 ### 好用的 Db 庫
 
 擁有大量好用的介面，可以輕鬆的從資料庫篩選出需要的資料：
@@ -137,6 +146,8 @@ const userList = await User.where<User>(this, db, [
 ]).all();
 ```
 
+> 提示：所有資料庫操作都已經做了安全防注入處理。
+
 ### Sql 庫自動增加表前綴和包裹字元「`」”
 
 ```typescript
@@ -186,10 +197,3 @@ return this._l('copy');
 ## 許可
 
 本框架基於 [Apache-2.0](../LICENSE) 許可。
-
-## 參與翻譯
-
-我們工作基於中文語言環境，若對本專案感興趣並對除中文簡體、中文繁體之外語種熟悉的朋友，歡迎一起參與翻譯工作，感興趣的朋友可以加入以下群組。
-
-Telegram 群：[https://t.me/maiyunlocale](https://t.me/maiyunlocale)  
-QQ 群：24158113

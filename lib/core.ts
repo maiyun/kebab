@@ -6,10 +6,12 @@
 import * as cp from 'child_process';
 import * as http from 'http';
 import * as http2 from 'http2';
+import * as stream from 'stream';
 import * as lTime from '~/lib/time';
 import * as lFs from '~/lib/fs';
 import * as lText from '~/lib/text';
 import * as lCrypto from '~/lib/crypto';
+import * as lResponse from '~/lib/net/response';
 import * as sCtr from '~/sys/ctr';
 import * as def from '~/sys/def';
 import * as types from '~/types';
@@ -276,7 +278,7 @@ export function objectSort(o: Record<string, any>): any {
 }
 
 /**
- * --- 将对象的所有属性清除包括键，不会破坏引用关系 ---
+ * --- 将对象的所有属性清除包括键，不会破坏引用关系，对象变量依然保证是引用状态 ---
  * @param obj 要清除的对象
  * @patam deep 也将子项都清空，如果子项有独立引用的话也要清空的话则要设置为 true
  */
@@ -290,6 +292,44 @@ export function emptyObject(obj: Record<string, any>, deep: boolean = false): vo
             }
         }
         delete obj[key];
+    }
+}
+
+/**
+ * --- 调用前自行创建 passThrough，并且调用 pipe 绑定到应该绑定的对象，然后再调用本函数 ---
+ * @param passThrough passThrough 对象
+ * @param data 数组
+ * @param end 是否关闭写入，默认是，关闭后 passThrough 不能被写入，但仍然可读
+ */
+export async function passThroughAppend(
+    passThrough: stream.PassThrough,
+    data: Array<stream.Readable | lResponse.Response | string | Buffer>,
+    end: boolean = true
+): Promise<void> {
+    for (const item of data) {
+        if (item instanceof stream.Readable || item instanceof lResponse.Response) {
+            const stm = item instanceof stream.Readable ? item : item.getStream();
+            // --- 读取流、Net 库 Response 对象 ---
+            stm.pipe(passThrough, {
+                'end': false
+            });
+            await new Promise<void>((resolve) => {
+                stm.on('end', () => {
+                    resolve();
+                });
+            });
+        }
+        else {
+            // --- 字符串、Buffer ---
+            await new Promise<void>((resolve) => {
+                passThrough.write(item, () => {
+                    resolve();
+                });
+            });
+        }
+    }
+    if (end) {
+        passThrough.end();
     }
 }
 

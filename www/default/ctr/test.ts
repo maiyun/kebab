@@ -2,6 +2,7 @@
 import * as lCore from '~/lib/core';
 import * as lNet from '~/lib/net';
 import * as lDb from '~/lib/db';
+import * as lFs from '~/lib/fs';
 import * as lText from '~/lib/text';
 import * as lCrypto from '~/lib/crypto';
 import * as lKv from '~/lib/kv';
@@ -94,6 +95,7 @@ export default class extends sCtr.Ctr {
             `<br><a href="${this._config.const.urlBase}test/ctr-locale">View "test/ctr-locale"</a>`,
             `<br><a href="${this._config.const.urlBase}test/ctr-cachettl">View "test/ctr-cachettl"</a>`,
             `<br><a href="${this._config.const.urlBase}test/ctr-httpcode">View "test/ctr-httpcode"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/ctr-readable">View "test/ctr-readable"</a>`,
 
             '<br><br><b>Middle:</b>',
             `<br><br><a href="${this._config.const.urlBase}test/middle">View "test/middle"</a>`,
@@ -130,6 +132,7 @@ export default class extends sCtr.Ctr {
 
             '<br><br><b>Net:</b>',
             `<br><br><a href="${this._config.const.urlBase}test/net">View "test/net"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/net-pipe">View "test/net-pipe"</a>`,
             `<br><a href="${this._config.const.urlBase}test/net-post">View "test/net-post"</a>`,
             `<br><a href="${this._config.const.urlBase}test/net-post-string">View "test/net-post-string"</a>`,
             `<br><a href="${this._config.const.urlBase}test/net-open">View "test/net-open"</a>`,
@@ -367,6 +370,11 @@ function postFd() {
     public ctrHttpcode(): string {
         this._httpCode = 404;
         return 'This page is a custom httpcode (404).';
+    }
+
+    public ctrReadable(): any {
+        this._res.setHeader('content-type', 'text/plain; charset=utf-8');
+        return lFs.createReadStream(def.ROOT_PATH + 'sys/route.js');
     }
 
     public async modSession(): Promise<any> {
@@ -1063,6 +1071,23 @@ content: <pre>${(await res.getContent())?.toString()}</pre>
 error: ${JSON.stringify(res.error)}`);
 
         return echo.join('') + '<br><br>' + this._getEnd();
+    }
+
+    public async netPipe(): Promise<any> {
+        const echo = [];
+
+        const res = await lNet.get('https://cdn.jsdelivr.net/npm/deskrt/package.json');
+        echo.push(
+            `<pre>Net::get('https://cdn.jsdelivr.net/npm/deskrt/package.json');</pre>
+headers: <pre>${JSON.stringify(res.headers, null, 4)}</pre>
+content: <pre>`,
+            res,
+            `</pre>
+error: ${JSON.stringify(res.error)}
+<br><br>` + this._getEnd()
+        );
+
+        return echo;
     }
 
     public async netPost(): Promise<any> {

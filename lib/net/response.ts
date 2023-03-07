@@ -3,17 +3,14 @@
  * Date: 2020-4-9 15:33:06
  * Last: 2020-4-12 11:12:03, 2022-09-10 12:43:23, 2022-12-25 15:12:57
  */
-import * as stream from 'stream';
 import * as hc from '@litert/http-client';
+import * as nStream from 'stream';
 import * as types from '~/types';
 
-export class Response extends stream.Readable {
+export class Response {
 
     /** --- httpClient 请求对象 --- */
     private readonly _req: hc.IResponse | null = null;
-
-    /** --- readable 对象 --- */
-    private _red: stream.Readable | null = null;
 
     /** --- 返回的 headers --- */
     public headers!: types.THttpHeaders;
@@ -24,7 +21,6 @@ export class Response extends stream.Readable {
     private _content: Buffer | null = null;
 
     public constructor(req: hc.IResponse | null) {
-        super();
         this._req = req;
     }
 
@@ -47,18 +43,10 @@ export class Response extends stream.Readable {
     }
 
     /**
-     * --- 间隔读取（on data 或 pipe 触发）---
+     * --- 获取响应读取流对象 ---
      */
-    // eslint-disable-next-line @typescript-eslint/naming-convention
-    public _read(): void {
-        if (this._req === null) {
-            this.push(null);
-            return;
-        }
-        if (this._red === null) {
-            this._red = this._req.getStream();
-        }
-        this.push(this._red.read());
+    public getStream(): nStream.Readable {
+        return this._req!.getStream();
     }
 
 }

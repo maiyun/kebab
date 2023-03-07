@@ -1,11 +1,18 @@
 <p align="center"><img src="./doc/icon.svg" width="68" height="68" alt="Kebab"></p>
+<p align="center">
+    <a href="https://github.com/maiyun/kebab/blob/master/LICENSE">
+        <img alt="License" src="https://img.shields.io/github/license/maiyun/kebab?color=blue" />
+    </a>
+    <a href="https://github.com/maiyun/kebab/releases">
+        <img alt="GitHub releases" src="https://img.shields.io/github/v/release/maiyun/kebab?color=brightgreen&logo=github" />
+        <img alt="GitHub pre-releases" src="https://img.shields.io/github/v/release/maiyun/kebab?color=yellow&logo=github&include_prereleases" />
+    </a>
+    <a href="https://github.com/maiyun/kebab/issues">
+        <img alt="GitHub issues" src="https://img.shields.io/github/issues/maiyun/kebab?color=blue&logo=github" />
+    </a>
+</p>
 
-[![License](https://img.shields.io/github/license/maiyun/kebab.svg)](https://github.com/maiyun/kebab/blob/master/LICENSE)
-[![GitHub issues](https://img.shields.io/github/issues/maiyun/kebab.svg)](https://github.com/maiyun/kebab/issues)
-[![GitHub Releases](https://img.shields.io/github/release/maiyun/kebab.svg)](https://github.com/maiyun/kebab/releases "Stable Release")
-[![GitHub Pre-Releases](https://img.shields.io/github/release/maiyun/kebab/all.svg)](https://github.com/maiyun/kebab/releases "Pre-Release")
-
-Simple, easy to use, full functionality of the Node.js framework.
+Simple, easy-to-use, and fully-featured Node.js framework that is ready-to-use out of the box.
 
 ## Languages
 
@@ -17,31 +24,31 @@ Node 16+
 
 ## Installation
 
-Download the latest release package, unzip it, and start developing. Start TypeScript compilation and execute `node ./index` to run the website.
+Download the latest release package, extract it, and start developing. To run the website, enable TypeScript compilation and execute `node ./index`.
 
 ## Library
 
 Captcha, Consistent, Crypto, Db (MySQL), Dns (DNSPod, Alibaba Cloud), Fs, Kv (Redis), Net, Scan, Session, Sql, Ssh (Shell, Sftp), Text, Time, Ws, Zlib.
 
-## Some features
+## Partial Features
 
-### Ready to eat
+### Ready-to-use
 
-Commonly used class libraries that encapsulate a unified style, easy to use!
+Following the principle of "ready-to-use", this package includes commonly used libraries in a unified style.
 
 ### Hot update
 
-By calling the Core.sendRestart method, you can smoothly implement alternate hot updates of old and new code without interrupting any existing services and connections.
+By calling the Core.sendRestart method, you can smoothly achieve alternating hot updates between old and new code without interrupting any existing business or connections.
 
 ### Multi-process support
 
-Create a multi-process model based on the number of CPU cores to fully improve the utilization of multi-core CPUs.
+Create a multi-process model based on the number of CPU cores to fully utilize the multi-core CPU.
 
 ### Global connection pool
 
-If different sites in the same process are connected to the same Db, Kv, etc. server, they will share the same connection pool, maximizing efficiency and reducing overhead.
+If different sites in the same process connect to the same server, such as Db, Kv, etc., they share the same connection pool, maximizing efficiency and reducing overhead.
 
-### Super easy to use Net library
+### Super Easy-to-use Net Library
 
 ```typescript
 const res = await lNet.open('https://xxx/test').post().data({ 'a': '1', 'b': '2' }).request();
@@ -53,7 +60,7 @@ It can also be used like this:
 const res = await lNet.get('https://xxx/test');
 ```
 
-Custom parsing results can be set:
+You can set custom parsing results:
 
 ```typescript
 const res = await lNet.get('https://xxx/test', {
@@ -71,16 +78,18 @@ const res = await lNet.get('https://xxx/test', {
 });
 ```
 
-It also has a complete cookie manager, which can easily obtain cookies and store them anywhere. When sending a request, the system will also choose to send according to the domain name and path set by the cookie, and if Set-Cookie has illegal cross-domain settings, it will also Discarded will not be logged, just like real browsers:
+It also has a complete cookie manager, which can easily obtain and store cookies anywhere. When sending a request, the system will select the domain and path based on the cookie settings. If Set-Cookie has an illegal cross-domain setting, it will be discarded and not recorded, just like a real browser.
 
 ```typescript
 const res1 = await lNet.get('https://xxx1.xxx/test1', { 'cookie': cookie });
 const res2 = await lNet.get('https://xxx2.xxx/test2', { 'cookie': cookie });
 ```
 
-### Useful Db library
+> Note: The Net library supports both options and open chain operations. For example, await lNet.open('xxx').follow().timeout(60).save(this._config.const.rootPath + 'doc/test.txt').request();
 
-With a large number of useful interfaces, you can easily filter out the required data from the database:
+### Easy-to-Use Db Library
+
+With a large number of useful interfaces, you can easily filter the data you need from the database:
 
 ```typescript
 const ls = Order.where<Order>(this, db, {
@@ -99,31 +108,31 @@ const user = await User.select<User>(this, db, ['id', 'user']).filter([
 ]).first();
 ```
 
-### XSRF detection
+### XSRF Detection
 
-Using the checkXInput method, XSRF detection can be performed to prevent malicious access.
+Use the _checkXInput method to perform XSRF detection and prevent malicious access.
 
-### Scan code to log in
+### Scan Login
 
-With the help of the Scan library, the scan code login function can be easily realized.
+With the help of the Scan library, it's easy to implement scan login.
 
 #### There are more features waiting for you to explore
 
-## Demo
+## Examples
 
-### Generate a 16-bit random number
+### Creating a 16-bit random number
 
 ```typescript
 let str: string = Core.random(16, Core.RANDOM_N)
 ```
 
-### Generate verification code image
+### Creating a verification code
 
 ```typescript
 Captcha.get(400, 100).getBuffer();
 ```
 
-### Get a list
+### Getting a list
 
 ```typescript
 const userList = await User.where<User>(this, db, [
@@ -135,19 +144,21 @@ const userList = await User.where<User>(this, db, [
 ]).all();
 ```
 
-### The Sql library automatically increases the table prefix and the wrapping character "`"
+> Note: All database operations have been protected against injection attacks.
+
+### Sql Library Automatically Adds Table Prefixes and Wrapping Characters "`"
 
 ```typescript
 ssql.select(['SUM(user.age) age'], 'order').leftJoin('user', {'order.user_id': '#user.id'});
 ```
 
-Will output:
+The output will be:
 
 ```sql
 SELECT SUM(`test_user`.`age`) AS `age` FROM `test_order` LEFT JOIN `test_user` ON `test_order`.`user_id` = `test_user`.`id`
 ```
 
-It's so easy!
+It's so easy to write!
 
 ### Localization
 
@@ -156,11 +167,11 @@ await this._loadLocale(this._get['lang'], 'test');
 return this._l('copy');
 ```
 
-Depending on the value of lang, it will output: Copy、复制、複製、コピー, etc., configured in the site directory /data/locale/.
+Based on the different values of lang, the output will be: Copy, 复制, 複製, コピー, etc., configured in the /data/locale/ directory.
 
-### Data validation
+### Data Validation
 
-According to the string, number, comparison size and even regularity, it is convenient to directly verify the submitted data!
+Directly validate submitted data based on strings, numbers, comparisons, and even regular expressions. It's convenient!
 
 ```typescript
 {
@@ -173,7 +184,7 @@ According to the string, number, comparison size and even regularity, it is conv
 
 See: /test/ctr-checkinput
 
-### Other demos
+### Other Examples
 
 You can visit /test/ to see more examples.
 

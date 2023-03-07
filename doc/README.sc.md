@@ -1,9 +1,16 @@
 <p align="center"><img src="./icon.svg" width="68" height="68" alt="Kebab"></p>
-
-[![License](https://img.shields.io/github/license/maiyun/kebab.svg)](https://github.com/maiyun/kebab/blob/master/LICENSE)
-[![GitHub issues](https://img.shields.io/github/issues/maiyun/kebab.svg)](https://github.com/maiyun/kebab/issues)
-[![GitHub Releases](https://img.shields.io/github/release/maiyun/kebab.svg)](https://github.com/maiyun/kebab/releases "Stable Release")
-[![GitHub Pre-Releases](https://img.shields.io/github/release/maiyun/kebab/all.svg)](https://github.com/maiyun/kebab/releases "Pre-Release")
+<p align="center">
+    <a href="https://github.com/maiyun/kebab/blob/master/LICENSE">
+        <img alt="License" src="https://img.shields.io/github/license/maiyun/kebab?color=blue" />
+    </a>
+    <a href="https://github.com/maiyun/kebab/releases">
+        <img alt="GitHub releases" src="https://img.shields.io/github/v/release/maiyun/kebab?color=brightgreen&logo=github" />
+        <img alt="GitHub pre-releases" src="https://img.shields.io/github/v/release/maiyun/kebab?color=yellow&logo=github&include_prereleases" />
+    </a>
+    <a href="https://github.com/maiyun/kebab/issues">
+        <img alt="GitHub issues" src="https://img.shields.io/github/issues/maiyun/kebab?color=blue&logo=github" />
+    </a>
+</p>
 
 简单，易用，功能完整开袋即食的 Node.js 框架。
 
@@ -78,6 +85,8 @@ const res1 = await lNet.get('https://xxx1.xxx/test1', { 'cookie': cookie });
 const res2 = await lNet.get('https://xxx2.xxx/test2', { 'cookie': cookie });
 ```
 
+> 提示：Net 库同时支持传入 options 和 open 链式操作，如 await lNet.open('xxx').follow().timeout(60).save(this._config.const.rootPath + 'doc/test.txt').request();
+
 ### 好用的 Db 库
 
 拥有大量好用的接口，可以轻松的从数据库筛选出需要的数据：
@@ -135,6 +144,8 @@ const userList = await User.where<User>(this, db, [
 ]).all();
 ```
 
+> 提示：所有数据库操作都已经做了安全防注入处理。
+
 ### Sql 库自动增加表前缀和包裹字符“`”
 
 ```typescript
@@ -184,10 +195,3 @@ return this._l('copy');
 ## 许可
 
 本框架基于 [Apache-2.0](../LICENSE) 许可。
-
-## 参与翻译
-
-我们工作基于中文语言环境，若对本项目感兴趣并对除中文简体、中文繁体之外语种熟悉的朋友，欢迎一起参与翻译工作，感兴趣的朋友可以加入以下群组。
-
-Telegram 群：[https://t.me/maiyunlocale](https://t.me/maiyunlocale)  
-QQ 群：24158113

@@ -10,11 +10,13 @@ import * as url from 'url';
 import * as stream from 'stream';
 // --- 库和定义 ---
 import * as lFs from '~/lib/fs';
+import * as lZlib from '~/lib/zlib';
 import * as lCore from '~/lib/core';
 import * as lCrypto from '~/lib/crypto';
 import * as lText from '~/lib/text';
 import * as lWs from '~/lib/ws';
 import * as lTime from '~/lib/time';
+import * as lResponse from '~/lib/net/response';
 import * as sCtr from './ctr';
 import * as def from '~/sys/def';
 import * as types from '~/types';
@@ -439,7 +441,7 @@ export async function run(data: {
         }
     }
     // --- 设置缓存 ---
-    if (data.res && (cacheTTL > 0)) {
+    if (data.res && !data.res.headersSent && (cacheTTL > 0)) {
         data.res.setHeader('expires', lTime.format(0, 'D, d M Y H:i:s', Date.now() + cacheTTL * 1000) + ' GMT');
         data.res.setHeader('cache-control', 'max-age=' + cacheTTL.toString());
     }
@@ -450,77 +452,213 @@ export async function run(data: {
     // --- 判断返回值 ---
     if (rtn === undefined || typeof rtn === 'boolean' || rtn === null) {
         if (data.res) {
-            if (data.res.getHeader('location')) {
-                data.res.writeHead(302);
+            if (data.res.headersSent) {
+                // --- 已经自行输出过 writeHead，可能自行处理了内容，如 pipe，则不再 writeHead ---
             }
             else {
-                data.res.writeHead(httpCode);
+                if (data.res.getHeader('location')) {
+                    data.res.writeHead(302);
+                }
+                else {
+                    data.res.writeHead(httpCode);
+                }
             }
-            data.res.end('');
+            if (!data.res.writableEnded) {
+                data.res.end('');
+            }
         }
         else {
             data.socket!.end('');
         }
         return true;
     }
-    if (typeof rtn === 'string') {
+    if (typeof rtn === 'string' || rtn instanceof Buffer) {
         // --- 返回的是纯字符串，直接输出 ---
         if (data.res) {
-            if (!data.res.getHeader('content-type')) {
-                data.res.setHeader('content-type', 'text/html; charset=utf-8');
+            /** --- 当前的压缩对象 --- */
+            let compress: lZlib.ICompress | null = null;
+            if (!data.res.headersSent) {
+                if (!data.res.getHeader('content-type')) {
+                    data.res.setHeader('content-type', 'text/html; charset=utf-8');
+                }
+                if (Buffer.byteLength(rtn) >= 1024) {
+                    compress = lZlib.createCompress(data.req.headers['accept-encoding'] as string ?? '');
+                    if (compress) {
+                        data.res.setHeader('content-encoding', compress.type);
+                    }
+                }
+                data.res.writeHead(httpCode);
             }
-            data.res.writeHead(httpCode);
-            data.res.end(rtn);
+            if (!data.res.writableEnded) {
+                if (compress) {
+                    compress.compress.write(rtn);
+                    compress.compress.pipe(data.res);
+                    compress.compress.end();
+                }
+                else {
+                    data.res.end(rtn);
+                }
+            }
         }
         else {
             data.socket!.end(rtn);
         }
     }
-    else if (rtn instanceof Buffer) {
-        // --- 返回的是个 buffer ---
+    else if (rtn instanceof stream.Readable || rtn instanceof lResponse.Response) {
+        // --- 返回的是流，那就以管道的形式输出 ---
+        const stm = rtn instanceof stream.Readable ? rtn : rtn.getStream();
         if (data.res) {
-            if (!data.res.getHeader('content-type')) {
-                data.res.setHeader('content-type', 'text/html; charset=utf-8');
+            /** --- 当前的压缩对象 --- */
+            let compress: lZlib.ICompress | null = null;
+            if (!data.res.headersSent) {
+                if (!data.res.getHeader('content-type')) {
+                    data.res.setHeader('content-type', 'text/html; charset=utf-8');
+                }
+                compress = lZlib.createCompress(data.req.headers['accept-encoding'] as string ?? '');
+                if (compress) {
+                    data.res.setHeader('content-encoding', compress.type);
+                }
+                data.res.writeHead(httpCode);
             }
-            data.res.writeHead(httpCode);
-            data.res.end(rtn);
+            if (!data.res.writableEnded) {
+                if (compress) {
+                    stm.pipe(compress.compress).pipe(data.res);
+                }
+                else {
+                    stm.pipe(data.res);
+                }
+            }
         }
         else {
-            data.socket!.end(rtn);
+            stm.pipe(data.socket!);
         }
     }
     else if (typeof rtn === 'object') {
-        // --- 返回的是数组，那么代表是 JSON，以 JSON 形式输出 ---
-        if (data.res) {
-            data.res.setHeader('content-type', 'application/json; charset=utf-8');
-            data.res.writeHead(httpCode);
-        }
+        // --- 返回的是数组，那么代表可能是 JSON，可能是对象序列 ---
         if (Array.isArray(rtn)) {
-            // --- [0, 'xxx'] 模式 ---
-            const json: Record<string, any> = { 'result': rtn[0] };
-            if (rtn[1] !== undefined) {
-                if (typeof rtn[1] === 'object') {
-                    // --- [0, {'xx': 'xx'}] ---
-                    Object.assign(json, rtn[1]);
+            // --- [0, 'xxx'] 模式，或 [string, Readable] 模式 ---
+            if (rtn.length === 0) {
+                // --- 异常 ---
+                if (data.res) {
+                    if (!data.res.headersSent) {
+                        data.res.writeHead(500);
+                    }
+                    if (!data.res.writableEnded) {
+                        data.res.end('<h1>500 Internal server error</h1><hr>Kebab');
+                    }
                 }
                 else {
-                    // --- [0, 'xxx'] ---
-                    json['msg'] = rtn[1];
-                    if (rtn[2] !== undefined) {
-                        Object.assign(json, rtn[2]);
+                    data.socket!.end('500 Internal server error.');
+                }
+            }
+            else {
+                if (typeof rtn[0] === 'number') {
+                    // --- 1. ---
+                    const json: Record<string, any> = { 'result': rtn[0] };
+                    if (rtn[1] !== undefined) {
+                        if (typeof rtn[1] === 'object') {
+                            // --- [0, {'xx': 'xx'}] ---
+                            Object.assign(json, rtn[1]);
+                        }
+                        else {
+                            // --- [0, 'xxx'] ---
+                            json['msg'] = rtn[1];
+                            if (rtn[2] !== undefined) {
+                                Object.assign(json, rtn[2]);
+                            }
+                        }
+                    }
+                    const writeData = JSON.stringify(json);
+                    if (data.res) {
+                        /** --- 当前的压缩对象 --- */
+                        let compress: lZlib.ICompress | null = null;
+                        if (!data.res.headersSent) {
+                            data.res.setHeader('content-type', 'application/json; charset=utf-8');
+                            if (Buffer.byteLength(writeData) >= 1024) {
+                                compress = lZlib.createCompress(data.req.headers['accept-encoding'] as string ?? '');
+                                if (compress) {
+                                    data.res.setHeader('content-encoding', compress.type);
+                                }
+                            }
+                            data.res.writeHead(httpCode);
+                        }
+                        if (!data.res.writableEnded) {
+                            if (compress) {
+                                compress.compress.write(writeData);
+                                compress.compress.pipe(data.res);
+                                compress.compress.end();
+                            }
+                            else {
+                                data.res.end(writeData);
+                            }
+                        }
+                    }
+                    else {
+                        data.socket!.end(writeData);
+                    }
+                }
+                else {
+                    // --- 2. 字符串与 Readable 的组合 ---
+                    if (data.res) {
+                        /** --- 当前的压缩对象 --- */
+                        let compress: lZlib.ICompress | null = null;
+                        if (!data.res.headersSent) {
+                            if (!data.res.getHeader('content-type')) {
+                                data.res.setHeader('content-type', 'text/html; charset=utf-8');
+                            }
+                            compress = lZlib.createCompress(data.req.headers['accept-encoding'] as string ?? '');
+                            if (compress) {
+                                data.res.setHeader('content-encoding', compress.type);
+                            }
+                            data.res.writeHead(httpCode);
+                        }
+                        if (!data.res.writableEnded) {
+                            const passThrough = new stream.PassThrough();
+                            // --- 先进行 pipe 绑定，之后 write 或 pipe 进 pass 的数据，直接就可以消费 ---
+                            if (compress) {
+                                passThrough.pipe(compress.compress).pipe(data.res);
+                            }
+                            else {
+                                passThrough.pipe(data.res);
+                            }
+                            await lCore.passThroughAppend(passThrough, rtn);
+                        }
+                    }
+                    else {
+                        // --- socket ---
+                        const passThrough = new stream.PassThrough();
+                        passThrough.pipe(data.socket!);
+                        await lCore.passThroughAppend(passThrough, rtn);
                     }
                 }
             }
-            if (data.res) {
-                data.res.end(JSON.stringify(json));
-            }
-            else {
-                data.socket!.end(JSON.stringify(json));
-            }
         }
         else {
+            // --- 直接是个 json 对象 ---
+            const writeData = JSON.stringify(rtn);
             if (data.res) {
-                data.res.end(JSON.stringify(rtn));
+                /** --- 当前的压缩对象 --- */
+                let compress: lZlib.ICompress | null = null;
+                if (!data.res.headersSent) {
+                    data.res.setHeader('content-type', 'application/json; charset=utf-8');
+                    if (Buffer.byteLength(writeData) >= 1024) {
+                        compress = lZlib.createCompress(data.req.headers['accept-encoding'] as string ?? '');
+                        if (compress) {
+                            data.res.setHeader('content-encoding', compress.type);
+                        }
+                    }
+                    data.res.writeHead(httpCode);
+                }
+                if (!data.res.writableEnded) {
+                    if (compress) {
+                        compress.compress.write(writeData);
+                        compress.compress.pipe(data.res);
+                        compress.compress.end();
+                    }
+                    else {
+                        data.res.end(writeData);
+                    }
+                }
             }
             else {
                 data.socket!.end(JSON.stringify(rtn));
@@ -528,9 +666,14 @@ export async function run(data: {
         }
     }
     else {
+        // --- 异常 ---
         if (data.res) {
-            data.res.writeHead(500);
-            data.res.end('<h1>500 Internal server error</h1><hr>Kebab');
+            if (!data.res.headersSent) {
+                data.res.writeHead(500);
+            }
+            if (!data.res.writableEnded) {
+                data.res.end('<h1>500 Internal server error</h1><hr>Kebab');
+            }
         }
         else {
             data.socket!.end('500 Internal server error.');

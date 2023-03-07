@@ -4,6 +4,13 @@
 
 [繁體中文](./CHANGELOG.tc.md) | [English](./CHANGELOG.md)
 
+## 1.0.1
+
+[+] 控制器新增 Buffer、stream.Readable、lResponse.Response 以及以上三种为 T 的组合 Array<T> 返回类型。  
+[+] Core 类新增 passThroughAppend 方法。  
+[+] 控制器返回值输出默认会进行压缩，压缩算法根据用户请求的头部来自适应。  
+[+] Net Response 新增 getStream 方法。
+
 ## 1.0.0
 
 [\*] 大量优化。
