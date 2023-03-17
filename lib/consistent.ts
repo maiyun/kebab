@@ -1,7 +1,7 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2022-09-12 10:51:16
- * Last: 2022-09-12 10:51:20
+ * Last: 2022-09-12 10:51:20, 2023-3-17 10:52:04
  */
 import * as crypto from '~/lib/crypto';
 
@@ -167,4 +167,18 @@ export function hash(val: string | number): number {
         ((bKey.charCodeAt(1) & 0xFF) << 8) |
         (bKey.charCodeAt(0) & 0xFF);
     return res & 0xffffffff;
+}
+
+/**
+ * --- 获取区间节点系列 ---
+ * @param min 最小值（含）
+ * @param max 最大值（含）
+ * @param pre 前导
+ */
+export function getRange(min: number, max: number, pre: string = ''): string[] {
+    const ls: string[] = [];
+    for (let i = min; i <= max; ++i) {
+        ls.push(pre + i.toString());
+    }
+    return ls;
 }
