@@ -119,6 +119,19 @@ export class Jwt {
     }
 
     /**
+     * --- 清除 cookie，仅仅清除 cookie，jwt 并不会失效 ---
+     */
+    public clearCookie(): void {
+        if (this._auth) {
+            return;
+        }
+        lCore.setCookie(this._ctr, this._name, '', {
+            'ttl': 0,
+            'ssl': this._ssl
+        });
+    }
+
+    /**
      * --- 销毁 jwt，其实就是将 token block 信息写入 redis，如果没有 redis 则不能销毁，返回数组代表销毁成功的 token 和原 exp，否则失败返回 false ---
      */
     public async destory(): Promise<{ token: string; exp: number; } | boolean> {

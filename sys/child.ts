@@ -42,7 +42,7 @@ let httpServer: http.Server;
 let http2Server: http2.Http2SecureServer;
 
 /** --- 当前使用中的连接 --- */
-let linkCount: number = 0;
+const linkCount: Record<string, number> = {};
 
 /**
  * --- 最终调用执行的函数块，创建 http 服务器等 ---
@@ -99,17 +99,31 @@ async function run(): Promise<void> {
     }, function(req: http2.Http2ServerRequest, res: http2.Http2ServerResponse): void {
         req.setTimeout(30 * 1000);
         (async function() {
-            ++linkCount;
+            const key = (req.headers[':authority'] ?? '') + req.url;
+            if (!linkCount[key]) {
+                linkCount[key] = 0;
+            }
+            ++linkCount[key];
             await requestHandler(req, res, true);
-            --linkCount;
+            --linkCount[key];
+            if (!linkCount[key]) {
+                delete linkCount[key];
+            }
         })().catch(function(e) {
             console.error('[child] [http2] [request]', e);
         });
     }).on('upgrade', function(req: http.IncomingMessage, socket: tls.TLSSocket): void {
         (async function() {
-            ++linkCount;
+            const key = (req.headers['host'] ?? '') + (req.url ?? '');
+            if (!linkCount[key]) {
+                linkCount[key] = 0;
+            }
+            ++linkCount[key];
             await upgradeHandler(req, socket, true);
-            --linkCount;
+            --linkCount[key];
+            if (!linkCount[key]) {
+                delete linkCount[key];
+            }
         })().catch(function(e) {
             console.error('[child] [http2] [upgrade]', e);
         });
@@ -117,17 +131,31 @@ async function run(): Promise<void> {
     httpServer = http.createServer(function(req: http.IncomingMessage, res: http.ServerResponse): void {
         req.setTimeout(30 * 1000);
         (async function() {
-            ++linkCount;
+            const key = (req.headers['host'] ?? '') + (req.url ?? '');
+            if (!linkCount[key]) {
+                linkCount[key] = 0;
+            }
+            ++linkCount[key];
             await requestHandler(req, res, false);
-            --linkCount;
+            --linkCount[key];
+            if (!linkCount[key]) {
+                delete linkCount[key];
+            }
         })().catch(function(e) {
             console.error('[child] [http] [request]', e);
         });
     }).on('upgrade', function(req: http.IncomingMessage, socket: stream.Duplex): void {
         (async function() {
-            ++linkCount;
+            const key = (req.headers['host'] ?? '') + (req.url ?? '');
+            if (!linkCount[key]) {
+                linkCount[key] = 0;
+            }
+            ++linkCount[key];
             await upgradeHandler(req, socket, false);
-            --linkCount;
+            --linkCount[key];
+            if (!linkCount[key]) {
+                delete linkCount[key];
+            }
         })().catch(function(e) {
             console.error('[child] [http] [upgrade]', e);
         });
@@ -425,11 +453,15 @@ process.on('message', function(msg: any) {
                 clearInterval(hbTimer);
                 // --- 等待连接全部断开 ---
                 while (true) {
-                    if (linkCount === 0) {
+                    if (!Object.keys(linkCount).length) {
                         break;
                     }
                     // --- 有长连接，等待中 ---
-                    console.log(`[child] Worker ${process.pid} busy, there are ${linkCount} connections.`);
+                    const str: string[] = [];
+                    for (const key in linkCount) {
+                        str.push(key + ':' + linkCount[key].toString());
+                    }
+                    console.log(`[child] Worker ${process.pid} busy: ${str.join(',')}.`);
                     await lCore.sleep(5000);
                 }
                 // --- 链接全部断开 ---
