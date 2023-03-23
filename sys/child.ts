@@ -462,6 +462,17 @@ process.on('message', function(msg: any) {
                         str.push(key + ':' + linkCount[key].toString());
                     }
                     console.log(`[child] Worker ${process.pid} busy: ${str.join(',')}.`);
+                    await lCore.log({
+                        'path': '',
+                        'urlFull': '',
+                        'hostname': '',
+                        'req': null,
+                        'get': {},
+                        'post': {},
+                        'cookie': {},
+                        'headers': {},
+                        'input': ''
+                    }, `[child] Worker ${process.pid} busy: ${str.join(',')}.`, '-error');
                     await lCore.sleep(5000);
                 }
                 // --- 链接全部断开 ---
