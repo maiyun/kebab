@@ -1687,11 +1687,14 @@ JSON.stringify(this._jwt);</pre>`);
         echo.push(JSON.stringify(this._jwt));
 
         this._jwt['test'] = 'a';
-        jwt.renew();
+        const value = jwt.renew();
         echo.push(`<pre>this._jwt['test'] = 'a';
-jwt.renew();
+const value = jwt.renew();
 JSON.stringify(this._jwt);</pre>`);
         echo.push(JSON.stringify(this._jwt));
+
+        echo.push(`<pre>JSON.stringify(value);</pre>`);
+        echo.push(JSON.stringify(value));
 
         const token = this._jwt['token'];
         const rtn = await jwt.destory();
