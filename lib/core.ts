@@ -150,16 +150,24 @@ export function unconvert62(n: string): bigint {
  */
 export function purify(text: string): string {
     text = '>' + text + '<';
-    const scripts: string[] = [];
-    let num: number = -1;
+    const keepScripts: string[] = [];
+    const keepPres: string[] = [];
+    let nums: number = -1;
+    let nump: number = -1;
     text = text.replace(/<!--([\s\S]*?)-->/g, '').replace(/<script[\s\S]+?<\/script>/g, function(t: string): string {
-        scripts.push(t);
+        keepScripts.push(t);
         return '[SCRIPT]';
+    }).replace(/<pre[\s\S]+?<\/pre>/g, function(t: string): string {
+        keepPres.push(t);
+        return '[PRE]';
     }).replace(/>([\s\S]*?)</g, function(t: string, t1: string): string {
         return '>' + t1.replace(/\t|\r\n| {2}/g, '').replace(/\n|\r/g, '') + '<';
     }).replace(/\[SCRIPT\]/g, function(): string {
-        ++num;
-        return scripts[num];
+        ++nums;
+        return keepScripts[nums];
+    }).replace(/\[PRE\]/g, function(): string {
+        ++nump;
+        return keepPres[nump];
     });
     return text.slice(1, -1);
 }
