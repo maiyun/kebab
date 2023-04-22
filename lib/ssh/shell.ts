@@ -1,19 +1,17 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2019-6-8 22:13
- * Last: 2020-4-10 16:08:32, 2022-12-30 00:03:40
+ * Last: 2020-4-10 16:08:32, 2022-12-30 00:03:40, 2023-4-22 21:06:57
  */
 import * as ssh2 from 'ssh2';
-import * as stream from 'stream';
 import * as lCore from '~/lib/core';
 
-export class Connection extends stream.Duplex {
+export class Connection {
 
     /** --- 连接对象 --- */
     private readonly _client: ssh2.ClientChannel;
 
     public constructor(stream: ssh2.ClientChannel) {
-        super();
         this._client = stream;
     }
 
@@ -24,7 +22,7 @@ export class Connection extends stream.Duplex {
      */
     public send(cmd: string | Buffer, encoding?: BufferEncoding): Promise<boolean> {
         return new Promise((resolve) => {
-            this.write(cmd, encoding, function(err) {
+            this._client.write(cmd, encoding, function(err) {
                 if (err) {
                     resolve(false);
                 }
@@ -58,7 +56,7 @@ export class Connection extends stream.Duplex {
      */
     public close(cmd?: string | Buffer, encoding?: BufferEncoding): Promise<void> {
         return new Promise((resolve) => {
-            this.end(cmd, encoding, function() {
+            this._client.end(cmd, encoding, function() {
                 resolve();
             });
         });
@@ -89,36 +87,10 @@ export class Connection extends stream.Duplex {
     }
 
     /**
-     * --- 重写的 write 方法 ---
-     * @param chunk 要发送的数据
-     * @param encoding 编码
-     * @param callback 回调
+     * --- 获取响应读取流对象 ---
      */
-    // eslint-disable-next-line @typescript-eslint/naming-convention
-    public _write(chunk: string | Buffer, encoding?: BufferEncoding, callback?: (error?: Error | null) => void): void {
-        this._client.write(chunk, encoding, callback);
-    }
-
-    /**
-     * --- 重写的 read 方法 ---
-     * @param size 读取长度
-     */
-    // eslint-disable-next-line @typescript-eslint/naming-convention
-    public _read(size?: number): void {
-        if (this._client.read() !== null) {
-            this.push(this._client.read(size));
-        }
-    }
-
-    /**
-     * --- 用户调用 end 后触发的事件 ---
-     * @param chunk 命令
-     * @param encoding 编码
-     * @param cb 回调
-     */
-    // eslint-disable-next-line @typescript-eslint/naming-convention
-    public _final(chunk?: object, encoding?: BufferEncoding, cb?: () => void): void {
-        this._client.end(chunk, encoding, cb);
+    public getStream(): ssh2.ClientChannel {
+        return this._client;
     }
 
 }
