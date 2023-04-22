@@ -150,7 +150,7 @@ export class Ctr {
         return true;
     }
 
-    public onData(val: string): string | Promise<string>;
+    public onData(val: string): boolean | object | string | null | Promise<boolean | object | string | null>;
     /**
      * --- WebSocket 下会自动被调用的事件，可重写此方法 ---
      */
