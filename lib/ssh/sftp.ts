@@ -1,7 +1,7 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2019-6-10 12:06
- * Last: 2020-4-11 09:28:11, 2022-09-11 17:15:38
+ * Last: 2020-4-11 09:28:11, 2022-09-11 17:15:38, 2023-4-24 21:43:42
  */
 import * as stream from 'stream';
 import * as ssh2 from 'ssh2';
@@ -218,7 +218,7 @@ export class Connection {
      */
     public async isDir(path: string): Promise<ssh2.Stats | false> {
         const pstats = await this.stats(path);
-        if (!pstats || !pstats.isDirectory()) {
+        if (!pstats?.isDirectory()) {
             return false;
         }
         return pstats;
@@ -230,7 +230,7 @@ export class Connection {
      */
     public async isFile(path: string): Promise<ssh2.Stats | false> {
         const pstats = await this.stats(path);
-        if (!pstats || !pstats.isFile()) {
+        if (!pstats?.isFile()) {
             return false;
         }
         return pstats;
@@ -496,6 +496,13 @@ export class Connection {
             this._path += '/';
         }
         return this._path;
+    }
+
+    /**
+     * --- 关闭当前频道 ---
+     */
+    public close(): void {
+        this._client.end();
     }
 
 }
