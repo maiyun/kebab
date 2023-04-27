@@ -1,7 +1,7 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2019-5-3 23:54
- * Last: 2020-3-31 15:01:07, 2020-4-9 22:28:50, 2022-07-22 14:19:46, 2022-9-29 22:11:07
+ * Last: 2020-3-31 15:01:07, 2020-4-9 22:28:50, 2022-07-22 14:19:46, 2022-9-29 22:11:07, 2023-4-25 03:39:14
  */
 import * as http2 from 'http2';
 import * as url from 'url';
@@ -109,8 +109,18 @@ async function run(): Promise<void> {
             if (!linkCount[key]) {
                 delete linkCount[key];
             }
-        })().catch(function(e) {
-            console.error('[child] [http2] [request]', e);
+        })().catch(async function(e) {
+            await lCore.log({
+                'path': '',
+                'urlFull': '',
+                'hostname': '',
+                'req': req,
+                'get': {},
+                'post': {},
+                'cookie': {},
+                'headers': {},
+                'input': ''
+            }, '[child][http2][request]' + JSON.stringify((e.stack as string)).slice(1, -1), '-error');
         });
     }).on('upgrade', function(req: http.IncomingMessage, socket: tls.TLSSocket): void {
         (async function() {
@@ -141,8 +151,18 @@ async function run(): Promise<void> {
             if (!linkCount[key]) {
                 delete linkCount[key];
             }
-        })().catch(function(e) {
-            console.error('[child] [http] [request]', e);
+        })().catch(async function(e) {
+            await lCore.log({
+                'path': '',
+                'urlFull': '',
+                'hostname': '',
+                'req': req,
+                'get': {},
+                'post': {},
+                'cookie': {},
+                'headers': {},
+                'input': ''
+            }, '[child][http][request]' + JSON.stringify((e.stack as string)).slice(1, -1), '-error');
         });
     }).on('upgrade', function(req: http.IncomingMessage, socket: stream.Duplex): void {
         (async function() {
@@ -156,8 +176,18 @@ async function run(): Promise<void> {
             if (!linkCount[key]) {
                 delete linkCount[key];
             }
-        })().catch(function(e) {
-            console.error('[child] [http] [upgrade]', e);
+        })().catch(async function(e) {
+            await lCore.log({
+                'path': '',
+                'urlFull': '',
+                'hostname': '',
+                'req': req,
+                'get': {},
+                'post': {},
+                'cookie': {},
+                'headers': {},
+                'input': ''
+            }, '[child][http][upgrade]' + JSON.stringify((e.stack as string)).slice(1, -1), '-error');
         });
     }).listen(config.httpPort);
 }

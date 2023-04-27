@@ -431,6 +431,9 @@ export async function log(opt: sCtr.Ctr | ILogOptions, msg: string, fend: string
         urlFull = opt.urlFull;
         hostname = opt.hostname;
     }
+    if (hostname === '') {
+        hostname = 'system';
+    }
 
     const realIp = req?.socket.remoteAddress ?? '';
     const clientIp = req ? ip(headers, req) : '';
