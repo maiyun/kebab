@@ -1,7 +1,7 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2022-07-22 13:44:12
- * Last: 2022-07-22 13:44:12
+ * Last: 2022-07-22 13:44:12, 2023-5-2 21:12:32
  */
 import * as url from 'url';
 import * as http from 'http';
@@ -11,8 +11,6 @@ export interface IVhost {
     readonly 'name': string;
     readonly 'domains': string[];
     readonly 'root': string;
-    readonly 'cert': string;
-    readonly 'key': string;
     readonly 'remark': string;
 }
 

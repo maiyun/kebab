@@ -3,8 +3,6 @@
         "name": "default",
         "domains": ["*"],
         "root": "default/",
-        "cert": "default/g7syhzh1.cer",
-        "key": "default/g7syhzh1.key",
         "remark": ""
     }
 ]

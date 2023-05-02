@@ -1,13 +1,14 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2019-5-3 23:54
- * Last: 2020-3-31 15:01:07, 2020-4-9 22:28:50, 2022-07-22 14:19:46, 2022-9-29 22:11:07, 2023-4-25 03:39:14
+ * Last: 2020-3-31 15:01:07, 2020-4-9 22:28:50, 2022-07-22 14:19:46, 2022-9-29 22:11:07, 2023-5-1 18:26:57
  */
 import * as http2 from 'http2';
 import * as url from 'url';
 import * as tls from 'tls';
 import * as http from 'http';
 import * as stream from 'stream';
+import * as crypto from 'crypto';
 // --- 库和定义 ---
 import * as fs from '~/lib/fs';
 import * as lCore from '~/lib/core';
@@ -29,8 +30,14 @@ const hbTimer = setInterval(function() {
     });
 }, 10000);
 
-/** --- 已加载的证书列表（name: ctx） --- */
-let certList: Record<string, tls.SecureContext> = {};
+/** --- 加载的证书列表（path: { sc, cert }） --- */
+const certList: Array<{
+    'sc': tls.SecureContext;
+    'cert': crypto.X509Certificate;
+}> = [];
+
+/** --- server: index --- */
+let certHostIndex: Record<string, any> = {};
 
 /** --- 当前的虚拟主机配置列表 - 读取于 conf/vhost/*.json --- */
 let vhosts: types.IVhost[] = [];
@@ -66,33 +73,22 @@ async function run(): Promise<void> {
     http2Server = http2.createSecureServer({
         // eslint-disable-next-line @typescript-eslint/naming-convention
         'SNICallback': (servername, cb) => {
-            (async () => {
-                // --- 查找 servername ---
-                for (const vhost of vhosts) {
-                    if (!vhost.domains.includes('*') && !vhost.domains.includes(servername)) {
-                        continue;
-                    }
-                    // --- 找到 ---
-                    if (certList[vhost.name]) {
-                        cb(null, certList[vhost.name]);
-                        return;
-                    }
-                    // --- 没找到 ---
-                    const key = await fs.getContent(lText.isRealPath(vhost.key) ? vhost.key : def.CERT_PATH + vhost.key, 'utf8');
-                    const cert = await fs.getContent(lText.isRealPath(vhost.cert) ? vhost.cert : def.CERT_PATH + vhost.cert, 'utf8');
-                    if (!cert || !key) {
-                        return;
-                    }
-                    const ctx = tls.createSecureContext({
-                        'key': key,
-                        'cert': cert
-                    });
-                    certList[vhost.name] = ctx;
-                    cb(null, ctx);
+            console.log('IN', servername);
+            const i = certHostIndex[servername];
+            if (i !== undefined) {
+                cb(null, certList[i].sc);
+                return;
+            }
+            // --- 查找 servername ---
+            for (let i = 0; i < certList.length; ++i) {
+                if (!certList[i].cert.checkHost(servername)) {
+                    continue;
                 }
-            })().catch((e) => {
-                console.log('child.run', e);
-            });
+                // --- 找到 ---
+                cb(null, certList[i].sc);
+                certHostIndex[servername] = i;
+                return;
+            }
         },
         'ciphers': 'ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA:ECDHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA256:DHE-RSA-AES256-SHA:ECDHE-ECDSA-DES-CBC3-SHA:ECDHE-RSA-DES-CBC3-SHA:EDH-RSA-DES-CBC3-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:DES-CBC3-SHA:!DSS',
         'allowHTTP1': true
@@ -437,7 +433,7 @@ async function upgradeHandler(req: http.IncomingMessage, socket: stream.Duplex, 
 }
 
 /**
- * --- 加载/重载 vhosts 信息、清空证书信息、清空全局 config。（清除动态 kebab.json 信息、data 信息、语言包信息） ---
+ * --- 加载/重载 vhosts 信息、清空证书信息、清空全局 config、重新加载证书。（清除动态 kebab.json 信息、data 信息、语言包信息） ---
  */
 async function reload(): Promise<void> {
     // --- 清除全局 config，下次 run 时就会重新加载了（/conf/config.json） ---
@@ -460,8 +456,34 @@ async function reload(): Promise<void> {
             vhosts.push(item);
         }
     }
-    // --- 重新加载证书对（清空，下次会自动加载新的） ---
-    certList = {};
+    // --- 重新加载证书对 ---
+    certList.length = 0;
+    try {
+        const certConfig = await fs.getContent(def.CONF_PATH + 'cert.json', 'utf8');
+        if (certConfig) {
+            const certs = JSON.parse(certConfig);
+            for (const item of certs) {
+                const key = await fs.getContent(lText.isRealPath(item.key) ? item.key : def.CERT_PATH + item.key, 'utf8');
+                const cert = await fs.getContent(lText.isRealPath(item.cert) ? item.cert : def.CERT_PATH + item.cert, 'utf8');
+                if (!cert || !key) {
+                    continue;
+                }
+                const certo = new crypto.X509Certificate(cert);
+                const sc = tls.createSecureContext({
+                    'key': key,
+                    'cert': cert
+                });
+                certList.push({
+                    'cert': certo,
+                    'sc': sc
+                });
+            }
+        }
+    }
+    catch {
+        // --- NOTHING ---
+    }
+    certHostIndex = {};
     // --- 其他操作 ---
     route.clearKebabConfigs();
     ctr.clearLocaleData();
