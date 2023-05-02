@@ -73,7 +73,6 @@ async function run(): Promise<void> {
     http2Server = http2.createSecureServer({
         // eslint-disable-next-line @typescript-eslint/naming-convention
         'SNICallback': (servername, cb) => {
-            console.log('IN', servername);
             const i = certHostIndex[servername];
             if (i !== undefined) {
                 cb(null, certList[i].sc);
