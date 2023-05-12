@@ -206,6 +206,7 @@ async function requestHandler(
     const vhost = getVhostByHostname(uri.hostname ?? '');
     if (!vhost) {
         const text = '<h1>Kebab: No permissions</h1>host: ' + (req.headers[':authority'] as string | undefined ?? req.headers['host'] ?? '') + '<br>url: ' + (lText.htmlescape(req.url ?? ''));
+        res.setHeader('content-type', 'text/html; charset=utf-8');
         res.setHeader('content-length', Buffer.byteLength(text));
         res.writeHead(403);
         res.end(text);
