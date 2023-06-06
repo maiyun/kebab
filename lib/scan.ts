@@ -28,13 +28,13 @@ import * as sCtr from '~/sys/ctr';
 /** --- Scan 设置的选项 --- */
 export interface IOptions {
     'ttl'?: number;
-    'sqlPre'?: string;
+    'sqlPre'?: sCtr.Ctr | string;
     'name'?: string;
 }
 
 /** --- scanned 函数的选项 --- */
 export interface IStaticOptions {
-    'sqlPre'?: string;
+    'sqlPre'?: sCtr.Ctr | string;
     'name'?: string;
 }
 
@@ -52,7 +52,7 @@ export class Scan {
     /** --- 有效期，默认 5 分钟 --- */
     private _ttl = 60 * 5;
 
-    public constructor(ctr: sCtr.Ctr, link: lDb.Pool | lKv.Pool, token?: string, opt: IOptions = {}) {
+    public constructor(link: lDb.Pool | lKv.Pool, token?: string, opt: IOptions = {}) {
         if (opt.ttl !== undefined) {
             this._ttl = opt.ttl;
         }
@@ -61,7 +61,7 @@ export class Scan {
         }
         this._link = link;
         if (link instanceof lDb.Pool) {
-            this._sql = lSql.get(ctr, opt.sqlPre);
+            this._sql = lSql.get(opt.sqlPre);
         }
         if (token) {
             this._token = token;
@@ -241,13 +241,12 @@ export class Scan {
 
 /**
  * -- 创建 Scan 对象 ---
- * @param ctr
  * @param link
  * @param token Token
  * @param opt
  */
-export async function get(ctr: sCtr.Ctr, link: lDb.Pool | lKv.Pool, token?: string, opt: IOptions = {}): Promise<Scan> {
-    const scan = new Scan(ctr, link, token, opt);
+export async function get(link: lDb.Pool | lKv.Pool, token?: string, opt: IOptions = {}): Promise<Scan> {
+    const scan = new Scan(link, token, opt);
     if (!token) {
         await scan.createToken();
     }
@@ -261,7 +260,6 @@ export async function get(ctr: sCtr.Ctr, link: lDb.Pool | lKv.Pool, token?: stri
  * @param opt
  */
 export async function scanned(
-    ctr: sCtr.Ctr,
     link: lDb.Pool | lKv.Pool,
     token: string,
     opt: IStaticOptions = {}
@@ -270,7 +268,7 @@ export async function scanned(
     const name = opt.name ?? 'scan';
     if (link instanceof lDb.Pool) {
         // --- Db ---
-        const sql = lSql.get(ctr, opt.sqlPre);
+        const sql = lSql.get(opt.sqlPre);
         sql.update(name, {
             'time_update': time
         }).where([
@@ -310,20 +308,18 @@ export async function scanned(
 
 /**
  * --- 将数据写入 token，通常在客户的逻辑下去写，服务器会 poll 到 ---
- * @param ctr
  * @param link
  * @param token
  * @param data
  * @param opt
  */
 export async function setData(
-    ctr: sCtr.Ctr,
     link: lDb.Pool | lKv.Pool,
     token: string,
     data: Record<string, any> | string | number,
     opt: IStaticOptions = {}
 ): Promise<boolean> {
-    if (Number.isInteger(data)) {
+    if (typeof data === 'number' && Number.isInteger(data)) {
         if (data >= -3 && data <= 1) {
             return false;
         }
@@ -332,7 +328,7 @@ export async function setData(
     const name = opt.name ?? 'scan';
     if (link instanceof lDb.Pool) {
         // --- Db ---
-        const sql = lSql.get(ctr, opt.sqlPre);
+        const sql = lSql.get(opt.sqlPre);
         sql.update(name, {
             'data': JSON.stringify(data)
         }).where([

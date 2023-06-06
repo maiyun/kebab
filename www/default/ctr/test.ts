@@ -395,15 +395,19 @@ function postFd() {
         }
 
         if (this._get['action'] === 'remove') {
-            await mSession.removeByWhere(this, db, [
+            await mSession.removeByWhere(db, [
                 ['token', 'LIKE', 'test_%']
-            ]);
+            ], {
+                'pre': this
+            });
             return this._location('test/mod-session');
         }
         else {
 
             const time = lTime.stamp();
-            const session = mSession.getCreate<mSession>(this, db);
+            const session = mSession.getCreate<mSession>(db, {
+                'ctr': this
+            });
             session.set({
                 'data': JSON.stringify({ 'test': lCore.random(4) }),
                 'time_update': time,
@@ -412,7 +416,9 @@ function postFd() {
             const result = await session.create();
 
             echo.push(`<pre>const time = lTime.stamp();
-const session = mSession.getCreate(this, db);
+const session = mSession.getCreate(db, {
+    'ctr': this
+});
 session.set({
     'data': JSON.stringify({'test': lText.random(4)}),
     'time_update': time,
@@ -430,13 +436,17 @@ JSON.stringify(result))</pre>` + JSON.stringify(result));
 
             // --- explain ---
 
-            const ls = mSession.where<mSession>(this, db, [
+            const ls = mSession.where<mSession>(db, [
                 ['time_update', '>', time - 60 * 5]
-            ]);
+            ], {
+                'ctr': this
+            });
             const r = await ls.explain();
-            echo.push(`<pre>const ls = mSession.where<mSession>(this, db, [
+            echo.push(`<pre>const ls = mSession.where<mSession>(db, [
     ['time_update', '>', time - 60 * 5]
-]);
+], {
+    'ctr': this
+});
 const r = await ls.explain();</pre>` + lText.htmlescape(JSON.stringify(r)));
 
             const r2 = await ls.explain(true);
@@ -501,7 +511,9 @@ CREATE TABLE \`m_test_data_0\` (
     public async modSplit1(): Promise<void> {
         const db = lDb.get(this);
 
-        const test = mTest.getCreate<mTest>(this, db);
+        const test = mTest.getCreate<mTest>(db, {
+            'ctr': this
+        });
         test.set({
             'name': lCore.random(lCore.rand(8, 32)),
             'time_add': lTime.stamp()
@@ -513,7 +525,9 @@ CREATE TABLE \`m_test_data_0\` (
         const db = lDb.get(this);
 
         const ids: number[] = [];
-        const ls = await mTest.select<mTest>(this, db, ['id']).by('time_add').limit(0, 50).all();
+        const ls = await mTest.select<mTest>(db, ['id'], {
+            'ctr': this
+        }).by('time_add').limit(0, 50).all();
         if (ls) {
             for (const item of ls) {
                 if (!item.id) {
@@ -530,7 +544,8 @@ CREATE TABLE \`m_test_data_0\` (
         // --- 一致性 hash ---
         const index = lConsistent.fast(id.toString(), ['0', '1', '2', '3', '4']);
 
-        const testData = mTestData.getCreate<mTestData>(this, db, {
+        const testData = mTestData.getCreate<mTestData>(db, {
+            'ctr': this,
             'index': index ?? ''
         });
         testData.set({
@@ -1438,9 +1453,9 @@ error: <pre>${JSON.stringify(res.error, null, 4)}</pre>`);
         const s = this._get['s'] ?? 'db';
 
         const echo = [];
-        const scan = await lScan.get(this, link, undefined, { 'ttl': 30 });
+        const scan = await lScan.get(link, undefined, { 'ttl': 30, 'sqlPre': this });
         const token = scan.getToken();
-        echo.push(`<pre>const scan = await lScan.get(this, link, undefined, { 'ttl': 30 });
+        echo.push(`<pre>const scan = await lScan.get(this, link, undefined, { 'ttl': 30, 'sqlPre': this });
 const token = scan.getToken();</pre>
 token: ${token}<br><br>
 Scan status: <b id="status" style="color: red;">Waiting...</b><br>
@@ -1531,7 +1546,9 @@ function confirm() {
             return [0, 'Failed, link can not be connected.'];
         }
 
-        const scan = await lScan.get(this, link, this._post['token']);
+        const scan = await lScan.get(link, this._post['token'], {
+            'sqlPre': this
+        });
         const rtn = await scan.poll();
         switch (rtn) {
             case -3: {
@@ -1555,7 +1572,9 @@ function confirm() {
         if (!link) {
             return [0, 'Failed, link can not be connected.'];
         }
-        if (!await lScan.scanned(this, link, this._post['token'])) {
+        if (!await lScan.scanned(link, this._post['token'], {
+            'sqlPre': this
+        })) {
             return [0, 'Token has expired.'];
         }
         return [1];
@@ -1566,8 +1585,10 @@ function confirm() {
         if (!link) {
             return [0, 'Failed, link can not be connected.'];
         }
-        if (!await lScan.setData(this, link, this._post['token'], {
+        if (!await lScan.setData(link, this._post['token'], {
             'uid': '5'
+        }, {
+            'sqlPre': this
         })) {
             return [0, 'Token has expired.'];
         }
@@ -1733,7 +1754,7 @@ Result:<pre id="result">Nothing.</pre>`);
 
     public sql(): string {
         const echo: string[] = [];
-        const sql = lSql.get(this, 'test_');
+        const sql = lSql.get('test_');
         switch (this._get['type']) {
             case 'insert': {
                 let s = sql.insert('user').values(['name', 'age'], [

@@ -1,7 +1,7 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2019-6-5 22:01:40
- * Last: 2020-3-30 00:11:15, 2022-12-29 00:10:28
+ * Last: 2020-3-30 00:11:15, 2022-12-29 00:10:28, 2023-5-24 18:59:27
  */
 
 /*
@@ -87,7 +87,7 @@ export class Session {
 
         this._link = link;
         if (link instanceof db.Pool) {
-            this._sql = sql.get(ctr, pre ? pre : undefined);
+            this._sql = sql.get(pre ? pre : ctr);
             await this._gc();    // --- 执行 gc ---
         }
 

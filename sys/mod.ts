@@ -1,13 +1,13 @@
 /**
  * Project: Mutton, User: JianSuoQiYue
  * Date: 2019-6-4 21:35
- * Last: 2020-4-14 13:33:51, 2022-07-23 16:01:34, 2022-09-06 22:59:26
+ * Last: 2020-4-14 13:33:51, 2022-07-23 16:01:34, 2022-09-06 22:59:26, 2023-5-24 19:11:37
  */
-import * as sql from '~/lib/sql';
-import * as db from '~/lib/db';
-import * as time from '~/lib/time';
-import * as core from '~/lib/core';
-import * as ctr from '~/sys/ctr';
+import * as lSql from '~/lib/sql';
+import * as lDb from '~/lib/db';
+import * as lTime from '~/lib/time';
+import * as lCore from '~/lib/core';
+import * as sCtr from '~/sys/ctr';
 
 /**
  * --- 开启软更需要在表添加字段：ALTER TABLE `table_name` ADD `time_remove` bigint NOT NULL DEFAULT '0' AFTER `xxx`; ---
@@ -36,21 +36,22 @@ export default class Mod {
     protected _index: string | null = null;
 
     /** --- 数据库连接对象 --- */
-    protected _db!: db.Pool | db.Connection;
+    protected _db!: lDb.Pool | lDb.Connection;
 
     /** --- Sql 对象 --- */
-    protected _sql!: sql.Sql;
+    protected _sql!: lSql.Sql;
 
     /** --- ctr 对象, Mutton: false, Kebab: true --- */
-    protected _ctr!: ctr.Ctr;
+    protected _ctr?: sCtr.Ctr = undefined;
 
     /**
      * --- 构造函数 ---
      * @param ctr Ctr 对象
      * @param opt 选项
      */
-    public constructor(ctr: ctr.Ctr, opt: {
-        'db': db.Pool | db.Connection;
+    public constructor(opt: {
+        'db': lDb.Pool | lDb.Connection;
+        'ctr'?: sCtr.Ctr;
         'index'?: string;
         'row'?: Record<string, any>;
         'select'?: string | string[];
@@ -59,11 +60,11 @@ export default class Mod {
         'pre'?: string;
     }) {
         /** --- 导入 ctr 对象 --- */
-        this._ctr = ctr;
+        this._ctr = opt.ctr;
         /** --- 导入数据库连接 --- */
         this._db = opt.db;
         /** --- 新建 sql 对象 --- */
-        this._sql = sql.get(ctr, opt.pre);
+        this._sql = lSql.get(opt.pre ?? opt.ctr);
         if (opt.index) {
             this._index = opt.index;
         }
@@ -101,20 +102,18 @@ export default class Mod {
 
     /**
      * --- 添加一个序列 ---
-     * @param ctr ctr 对象
      * @param db 数据库对象
      * @param cs 字段列表
      * @param vs 数据列表
      * @param opt 选项
      */
     public static async insert(
-        ctr: ctr.Ctr,
-        db: db.Pool | db.Connection,
+        db: lDb.Pool | lDb.Connection,
         cs: any[] | Record<string, any>,
         vs?: any[] | any[][],
-        opt: { 'pre'?: string; 'index'?: string; } = {}
+        opt: { 'pre'?: sCtr.Ctr | string; 'index'?: string; } = {}
     ): Promise<boolean | null | false> {
-        const sq = sql.get(ctr, opt.pre);
+        const sq = lSql.get(opt.pre);
         sq.insert(this._$table + (opt.index ? ('_' + opt.index) : '')).values(cs, vs);
         const r = await db.execute(sq.getSql(), sq.getData());
         if (r.packet === null) {
@@ -130,38 +129,34 @@ export default class Mod {
 
     /**
      * --- 获取添加一个序列的模拟 SQL ---
-     * @param ctr ctr 对象
      * @param cs 字段列表
      * @param vs 数据列表
      * @param opt 选项
      */
     public static insertSql(
-        ctr: ctr.Ctr,
         cs: any[] | Record<string, any>,
         vs?: any[] | any[][],
-        opt: { 'pre'?: string; 'index'?: string; } = {}
+        opt: { 'pre'?: sCtr.Ctr | string; 'index'?: string; } = {}
     ): string {
-        const sq = sql.get(ctr, opt.pre);
+        const sq = lSql.get(opt.pre);
         sq.insert(this._$table + (opt.index ? ('_' + opt.index) : '')).values(cs, vs);
         return sq.format();
     }
 
     /**
      * --- 插入数据如果唯一键冲突则更新 ---
-     * @param ctr ctr 对象
      * @param db 数据库对象
      * @param data 要插入的数据
      * @param update 要更新的数据
      * @param opt 选项
      */
     public static async insertDuplicate(
-        ctr: ctr.Ctr,
-        db: db.Pool | db.Connection,
+        db: lDb.Pool | lDb.Connection,
         data: any[] | Record<string, any>,
         update: any[],
-        opt: { 'pre'?: string; 'index'?: string; } = {}
+        opt: { 'pre'?: sCtr.Ctr | string; 'index'?: string; } = {}
     ): Promise<boolean | null> {
-        const sq = sql.get(ctr, opt.pre);
+        const sq = lSql.get(opt.pre);
         sq.insert(this._$table + (opt.index ? ('_' + opt.index) : '')).values(data).duplicate(update);
         const r = await db.execute(sq.getSql(), sq.getData());
         if (r.packet === null) {
@@ -177,19 +172,17 @@ export default class Mod {
 
     /**
      * --- 根据条件移除条目 ---
-     * @param ctr ctr 对象
      * @param db 数据库对象
      * @param where 筛选条件
      * @param opt 选项
      */
     public static async removeByWhere(
-        ctr: ctr.Ctr,
-        db: db.Pool | db.Connection,
+        db: lDb.Pool | lDb.Connection,
         where: string | any[] | Record<string, any>,
-        opt: { 'raw'?: boolean; 'pre'?: string; 'index'?: string; } = {}
+        opt: { 'raw'?: boolean; 'pre'?: sCtr.Ctr | string; 'index'?: string; } = {}
     ): Promise<boolean | null> {
-        const tim = time.stamp();
-        const sq = sql.get(ctr, opt.pre);
+        const tim = lTime.stamp();
+        const sq = lSql.get(opt.pre);
         if (this._$soft && !opt.raw) {
             // --- 软删除 ---
             sq.update(this._$table + (opt.index ? ('_' + opt.index) : ''), [{
@@ -226,20 +219,18 @@ export default class Mod {
 
     /**
      * --- 根据条件更新数据 ---
-     * @param ctr ctr 对象
      * @param db 数据库对象
      * @param data 要更新的数据
      * @param where 筛选条件
      * @param opt 选项
      */
     public static async updateByWhere(
-        ctr: ctr.Ctr,
-        db: db.Pool | db.Connection,
+        db: lDb.Pool | lDb.Connection,
         data: any[] | Record<string, any>,
         where: string | any[] | Record<string, any>,
-        opt: { 'raw'?: boolean; 'pre'?: string; 'index'?: string; } = {}
+        opt: { 'raw'?: boolean; 'pre'?: sCtr.Ctr | string; 'index'?: string; } = {}
     ): Promise<boolean | null> {
-        const sq = sql.get(ctr, opt.pre);
+        const sq = lSql.get(opt.pre);
         sq.update(this._$table + (opt.index ? ('_' + opt.index) : ''), data);
         if (this._$soft && !opt.raw) {
             if (typeof where === 'string') {
@@ -275,12 +266,11 @@ export default class Mod {
      * @return LSql
      */
     public static updateByWhereSql(
-        ctr: ctr.Ctr,
         data: any[],
         where: string | any[] | Record<string, any>,
-        opt: { 'raw'?: boolean; 'pre'?: string; 'index'?: string; } = {}
-    ): sql.Sql {
-        const sq = sql.get(ctr, opt.pre);
+        opt: { 'raw'?: boolean; 'pre'?: sCtr.Ctr | string; 'index'?: string; } = {}
+    ): lSql.Sql {
+        const sq = lSql.get(opt.pre);
         sq.update(this._$table + (opt.index ? ('_' + opt.index) : ''), data);
         if (this._$soft && !opt.raw) {
             if (typeof where === 'string') {
@@ -301,19 +291,18 @@ export default class Mod {
 
     /**
      * --- select 自定字段 ---
-     * @param ctr ctr 对象
      * @param db 数据库对象
      * @param c 字段字符串或字段数组
      * @param opt 选项
      */
     public static select<T extends Mod>(
-        ctr: ctr.Ctr,
-        db: db.Pool | db.Connection,
+        db: lDb.Pool | lDb.Connection,
         c: string | string[],
-        opt: { 'pre'?: string; 'index'?: string; } = {}
+        opt: { 'ctr'?: sCtr.Ctr; 'pre'?: string; 'index'?: string; } = {}
     ): T & Record<string, any> {
-        return new this(ctr, {
+        return new this({
             'db': db,
+            'ctr': opt.ctr,
             'pre': opt.pre,
             'select': c,
             'index': opt.index
@@ -322,19 +311,18 @@ export default class Mod {
 
     /**
      * --- 通过 where 条件获取模型 ---
-     * @param ctr ctr 对象
      * @param db 数据库对象
      * @param s 筛选条件数组或字符串
      * @param opt 选项
      */
     public static where<T extends Mod>(
-        ctr: ctr.Ctr,
-        db: db.Pool | db.Connection,
+        db: lDb.Pool | lDb.Connection,
         s: string | any[] | Record<string, any> = '',
-        opt: { 'raw'?: boolean; 'pre'?: string; 'index'?: string; } = {}
+        opt: { 'ctr'?: sCtr.Ctr; 'raw'?: boolean; 'pre'?: string; 'index'?: string; } = {}
     ): T & Record<string, any> {
-        return new this(ctr, {
+        return new this({
             'db': db,
+            'ctr': opt.ctr,
             'pre': opt.pre,
             'where': s,
             'raw': opt.raw,
@@ -344,17 +332,16 @@ export default class Mod {
 
     /**
      * --- 获取创建对象，通常用于新建数据库条目 ---
-     * @param ctr ctr 对象
      * @param db 数据库对象
      * @param opt 选项
      */
     public static getCreate<T extends Mod>(
-        ctr: ctr.Ctr,
-        db: db.Pool | db.Connection,
-        opt: { 'pre'?: string; 'index'?: string; } = {}
+        db: lDb.Pool | lDb.Connection,
+        opt: { 'ctr'?: sCtr.Ctr; 'pre'?: string; 'index'?: string; } = {}
     ): T {
-        return new this(ctr, {
+        return new this({
             'db': db,
+            'ctr': opt.ctr,
             'pre': opt.pre,
             'index': opt.index
         }) as T;
@@ -362,21 +349,20 @@ export default class Mod {
 
     /**
      * --- 根据主键获取对象 ---
-     * @param ctr ctr 对象
      * @param db 数据库对象
      * @param val 主键值
      * @param lock 是否加锁
      * @param opt 选项
      */
     public static find<T extends Mod>(
-        ctr: ctr.Ctr,
-        db: db.Pool | db.Connection,
+        db: lDb.Pool | lDb.Connection,
         val: string | number | null,
         lock: boolean = false,
-        opt: { 'raw'?: boolean; 'pre'?: string; 'index'?: string; } = {}
+        opt: { 'ctr'?: sCtr.Ctr; 'raw'?: boolean; 'pre'?: string; 'index'?: string; } = {}
     ): Promise<false | null | (T & Record<string, any>)> {
-        return (new this(ctr, {
+        return (new this({
             'db': db,
+            'ctr': opt.ctr,
             'pre': opt.pre,
             'where': [{
                 [this._$primary]: val
@@ -388,19 +374,18 @@ export default class Mod {
 
     /**
      * --- 通过 where 条件筛选单条数据 ---
-     * @param ctr ctr 对象
      * @param db 数据库对象
      * @param s 筛选条件数组或字符串
      * @param opt 选项
      */
     public static one<T extends Mod>(
-        ctr: ctr.Ctr,
-        db: db.Pool | db.Connection,
+        db: lDb.Pool | lDb.Connection,
         s: string | any[] | Record<string, any>,
-        opt: { 'raw'?: boolean; 'pre'?: string; 'index'?: string; } = {}
+        opt: { 'ctr'?: sCtr.Ctr; 'raw'?: boolean; 'pre'?: string; 'index'?: string; } = {}
     ): Promise<false | null | (T & Record<string, any>)> {
-        return (new this(ctr, {
+        return (new this({
             'db': db,
+            'ctr': opt.ctr,
             'pre': opt.pre,
             'where': s,
             'raw': opt.raw,
@@ -410,18 +395,16 @@ export default class Mod {
 
     /**
      * --- 根据 where 条件获取主键值列表 ---
-     * @param ctr ctr 对象
      * @param db 数据库对象
      * @param where where 条件
      * @param opt 选项
      */
     public static async primarys(
-        ctr: ctr.Ctr,
-        db: db.Pool | db.Connection,
+        db: lDb.Pool | lDb.Connection,
         where: string | any[] | Record<string, any> = '',
-        opt: { 'raw'?: boolean; 'pre'?: string; 'index'?: string; } = {}
+        opt: { 'ctr'?: sCtr.Ctr; 'raw'?: boolean; 'pre'?: string; 'index'?: string; } = {}
     ): Promise<any[] | false> {
-        const sq = sql.get(ctr, opt.pre);
+        const sq = lSql.get(opt.pre ?? opt.ctr);
         if (this._$soft && !opt.raw) {
             // --- 不包含已删除 ---
             if (typeof where === 'string') {
@@ -502,7 +485,7 @@ export default class Mod {
             table = (cstr._$table as string) + (this._index ? ('_' + this._index) : '');
         }
 
-        let r: db.IPacket | null = null;
+        let r: lDb.IPacket | null = null;
         if ((cstr._$key !== '') && (updates[cstr._$key] === undefined)) {
             let count: number = 0;
             while (true) {
@@ -633,7 +616,7 @@ export default class Mod {
      * @param raw 是否真实移除
      */
     public async remove(raw: boolean = false): Promise<boolean> {
-        const tim = time.stamp();
+        const tim = lTime.stamp();
         const cstr = this.constructor as any;
         if (cstr._$soft && !raw) {
             this._sql.update((cstr._$table as string) + (this._index ? ('_' + this._index) : ''), [{
@@ -690,14 +673,17 @@ export default class Mod {
     public async all(key?: string): Promise<false | this[] | Record<string, this>> {
         const r = await this._db.query(this._sql.getSql(), this._sql.getData());
         if (r.rows === null) {
-            await core.log(this._ctr, '[all, mod] ' + JSON.stringify(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+            if (this._ctr) {
+                await lCore.log(this._ctr, '[all, mod] ' + JSON.stringify(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+            }
             return false;
         }
         if (key) {
             const list: Record<string, this> = {};
             for (const row of r.rows) {
-                const obj = new (this.constructor as any)(this._ctr, {
+                const obj = new (this.constructor as any)({
                     'db': this._db,
+                    'ctr': this._ctr,
                     'pre': this._sql.getPre(),
                     'row': row,
                     'index': this._index
@@ -709,8 +695,9 @@ export default class Mod {
         else {
             const list: this[] = [];
             for (const row of r.rows) {
-                const obj = new (this.constructor as any)(this._ctr, {
+                const obj = new (this.constructor as any)({
                     'db': this._db,
+                    'ctr': this._ctr,
                     'pre': this._sql.getPre(),
                     'row': row,
                     'index': this._index

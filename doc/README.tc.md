@@ -151,7 +151,7 @@ const userList = await User.where<User>(this, db, [
 ### Sql 庫自動增加表前綴和包裹字元「`」”
 
 ```typescript
-ssql.select(['SUM(user.age) age'], 'order').leftJoin('user', {'order.user_id': '#user.id'});
+sql.select(['SUM(user.age) age'], 'order').leftJoin('user', {'order.user_id': '#user.id'});
 ```
 
 將輸出：

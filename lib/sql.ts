@@ -1,7 +1,7 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2019-5-27 20:18:50
- * Last: 2020-3-29 19:37:25, 2022-07-24 22:38:11
+ * Last: 2020-3-29 19:37:25, 2022-07-24 22:38:11, 2023-5-24 18:49:18
  */
 
 // --- 第三方 ---
@@ -651,8 +651,8 @@ export class Sql {
 
 }
 
-export function get(ctr: ctr.Ctr, pre?: string): Sql {
-    return new Sql(pre ?? ctr.getPrototype('_config').sql.pre);
+export function get(ctrPre?: ctr.Ctr | string): Sql {
+    return new Sql(ctrPre instanceof ctr.Ctr ? ctrPre.getPrototype('_config').sql.pre : ctrPre);
 }
 
 /**

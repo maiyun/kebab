@@ -1,7 +1,7 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2019-4-15 13:40
- * Last: 2020-4-13 15:34:45, 2022-09-12 13:10:34
+ * Last: 2020-4-13 15:34:45, 2022-09-12 13:10:34, 2023-5-24 18:29:38
  */
 
 // --- Pool 是使用时必须要一个用户创建一份的，Connection 是池子里获取的 ---
@@ -103,8 +103,8 @@ export class Pool {
     /** --- 当前 Pool 对象的数据库连接信息 --- */
     private readonly _etc: types.IConfigDb;
 
-    public constructor(ctr: ctr.Ctr, etc?: types.IConfigDb) {
-        this._etc = etc ?? ctr.getPrototype('_config').db;
+    public constructor(etc: types.IConfigDb) {
+        this._etc = etc;
     }
 
     /**
@@ -479,11 +479,9 @@ export class Connection {
  * --- 获取 Db Pool 对象 ---
  * @param etc 配置信息可留空
  */
-export function get(ctr: ctr.Ctr, etc?: types.IConfigDb): Pool {
-    if (!etc) {
-        etc = ctr.getPrototype('_config').db;
-    }
-    return new Pool(ctr, etc);
+export function get(ctrEtc: ctr.Ctr | types.IConfigDb): Pool {
+    const etc = ctrEtc instanceof ctr.Ctr ? ctrEtc.getPrototype('_config').db : ctrEtc;
+    return new Pool(etc);
 }
 
 /**
