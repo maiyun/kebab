@@ -1,7 +1,7 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2019-5-27 20:18:50
- * Last: 2020-3-29 19:37:25, 2022-07-24 22:38:11, 2023-5-24 18:49:18
+ * Last: 2020-3-29 19:37:25, 2022-07-24 22:38:11, 2023-5-24 18:49:18, 2023-6-13 22:20:21
  */
 
 // --- 第三方 ---
@@ -71,8 +71,15 @@ export class Sql {
             for (const v of vs) {
                 sql += '(';
                 for (const v1 of v) {
-                    sql += '?, ';
-                    this._data.push(v1);
+                    if (Array.isArray(v1)) {
+                        // --- v1: ['POINT(?)', ['20']] ---
+                        sql += v1[0] + ', ';
+                        this._data.push(...v1[1]);
+                    }
+                    else {
+                        sql += '?, ';
+                        this._data.push(v1);
+                    }
                 }
                 sql = sql.slice(0, -2) + '), ';
             }
@@ -85,8 +92,15 @@ export class Sql {
             for (const k in cs) {
                 const v = cs[k];
                 sql += this.field(k) + ', ';
-                this._data.push(v);
-                values += '?, ';
+                if (Array.isArray(v)) {
+                    // --- v: ['POINT(?)', ['20']] ---
+                    values += v[0] + ', ';
+                    this._data.push(...v[1]);
+                }
+                else {
+                    values += '?, ';
+                    this._data.push(v);
+                }
             }
             sql = sql.slice(0, -2) + ') VALUES (' + values.slice(0, -2) + ')';
         }
@@ -110,8 +124,14 @@ export class Sql {
         }
         sql = sql.slice(0, -2) + ') SELECT ';
         for (const value of values) {
-            sql += '?, ';
-            this._data.push(value);
+            if (Array.isArray(value)) {
+                sql += value[0] + ', ';
+                this._data.push(...value[1]);
+            }
+            else {
+                sql += '?, ';
+                this._data.push(value);
+            }
         }
         sql = sql.slice(0, -2) + ' FROM DUAL WHERE NOT EXISTS (SELECT `id` FROM ' + this.field(table, this._pre) + ' WHERE ' + this._whereSub(where) + ')';
         this._sql.push(sql);
@@ -135,7 +155,7 @@ export class Sql {
      * @param c 字段字符串或字段数组
      * @param f 表，允许多张表
      */
-    public select(c: string | string[], f: string | string[]): this {
+    public select(c: string | Array<string | any[]>, f: string | string[]): this {
         this._data = [];
         let sql = 'SELECT ';
         if (typeof c === 'string') {
@@ -144,7 +164,13 @@ export class Sql {
         else {
             // --- c: ['id', 'name'] ---
             for (const i of c) {
-                sql += this.field(i) + ', ';
+                if (Array.isArray(i)) {
+                    sql += this.field(i[0]) + ', ';
+                    this._data.push(...i[1]);
+                }
+                else {
+                    sql += this.field(i) + ', ';
+                }
             }
             sql = sql.slice(0, -2);
         }

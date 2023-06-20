@@ -16,7 +16,6 @@ import * as lJwt from '~/lib/jwt';
 import * as sCtr from '~/sys/ctr';
 import * as def from '~/sys/def';
 // --- mod ---
-import mSession from '../mod/session';
 import mTest from '../mod/test';
 import mTestData from '../mod/testdata';
 
@@ -102,8 +101,8 @@ export default class extends sCtr.Ctr {
 
             '<br><br><b>Model test:</b>',
 
-            '<br><br><b style="color: red;">In a production environment, please delete "mod/session.php", "mod/test.php", "mod/testdata.php" files.</b>',
-            `<br><a href="${this._config.const.urlBase}test/mod-session">Click to see an example of a Session model</a>`,
+            '<br><br><b style="color: red;">In a production environment, please delete "mod/test.ts", "mod/testdata.ts" files.</b>',
+            `<br><a href="${this._config.const.urlBase}test/mod-test">Click to see an example of a Test model</a>`,
             `<br><a href="${this._config.const.urlBase}test/mod-split">View "test/mod-split"</a>`,
 
             '<br><br><b>Library test:</b>',
@@ -377,7 +376,7 @@ function postFd() {
         return lFs.createReadStream(def.ROOT_PATH + 'sys/route.js');
     }
 
-    public async modSession(): Promise<any> {
+    public async modTest(): Promise<any> {
         const retur: any[] = [];
         if (!(this._checkInput(this._get, {
             'action': [['', 'remove'], [0, 'Error']]
@@ -385,72 +384,69 @@ function postFd() {
             return retur;
         }
 
-        const echo = ['<b style="color: red;">In a production environment, please delete the "mod/session.php" file.</b>'];
+        const echo = ['<b style="color: red;">In a production environment, please delete the "mod/test.ts" file.</b>'];
 
         const db = lDb.get(this);
-        let stmt = await db.query('SELECT * FROM `m_session` WHERE `token` LIMIT 1;');
+        let stmt = await db.query('SELECT * FROM `m_test` WHERE `token` LIMIT 1;');
 
         if (!stmt.rows) {
-            return [0, 'Failed("m_session" not found).'];
+            return [0, 'Failed("m_test" not found).'];
         }
 
         if (this._get['action'] === 'remove') {
-            await mSession.removeByWhere(db, [
+            await mTest.removeByWhere(db, [
                 ['token', 'LIKE', 'test_%']
             ], {
                 'pre': this
             });
-            return this._location('test/mod-session');
+            return this._location('test/mod-test');
         }
         else {
-
             const time = lTime.stamp();
-            const session = mSession.getCreate<mSession>(db, {
+            const test = mTest.getCreate<mTest>(db, {
                 'ctr': this
             });
-            session.set({
-                'data': JSON.stringify({ 'test': lCore.random(4) }),
-                'time_update': time,
+            test.set({
+                'point': ['POINT', lCore.rand(0, 99).toString() + ' ' + lCore.rand(0, 99).toString()],
                 'time_add': time
             });
-            const result = await session.create();
+            const result = await test.create();
 
             echo.push(`<pre>const time = lTime.stamp();
-const session = mSession.getCreate(db, {
+const test = mTest.getCreate<mTest>(db, {
     'ctr': this
 });
-session.set({
-    'data': JSON.stringify({'test': lText.random(4)}),
-    'time_update': time,
+test.set({
+    'point': ['POINT', lCore.rand(0, 99).toString() + ' ' + lCore.rand(0, 99).toString()],
     'time_add': time
 });
-const result = await session.create();
-JSON.stringify(result))</pre>` + JSON.stringify(result));
+const result = await test.create();
+JSON.stringify(result));</pre>` + JSON.stringify(result));
 
-            echo.push('<pre>JSON.stringify(session.toArray());</pre>' + lText.htmlescape(JSON.stringify(session.toArray())));
+            echo.push('<pre>JSON.stringify(test.toArray());</pre>' + lText.htmlescape(JSON.stringify(test.toArray())));
 
-            echo.push('<br><br>Session table:');
+            echo.push('<br><br>Test table:');
 
-            stmt = await db.query('SELECT * FROM `m_session` WHERE `token` LIKE \'test_%\' ORDER BY `id` ASC;');
+            stmt = await db.query('SELECT `id`, `token`, ST_ASTEXT(`point`), `time_add` FROM `m_test` WHERE `token` LIKE \'test_%\' ORDER BY `id` ASC;');
             this._dbTable(stmt, echo);
 
             // --- explain ---
 
-            const ls = mSession.where<mSession>(db, [
-                ['time_update', '>', time - 60 * 5]
+            const ls = mTest.where<mTest>(db, [
+                ['time_add', '>', time - 60 * 5]
             ], {
                 'ctr': this
             });
             const r = await ls.explain();
-            echo.push(`<pre>const ls = mSession.where<mSession>(db, [
-    ['time_update', '>', time - 60 * 5]
+            echo.push(`<pre>const ls = mTest.where<mTest>(db, [
+    ['time_add', '>', time - 60 * 5]
 ], {
     'ctr': this
 });
 const r = await ls.explain();</pre>` + lText.htmlescape(JSON.stringify(r)));
 
             const r2 = await ls.explain(true);
-            echo.push('<pre>$ls->explain(true);</pre>');
+            echo.push('<pre>ls->explain(true);</pre>');
             if (r2) {
                 echo.push('<table style="width: 100%;">');
                 for (const k in r2) {
@@ -463,7 +459,84 @@ const r = await ls.explain();</pre>` + lText.htmlescape(JSON.stringify(r)));
                 echo.push('<div>false</div>');
             }
 
-            echo.push('<br><a href="' + this._config.const.urlBase + 'test/mod-session?action=remove">Remove all test data</a> | <a href="' + this._config.const.urlBase + 'test">Return</a>');
+            let ft = await mTest.one<mTest>(db, [
+                ['time_add', '>', '0']
+            ], {
+                'ctr': this
+            });
+            echo.push(`<pre>await mTest.one<mTest>(db, [
+    ['time_add', '>', '0']
+], {
+    'ctr': this
+});</pre>`);
+            if (ft) {
+                echo.push('<table style="width: 100%;">');
+
+                echo.push('<tr><th>id</th><td>' + ft.id!.toString() + '</td></tr>');
+                echo.push('<tr><th>token</th><td>' + ft.token! + '</td></tr>');
+                echo.push('<tr><th>point</th><td>' + JSON.stringify(ft.point) + '</td></tr>');
+                echo.push('<tr><th>time_add</th><td>' + ft.time_add!.toString() + '</td></tr>');
+
+                echo.push('</table>');
+
+                // --- 修改 point 值 ---
+
+                ft.set('point', [
+                    'POINT', '20 20'
+                ]);
+                await ft.save();
+                echo.push(`<pre>ft.set('point', [
+    'POINT', '20 20'
+]);
+await ft.save();</pre>`);
+
+                ft = await mTest.find<mTest>(db, ft.id!, {
+                    'ctr': this
+                });
+                if (!ft) {
+                    return;
+                }
+
+                echo.push('<table style="width: 100%;">');
+
+                echo.push('<tr><th>id</th><td>' + ft.id!.toString() + '</td></tr>');
+                echo.push('<tr><th>token</th><td>' + ft.token! + '</td></tr>');
+                echo.push('<tr><th>point</th><td>' + JSON.stringify(ft.point) + '</td></tr>');
+                echo.push('<tr><th>time_add</th><td>' + ft.time_add!.toString() + '</td></tr>');
+
+                echo.push('</table>');
+
+                // --- 再次修改 ---
+
+                ft.set({
+                    'point': [
+                        'POINT', '40 40'
+                    ]
+                });
+                await ft.save();
+                await ft.refresh();
+                echo.push(`<pre>ft.set({
+    'point': [
+        'POINT', '40 40'
+    ]
+});
+await ft.save();
+await ft.refresh();</pre>`);
+
+                echo.push('<table style="width: 100%;">');
+
+                echo.push('<tr><th>id</th><td>' + ft.id!.toString() + '</td></tr>');
+                echo.push('<tr><th>token</th><td>' + ft.token! + '</td></tr>');
+                echo.push('<tr><th>point</th><td>' + JSON.stringify(ft.point) + '</td></tr>');
+                echo.push('<tr><th>time_add</th><td>' + ft.time_add!.toString() + '</td></tr>');
+
+                echo.push('</table>');
+            }
+            else {
+                echo.push('<div>false</div>');
+            }
+
+            echo.push('<br><a href="' + this._config.const.urlBase + 'test/mod-test?action=remove">Remove all test data</a> | <a href="' + this._config.const.urlBase + 'test">Return</a>');
 
             return echo.join('') + '<br><br>' + this._getEnd();
         }
@@ -475,11 +548,14 @@ const r = await ls.explain();</pre>` + lText.htmlescape(JSON.stringify(r)));
         const db = lDb.get(this);
 
         echo.push(`<br><br>Test SQL:<pre>CREATE TABLE \`m_test\` (
-    \`id\` bigint NOT NULL AUTO_INCREMENT,
-    \`name\` varchar(32) COLLATE ascii_bin NOT NULL,
-    \`time_add\` bigint NOT NULL,
-    PRIMARY KEY (\`id\`)
-) ENGINE=InnoDB DEFAULT CHARSET=ascii COLLATE=ascii_bin;
+    \`id\` INT NOT NULL AUTO_INCREMENT,
+    \`token\` CHAR(16) NOT NULL COLLATE 'ascii_bin',
+    \`point\` POINT NOT NULL,
+    \`time_add\` BIGINT NOT NULL,
+    PRIMARY KEY (\`id\`) USING BTREE,
+    UNIQUE INDEX \`token\` (\`token\`) USING BTREE,
+    INDEX \`time_add\` (\`time_add\`) USING BTREE
+) ENGINE=InnoDB COLLATE=utf8mb4_general_ci;
 CREATE TABLE \`m_test_data_0\` (
     \`id\` bigint NOT NULL AUTO_INCREMENT,
     \`test_id\` bigint NOT NULL,
@@ -515,7 +591,10 @@ CREATE TABLE \`m_test_data_0\` (
             'ctr': this
         });
         test.set({
-            'name': lCore.random(lCore.rand(8, 32)),
+            'token': lCore.random(lCore.rand(8, 32)),
+            'point': [
+                'POINT', '10 10'
+            ],
             'time_add': lTime.stamp()
         });
         await test.create();
@@ -768,14 +847,15 @@ JSON.stringify(orig);</pre>${JSON.stringify(orig)}`);
         const echo = [(Math.round(this._getRunTime() * 10000000) / 10000).toString()];
 
         const db = lDb.get(this);
-        // --- 先获取 session 表的情况 ---
-        let stmt = await db.query('SELECT * FROM `m_session` ORDER BY `id` DESC LIMIT 10;');
+
+        // --- 先获取 test 表的情况 ---
+        let stmt = await db.query('SELECT * FROM `m_test` ORDER BY `id` DESC LIMIT 10;');
         if (!stmt.rows) {
-            return [0, stmt.error ? (stmt.error.message + '(' + stmt.error.errno.toString() + ')') : 'Failed("m_session" not found).'];
+            return [0, stmt.error ? (stmt.error.message + '(' + stmt.error.errno.toString() + ')') : 'Failed("m_test" not found).'];
         }
 
         echo.push(`<pre>const db = lDb.get(this);
-const stmt = await db.query('SELECT * FROM \`m_session\` ORDER BY \`id\` DESC LIMIT 10;');</pre>`);
+const stmt = await db.query('SELECT * FROM \`m_test\` ORDER BY \`id\` DESC LIMIT 10;');</pre>`);
 
         this._dbTable(stmt, echo);
 
@@ -783,11 +863,11 @@ const stmt = await db.query('SELECT * FROM \`m_session\` ORDER BY \`id\` DESC LI
 
         // --- 插入 test-token 的条目 ---
         const time = lTime.stamp().toString();
-        let exec = await db.execute('INSERT INTO `m_session` (`token`, `data`, `time_update`, `time_add`) VALUES (\'test-token\', \'' + JSON.stringify({ 'go': 'ok' }) + '\', \'' + time + '\', \'' + time + '\');');
+        let exec = await db.execute('INSERT INTO `m_test` (`token`, `point`, `time_add`) VALUES (\'test-token\', ST_POINTFROMTEXT(\'POINT(10 10)\'), \'' + time + '\');');
         let ms = (Math.round(this._getRunTime() * 10000000) / 10000).toString();
         let insertId: number = 0;
         if (exec.error?.errno === 1062) {
-            insertId = (await db.query('SELECT * FROM `m_session` WHERE `token` = \'test-token\';')).rows?.[0].id ?? 0;
+            insertId = (await db.query('SELECT * FROM `m_test` WHERE `token` = \'test-token\';')).rows?.[0].id ?? 0;
             ms += ', ' + (Math.round(this._getRunTime() * 10000000) / 10000).toString();
         }
         else {
@@ -795,10 +875,10 @@ const stmt = await db.query('SELECT * FROM \`m_session\` ORDER BY \`id\` DESC LI
         }
 
         echo.push(`<pre>const time = lTime.stamp().toString();
-const exec = await db.execute('INSERT INTO \`m_session\` (\`token\`, \`data\`, \`time_update\`, \`time_add\`) VALUES (\\'test-token\\', \\'' + JSON.stringify({ 'go': 'ok' }) + '\\', \\'' + time + '\\', \\'' + time + '\\');');
+const exec = await db.execute('INSERT INTO \`m_test\` (\`token\`, \`data\`, \`time_update\`, \`time_add\`) VALUES (\\'test-token\\', ST_POINTFROMTEXT(\\'POINT(10 10)\\'), \\'' + time + '\\');');
 let insertId: number = 0;
 if (exec.error?.errno === 1062) {
-    insertId = (await db.query('SELECT * FROM \`m_session\` WHERE \`token\` = \\'test-token\\';')).rows?.[0].id ?? 0;
+    insertId = (await db.query('SELECT * FROM \`m_test\` WHERE \`token\` = \\'test-token\\';')).rows?.[0].id ?? 0;
 }
 else {
     insertId = exec.packet?.insertId ?? 0;
@@ -810,13 +890,13 @@ error: ${JSON.stringify(exec.error)}<br>
 ms: ${ms}<br><br>`);
 
         // --- 获取最近的一条 ---
-        stmt = await db.query('SELECT * FROM `m_session` ORDER BY `id` DESC LIMIT 1;');
+        stmt = await db.query('SELECT * FROM `m_test` ORDER BY `id` DESC LIMIT 1;');
         this._dbTable(stmt, echo);
 
         // --- 再次插入 test-token 的条目 ---
-        exec = await db.execute('INSERT INTO `m_session` (`token`, `data`, `time_update`, `time_add`) VALUES (\'test-token\', \'' + JSON.stringify({ 'go': 'ok' }) + '\', \'' + time + '\', \'' + time + '\');');
+        exec = await db.execute('INSERT INTO `m_test` (`token`, `point`, `time_add`) VALUES (\'test-token\', ST_POINTFROMTEXT(\'POINT(10 10)\'), \'' + time + '\');');
         insertId = exec.packet?.insertId ?? 0;
-        echo.push(`<pre>exec = await db.execute('INSERT INTO \`m_session\` (\`token\`, \`data\`, \`time_update\`, \`time_add\`) VALUES (\\'test-token\\', \\'' + JSON.stringify({ 'go': 'ok' }) + '\\', \\'' + time + '\\', \\'' + time + '\\');');
+        echo.push(`<pre>exec = await db.execute('INSERT INTO \`m_test\` (\`token\`, \`point\`, \`time_add\`) VALUES (\\'test-token\\', ST_POINTFROMTEXT(\\'POINT(10 10)\\'), \\'' + time + '\\');');
 insertId = exec.packet?.insertId ?? 0;</pre>
 exec: ${JSON.stringify(exec)}<br>
 insertId: ${JSON.stringify(insertId)}<br>
@@ -825,9 +905,9 @@ error: ${JSON.stringify(exec.error)}<br>
 ms: ${(Math.round(this._getRunTime() * 10000000) / 10000).toString()}<br>`);
 
         // --- 依据唯一键替换值 ---
-        exec = await db.execute('REPLACE INTO `m_session` (`token`, `data`, `time_update`, `time_add`) VALUES (\'test-token\', \'' + JSON.stringify({ 'go2': 'ok2' }) + '\', \'' + time + '\', \'' + time + '\');');
+        exec = await db.execute('REPLACE INTO `m_test` (`token`, `point`, `time_add`) VALUES (\'test-token\', ST_POINTFROMTEXT(\'POINT(20 20)\'), \'' + time + '\');');
         insertId = exec.packet?.insertId ?? 0;
-        echo.push(`<pre>exec = await db.execute('REPLACE INTO \`m_session\` (\`token\`, \`data\`, \`time_update\`, \`time_add\`) VALUES (\\'test-token\\', \\'' + JSON.stringify({ 'go2': 'ok2' }) + '\\', \\'' + time + '\\', \\'' + time + '\\');');
+        echo.push(`<pre>exec = await db.execute('REPLACE INTO \`m_session\` (\`token\`, \`point\`, \`time_add\`) VALUES (\\'test-token\\', ST_POINTFROMTEXT(\\'POINT(20 20)\\'), \\'' + time + '\\');');
 insertId = exec.packet?.insertId ?? 0;</pre>
 exec: ${JSON.stringify(exec)}<br>
 insertId: ${JSON.stringify(insertId)}<br>
@@ -836,23 +916,23 @@ error: ${JSON.stringify(exec.error)}<br>
 ms: ${(Math.round(this._getRunTime() * 10000000) / 10000).toString()}<br><br>`);
 
         // --- 显示近 10 条 ---
-        stmt = await db.query('SELECT * FROM `m_session` ORDER BY `id` DESC LIMIT 10;');
+        stmt = await db.query('SELECT * FROM `m_test` ORDER BY `id` DESC LIMIT 10;');
         this._dbTable(stmt, echo);
 
         // --- explain 开始 ---
         const explain = 'EXPLAIN';
-        stmt = await db.query(explain + ' SELECT * FROM `m_session` LIMIT 10;');
-        echo.push(`<pre>stmt = await db.query('${explain} SELECT * FROM \`m_session\` LIMIT 10;');</pre>`);
+        stmt = await db.query(explain + ' SELECT * FROM `m_test` LIMIT 10;');
+        echo.push(`<pre>stmt = await db.query('${explain} SELECT * FROM \`m_test\` LIMIT 10;');</pre>`);
         this._dbTable(stmt, echo);
 
         echo.push('<br>ms: ' + (Math.round(this._getRunTime() * 10000000) / 10000).toString());
 
         // --- 删除测试添加的 token ---
-        exec = await db.execute('DELETE FROM `m_session` WHERE `token` = \'test-token\';');
-        echo.push(`<pre>exec = await db.execute('DELETE FROM \`m_session\` WHERE \`token\` = \\'test-token\\';');</pre>
+        exec = await db.execute('DELETE FROM `m_test` WHERE `token` = \'test-token\';');
+        echo.push(`<pre>exec = await db.execute('DELETE FROM \`m_test\` WHERE \`token\` = \\'test-token\\';');</pre>
 exec: ${JSON.stringify(exec)}<br><br>`);
 
-        stmt = await db.query('SELECT * FROM `m_session` ORDER BY `id` DESC LIMIT 10;');
+        stmt = await db.query('SELECT * FROM `m_test` ORDER BY `id` DESC LIMIT 10;');
         this._dbTable(stmt, echo);
 
         return echo.join('') + '<br>queries: ' + db.getQueries().toString() + '<br>' + this._getEnd();
@@ -1791,9 +1871,9 @@ Result:<pre id="result">Nothing.</pre>`);
 <b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
 <b>format() :</b> ${sql.format(s, sd)}<hr>`);
 
-                s = sql.insert('order').notExists('order', { 'name': 'Amy', 'age': '16', 'time_add': lTime.stamp() }, { 'name': 'Amy' }).getSql();
+                s = sql.insert('order').notExists('order', { 'name': 'Amy', 'age': '16', 'time_add': lTime.stamp(), 'point': ['POINT(?)', ['20']] }, { 'name': 'Amy' }).getSql();
                 sd = sql.getData();
-                echo.push(`<pre>sql.insert('order').notExists('order', { 'name': 'Amy', 'age': '16', 'time_add': lTime.stamp() }, { 'name': 'Amy' });</pre>
+                echo.push(`<pre>sql.insert('order').notExists('order', { 'name': 'Amy', 'age': '16', 'time_add': lTime.stamp(), 'point': ['POINT(?)', ['20']] }, { 'name': 'Amy' });</pre>
 <b>getSql() :</b> ${s}<br>
 <b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
 <b>format() :</b> ${sql.format(s, sd)}<hr>`);
@@ -1801,6 +1881,36 @@ Result:<pre id="result">Nothing.</pre>`);
                 s = sql.insert('verify').values({ 'token': 'abc', 'time_update': '10' }).duplicate({ 'time_update': ['CONCAT(`time_update`, ?)', ['01']] }).getSql();
                 sd = sql.getData();
                 echo.push(`<pre>sql.insert('verify').values({ 'token': 'abc', 'time_update': '10' }).duplicate({ 'time_update': ['CONCAT(\`time_update\`, ?)', ['01']] });</pre>
+<b>getSql() :</b> ${s}<br>
+<b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
+<b>format() :</b> ${sql.format(s, sd)}<hr>`);
+
+                // --- insert 中使用函数 ---
+
+                s = sql.insert('geo').values({ 'point': ['ST_POINTFROMTEXT(?)', ['POINT(122.147775 30.625014)']] }).getSql();
+                sd = sql.getData();
+                echo.push(`<pre>sql.insert('geo').values({ 'point': ['ST_POINTFROMTEXT(?)', ['POINT(122.147775 30.625014)']] });</pre>
+<b>getSql() :</b> ${s}<br>
+<b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
+<b>format() :</b> ${sql.format(s, sd)}<hr>`);
+
+                s = sql.insert('geo').values(['name', 'point'], [
+                    [
+                        'POINT A', ['ST_POINTFROMTEXT(?)', ['POINT(122.147775 30.625014)']]
+                    ],
+                    [
+                        'POINT B', ['ST_POINTFROMTEXT(?)', ['POINT(123.147775 30.625014)']]
+                    ]
+                ]).getSql();
+                sd = sql.getData();
+                echo.push(`<pre>sql.insert('geo').values(['name', 'point'], [
+    [
+        'POINT A', ['ST_POINTFROMTEXT(?)', ['POINT(122.147775 30.625014)']]
+    ],
+    [
+        'POINT B', ['ST_POINTFROMTEXT(?)', ['POINT(123.147775 30.625014)']]
+    ]
+]);</pre>
 <b>getSql() :</b> ${s}<br>
 <b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
 <b>format() :</b> ${sql.format(s, sd)}`);
@@ -1951,11 +2061,32 @@ Result:<pre id="result">Nothing.</pre>`);
                 break;
             }
             case 'having': {
-                const s = sql.select(['id', 'name', '(6371 * ACOS(COS(RADIANS(31.239845)) * COS(RADIANS(`lat`)) * COS(RADIANS(`lng`) - RADIANS(121.499662)) + SIN(RADIANS(31.239845)) * SIN(RADIANS(`lat`)))) AS distance'], 'location').having([
+                let s = sql.select(['id', 'name', '(6371 * ACOS(COS(RADIANS(31.239845)) * COS(RADIANS(`lat`)) * COS(RADIANS(`lng`) - RADIANS(121.499662)) + SIN(RADIANS(31.239845)) * SIN(RADIANS(`lat`)))) AS distance'], 'location').having([
                     ['distance', '<', '2']
                 ]).getSql();
-                const sd = sql.getData();
+                let sd = sql.getData();
                 echo.push(`<pre>sql.select(['id', 'name', '(6371 * ACOS(COS(RADIANS(31.239845)) * COS(RADIANS(\`lat\`)) * COS(RADIANS(\`lng\`) - RADIANS(121.499662)) + SIN(RADIANS(31.239845)) * SIN(RADIANS(\`lat\`)))) AS distance'], 'location').having([
+    ['distance', '<', '2']
+]);</pre>
+<b>getSql() :</b> ${s}<br>
+<b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
+<b>format() :</b> ${sql.format(s, sd)}<hr>`);
+
+                s = sql.select(['id', 'name',
+                    [
+                        '(6371 * ACOS(COS(RADIANS(?)) * COS(RADIANS(`lat`)) * COS(RADIANS(`lng`) - RADIANS(?)) + SIN(RADIANS(?)) * SIN(RADIANS(`lat`)))) AS distance',
+                        ['31.239845', '121.499662', '31.239845']
+                    ]
+                ], 'location').having([
+                    ['distance', '<', '2']
+                ]).getSql();
+                sd = sql.getData();
+                echo.push(`<pre>sql.select(['id', 'name',
+    [
+        '(6371 * ACOS(COS(RADIANS(?)) * COS(RADIANS(\`lat\`)) * COS(RADIANS(\`lng\`) - RADIANS(?)) + SIN(RADIANS(?)) * SIN(RADIANS(\`lat\`)))) AS distance',
+        ['31.239845', '121.499662', '31.239845']
+    ]
+], 'location')->having([
     ['distance', '<', '2']
 ]);</pre>
 <b>getSql() :</b> ${s}<br>
