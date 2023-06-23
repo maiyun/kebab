@@ -48,7 +48,7 @@ export async function run(data: {
     'path': string;
 }): Promise<boolean> {
     // --- 检测 path 是否是静态文件 ---
-    if (/^(stc\/.*|favicon.\w+?\??.*|apple[\w-]+?\.png\??.*|[\w-]+?\.txt\??.*)/.test(data.path)) {
+    if (/^(stc\/.*|favicon.\w+?\??.*|apple[\w-]+?\.png\??.*|[\w-]+?\.txt\??.*|[\w-]+?\.html\??.*)/.test(data.path)) {
         return false;
     }
     // --- 根据 res 还是 socket 进行初始化设置 ---
