@@ -1,7 +1,7 @@
 /**
  * Project: Mutton, User: JianSuoQiYue
  * Date: 2019-6-4 21:35
- * Last: 2020-4-14 13:33:51, 2022-07-23 16:01:34, 2022-09-06 22:59:26, 2023-5-24 19:11:37, 2023-6-13 21:47:58
+ * Last: 2020-4-14 13:33:51, 2022-07-23 16:01:34, 2022-09-06 22:59:26, 2023-5-24 19:11:37, 2023-6-13 21:47:58, 2023-7-10 18:54:03
  */
 import * as lSql from '~/lib/sql';
 import * as lDb from '~/lib/db';
@@ -92,7 +92,7 @@ export default class Mod {
         if (opt.select) {
             this._sql.select(opt.select, ((this.constructor as any)._$table as string) + (this._index !== null ? ('_' + this._index) : ''));
         }
-        if (opt.where) {
+        if (opt.where !== undefined) {
             const select = ['*'];
             if ((this.constructor as any)._$astext.length > 0) {
                 for (const item of (this.constructor as any)._$astext) {
@@ -102,7 +102,7 @@ export default class Mod {
             this._sql.select(select, ((this.constructor as any)._$table as string) + (this._index !== null ? ('_' + this._index) : ''));
             if ((this.constructor as any)._soft && !opt.raw) {
                 if (typeof opt.where === 'string') {
-                    opt.where = '(' + opt.where + ') AND `time_remove` = 0';
+                    opt.where = opt.where ? ('(' + opt.where + ') AND ') : '`time_remove` = 0';
                 }
                 else if (Array.isArray(opt.where)) {
                     opt.where.push({
