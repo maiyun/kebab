@@ -316,7 +316,7 @@ export default class Mod {
      */
     public static select<T extends Mod>(
         db: lDb.Pool | lDb.Connection,
-        c: string | string[],
+        c: string | any[],
         opt: { 'ctr'?: sCtr.Ctr; 'pre'?: string; 'index'?: string; } = {}
     ): T & Record<string, any> {
         return new this({
@@ -396,19 +396,40 @@ export default class Mod {
      * @param s 筛选条件数组或字符串
      * @param opt 选项
      */
-    public static one<T extends Mod>(
+    public static async one<T extends Mod>(
         db: lDb.Pool | lDb.Connection,
         s: string | any[] | Record<string, any>,
-        opt: { 'ctr'?: sCtr.Ctr; 'raw'?: boolean; 'pre'?: string; 'index'?: string; } = {}
+        opt: { 'ctr'?: sCtr.Ctr; 'raw'?: boolean; 'pre'?: string; 'index'?: string | string[]; } = {}
     ): Promise<false | null | (T & Record<string, any>)> {
-        return (new this({
-            'db': db,
-            'ctr': opt.ctr,
-            'pre': opt.pre,
-            'where': s,
-            'raw': opt.raw,
-            'index': opt.index
-        }) as T).first();
+        if (!opt.index) {
+            return (new this({
+                'db': db,
+                'ctr': opt.ctr,
+                'pre': opt.pre,
+                'where': s,
+                'raw': opt.raw
+            }) as T).first();
+        }
+        if (typeof opt.index === 'string') {
+            opt.index = [opt.index];
+        }
+        for (const item of opt.index) {
+            const row = await (new this({
+                'db': db,
+                'ctr': opt.ctr,
+                'pre': opt.pre,
+                'where': s,
+                'raw': opt.raw,
+                'index': item
+            }) as T).first();
+            if (row) {
+                return row;
+            }
+            if (row === false) {
+                return false;
+            }
+        }
+        return null;
     }
 
     /**

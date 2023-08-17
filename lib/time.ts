@@ -196,6 +196,11 @@ export function format(zone: number | sCtr.Ctr | null, f: string, date?: Date | 
                 over.push(text.pad(date.getUTCSeconds()));
                 break;
             }
+            case 'T': {
+                const t = -(date.getTimezoneOffset() / 60);
+                over.push('UTC' + (t >= 0 ? '+' : '') + t.toString());
+                break;
+            }
             default: {
                 over.push(v);
                 break;

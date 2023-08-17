@@ -43,6 +43,20 @@ export class Connection {
     }
 
     /**
+     * --- 发送 Enter 键 ---
+     */
+    public async sendEnter(): Promise<boolean> {
+        return this.send('\n');
+    }
+
+    /**
+     * --- 发送 Tab 键 ---
+     */
+    public async sendTab(): Promise<boolean> {
+        return this.send('\t');
+    }
+
+    /**
      * --- 发送中断 ---
      */
     public async sendCtrlC(): Promise<boolean> {

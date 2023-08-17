@@ -155,6 +155,8 @@ export interface INetOptions {
     'save'?: string;
     'local'?: string;
     'headers'?: THttpHeaders;
+    /** --- 默认为 default --- */
+    'reuse'?: string;
     /** --- cookie 托管对象 --- */
     'cookie'?: Record<string, INetCookie>;
 }

@@ -22,8 +22,10 @@ import * as response from './net/response';
 /** --- ca 根证书内容 --- */
 let ca: string = '';
 
-/** --- http 请求对象 --- */
-const hcli = hc.createHttpClient();
+/** --- 复用的 hc 对象列表 --- */
+const reuses: Record<string, hc.IClient> = {
+    'default': hc.createHttpClient()
+};
 
 /**
  * --- 创建一个请求对象 ---
@@ -91,6 +93,7 @@ export async function request(
     const hosts = opt.hosts ?? {};
     const save = opt.save;
     const local = opt.local;
+    const reuse = opt.reuse ?? 'default';
     const headers: Record<string, any> = {};
     if (opt.headers) {
         for (const key in opt.headers) {
@@ -146,7 +149,10 @@ export async function request(
     try {
         // --- 重定义 IP ---
         const host = uri.hostname?.toLowerCase() ?? '';
-        req = await hcli.request({
+        if (!reuses[reuse]) {
+            reuses[reuse] = hc.createHttpClient();
+        }
+        req = await reuses[reuse].request({
             'url': u,
             'method': method,
             'data': data,

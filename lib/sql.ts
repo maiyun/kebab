@@ -583,9 +583,16 @@ export class Sql {
      * @param str
      * @param pre 表前缀，仅请在 field 表名时倒入前缀
      */
-    public field(str: string, pre: string = ''): string {
+    public field(str: string | number | any[], pre: string = ''): string {
         let left: string = '';
         let right: string = '';
+        if (Array.isArray(str)) {
+            this._data.push(...str[1]);
+            return this.field(str[0]);
+        }
+        if (typeof str === 'number') {
+            str = str.toString();
+        }
         str = str.trim();                   // --- 去除前导尾随 ---
         str = str.replace(/ {2,}/g, ' ');   // --- 去除多余的空格 ---
         str = str.replace(/ +([),])/g, ' $1');
@@ -645,10 +652,10 @@ export class Sql {
             return '`' + this._pre + l[0] + '`.' + w + right;
         }
         else {
-            return left.replace(/([(,])([a-zA-Z`_][\w`_.]*)([),])/g, (
-                t: string, t1: string, t2: string, t3: string
+            return left.replace(/([(, ])([a-zA-Z`_][\w`_.]*)(?=[), ])/g, (
+                t: string, t1: string, t2: string
             ): string => {
-                return t1 + this.field(t2, pre) + t3;
+                return t1 + this.field(t2, pre);
             }) + right;
         }
     }
