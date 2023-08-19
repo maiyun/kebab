@@ -285,7 +285,7 @@ export default class Mod {
      * @return LSql
      */
     public static updateByWhereSql(
-        data: any[],
+        data: any[] | Record<string, any>,
         where: string | any[] | Record<string, any>,
         opt: { 'raw'?: boolean; 'pre'?: sCtr.Ctr | string; 'index'?: string; } = {}
     ): lSql.Sql {
