@@ -1,7 +1,7 @@
 /**
  * Project: Mutton, User: JianSuoQiYue
  * Date: 2019-6-4 21:35
- * Last: 2020-4-14 13:33:51, 2022-07-23 16:01:34, 2022-09-06 22:59:26, 2023-5-24 19:11:37, 2023-6-13 21:47:58, 2023-7-10 18:54:03
+ * Last: 2020-4-14 13:33:51, 2022-07-23 16:01:34, 2022-09-06 22:59:26, 2023-5-24 19:11:37, 2023-6-13 21:47:58, 2023-7-10 18:54:03, 2023-8-23 17:03:16
  */
 import * as lSql from '~/lib/sql';
 import * as lDb from '~/lib/db';
@@ -25,9 +25,6 @@ export default class Mod {
 
     /** ---- 可开启软删软更新软新增 --- */
     protected static _$soft: boolean = false;
-
-    /** --- @var 将下列字段代入 ST_ASTEXT 函数在 * 模式下 --- */
-    protected static _$astext: string[] = [];
 
     /** --- 要 update 的内容 --- */
     protected _updates: Record<string, boolean> = {};
@@ -75,16 +72,6 @@ export default class Mod {
         if (opt.row) {
             for (const k in opt.row) {
                 const v = opt.row[k];
-                if (typeof v === 'string') {
-                    if (v.startsWith('POINT(') || v.startsWith('POLYGON(')) {
-                        const matchs = /^([A-Z]+)\((.+)\)$/.exec(v);
-                        if (matchs) {
-                            this._data[k] = [matchs[1], matchs[2]];
-                            (this as any)[k] = [matchs[1], matchs[2]];
-                            continue;
-                        }
-                    }
-                }
                 this._data[k] = v;
                 (this as any)[k] = v;
             }
@@ -93,13 +80,7 @@ export default class Mod {
             this._sql.select(opt.select, ((this.constructor as any)._$table as string) + (this._index !== null ? ('_' + this._index) : ''));
         }
         if (opt.where !== undefined) {
-            const select = ['*'];
-            if ((this.constructor as any)._$astext.length > 0) {
-                for (const item of (this.constructor as any)._$astext) {
-                    select.push('ST_ASTEXT(`' + item + '`) AS `' + item + '`');
-                }
-            }
-            this._sql.select(select, ((this.constructor as any)._$table as string) + (this._index !== null ? ('_' + this._index) : ''));
+            this._sql.select('*', ((this.constructor as any)._$table as string) + (this._index !== null ? ('_' + this._index) : ''));
             if ((this.constructor as any)._soft && !opt.raw) {
                 if (typeof opt.where === 'string') {
                     opt.where = opt.where ? ('(' + opt.where + ') AND ') : '`time_remove` = 0';
@@ -487,11 +468,6 @@ export default class Mod {
             for (const k in n) {
                 const v = n[k];
                 // --- 强制更新，因为有的可能就是要强制更新既然设置了 ---
-                if (typeof v === 'string') {
-                    if (v.startsWith('POINT(') || v.startsWith('POLYGON(')) {
-                        continue;
-                    }
-                }
                 this._updates[k] = true;
                 this._data[k] = v;
                 (this as any)[k] = v;
@@ -501,11 +477,6 @@ export default class Mod {
             // --- x, y ---
             if (typeof n !== 'string') {
                 return;
-            }
-            if (typeof v === 'string') {
-                if (v.startsWith('POINT(') || v.startsWith('POLYGON(')) {
-                    return;
-                }
             }
             this._updates[n] = true;
             this._data[n] = v;
@@ -530,13 +501,7 @@ export default class Mod {
         const cstr: any = this.constructor as any;
         const updates: Record<string, any> = {};
         for (const k in this._updates) {
-            const v = this._data[k];
-            if (Array.isArray(v)) {
-                updates[k] = ['ST_GEOMFROMTEXT(?)', [v[0] + '(' + v[1] + ')']];
-            }
-            else {
-                updates[k] = this._data[k];
-            }
+            updates[k] = this._data[k];
         }
         if (!table) {
             table = (cstr._$table as string) + (this._index ? ('_' + this._index) : '');
@@ -600,13 +565,7 @@ export default class Mod {
         const cstr = this.constructor as any;
         const updates: Record<string, any> = {};
         for (const k in this._updates) {
-            const v = this._data[k];
-            if (Array.isArray(v)) {
-                updates[k] = ['ST_GEOMFROMTEXT(?)', [v[0] + '(' + v[1] + ')']];
-            }
-            else {
-                updates[k] = this._data[k];
-            }
+            updates[k] = this._data[k];
         }
 
         this._sql.replace((cstr._$table as string) + (this._index ? ('_' + this._index) : '')).values(updates);
@@ -628,13 +587,7 @@ export default class Mod {
      */
     public async refresh(lock = false): Promise<boolean | null> {
         const cstr = this.constructor as any;
-        const select = ['*'];
-        if (cstr._$astext.length > 0) {
-            for (const item of cstr._$astext) {
-                select.push('ST_ASTEXT(`' + item + '`) AS `' + item + '`');
-            }
-        }
-        this._sql.select(select, (cstr._$table as string) + (this._index ? ('_' + this._index) : '')).where([{
+        this._sql.select('*', (cstr._$table as string) + (this._index ? ('_' + this._index) : '')).where([{
             [cstr._$primary]: this._data[cstr._$primary]
         }]);
         if (lock) {
@@ -649,16 +602,6 @@ export default class Mod {
         }
         for (const k in r.rows[0]) {
             const v = r.rows[0][k];
-            if (typeof v === 'string') {
-                if (v.startsWith('POINT(') || v.startsWith('POLYGON(')) {
-                    const matchs = /^([A-Z]+)\((.+)\)$/.exec(v);
-                    if (matchs) {
-                        this._data[k] = [matchs[1], matchs[2]];
-                        (this as any)[k] = [matchs[1], matchs[2]];
-                        continue;
-                    }
-                }
-            }
             this._data[k] = v;
             (this as any)[k] = v;
         }
@@ -672,13 +615,7 @@ export default class Mod {
         const cstr = this.constructor as any;
         const updates: Record<string, any> = {};
         for (const k in this._updates) {
-            const v = this._data[k];
-            if (Array.isArray(v)) {
-                updates[k] = ['ST_GEOMFROMTEXT(?)', [v[0] + '(' + v[1] + ')']];
-            }
-            else {
-                updates[k] = this._data[k];
-            }
+            updates[k] = this._data[k];
         }
         if (Object.keys(updates).length === 0) {
             return true;
@@ -743,16 +680,6 @@ export default class Mod {
         }
         for (const k in r.rows[0]) {
             const v = r.rows[0][k];
-            if (typeof v === 'string') {
-                if (v.startsWith('POINT(') || v.startsWith('POLYGON(')) {
-                    const matchs = /^([A-Z]+)\((.+)\)$/.exec(v);
-                    if (matchs) {
-                        this._data[k] = [matchs[1], matchs[2]];
-                        (this as any)[k] = [matchs[1], matchs[2]];
-                        continue;
-                    }
-                }
-            }
             this._data[k] = v;
             (this as any)[k] = v;
         }

@@ -71,10 +71,29 @@ export class Sql {
             for (const v of vs) {
                 sql += '(';
                 for (const v1 of v) {
+                    // --- v1 是项目值，如 {'x': 1, 'y': 2}, 'string', 0 ---
                     if (Array.isArray(v1)) {
-                        // --- v1: ['POINT(?)', ['20']] ---
-                        sql += v1[0] + ', ';
-                        this._data.push(...v1[1]);
+                        if (v1[0][0]?.x === undefined) {
+                            // --- v1: ['POINT(?)', ['20']] ---
+                            sql += this.field(v1[0]) + ', ';
+                            if (v1[1]) {
+                                this._data.push(...v1[1]);
+                            }
+                        }
+                        else {
+                            // --- v1: [[{'x': 1, 'y': 2}, { ... }], [{ ... }, { ... }]] ---
+                            sql += 'ST_POLYGONFROMTEXT(?), ';
+                            this._data.push(`POLYGON(${v1.map((item) => {
+                                return `(${item.map((it: any) => {
+                                    return `${it.x} ${it.y}`;
+                                }).join(', ')})`;
+                            })})`);
+                        }
+                    }
+                    else if (v1.x !== undefined) {
+                        // --- v1: {'x': 1, 'y': 2} ---
+                        sql += 'ST_POINTFROMTEXT(?), ';
+                        this._data.push(`POINT(${v1.x} ${v1.y})`);
                     }
                     else {
                         sql += '?, ';
@@ -93,9 +112,27 @@ export class Sql {
                 const v = cs[k];
                 sql += this.field(k) + ', ';
                 if (Array.isArray(v)) {
-                    // --- v: ['POINT(?)', ['20']] ---
-                    values += v[0] + ', ';
-                    this._data.push(...v[1]);
+                    if (v[0][0]?.x === undefined) {
+                        // --- v: ['POINT(?)', ['20']] ---
+                        values += this.field(v[0]) + ', ';
+                        if (v[1] !== undefined) {
+                            this._data.push(...v[1]);
+                        }
+                    }
+                    else {
+                        // --- v: [[{'x': 1, 'y': 2}, { ... }], [{ ... }, { ... }]] ---
+                        values += 'ST_POLYGONFROMTEXT(?), ';
+                        this._data.push(`POLYGON(${v.map((item) => {
+                            return `(${item.map((it: any) => {
+                                return `${it.x} ${it.y}`;
+                            }).join(', ')})`;
+                        })})`);
+                    }
+                }
+                else if (v.x !== undefined) {
+                    // --- v: {'x': 1, 'y': 2} ---
+                    values += 'ST_POINTFROMTEXT(?), ';
+                    this._data.push(`POINT(${v.x} ${v.y})`);
                 }
                 else {
                     values += '?, ';
@@ -209,7 +246,9 @@ export class Sql {
                 'type': '6',        // 2
                 'type': '#type2',   // 3
                 'type': ['type3'],  // 4
-                'type' => ['(CASE `id` WHEN 1 THEN ? WHEN 2 THEN ? END)', ['val1', 'val2']]     // 5
+                'type' => ['(CASE `id` WHEN 1 THEN ? WHEN 2 THEN ? END)', ['val1', 'val2']],     // 5
+                'point' => { 'x': 0, 'y': 0 },  // 6
+                'polygon' => [ [ { 'x': 0, 'y': 0 }, { ... } ], [ ... ] ]   // 7
             }
         ]
         */
@@ -229,24 +268,41 @@ export class Sql {
                 }
             }
             else {
-                // --- 2, 3, 4, 5 ---
-                if (typeof v !== 'string' && typeof v !== 'number') {
-                    // --- 4, 5 ---
-                    sql += this.field(k) + ' = ' + this.field(v[0]) + ', ';
-                    if (v[1] !== undefined && Array.isArray(v[1])) {
-                        // --- 5 ---
-                        this._data.push(...v[1]);
+                // --- 2, 3, 4, 5, 6, 7 ---
+                sql += this.field(k) + ' = ';
+                if (Array.isArray(v)) {
+                    if (v[0][0]?.x === undefined) {
+                        // --- 4, 5 ---
+                        sql += this.field(v[0]) + ', ';
+                        if (v[1] !== undefined) {
+                            this._data.push(...v[1]);
+                        }
                     }
+                    else {
+                        // --- 7 ---
+                        sql += 'ST_POLYGONFROMTEXT(?), ';
+                        this._data.push(`POLYGON(${v.map((item) => {
+                            return `(${item.map((it: any) => {
+                                return `${it.x} ${it.y}`;
+                            }).join(', ')})`;
+                        })})`);
+                    }
+                }
+                else if (v.x !== undefined) {
+                    // --- 6 ---
+                    sql += 'ST_POINTFROMTEXT(?), ';
+                    this._data.push(`POINT(${v.x} ${v.y})`);
                 }
                 else {
                     // --- 2, 3 ---
                     const isf = this._isField(v);
                     if (isf[0]) {
-                        // --- field ---
-                        sql += this.field(k) + ' = ' + this.field(isf[1]) + ', ';
+                        // --- 3: field ---
+                        sql += this.field(isf[1]) + ', ';
                     }
                     else {
-                        sql += this.field(k) + ' = ?, ';
+                        // --- 2 ---
+                        sql += '?, ';
                         this._data.push(isf[1]);
                     }
                 }

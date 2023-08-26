@@ -407,7 +407,15 @@ function postFd() {
                 'ctr': this
             });
             test.set({
-                'point': ['POINT', lCore.rand(0, 99).toString() + ' ' + lCore.rand(0, 99).toString()],
+                'point': { 'x': lCore.rand(0, 99), 'y': lCore.rand(0, 99) },
+                'polygon': [
+                    [
+                        { 'x': 1, 'y': 1 },
+                        { 'x': 2, 'y': 2 },
+                        { 'x': 3, 'y': 3 },
+                        { 'x': 1, 'y': 1 }
+                    ]
+                ],
                 'time_add': time
             });
             const result = await test.create();
@@ -417,7 +425,15 @@ const test = mTest.getCreate<mTest>(db, {
     'ctr': this
 });
 test.set({
-    'point': ['POINT', lCore.rand(0, 99).toString() + ' ' + lCore.rand(0, 99).toString()],
+    'point': { 'x': lCore.rand(0, 99), 'y': lCore.rand(0, 99) },
+    'polygon': [
+        [
+            { 'x': 1, 'y': 1 },
+            { 'x': 2, 'y': 2 },
+            { 'x': 3, 'y': 3 },
+            { 'x': 1, 'y': 1 }
+        ]
+    ],
     'time_add': time
 });
 const result = await test.create();
@@ -427,7 +443,7 @@ JSON.stringify(result));</pre>` + JSON.stringify(result));
 
             echo.push('<br><br>Test table:');
 
-            stmt = await db.query('SELECT `id`, `token`, ST_ASTEXT(`point`), `time_add` FROM `m_test` WHERE `token` LIKE \'test_%\' ORDER BY `id` ASC;');
+            stmt = await db.query('SELECT * FROM `m_test` WHERE `token` LIKE \'test_%\' ORDER BY `id` ASC;');
             this._dbTable(stmt, echo);
 
             // --- explain ---
@@ -475,19 +491,22 @@ const r = await ls.explain();</pre>` + lText.htmlescape(JSON.stringify(r)));
                 echo.push('<tr><th>id</th><td>' + ft.id!.toString() + '</td></tr>');
                 echo.push('<tr><th>token</th><td>' + ft.token! + '</td></tr>');
                 echo.push('<tr><th>point</th><td>' + JSON.stringify(ft.point) + '</td></tr>');
+                echo.push('<tr><th>polygon</th><td>' + JSON.stringify(ft.polygon) + '</td></tr>');
                 echo.push('<tr><th>time_add</th><td>' + ft.time_add!.toString() + '</td></tr>');
 
                 echo.push('</table>');
 
                 // --- 修改 point 值 ---
 
-                ft.set('point', [
-                    'POINT', '20 20'
-                ]);
+                ft.set('point', {
+                    'x': 20,
+                    'y': 20
+                });
                 await ft.save();
-                echo.push(`<pre>ft.set('point', [
-    'POINT', '20 20'
-]);
+                echo.push(`<pre>ft.set('point', {
+    'x': 20,
+    'y': 20
+});
 await ft.save();</pre>`);
 
                 ft = await mTest.find<mTest>(db, ft.id!, {
@@ -502,6 +521,7 @@ await ft.save();</pre>`);
                 echo.push('<tr><th>id</th><td>' + ft.id!.toString() + '</td></tr>');
                 echo.push('<tr><th>token</th><td>' + ft.token! + '</td></tr>');
                 echo.push('<tr><th>point</th><td>' + JSON.stringify(ft.point) + '</td></tr>');
+                echo.push('<tr><th>polygon</th><td>' + JSON.stringify(ft.polygon) + '</td></tr>');
                 echo.push('<tr><th>time_add</th><td>' + ft.time_add!.toString() + '</td></tr>');
 
                 echo.push('</table>');
@@ -509,15 +529,33 @@ await ft.save();</pre>`);
                 // --- 再次修改 ---
 
                 ft.set({
-                    'point': [
-                        'POINT', '40 40'
+                    'point': {
+                        'x': 40,
+                        'y': 40
+                    },
+                    'polygon': [
+                        [
+                            { 'x': 5, 'y': 1 },
+                            { 'x': 6, 'y': 2 },
+                            { 'x': 7, 'y': 3 },
+                            { 'x': 5, 'y': 1 }
+                        ]
                     ]
                 });
                 await ft.save();
                 await ft.refresh();
                 echo.push(`<pre>ft.set({
-    'point': [
-        'POINT', '40 40'
+    'point': {
+        'x': 40,
+        'y': 40
+    },
+    'polygon': [
+        [
+            { 'x': 5, 'y': 1 },
+            { 'x': 6, 'y': 2 },
+            { 'x': 7, 'y': 3 },
+            { 'x': 5, 'y': 1 }
+        ]
     ]
 });
 await ft.save();
@@ -528,6 +566,7 @@ await ft.refresh();</pre>`);
                 echo.push('<tr><th>id</th><td>' + ft.id!.toString() + '</td></tr>');
                 echo.push('<tr><th>token</th><td>' + ft.token! + '</td></tr>');
                 echo.push('<tr><th>point</th><td>' + JSON.stringify(ft.point) + '</td></tr>');
+                echo.push('<tr><th>polygon</th><td>' + JSON.stringify(ft.polygon) + '</td></tr>');
                 echo.push('<tr><th>time_add</th><td>' + ft.time_add!.toString() + '</td></tr>');
 
                 echo.push('</table>');
@@ -592,9 +631,10 @@ CREATE TABLE \`m_test_data_0\` (
         });
         test.set({
             'token': lCore.random(lCore.rand(8, 32)),
-            'point': [
-                'POINT', '10 10'
-            ],
+            'point': {
+                'x': 10,
+                'y': 10
+            },
             'time_add': lTime.stamp()
         });
         await test.create();
@@ -950,7 +990,7 @@ exec: ${JSON.stringify(exec)}<br><br>`);
                 echo.push('<tr>');
                 for (const key in row) {
                     const val = row[key];
-                    echo.push('<td>' + (val === null ? 'null' : lText.htmlescape(val.toString())) + '</td>');
+                    echo.push('<td>' + (val === null ? 'null' : lText.htmlescape(JSON.stringify(val))) + '</td>');
                 }
                 echo.push('</tr>');
             }
@@ -1894,21 +1934,21 @@ Result:<pre id="result">Nothing.</pre>`);
 <b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
 <b>format() :</b> ${sql.format(s, sd)}<hr>`);
 
-                s = sql.insert('geo').values(['name', 'point'], [
+                s = sql.insert('geo').values(['name', 'point', 'point2'], [
                     [
-                        'POINT A', ['ST_POINTFROMTEXT(?)', ['POINT(122.147775 30.625014)']]
+                        'POINT A', ['ST_POINTFROMTEXT(?)', ['POINT(122.147775 30.625014)']], { 'x': 1, 'y': 1 }
                     ],
                     [
-                        'POINT B', ['ST_POINTFROMTEXT(?)', ['POINT(123.147775 30.625014)']]
+                        'POINT B', ['ST_POINTFROMTEXT(?)', ['POINT(123.147775 30.625014)']], { 'x': 1, 'y': 1 }
                     ]
                 ]).getSql();
                 sd = sql.getData();
-                echo.push(`<pre>sql.insert('geo').values(['name', 'point'], [
+                echo.push(`<pre>sql.insert('geo').values(['name', 'point', 'point2'], [
     [
-        'POINT A', ['ST_POINTFROMTEXT(?)', ['POINT(122.147775 30.625014)']]
+        'POINT A', ['ST_POINTFROMTEXT(?)', ['POINT(122.147775 30.625014)']], { 'x': 1, 'y': 1 }
     ],
     [
-        'POINT B', ['ST_POINTFROMTEXT(?)', ['POINT(123.147775 30.625014)']]
+        'POINT B', ['ST_POINTFROMTEXT(?)', ['POINT(123.147775 30.625014)']], { 'x': 1, 'y': 1 }
     ]
 ]);</pre>
 <b>getSql() :</b> ${s}<br>
