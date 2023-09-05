@@ -703,6 +703,8 @@ const base64 = cap.getBase64();</pre>phrase:`];
         return '<pre>lCore.random(16, lCore.RANDOM_LUNS);</pre>' + lText.htmlescape(lCore.random(16, lCore.RANDOM_LUNS)) +
             '<pre>lCore.random(4, lCore.RANDOM_V);</pre>' + lText.htmlescape(lCore.random(4, lCore.RANDOM_V)) +
             '<pre>lCore.random(8, lCore.RANDOM_N, \'0349\');</pre>' + lText.htmlescape(lCore.random(8, lCore.RANDOM_N, '0349')) +
+            '<pre>lCore.random(8, lCore.RANDOM_LNU);</pre>' + lText.htmlescape(lCore.random(8, lCore.RANDOM_LUN)) +
+            '<pre>lCore.random(16, lCore.RANDOM_LNU);</pre>' + lText.htmlescape(lCore.random(16, lCore.RANDOM_LUN)) +
             '<br><br>' + this._getEnd();
     }
 

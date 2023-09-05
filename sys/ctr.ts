@@ -288,6 +288,15 @@ export class Ctr {
                             }
                             break;
                         }
+                        case 'string': {
+                            if (input[key] !== null && (typeof input[key] !== 'string')) {
+                                // --- 如果不是 string 直接失败 ---
+                                rtn[0] = val[lastK][0];
+                                rtn[1] = val[lastK][1];
+                                return false;
+                            }
+                            break;
+                        }
                         default: {
                             let match: RegExpExecArray | null;
                             if (input[key]) {
