@@ -653,6 +653,7 @@ export class Sql {
         str = str.replace(/ {2,}/g, ' ');   // --- 去除多余的空格 ---
         str = str.replace(/ +([),])/g, ' $1');
         str = str.replace(/([(,]) +/g, '$1 ');
+        str = str.replace(/["']/g, '');
         // --- 先判断有没有别名（也就是 as） ---
         const loStr = str.toLowerCase();
         const asPos = loStr.indexOf(' as ');

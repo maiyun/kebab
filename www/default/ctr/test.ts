@@ -2184,6 +2184,7 @@ Result:<pre id="result">Nothing.</pre>`);
                 echo.push(`<pre>sql.field('FROM_UNIXTIME(time, \\'%Y-%m-%d\\') time');</pre>` + sql.field('FROM_UNIXTIME(time, \'%Y-%m-%d\') time'));
                 echo.push(`<pre>sql.field('(6371 * ACOS(COS(RADIANS(31.239845)) * COS(RADIANS(lat)) * COS(RADIANS(\`lng\`) - RADIANS(121.499662)) + SIN(RADIANS(31.239845)) * SIN(RADIANS(\`lat\`))))');</pre>` + sql.field('(6371 * ACOS(COS(RADIANS(31.239845)) * COS(RADIANS(lat)) * COS(RADIANS(`lng`) - RADIANS(121.499662)) + SIN(RADIANS(31.239845)) * SIN(RADIANS(`lat`))))'));
                 echo.push(`<pre>sql.field('MATCH(name_sc, name_tc) AGAINST("ok") tmp'));</pre>` + sql.field('MATCH(name_sc, name_tc) AGAINST("ok") tmp'));
+                echo.push(`<pre>sql.field('a\\'bc');</pre>` + sql.field('a\'bc'));
                 break;
             }
         }
