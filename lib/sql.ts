@@ -654,6 +654,7 @@ export class Sql {
         str = str.replace(/ +([),])/g, ' $1');
         str = str.replace(/([(,]) +/g, '$1 ');
         str = str.replace(/["']/g, '');
+        str = str.replace(/(\W)(JOIN|WHERE|OR|AND|UNION)(\W)/ig, '$1$3');
         // --- 先判断有没有别名（也就是 as） ---
         const loStr = str.toLowerCase();
         const asPos = loStr.indexOf(' as ');
