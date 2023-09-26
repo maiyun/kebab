@@ -93,9 +93,18 @@ async function run(): Promise<void> {
         'ciphers': 'ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA:ECDHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA256:DHE-RSA-AES256-SHA:ECDHE-ECDSA-DES-CBC3-SHA:ECDHE-RSA-DES-CBC3-SHA:EDH-RSA-DES-CBC3-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:DES-CBC3-SHA:!DSS',
         'allowHTTP1': true
     }, function(req: http2.Http2ServerRequest, res: http2.Http2ServerResponse): void {
+        const host = (req.headers[':authority'] ?? req.headers['host'] ?? '');
+        if (!host) {
+            const text = '<h1>Kebab: No permissions</h1>url: ' + (lText.htmlescape(req.url ?? '') + '<br>code: 1');
+            res.setHeader('content-type', 'text/html; charset=utf-8');
+            res.setHeader('content-length', Buffer.byteLength(text));
+            res.writeHead(403);
+            res.end(text);
+            return;
+        }
         req.setTimeout(30 * 1000);
         (async function() {
-            const key = (req.headers[':authority'] ?? '') + req.url;
+            const key = host + req.url;
             if (!linkCount[key]) {
                 linkCount[key] = 0;
             }
@@ -119,8 +128,13 @@ async function run(): Promise<void> {
             }, '[child][http2][request]' + JSON.stringify((e.stack as string)).slice(1, -1), '-error');
         });
     }).on('upgrade', function(req: http.IncomingMessage, socket: tls.TLSSocket): void {
+        const host = (req.headers['host'] ?? '');
+        if (!host) {
+            socket.end(`HTTP/${req.httpVersion} 403 No permissions\r\n\r\n`);
+            return;
+        }
         (async function() {
-            const key = (req.headers['host'] ?? '') + (req.url ?? '');
+            const key = host + (req.url ?? '');
             if (!linkCount[key]) {
                 linkCount[key] = 0;
             }
@@ -135,9 +149,18 @@ async function run(): Promise<void> {
         });
     }).listen(config.httpsPort);
     httpServer = http.createServer(function(req: http.IncomingMessage, res: http.ServerResponse): void {
+        const host = (req.headers['host'] ?? '');
+        if (!host) {
+            const text = '<h1>Kebab: No permissions</h1>url: ' + (lText.htmlescape(req.url ?? '') + '<br>code: 2');
+            res.setHeader('content-type', 'text/html; charset=utf-8');
+            res.setHeader('content-length', Buffer.byteLength(text));
+            res.writeHead(403);
+            res.end(text);
+            return;
+        }
         req.setTimeout(30 * 1000);
         (async function() {
-            const key = (req.headers['host'] ?? '') + (req.url ?? '');
+            const key = host + (req.url ?? '');
             if (!linkCount[key]) {
                 linkCount[key] = 0;
             }
@@ -161,8 +184,13 @@ async function run(): Promise<void> {
             }, '[child][http][request]' + JSON.stringify((e.stack as string)).slice(1, -1), '-error');
         });
     }).on('upgrade', function(req: http.IncomingMessage, socket: stream.Duplex): void {
+        const host = (req.headers['host'] ?? '');
+        if (!host) {
+            socket.end(`HTTP/${req.httpVersion} 403 No permissions\r\n\r\n`);
+            return;
+        }
         (async function() {
-            const key = (req.headers['host'] ?? '') + (req.url ?? '');
+            const key = host + (req.url ?? '');
             if (!linkCount[key]) {
                 linkCount[key] = 0;
             }

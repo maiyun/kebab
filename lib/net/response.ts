@@ -1,7 +1,7 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2020-4-9 15:33:06
- * Last: 2020-4-12 11:12:03, 2022-09-10 12:43:23, 2022-12-25 15:12:57
+ * Last: 2020-4-12 11:12:03, 2022-09-10 12:43:23, 2022-12-25 15:12:57, 2023-9-26 14:20:41
  */
 import * as hc from '@litert/http-client';
 import * as nStream from 'stream';
@@ -13,7 +13,7 @@ export class Response {
     private readonly _req: hc.IResponse | null = null;
 
     /** --- 返回的 headers --- */
-    public headers!: types.THttpHeaders;
+    public headers: types.THttpHeaders | null = null;
 
     public error: Error | null = null;
 
