@@ -238,6 +238,9 @@ export class Ctr {
                     if (v.length === 0) {
                         rtn[0] = val[lastK][0];
                         rtn[1] = val[lastK][1];
+                        if (val[lastK][2]) {
+                            rtn[2] = val[lastK][2];
+                        }
                         return false;
                     }
                     // --- 判断提交的数据是否在此 array 之内，若没有提交数据，则自动设置为第一个项 ---
@@ -248,6 +251,9 @@ export class Ctr {
                         // --- 不在 ---
                         rtn[0] = val[lastK][0];
                         rtn[1] = val[lastK][1];
+                        if (val[lastK][2]) {
+                            rtn[2] = val[lastK][2];
+                        }
                         return false;
                     }
                 }
@@ -257,6 +263,9 @@ export class Ctr {
                             if ((input[key] === null) || (input[key] === '')) {
                                 rtn[0] = val[lastK][0];
                                 rtn[1] = val[lastK][1];
+                                if (val[lastK][2]) {
+                                    rtn[2] = val[lastK][2];
+                                }
                                 return false;
                             }
                             break;
@@ -266,6 +275,9 @@ export class Ctr {
                             if (input[key] && (typeof input[key] !== 'number') && !/^[0-9]+\.?[0-9]*$/.test(input[key])) {
                                 rtn[0] = val[lastK][0];
                                 rtn[1] = val[lastK][1];
+                                if (val[lastK][2]) {
+                                    rtn[2] = val[lastK][2];
+                                }
                                 return false;
                             }
                             break;
@@ -274,6 +286,9 @@ export class Ctr {
                             if (input[key] !== null && !Array.isArray(input[key])) {
                                 rtn[0] = val[lastK][0];
                                 rtn[1] = val[lastK][1];
+                                if (val[lastK][2]) {
+                                    rtn[2] = val[lastK][2];
+                                }
                                 return false;
                             }
                             break;
@@ -284,6 +299,9 @@ export class Ctr {
                                 // --- 如果不是 bool 直接失败，字符串的 true, false 也会失败 ---
                                 rtn[0] = val[lastK][0];
                                 rtn[1] = val[lastK][1];
+                                if (val[lastK][2]) {
+                                    rtn[2] = val[lastK][2];
+                                }
                                 return false;
                             }
                             break;
@@ -293,6 +311,9 @@ export class Ctr {
                                 // --- 如果不是 string 直接失败 ---
                                 rtn[0] = val[lastK][0];
                                 rtn[1] = val[lastK][1];
+                                if (val[lastK][2]) {
+                                    rtn[2] = val[lastK][2];
+                                }
                                 return false;
                             }
                             break;
@@ -305,6 +326,9 @@ export class Ctr {
                                     if (!(new RegExp(v.slice(1, -1))).test(input[key])) {
                                         rtn[0] = val[lastK][0];
                                         rtn[1] = val[lastK][1];
+                                        if (val[lastK][2]) {
+                                            rtn[2] = val[lastK][2];
+                                        }
                                         return false;
                                     }
                                 }
@@ -357,6 +381,9 @@ export class Ctr {
                                     if (needReturn) {
                                         rtn[0] = val[lastK][0];
                                         rtn[1] = val[lastK][1];
+                                        if (val[lastK][2]) {
+                                            rtn[2] = val[lastK][2];
+                                        }
                                         return false;
                                     }
                                 }
@@ -364,6 +391,9 @@ export class Ctr {
                                     if (input[key] !== v) {
                                         rtn[0] = val[lastK][0];
                                         rtn[1] = val[lastK][1];
+                                        if (val[lastK][2]) {
+                                            rtn[2] = val[lastK][2];
+                                        }
                                         return false;
                                     }
                                 }
@@ -587,10 +617,10 @@ export class Ctr {
      */
     protected _l(key: string, data?: string[]): string {
         if (!this._localeData[this._locale]) {
-            return 'LocaleError';
+            return '[LocaleError]' + key;
         }
         if (!this._localeData[this._locale][key]) {
-            return 'LocaleError';
+            return '[LocaleError]' + key;
         }
         if (data) {
             let i: number = -1;

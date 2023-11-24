@@ -173,6 +173,7 @@ export default class extends sCtr.Ctr {
             `<br><br><a href="${this._config.const.urlBase}test/consistent-hash">View "test/consistent-hash"</a>`,
             `<br><a href="${this._config.const.urlBase}test/consistent-distributed">View "test/consistent-distributed"</a>`,
             `<br><a href="${this._config.const.urlBase}test/consistent-migration">View "test/consistent-migration"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/consistent-fast">View "test/consistent-fast"</a>`,
 
             '<br><br><b>Text:</b>',
             `<br><br><a href="${this._config.const.urlBase}test/text">View "test/text"</a>`,
@@ -2291,6 +2292,20 @@ const rtn = cons.migration(rows, newTables);</pre>`);
         echo.push('</table>');
 
         return echo.join('') + '... More ' + (count - 200).toString() + ' ...<br><br>' + this._getEnd();
+    }
+
+    public consistentFast(): string {
+        const echo: string[] = [];
+
+        let rtn = lConsistent.fast('a', lConsistent.getRange(0, 30));
+        echo.push(`<pre>Consistent.fast('a', lConsistent.getRange(0, 30))</pre>`);
+        echo.push(JSON.stringify(rtn));
+
+        rtn = lConsistent.fast('b', lConsistent.getRange(0, 30));
+        echo.push(`<pre>Consistent.fast('b', lConsistent.getRange(0, 30))</pre>`);
+        echo.push(JSON.stringify(rtn));
+
+        return echo.join('') + '<br><br>' + this._getEnd();
     }
 
     public text(): string {

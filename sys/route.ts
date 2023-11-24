@@ -561,7 +561,7 @@ export async function run(data: {
                             Object.assign(json, rtn[1]);
                         }
                         else {
-                            // --- [0, 'xxx'] ---
+                            // --- [0, 'xxx'], [0, 'xxx', {'xx': 'xx'}] ---
                             json['msg'] = rtn[1];
                             if (rtn[2] !== undefined) {
                                 Object.assign(json, rtn[2]);

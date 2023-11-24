@@ -1,7 +1,7 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2022-09-12 10:51:16
- * Last: 2022-09-12 10:51:20, 2023-3-17 10:52:04
+ * Last: 2022-09-12 10:51:20, 2023-3-17 10:52:04, 2023-11-15 11:45:28
  */
 import * as crypto from '~/lib/crypto';
 
@@ -11,7 +11,7 @@ export class Consistent {
     private readonly _vcount: number = 300;
 
     /** --- hash 环 --- */
-    private _circle: Record<string, string> = {};
+    private readonly _circle: Record<string, string> = {};
 
     /** --- circle 的 keys --- */
     private _keys: string[] = [];
@@ -32,14 +32,7 @@ export class Consistent {
      * @param node node 节点名一个或多个
      */
     public add(node: string | string[]): void {
-        if (typeof node === 'string') {
-            node = [node];
-        }
-        for (const v of node) {
-            for (let i = 0; i < this._vcount; i++) {
-                this._circle[hash(v + i.toString())] = v;
-            }
-        }
+        addToCircle(this._circle, node, this._vcount);
         this._keys = [];
     }
 
@@ -61,7 +54,7 @@ export class Consistent {
 
     /**
      * 获得一个最近的顺时针节点
-     * @param key 为给定键取Hash，取得顺时针方向上最近的一个虚拟节点对应的实际节点
+     * @param key 为给定键取 Hash，取得顺时针方向上最近的一个虚拟节点对应的实际节点
      */
     public find(key: string | number): string | null {
         if (this._keys.length === 0) {
@@ -70,25 +63,7 @@ export class Consistent {
                 return parseFloat(a) - parseFloat(b);
             });
         }
-        const count = this._keys.length;
-        if (count === 0) {
-            return null;
-        }
-        if (count === 1) {
-            return this._circle[this._keys[0]];
-        }
-        const hashv = hash(key);
-        if (this._circle[hashv] !== undefined) {
-            return this._circle[hashv];
-        }
-        for (const v of this._keys) {
-            if (parseFloat(v) < hashv) {
-                continue;
-            }
-            return this._circle[v];
-        }
-        // --- 没找到 ---
-        return this._circle[this._keys[0]];
+        return findInCircle(this._circle, key, this._keys);
     }
 
     /**
@@ -147,9 +122,9 @@ export function get(vcount = 300): Consistent {
  * @param vcount 虚拟节点数量
  */
 export function fast(key: string | number, nodes: string | string[], vcount = 300): string | null {
-    const cons = new Consistent(vcount);
-    cons.add(nodes);
-    return cons.find(key);
+    const circle: Record<string, string> = {};
+    addToCircle(circle, nodes, vcount);
+    return findInCircle(circle, key);
 }
 
 /**
@@ -181,4 +156,64 @@ export function getRange(min: number, max: number, pre: string = ''): string[] {
         ls.push(pre + i.toString());
     }
     return ls;
+}
+
+/**
+ * --- 添加到圆环 ---
+ * @param circle 圆环
+ * @param node node 节点名一个或多个
+ * @param vcount 虚拟节点数量
+ */
+export function addToCircle(
+    circle: Record<string, string>,
+    node: string | string[],
+    vcount: number = 300
+): void {
+    if (typeof node === 'string') {
+        node = [node];
+    }
+    for (const v of node) {
+        for (let i = 0; i < vcount; i++) {
+            circle[hash(v + i.toString())] = v;
+        }
+    }
+}
+
+/**
+ * --- 获得一个最近的顺时针节点 ---
+ * @param circle 圆环
+ * @param key 为给定键取 Hash，取得顺时针方向上最近的一个虚拟节点对应的实际节点
+ * @param keys keys，留空则自动从 circle 上取
+ */
+export function findInCircle(
+    circle: Record<string, string>,
+    key: string | number,
+    keys: string[] = []
+): string | null {
+    let count = keys.length;
+    if (keys.length === 0) {
+        keys = Object.keys(circle);
+        count = keys.length;
+        keys.sort((a, b) => {
+            return parseFloat(a) - parseFloat(b);
+        });
+    }
+    if (count === 0) {
+        return null;
+    }
+    if (count === 1) {
+        return circle[keys[0]];
+    }
+    const hashv = hash(key);
+    if (circle[hashv] !== undefined) {
+        return circle[hashv];
+    }
+    for (const v of keys) {
+        if (parseFloat(v) < hashv) {
+            continue;
+        }
+        return circle[v];
+    }
+    // --- 没找到 ---
+    return circle[keys[0]];
 }
