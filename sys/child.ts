@@ -95,12 +95,16 @@ async function run(): Promise<void> {
     }, function(req: http2.Http2ServerRequest, res: http2.Http2ServerResponse): void {
         const host = (req.headers[':authority'] ?? req.headers['host'] ?? '');
         if (!host) {
+            req.socket.destroy();
+            return;
+            /*
             const text = '<h1>Kebab: No permissions</h1>url: ' + (lText.htmlescape(req.url ?? '') + '<br>code: 1');
             res.setHeader('content-type', 'text/html; charset=utf-8');
             res.setHeader('content-length', Buffer.byteLength(text));
             res.writeHead(403);
             res.end(text);
             return;
+            */
         }
         req.setTimeout(30 * 1000);
         (async function() {
@@ -130,8 +134,12 @@ async function run(): Promise<void> {
     }).on('upgrade', function(req: http.IncomingMessage, socket: tls.TLSSocket): void {
         const host = (req.headers['host'] ?? '');
         if (!host) {
+            req.socket.destroy();
+            return;
+            /*
             socket.end(`HTTP/${req.httpVersion} 403 No permissions\r\n\r\n`);
             return;
+            */
         }
         (async function() {
             const key = host + (req.url ?? '');
@@ -151,12 +159,16 @@ async function run(): Promise<void> {
     httpServer = http.createServer(function(req: http.IncomingMessage, res: http.ServerResponse): void {
         const host = (req.headers['host'] ?? '');
         if (!host) {
+            req.socket.destroy();
+            return;
+            /*
             const text = '<h1>Kebab: No permissions</h1>url: ' + (lText.htmlescape(req.url ?? '') + '<br>code: 2');
             res.setHeader('content-type', 'text/html; charset=utf-8');
             res.setHeader('content-length', Buffer.byteLength(text));
             res.writeHead(403);
             res.end(text);
             return;
+            */
         }
         req.setTimeout(30 * 1000);
         (async function() {
@@ -186,8 +198,12 @@ async function run(): Promise<void> {
     }).on('upgrade', function(req: http.IncomingMessage, socket: stream.Duplex): void {
         const host = (req.headers['host'] ?? '');
         if (!host) {
+            req.socket.destroy();
+            return;
+            /*
             socket.end(`HTTP/${req.httpVersion} 403 No permissions\r\n\r\n`);
             return;
+            */
         }
         (async function() {
             const key = host + (req.url ?? '');
@@ -234,12 +250,16 @@ async function requestHandler(
     /** --- 当前的 vhost 配置文件 --- */
     const vhost = getVhostByHostname(uri.hostname ?? '');
     if (!vhost) {
+        req.socket.destroy();
+        return;
+        /*
         const text = '<h1>Kebab: No permissions</h1>host: ' + (req.headers[':authority'] as string | undefined ?? req.headers['host'] ?? '') + '<br>url: ' + (lText.htmlescape(req.url ?? ''));
         res.setHeader('content-type', 'text/html; charset=utf-8');
         res.setHeader('content-length', Buffer.byteLength(text));
         res.writeHead(403);
         res.end(text);
         return;
+        */
     }
     /** --- 网站绝对根目录，末尾带 / --- */
     let rootPath = lText.isRealPath(vhost.root) ? vhost.root : def.WWW_PATH + vhost.root;

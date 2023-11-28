@@ -464,6 +464,7 @@ export async function run(data: {
                 }
             }
             if (!data.res.writableEnded) {
+                // --- 如果当前还没结束，则强制关闭连接，一切 pipe 请自行在方法中 await，否则会被中断 ---
                 data.res.end('');
             }
         }
