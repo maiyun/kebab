@@ -489,11 +489,11 @@ const r = await ls.explain();</pre>` + lText.htmlescape(JSON.stringify(r)));
             if (ft) {
                 echo.push('<table style="width: 100%;">');
 
-                echo.push('<tr><th>id</th><td>' + ft.id!.toString() + '</td></tr>');
-                echo.push('<tr><th>token</th><td>' + ft.token! + '</td></tr>');
+                echo.push('<tr><th>id</th><td>' + ft.id.toString() + '</td></tr>');
+                echo.push('<tr><th>token</th><td>' + ft.token + '</td></tr>');
                 echo.push('<tr><th>point</th><td>' + JSON.stringify(ft.point) + '</td></tr>');
                 echo.push('<tr><th>polygon</th><td>' + JSON.stringify(ft.polygon) + '</td></tr>');
-                echo.push('<tr><th>time_add</th><td>' + ft.time_add!.toString() + '</td></tr>');
+                echo.push('<tr><th>time_add</th><td>' + ft.time_add.toString() + '</td></tr>');
 
                 echo.push('</table>');
 
@@ -510,7 +510,7 @@ const r = await ls.explain();</pre>` + lText.htmlescape(JSON.stringify(r)));
 });
 await ft.save();</pre>`);
 
-                ft = await mTest.find<mTest>(db, ft.id!, {
+                ft = await mTest.find<mTest>(db, ft.id, {
                     'ctr': this
                 });
                 if (!ft) {
@@ -519,11 +519,11 @@ await ft.save();</pre>`);
 
                 echo.push('<table style="width: 100%;">');
 
-                echo.push('<tr><th>id</th><td>' + ft.id!.toString() + '</td></tr>');
-                echo.push('<tr><th>token</th><td>' + ft.token! + '</td></tr>');
+                echo.push('<tr><th>id</th><td>' + ft.id.toString() + '</td></tr>');
+                echo.push('<tr><th>token</th><td>' + ft.token + '</td></tr>');
                 echo.push('<tr><th>point</th><td>' + JSON.stringify(ft.point) + '</td></tr>');
                 echo.push('<tr><th>polygon</th><td>' + JSON.stringify(ft.polygon) + '</td></tr>');
-                echo.push('<tr><th>time_add</th><td>' + ft.time_add!.toString() + '</td></tr>');
+                echo.push('<tr><th>time_add</th><td>' + ft.time_add.toString() + '</td></tr>');
 
                 echo.push('</table>');
 
@@ -564,11 +564,11 @@ await ft.refresh();</pre>`);
 
                 echo.push('<table style="width: 100%;">');
 
-                echo.push('<tr><th>id</th><td>' + ft.id!.toString() + '</td></tr>');
-                echo.push('<tr><th>token</th><td>' + ft.token! + '</td></tr>');
+                echo.push('<tr><th>id</th><td>' + ft.id.toString() + '</td></tr>');
+                echo.push('<tr><th>token</th><td>' + ft.token + '</td></tr>');
                 echo.push('<tr><th>point</th><td>' + JSON.stringify(ft.point) + '</td></tr>');
                 echo.push('<tr><th>polygon</th><td>' + JSON.stringify(ft.polygon) + '</td></tr>');
-                echo.push('<tr><th>time_add</th><td>' + ft.time_add!.toString() + '</td></tr>');
+                echo.push('<tr><th>time_add</th><td>' + ft.time_add.toString() + '</td></tr>');
 
                 echo.push('</table>');
             }

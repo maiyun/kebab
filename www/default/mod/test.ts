@@ -23,15 +23,15 @@ export default class extends sMod {
 
     /* eslint-disable @typescript-eslint/naming-convention */
 
-    public id?: number;
+    public id!: number;
 
-    public token?: string;
+    public token!: string;
 
-    public point?: { 'x': number; 'y': number; };
+    public point!: { 'x': number; 'y': number; };
 
-    public polygon?: Array<Array<{ 'x': number; 'y': number; }>>;
+    public polygon!: Array<Array<{ 'x': number; 'y': number; }>>;
 
-    public time_add?: number;
+    public time_add!: number;
 
     /* eslint-enable */
 

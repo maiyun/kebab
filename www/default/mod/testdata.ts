@@ -17,13 +17,13 @@ export default class extends sMod {
 
     /* eslint-disable @typescript-eslint/naming-convention */
 
-    public id?: number;
+    public id!: number;
 
-    public test_id?: number;
+    public test_id!: number;
 
-    public content?: string;
+    public content!: string;
 
-    public time_add?: number;
+    public time_add!: number;
 
     /* eslint-enable */
 
