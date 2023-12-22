@@ -10,7 +10,7 @@
     "ts-alias-loader": "^0.1.2"
   },
   "devDependencies": {
-    "@litert/eslint-plugin-rules": "^0.1.2",
+    "@litert/eslint-plugin-rules": "^0.1.6",
     "@types/ejs": "^3.1.1",
     "@types/node": "^18.14.6",
     "@types/ssh2": "^1.11.11",

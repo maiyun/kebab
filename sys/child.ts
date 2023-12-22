@@ -37,7 +37,7 @@ const certList: Array<{
 }> = [];
 
 /** --- server: index --- */
-let certHostIndex: Record<string, any> = {};
+let certHostIndex: Record<string, number> = {};
 
 /** --- 当前的虚拟主机配置列表 - 读取于 conf/vhost/*.json --- */
 let vhosts: types.IVhost[] = [];
@@ -133,7 +133,7 @@ async function run(): Promise<void> {
             }, '[child][http2][request]' + JSON.stringify((e.stack as string)).slice(1, -1), '-error');
         });
     }).on('tlsClientError', (err, socket) => {
-        console.log('[child][http2][tls]', err);
+        // console.log('[child][http2][tls]', err);
         socket.destroy();
     }).on('upgrade', function(req: http.IncomingMessage, socket: tls.TLSSocket): void {
         const host = (req.headers['host'] ?? '');
@@ -156,8 +156,18 @@ async function run(): Promise<void> {
             if (!linkCount[key]) {
                 delete linkCount[key];
             }
-        })().catch(function(e) {
-            console.error('[child] [http2] [upgrade]', e);
+        })().catch(async function(e) {
+            await lCore.log({
+                'path': '',
+                'urlFull': '',
+                'hostname': '',
+                'req': req,
+                'get': {},
+                'post': {},
+                'cookie': {},
+                'headers': {},
+                'input': ''
+            }, '[child][http2][upgrade]' + JSON.stringify((e.stack as string)).slice(1, -1), '-error');
         });
     }).listen(config.httpsPort);
     httpServer = http.createServer(function(req: http.IncomingMessage, res: http.ServerResponse): void {
@@ -250,7 +260,15 @@ async function requestHandler(
     // --- 设置服务器名版本 ---
     res.setHeader('Server', 'Kebab/' + def.VER);
     // --- 当前 uri ---
-    const uri: url.UrlWithStringQuery = url.parse(`http${https ? 's' : ''}://${req.headers[':authority'] ?? req.headers['host']}${req.url}`);
+    let host = req.headers[':authority'];
+    if (host === undefined || typeof host !== 'string') {
+        host = req.headers['host'];
+        if (host === undefined) {
+            req.socket.destroy();
+            return;
+        }
+    }
+    const uri: url.UrlWithStringQuery = url.parse(`http${https ? 's' : ''}://${host}${req.url ?? ''}`);
     /** --- 当前的 vhost 配置文件 --- */
     const vhost = getVhostByHostname(uri.hostname ?? '');
     if (!vhost) {
@@ -311,7 +329,7 @@ async function requestHandler(
                             return;
                         }
                     }
-                    catch (e: any) {
+                    catch (e: types.Json) {
                         await lCore.log({
                             'path': path.slice(('/' + pathList.slice(0, i).join('/')).length + 1),
                             'urlFull': (uri.protocol ?? '') + '//' + (uri.host ?? '') + '/' + now,
@@ -358,7 +376,7 @@ async function requestHandler(
                         return;
                     }
                 }
-                catch (e: any) {
+                catch (e: types.Json) {
                     await lCore.log({
                         'path': path.slice(1),
                         'urlFull': (uri.protocol ?? '') + '//' + (uri.host ?? '') + '/' + now,
@@ -403,7 +421,7 @@ async function requestHandler(
 async function upgradeHandler(req: http.IncomingMessage, socket: stream.Duplex, https: boolean): Promise<void> {
     socket.removeAllListeners('error');
     // --- 当前 uri ---
-    const uri: url.UrlWithStringQuery = url.parse(`ws${https ? 's' : ''}://${req.headers['host']}${req.url}`);
+    const uri: url.UrlWithStringQuery = url.parse(`ws${https ? 's' : ''}://${req.headers['host'] ?? ''}${req.url ?? ''}`);
     /** --- 当前的 vhost 配置文件 --- */
     const vhost = getVhostByHostname(uri.hostname ?? '');
     if (!vhost) {
@@ -501,7 +519,7 @@ async function reload(): Promise<void> {
         if (!fstr) {
             continue;
         }
-        let list: any = JSON.parse(fstr);
+        let list: types.IVhost | types.IVhost[] = JSON.parse(fstr);
         if (!Array.isArray(list)) {
             list = [list];
         }
@@ -543,11 +561,12 @@ async function reload(): Promise<void> {
 }
 
 // --- 接收主进程回传信号，主要用来 reload，restart ---
-process.on('message', function(msg: any) {
+process.on('message', function(msg: types.Json) {
     (async function() {
         switch (msg.action) {
             case 'reload': {
                 await reload();
+                // eslint-disable-next-line no-console
                 console.log(`[child] Worker ${process.pid} reload execution succeeded.`);
                 break;
             }
@@ -566,6 +585,7 @@ process.on('message', function(msg: any) {
                     for (const key in linkCount) {
                         str.push(key + ':' + linkCount[key].toString());
                     }
+                    // eslint-disable-next-line no-console
                     console.log(`[child] Worker ${process.pid} busy: ${str.join(',')}.`);
                     await lCore.log({
                         'path': '',
@@ -581,13 +601,24 @@ process.on('message', function(msg: any) {
                     await lCore.sleep(5000);
                 }
                 // --- 链接全部断开 ---
+                // eslint-disable-next-line no-console
                 console.log(`[child] Worker ${process.pid} has run disconnect().`);
                 process.disconnect();
                 break;
             }
         }
-    })().catch(function(e) {
-        console.log('[child] [process] [message]', e);
+    })().catch(async function(e) {
+        await lCore.log({
+            'path': '',
+            'urlFull': '',
+            'hostname': '',
+            'req': null,
+            'get': {},
+            'post': {},
+            'cookie': {},
+            'headers': {},
+            'input': ''
+        }, '[child][process][message]' + JSON.stringify((e.stack as string)).slice(1, -1), '-error');
     });
 });
 
@@ -627,6 +658,8 @@ function getVhostByHostname(hostname: string): types.IVhost | null {
 }
 
 run().catch(function(e): void {
+    /* eslint-disable no-console */
     console.log('[child] ------ [Process fatal Error] ------');
     console.log(e);
+    /* eslint-enable */
 });

@@ -1,7 +1,7 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2020-3-14 17:24:38
- * Last: 2020-3-30 15:31:40, 2022-07-22 16:59:00, 2022-09-12 23:51:56, 2022-09-23 15:53:58, 2022-12-29 01:18:08, 2023-2-28 20:07:57
+ * Last: 2020-3-30 15:31:40, 2022-07-22 16:59:00, 2022-09-12 23:51:56, 2022-09-23 15:53:58, 2022-12-29 01:18:08, 2023-2-28 20:07:57, 2023-12-21 13:25:54
  */
 import * as http from 'http';
 import * as http2 from 'http2';
@@ -18,14 +18,20 @@ import * as text from '../lib/text';
 import * as sRoute from '../sys/route';
 import * as types from '../types';
 
-/** --- 已加载的 DATA 数据缓存-- */
-let loadedData: any = {};
+/** --- 已加载的 DATA 数据缓存（不是语言包）-- */
+let loadedData: Record<
+    string, // 文件名
+    Record<string, types.Json>
+> = {};
 
 /** --- 已加载的语言文件列表 --- */
 let localeFiles: string[] = [];
 
 /** --- 已经加载的语言包（全局） ---  */
-let localeData: Record<string, Record<string, any>> = {};
+let localeData: Record<
+    string, // 文件名
+    Record<string, string>
+> = {};
 
 /**
  * --- 清除已经加载的 data 与语言包文件缓存 ---
@@ -51,10 +57,10 @@ export class Ctr {
     protected _get!: Record<string, string>;
 
     /** --- 原始 POST 数据 --- */
-    protected _rawPost: Record<string, any> = {};
+    protected _rawPost: Record<string, types.Json> = {};
 
     /** --- POST 数据 --- */
-    protected _post: Record<string, any> = {};
+    protected _post: Record<string, types.Json> = {};
 
     /** --- 原始 input 字符串 */
     protected _input: string = '';
@@ -66,10 +72,10 @@ export class Ctr {
     protected _cookie: Record<string, string> = {};
 
     /** --- Jwt 数组 --- */
-    protected _jwt: Record<string, any> = {};
+    protected _jwt: Record<string, types.Json> = {};
 
     /** --- Session 数组 --- */
-    protected _session: Record<string, any> = {};
+    protected _session: Record<string, types.Json> = {};
 
     /** --- Session --- 对象 */
     protected _sess: session.Session | null = null;
@@ -127,26 +133,27 @@ export class Ctr {
     public getPrototype(name: '_headers'): http.IncomingHttpHeaders;
     public getPrototype(name: '_req'): http2.Http2ServerRequest | http.IncomingMessage;
     public getPrototype(name: '_res'): http2.Http2ServerResponse | http.ServerResponse;
-    public getPrototype(name: '_rawPost' | '_post' | '_get' | '_session'): Record<string, any>;
+    public getPrototype(name: '_rawPost' | '_post' | '_get' | '_session'): Record<string, types.Json>;
     public getPrototype(name: '_input'): string;
-    public getPrototype(name: string): any;
-    public getPrototype(name: string): any {
-        return (this as any)[name];
+    public getPrototype(name: string): types.Json;
+    public getPrototype(name: string): types.Json {
+        return (this as types.Json)[name];
     }
 
     /** --- 设置类内部的 prototype --- */
     public setPrototype(
         name: string,
         val: string | string[] |
-        http.IncomingHttpHeaders | Record<string, any> | session.Session | null
+        http.IncomingHttpHeaders | Record<string, types.Json> | session.Session | null
     ): void {
-        (this as any)[name] = val;
+        (this as types.Json)[name] = val;
     }
 
     /**
      * --- 实例化后会执行的方法，可重写此方法 ---
      */
-    public onLoad(): boolean | string | Promise<boolean | string> {
+    public onLoad(): boolean | string | types.DbValue[] |
+    Promise<boolean | string | types.DbValue[]> {
         return true;
     }
 
@@ -186,7 +193,7 @@ export class Ctr {
      * @param path
      * @param data
      */
-    protected async _loadView(path: string, data: any = {}): Promise<string> {
+    protected async _loadView(path: string, data: types.Json = {}): Promise<string> {
         const content = await fs.getContent(this._config.const.viewPath + path + '.ejs', 'utf8');
         if (!content) {
             return '';
@@ -210,7 +217,10 @@ export class Ctr {
      * @param rule 规则
      * @param rtn 返回值
      */
-    protected _checkInput(input: Record<string, any>, rule: Record<string, any[]>, rtn: any[]): boolean {
+    protected _checkInput(
+        input: Record<string, types.Json>,
+        rule: Record<string, types.Json[]>, rtn: types.Json[]
+    ): boolean {
         // --- 遍历规则 ---
         // --- input, {'xx': ['require', '> 6', [0, 'xx 必须大于 6']], 'yy': [], '_xsrf': []], rtn ---
         for (const key in rule) {
@@ -249,6 +259,17 @@ export class Ctr {
                     }
                     else if (!v.includes(input[key])) {
                         // --- 不在 ---
+                        rtn[0] = val[lastK][0];
+                        rtn[1] = val[lastK][1];
+                        if (val[lastK][2]) {
+                            rtn[2] = val[lastK][2];
+                        }
+                        return false;
+                    }
+                }
+                else if (v instanceof RegExp) {
+                    // --- 正则 ---
+                    if (!v.test(input[key])) {
                         rtn[0] = val[lastK][0];
                         rtn[1] = val[lastK][1];
                         if (val[lastK][2]) {
@@ -412,7 +433,9 @@ export class Ctr {
      * @param rule 规则
      * @param rtn 返回值
      */
-    protected _checkXInput(input: Record<string, any>, rule: Record<string, any[]>, rtn: any[]): boolean {
+    protected _checkXInput(
+        input: Record<string, types.Json>, rule: Record<string, types.Json[]>, rtn: types.Json[]
+    ): boolean {
         if (rule['_xsrf'] === undefined) {
             rule['_xsrf'] = ['require', this._cookie['XSRF-TOKEN'], [0, 'Bad request, no permission.']];
         }
@@ -488,7 +511,7 @@ export class Ctr {
      * --- 获取 data 数据 ---
      * @param path 文件路径（不含扩展名）
      */
-    protected async _loadData(path: string): Promise<Record<string, any> | null> {
+    protected async _loadData(path: string): Promise<Record<string, string> | null> {
         const realPath = this._config.const.dataPath + path + '.json';
         if (loadedData[realPath]) {
             return loadedData[realPath];
@@ -552,9 +575,6 @@ export class Ctr {
                 if (localeData[lPath] === undefined) {
                     localeData[lPath] = {};
                 }
-                if (localeData[lPath][loc] === undefined) {
-                    localeData[lPath][loc] = {};
-                }
                 this._loadLocaleDeep(lPath, locData);
                 localeFiles.push(lPath);
             }
@@ -565,8 +585,8 @@ export class Ctr {
             if (this._localeData[loc] === undefined) {
                 this._localeData[loc] = {};
             }
-            for (const key in localeData[lPath][loc]) {
-                this._localeData[loc][key] = localeData[lPath][loc][key];
+            for (const key in localeData[lPath]) {
+                this._localeData[loc][key] = localeData[lPath][key];
             }
             this._localeFiles.push(lName);
         }
@@ -576,14 +596,14 @@ export class Ctr {
         return true;
     }
 
-    private _loadLocaleDeep(lPath: string, locData: Record<string, any>, pre: string = ''): void {
+    private _loadLocaleDeep(lPath: string, locData: Record<string, types.Json>, pre: string = ''): void {
         for (const k in locData) {
             const v = locData[k];
             if (typeof v === 'object') {
                 this._loadLocaleDeep(lPath, v, pre + k + '.');
             }
             else {
-                localeData[lPath][this._locale][pre + k] = v;
+                localeData[lPath][pre + k] = v;
             }
         }
     }

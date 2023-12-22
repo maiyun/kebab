@@ -1,3 +1,4 @@
+import * as fs from 'fs';
 // --- 库和定义 ---
 import * as lCore from '~/lib/core';
 import * as lNet from '~/lib/net';
@@ -15,6 +16,7 @@ import * as lSsh from '~/lib/ssh';
 import * as lJwt from '~/lib/jwt';
 import * as sCtr from '~/sys/ctr';
 import * as def from '~/sys/def';
+import * as types from '~/types';
 // --- mod ---
 import mTest from '../mod/test';
 import mTestData from '../mod/testdata';
@@ -23,7 +25,7 @@ export default class extends sCtr.Ctr {
 
     private _internalUrl: string = '';
 
-    public onLoad(): any {
+    public onLoad(): Array<string | number> | boolean {
         if (this._config.const.hostname !== '127.0.0.1' && this._config.const.hostname !== '172.17.0.1' && this._config.const.hostname !== 'local-test.brc-app.com' && !this._config.const.hostname.startsWith('192.168.')) {
             return [0, 'Please use 127.0.0.1 to access the file (' + this._config.const.host + ').'];
         }
@@ -34,6 +36,7 @@ export default class extends sCtr.Ctr {
         else {
             this._internalUrl = this._config.const.urlFull;
         }
+        return true;
     }
 
     public notfound(): string {
@@ -207,7 +210,7 @@ export default class extends sCtr.Ctr {
         });
     }
 
-    public json(): any {
+    public json(): Array<number | string | object> | object {
         switch (this._get.type) {
             case '1':
                 return [0];
@@ -236,8 +239,8 @@ export default class extends sCtr.Ctr {
 Result:<pre id="result">Nothing.</pre>${this._getEnd()}`;
     }
 
-    public ctrXsrf1(): any[] {
-        const retur: any[] = [];
+    public ctrXsrf1(): Array<string | number | object> {
+        const retur: Array<string | number | object> = [];
         if (!this._checkXInput(this._post, {}, retur)) {
             return retur;
         }
@@ -322,9 +325,9 @@ function postFd() {
         return echo.join('') + this._getEnd();
     }
 
-    public async ctrCheckinput1(): Promise<any[]> {
+    public async ctrCheckinput1(): Promise<types.Json[]> {
         await this._handleFormData();
-        const retur: any[] = [];
+        const retur: types.Json[] = [];
         if (!this._checkInput(this._post, {
             'he': ['require', [0, 'The he param does not exist.']],
             'num': ['> 10', [0, 'The num param must > 10.']],
@@ -336,8 +339,8 @@ function postFd() {
         return [1, { 'post': this._post }];
     }
 
-    public async ctrLocale(): Promise<any> {
-        let rtn: any = [];
+    public async ctrLocale(): Promise<types.Json[] | string> {
+        const rtn: types.Json[] = [];
         if (!this._checkInput(this._get, {
             'lang': [['en', 'sc', 'tc', 'ja'], [0, 'Wrong language.']]
         }, rtn)) {
@@ -352,8 +355,8 @@ function postFd() {
             '<a href="' + this._config.const.urlBase + 'test">Return</a>'
         ];
 
-        rtn = await this._loadLocale(this._get['lang'], 'test');
-        echo.push(`<pre>await this._loadLocale(this._get['lang'], 'test');</pre>${rtn ? 'true' : 'false'}`);
+        const r = await this._loadLocale(this._get['lang'], 'test');
+        echo.push(`<pre>await this._loadLocale(this._get['lang'], 'test');</pre>${r ? 'true' : 'false'}`);
 
         echo.push("<pre>l('hello')</pre>" + this._l('hello'));
         echo.push("<pre>l('copy')</pre>" + this._l('copy'));
@@ -372,13 +375,13 @@ function postFd() {
         return 'This page is a custom httpcode (404).';
     }
 
-    public ctrReadable(): any {
+    public ctrReadable(): fs.ReadStream {
         this._res.setHeader('content-type', 'text/plain; charset=utf-8');
         return lFs.createReadStream(def.ROOT_PATH + 'sys/route.js');
     }
 
-    public async modTest(): Promise<any> {
-        const retur: any[] = [];
+    public async modTest(): Promise<types.Json[] | string | boolean> {
+        const retur: types.Json[] = [];
         if (!(this._checkInput(this._get, {
             'action': [['', 'remove'], [0, 'Error']]
         }, retur))) {
@@ -468,7 +471,7 @@ const r = await ls.explain();</pre>` + lText.htmlescape(JSON.stringify(r)));
                 echo.push('<table style="width: 100%;">');
                 for (const k in r2) {
                     const v = r2[k];
-                    echo.push('<tr><th>' + lText.htmlescape(k) + '</th><td>' + (v === null ? 'null' : lText.htmlescape(v.toString())) + '</td></tr>');
+                    echo.push('<tr><th>' + lText.htmlescape(k) + '</th><td>' + (v === null ? 'null' : lText.htmlescape((typeof v === 'string' || typeof v === 'number') ? v.toString() : '[object]')) + '</td></tr>');
                 }
                 echo.push('</table>');
             }
@@ -514,7 +517,7 @@ await ft.save();</pre>`);
                     'ctr': this
                 });
                 if (!ft) {
-                    return;
+                    return '';
                 }
 
                 echo.push('<table style="width: 100%;">');
@@ -641,7 +644,7 @@ CREATE TABLE \`m_test_data_0\` (
         await test.create();
     }
 
-    public async modSplit2(): Promise<any[]> {
+    public async modSplit2(): Promise<types.Json[]> {
         const db = lDb.get(this);
 
         const ids: number[] = [];
@@ -886,7 +889,7 @@ JSON.stringify(orig);</pre>${JSON.stringify(orig)}`);
         return echo.join('') + '<br><br>' + this._getEnd();
     }
 
-    public async db(): Promise<any> {
+    public async db(): Promise<types.Json> {
         const echo = [(Math.round(this._getRunTime() * 10000000) / 10000).toString()];
 
         const db = lDb.get(this);
@@ -981,7 +984,7 @@ exec: ${JSON.stringify(exec)}<br><br>`);
         return echo.join('') + '<br>queries: ' + db.getQueries().toString() + '<br>' + this._getEnd();
     }
 
-    private _dbTable(stmt: lDb.IData, echo: any[]): void {
+    private _dbTable(stmt: lDb.IData, echo: types.Json[]): void {
         echo.push('<table style="width: 100%;"><tr>');
         if (stmt.rows) {
             for (const item of stmt.fields) {
@@ -1004,7 +1007,7 @@ exec: ${JSON.stringify(exec)}<br><br>`);
         echo.push('</table>');
     }
 
-    public async kv(): Promise<any> {
+    public async kv(): Promise<types.Json> {
         const kv = lKv.get(this);
         if (!await kv.ping()) {
             return [0, 'Failed.'];
@@ -1199,19 +1202,19 @@ echo[echo.length - 1] = echo[echo.length - 1].slice(0, -4);</pre>`);
             '<a href="' + this._config.const.urlBase + 'test">Return</a>' + echo.join('') + '<br><br>' + this._getEnd();
     }
 
-    public async net(): Promise<any> {
+    public async net(): Promise<string> {
         const echo = [];
 
         const res = await lNet.get('https://cdn.jsdelivr.net/npm/deskrt/package.json');
         echo.push(`<pre>Net::get('https://cdn.jsdelivr.net/npm/deskrt/package.json');</pre>
 headers: <pre>${JSON.stringify(res.headers, null, 4)}</pre>
-content: <pre>${(await res.getContent())?.toString()}</pre>
+content: <pre>${(await res.getContent())?.toString() ?? 'null'}</pre>
 error: ${JSON.stringify(res.error)}`);
 
         return echo.join('') + '<br><br>' + this._getEnd();
     }
 
-    public async netPipe(): Promise<any> {
+    public async netPipe(): Promise<types.Json> {
         const echo = [];
 
         const res = await lNet.get('https://cdn.jsdelivr.net/npm/deskrt/package.json');
@@ -1228,13 +1231,13 @@ error: ${JSON.stringify(res.error)}
         return echo;
     }
 
-    public async netPost(): Promise<any> {
+    public async netPost(): Promise<types.Json> {
         const echo = [];
 
         const res = await lNet.post(this._internalUrl + 'test/netPost1', { 'a': '1', 'b': '2', 'c': ['1', '2', '3'] });
         echo.push(`<pre>lNet.post('${this._internalUrl}test/netPost1', { 'a': '1', 'b': '2', 'c': ['1', '2', '3'] });</pre>
 headers: <pre>${JSON.stringify(res.headers, null, 4)}</pre>
-content: <pre>${(await res.getContent())?.toString()}</pre>
+content: <pre>${(await res.getContent())?.toString() ?? 'null'}</pre>
 error: ${JSON.stringify(res.error)}`);
 
         return echo.join('') + '<br><br>' + this._getEnd();
@@ -1250,23 +1253,23 @@ error: ${JSON.stringify(res.error)}`);
         const res = await lNet.post(this._internalUrl + 'test/netPostString1', 'HeiHei');
         echo.push(`<pre>lNet.post('${this._internalUrl}test/netPostString1', 'HeiHei');</pre>
 headers: <pre>${JSON.stringify(res.headers, null, 4)}</pre>
-content: <pre>${(await res.getContent())?.toString()}</pre>
+content: <pre>${(await res.getContent())?.toString() ?? 'null'}</pre>
 error: ${JSON.stringify(res.error)}`);
 
         return echo.join('') + '<br><br>' + this._getEnd();
     }
 
-    public netPostString1(): any[] {
+    public netPostString1(): types.Json[] {
         return [1, this._input];
     }
 
-    public async netOpen(): Promise<any> {
+    public async netOpen(): Promise<types.Json> {
         const echo = [];
 
         const res = await lNet.open(this._internalUrl + 'test/netPost1').post().data({ 'a': '2', 'b': '0', 'c': ['0', '1', '3'] }).request();
         echo.push(`<pre>lNet.open('${this._internalUrl}test/netPost1').post().data({ 'a': '2', 'b': '0', 'c': ['0', '1', '3'] }).request();</pre>
 headers: <pre>${JSON.stringify(res.headers, null, 4)}</pre>
-content: <pre>${(await res.getContent())?.toString()}</pre>
+content: <pre>${(await res.getContent())?.toString() ?? 'null'}</pre>
 error: ${JSON.stringify(res.error)}`);
 
         return echo.join('') + this._getEnd();
@@ -1315,7 +1318,7 @@ await fd.putFile('multiple', def.LIB_PATH + 'net/cacert.pem');
 await fd.putFile('multiple', def.LIB_PATH + 'net/cacert.pem');
 lNet.post('${this._internalUrl}test/net-upload1', fd);</pre>
 headers: <pre>${JSON.stringify(res.headers, null, 4)}</pre>
-content: <pre>${(await res.getContent())?.toString()}</pre>
+content: <pre>${(await res.getContent())?.toString() ?? 'null'}</pre>
 error: ${JSON.stringify(res.error)}`);
 
         return echo.join('') + '<br><br>' + this._getEnd();
@@ -1338,7 +1341,7 @@ lNet.get(this._internalUrl + 'test/net-cookie1', {
     'cookie': cookie
 });</pre>
 headers: <pre>${JSON.stringify(res.headers, null, 4)}</pre>
-content: <pre>${(await res.getContent())?.toString()}</pre>
+content: <pre>${(await res.getContent())?.toString() ?? 'null'}</pre>
 cookie: <pre>${JSON.stringify(cookie, null, 4)}</pre><hr>`);
 
         res = await lNet.get(this._internalUrl + 'test/net-cookie2', {
@@ -1348,7 +1351,7 @@ cookie: <pre>${JSON.stringify(cookie, null, 4)}</pre><hr>`);
     'cookie': cookie
 });</pre>
 headers: <pre>${JSON.stringify(res.headers, null, 4)}</pre>
-content: <pre>${(await res.getContent())?.toString()}</pre>`);
+content: <pre>${(await res.getContent())?.toString() ?? 'null'}</pre>`);
 
         lNet.setCookie(cookie, 'custom1', 'abc1', this._config.const.host);
         lNet.setCookie(cookie, 'custom2', 'abc2', '172.17.0.1');
@@ -1361,7 +1364,7 @@ lNet.get(this._internalUrl + 'test/net-cookie2', {
     'cookie': cookie
 });</pre>
 headers: <pre>${JSON.stringify(res.headers, null, 4)}</pre>
-content: <pre>${(await res.getContent())?.toString()}</pre>`);
+content: <pre>${(await res.getContent())?.toString() ?? 'null'}</pre>`);
 
         return echo.join('') + this._getEnd();
     }
@@ -1477,7 +1480,7 @@ lCore.setCookie(this, 'test10', 'httponly', {
     'save': def.LOG_PATH + 'test-must-remove.json'
 });</pre>
 headers: <pre>${JSON.stringify(res.headers, null, 4)}</pre>
-content: <pre>${(await res.getContent())?.toString()}</pre>
+content: <pre>${(await res.getContent())?.toString() ?? 'null'}</pre>
 error: ${JSON.stringify(res.error)}</pre>`);
 
         return echo.join('') + this._getEnd();
@@ -1499,7 +1502,7 @@ error: ${JSON.stringify(res.error)}</pre>`);
     'follow': 5
 });</pre>
 headers: <pre>${JSON.stringify(res.headers, null, 4)}</pre>
-content: <pre>${(await res.getContent())?.toString()}</pre>
+content: <pre>${(await res.getContent())?.toString() ?? 'null'}</pre>
 error: ${JSON.stringify(res.error)}</pre>`);
 
         return echo.join('') + this._getEnd();
@@ -1509,7 +1512,7 @@ error: ${JSON.stringify(res.error)}</pre>`);
         this._location('test/net-follow2');
     }
 
-    public netFollow2(): any {
+    public netFollow2(): types.Json {
         return [1, { 'post': (this._post['a'] as string) + ',' + (this._post['b'] as string) }];
     }
 
@@ -1542,7 +1545,7 @@ error: ${JSON.stringify(res.error)}</pre>`);
         const res = await lNet.get('https://192.111.000.222/xxx.zzz');
         echo.push(`<pre>lNet.get('https://192.111.000.222/xxx.zzz');</pre>
 headers: <pre>${JSON.stringify(res.headers, null, 4)}</pre>
-content: <pre>${(await res.getContent())?.toString()}</pre>
+content: <pre>${(await res.getContent())?.toString() ?? 'null'}</pre>
 error: <pre>${JSON.stringify(res.error, null, 4)}</pre>`);
 
         return echo.join('') + this._getEnd();
@@ -1568,7 +1571,7 @@ error: <pre>${JSON.stringify(res.error, null, 4)}</pre>`);
         return echo.join('') + this._getEnd();
     }
 
-    public async scan(): Promise<any> {
+    public async scan(): Promise<types.Json> {
         const link = await this._scanLink();
         if (!link) {
             return [0, 'Failed, link can not be connected.'];
@@ -1580,17 +1583,17 @@ error: <pre>${JSON.stringify(res.error, null, 4)}</pre>`);
         const token = scan.getToken();
         echo.push(`<pre>const scan = await lScan.get(this, link, undefined, { 'ttl': 30, 'sqlPre': this });
 const token = scan.getToken();</pre>
-token: ${token}<br><br>
+token: ${token ?? 'null'}<br><br>
 Scan status: <b id="status" style="color: red;">Waiting...</b><br>
 Poll count: <span id="count">0</span>, expiration date: <span id="exp"></span><br><br>
-Simulated scan URL: http://www.test.simu/scan?token=${token} (QR Code can be generated)<br><br>
-<input type="button" value="Visit the simulated URL" onclick="this.disabled=true;document.getElementById('url').innerText='http://www.test.simu/scan?token=${token}';visit();"><br><br>
+Simulated scan URL: http://www.test.simu/scan?token=${token ?? 'null'} (QR Code can be generated)<br><br>
+<input type="button" value="Visit the simulated URL" onclick="this.disabled=true;document.getElementById('url').innerText='http://www.test.simu/scan?token=${token ?? 'null'}';visit();"><br><br>
 <div style="border: solid 1px rgba(0,0,0,.3); box-shadow: 0 5px 20px rgba(0, 0, 0, .25); width: 90%; margin: auto;">
     <div id="url" style="background: rgba(0,0,0,.07); border-bottom: solid 1px rgba(0,0,0,.3); padding: 10px;">about:blank</div>
     <div id="content" style="height: 200px; font-size: 16px; display: flex; justify-content: center; align-items: center; flex-direction: column;"></div>
 </div>
 <script>
-var token = '${token}';
+var token = '${token ?? 'null'}';
 var count = 0;
 function poll() {
     fetch('${this._config.const.urlBase}test/scan1?s=${s}', {
@@ -1598,7 +1601,7 @@ function poll() {
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded'
         },
-        body: 'token=${token}'
+        body: 'token=${token ?? 'null'}'
     }).then(function(r) {
         return r.json();
     }).then(function(j) {
@@ -1625,7 +1628,7 @@ function visit() {
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded'
         },
-        body: 'token=${token}'
+        body: 'token=${token ?? 'null'}'
     }).then(function(r) {
         return r.json();
     }).then(function(j) {
@@ -1644,7 +1647,7 @@ function confirm() {
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded'
         },
-        body: 'token=${token}'
+        body: 'token=${token ?? 'null'}'
     }).then(function(r) {
         return r.json();
     }).then(function(j) {
@@ -1663,7 +1666,7 @@ function confirm() {
         '<a href="' + this._config.const.urlBase + 'test">Return</a>' + echo.join('') + '<br>' + this._getEnd();
     }
 
-    public async scan1(): Promise<any> {
+    public async scan1(): Promise<types.Json> {
         const link = await this._scanLink();
         if (!link) {
             return [0, 'Failed, link can not be connected.'];
@@ -1690,7 +1693,7 @@ function confirm() {
         return [0, 'Scan result: ' + JSON.stringify(rtn)];
     }
 
-    public async scan2(): Promise<any> {
+    public async scan2(): Promise<types.Json> {
         const link = await this._scanLink();
         if (!link) {
             return [0, 'Failed, link can not be connected.'];
@@ -1703,7 +1706,7 @@ function confirm() {
         return [1];
     }
 
-    public async scan3(): Promise<any> {
+    public async scan3(): Promise<types.Json> {
         const link = await this._scanLink();
         if (!link) {
             return [0, 'Failed, link can not be connected.'];
@@ -1718,7 +1721,7 @@ function confirm() {
         return [1];
     }
 
-    private async _scanLink(): Promise<any> {
+    private async _scanLink(): Promise<types.Json> {
         const s = this._get['s'] ?? 'db';
         let link: lDb.Pool | lKv.Pool;
         if (s === 'db') {
@@ -1735,8 +1738,8 @@ function confirm() {
         return link;
     }
 
-    public async session(): Promise<string | any[]> {
-        const retur: any[] = [];
+    public async session(): Promise<string | types.Json[]> {
+        const retur: types.Json[] = [];
         if (!(this._checkInput(this._get, {
             's': ['require', ['db', 'kv'], [0, 'Object not found.']],
             'auth': [['', '1'], [0, 'Bad request.']],
@@ -1804,8 +1807,8 @@ Result:<pre id="result">Nothing.</pre>`);
         }
     }
 
-    public async jwt(): Promise<string | any[]> {
-        const retur: any[] = [];
+    public async jwt(): Promise<string | types.Json[]> {
+        const retur: types.Json[] = [];
         if (!(this._checkInput(this._get, {
             'type': [['', 'kv', 'auth'], [0, 'Bad request.']]
         }, retur))) {
@@ -1868,7 +1871,7 @@ Result:<pre id="result">Nothing.</pre>`);
         return echo.join('') + this._getEnd();
     }
 
-    public async jwt1(): Promise<any[]>  {
+    public async jwt1(): Promise<[number, types.Json]>  {
         await lJwt.get(this, {
             'auth': true
         });
@@ -1937,21 +1940,47 @@ Result:<pre id="result">Nothing.</pre>`);
 <b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
 <b>format() :</b> ${sql.format(s, sd)}<hr>`);
 
-                s = sql.insert('geo').values(['name', 'point', 'point2'], [
+                s = sql.insert('geo').values(['name', 'point', 'point2', 'polygon'], [
                     [
-                        'POINT A', ['ST_POINTFROMTEXT(?)', ['POINT(122.147775 30.625014)']], { 'x': 1, 'y': 1 }
+                        'POINT A', ['ST_POINTFROMTEXT(?)', ['POINT(122.147775 30.625014)']], { 'x': 1, 'y': 1 }, [
+                            [
+                                { 'x': 1, 'y': 1 },
+                                { 'x': 2, 'y': 2 },
+                                { 'x': 3, 'y': 3 },
+                                { 'x': 1, 'y': 1 }
+                            ],
+                            [
+                                { 'x': 6, 'y': 1 },
+                                { 'x': 7, 'y': 2 },
+                                { 'x': 8, 'y': 3 },
+                                { 'x': 6, 'y': 1 }
+                            ]
+                        ]
                     ],
                     [
-                        'POINT B', ['ST_POINTFROMTEXT(?)', ['POINT(123.147775 30.625014)']], { 'x': 1, 'y': 1 }
+                        'POINT B', ['ST_POINTFROMTEXT(?)', ['POINT(123.147775 30.625014)']], { 'x': 1, 'y': 1 }, null
                     ]
                 ]).getSql();
                 sd = sql.getData();
                 echo.push(`<pre>sql.insert('geo').values(['name', 'point', 'point2'], [
     [
-        'POINT A', ['ST_POINTFROMTEXT(?)', ['POINT(122.147775 30.625014)']], { 'x': 1, 'y': 1 }
+        'POINT A', ['ST_POINTFROMTEXT(?)', ['POINT(122.147775 30.625014)']], { 'x': 1, 'y': 1 }, [
+            [
+                { 'x': 1, 'y': 1 },
+                { 'x': 2, 'y': 2 },
+                { 'x': 3, 'y': 3 },
+                { 'x': 1, 'y': 1 }
+            ],
+            [
+                { 'x': 6, 'y': 1 },
+                { 'x': 7, 'y': 2 },
+                { 'x': 8, 'y': 3 },
+                { 'x': 6, 'y': 1 }
+            ]
+        ]
     ],
     [
-        'POINT B', ['ST_POINTFROMTEXT(?)', ['POINT(123.147775 30.625014)']], { 'x': 1, 'y': 1 }
+        'POINT B', ['ST_POINTFROMTEXT(?)', ['POINT(123.147775 30.625014)']], { 'x': 1, 'y': 1 }, null
     ]
 ]);</pre>
 <b>getSql() :</b> ${s}<br>
@@ -2036,6 +2065,15 @@ Result:<pre id="result">Nothing.</pre>`);
                 echo.push(`<pre>sql.update('user', { 'age': '#age_verify', 'date': '##', 'he': ['he2'] }).where({ 'date_birth': '2001' });</pre>
 <b>getSql() :</b> ${s}<br>
 <b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
+<b>format() :</b> ${sql.format(s, sd)}<hr>`);
+
+                // --- update order limit ---
+
+                s = sql.update('user', { 'he': 'he2' }).where([ ['birth', '>', '2001'] ]).by('birth').limit(0, 10).getSql();
+                sd = sql.getData();
+                echo.push(`<pre>sql.update('user', { 'he': 'he2' }).where([ ['birth', '>', '2001'] ]).by('birth').limit(0, 10);</pre>
+<b>getSql() :</b> ${s}<br>
+<b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
 <b>format() :</b> ${sql.format(s, sd)}`);
 
                 break;
@@ -2109,6 +2147,13 @@ Result:<pre id="result">Nothing.</pre>`);
                 echo.push(`<pre>sql.delete('user').where([
     [['MATCH(name_sc, name_tc) AGAINST(?)', ['search']], '>=', '0.9']
 ]);</pre>
+<b>getSql() :</b> ${s}<br>
+<b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
+<b>format() :</b> ${sql.format(s, sd)}<hr>`);
+
+                s = sql.select('*', 'user').where([{ 'city': 'la', 'area': null }, ['age', '>', '10'], ['soft', '<>', null], ['ware', 'IS', null]]).getSql();
+                sd = sql.getData();
+                echo.push(`<pre>sql.select('*', 'user').where([{ 'city': 'la', 'area': null }, ['age', '>', '10'], ['soft', '<>', null], ['ware', 'IS', null]]);</pre>
 <b>getSql() :</b> ${s}<br>
 <b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
 <b>format() :</b> ${sql.format(s, sd)}`);
@@ -2240,8 +2285,8 @@ const oldSrv = map[file];
 const newSrv = cons.find(file);</pre>`);
         echo.push(`<table style="width: 100%;">
     <tr><th>File</th><td>${file}</td></tr>
-    <tr><th>Old</th><td>${oldSrv}</td></tr>
-    <tr><th>New</th><td>${newSrv}</td></tr>
+    <tr><th>Old</th><td>${oldSrv ?? 'null'}</td></tr>
+    <tr><th>New</th><td>${newSrv ?? 'null'}</td></tr>
     <tr><th>State</th><td>${((oldSrv === newSrv) ? '<b>Hit</b>' : 'Miss')}</td></tr>
 </table>`);
 
@@ -2465,8 +2510,8 @@ function send() {
         return echo + '<br>' + this._getEnd();
     }
 
-    public async ssh(): Promise<string | any[]> {
-        const retur: any[] = [];
+    public async ssh(): Promise<string | types.Json[]> {
+        const retur: types.Json[] = [];
         if (!(this._checkInput(this._get, {
             'type': ['require', ['shell', 'sftp'], [0, 'Type not found.']]
         }, retur))) {

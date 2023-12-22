@@ -1,13 +1,14 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2019-5-27 20:18:50
- * Last: 2020-3-29 19:37:25, 2022-07-24 22:38:11, 2023-5-24 18:49:18, 2023-6-13 22:20:21
+ * Last: 2020-3-29 19:37:25, 2022-07-24 22:38:11, 2023-5-24 18:49:18, 2023-6-13 22:20:21, 2023-12-11 13:58:54, 2023-12-14 13:14:40, 2023-12-21 00:04:40
  */
 
 // --- 第三方 ---
 import * as mysql2 from 'mysql2/promise';
 // --- 库和定义 ---
 import * as ctr from '~/sys/ctr';
+import * as types from '~/types';
 
 export class Sql {
 
@@ -18,11 +19,11 @@ export class Sql {
     private _sql: string[] = [];
 
     /** --- 所有 data 数据 --- */
-    private _data: any[] = [];
+    private _data: types.DbValue[] = [];
 
     // --- 实例化 ---
     public constructor(pre?: string) {
-        this._pre = pre !== undefined ? pre : '';
+        this._pre = pre ?? '';
     }
 
     // --- 前导 ---
@@ -54,7 +55,10 @@ export class Sql {
      * @param cs [] 数据列或字段列
      * @param vs [] | [][] 数据
      */
-    public values(cs: any[] | Record<string, any>, vs: any[] | any[][] = []): this {
+    public values(
+        cs: string[] | Record<string, types.DbValue>,
+        vs: types.DbValue[] | types.DbValue[][] = []
+    ): this {
         let sql = ' (';
         if (Array.isArray(cs)) {
             // --- ['id', 'name'], [['1', 'wow'], ['2', 'oh']] ---
@@ -68,11 +72,18 @@ export class Sql {
             }
             // --- INSERT INTO xx (id, name) VALUES (?, ?) ---
             // --- INSERT INTO xx (id, name) VALUES (?, ?), (?, ?) ---
-            for (const v of vs) {
+            for (const v of vs as types.DbValue[][]) {
                 sql += '(';
                 for (const v1 of v) {
                     // --- v1 是项目值，如 {'x': 1, 'y': 2}, 'string', 0 ---
-                    if (Array.isArray(v1)) {
+                    if (v1 === null) {
+                        sql += 'NULL, ';
+                    }
+                    else if (typeof v1 === 'string' || typeof v1 === 'number') {
+                        sql += '?, ';
+                        this._data.push(v1);
+                    }
+                    else if (Array.isArray(v1)) {
                         if (v1[0][0]?.x === undefined) {
                             // --- v1: ['POINT(?)', ['20']] ---
                             sql += this.field(v1[0]) + ', ';
@@ -84,10 +95,10 @@ export class Sql {
                             // --- v1: [[{'x': 1, 'y': 2}, { ... }], [{ ... }, { ... }]] ---
                             sql += 'ST_POLYGONFROMTEXT(?), ';
                             this._data.push(`POLYGON(${v1.map((item) => {
-                                return `(${item.map((it: any) => {
+                                return `(${item.map((it: Record<string, string | number>) => {
                                     return `${it.x} ${it.y}`;
                                 }).join(', ')})`;
-                            })})`);
+                            }).join(', ')})`);
                         }
                     }
                     else if (v1.x !== undefined) {
@@ -111,7 +122,14 @@ export class Sql {
             for (const k in cs) {
                 const v = cs[k];
                 sql += this.field(k) + ', ';
-                if (Array.isArray(v)) {
+                if (v === null) {
+                    values += 'NULL, ';
+                }
+                else if (typeof v === 'string' || typeof v === 'number') {
+                    values += '?, ';
+                    this._data.push(v);
+                }
+                else if (Array.isArray(v)) {
                     if (v[0][0]?.x === undefined) {
                         // --- v: ['POINT(?)', ['20']] ---
                         values += this.field(v[0]) + ', ';
@@ -123,10 +141,10 @@ export class Sql {
                         // --- v: [[{'x': 1, 'y': 2}, { ... }], [{ ... }, { ... }]] ---
                         values += 'ST_POLYGONFROMTEXT(?), ';
                         this._data.push(`POLYGON(${v.map((item) => {
-                            return `(${item.map((it: any) => {
+                            return `(${item.map((it: Record<string, string | number>) => {
                                 return `${it.x} ${it.y}`;
                             }).join(', ')})`;
-                        })})`);
+                        }).join(', ')})`);
                     }
                 }
                 else if (v.x !== undefined) {
@@ -151,7 +169,10 @@ export class Sql {
      * @param insert {'xx': 'xx', 'xx': 'xx'}
      * @param where [{'xx': 'xx', 'xx': 'xx'}], {'xx': 'xx'}
      */
-    public notExists(table: string, insert: Record<string, any>, where: any[] | Record<string, any>): this {
+    public notExists(
+        table: string, insert: Record<string, types.DbValue>,
+        where: string | types.Json
+    ): this {
         let sql = '(';
         const values = [];
         for (const field in insert) {
@@ -179,7 +200,7 @@ export class Sql {
      * --- 当不能 insert 时，update（仅能配合 insert 方法用） ---
      * @param s 更新数据
      */
-    public duplicate(s: any[] | Record<string, any>): this {
+    public duplicate(s: types.Json): this {
         if (Array.isArray(s) ? s.length : Object.keys(s).length) {
             const sql = ' ON DUPLICATE KEY UPDATE ' + this._updateSub(s);
             this._sql.push(sql);
@@ -192,7 +213,7 @@ export class Sql {
      * @param c 字段字符串或字段数组
      * @param f 表，允许多张表
      */
-    public select(c: string | Array<string | any[]>, f: string | string[]): this {
+    public select(c: string | Array<string | Array<string | string[]>>, f: string | string[]): this {
         this._data = [];
         let sql = 'SELECT ';
         if (typeof c === 'string') {
@@ -202,6 +223,7 @@ export class Sql {
             // --- c: ['id', 'name'] ---
             for (const i of c) {
                 if (Array.isArray(i)) {
+                    // --- i: ['xx', ['x']] ---
                     sql += this.field(i[0]) + ', ';
                     this._data.push(...i[1]);
                 }
@@ -231,14 +253,14 @@ export class Sql {
      * @param f 表名
      * @param s 设定 update 的值
      */
-    public update(f: string, s: any[] | Record<string, any>): this {
+    public update(f: string, s: types.Json): this {
         this._data = [];
         const sql = `UPDATE ${this.field(f, this._pre)} SET ${this._updateSub(s)}`;
         this._sql = [sql];
         return this;
     }
 
-    private _updateSub(s: any[] | Record<string, any>): string {
+    private _updateSub(s: types.Json): string {
         /*
         [
             ['total', '+', '1'],    // 1, '1' 可能也是 1 数字类型
@@ -282,10 +304,10 @@ export class Sql {
                         // --- 7 ---
                         sql += 'ST_POLYGONFROMTEXT(?), ';
                         this._data.push(`POLYGON(${v.map((item) => {
-                            return `(${item.map((it: any) => {
+                            return `(${item.map((it: Record<string, string | number>) => {
                                 return `${it.x} ${it.y}`;
                             }).join(', ')})`;
-                        })})`);
+                        }).join(', ')})`);
                     }
                 }
                 else if (v.x !== undefined) {
@@ -328,7 +350,7 @@ export class Sql {
      * @param s ON 信息
      * @param type 类型
      */
-    public join(f: string, s: any[] | Record<string, any> = [], type: string = 'INNER'): this {
+    public join(f: string, s: types.Json = [], type: string = 'INNER'): this {
         let sql = ' ' + type + ' JOIN ' + this.field(f, this._pre);
         if (Array.isArray(s) ? s.length : Object.keys(s).length) {
             sql += ' ON ' + this._whereSub(s);
@@ -342,7 +364,7 @@ export class Sql {
      * @param f 表名
      * @param s ON 信息
      */
-    public leftJoin(f: string, s: any[] | Record<string, any> = []): this {
+    public leftJoin(f: string, s: types.Json = []): this {
         return this.join(f, s, 'LEFT');
     }
 
@@ -351,7 +373,7 @@ export class Sql {
      * @param f 表名
      * @param s ON 信息
      */
-    public rightJoin(f: string, s: any[] | Record<string, any> = []): this {
+    public rightJoin(f: string, s: types.Json = []): this {
         return this.join(f, s, 'RIGHT');
     }
 
@@ -360,7 +382,7 @@ export class Sql {
      * @param f 表名
      * @param s ON 信息
      */
-    public innerJoin(f: string, s: any[] | Record<string, any> = []): this {
+    public innerJoin(f: string, s: types.Json = []): this {
         return this.join(f, s);
     }
 
@@ -369,7 +391,7 @@ export class Sql {
      * @param f 表名
      * @param s ON 信息
      */
-    public fullJoin(f: string, s: any[] | Record<string, any> = []): this {
+    public fullJoin(f: string, s: types.Json = []): this {
         return this.join(f, s, 'FULL');
     }
 
@@ -378,14 +400,14 @@ export class Sql {
      * @param f 表名
      * @param s ON 信息
      */
-    public crossJoin(f: string, s: any[] | Record<string, any> = []): this {
+    public crossJoin(f: string, s: types.Json = []): this {
         return this.join(f, s, 'CROSS');
     }
 
     /**
      * --- having 后置筛选器，用法类似 where ---
      */
-    public having(s: string | any[] | Record<string, any> = ''): this {
+    public having(s: string | types.Json = ''): this {
         if (typeof s === 'string') {
             // --- string ---
             if (s !== '') {
@@ -414,7 +436,7 @@ export class Sql {
      * --- 6. 'city_in' => '#city_out' ---
      * @param s 筛选数据
      */
-    public where(s: string | any[] | Record<string, any>): this {
+    public where(s: string | types.Json): this {
         if (typeof s === 'string') {
             // --- string ---
             if (s !== '') {
@@ -444,14 +466,27 @@ export class Sql {
         return this;
     }
 
-    private _whereSub(s: any[] | Record<string, any>): string {
+    private _whereSub(s: types.Json): string {
         s = aoMix(s);
         let sql = '';
         for (const k in s) {
             const v = s[k];
             if (/^[0-9]+$/.test(k)) {
                 // --- 2, 3 ---
-                if (Array.isArray(v[2])) {
+                if (v[2] === null) {
+                    let opera = v[1];
+                    if (opera === '!=' || opera === '!==' || opera === '<>') {
+                        opera = 'IS NOT';
+                    }
+                    else if (opera === '=' || opera === '==' || opera === '===') {
+                        opera = 'IS';
+                    }
+                    else {
+                        opera = opera.toUpperCase();
+                    }
+                    sql += this.field(v[0]) + ' ' + opera + ' NULL AND ';
+                }
+                else if (Array.isArray(v[2])) {
                     // --- 3 ---
                     sql += this.field(v[0]) + ' ' + v[1].toUpperCase() + ' (';
                     for (const v1 of v[2]) {
@@ -493,7 +528,10 @@ export class Sql {
                 }
                 else {
                     // --- 1, 4, 6 ---
-                    if (typeof v === 'string' || typeof v === 'number') {
+                    if (v === null) {
+                        sql += this.field(k) + ' IS NULL AND ';
+                    }
+                    else if (typeof v === 'string' || typeof v === 'number') {
                         // --- 1, 6 ---
                         // --- 'city': 'bj', 'city_in': '#city_out' ---
                         const isf = this._isField(v);
@@ -603,7 +641,7 @@ export class Sql {
     /**
      * --- 获取全部 data ---
      */
-    public getData(): any[] {
+    public getData(): types.DbValue[] {
         return this._data;
     }
 
@@ -619,7 +657,7 @@ export class Sql {
      * @param sql
      * @param data
      */
-    public format(sql?: string, data?: any[]): string {
+    public format(sql?: string, data?: types.DbValue[]): string {
         return mysql2.format(sql ?? this.getSql(), data ?? this.getData());
     }
 
@@ -639,7 +677,7 @@ export class Sql {
      * @param str
      * @param pre 表前缀，仅请在 field 表名时倒入前缀
      */
-    public field(str: string | number | any[], pre: string = ''): string {
+    public field(str: string | number | Array<string | string[]>, pre: string = ''): string {
         let left: string = '';
         let right: string = '';
         if (Array.isArray(str)) {
@@ -722,7 +760,7 @@ export class Sql {
      * --- 判断用户输入值是否是 field 还是普通字符串 ---
      * @param str
      */
-    private _isField(str: string | number): any[] {
+    private _isField(str: string | number): [boolean, string | number] {
         if ((typeof str === 'string') && str[0] && (str[0].startsWith('#')) && str[1]) {
             if (str[1] === '#') {
                 // --- 不是 field ---
@@ -751,7 +789,7 @@ export function get(ctrPre?: ctr.Ctr | string): Sql {
  * @param sql SQL 字符串
  * @param data DATA 数据
  */
-export function format(sql: string, data: any[]): string {
+export function format(sql: string, data: types.DbValue[]): string {
     return mysql2.format(sql, data);
 }
 
@@ -759,11 +797,11 @@ export function format(sql: string, data: any[]): string {
  * --- 将数组兑换为组合的对象（Array/Object mix） ---
  * @param arr 要转换的数组
  */
-export function aoMix(arr: any[] | Record<string, any>): Record<string, string | number | any[]> {
+export function aoMix(arr: types.Json): Record<string, string | number | types.Json> {
     if (!Array.isArray(arr)) {
         return arr;
     }
-    const mix: Record<string, string | number | any[]> = {};
+    const mix: Record<string, string | number | types.Json> = {};
     let i: number = 0;
     for (const v of arr) {
         if (Array.isArray(v)) {

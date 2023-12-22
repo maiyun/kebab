@@ -1,7 +1,7 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2023-1-31 20:34:47
- * Last: 2023-1-31 20:34:47
+ * Last: 2023-1-31 20:34:47, 2023-12-8 13:55:09
  */
 
 // --- 库和定义 ---
@@ -10,6 +10,7 @@ import * as lTime from '~/lib/time';
 import * as lCrypto from '~/lib/crypto';
 import * as kv from '~/lib/kv';
 import * as ctr from '~/sys/ctr';
+import * as types from '~/types';
 
 export interface IOptions {
     'name'?: string;
@@ -192,7 +193,7 @@ export function getOrigin(ctr: ctr.Ctr, name: string = '', auth: boolean = false
  * --- decode ---
  * 不传入 link 的话，将不做 block 有效校验，只做本身的 exp 有效校验
  */
-export async function decode(ctr: ctr.Ctr, val: string, link?: kv.Pool, name: string = '', secret: string = ''): Promise<Record<string, any> | false> {
+export async function decode(ctr: ctr.Ctr, val: string, link?: kv.Pool, name: string = '', secret: string = ''): Promise<Record<string, types.DbValue> | false> {
     if (!val) {
         return false;
     }

@@ -1,5 +1,6 @@
 import * as lCore from '~/lib/core';
 import sMod from '~/sys/mod';
+
 /*
 CREATE TABLE `m_test` (
   `id` INT NOT NULL AUTO_INCREMENT,

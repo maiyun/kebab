@@ -1,7 +1,7 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2019-5-3 23:54
- * Last: 2020-4-11 22:34:58, 2022-10-2 14:13:06, 2022-12-28 20:33:24
+ * Last: 2020-4-11 22:34:58, 2022-10-2 14:13:06, 2022-12-28 20:33:24, 2023-12-15 11:49:02
  */
 import * as cp from 'child_process';
 import * as http from 'http';
@@ -20,7 +20,7 @@ import * as types from '~/types';
 export const globalConfig: types.IConfig & {
     'httpPort': number;
     'httpsPort': number;
-} = {} as any;
+} = {} as types.Json;
 
 /** --- Cookie 设置的选项 --- */
 export interface ICookieOptions {
@@ -271,8 +271,8 @@ export function sleep(ms: number): Promise<void> {
  * --- 将对象进行升序排列 ---
  * @param o 要重排的对象
  */
-export function objectSort(o: Record<string, any>): any {
-    const ordered: any = {};
+export function objectSort(o: Record<string, types.Json>): types.Json {
+    const ordered: types.Json = {};
     const list = Object.keys(o).sort();
     for (const key of list) {
         if ((typeof o[key] === 'object') && (!Array.isArray(o[key]))) {
@@ -290,7 +290,7 @@ export function objectSort(o: Record<string, any>): any {
  * @param obj 要清除的对象
  * @patam deep 也将子项都清空，如果子项有独立引用的话也要清空的话则要设置为 true
  */
-export function emptyObject(obj: Record<string, any>, deep: boolean = false): void {
+export function emptyObject(obj: Record<string, types.Json>, deep: boolean = false): void {
     const keys = Object.keys(obj);
     for (const key of keys) {
         if (deep) {
@@ -362,6 +362,7 @@ export function exec(command: string): Promise<string | false> {
  * --- 主要作用除代码热更新以外的其他情况 ---
  */
 export function sendReload(): void {
+    // eslint-disable-next-line no-console
     console.log('[ Child] Sending reload request...');
     process.send!({
         action: 'reload'
@@ -373,6 +374,7 @@ export function sendReload(): void {
  * --- 主要用作不间断的代码热更新 ---
  */
 export function sendRestart(): void {
+    // eslint-disable-next-line no-console
     console.log('[ Child] Sending restart request...');
     process.send!({
         action: 'restart'
@@ -385,8 +387,8 @@ export interface ILogOptions {
     'urlFull': string;
     'hostname': string;
     'req': http2.Http2ServerRequest | http.IncomingMessage | null;
-    'get': Record<string, any>;
-    'post': Record<string, any>;
+    'get': Record<string, types.Json>;
+    'post': Record<string, types.Json>;
     'cookie': Record<string, string>;
     'headers': http.IncomingHttpHeaders;
     'input': string;
@@ -401,8 +403,8 @@ export interface ILogOptions {
 export async function log(opt: sCtr.Ctr | ILogOptions, msg: string, fend: string = ''): Promise<void> {
     let req: http2.Http2ServerRequest | http.IncomingMessage | null;
     let headers: http.IncomingHttpHeaders;
-    let get: Record<string, any>;
-    let post: Record<string, any>;
+    let get: Record<string, types.Json>;
+    let post: Record<string, types.Json>;
     let cookie: Record<string, string>;
     let input: string;
     let wpath: string;

@@ -1,10 +1,36 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2022-07-22 13:44:12
- * Last: 2022-07-22 13:44:12, 2023-5-2 21:12:32
+ * Last: 2022-07-22 13:44:12, 2023-5-2 21:12:32, 2023-12-14 11:43:09
  */
 import * as url from 'url';
 import * as http from 'http';
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+/** --- 除非确定是不可知的 Json，否则不能使用 --- */
+export type Json = any;
+
+/* eslint-enable */
+
+/** --- 数据库值的类型 --- */
+export type DbValue = string | number | null | Record<string, Json>;
+
+/** --- mod ls 对象 --- */
+export declare class Rows<T> implements Iterable<T> {
+
+    /** --- 总行数 --- */
+    public get length(): number;
+
+    /** --- 通过索引获取一个对象 --- */
+    public item(index: number): T;
+
+    /** --- 转换为数组对象 --- */
+    public toArray(): Array<Record<string, DbValue>>;
+
+    public [Symbol.iterator](): Iterator<T>;
+
+}
 
 /** --- 虚拟机配置对象 --- */
 export interface IVhost {
@@ -33,7 +59,7 @@ export interface IConfig {
         'staticPath': string;
         'staticPathFull': string;
 
-        [key: string]: any;
+        [key: string]: Json;
     };
     'const': IConfigConst;
     'db': IConfigDb;
@@ -47,7 +73,8 @@ export interface IConfig {
     };
     'sql': IConfigSql;
     'dns': IConfigDns;
-    [key: string]: Record<string, any>;
+
+    [key: string]: Record<string, Json>;
 }
 
 /** --- 动配数据库 --- */

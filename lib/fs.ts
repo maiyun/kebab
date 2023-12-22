@@ -1,7 +1,7 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2019-3-29 23:03:07
- * Last: 2020-3-11 22:21:51, 2022-12-29 01:18:25
+ * Last: 2020-3-11 22:21:51, 2022-12-29 01:18:25, 2023-12-13 20:50:09
  */
 import * as fs from 'fs';
 import * as http from 'http';
@@ -41,7 +41,7 @@ export async function getContent(path: string, options?: BufferEncoding | {
     const encoding = options.encoding;
     const start = options.start;
     const end = options.end;
-    if (start || end) {
+    if (start ?? end) {
         return new Promise(function(resolve) {
             const rs = createReadStream(path, {
                 'encoding': encoding,
