@@ -420,6 +420,7 @@ function postFd() {
                         { 'x': 1, 'y': 1 }
                     ]
                 ],
+                'json': { 'x': { 'y': 'abc' } },
                 'time_add': time
             });
             const result = await test.create();
@@ -438,6 +439,7 @@ test.set({
             { 'x': 1, 'y': 1 }
         ]
     ],
+    'json': { 'x': { 'y': 'abc' } },
     'time_add': time
 });
 const result = await test.create();
@@ -496,6 +498,7 @@ const r = await ls.explain();</pre>` + lText.htmlescape(JSON.stringify(r)));
                 echo.push('<tr><th>token</th><td>' + ft.token + '</td></tr>');
                 echo.push('<tr><th>point</th><td>' + JSON.stringify(ft.point) + '</td></tr>');
                 echo.push('<tr><th>polygon</th><td>' + JSON.stringify(ft.polygon) + '</td></tr>');
+                echo.push('<tr><th>json</th><td>' + JSON.stringify(ft.json) + '</td></tr>');
                 echo.push('<tr><th>time_add</th><td>' + ft.time_add.toString() + '</td></tr>');
 
                 echo.push('</table>');
@@ -526,6 +529,7 @@ await ft.save();</pre>`);
                 echo.push('<tr><th>token</th><td>' + ft.token + '</td></tr>');
                 echo.push('<tr><th>point</th><td>' + JSON.stringify(ft.point) + '</td></tr>');
                 echo.push('<tr><th>polygon</th><td>' + JSON.stringify(ft.polygon) + '</td></tr>');
+                echo.push('<tr><th>json</th><td>' + JSON.stringify(ft.json) + '</td></tr>');
                 echo.push('<tr><th>time_add</th><td>' + ft.time_add.toString() + '</td></tr>');
 
                 echo.push('</table>');
@@ -544,7 +548,8 @@ await ft.save();</pre>`);
                             { 'x': 7, 'y': 3 },
                             { 'x': 5, 'y': 1 }
                         ]
-                    ]
+                    ],
+                    'json': { 'x': { 'y': 'def' } }
                 });
                 await ft.save();
                 await ft.refresh();
@@ -560,7 +565,8 @@ await ft.save();</pre>`);
             { 'x': 7, 'y': 3 },
             { 'x': 5, 'y': 1 }
         ]
-    ]
+    ],
+    'json': { 'x': { 'y': 'def' } }
 });
 await ft.save();
 await ft.refresh();</pre>`);
@@ -571,6 +577,7 @@ await ft.refresh();</pre>`);
                 echo.push('<tr><th>token</th><td>' + ft.token + '</td></tr>');
                 echo.push('<tr><th>point</th><td>' + JSON.stringify(ft.point) + '</td></tr>');
                 echo.push('<tr><th>polygon</th><td>' + JSON.stringify(ft.polygon) + '</td></tr>');
+                echo.push('<tr><th>json</th><td>' + JSON.stringify(ft.json) + '</td></tr>');
                 echo.push('<tr><th>time_add</th><td>' + ft.time_add.toString() + '</td></tr>');
 
                 echo.push('</table>');
@@ -1940,9 +1947,9 @@ Result:<pre id="result">Nothing.</pre>`);
 <b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
 <b>format() :</b> ${sql.format(s, sd)}<hr>`);
 
-                s = sql.insert('geo').values(['name', 'point', 'point2', 'polygon'], [
+                s = sql.insert('geo').values(['name', 'point', 'point2', 'polygon', 'json'], [
                     [
-                        'POINT A', ['ST_POINTFROMTEXT(?)', ['POINT(122.147775 30.625014)']], { 'x': 1, 'y': 1 }, [
+                        'POINT A', ['ST_POINTFROMTEXT(?)', ['POINT(122.147775 30.625015)']], { 'x': 1, 'y': 1 }, [
                             [
                                 { 'x': 1, 'y': 1 },
                                 { 'x': 2, 'y': 2 },
@@ -1955,16 +1962,17 @@ Result:<pre id="result">Nothing.</pre>`);
                                 { 'x': 8, 'y': 3 },
                                 { 'x': 6, 'y': 1 }
                             ]
-                        ]
+                        ],
+                        { 'x': { 'y': 'ghi' } }
                     ],
                     [
-                        'POINT B', ['ST_POINTFROMTEXT(?)', ['POINT(123.147775 30.625014)']], { 'x': 1, 'y': 1 }, null
+                        'POINT B', ['ST_POINTFROMTEXT(?)', ['POINT(123.147775 30.625016)']], { 'x': 1, 'y': 1 }, null, null
                     ]
                 ]).getSql();
                 sd = sql.getData();
                 echo.push(`<pre>sql.insert('geo').values(['name', 'point', 'point2'], [
     [
-        'POINT A', ['ST_POINTFROMTEXT(?)', ['POINT(122.147775 30.625014)']], { 'x': 1, 'y': 1 }, [
+        'POINT A', ['ST_POINTFROMTEXT(?)', ['POINT(122.147775 30.625015)']], { 'x': 1, 'y': 1 }, [
             [
                 { 'x': 1, 'y': 1 },
                 { 'x': 2, 'y': 2 },
@@ -1977,10 +1985,11 @@ Result:<pre id="result">Nothing.</pre>`);
                 { 'x': 8, 'y': 3 },
                 { 'x': 6, 'y': 1 }
             ]
-        ]
+        ],
+        { 'x': { 'y': 'ghi' } }
     ],
     [
-        'POINT B', ['ST_POINTFROMTEXT(?)', ['POINT(123.147775 30.625014)']], { 'x': 1, 'y': 1 }, null
+        'POINT B', ['ST_POINTFROMTEXT(?)', ['POINT(123.147775 30.625016)']], { 'x': 1, 'y': 1 }, null, null
     ]
 ]);</pre>
 <b>getSql() :</b> ${s}<br>

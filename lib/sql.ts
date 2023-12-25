@@ -91,7 +91,7 @@ export class Sql {
                                 this._data.push(...v1[1]);
                             }
                         }
-                        else {
+                        else if (v1[0][0]?.y !== undefined) {
                             // --- v1: [[{'x': 1, 'y': 2}, { ... }], [{ ... }, { ... }]] ---
                             sql += 'ST_POLYGONFROMTEXT(?), ';
                             this._data.push(`POLYGON(${v1.map((item) => {
@@ -100,11 +100,23 @@ export class Sql {
                                 }).join(', ')})`;
                             }).join(', ')})`);
                         }
+                        else {
+                            // --- v1: json ---
+                            sql += '?, ';
+                            this._data.push(JSON.stringify(v1));
+                        }
                     }
                     else if (v1.x !== undefined) {
-                        // --- v1: {'x': 1, 'y': 2} ---
-                        sql += 'ST_POINTFROMTEXT(?), ';
-                        this._data.push(`POINT(${v1.x} ${v1.y})`);
+                        if (v1.y !== undefined) {
+                            // --- v1: {'x': 1, 'y': 2} ---
+                            sql += 'ST_POINTFROMTEXT(?), ';
+                            this._data.push(`POINT(${v1.x} ${v1.y})`);
+                        }
+                        else {
+                            // --- v1: json ---
+                            sql += '?, ';
+                            this._data.push(JSON.stringify(v1));
+                        }
                     }
                     else {
                         sql += '?, ';
@@ -137,7 +149,7 @@ export class Sql {
                             this._data.push(...v[1]);
                         }
                     }
-                    else {
+                    else if (v[0][0]?.y !== undefined) {
                         // --- v: [[{'x': 1, 'y': 2}, { ... }], [{ ... }, { ... }]] ---
                         values += 'ST_POLYGONFROMTEXT(?), ';
                         this._data.push(`POLYGON(${v.map((item) => {
@@ -146,11 +158,23 @@ export class Sql {
                             }).join(', ')})`;
                         }).join(', ')})`);
                     }
+                    else {
+                        // --- v: json ---
+                        values += '?, ';
+                        this._data.push(JSON.stringify(v));
+                    }
                 }
                 else if (v.x !== undefined) {
-                    // --- v: {'x': 1, 'y': 2} ---
-                    values += 'ST_POINTFROMTEXT(?), ';
-                    this._data.push(`POINT(${v.x} ${v.y})`);
+                    if (v.y !== undefined) {
+                        // --- v: {'x': 1, 'y': 2} ---
+                        values += 'ST_POINTFROMTEXT(?), ';
+                        this._data.push(`POINT(${v.x} ${v.y})`);
+                    }
+                    else {
+                        // --- v: json ---
+                        values += '?, ';
+                        this._data.push(JSON.stringify(v));
+                    }
                 }
                 else {
                     values += '?, ';
@@ -270,7 +294,8 @@ export class Sql {
                 'type': ['type3'],  // 4
                 'type' => ['(CASE `id` WHEN 1 THEN ? WHEN 2 THEN ? END)', ['val1', 'val2']],     // 5
                 'point' => { 'x': 0, 'y': 0 },  // 6
-                'polygon' => [ [ { 'x': 0, 'y': 0 }, { ... } ], [ ... ] ]   // 7
+                'polygon' => [ [ { 'x': 0, 'y': 0 }, { ... } ], [ ... ] ],   // 7
+                'json' => { 'a': 1, 'b': { 'c': 2 } }        // 8
             }
         ]
         */
@@ -300,7 +325,7 @@ export class Sql {
                             this._data.push(...v[1]);
                         }
                     }
-                    else {
+                    else if (v[0][0]?.y !== undefined) {
                         // --- 7 ---
                         sql += 'ST_POLYGONFROMTEXT(?), ';
                         this._data.push(`POLYGON(${v.map((item) => {
@@ -309,11 +334,23 @@ export class Sql {
                             }).join(', ')})`;
                         }).join(', ')})`);
                     }
+                    else {
+                        // --- 8: json ---
+                        sql += '?, ';
+                        this._data.push(JSON.stringify(v));
+                    }
                 }
                 else if (v.x !== undefined) {
-                    // --- 6 ---
-                    sql += 'ST_POINTFROMTEXT(?), ';
-                    this._data.push(`POINT(${v.x} ${v.y})`);
+                    if (v.y !== undefined) {
+                        // --- 6: v: {'x': 1, 'y': 2} ---
+                        sql += 'ST_POINTFROMTEXT(?), ';
+                        this._data.push(`POINT(${v.x} ${v.y})`);
+                    }
+                    else {
+                        // --- v: json ---
+                        sql += '?, ';
+                        this._data.push(JSON.stringify(v));
+                    }
                 }
                 else {
                     // --- 2, 3 ---

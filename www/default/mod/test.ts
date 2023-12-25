@@ -1,5 +1,6 @@
 import * as lCore from '~/lib/core';
 import sMod from '~/sys/mod';
+import types from '~/types';
 
 /*
 CREATE TABLE `m_test` (
@@ -7,6 +8,7 @@ CREATE TABLE `m_test` (
   `token` CHAR(16) NOT NULL COLLATE 'ascii_bin',
   `point` POINT NOT NULL,
   `polygon` POLYGON NULL DEFAULT NULL,
+  `json` JSON NULL DEFAULT NULL,
   `time_add` BIGINT NOT NULL,
   PRIMARY KEY (`id`) USING BTREE,
 	UNIQUE INDEX `token` (`token`) USING BTREE,
@@ -31,6 +33,8 @@ export default class extends sMod {
     public point!: { 'x': number; 'y': number; };
 
     public polygon!: Array<Array<{ 'x': number; 'y': number; }>>;
+
+    public json!: types.Json;
 
     public time_add!: number;
 
