@@ -29,6 +29,7 @@ export interface ICookieOptions {
     'domain'?: string;
     'ssl'?: boolean;
     'httponly'?: boolean;
+    'samesite'?: 'None' | 'Lax' | 'Strict';
 }
 
 /**
@@ -54,9 +55,10 @@ export function setCookie(ctr: sCtr.Ctr, name: string, value: string, opt: ICook
     const domain = opt.domain ? `; domain=${opt.domain}` : '';
     const secure = opt.ssl ? '; secure' : '';
     const httpOnly = opt.httponly ? '; HttpOnly' : '';
+    const sameSite = '; SameSite=' + (opt.samesite ?? 'None');
     const cookies: string[] = res.getHeader('set-cookie') as string[] | undefined ?? [];
     // cookies.push(`${name}=${encodeURIComponent(value)}; expires=${expires}; Max-Age=${ttl}${path}${domain}${secure}${httpOnly}`);
-    cookies.push(`${name}=${encodeURIComponent(value)}${maxAge}${path}${domain}${secure}${httpOnly}`);
+    cookies.push(`${name}=${encodeURIComponent(value)}${maxAge}${path}${domain}${secure}${httpOnly}${sameSite}`);
     res.setHeader('set-cookie', cookies);
 }
 

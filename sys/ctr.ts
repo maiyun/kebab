@@ -1,7 +1,7 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2020-3-14 17:24:38
- * Last: 2020-3-30 15:31:40, 2022-07-22 16:59:00, 2022-09-12 23:51:56, 2022-09-23 15:53:58, 2022-12-29 01:18:08, 2023-2-28 20:07:57, 2023-12-21 13:25:54
+ * Last: 2020-3-30 15:31:40, 2022-07-22 16:59:00, 2022-09-12 23:51:56, 2022-09-23 15:53:58, 2022-12-29 01:18:08, 2023-2-28 20:07:57, 2023-12-27 18:39:35
  */
 import * as http from 'http';
 import * as http2 from 'http2';
@@ -626,6 +626,20 @@ export class Ctr {
      */
     protected _getLocale(): string {
         return this._locale;
+    }
+
+    /**
+     * --- 开启跨域请求 ---
+     * 返回 true 接续执行，返回 false 需要中断用户本次访问（options请求）
+     */
+    protected _cross(): boolean {
+        this._res.setHeader('access-control-allow-origin', '*');
+        this._res.setHeader('access-control-allow-headers', '*');
+        if (this._req.method === 'OPTIONS') {
+            this._res.setHeader('access-control-max-age', '3600');
+            return false;
+        }
+        return true;
     }
 
     // --- 以下：Mutton: false, Kebab: true ---
