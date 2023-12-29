@@ -1,7 +1,7 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2019-4-15 13:40
- * Last: 2020-4-14 13:52:00, 2022-09-07 01:43:31
+ * Last: 2020-4-14 13:52:00, 2022-09-07 01:43:31, 2023-12-29 17:24:03
  */
 import * as http from 'http';
 import * as http2 from 'http2';
@@ -115,7 +115,7 @@ export async function run(data: {
         }
     }
     // --- 加载 kebab config ---
-    const config: types.IConfig = {} as any;
+    const config: types.IConfig = {} as types.Json;
     const configData = kebabConfigs[data.rootPath + 'kebab.json'];
     for (const name in configData) {
         config[name] = configData[name];
@@ -260,11 +260,11 @@ export async function run(data: {
     }
 
     // --- 执行中间控制器的 _load ---
-    let rtn: any;
+    let rtn: types.Json;
     try {
-        rtn = await (middle.onLoad() as any);
+        rtn = await (middle.onLoad() as types.Json);
     }
-    catch (e: any) {
+    catch (e: types.Json) {
         await lCore.log(middle, '(E03)' + JSON.stringify((e.stack as string)).slice(1, -1), '-error');
         if (data.res) {
             data.res.setHeader('content-type', 'text/html; charset=utf-8');
@@ -358,7 +358,7 @@ export async function run(data: {
             pathRight = pathRight.replace(/-([a-zA-Z0-9])/g, function(t, t1: string): string {
                 return t1.toUpperCase();
             });
-            if ((cctr as any)[pathRight] === undefined) {
+            if ((cctr as types.Json)[pathRight] === undefined) {
                 if (config.route['#404']) {
                     data.res.setHeader('location', lText.urlResolve(config.const.urlBase, config.route['#404']));
                     data.res.writeHead(302);
@@ -374,10 +374,10 @@ export async function run(data: {
             }
             // --- 执行 onLoad 方法 ---
             try {
-                rtn = await (cctr.onLoad() as any);
+                rtn = await (cctr.onLoad() as types.Json);
                 // --- 执行 action ---
                 if (rtn === undefined || rtn === true) {
-                    rtn = await (cctr as any)[pathRight]();
+                    rtn = await (cctr as types.Json)[pathRight]();
                     await unlinkUploadFiles(cctr);
                     const sess = cctr.getPrototype('_sess');
                     if (sess) {
@@ -388,7 +388,7 @@ export async function run(data: {
                 cacheTTL = cctr.getPrototype('_cacheTTL');
                 httpCode = cctr.getPrototype('_httpCode');
             }
-            catch (e: any) {
+            catch (e: types.Json) {
                 await lCore.log(cctr, '(E04)' + JSON.stringify(e.stack).slice(1, -1), '-error');
                 data.res.setHeader('content-type', 'text/html; charset=utf-8');
                 data.res.setHeader('content-length', 25);
@@ -401,9 +401,9 @@ export async function run(data: {
             // --- web socket ---
             // --- 执行 onLoad 方法 ---
             try {
-                rtn = await (cctr as any).onLoad();
+                rtn = await (cctr as types.Json).onLoad();
             }
-            catch (e: any) {
+            catch (e: types.Json) {
                 await lCore.log(cctr, JSON.stringify((e.stack as string)).slice(1, -1), '-error');
                 data.socket!.end('500 Internal server error.');
                 return true;
@@ -418,7 +418,7 @@ export async function run(data: {
                                 data.socket!.end();
                             }
                             else {
-                                const wrtn = await (cctr as any)['onData'](da.payloadData);
+                                const wrtn = await (cctr as types.Json)['onData'](da.payloadData);
                                 if (wrtn) {
                                     lWs.send(data.socket!, wrtn);
                                 }
@@ -428,7 +428,7 @@ export async function run(data: {
                         });
                     }).on('close', function() {
                         (async function() {
-                            await (cctr as any)['onClose']();
+                            await (cctr as types.Json)['onClose']();
                             resolve();
                         })().catch(async (e) => {
                             await lCore.log(cctr, JSON.stringify((e.stack as string)).slice(1, -1), '-error');
@@ -555,7 +555,7 @@ export async function run(data: {
             else {
                 if (typeof rtn[0] === 'number') {
                     // --- 1. ---
-                    const json: Record<string, any> = { 'result': rtn[0] };
+                    const json: Record<string, types.Json> = { 'result': rtn[0] };
                     if (rtn[1] !== undefined) {
                         if (typeof rtn[1] === 'object') {
                             // --- [0, {'xx': 'xx'}] ---
@@ -729,7 +729,7 @@ export async function unlinkUploadFiles(cctr: sCtr.Ctr): Promise<void> {
  * --- 将 POST 数据的值执行 trim ---
  * @param post
  */
-export function trimPost(post: Record<string, any>): any {
+export function trimPost(post: Record<string, types.Json>): void {
     for (const key in post) {
         const val = post[key];
         if (typeof val === 'string') {
@@ -745,7 +745,7 @@ export function trimPost(post: Record<string, any>): any {
  * --- 内部使用，获取 post 对象，如果是文件上传（formdata）的情况则不获取 ---
  * @param req 请求对象
  */
-function getPost(req: http2.Http2ServerRequest | http.IncomingMessage): Promise<[string, Record<string, any>]> {
+function getPost(req: http2.Http2ServerRequest | http.IncomingMessage): Promise<[string, Record<string, types.Json>]> {
     return new Promise(function(resolve) {
         const ct = req.headers['content-type'] ?? '';
         if (ct.includes('form-data')) {
@@ -791,7 +791,7 @@ export function getFormData(
         onfileend?: () => void;
     } = {}
 ): Promise<{
-    'post': Record<string, any>;
+    'post': Record<string, types.Json>;
     'files': Record<string, types.IPostFile | types.IPostFile[]>;
 }> {
     return new Promise(function(resolve) {
@@ -808,7 +808,7 @@ export function getFormData(
         }
         /** --- 最终返回 --- */
         const rtn: {
-            'post': Record<string, any>;
+            'post': Record<string, types.Json>;
             'files': Record<string, types.IPostFile | types.IPostFile[]>;
         } = {
             'post': {},
@@ -844,6 +844,10 @@ export function getFormData(
         let ftmpStream: fs.WriteStream;
         /** --- 当前临时文件已写入的流大小 --- */
         let ftmpSize: number = 0;
+        /** --- 当前正在写入的文件数量 --- */
+        let writeFileLength: number = 0;
+        /** --- 当前读取是否已经完全结束 --- */
+        let readEnd: boolean = false;
 
         // --- 开始读取 ---
         req.on('data', function(chunk: Buffer) {
@@ -871,6 +875,7 @@ export function getFormData(
                         }
                         else {
                             // --- 文件 ---
+                            ++writeFileLength;
                             state = EState.FILE;
                             fileName = match[1];
                             const fr = events.onfilestart?.(name);
@@ -935,7 +940,19 @@ export function getFormData(
                         else {
                             ftmpStream.write(writeBuffer);
                             ftmpSize += Buffer.byteLength(writeBuffer);
-                            ftmpStream.end();
+                            ftmpStream.end(() => {
+                                --writeFileLength;
+                                if (!readEnd) {
+                                    // --- request 没读完，不管 ---
+                                    return;
+                                }
+                                if (writeFileLength) {
+                                    // --- req 读完了但文件还没写完，不管 ---
+                                    return;
+                                }
+                                // --- 文件也写完了 ---
+                                resolve(rtn);
+                            });
                             // --- POST 部分 ---
                             let fname = fileName.replace(/\\/g, '/');
                             const nlio = fname.lastIndexOf('/');
@@ -969,6 +986,12 @@ export function getFormData(
             }
         });
         req.on('end', function() {
+            readEnd = true;
+            if (writeFileLength) {
+                // --- 文件没写完 ---
+                return;
+            }
+            // --- 文件写完了 ----
             resolve(rtn);
         });
     });
