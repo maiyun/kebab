@@ -26,7 +26,7 @@ export default class extends sCtr.Ctr {
     private _internalUrl: string = '';
 
     public onLoad(): Array<string | number> | boolean {
-        if (this._config.const.hostname !== '127.0.0.1' && this._config.const.hostname !== '172.17.0.1' && this._config.const.hostname !== 'local-test.brc-app.com' && !this._config.const.hostname.startsWith('192.168.')) {
+        if (this._config.const.hostname !== '127.0.0.1' && this._config.const.hostname !== '172.17.0.1' && this._config.const.hostname !== 'localhost' && this._config.const.hostname !== 'local-test.brc-app.com' && !this._config.const.hostname.startsWith('192.168.')) {
             return [0, 'Please use 127.0.0.1 to access the file (' + this._config.const.host + ').'];
         }
         const realIp = lCore.realIP(this);
@@ -97,6 +97,7 @@ export default class extends sCtr.Ctr {
             `<br><a href="${this._config.const.urlBase}test/ctr-locale">View "test/ctr-locale"</a>`,
             `<br><a href="${this._config.const.urlBase}test/ctr-cachettl">View "test/ctr-cachettl"</a>`,
             `<br><a href="${this._config.const.urlBase}test/ctr-httpcode">View "test/ctr-httpcode"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/ctr-cross">View "test/ctr-cross"</a>`,
             `<br><a href="${this._config.const.urlBase}test/ctr-readable">View "test/ctr-readable"</a>`,
 
             '<br><br><b>Middle:</b>',
@@ -239,8 +240,8 @@ export default class extends sCtr.Ctr {
 Result:<pre id="result">Nothing.</pre>${this._getEnd()}`;
     }
 
-    public ctrXsrf1(): Array<string | number | object> {
-        const retur: Array<string | number | object> = [];
+    public ctrXsrf1(): types.Json[] {
+        const retur: types.Json[] = [];
         if (!this._checkXInput(this._post, {}, retur)) {
             return retur;
         }
@@ -373,6 +374,24 @@ function postFd() {
     public ctrHttpcode(): string {
         this._httpCode = 404;
         return 'This page is a custom httpcode (404).';
+    }
+
+    public ctrCross(): string {
+        return `<input type="button" value="Fetch localhost" onclick="document.getElementById('result').innerText='Waiting...';fetch('http://localhost:${this._config.const.hostport}${this._config.const.urlBase}test/ctr-cross1').then(function(r){return r.text();}).then(function(t){document.getElementById('result').innerText=t;}).catch(()=>{document.getElementById('result').innerText='Failed.';});">
+<input type='button' value="Fetch localhost with cross" style="margin-left: 10px;" onclick="document.getElementById('result').innerText='Waiting...';fetch('http://localhost:${this._config.const.hostport}${this._config.const.urlBase}test/ctr-cross2').then(function(r){return r.text();}).then(function(t){document.getElementById('result').innerText=t;});">
+<input type='button' value="Fetch local-test.brc-app.com with cross" style="margin-left: 10px;" onclick="document.getElementById('result').innerText='Waiting...';fetch('http://local-test.brc-app.com:${this._config.const.hostport}${this._config.const.urlBase}test/ctr-cross2').then(function(r){return r.text();}).then(function(t){document.getElementById('result').innerText=t;});"><br><br>
+Result:<pre id="result">Nothing.</pre>` + this._getEnd();
+    }
+
+    public ctrCross1(): types.Json[] {
+        return [1, { 'value': 'done' }];
+    }
+
+    public ctrCross2(): types.Json[] {
+        if (!this._cross()) {
+            return [0];
+        }
+        return [1, { 'value': 'done' }];
     }
 
     public ctrReadable(): fs.ReadStream {
