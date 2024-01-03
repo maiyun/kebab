@@ -147,6 +147,7 @@ export default class extends sCtr.Ctr {
             `<br><a href="${this._config.const.urlBase}test/net-reuse">View "test/net-reuse"</a>`,
             `<br><a href="${this._config.const.urlBase}test/net-error">View "test/net-error"</a>`,
             `<br><a href="${this._config.const.urlBase}test/net-hosts">View "test/net-hosts"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/net-rproxy/dist/core.js">View "test/net-rproxy/dist/core.js"</a> <a href="${this._config.const.urlBase}test/net-rproxy/package.json">View "package.json"</a>`,
 
             '<br><br><b>Scan:</b>',
             `<br><br><a href="${this._config.const.urlBase}test/scan?s=db">View "test/scan?s=db"</a>`,
@@ -1231,8 +1232,8 @@ echo[echo.length - 1] = echo[echo.length - 1].slice(0, -4);</pre>`);
     public async net(): Promise<string> {
         const echo = [];
 
-        const res = await lNet.get('https://cdn.jsdelivr.net/npm/deskrt/package.json');
-        echo.push(`<pre>Net::get('https://cdn.jsdelivr.net/npm/deskrt/package.json');</pre>
+        const res = await lNet.get('https://cdn.jsdelivr.net/npm/deskrt@2.0.10/package.json');
+        echo.push(`<pre>Net::get('https://cdn.jsdelivr.net/npm/deskrt@2.0.10/package.json');</pre>
 headers: <pre>${JSON.stringify(res.headers, null, 4)}</pre>
 content: <pre>${(await res.getContent())?.toString() ?? 'null'}</pre>
 error: ${JSON.stringify(res.error)}`);
@@ -1243,9 +1244,9 @@ error: ${JSON.stringify(res.error)}`);
     public async netPipe(): Promise<types.Json> {
         const echo = [];
 
-        const res = await lNet.get('https://cdn.jsdelivr.net/npm/deskrt/package.json');
+        const res = await lNet.get('https://cdn.jsdelivr.net/npm/deskrt@2.0.10/package.json');
         echo.push(
-            `<pre>Net::get('https://cdn.jsdelivr.net/npm/deskrt/package.json');</pre>
+            `<pre>Net::get('https://cdn.jsdelivr.net/npm/deskrt@2.0.10/package.json');</pre>
 headers: <pre>${JSON.stringify(res.headers, null, 4)}</pre>
 content: <pre>`,
             res,
@@ -1497,11 +1498,11 @@ lCore.setCookie(this, 'test10', 'httponly', {
     public async netSave(): Promise<string> {
         const echo = [];
 
-        const res = await lNet.get('https://cdn.jsdelivr.net/npm/deskrt/package.json', {
+        const res = await lNet.get('https://cdn.jsdelivr.net/npm/deskrt@2.0.10/package.json', {
             'follow': 5,
             'save': def.LOG_PATH + 'test-must-remove.json'
         });
-        echo.push(`<pre>lNet.get('https://cdn.jsdelivr.net/npm/deskrt/package.json', {
+        echo.push(`<pre>lNet.get('https://cdn.jsdelivr.net/npm/deskrt@2.0.10/package.json', {
     'follow': 5,
     'save': def.LOG_PATH + 'test-must-remove.json'
 });</pre>
@@ -1595,6 +1596,15 @@ content: <pre>${lText.htmlescape((await res.getContent())?.toString() ?? '')}</p
 error: <pre>${JSON.stringify(res.error, null, 4)}</pre>`);
 
         return echo.join('') + this._getEnd();
+    }
+
+    public async netRproxy(): Promise<string | boolean> {
+        if (await lNet.rproxy(this, {
+            'test/net-rproxy/': 'https://cdn.jsdelivr.net/npm/deskrt@2.0.10/'
+        })) {
+            return true;
+        }
+        return 'Nothing';
     }
 
     public async scan(): Promise<types.Json> {

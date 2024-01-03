@@ -154,11 +154,13 @@ export interface IConfigConst {
 }
 
 /** --- http headers --- */
+/* eslint-disable @typescript-eslint/naming-convention */
 export type THttpHeaders = http.IncomingHttpHeaders & {
-    'httpVersion'?: string;
-    'httpCode'?: number;
-    'httpUrl'?: string;
+    'http-version'?: string;
+    'http-code'?: number;
+    'http-url'?: string;
 };
+/* eslint-enable */
 
 /** --- Net Cookie 对象 --- */
 export interface INetCookie {
@@ -174,7 +176,7 @@ export interface INetCookie {
 
 /** --- 请求的传入参数选项 --- */
 export interface INetOptions {
-    'method'?: 'GET' | 'POST';
+    'method'?: 'GET' | 'POST' | 'OPTIONS';
     'type'?: 'form' | 'json';
     'timeout'?: number;
     'follow'?: number;

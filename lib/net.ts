@@ -2,7 +2,7 @@
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2019-5-15 22:47
  * CA: https://curl.haxx.se/ca/cacert.pem
- * Last: 2020-4-9 20:11:02, 2022-09-22 14:30:13
+ * Last: 2020-4-9 20:11:02, 2022-09-22 14:30:13, 2024-1-1 21:32:26
  */
 import * as url from 'url';
 import * as stream from 'stream';
@@ -12,7 +12,9 @@ import * as hc from '@litert/http-client';
 import * as fs from '~/lib/fs';
 import * as text from '~/lib/text';
 import * as time from '~/lib/time';
+import * as zlib from '~/lib/zlib';
 import * as def from '~/sys/def';
+import * as ctr from '~/sys/ctr';
 import * as types from '~/types';
 // --- 自己 ---
 import * as fd from './net/formdata';
@@ -52,7 +54,7 @@ export async function get(u: string, opt: types.INetOptions = {}): Promise<respo
  */
 export async function post(
     u: string,
-    data: Record<string, any> | Buffer | string | stream.Readable,
+    data: Record<string, types.Json> | Buffer | string | stream.Readable,
     opt: types.INetOptions = {}
 ): Promise<response.Response> {
     opt.method = 'POST';
@@ -67,7 +69,7 @@ export async function post(
  */
 export async function postJson(
     u: string,
-    data: any[] | Record<string, any>,
+    data: types.Json[] | Record<string, types.Json>,
     opt: types.INetOptions = {}
 ): Promise<response.Response> {
     opt.method = 'POST';
@@ -81,7 +83,7 @@ export async function postJson(
  */
 export async function request(
     u: string,
-    data?: Record<string, any> | Buffer | string | stream.Readable,
+    data?: Record<string, types.Json> | Buffer | string | stream.Readable,
     opt: types.INetOptions = {}
 ): Promise<response.Response> {
     const uri = url.parse(u);
@@ -94,7 +96,7 @@ export async function request(
     const save = opt.save;
     const local = opt.local;
     const reuse = opt.reuse ?? 'default';
-    const headers: Record<string, any> = {};
+    const headers: Record<string, types.Json> = {};
     if (opt.headers) {
         for (const key in opt.headers) {
             headers[key.toLowerCase()] = opt.headers[key];
@@ -165,7 +167,7 @@ export async function request(
             }
         });
     }
-    catch (err: any) {
+    catch (err: types.Json) {
         const res = new response.Response(null);
         res.error = err;
         return res;
@@ -199,9 +201,9 @@ export async function request(
         res.setContent(total.toString());
     }
     res.headers = req.headers as types.THttpHeaders;
-    res.headers.httpVersion = '';
-    res.headers.httpCode = req.statusCode;
-    res.headers.httpUrl = u;
+    res.headers['http-version'] = '';
+    res.headers['http-code'] = req.statusCode;
+    res.headers['http-url'] = u;
     // --- 判断 follow 追踪 ---
     if (follow === 0) {
         return res;
@@ -428,4 +430,82 @@ export function resetCookieSession(cookie: Record<string, types.INetCookie>): vo
  */
 export function getFormData(): fd.FormData {
     return new fd.FormData();
+}
+
+// --- 以下是反向代理的实现 ---
+
+export async function rproxy(
+    ctr: ctr.Ctr,
+    route: Record<string, string>,
+    opt: types.INetOptions = {}
+): Promise<boolean> {
+    const req = ctr.getPrototype('_req');
+    const res = ctr.getPrototype('_res');
+    const config = ctr.getPrototype('_config');
+    const input = ctr.getPrototype('_input');
+    const path = config.const.path + (config.const.qs ? '?' + config.const.qs : '');
+    for (const key in route) {
+        if (!path.startsWith(key)) {
+            continue;
+        }
+        // --- 找到了，做转发 ---
+        const lpath = path.slice(key.length);
+        (opt as types.Json).method = req.method ?? 'GET';
+        /** --- 不代理的 header  --- */
+        const continueHeaders = ['host', 'connection', 'http-version', 'http-code', 'http-url'];
+        if (!opt.headers) {
+            opt.headers = {};
+        }
+        for (const h in req.headers) {
+            if (continueHeaders.includes(h)) {
+                continue;
+            }
+            if (h.includes(':') || h.includes('(')) {
+                continue;
+            }
+            opt.headers[h] = req.headers[h];
+        }
+        // --- 发起请求 ---
+        const rres = await request(route[key] + lpath, req.headers['content-type']?.includes('form-data') ? req : input, opt);
+        if (rres.error) {
+            return false;
+        }
+        for (const h in rres.headers) {
+            if (continueHeaders.includes(h)) {
+                continue;
+            }
+            if (h.includes(':') || h.includes('(')) {
+                continue;
+            }
+            const v = rres.headers[h];
+            if (v === undefined) {
+                continue;
+            }
+            res.setHeader(h, v);
+        }
+        /** --- 当前的压缩对象 --- */
+        let compress: zlib.ICompress | null = null;
+        if (rres.headers?.['content-encoding']) {
+            compress = zlib.createCompress(rres.headers?.['content-encoding']);
+            if (!compress) {
+                res.removeHeader('content-encoding');
+            }
+        }
+        res.writeHead(rres.headers?.['http-code'] ?? 200);
+        await new Promise<void>((resolve) => {
+            // --- 压缩 ---
+            if (compress) {
+                rres.getStream().pipe(compress.compress).pipe(res).on('finish', () => {
+                    resolve();
+                });
+            }
+            else {
+                rres.getStream().pipe(res).on('finish', () => {
+                    resolve();
+                });
+            }
+        });
+        return true;
+    }
+    return false;
 }

@@ -55,7 +55,7 @@ export function setCookie(ctr: sCtr.Ctr, name: string, value: string, opt: ICook
     const domain = opt.domain ? `; domain=${opt.domain}` : '';
     const secure = opt.ssl ? '; secure' : '';
     const httpOnly = opt.httponly ? '; HttpOnly' : '';
-    const sameSite = '; SameSite=' + (opt.samesite ?? 'None');
+    const sameSite = opt.samesite ? '; SameSite=' + opt.samesite : '';
     const cookies: string[] = res.getHeader('set-cookie') as string[] | undefined ?? [];
     // cookies.push(`${name}=${encodeURIComponent(value)}; expires=${expires}; Max-Age=${ttl}${path}${domain}${secure}${httpOnly}`);
     cookies.push(`${name}=${encodeURIComponent(value)}${maxAge}${path}${domain}${secure}${httpOnly}${sameSite}`);
