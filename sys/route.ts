@@ -378,6 +378,8 @@ export async function run(data: {
                 // --- 执行 action ---
                 if (rtn === undefined || rtn === true) {
                     rtn = await (cctr as types.Json)[pathRight]();
+                    rtn = await (cctr.onUnload(rtn) as types.Json);
+                    rtn = await (middle.onUnload(rtn) as types.Json);
                     await unlinkUploadFiles(cctr);
                     const sess = cctr.getPrototype('_sess');
                     if (sess) {

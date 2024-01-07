@@ -157,6 +157,15 @@ export class Ctr {
         return true;
     }
 
+    /**
+     * --- 整个结束前会执行本方法，可重写此方法对输出结果再处理一次（Websocket 模式无效） ---
+     * @param rtn 之前用户的输出结果
+     */
+    public onUnload(rtn: boolean | string | types.DbValue[]): boolean | string | types.DbValue[] |
+    Promise<boolean | string | types.DbValue[]> {
+        return rtn;
+    }
+
     public onData(val: string): boolean | object | string | null | Promise<boolean | object | string | null>;
     /**
      * --- WebSocket 下会自动被调用的事件，可重写此方法 ---

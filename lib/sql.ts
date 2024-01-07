@@ -386,9 +386,10 @@ export class Sql {
      * @param f 表名
      * @param s ON 信息
      * @param type 类型
+     * @param suf 表后缀
      */
-    public join(f: string, s: types.Json = [], type: string = 'INNER'): this {
-        let sql = ' ' + type + ' JOIN ' + this.field(f, this._pre);
+    public join(f: string, s: types.Json = [], type: string = 'INNER', suf: string = ''): this {
+        let sql = ' ' + type + ' JOIN ' + this.field(f, this._pre, suf ? ('#' + suf) : '');
         if (Array.isArray(s) ? s.length : Object.keys(s).length) {
             sql += ' ON ' + this._whereSub(s);
         }
@@ -400,45 +401,50 @@ export class Sql {
      * --- left join 方法 ---
      * @param f 表名
      * @param s ON 信息
+     * @param suf 表后缀
      */
-    public leftJoin(f: string, s: types.Json = []): this {
-        return this.join(f, s, 'LEFT');
+    public leftJoin(f: string, s: types.Json = [], suf: string = ''): this {
+        return this.join(f, s, 'LEFT', suf);
     }
 
     /**
      * --- right join 方法 ---
      * @param f 表名
      * @param s ON 信息
+     * @param suf 表后缀
      */
-    public rightJoin(f: string, s: types.Json = []): this {
-        return this.join(f, s, 'RIGHT');
+    public rightJoin(f: string, s: types.Json = [], suf: string = ''): this {
+        return this.join(f, s, 'RIGHT', suf);
     }
 
     /**
      * --- inner join 方法 ---
      * @param f 表名
      * @param s ON 信息
+     * @param suf 表后缀
      */
-    public innerJoin(f: string, s: types.Json = []): this {
-        return this.join(f, s);
+    public innerJoin(f: string, s: types.Json = [], suf: string = ''): this {
+        return this.join(f, s, suf);
     }
 
     /**
      * --- full join 方法 ---
      * @param f 表名
      * @param s ON 信息
+     * @param suf 表后缀
      */
-    public fullJoin(f: string, s: types.Json = []): this {
-        return this.join(f, s, 'FULL');
+    public fullJoin(f: string, s: types.Json = [], suf: string = ''): this {
+        return this.join(f, s, 'FULL', suf);
     }
 
     /**
      * --- cross join 方法 ---
      * @param f 表名
      * @param s ON 信息
+     * @param suf 表后缀
      */
-    public crossJoin(f: string, s: types.Json = []): this {
-        return this.join(f, s, 'CROSS');
+    public crossJoin(f: string, s: types.Json = [], suf: string = ''): this {
+        return this.join(f, s, 'CROSS', suf);
     }
 
     /**
@@ -713,8 +719,9 @@ export class Sql {
      * --- 对字段进行包裹 ---
      * @param str
      * @param pre 表前缀，仅请在 field 表名时倒入前缀
+     * @param suf 表后缀，仅请在 field 表名时倒入后缀，前面加 # 代表要强制 AS
      */
-    public field(str: string | number | Array<string | string[]>, pre: string = ''): string {
+    public field(str: string | number | Array<string | string[]>, pre: string = '', suf: string = ''): string {
         let left: string = '';
         let right: string = '';
         if (Array.isArray(str)) {
@@ -730,6 +737,13 @@ export class Sql {
         str = str.replace(/([(,]) +/g, '$1 ');
         str = str.replace(/["']/g, '');
         str = str.replace(/(\W)(JOIN|WHERE|OR|AND|UNION)(\W)/ig, '$1$3');
+        // --- 先判断 suf 强制性 AS ---
+        let sufAs = false;
+        if (suf.startsWith('#')) {
+            // --- 强制 AS ---
+            suf = suf.slice(1);
+            sufAs = true;
+        }
         // --- 先判断有没有别名（也就是 as） ---
         const loStr = str.toLowerCase();
         const asPos = loStr.indexOf(' as ');
@@ -757,7 +771,7 @@ export class Sql {
             left = str.slice(0, asPos);
             right = str.slice(asPos + 4);
         }
-        if (right !== '') {
+        if (right) {
             // --- 处理右侧 ---
             if (right.startsWith('`')) {
                 right = '`' + pre + right.slice(1);
@@ -766,6 +780,13 @@ export class Sql {
                 right = '`' + pre + right + '`';
             }
             right = ' AS ' + right;
+        }
+        else {
+            // --- 没有右侧 ---
+            if (sufAs) {
+                // --- 强制 AS ---
+                right = ' AS ' + this.field(left, pre);
+            }
         }
         // --- 处理 left ---
         if (/^[\w`_.*]+$/.test(left)) {
@@ -778,17 +799,18 @@ export class Sql {
             }
             if (l[1] === undefined) {
                 // --- xxx ---
-                return '`' + pre + l[0] + '`' + right;
+                return '`' + pre + l[0] + suf + '`' + right;
             }
             // --- x.xxx ---
+            // --- 只有在此模式才知道 . 前面的一定是表名，因此自动加 sql 级的 _pre ---
             const w = l[1] === '*' ? '*' : (l[1].startsWith('`') ? l[1] : ('`' + l[1] + '`'));
-            return '`' + this._pre + l[0] + '`.' + w + right;
+            return '`' + this._pre + l[0] + suf + '`.' + w + right;
         }
         else {
             return left.replace(/([(, ])([a-zA-Z`_][\w`_.]*)(?=[), ])/g, (
                 t: string, t1: string, t2: string
             ): string => {
-                return t1 + this.field(t2, pre);
+                return t1 + this.field(t2, pre, suf);
             }) + right;
         }
     }

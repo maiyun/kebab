@@ -284,6 +284,56 @@ export default class Mod {
     }
 
     /**
+     * --- 根据条件移除条目（仅获取 SQL 对象） ---
+     * @param db 数据库对象
+     * @param where 筛选条件
+     * @param opt 选项
+     */
+    public static removeByWhereSql(
+        db: lDb.Pool | lDb.Connection,
+        where: string | types.Json,
+        opt: {
+            'raw'?: boolean;
+            'pre'?: sCtr.Ctr | string;
+            'index'?: string;
+            'by'?: [string | string[], 'DESC' | 'ASC'];
+            'limit'?: [number, number?];
+        } = {}
+    ): lSql.Sql {
+        const tim = lTime.stamp();
+        const sq = lSql.get(opt.pre);
+        if (this._$soft && !opt.raw) {
+            // --- 软删除 ---
+            sq.update(this._$table + (opt.index ? ('_' + opt.index) : ''), [{
+                'time_remove': tim
+            }]);
+            if (typeof where === 'string') {
+                where = '(' + where + ') AND `time_remove` = 0';
+            }
+            else if (Array.isArray(where)) {
+                where.push({
+                    'time_remove': 0
+                });
+            }
+            else {
+                where['time_remove'] = 0;
+            }
+        }
+        else {
+            // --- 真删除 ---
+            sq.delete(this._$table + (opt.index ? ('_' + opt.index) : ''));
+        }
+        sq.where(where);
+        if (opt.by) {
+            sq.by(opt.by[0], opt.by[1]);
+        }
+        if (opt.limit) {
+            sq.limit(opt.limit[0], opt.limit[1]);
+        }
+        return sq;
+    }
+
+    /**
      * --- 根据条件更新数据 ---
      * @param db 数据库对象
      * @param data 要更新的数据
@@ -339,7 +389,6 @@ export default class Mod {
      * @param data 要更新的数据
      * @param where 筛选条件
      * @param opt 选项
-     * @return LSql
      */
     public static updateByWhereSql(
         data: types.Json,
@@ -1002,9 +1051,10 @@ export default class Mod {
      * @param f 表名
      * @param s ON 信息
      * @param type 类型
+     * @param index 给本表增加 index 分表项
      */
-    public join(f: string, s: types.Json = [], type: string = 'INNER'): this {
-        this._sql.join(f, s, type);
+    public join(f: string, s: types.Json = [], type: string = 'INNER', index: string = ''): this {
+        this._sql.join(f, s, type, index ? '_' + index : '');
         return this;
     }
 
@@ -1012,9 +1062,10 @@ export default class Mod {
      * --- left join 方法 ---
      * @param f 表名
      * @param s ON 信息
+     * @param index 给本表增加 index 分表项
      */
-    public leftJoin(f: string, s: types.Json): this {
-        this._sql.leftJoin(f, s);
+    public leftJoin(f: string, s: types.Json, index: string = ''): this {
+        this._sql.leftJoin(f, s, index ? '_' + index : '');
         return this;
     }
 
@@ -1022,9 +1073,10 @@ export default class Mod {
      * --- right join 方法 ---
      * @param f 表名
      * @param s ON 信息
+     * @param index 给本表增加 index 分表项
      */
-    public rightJoin(f: string, s: types.Json): this {
-        this._sql.rightJoin(f, s);
+    public rightJoin(f: string, s: types.Json, index: string = ''): this {
+        this._sql.rightJoin(f, s, index ? '_' + index : '');
         return this;
     }
 
@@ -1032,9 +1084,10 @@ export default class Mod {
      * --- inner join 方法 ---
      * @param f 表名
      * @param s ON 信息
+     * @param index 给本表增加 index 分表项
      */
-    public innerJoin(f: string, s: types.Json): this {
-        this._sql.innerJoin(f, s);
+    public innerJoin(f: string, s: types.Json, index: string = ''): this {
+        this._sql.innerJoin(f, s, index ? '_' + index : '');
         return this;
     }
 
@@ -1042,9 +1095,10 @@ export default class Mod {
      * --- full join 方法 ---
      * @param f 表名
      * @param s ON 信息
+     * @param index 给本表增加 index 分表项
      */
-    public fullJoin(f: string, s: types.Json): this {
-        this._sql.fullJoin(f, s);
+    public fullJoin(f: string, s: types.Json, index: string = ''): this {
+        this._sql.fullJoin(f, s, index ? '_' + index : '');
         return this;
     }
 
@@ -1052,9 +1106,10 @@ export default class Mod {
      * --- cross join 方法 ---
      * @param f 表名
      * @param s ON 信息
+     * @param index 给本表增加 index 分表项
      */
-    public crossJoin(f: string, s: types.Json): this {
-        this._sql.crossJoin(f, s);
+    public crossJoin(f: string, s: types.Json, index: string = ''): this {
+        this._sql.crossJoin(f, s, index ? '_' + index : '');
         return this;
     }
 

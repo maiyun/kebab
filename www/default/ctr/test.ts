@@ -39,6 +39,19 @@ export default class extends sCtr.Ctr {
         return true;
     }
 
+    public onUnload(rtn: string | boolean | types.DbValue[]): string | boolean | types.DbValue[] {
+        if (!Array.isArray(rtn)) {
+            return rtn;
+        }
+        if (rtn[0] !== -102) {
+            return rtn;
+        }
+        rtn.push({
+            'test': 'unload'
+        });
+        return rtn;
+    }
+
     public notfound(): string {
         // --- Set on route.php ---
         this._httpCode = 404;
@@ -90,6 +103,8 @@ export default class extends sCtr.Ctr {
             `<br><a href="${this._config.const.urlBase}test/json?type=5">View "test/json?type=5"</a>`,
             `<br><a href="${this._config.const.urlBase}test/json?type=6">View "test/json?type=6"</a>`,
             `<br><a href="${this._config.const.urlBase}test/json?type=7">View "test/json?type=7"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/json?type=8">View "test/json?type=8"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/json?type=9">View "test/json?type=9"</a>`,
 
             '<br><br><b>Ctr:</b>',
             `<br><br><a href="${this._config.const.urlBase}test/ctr-xsrf">View "test/ctr-xsrf"</a>`,
@@ -228,6 +243,10 @@ export default class extends sCtr.Ctr {
                 return { 'oh': 'yeah', 'sb': 'is me' };
             case '7':
                 return [1, 'success', { 'list': [1, 2, 3] }];
+            case '8':
+                return [-101, 'Test middle onUnload'];
+            case '9':
+                return [-102, 'Test ctr onUnload'];
             default:
                 return [];
         }
@@ -2072,6 +2091,13 @@ Result:<pre id="result">Nothing.</pre>`);
                 s = sql.select(['SUM(user.age) age'], 'order').leftJoin('user', { 'order.user_id': '#user.id' }).getSql();
                 sd = sql.getData();
                 echo.push(`<pre>sql.select(['SUM(user.age) age'], 'order').leftJoin('user', { 'order.user_id': '#user.id' });</pre>
+<b>getSql() :</b> ${s}<br>
+<b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
+<b>format() :</b> ${sql.format(s, sd)}<hr>`);
+
+                s = sql.select('*', 'order').leftJoin('user', { 'order.user_id': '#user.id' }, '_0').leftJoin('group a', { 'order.group_id': '#a.id' }, '_0').getSql();
+                sd = sql.getData();
+                echo.push(`<pre>sql.select('*', 'order').leftJoin('user', { 'order.user_id': '#user.id' }, '_0').leftJoin('group a', { 'order.group_id': '#a.id' }, '_0').getSql();</pre>
 <b>getSql() :</b> ${s}<br>
 <b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
 <b>format() :</b> ${sql.format(s, sd)}`);
