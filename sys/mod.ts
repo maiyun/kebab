@@ -127,16 +127,17 @@ export default class Mod {
                 (this as Record<string, types.Json>)[k] = v;
             }
         }
-        if (opt.select) {
+        /** --- 是否有 select --- */
+        const select = opt.select ? opt.select : (opt.where ? '*' : '');
+        if (select) {
             this._sql.select(
-                opt.select,
+                select,
                 ((this.constructor as Record<string, types.Json>)._$table as string) +
                 (this._index !== null ? ('_' + this._index) : '') +
                 (opt.alias ? ' ' + opt.alias : '')
             );
         }
         if (opt.where !== undefined) {
-            this._sql.select('*', ((this.constructor as Record<string, types.Json>)._$table as string) + (this._index !== null ? ('_' + this._index) : ''));
             if ((this.constructor as Record<string, types.Json>)._soft && !opt.raw) {
                 if (typeof opt.where === 'string') {
                     opt.where = opt.where ? ('(' + opt.where + ') AND ') : '`time_remove` = 0';

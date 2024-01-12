@@ -3,7 +3,6 @@
  * Date: 2022-07-22 13:44:12
  * Last: 2022-07-22 13:44:12, 2023-5-2 21:12:32, 2023-12-14 11:43:09
  */
-import * as url from 'url';
 import * as http from 'http';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -134,7 +133,7 @@ export interface IConfigConst {
     'host': string;
     'hostname': string;
     'hostport': number;
-    'uri': url.UrlWithStringQuery;
+    'uri': IUrlParse;
 
     // --- 服务端用的路径 ---
 

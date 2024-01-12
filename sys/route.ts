@@ -6,7 +6,6 @@
 import * as http from 'http';
 import * as http2 from 'http2';
 import * as fs from 'fs';
-import * as url from 'url';
 import * as stream from 'stream';
 // --- 库和定义 ---
 import * as lFs from '~/lib/fs';
@@ -39,7 +38,7 @@ export async function run(data: {
     'req': http2.Http2ServerRequest | http.IncomingMessage;
     'res'?: http2.Http2ServerResponse | http.ServerResponse;
     'socket'?: stream.Duplex;
-    'uri': url.UrlWithStringQuery;
+    'uri': types.IUrlParse;
     /** --- 虚拟主机当前动态目录的绝对根目录，末尾带 / --- */
     'rootPath': string;
     /** --- base url，如 /abc/vhost/，前后都带 / --- */

@@ -1,10 +1,9 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2019-5-3 23:54
- * Last: 2020-3-31 15:01:07, 2020-4-9 22:28:50, 2022-07-22 14:19:46, 2022-9-29 22:11:07, 2023-5-1 18:26:57
+ * Last: 2020-3-31 15:01:07, 2020-4-9 22:28:50, 2022-07-22 14:19:46, 2022-9-29 22:11:07, 2023-5-1 18:26:57, 2024-1-12 13:32:00
  */
 import * as http2 from 'http2';
-import * as url from 'url';
 import * as tls from 'tls';
 import * as http from 'http';
 import * as stream from 'stream';
@@ -268,7 +267,7 @@ async function requestHandler(
             return;
         }
     }
-    const uri: url.UrlWithStringQuery = url.parse(`http${https ? 's' : ''}://${host}${req.url ?? ''}`);
+    const uri = lText.parseUrl(`http${https ? 's' : ''}://${host}${req.url ?? ''}`);
     /** --- 当前的 vhost 配置文件 --- */
     const vhost = getVhostByHostname(uri.hostname ?? '');
     if (!vhost) {
@@ -421,7 +420,7 @@ async function requestHandler(
 async function upgradeHandler(req: http.IncomingMessage, socket: stream.Duplex, https: boolean): Promise<void> {
     socket.removeAllListeners('error');
     // --- 当前 uri ---
-    const uri: url.UrlWithStringQuery = url.parse(`ws${https ? 's' : ''}://${req.headers['host'] ?? ''}${req.url ?? ''}`);
+    const uri = lText.parseUrl(`ws${https ? 's' : ''}://${req.headers['host'] ?? ''}${req.url ?? ''}`);
     /** --- 当前的 vhost 配置文件 --- */
     const vhost = getVhostByHostname(uri.hostname ?? '');
     if (!vhost) {

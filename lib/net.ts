@@ -2,9 +2,8 @@
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2019-5-15 22:47
  * CA: https://curl.haxx.se/ca/cacert.pem
- * Last: 2020-4-9 20:11:02, 2022-09-22 14:30:13, 2024-1-1 21:32:26
+ * Last: 2020-4-9 20:11:02, 2022-09-22 14:30:13, 2024-1-1 21:32:26, 2024-1-12 13:01:54
  */
-import * as url from 'url';
 import * as stream from 'stream';
 // --- 第三方 ---
 import * as hc from '@litert/http-client';
@@ -86,7 +85,7 @@ export async function request(
     data?: Record<string, types.Json> | Buffer | string | stream.Readable,
     opt: types.INetOptions = {}
 ): Promise<response.Response> {
-    const uri = url.parse(u);
+    const uri = text.parseUrl(u);
     // let isSsl: boolean = false;
     const method = opt.method ?? 'GET';
     const type = opt.type ?? 'form';
@@ -153,6 +152,10 @@ export async function request(
         const host = uri.hostname?.toLowerCase() ?? '';
         if (!reuses[reuse]) {
             reuses[reuse] = hc.createHttpClient();
+        }
+        if (headers['content-length']) {
+            // --- 保证必须是正常的整型数字 ---
+            headers['content-length'] = parseInt(headers['content-length']);
         }
         req = await reuses[reuse].request({
             'url': u,
@@ -260,7 +263,7 @@ export function setCookie(cookie: Record<string, types.INetCookie>, name: string
 async function buildCookieObject(
     cookie: Record<string, types.INetCookie>,
     setCookies: string[],
-    uri: url.UrlWithStringQuery
+    uri: types.IUrlParse
 ): Promise<void> {
     const tim = time.stamp();
     if (!uri.path) {
@@ -364,7 +367,7 @@ async function buildCookieObject(
  * @param cookie cookie 对象
  * @param uri 请求的 URI 对象
  */
-function buildCookieQuery(cookie: Record<string, types.INetCookie>, uri: url.UrlWithStringQuery): string {
+function buildCookieQuery(cookie: Record<string, types.INetCookie>, uri: types.IUrlParse): string {
     const tim = time.stamp();
     let cookieStr: string = '';
     for (const key in cookie) {
