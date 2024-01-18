@@ -2506,8 +2506,8 @@ ${lTime.format(null, 'Y-m-d H:i:s')}
 ${lTime.format(9, 'Y-m-d H:i:s')}
 <pre>lTime.format(9.5, 'Y-m-d H:i:s');</pre>
 ${lTime.format(9.5, 'Y-m-d H:i:s')}
-<pre>lTime.format(null, 'Y|y|F|M|m|L|l|D|d|H|h|i|s');</pre>
-${lTime.format(null, 'Y|y|F|M|m|L|l|D|d|H|h|i|s')}`;
+<pre>lTime.format(null, 'd|D|j|l|N|w|Y|y|F|M|m|H|h|i|s|T');</pre>
+${lTime.format(null, 'd|D|j|l|N|w|Y|y|F|M|m|H|h|i|s|T')}`;
         return echo + '<br><br>' + this._getEnd();
     }
 

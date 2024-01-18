@@ -125,7 +125,7 @@ export function stamp(date?: Date): number {
  * --- 将时间对象转换为时间字符串 ---
  * @param zone 时区小时或 ctr 对象，如 8，设置 null 则以系统时区为准
  * @param f 转换格式
- * @param date 时间对象
+ * @param date 时间对象或毫秒级数字，如果是秒请乘以 1000
  */
 export function format(zone: number | sCtr.Ctr | null, f: string, date?: Date | number): string {
     const over: string[] = [];
