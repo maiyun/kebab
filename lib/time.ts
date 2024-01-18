@@ -1,7 +1,7 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2019-6-6 12:04:15
- * Last: 2020-3-29 23:41:21
+ * Last: 2020-3-29 23:41:21, 2024-1-18 17:16:50
  */
 import * as sCtr from '~/sys/ctr';
 import * as text from '~/lib/text';
@@ -146,6 +146,31 @@ export function format(zone: number | sCtr.Ctr | null, f: string, date?: Date | 
     }
     for (const v of f) {
         switch (v) {
+            case 'd': {
+                over.push(text.pad(date.getUTCDate()));
+                break;
+            }
+            case 'D': {
+                over.push(dayNames[0][date.getUTCDay()]);
+                break;
+            }
+            case 'j': {
+                over.push(date.getUTCDate().toString());
+                break;
+            }
+            case 'l': {
+                over.push(dayNames[1][date.getUTCDay()]);
+                break;
+            }
+            case 'N': {
+                const d = date.getUTCDay();
+                over.push((d ? d : 7).toString());
+                break;
+            }
+            case 'w': {
+                over.push(date.getUTCDay().toString());
+                break;
+            }
             case 'Y': {
                 over.push(date.getUTCFullYear().toString());
                 break;
@@ -164,19 +189,6 @@ export function format(zone: number | sCtr.Ctr | null, f: string, date?: Date | 
             }
             case 'm': {
                 over.push(text.pad(date.getUTCMonth() + 1));
-                break;
-            }
-            case 'L':
-            case 'l': {
-                over.push(dayNames[1][date.getUTCDay()]);
-                break;
-            }
-            case 'D': {
-                over.push(dayNames[0][date.getUTCDay()]);
-                break;
-            }
-            case 'd': {
-                over.push(text.pad(date.getUTCDate()));
                 break;
             }
             case 'H': {
