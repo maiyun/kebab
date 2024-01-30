@@ -2018,7 +2018,7 @@ Result:<pre id="result">Nothing.</pre>`);
                     ]
                 ]).getSql();
                 sd = sql.getData();
-                echo.push(`<pre>sql.insert('geo').values(['name', 'point', 'point2'], [
+                echo.push(`<pre>sql.insert('geo').values(['name', 'point', 'point2', 'polygon', 'json'], [
     [
         'POINT A', ['ST_POINTFROMTEXT(?)', ['POINT(122.147775 30.625015)']], { 'x': 1, 'y': 1 }, [
             [

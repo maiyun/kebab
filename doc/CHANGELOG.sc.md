@@ -4,6 +4,25 @@
 
 [繁體中文](./CHANGELOG.tc.md) | [English](./CHANGELOG.md)
 
+## 1.1.0
+
+[+] Consistent 库新增 getRange 方法。  
+[+] Jwt 库新增 clearCookie 方法。  
+[+] sftp 库新增 close 方法。  
+[+] 新增 ind 机制，可独立运行常驻代码。  
+[+] sql、db 库支持 GIS、JSON 格式。  
+[+] mod 类新增 oneArray、toArrayByRecord、firstArray、allArray 方法。  
+[+] ctr 类新增 _cross 方法，可放开跨域限制。  
+[+] 新增反代特性，使用 net 库的 rproxy 方法轻松实现反代。  
+[+] 生命周期新增 onUnload 事件，在页面结束时会执行。  
+[+] sql 库部分方法新增 suf 表后缀参数。  
+[+] mod 类新增 removeByWhereSql 方法。  
+[+] mod 的各种 join 方法新增 index 参数。  
+[\*] 优化了 core 库的 purify 方法。  
+[\*] 优化重写规则，html 格式文件将直接显示。  
+[\*] 优化 SSL 的 X509 证书加载模式。  
+[\*] 其他大量优化。
+
 ## 1.0.1
 
 [+] 控制器新增 Buffer、stream.Readable、lResponse.Response 以及以上三种为 T 的组合 Array<T> 返回类型。  

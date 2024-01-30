@@ -46,9 +46,9 @@ Create a multi-process model based on the number of CPU cores to fully utilize t
 
 ### Global connection pool
 
-If different sites in the same process connect to the same server, such as Db, Kv, etc., they share the same connection pool, maximizing efficiency and reducing overhead.
+If different sites in the same process connect to the same server, such as db, kv, etc., they share the same connection pool, maximizing efficiency and reducing overhead.
 
-### Super Easy-to-use Net Library
+### Super Easy-to-use net Library
 
 ```typescript
 const res = await lNet.open('https://xxx/test').post().data({ 'a': '1', 'b': '2' }).request();
@@ -85,7 +85,7 @@ const res1 = await lNet.get('https://xxx1.xxx/test1', { 'cookie': cookie });
 const res2 = await lNet.get('https://xxx2.xxx/test2', { 'cookie': cookie });
 ```
 
-> Note: The Net library supports both options and open chain operations. For example, await lNet.open('xxx').follow().timeout(60).save(this._config.const.rootPath + 'doc/test.txt').request();
+> Note: The net library supports both options and open chain operations. For example, await lNet.open('xxx').follow().timeout(60).save(this._config.const.rootPath + 'doc/test.txt').request();
 
 ### Easy-to-Use Db Library
 
@@ -115,6 +115,10 @@ Use the _checkXInput method to perform XSRF detection and prevent malicious acce
 ### Scan Login
 
 With the help of the Scan library, it's easy to implement scan login.
+
+### Reverse Proxy
+
+Achieve reverse proxy functionality effortlessly by utilizing the rproxy method from the net library, combined with route parameters.
 
 #### There are more features waiting for you to explore
 

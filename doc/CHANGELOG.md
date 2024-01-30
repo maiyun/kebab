@@ -4,6 +4,25 @@
 
 [简体中文](./CHANGELOG.sc.md) | [繁體中文](./CHANGELOG.tc.md)
 
+## 1.1.0
+
+[+] Added `getRange` method to the Consistent library.  
+[+] Introduced `clearCookie` method in the Jwt library.  
+[+] Added `close` method to the sftp library.  
+[+] Implemented independent execution for persistent code with the new `ind` mechanism.  
+[+] Enhanced GIS and JSON format support for sql and db libraries.  
+[+] New methods `oneArray`, `toArrayByRecord`, `firstArray`, `allArray` added to the mod class.  
+[+] Added `_cross` method to the ctr class, allowing cross-origin restrictions to be lifted.  
+[+] Introducing reverse proxy feature using `rproxy` method from the net library.  
+[+] Added `onUnload` event to the lifecycle, executing when the page ends.  
+[+] Some methods in the sql library now support a `suf` suffix parameter.  
+[+] New method `removeByWhereSql` added to the mod class.  
+[+] Various `join` methods in the mod class now support an `index` parameter.  
+[\*] Optimized the `purify` method in the core library.  
+[\*] Improved rewrite rules, directly displaying HTML-formatted files.  
+[\*] Enhanced SSL X509 certificate loading mode.  
+[\*] Numerous other optimizations.
+
 ## 1.0.1
 
 [+] Added Buffer, stream.Readable, and lResponse.Response as T combination Array<T> return types in the controller.  

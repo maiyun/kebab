@@ -46,9 +46,9 @@ Captcha, Consistent, Crypto, Db (MySQL), Dns (DNSPod, Alibaba Cloud), Fs, Kv (Re
 
 ### 全域連接池
 
-同一進程中的不同站點如果連接到同一個 Db、Kv 等伺服器，則共用同一個連接池，最大限度地提高效率並減少開銷。
+同一進程中的不同站點如果連接到同一個 db、kv 等伺服器，則共用同一個連接池，最大限度地提高效率並減少開銷。
 
-### 超好用 Net 庫
+### 超好用 net 庫
 
 可以這樣用：
 
@@ -87,7 +87,7 @@ const res1 = await lNet.get('https://xxx1.xxx/test1', { 'cookie': cookie });
 const res2 = await lNet.get('https://xxx2.xxx/test2', { 'cookie': cookie });
 ```
 
-> 提示：Net 庫同時支援傳入 options 和 open 鏈式操作，如 await lNet.open('xxx').follow().timeout(60).save(this._config.const.rootPath + 'doc/test.txt').request();
+> 提示：net 庫同時支援傳入 options 和 open 鏈式操作，如 await lNet.open('xxx').follow().timeout(60).save(this._config.const.rootPath + 'doc/test.txt').request();
 
 ### 好用的 Db 庫
 
@@ -116,7 +116,11 @@ const user = await User.select<User>(this, db, ['id', 'user']).filter([
 
 ### 扫码登录
 
-借助 Scan 庫可以輕鬆實現掃碼登入的功能。
+借助 scan 庫可以輕鬆實現掃碼登入的功能。
+
+### 反向代理
+
+使用 net 庫的 rproxy 方法，配合路由參數，可輕鬆實現反向代理功能。
 
 #### 還有更多特性等你探索
 

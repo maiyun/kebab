@@ -116,6 +116,10 @@ const user = await User.select<User>(this, db, ['id', 'user']).filter([
 
 借助 Scan 库可以轻松实现扫码登录的功能。
 
+### 反向代理
+
+使用 net 库的 rproxy 方法，配合路由参数，可轻松实现反向代理功能。
+
 #### 还有更多特性等你探索
 
 ## 代码演示
