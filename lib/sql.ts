@@ -735,7 +735,6 @@ export class Sql {
         str = str.replace(/ {2,}/g, ' ');   // --- 去除多余的空格 ---
         str = str.replace(/ +([),])/g, ' $1');
         str = str.replace(/([(,]) +/g, '$1 ');
-        str = str.replace(/["']/g, '');
         str = str.replace(/(\W)(JOIN|WHERE|OR|AND|UNION)(\W)/ig, '$1$3');
         // --- 先判断 suf 强制性 AS ---
         let sufAs = false;
@@ -799,6 +798,10 @@ export class Sql {
             }
             if (l[1] === undefined) {
                 // --- xxx ---
+                if (/^[A-Z0-9_]+$/.test(l[0])) {
+                    // --- 纯大写是内置函数，不能加 ` ---
+                    return l[0] + right;
+                }
                 return '`' + pre + l[0] + suf + '`' + right;
             }
             // --- x.xxx ---
