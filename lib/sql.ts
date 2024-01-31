@@ -735,7 +735,7 @@ export class Sql {
         str = str.replace(/ {2,}/g, ' ');   // --- 去除多余的空格 ---
         str = str.replace(/ +([),])/g, ' $1');
         str = str.replace(/([(,]) +/g, '$1 ');
-        str = str.replace(/(\W)(JOIN|WHERE|OR|AND|UNION)(\W)/ig, '$1$3');
+        str = str.replace(/(\W)(JOIN|WHERE|UNION)(\W)/ig, '$1$3');
         // --- 先判断 suf 强制性 AS ---
         let sufAs = false;
         if (suf.startsWith('#')) {
