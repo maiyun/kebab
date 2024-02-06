@@ -398,63 +398,6 @@ export function queryParse(query: string): Record<string, string | string[]> {
     return ret;
 }
 
-// --- 字符串补足 ---
-export const PAD_LEFT = 1;
-export const PAD_RIGHT = 1 << 1;
-export const PAD_BOTH = PAD_LEFT | PAD_RIGHT;
-
-/**
- * --- 填充一个字符串 ---
- * @param input 被填充的字符串
- * @param length 填充后总长度
- * @param pad 要填充的字符
- * @param type 类型
- */
-export function pad(input: string | number, length: number = 2, pad: string = '0', type: number = PAD_LEFT): string {
-    if (typeof input !== 'string') {
-        input = input.toString();
-    }
-    let i, j;
-    let n = length - input.length;
-    if (n <= 0) {
-        return input;
-    }
-    const offset = pad.length;
-    let p = '';  // 要填充的字符串
-
-    switch (type) {
-        case PAD_BOTH: {
-            let q = '';
-            for (i = 0, j = 0; 0 < n; n--, i = (i + 1) % offset, j++) {
-                // 先在右边添加 后再左边添加
-                if (Math.floor(j / offset) % 2 === 0) {
-                    q += pad[i];
-                }
-                else {
-                    p += pad[i];
-                }
-            }
-            input = p + input + q;
-            break;
-        }
-        case PAD_LEFT: {
-            for (i = 0; 0 < n; n--, i = (i + 1) % offset) {
-                p += pad[i];
-            }
-            input = p + input;
-            break;
-        }
-        case PAD_RIGHT: {
-            for (i = 0; 0 < n; n--, i = (i + 1) % offset) {
-                p += pad[i];
-            }
-            input = input + p;
-            break;
-        }
-    }
-    return input;
-}
-
 /**
  * --- HTML 特殊字符转换为实体字符 ---
  * @param html 待转换的 HTML

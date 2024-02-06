@@ -883,7 +883,11 @@ export function getFormData(
                             if (fr !== true) {
                                 // --- 创建文件流 ---
                                 const date = new Date();
-                                ftmpName = date.getUTCFullYear().toString() + lText.pad(date.getUTCMonth() + 1) + lText.pad(date.getUTCDate()) + lText.pad(date.getUTCHours()) + lText.pad(date.getUTCMinutes()) + '_' + lCore.random() + '.ftmp';
+                                ftmpName = date.getUTCFullYear().toString() +
+                                    (date.getUTCMonth() + 1).toString().padStart(2, '0') +
+                                    date.getUTCDate().toString().padStart(2, '0') +
+                                    date.getUTCHours().toString().padStart(2, '0') +
+                                    date.getUTCMinutes().toString().padStart(2, '0') + '_' + lCore.random() + '.ftmp';
                                 ftmpStream = lFs.createWriteStream(def.FTMP_PATH + ftmpName);
                                 ftmpSize = 0;
                             }

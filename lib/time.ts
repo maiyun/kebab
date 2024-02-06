@@ -147,7 +147,7 @@ export function format(zone: number | sCtr.Ctr | null, f: string, date?: Date | 
     for (const v of f) {
         switch (v) {
             case 'd': {
-                over.push(text.pad(date.getUTCDate()));
+                over.push(date.getUTCDate().toString().padStart(2, '0'));
                 break;
             }
             case 'D': {
@@ -188,24 +188,24 @@ export function format(zone: number | sCtr.Ctr | null, f: string, date?: Date | 
                 break;
             }
             case 'm': {
-                over.push(text.pad(date.getUTCMonth() + 1));
+                over.push((date.getUTCMonth() + 1).toString().padStart(2, '0'));
                 break;
             }
             case 'H': {
-                over.push(text.pad(date.getUTCHours()));
+                over.push(date.getUTCHours().toString().padStart(2, '0'));
                 break;
             }
             case 'h': {
                 const h = date.getUTCHours();
-                over.push(text.pad(h > 12 ? h - 12 : h));
+                over.push((h > 12 ? h - 12 : h).toString().padStart(2, '0'));
                 break;
             }
             case 'i': {
-                over.push(text.pad(date.getUTCMinutes()));
+                over.push(date.getUTCMinutes().toString().padStart(2, '0'));
                 break;
             }
             case 's': {
-                over.push(text.pad(date.getUTCSeconds()));
+                over.push(date.getUTCSeconds().toString().padStart(2, '0'));
                 break;
             }
             case 'T': {
