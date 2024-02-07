@@ -32,6 +32,17 @@ export interface ICookieOptions {
     'samesite'?: 'None' | 'Lax' | 'Strict';
 }
 
+/** --- 跨进程全局变量 --- */
+export const global: Record<string, any> = {};
+
+export function setGlobal(key: string, val: any) {
+    process.send!({
+        'action': 'global',
+        'key': key,
+        'value': val
+    });
+}
+
 /**
  * --- 设置 cookie ---
  * @param ctr ctr 实例
@@ -367,7 +378,7 @@ export function sendReload(): void {
     // eslint-disable-next-line no-console
     console.log('[ Child] Sending reload request...');
     process.send!({
-        action: 'reload'
+        'action': 'reload'
     });
 }
 
@@ -379,7 +390,7 @@ export function sendRestart(): void {
     // eslint-disable-next-line no-console
     console.log('[ Child] Sending restart request...');
     process.send!({
-        action: 'restart'
+        'action': 'restart'
     });
 }
 

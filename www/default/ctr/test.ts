@@ -14,6 +14,7 @@ import * as lSql from '~/lib/sql';
 import * as lConsistent from '~/lib/consistent';
 import * as lSsh from '~/lib/ssh';
 import * as lJwt from '~/lib/jwt';
+import * as lWs from '~/lib/ws';
 import * as sCtr from '~/sys/ctr';
 import * as def from '~/sys/def';
 import * as types from '~/types';
@@ -202,7 +203,8 @@ export default class extends sCtr.Ctr {
             `<br><br><a href="${this._config.const.urlBase}test/time">View "test/time"</a>`,
 
             '<br><br><b>Ws:</b>',
-            `<br><br><a href="${this._config.const.urlBase}test/ws">View "test/ws"</a>`,
+            `<br><br><a href="${this._config.const.urlBase}test/ws-server">View "test/ws-server"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/ws-client">View "test/ws-client"</a>`,
 
             '<br><br><b>Ssh:</b>',
             `<br><br><a href="${this._config.const.urlBase}test/ssh?type=shell">View "test/ssh?type=shell"</a>`,
@@ -2512,7 +2514,7 @@ ${lTime.format(null, 'd|D|j|l|N|w|Y|y|F|M|m|H|h|i|s|T')}`;
         return echo + '<br><br>' + this._getEnd();
     }
 
-    public ws(): string {
+    public wsServer(): string {
         const echo = `Nick: <input id="nick"> <input id="btn" type="button" value="Enter" onclick="enter()"> <input id="stop" type="button" value="Stop" onclick="stop()" disabled>
 <div id="list" style="border: solid 1px #000; line-height: 1.5; height: 300px; overflow-y: scroll; margin-top: 10px; padding: 10px;"></div>
 <div style="margin-top: 10px; display: flex;">
@@ -2573,6 +2575,35 @@ function send() {
 }
 </script>`;
         return echo + '<br>' + this._getEnd();
+    }
+
+    public async wsClient(): Promise<string> {
+        const ws = await lWs.connect('ws' + (this._config.const.https ? 's' : '') + '://' + this._config.const.host + '/test');
+        if (!ws) {
+            return '<div>Connect "ws' + (this._config.const.https ? 's' : '') + '://' + this._config.const.host + '/test" failed.</div><br>' + this._getEnd();
+        }
+        const echo: string[] = ['<div>Connected "ws' + (this._config.const.https ? 's' : '') + '://' + this._config.const.host + '/test".</div>'];
+        // --- 绑定事件 ---
+        await new Promise<void>(async (resolve) => {
+            ws.on('message', (frame) => {
+                echo.push('<div>Server: ' + frame.data.toString() + '.</div>');
+            });
+            ws.on('close', () => {
+                resolve();
+            });
+            ws.writeText('Hello: clientws');
+            echo.push('<div>Client: send "Hello: clientws".</div>');
+            await lCore.sleep(1000);
+            ws.writeText('aaa');
+            await lCore.sleep(1000);
+            ws.writeText('abc');
+            await lCore.sleep(1000);
+            ws.writeText('ok');
+            await lCore.sleep(1000);
+            ws.end();
+        });
+
+        return echo.join('') + '<br>' + this._getEnd();
     }
 
     public async ssh(): Promise<string | types.Json[]> {
@@ -2649,8 +2680,7 @@ function send() {
             }
             echo.push(`Get successful, ${Date.now() - ms}ms, ${sftp.pwd()}:`);
             const list = await sftp.readDir('./');
-            echo.push(`<table width="100%">
-            <tr><th>Name</th><th>Size</th><th>Uid</th><th>Gid</th><th>PMSN</th><th>Mode</th><th>Atime</th><th>Mtime</th></tr>`);
+            echo.push(`<table width="100%"><tr><th>Name</th><th>Size</th><th>Uid</th><th>Gid</th><th>PMSN</th><th>Mode</th><th>Atime</th><th>Mtime</th></tr>`);
             for (const item of list) {
                 echo.push(`<tr><td>${item.filename}</td><td>${lText.sizeFormat(item.attrs.size)}</td><td>${item.attrs.uid}</td><td>${item.attrs.gid}</td><td>${item.attrs.mode}</td><td>${item.attrs.mode.toString(8).slice(-4)}</td><td>${lTime.format(this, 'Y-m-d H:i:s', new Date(item.attrs.atime * 1000))}</td><td>${lTime.format(this, 'Y-m-d H:i:s', new Date(item.attrs.mtime * 1000))}</td></tr>`);
             }

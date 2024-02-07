@@ -5,6 +5,7 @@
  */
 import * as http2 from 'http2';
 import * as tls from 'tls';
+import * as net from 'net';
 import * as http from 'http';
 import * as stream from 'stream';
 import * as crypto from 'crypto';
@@ -27,7 +28,7 @@ const hbTimer = setInterval(function() {
         action: 'hbtime',
         pid: process.pid
     });
-}, 10000);
+}, 10_000);
 
 /** --- 加载的证书列表（path: { sc, cert }） --- */
 const certList: Array<{
@@ -97,14 +98,6 @@ async function run(): Promise<void> {
         if (!host) {
             req.socket.destroy();
             return;
-            /*
-            const text = '<h1>Kebab: No permissions</h1>url: ' + (lText.htmlescape(req.url ?? '') + '<br>code: 1');
-            res.setHeader('content-type', 'text/html; charset=utf-8');
-            res.setHeader('content-length', Buffer.byteLength(text));
-            res.writeHead(403);
-            res.end(text);
-            return;
-            */
         }
         req.setTimeout(30 * 1000);
         (async function() {
@@ -132,17 +125,12 @@ async function run(): Promise<void> {
             }, '[child][http2][request]' + JSON.stringify((e.stack as string)).slice(1, -1), '-error');
         });
     }).on('tlsClientError', (err, socket) => {
-        // console.log('[child][http2][tls]', err);
         socket.destroy();
-    }).on('upgrade', function(req: http.IncomingMessage, socket: tls.TLSSocket): void {
+    }).on('upgrade', function(req: http.IncomingMessage, socket: net.Socket): void {
         const host = (req.headers['host'] ?? '');
         if (!host) {
             req.socket.destroy();
             return;
-            /*
-            socket.end(`HTTP/${req.httpVersion} 403 No permissions\r\n\r\n`);
-            return;
-            */
         }
         (async function() {
             const key = host + (req.url ?? '');
@@ -174,14 +162,6 @@ async function run(): Promise<void> {
         if (!host) {
             req.socket.destroy();
             return;
-            /*
-            const text = '<h1>Kebab: No permissions</h1>url: ' + (lText.htmlescape(req.url ?? '') + '<br>code: 2');
-            res.setHeader('content-type', 'text/html; charset=utf-8');
-            res.setHeader('content-length', Buffer.byteLength(text));
-            res.writeHead(403);
-            res.end(text);
-            return;
-            */
         }
         req.setTimeout(30 * 1000);
         (async function() {
@@ -208,15 +188,11 @@ async function run(): Promise<void> {
                 'input': ''
             }, '[child][http][request]' + JSON.stringify((e.stack as string)).slice(1, -1), '-error');
         });
-    }).on('upgrade', function(req: http.IncomingMessage, socket: stream.Duplex): void {
+    }).on('upgrade', function(req: http.IncomingMessage, socket: net.Socket): void {
         const host = (req.headers['host'] ?? '');
         if (!host) {
             req.socket.destroy();
             return;
-            /*
-            socket.end(`HTTP/${req.httpVersion} 403 No permissions\r\n\r\n`);
-            return;
-            */
         }
         (async function() {
             const key = host + (req.url ?? '');
@@ -417,14 +393,14 @@ async function requestHandler(
  * @param socket socket 对象
  * @param https 是否是 https
  */
-async function upgradeHandler(req: http.IncomingMessage, socket: stream.Duplex, https: boolean): Promise<void> {
+async function upgradeHandler(req: http.IncomingMessage, socket: net.Socket, https: boolean): Promise<void> {
     socket.removeAllListeners('error');
     // --- 当前 uri ---
     const uri = lText.parseUrl(`ws${https ? 's' : ''}://${req.headers['host'] ?? ''}${req.url ?? ''}`);
     /** --- 当前的 vhost 配置文件 --- */
     const vhost = getVhostByHostname(uri.hostname ?? '');
     if (!vhost) {
-        socket.end(`HTTP/${req.httpVersion} 403 No permissions\r\n\r\n`);
+        socket.destroy();
         return;
     }
     /** --- 网站绝对根目录，末尾带 / --- */
@@ -449,7 +425,7 @@ async function upgradeHandler(req: http.IncomingMessage, socket: stream.Duplex, 
             /** --- 'abc' / 'def.json' ---  */
             let stat = await fs.stats(rootPath + now + item);
             if (!stat) {
-                socket.end(`HTTP/${req.httpVersion} 404 Not found\r\n\r\n`);
+                socket.destroy();
                 return;
             }
             if (stat.isDirectory()) {
@@ -472,7 +448,7 @@ async function upgradeHandler(req: http.IncomingMessage, socket: stream.Duplex, 
             }
             else {
                 // --- 文件，报错 ---
-                socket.end(`HTTP/${req.httpVersion} 403 No permissions\r\n\r\n`);
+                socket.destroy();
                 return;
             }
         }
@@ -499,7 +475,7 @@ async function upgradeHandler(req: http.IncomingMessage, socket: stream.Duplex, 
         }
     }
     // --- 最后一层，又不是动态层 ---
-    socket.end(`HTTP/${req.httpVersion} 403 No permissions\r\n\r\n`);
+    socket.destroy();
 }
 
 /**

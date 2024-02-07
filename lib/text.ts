@@ -434,3 +434,41 @@ export function getFilename(path: string): string {
     }
     return path.slice(lio + 1);
 }
+
+/**
+ * --- 将普通的返回 JSON 对象序列化为字符串，Mutton 不能使用 ---
+ * @param o 返回 JSON 对象
+ */
+export function stringifyResult(rtn: any): string {
+    if (Array.isArray(rtn)) {
+        // --- [0, 'xxx'] 模式 ---
+        if (rtn.length === 0) {
+            return JSON.stringify({
+                'result': 0,
+                'msg': 'ERROR'
+            });
+        }
+        if (typeof rtn[0] === 'number') {
+            // --- 1. ---
+            const json: Record<string, types.Json> = { 'result': rtn[0] };
+            if (rtn[1] !== undefined) {
+                if (typeof rtn[1] === 'object') {
+                    // --- [0, {'xx': 'xx'}] ---
+                    Object.assign(json, rtn[1]);
+                }
+                else {
+                    // --- [0, 'xxx'], [0, 'xxx', {'xx': 'xx'}] ---
+                    json['msg'] = rtn[1];
+                    if (rtn[2] !== undefined) {
+                        Object.assign(json, rtn[2]);
+                    }
+                }
+            }
+            return JSON.stringify(json);
+        }
+        // --- 直接是个 json 对象 ---
+        return JSON.stringify(rtn);
+    }
+    // --- 直接是个 json 对象 ---
+    return JSON.stringify(rtn);
+}

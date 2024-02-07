@@ -1,13 +1,13 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2019-5-2 21:03:42
- * Last: 2020-3-7 10:33:17, 2022-07-22 13:40:10, 2022-09-06 22:40:58
+ * Last: 2020-3-7 10:33:17, 2022-07-22 13:40:10, 2022-09-06 22:40:58, 2024-2-7 01:44:59
  */
 import * as os from 'os';
 import * as cluster from 'cluster';
 import * as http from 'http';
 // --- 库和定义 ---
-import * as core from '~/lib/core';
+import * as lCore from '~/lib/core';
 
 /** --- 当前运行中的子进程列表 --- */
 const workerList: Record<string, {
@@ -137,7 +137,7 @@ async function createChildProcess(cpu: number): Promise<void> {
     // --- 如果是支持将线程放到对应的 CPU，则执行相关操作 ---
     if (!os.type().toLowerCase().includes('windows')) {
         // --- 非 Windows ---
-        const cpr = await core.exec(`taskset -cp ${cpu} ${worker.process.pid}`);
+        const cpr = await lCore.exec(`taskset -cp ${cpu} ${worker.process.pid}`);
         console.log(cpr);
         console.log(`[master] Worker ${worker.process.pid} start on cpu #${cpu}.`);
     }

@@ -177,6 +177,7 @@ export interface INetCookie {
 export interface INetOptions {
     'method'?: 'GET' | 'POST' | 'OPTIONS';
     'type'?: 'form' | 'json';
+    /** --- 秒数 --- */
     'timeout'?: number;
     'follow'?: number;
     'hosts'?: Record<string, string>;

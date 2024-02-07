@@ -23,6 +23,15 @@ import * as response from './net/response';
 /** --- ca 根证书内容 --- */
 let ca: string = '';
 
+/** --- 获取 CA 证书 --- */
+export async function getCa(): Promise<string> {
+    if (ca) {
+        return ca;
+    }
+    ca = (await fs.getContent(def.LIB_PATH + 'net/cacert.pem', 'utf8')) ?? '';
+    return ca;
+}
+
 /** --- 复用的 hc 对象列表 --- */
 const reuses: Record<string, hc.IClient> = {
     'default': hc.createHttpClient()
@@ -130,16 +139,8 @@ export async function request(
     }
     headers['accept-encoding'] = 'gzip, deflate';
     // --- ssl ---
-    let tca: string | undefined = undefined;
     if (uri.protocol === 'https:') {
-        // isSsl = true;
-        if (ca === '') {
-            tca = (await fs.getContent(def.LIB_PATH + 'net/cacert.pem', 'utf8')) ?? '';
-            ca = tca;
-        }
-        else {
-            tca = ca;
-        }
+        await getCa();
     }
     // --- cookie 托管 ---
     if (opt.cookie) {
@@ -153,10 +154,6 @@ export async function request(
         if (!reuses[reuse]) {
             reuses[reuse] = hc.createHttpClient();
         }
-        if (headers['content-length']) {
-            // --- 保证必须是正常的整型数字 ---
-            headers['content-length'] = parseInt(headers['content-length']);
-        }
         req = await reuses[reuse].request({
             'url': u,
             'method': method,
@@ -166,7 +163,7 @@ export async function request(
             'localAddress': local,
             'ca': ca,
             'connectionOptions': {
-                'remoteHost': hosts[host] ? hosts[host] : undefined
+                'remoteHost': hosts[host]
             }
         });
     }
@@ -367,7 +364,7 @@ async function buildCookieObject(
  * @param cookie cookie 对象
  * @param uri 请求的 URI 对象
  */
-function buildCookieQuery(cookie: Record<string, types.INetCookie>, uri: types.IUrlParse): string {
+export function buildCookieQuery(cookie: Record<string, types.INetCookie>, uri: types.IUrlParse): string {
     const tim = time.stamp();
     let cookieStr: string = '';
     for (const key in cookie) {
@@ -435,8 +432,12 @@ export function getFormData(): fd.FormData {
     return new fd.FormData();
 }
 
-// --- 以下是反向代理的实现 ---
-
+/**
+ * --- 反向代理，将本服务器的某个路由反代到其他网址 ---
+ * @param ctr 当前控制器
+ * @param route 要反代的路由
+ * @param opt 参数
+ */
 export async function rproxy(
     ctr: ctr.Ctr,
     route: Record<string, string>,

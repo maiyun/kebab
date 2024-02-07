@@ -1,21 +1,23 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2019-4-15 13:40
- * Last: 2020-4-14 13:52:00, 2022-09-07 01:43:31, 2023-12-29 17:24:03
+ * Last: 2020-4-14 13:52:00, 2022-09-07 01:43:31, 2023-12-29 17:24:03, 2024-2-7 00:28:50
  */
 import * as http from 'http';
 import * as http2 from 'http2';
+import * as net from 'net';
 import * as fs from 'fs';
 import * as stream from 'stream';
+// --- 第三方 ---
+import * as ws from '@litert/websocket';
 // --- 库和定义 ---
 import * as lFs from '~/lib/fs';
 import * as lZlib from '~/lib/zlib';
 import * as lCore from '~/lib/core';
-import * as lCrypto from '~/lib/crypto';
 import * as lText from '~/lib/text';
-import * as lWs from '~/lib/ws';
 import * as lTime from '~/lib/time';
 import * as lResponse from '~/lib/net/response';
+import * as lWs from '~/lib/ws';
 import * as sCtr from './ctr';
 import * as def from '~/sys/def';
 import * as types from '~/types';
@@ -37,7 +39,7 @@ export function clearKebabConfigs(): void {
 export async function run(data: {
     'req': http2.Http2ServerRequest | http.IncomingMessage;
     'res'?: http2.Http2ServerResponse | http.ServerResponse;
-    'socket'?: stream.Duplex;
+    'socket'?: net.Socket;
     'uri': types.IUrlParse;
     /** --- 虚拟主机当前动态目录的绝对根目录，末尾带 / --- */
     'rootPath': string;
@@ -54,16 +56,6 @@ export async function run(data: {
     if (data.res) {
         data.res.setHeader('expires', 'Mon, 26 Jul 1994 05:00:00 GMT');
         data.res.setHeader('cache-control', 'no-store');
-    }
-    else {
-        // --- socket 要发送成功的消息(握手) ---
-        const swa = lCrypto.hashHmac('sha1', (data.req.headers['sec-websocket-key'] ?? '') + '258EAFA5-E914-47DA-95CA-C5AB0DC85B11', undefined, 'base64');
-        data.socket!.write([
-            `HTTP/${data.req.httpVersion} 101 Switching Protocols`,
-            `upgrade: websocket`,
-            `connection: upgrade`,
-            `sec-webSocket-accept: ${swa}`
-        ].join('\r\n') + '\r\n\r\n');
     }
     // --- 判断全局 config 是否已经加载过读取过 ---
     if (lCore.globalConfig.httpPort === undefined) {
@@ -86,7 +78,7 @@ export async function run(data: {
                 data.res.end('<h1>500 File config.json can not be read</h1><hr>Kebab');
             }
             else {
-                data.socket!.end('500 File config.json can not be read.');
+                data.socket?.destroy();
             }
             return true;
         }
@@ -207,46 +199,13 @@ export async function run(data: {
             data.res.end(text);
         }
         else {
-            data.socket!.end(text);
+            data.socket?.destroy();
         }
         return true;
     }
-    // --- 加载中间控制器 ---
-    const middleCtr = (await import((data.res ? config.const.ctrPath : config.const.wsPath) + 'middle')).default as typeof sCtr.Ctr;
-    const middle: sCtr.Ctr = new middleCtr(config, data.req, data.res ?? data.socket!);
-    // --- 对信息进行初始化 ---
-    // --- 路由定义的参数序列 ---
-    middle.setPrototype('_param', param);
-    // --- action 名 ---
-    middle.setPrototype('_action', pathRight);
-    // --- 处理 headers ---
-    const headers: http.IncomingHttpHeaders = {};
-    for (const key in data.req.headers) {
-        headers[key.toLowerCase()] = data.req.headers[key];
-    }
-    if (!headers['authorization']) {
-        headers['authorization'] = '';
-    }
-    middle.setPrototype('_headers', headers);
 
     // --- 原始 GET ---
     const get = data.uri.query ? lText.queryParse(data.uri.query) : {};
-    middle.setPrototype('_get', get);
-    if (data.res) {
-        const rawPost = await getPost(data.req);
-        // --- 原始 POST ---
-        middle.setPrototype('_rawPost', rawPost[1]);
-        // --- 原始 input ---
-        middle.setPrototype('_input', rawPost[0]);
-        // --- 处理 POST 的值 JSON 上面就同时处理了 ---
-        // --- 格式化 post 数据 ---
-        // --- assign 是为了创建一份拷贝 ---
-        const post = Object.assign({}, rawPost[1]);
-        trimPost(post);
-        middle.setPrototype('_post', post);
-    }
-    // --- form data 格式交由用户自行获取，可以直接获取文件流，然后做他想做的事情 ---
-
     // --- Cookie ---
     const cookies: Record<string, string> = {};
     if (data.req.headers['cookie']) {
@@ -255,25 +214,143 @@ export async function run(data: {
             const co: string[] = cookie.split('=');
             cookies[co[0].trim()] = decodeURIComponent(co[1]);
         }
-        middle.setPrototype('_cookie', cookies);
     }
+    // --- 处理 headers ---
+    const headers: http.IncomingHttpHeaders = {};
+    for (const key in data.req.headers) {
+        headers[key.toLowerCase()] = data.req.headers[key];
+    }
+    if (!headers['authorization']) {
+        headers['authorization'] = '';
+    }
+    /** --- 开发者返回值 --- */
+    let rtn: types.Json;
+
+    if (data.socket && data.req instanceof http.IncomingMessage) {
+        // --- 判断真实控制器文件是否存在 ---
+        const filePath = config.const.wsPath + pathLeft + '.js';
+        if (!await lFs.isFile(filePath)) {
+            // --- 指定的控制器不存在 ---
+            data.socket?.destroy();
+            return true;
+        }
+        // --- 加载控制器文件 ---
+        const ctrCtr: typeof sCtr.Ctr = (await import(filePath)).default;
+        // --- 先处理 web socket 的情况 ---
+        const wsSocket = lWs.createServer(data.req, data.socket);
+        const cctr: sCtr.Ctr = new ctrCtr(config, data.req, wsSocket);
+        cctr.setPrototype('_param', param);
+        cctr.setPrototype('_action', pathRight);
+        cctr.setPrototype('_headers', headers);
+        cctr.setPrototype('_get', get);
+        cctr.setPrototype('_cookie', cookies);
+
+        await lCore.log(cctr, '', '-visit');
+
+        try {
+            rtn = await (cctr as types.Json).onLoad();
+        }
+        catch (e: types.Json) {
+            await lCore.log(cctr, JSON.stringify((e.stack as string)).slice(1, -1), '-error');
+            data.socket.destroy();
+            return true;
+        }
+        if (rtn === undefined || rtn === true) {
+            await new Promise<void>(function(resolve) {
+                wsSocket.on('message', async function(msg): Promise<void> {
+                    switch (msg.opcode) {
+                        case ws.EOpcode.CLOSE: {
+                            wsSocket.end();
+                            break;
+                        }
+                        case ws.EOpcode.PING: {
+                            wsSocket.pong();
+                            break;
+                        }
+                        case ws.EOpcode.BINARY:
+                        case ws.EOpcode.TEXT: {
+                            try {
+                                const wrtn = await (cctr as types.Json)['onData'](msg.data, msg.opcode);
+                                if (!wrtn) {
+                                    return;
+                                }
+                                if (wrtn instanceof Buffer) {
+                                    wsSocket.writeBinary(wrtn);
+                                    return;
+                                }
+                                if (typeof wrtn === 'string') {
+                                    if (!wrtn) {
+                                        return;
+                                    }
+                                    wsSocket.writeText(wrtn);
+                                    return;
+                                }
+                                if (typeof wrtn === 'object') {
+                                    // --- 返回的是数组，那么代表可能是 JSON，可能是对象序列 ---
+                                    wsSocket.writeText(lText.stringifyResult(wrtn));
+                                    return;
+                                }
+                            }
+                            catch (e: any) {
+                                await lCore.log(cctr, JSON.stringify((e.stack as string)).slice(1, -1), '-error');
+                            }
+                        }
+                    }
+                }).on('error', async (e: any) => {
+                    await lCore.log(cctr, JSON.stringify((e.stack as string)).slice(1, -1), '-error');
+                }).on('close', async () => {
+                    try {
+                        await (cctr as types.Json)['onClose']();
+                    }
+                    catch(e: any) {
+                        await lCore.log(cctr, JSON.stringify((e.stack as string)).slice(1, -1), '-error');
+                    }
+                    resolve();
+                });
+            });
+            return true;
+        }
+        wsSocket.end();
+        return true;
+    }
+    if (!data.res) {
+        return true;
+    }
+    // --- 加载中间控制器 ---
+    const middleCtr = (await import(config.const.ctrPath + 'middle')).default as typeof sCtr.Ctr;
+    const middle: sCtr.Ctr = new middleCtr(config, data.req, data.res);
+    // --- 对信息进行初始化 ---
+    // --- 路由定义的参数序列 ---
+    middle.setPrototype('_param', param);
+    // --- action 名 ---
+    middle.setPrototype('_action', pathRight);
+    middle.setPrototype('_headers', headers);
+
+    middle.setPrototype('_get', get);
+
+    const rawPost = await getPost(data.req);
+    // --- 原始 POST ---
+    middle.setPrototype('_rawPost', rawPost[1]);
+    // --- 原始 input ---
+    middle.setPrototype('_input', rawPost[0]);
+    // --- 处理 POST 的值 JSON 上面就同时处理了 ---
+    // --- 格式化 post 数据 ---
+    // --- assign 是为了创建一份拷贝 ---
+    const post = Object.assign({}, rawPost[1]);
+    trimPost(post);
+    middle.setPrototype('_post', post);
+    // --- form data 格式交由用户自行获取，可以直接获取文件流，然后做他想做的事情 ---
 
     // --- 执行中间控制器的 _load ---
-    let rtn: types.Json;
     try {
         rtn = await (middle.onLoad() as types.Json);
     }
     catch (e: types.Json) {
         await lCore.log(middle, '(E03)' + JSON.stringify((e.stack as string)).slice(1, -1), '-error');
-        if (data.res) {
-            data.res.setHeader('content-type', 'text/html; charset=utf-8');
-            data.res.setHeader('content-length', 25);
-            data.res.writeHead(500);
-            data.res.end('<h1>500 Server Error</h1><hr>Kebab');
-        }
-        else {
-            data.socket!.end('500 Server Error');
-        }
+        data.res.setHeader('content-type', 'text/html; charset=utf-8');
+        data.res.setHeader('content-length', 25);
+        data.res.writeHead(500);
+        data.res.end('<h1>500 Server Error</h1><hr>Kebab');
         return true;
     }
     let cacheTTL: number = middle.getPrototype('_cacheTTL');
@@ -285,22 +362,16 @@ export async function run(data: {
         if (!await lFs.isFile(filePath)) {
             // --- 指定的控制器不存在 ---
             const text = '[Error] Controller not found, path: ' + data.path + '.';
-            if (data.res) {
-                if (config.route['#404']) {
-                    data.res.setHeader('location', lText.urlResolve(config.const.urlBase, config.route['#404']));
-                    data.res.writeHead(302);
-                    data.res.end('');
-                    return true;
-                }
-                data.res.setHeader('content-type', 'text/html; charset=utf-8');
-                data.res.setHeader('content-length', Buffer.byteLength(text));
-                data.res.writeHead(404);
-                data.res.end(text);
+            if (config.route['#404']) {
+                data.res.setHeader('location', lText.urlResolve(config.const.urlBase, config.route['#404']));
+                data.res.writeHead(302);
+                data.res.end('');
+                return true;
             }
-            else {
-                lWs.send(data.socket!, text);
-                data.socket!.end();
-            }
+            data.res.setHeader('content-type', 'text/html; charset=utf-8');
+            data.res.setHeader('content-length', Buffer.byteLength(text));
+            data.res.writeHead(404);
+            data.res.end(text);
             return true;
         }
         // --- 加载控制器文件 ---
@@ -331,118 +402,74 @@ export async function run(data: {
 
         await lCore.log(cctr, '', '-visit');
 
-        if (data.res) {
-            // --- 强制 HTTPS ---
-            if (config.set.mustHttps && !config.const.https) {
-                data.res.setHeader('location', data.req.url ?? '');
-                data.res.writeHead(302);
-                return true;
-            }
-            // --- 检测 action 是否存在，以及排除内部方法 ---
-            if (pathRight.startsWith('_') || pathRight === 'onLoad' || pathRight === 'onData' || pathRight === 'onClose' || pathRight === 'setPrototype' || pathRight === 'getPrototype' || pathRight === 'getAuthorization') {
-                // --- _ 开头的 action 是内部方法，不允许访问 ---
-                if (config.route['#404']) {
-                    data.res.setHeader('location', lText.urlResolve(config.const.urlBase, config.route['#404']));
-                    data.res.writeHead(302);
-                    data.res.end('');
-                    return true;
-                }
-                const text = '[Error] Action not found, path: ' + data.path + '.';
-                data.res.setHeader('content-type', 'text/html; charset=utf-8');
-                data.res.setHeader('content-length', Buffer.byteLength(text));
-                data.res.writeHead(404);
-                data.res.end(text);
-                return true;
-            }
-            pathRight = pathRight.replace(/-([a-zA-Z0-9])/g, function(t, t1: string): string {
-                return t1.toUpperCase();
-            });
-            if ((cctr as types.Json)[pathRight] === undefined) {
-                if (config.route['#404']) {
-                    data.res.setHeader('location', lText.urlResolve(config.const.urlBase, config.route['#404']));
-                    data.res.writeHead(302);
-                    data.res.end('');
-                    return true;
-                }
-                const text = '[Error] Action not found, path: ' + data.path + '.';
-                data.res.setHeader('content-type', 'text/html; charset=utf-8');
-                data.res.setHeader('content-length', Buffer.byteLength(text));
-                data.res.writeHead(404);
-                data.res.end(text);
-                return true;
-            }
-            // --- 执行 onLoad 方法 ---
-            try {
-                rtn = await (cctr.onLoad() as types.Json);
-                // --- 执行 action ---
-                if (rtn === undefined || rtn === true) {
-                    rtn = await (cctr as types.Json)[pathRight]();
-                    rtn = await (cctr.onUnload(rtn) as types.Json);
-                    rtn = await (middle.onUnload(rtn) as types.Json);
-                    await unlinkUploadFiles(cctr);
-                    const sess = cctr.getPrototype('_sess');
-                    if (sess) {
-                        await sess.update();
-                    }
-                }
-                // --- 获取 ctr 设置的 cache 和 hcode ---
-                cacheTTL = cctr.getPrototype('_cacheTTL');
-                httpCode = cctr.getPrototype('_httpCode');
-            }
-            catch (e: types.Json) {
-                await lCore.log(cctr, '(E04)' + JSON.stringify(e.stack).slice(1, -1), '-error');
-                data.res.setHeader('content-type', 'text/html; charset=utf-8');
-                data.res.setHeader('content-length', 25);
-                data.res.writeHead(500);
-                data.res.end('<h1>500 Server Error</h1><hr>Kebab');
-                return true;
-            }
+        // --- 强制 HTTPS ---
+        if (config.set.mustHttps && !config.const.https) {
+            data.res.setHeader('location', data.req.url ?? '');
+            data.res.writeHead(302);
+            return true;
         }
-        else {
-            // --- web socket ---
-            // --- 执行 onLoad 方法 ---
-            try {
-                rtn = await (cctr as types.Json).onLoad();
-            }
-            catch (e: types.Json) {
-                await lCore.log(cctr, JSON.stringify((e.stack as string)).slice(1, -1), '-error');
-                data.socket!.end('500 Internal server error.');
+        // --- 检测 action 是否存在，以及排除内部方法 ---
+        if (pathRight.startsWith('_') || pathRight === 'onLoad' || pathRight === 'onData' || pathRight === 'onClose' || pathRight === 'setPrototype' || pathRight === 'getPrototype' || pathRight === 'getAuthorization') {
+            // --- _ 开头的 action 是内部方法，不允许访问 ---
+            if (config.route['#404']) {
+                data.res.setHeader('location', lText.urlResolve(config.const.urlBase, config.route['#404']));
+                data.res.writeHead(302);
+                data.res.end('');
                 return true;
             }
+            const text = '[Error] Action not found, path: ' + data.path + '.';
+            data.res.setHeader('content-type', 'text/html; charset=utf-8');
+            data.res.setHeader('content-length', Buffer.byteLength(text));
+            data.res.writeHead(404);
+            data.res.end(text);
+            return true;
+        }
+        pathRight = pathRight.replace(/-([a-zA-Z0-9])/g, function(t, t1: string): string {
+            return t1.toUpperCase();
+        });
+        if ((cctr as types.Json)[pathRight] === undefined) {
+            if (config.route['#404']) {
+                data.res.setHeader('location', lText.urlResolve(config.const.urlBase, config.route['#404']));
+                data.res.writeHead(302);
+                data.res.end('');
+                return true;
+            }
+            const text = '[Error] Action not found, path: ' + data.path + '.';
+            data.res.setHeader('content-type', 'text/html; charset=utf-8');
+            data.res.setHeader('content-length', Buffer.byteLength(text));
+            data.res.writeHead(404);
+            data.res.end(text);
+            return true;
+        }
+        // --- 执行 onLoad 方法 ---
+        try {
+            rtn = await (cctr.onLoad() as types.Json);
+            // --- 执行 action ---
             if (rtn === undefined || rtn === true) {
-                await new Promise<void>(function(resolve) {
-                    data.socket!.on('data', function(chunk: Buffer): void {
-                        (async function() {
-                            const da = lWs.decodeDataFrame(chunk);
-                            if (da.opcode === 8) {
-                                // --- 关闭连接 ---
-                                data.socket!.end();
-                            }
-                            else {
-                                const wrtn = await (cctr as types.Json)['onData'](da.payloadData);
-                                if (wrtn) {
-                                    lWs.send(data.socket!, wrtn);
-                                }
-                            }
-                        })().catch(async (e) => {
-                            await lCore.log(cctr, JSON.stringify((e.stack as string)).slice(1, -1), '-error');
-                        });
-                    }).on('close', function() {
-                        (async function() {
-                            await (cctr as types.Json)['onClose']();
-                            resolve();
-                        })().catch(async (e) => {
-                            await lCore.log(cctr, JSON.stringify((e.stack as string)).slice(1, -1), '-error');
-                        });
-                    });
-                });
-                return true;
+                rtn = await (cctr as types.Json)[pathRight]();
+                rtn = await (cctr.onUnload(rtn) as types.Json);
+                rtn = await (middle.onUnload(rtn) as types.Json);
+                await unlinkUploadFiles(cctr);
+                const sess = cctr.getPrototype('_sess');
+                if (sess) {
+                    await sess.update();
+                }
             }
-            // --- socket 断开后才会继续往下执行 ---
+            // --- 获取 ctr 设置的 cache 和 hcode ---
+            cacheTTL = cctr.getPrototype('_cacheTTL');
+            httpCode = cctr.getPrototype('_httpCode');
+        }
+        catch (e: types.Json) {
+            await lCore.log(cctr, '(E04)' + JSON.stringify(e.stack).slice(1, -1), '-error');
+            data.res.setHeader('content-type', 'text/html; charset=utf-8');
+            data.res.setHeader('content-length', 25);
+            data.res.writeHead(500);
+            data.res.end('<h1>500 Server Error</h1><hr>Kebab');
+            return true;
         }
     }
     // --- 设置缓存 ---
-    if (data.res && !data.res.headersSent && (cacheTTL > 0)) {
+    if (!data.res.headersSent && (cacheTTL > 0)) {
         data.res.setHeader('expires', lTime.format(0, 'D, d M Y H:i:s', Date.now() + cacheTTL * 1000) + ' GMT');
         data.res.setHeader('cache-control', 'max-age=' + cacheTTL.toString());
     }
@@ -452,87 +479,72 @@ export async function run(data: {
     }
     // --- 判断返回值 ---
     if (rtn === undefined || typeof rtn === 'boolean' || rtn === null) {
-        if (data.res) {
-            if (data.res.headersSent) {
-                // --- 已经自行输出过 writeHead，可能自行处理了内容，如 pipe，则不再 writeHead ---
-            }
-            else {
-                if (data.res.getHeader('location')) {
-                    data.res.writeHead(302);
-                }
-                else {
-                    data.res.writeHead(httpCode);
-                }
-            }
-            if (!data.res.writableEnded) {
-                // --- 如果当前还没结束，则强制关闭连接，一切 pipe 请自行在方法中 await，否则会被中断 ---
-                data.res.end('');
-            }
+        if (data.res.headersSent) {
+            // --- 已经自行输出过 writeHead，可能自行处理了内容，如 pipe，则不再 writeHead ---
         }
         else {
-            data.socket!.end('');
+            if (data.res.getHeader('location')) {
+                data.res.writeHead(302);
+            }
+            else {
+                data.res.writeHead(httpCode);
+            }
+        }
+        if (!data.res.writableEnded) {
+            // --- 如果当前还没结束，则强制关闭连接，一切 pipe 请自行在方法中 await，否则会被中断 ---
+            data.res.end('');
         }
         return true;
     }
     if (typeof rtn === 'string' || rtn instanceof Buffer) {
         // --- 返回的是纯字符串，直接输出 ---
-        if (data.res) {
-            /** --- 当前的压缩对象 --- */
-            let compress: lZlib.ICompress | null = null;
-            if (!data.res.headersSent) {
-                if (!data.res.getHeader('content-type')) {
-                    data.res.setHeader('content-type', 'text/html; charset=utf-8');
-                }
-                if (Buffer.byteLength(rtn) >= 1024) {
-                    compress = lZlib.createCompress(data.req.headers['accept-encoding'] as string ?? '');
-                    if (compress) {
-                        data.res.setHeader('content-encoding', compress.type);
-                    }
-                }
-                data.res.writeHead(httpCode);
+        /** --- 当前的压缩对象 --- */
+        let compress: lZlib.ICompress | null = null;
+        if (!data.res.headersSent) {
+            if (!data.res.getHeader('content-type')) {
+                data.res.setHeader('content-type', 'text/html; charset=utf-8');
             }
-            if (!data.res.writableEnded) {
+            if (Buffer.byteLength(rtn) >= 1024) {
+                compress = lZlib.createCompress(data.req.headers['accept-encoding'] as string ?? '');
                 if (compress) {
-                    compress.compress.write(rtn);
-                    compress.compress.pipe(data.res);
-                    compress.compress.end();
-                }
-                else {
-                    data.res.end(rtn);
+                    data.res.setHeader('content-encoding', compress.type);
                 }
             }
+            data.res.writeHead(httpCode);
         }
-        else {
-            data.socket!.end(rtn);
+        if (!data.res.writableEnded) {
+            if (compress) {
+                compress.compress.write(rtn);
+                compress.compress.pipe(data.res);
+                compress.compress.end();
+            }
+            else {
+                data.res.end(rtn);
+            }
         }
     }
     else if (rtn instanceof stream.Readable || rtn instanceof lResponse.Response) {
         // --- 返回的是流，那就以管道的形式输出 ---
         const stm = rtn instanceof stream.Readable ? rtn : rtn.getStream();
-        if (data.res) {
-            /** --- 当前的压缩对象 --- */
-            let compress: lZlib.ICompress | null = null;
-            if (!data.res.headersSent) {
-                if (!data.res.getHeader('content-type')) {
-                    data.res.setHeader('content-type', 'text/html; charset=utf-8');
-                }
-                compress = lZlib.createCompress(data.req.headers['accept-encoding'] as string ?? '');
-                if (compress) {
-                    data.res.setHeader('content-encoding', compress.type);
-                }
-                data.res.writeHead(httpCode);
+        /** --- 当前的压缩对象 --- */
+        let compress: lZlib.ICompress | null = null;
+        if (!data.res.headersSent) {
+            if (!data.res.getHeader('content-type')) {
+                data.res.setHeader('content-type', 'text/html; charset=utf-8');
             }
-            if (!data.res.writableEnded) {
-                if (compress) {
-                    stm.pipe(compress.compress).pipe(data.res);
-                }
-                else {
-                    stm.pipe(data.res);
-                }
+            compress = lZlib.createCompress(data.req.headers['accept-encoding'] as string ?? '');
+            if (compress) {
+                data.res.setHeader('content-encoding', compress.type);
             }
+            data.res.writeHead(httpCode);
         }
-        else {
-            stm.pipe(data.socket!);
+        if (!data.res.writableEnded) {
+            if (compress) {
+                stm.pipe(compress.compress).pipe(data.res);
+            }
+            else {
+                stm.pipe(data.res);
+            }
         }
     }
     else if (typeof rtn === 'object') {
@@ -541,16 +553,11 @@ export async function run(data: {
             // --- [0, 'xxx'] 模式，或 [string, Readable] 模式 ---
             if (rtn.length === 0) {
                 // --- 异常 ---
-                if (data.res) {
-                    if (!data.res.headersSent) {
-                        data.res.writeHead(500);
-                    }
-                    if (!data.res.writableEnded) {
-                        data.res.end('<h1>500 Internal server error</h1><hr>Kebab');
-                    }
+                if (!data.res.headersSent) {
+                    data.res.writeHead(500);
                 }
-                else {
-                    data.socket!.end('500 Internal server error.');
+                if (!data.res.writableEnded) {
+                    data.res.end('<h1>500 Internal server error</h1><hr>Kebab');
                 }
             }
             else {
@@ -571,65 +578,52 @@ export async function run(data: {
                         }
                     }
                     const writeData = JSON.stringify(json);
-                    if (data.res) {
-                        /** --- 当前的压缩对象 --- */
-                        let compress: lZlib.ICompress | null = null;
-                        if (!data.res.headersSent) {
-                            data.res.setHeader('content-type', 'application/json; charset=utf-8');
-                            if (Buffer.byteLength(writeData) >= 1024) {
-                                compress = lZlib.createCompress(data.req.headers['accept-encoding'] as string ?? '');
-                                if (compress) {
-                                    data.res.setHeader('content-encoding', compress.type);
-                                }
-                            }
-                            data.res.writeHead(httpCode);
-                        }
-                        if (!data.res.writableEnded) {
-                            if (compress) {
-                                compress.compress.write(writeData);
-                                compress.compress.pipe(data.res);
-                                compress.compress.end();
-                            }
-                            else {
-                                data.res.end(writeData);
-                            }
-                        }
-                    }
-                    else {
-                        data.socket!.end(writeData);
-                    }
-                }
-                else {
-                    // --- 2. 字符串与 Readable 的组合 ---
-                    if (data.res) {
-                        /** --- 当前的压缩对象 --- */
-                        let compress: lZlib.ICompress | null = null;
-                        if (!data.res.headersSent) {
-                            if (!data.res.getHeader('content-type')) {
-                                data.res.setHeader('content-type', 'text/html; charset=utf-8');
-                            }
+                    /** --- 当前的压缩对象 --- */
+                    let compress: lZlib.ICompress | null = null;
+                    if (!data.res.headersSent) {
+                        data.res.setHeader('content-type', 'application/json; charset=utf-8');
+                        if (Buffer.byteLength(writeData) >= 1024) {
                             compress = lZlib.createCompress(data.req.headers['accept-encoding'] as string ?? '');
                             if (compress) {
                                 data.res.setHeader('content-encoding', compress.type);
                             }
-                            data.res.writeHead(httpCode);
                         }
-                        if (!data.res.writableEnded) {
-                            const passThrough = new stream.PassThrough();
-                            // --- 先进行 pipe 绑定，之后 write 或 pipe 进 pass 的数据，直接就可以消费 ---
-                            if (compress) {
-                                passThrough.pipe(compress.compress).pipe(data.res);
-                            }
-                            else {
-                                passThrough.pipe(data.res);
-                            }
-                            await lCore.passThroughAppend(passThrough, rtn);
+                        data.res.writeHead(httpCode);
+                    }
+                    if (!data.res.writableEnded) {
+                        if (compress) {
+                            compress.compress.write(writeData);
+                            compress.compress.pipe(data.res);
+                            compress.compress.end();
+                        }
+                        else {
+                            data.res.end(writeData);
                         }
                     }
-                    else {
-                        // --- socket ---
+                }
+                else {
+                    // --- 2. 字符串与 Readable 的组合 ---
+                    /** --- 当前的压缩对象 --- */
+                    let compress: lZlib.ICompress | null = null;
+                    if (!data.res.headersSent) {
+                        if (!data.res.getHeader('content-type')) {
+                            data.res.setHeader('content-type', 'text/html; charset=utf-8');
+                        }
+                        compress = lZlib.createCompress(data.req.headers['accept-encoding'] as string ?? '');
+                        if (compress) {
+                            data.res.setHeader('content-encoding', compress.type);
+                        }
+                        data.res.writeHead(httpCode);
+                    }
+                    if (!data.res.writableEnded) {
                         const passThrough = new stream.PassThrough();
-                        passThrough.pipe(data.socket!);
+                        // --- 先进行 pipe 绑定，之后 write 或 pipe 进 pass 的数据，直接就可以消费 ---
+                        if (compress) {
+                            passThrough.pipe(compress.compress).pipe(data.res);
+                        }
+                        else {
+                            passThrough.pipe(data.res);
+                        }
                         await lCore.passThroughAppend(passThrough, rtn);
                     }
                 }
@@ -638,47 +632,37 @@ export async function run(data: {
         else {
             // --- 直接是个 json 对象 ---
             const writeData = JSON.stringify(rtn);
-            if (data.res) {
-                /** --- 当前的压缩对象 --- */
-                let compress: lZlib.ICompress | null = null;
-                if (!data.res.headersSent) {
-                    data.res.setHeader('content-type', 'application/json; charset=utf-8');
-                    if (Buffer.byteLength(writeData) >= 1024) {
-                        compress = lZlib.createCompress(data.req.headers['accept-encoding'] as string ?? '');
-                        if (compress) {
-                            data.res.setHeader('content-encoding', compress.type);
-                        }
-                    }
-                    data.res.writeHead(httpCode);
-                }
-                if (!data.res.writableEnded) {
+            /** --- 当前的压缩对象 --- */
+            let compress: lZlib.ICompress | null = null;
+            if (!data.res.headersSent) {
+                data.res.setHeader('content-type', 'application/json; charset=utf-8');
+                if (Buffer.byteLength(writeData) >= 1024) {
+                    compress = lZlib.createCompress(data.req.headers['accept-encoding'] as string ?? '');
                     if (compress) {
-                        compress.compress.write(writeData);
-                        compress.compress.pipe(data.res);
-                        compress.compress.end();
-                    }
-                    else {
-                        data.res.end(writeData);
+                        data.res.setHeader('content-encoding', compress.type);
                     }
                 }
+                data.res.writeHead(httpCode);
             }
-            else {
-                data.socket!.end(JSON.stringify(rtn));
+            if (!data.res.writableEnded) {
+                if (compress) {
+                    compress.compress.write(writeData);
+                    compress.compress.pipe(data.res);
+                    compress.compress.end();
+                }
+                else {
+                    data.res.end(writeData);
+                }
             }
         }
     }
     else {
         // --- 异常 ---
-        if (data.res) {
-            if (!data.res.headersSent) {
-                data.res.writeHead(500);
-            }
-            if (!data.res.writableEnded) {
-                data.res.end('<h1>500 Internal server error</h1><hr>Kebab');
-            }
+        if (!data.res.headersSent) {
+            data.res.writeHead(500);
         }
-        else {
-            data.socket!.end('500 Internal server error.');
+        if (!data.res.writableEnded) {
+            data.res.end('<h1>500 Internal server error</h1><hr>Kebab');
         }
     }
     return true;

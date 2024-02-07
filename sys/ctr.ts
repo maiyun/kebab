@@ -6,14 +6,13 @@
 import * as http from 'http';
 import * as http2 from 'http2';
 import * as ejs from 'ejs';
-import * as stream from 'stream';
 import * as core from '../lib/core';
 import * as fs from '../lib/fs';
 import * as crypto from '../lib/crypto';
 import * as session from '../lib/session';
 import * as db from '../lib/db';
 import * as kv from '../lib/kv';
-import * as ws from '../lib/ws';
+import * as lWs from '../lib/ws';
 import * as text from '../lib/text';
 import * as sRoute from '../sys/route';
 import * as types from '../types';
@@ -101,7 +100,7 @@ export class Ctr {
 
     protected readonly _res!: http2.Http2ServerResponse | http.ServerResponse;
 
-    protected readonly _socket!: stream.Duplex;
+    protected readonly _socket!: lWs.Socket;
 
     /** --- 本 ctr 已加载的语言文件列表 --- */
     protected _localeFiles: string[] = [];
@@ -112,15 +111,15 @@ export class Ctr {
     public constructor(
         config: types.IConfig,
         req: http2.Http2ServerRequest | http.IncomingMessage,
-        res: http2.Http2ServerResponse | http.ServerResponse | stream.Duplex
+        res: http2.Http2ServerResponse | http.ServerResponse | lWs.Socket
     ) {
         this._config = config;
         this._req = req;
-        if (res instanceof stream.Duplex) {
-            this._socket = res;
+        if (res instanceof http2.Http2ServerResponse || res instanceof http.ServerResponse) {
+            this._res = res;
         }
         else {
-            this._res = res;
+            this._socket = res;
         }
         this._cacheTTL = config.set.cacheTtl;
     }
@@ -133,6 +132,7 @@ export class Ctr {
     public getPrototype(name: '_headers'): http.IncomingHttpHeaders;
     public getPrototype(name: '_req'): http2.Http2ServerRequest | http.IncomingMessage;
     public getPrototype(name: '_res'): http2.Http2ServerResponse | http.ServerResponse;
+    public getPrototype(name: '_socket'): lWs.Socket;
     public getPrototype(name: '_rawPost' | '_post' | '_get' | '_session'): Record<string, types.Json>;
     public getPrototype(name: '_input'): string;
     public getPrototype(name: string): types.Json;
@@ -166,7 +166,7 @@ export class Ctr {
         return rtn;
     }
 
-    public onData(val: string): boolean | object | string | null | Promise<boolean | object | string | null>;
+    public onData(data: Buffer): string | Buffer | object | void | Promise<string | Buffer | object | void>;
     /**
      * --- WebSocket 下会自动被调用的事件，可重写此方法 ---
      */
@@ -682,11 +682,35 @@ export class Ctr {
     }
 
     /**
-     * --- 发送 socket 信息 ---
+     * --- 发送 socket 文本 ---
      * @param data 要发送的信息
      */
-    protected _send(data: boolean | object | string | null): void {
-        ws.send(this._socket, data);
+    protected _writeText(data: string): boolean {
+        return this._socket.writeText(data);
+    }
+
+    /**
+     * --- 发送 socket 二进制 ---
+     * @param data 要发送的信息
+     */
+    protected _writeBinary(data: Buffer | string | Array<Buffer | string>): boolean {
+        return this._socket.writeBinary(data);
+    }
+
+    /**
+     * --- 发送 socket ping ---
+     * @param data 要发送的信息
+     */
+    protected _ping(): boolean {
+        return this._socket.ping();
+    }
+
+    /**
+     * --- 发送 socket pong ---
+     * @param data 要发送的信息
+     */
+    protected _pong(): boolean {
+        return this._socket.pong();
     }
 
     /**
