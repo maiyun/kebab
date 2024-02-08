@@ -49,4 +49,12 @@ export class Response {
         return this._req!.getStream();
     }
 
+    /**
+     * --- 获取原生响应读取流对象 ---
+     * @returns 
+     */
+    public getRawStream(): nStream.Readable {
+        return this._req!.getRawStream();
+    }
+
 }

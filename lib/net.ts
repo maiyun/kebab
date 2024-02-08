@@ -487,27 +487,11 @@ export async function rproxy(
             }
             res.setHeader(h, v);
         }
-        /** --- 当前的压缩对象 --- */
-        let compress: zlib.ICompress | null = null;
-        if (rres.headers?.['content-encoding']) {
-            compress = zlib.createCompress(rres.headers?.['content-encoding']);
-            if (!compress) {
-                res.removeHeader('content-encoding');
-            }
-        }
         res.writeHead(rres.headers?.['http-code'] ?? 200);
         await new Promise<void>((resolve) => {
-            // --- 压缩 ---
-            if (compress) {
-                rres.getStream().pipe(compress.compress).pipe(res).on('finish', () => {
-                    resolve();
-                });
-            }
-            else {
-                rres.getStream().pipe(res).on('finish', () => {
-                    resolve();
-                });
-            }
+            rres.getRawStream().pipe(res).on('finish', () => {
+                resolve();
+            });
         });
         return true;
     }
