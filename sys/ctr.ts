@@ -166,12 +166,23 @@ export class Ctr {
         return rtn;
     }
 
-    public onData(data: Buffer): string | Buffer | object | void | Promise<string | Buffer | object | void>;
     /**
-     * --- WebSocket 下会自动被调用的事件，可重写此方法 ---
+     * --- WebSocket 下当收到数据时会自动被调用的事件，即只文本和二进制数据 ---
      */
+    public onData(data: Buffer | string, opcode: lWs.EOpcode): string | Buffer | object | void | Promise<string | Buffer | object | void>;
     public onData(): string {
         return '';
+    }
+
+    /**
+     * --- 包含所有 opcode 的消息，若要发送数据需自行调用 write 方法，返回 false 则不会执行默认方法 ---
+     * @param data 数据
+     * @param opcode opcode
+     */
+    public onMessage(data: Buffer | string, opcode: lWs.EOpcode): void | boolean | Promise<void | boolean>;
+    public onMessage(): void {
+        return;
+
     }
 
     /**

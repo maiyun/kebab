@@ -16,14 +16,16 @@ export default class extends sCtr.Ctr {
         return true;
     }
 
-    public onData(data: Buffer): string {
-        const v = data.toString();
-        if (v.startsWith('Hello: ')) {
-            this._nick = v.slice(7);
-            return 'Base64: ' + lCrypto.base64Encode(v);
+    public onData(data: Buffer | string): string {
+        if (typeof data !== 'string') {
+            return '';
+        }
+        if (data.startsWith('Hello: ')) {
+            this._nick = data.slice(7);
+            return 'Base64: ' + lCrypto.base64Encode(data);
         }
         // --- 用户消息 ---
-        return '<b>' + this._nick + ':</b> ' + v;
+        return '<b>' + this._nick + ':</b> ' + data;
     }
 
     public onClose(): void {

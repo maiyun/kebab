@@ -11,7 +11,6 @@ import * as hc from '@litert/http-client';
 import * as fs from '~/lib/fs';
 import * as text from '~/lib/text';
 import * as time from '~/lib/time';
-import * as zlib from '~/lib/zlib';
 import * as def from '~/sys/def';
 import * as ctr from '~/sys/ctr';
 import * as types from '~/types';
@@ -453,6 +452,9 @@ export async function rproxy(
             continue;
         }
         // --- 找到了，做转发 ---
+        // --- key 类似：test/net-rproxy/ ---
+        // --- 值类似：https://cdn.jsdelivr.net/npm/deskrt@2.0.10/ ---
+        /** --- 要拼接的地址 --- */
         const lpath = path.slice(key.length);
         (opt as types.Json).method = req.method ?? 'GET';
         /** --- 不代理的 header  --- */

@@ -11,12 +11,23 @@ import * as liws from '@litert/websocket';
 // --- 库 ---
 import * as lText from '~/lib/text';
 import * as lNet from '~/lib/net';
+import * as sCtr from '~/sys/ctr';
 
 /** --- 一般用 SIMPLE --- */
 export enum EFrameReceiveMode {
     STANDARD,
     LITE,
     SIMPLE
+}
+
+/** --- OPCODE --- */
+export enum EOpcode {
+    CONTINUATION = 0x0,
+    TEXT = 0x1,
+    BINARY = 0x2,
+    CLOSE = 0x8,
+    PING = 0x9,
+    PONG = 0xA
 }
 
 /** --- 请求的传入参数选项 --- */
@@ -42,9 +53,6 @@ export class Socket {
     /** --- 当前的 ws 对象 --- */
     private _ws!: liws.IWebSocket | liws.IClient;
 
-    /** --- 标识当前是客户端还是服务端 --- */
-    private _mode: 'client' | 'server' = 'server';
-
     public constructor(request?: http.IncomingMessage, socket?: net.Socket) {
         if (!request || !socket) {
             return;
@@ -63,7 +71,6 @@ export class Socket {
      * @param opt 参数
      */
     public async connect(u: string, opt: IConnectOptions = {}): Promise<this | null> {
-        this._mode = 'client';
         const uri = lText.parseUrl(u);
         if (!uri.hostname) {
             return null;
@@ -126,12 +133,22 @@ export class Socket {
     /** --- 创建成功后第一时间绑定事件 --- */
     private _bindEvent(): void {
         this._ws.on('message', async (msg) => {
-            if (msg.opcode === liws.EOpcode.CLOSE) {
+            if (msg.opcode === EOpcode.CLOSE) {
                 return;
+            }
+            let data: Buffer | string = '';
+            if ('data' in msg) {
+                data = Buffer.concat(msg.data);
+                if (msg.opcode === EOpcode.TEXT) {
+                    data = data.toString();
+                }
+            }
+            else {
+                data = await (msg.opcode === EOpcode.TEXT ? msg.toString() : msg.toBuffer());
             }
             this._on.message({
                 'opcode': msg.opcode,
-                'data': 'data' in msg ? Buffer.concat(msg.data) : await msg.toBuffer()
+                'data': data
             });
         }).on('error', (e) => {
             this._on.error(e);
@@ -142,8 +159,8 @@ export class Socket {
 
     /** --- 还未开启监听时来的数据将存在这里 --- */
     private _waitMsg: Array<{
-        'opcode': liws.EOpcode,
-        'data': Buffer
+        'opcode': EOpcode,
+        'data': Buffer | string
     }> = [];
 
     /** --- 还未开启 error 监听时产生的 error 错误对象 --- */
@@ -155,8 +172,8 @@ export class Socket {
     /** --- 未绑定自定义监听事件的默认执行函数 --- */
     private _on = {
         'message': (msg: {
-            'opcode': liws.EOpcode,
-            'data': Buffer
+            'opcode': EOpcode,
+            'data': Buffer | string
         }): void => {
             this._waitMsg.push(msg);
         },
@@ -170,8 +187,8 @@ export class Socket {
 
     /** --- 绑定监听 --- */
     public on(event: 'message', cb: (msg: {
-        'opcode': liws.EOpcode,
-        'data': Buffer
+        'opcode': EOpcode,
+        'data': Buffer | string
     }) => void | Promise<void>): this;
     public on(event: 'error', cb: (error: any) => void | Promise<void>): this;
     public on(event: 'close', cb: () => void | Promise<void>): this;
@@ -223,13 +240,29 @@ export class Socket {
     /** --- 当前是否是可写状态 --- */
     public get writable(): boolean {
         return this._ws.writable;
-        
+    }
+
+    /** --- 当前是否已经结束读取，并且无法继续读取 --- */
+    public get ended(): boolean {
+        return this._ws.ended;
+    }
+
+    /** --- 当前是否已经结束写入，并且无法继续写入 --- */
+    public get finished(): boolean {
+        return this._ws.finished;
+    }
+
+    /**
+     * --- 当前连接是不是服务器连接 ---
+     */
+    public get isServer(): boolean {
+        return this._ws.isServer;
     }
 
     /** --- 发送 ping --- */
-    public ping(): boolean {
+    public ping(data?: Buffer | string): boolean {
         try {
-            this._ws.ping();
+            this._ws.ping(data);
             return true;
         }
         catch {
@@ -238,9 +271,9 @@ export class Socket {
     }
 
     /** --- 发送 ping --- */
-    public pong(): boolean {
+    public pong(data?: Buffer | string): boolean {
         try {
-            this._ws.pong();
+            this._ws.pong(data);
             return true;
         }
         catch {
@@ -268,4 +301,105 @@ export function connect(u: string, opt: types.INetOptions = {}
  */
 export function createServer(request: http.IncomingMessage, socket: net.Socket) {
     return new Socket(request, socket);
+}
+
+/**
+ * --- 反向代理，将本 socket 连接反代到其他网址，在 ws 的 onLoad 事件中使用 ---
+ * @param ctr 当前控制器
+ * @param url 反代真实请求地址，如有 get 需要自行添加
+ * @param opt 参数
+ */
+export async function rproxy(
+    ctr: sCtr.Ctr,
+    url: string,
+    opt: IConnectOptions = {}
+): Promise<boolean> {
+    const req = ctr.getPrototype('_req');
+    /** --- 请求端产生的双向 socket --- */
+    const socket = ctr.getPrototype('_socket');
+    /** --- 不代理的 header --- */
+    const continueHeaders = ['host', 'connection', 'http-version', 'http-code', 'http-url'];
+    if (!opt.headers) {
+        opt.headers = {};
+    }
+    for (const h in req.headers) {
+        if (continueHeaders.includes(h)) {
+            continue;
+        }
+        if (h.includes(':') || h.includes('(')) {
+            continue;
+        }
+        opt.headers[h] = req.headers[h];
+    }
+    // --- 发起请求 ---
+    /** --- 远程端的双向 socket --- */
+    const rsocket = await connect(url, opt);
+    if (!rsocket) {
+        return false;
+    }
+    await new Promise((resolve) => {
+        // --- 监听发送端的 ---
+        socket.on('message', (msg) => {
+            switch (msg.opcode) {
+                case EOpcode.TEXT:
+                case EOpcode.BINARY: {
+                    if (typeof msg.data === 'string') {
+                        rsocket.writeText(msg.data);
+                        break;
+                    }
+                    rsocket.writeBinary(msg.data);
+                    break;
+                }
+                case EOpcode.CLOSE: {
+                    rsocket.end();
+                    resolve(true);
+                    break;
+                }
+                case EOpcode.PING: {
+                    rsocket.ping(msg.data);
+                    break;
+                }
+                case EOpcode.PONG: {
+                    rsocket.pong(msg.data);
+                    break;
+                }
+            }
+        }).on('close', () => {
+            resolve(true);
+        }).on('error', () => {
+            resolve(true);
+        });
+        // --- 监听远程端的 ---
+        rsocket.on('message', (msg) => {
+            switch (msg.opcode) {
+                case EOpcode.TEXT:
+                case EOpcode.BINARY: {
+                    if (typeof msg.data === 'string') {
+                        socket.writeText(msg.data);
+                        break;
+                    }
+                    socket.writeBinary(msg.data);
+                    break;
+                }
+                case EOpcode.CLOSE: {
+                    socket.end();
+                    resolve(true);
+                    break;
+                }
+                case EOpcode.PING: {
+                    socket.ping(msg.data);
+                    break;
+                }
+                case EOpcode.PONG: {
+                    socket.pong(msg.data);
+                    break;
+                }
+            }
+        }).on('close', () => {
+            resolve(true);
+        }).on('error', () => {
+            resolve(true);
+        });
+    });
+    return true;
 }

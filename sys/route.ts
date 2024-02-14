@@ -227,7 +227,7 @@ export async function run(data: {
     let rtn: types.Json;
 
     if (data.socket && data.req instanceof http.IncomingMessage) {
-        // --- 判断真实控制器文件是否存在 ---
+        // --- socket 模式，判断真实控制器文件是否存在 ---
         const filePath = config.const.wsPath + pathLeft + '.js';
         if (!await lFs.isFile(filePath)) {
             // --- 指定的控制器不存在 ---
@@ -255,21 +255,33 @@ export async function run(data: {
             data.socket.destroy();
             return true;
         }
-        if (rtn === undefined || rtn === true) {
+        if (rtn !== false) {
             await new Promise<void>(function(resolve) {
                 wsSocket.on('message', async function(msg): Promise<void> {
                     switch (msg.opcode) {
                         case ws.EOpcode.CLOSE: {
+                            const r = await (cctr as types.Json)['onMessage'](msg.data, msg.opcode);
+                            if (r === false) {
+                                break;
+                            }
                             wsSocket.end();
                             break;
                         }
                         case ws.EOpcode.PING: {
+                            const r = await (cctr as types.Json)['onMessage'](msg.data, msg.opcode);
+                            if (r === false) {
+                                break;
+                            }
                             wsSocket.pong();
                             break;
                         }
                         case ws.EOpcode.BINARY:
                         case ws.EOpcode.TEXT: {
                             try {
+                                const r = await (cctr as types.Json)['onMessage'](msg.data, msg.opcode);
+                                if (r === false) {
+                                    break;
+                                }
                                 const wrtn = await (cctr as types.Json)['onData'](msg.data, msg.opcode);
                                 if (!wrtn) {
                                     return;
@@ -310,7 +322,9 @@ export async function run(data: {
             });
             return true;
         }
-        wsSocket.end();
+        if (!wsSocket.ended) {
+            wsSocket.end();
+        }
         return true;
     }
     if (!data.res) {
@@ -341,7 +355,7 @@ export async function run(data: {
     middle.setPrototype('_post', post);
     // --- form data 格式交由用户自行获取，可以直接获取文件流，然后做他想做的事情 ---
 
-    // --- 执行中间控制器的 _load ---
+    // --- 执行中间控制器的 onLoad ---
     try {
         rtn = await (middle.onLoad() as types.Json);
     }
@@ -355,7 +369,7 @@ export async function run(data: {
     }
     let cacheTTL: number = middle.getPrototype('_cacheTTL');
     let httpCode: number = middle.getPrototype('_httpCode');
-    if (rtn === undefined || rtn === true) {
+    if (rtn !== false) {
         // --- 只有不返回或返回 true 时才加载控制文件 ---
         // --- 判断真实控制器文件是否存在 ---
         const filePath = (data.res ? config.const.ctrPath : config.const.wsPath) + pathLeft + '.js';
@@ -445,7 +459,7 @@ export async function run(data: {
         try {
             rtn = await (cctr.onLoad() as types.Json);
             // --- 执行 action ---
-            if (rtn === undefined || rtn === true) {
+            if (rtn !== false) {
                 rtn = await (cctr as types.Json)[pathRight]();
                 rtn = await (cctr.onUnload(rtn) as types.Json);
                 rtn = await (middle.onUnload(rtn) as types.Json);

@@ -205,6 +205,7 @@ export default class extends sCtr.Ctr {
             '<br><br><b>Ws:</b>',
             `<br><br><a href="${this._config.const.urlBase}test/ws-server">View "test/ws-server"</a>`,
             `<br><a href="${this._config.const.urlBase}test/ws-client">View "test/ws-client"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/ws-server?ac=rproxy">View ws rproxy</a>`,
 
             '<br><br><b>Ssh:</b>',
             `<br><br><a href="${this._config.const.urlBase}test/ssh?type=shell">View "test/ssh?type=shell"</a>`,
@@ -1623,7 +1624,7 @@ error: <pre>${JSON.stringify(res.error, null, 4)}</pre>`);
         if (await lNet.rproxy(this, {
             'test/net-rproxy/': 'https://cdn.jsdelivr.net/npm/deskrt@2.0.10/'
         })) {
-            return true;
+            return false;
         }
         return 'Nothing';
     }
@@ -2515,7 +2516,10 @@ ${lTime.format(null, 'd|D|j|l|N|w|Y|y|F|M|m|H|h|i|s|T')}`;
     }
 
     public wsServer(): string {
-        const echo = `Nick: <input id="nick"> <input id="btn" type="button" value="Enter" onclick="enter()"> <input id="stop" type="button" value="Stop" onclick="stop()" disabled>
+        const echo = '<a href="' + this._config.const.urlBase + 'test/ws-server">Default</a> | ' +
+        '<a href="' + this._config.const.urlBase + 'test/ws-server?ac=rproxy">rproxy</a> | ' +
+        '<a href="' + this._config.const.urlBase + 'test">Return</a><br><br>' +
+`Nick: <input id="nick"> <input id="btn" type="button" value="Enter" onclick="enter()"> <input id="stop" type="button" value="Stop" onclick="stop()" disabled>
 <div id="list" style="border: solid 1px #000; line-height: 1.5; height: 300px; overflow-y: scroll; margin-top: 10px; padding: 10px;"></div>
 <div style="margin-top: 10px; display: flex;">
     <input id="text" style="flex: 1;">
@@ -2539,7 +2543,7 @@ function enter() {
     nickEl.disabled = true;
     btnEl.disabled = true;
     listEl.insertAdjacentHTML('afterbegin', '<div>Connecting...</div>');
-    ws = new WebSocket('ws${this._config.const.https ? 's' : ''}://${this._config.const.host}/test');
+    ws = new WebSocket('ws${this._config.const.https ? 's' : ''}://${this._config.const.host}/${this._get['ac'] === 'rproxy' ? 'rproxy' : 'test'}');
     ws.onopen = function() {
         listEl.insertAdjacentHTML('afterbegin', '<div>Event: onOpen.</div>');
         ws.send('Hello: ' + nick);
