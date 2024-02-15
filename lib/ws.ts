@@ -32,14 +32,13 @@ export enum EOpcode {
 
 /** --- 请求的传入参数选项 --- */
 export interface IConnectOptions {
-    'method'?: 'GET' | 'POST' | 'OPTIONS';
     /** --- 秒数 --- */
     'timeout'?: number;
     'hosts'?: Record<string, string>;
     'local'?: string;
     'headers'?: types.THttpHeaders;
     /** --- cookie 托管对象 --- */
-    'cookie'?: Record<string, types.INetCookie>;
+    'cookie'?: Record<string, types.ICookie>;
     /** --- 小帧模式，默认 false --- */
     'mode'?: EFrameReceiveMode;
     /** --- 加密模式，默认 true --- */
@@ -288,7 +287,7 @@ export class Socket {
  * @param u 以 ws, wss 开头的地址
  * @param opt 参数
  */
-export function connect(u: string, opt: types.INetOptions = {}
+export function connect(u: string, opt: IConnectOptions = {}
 ) {
     const s = new Socket();
     return s.connect(u, opt);

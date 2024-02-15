@@ -17,7 +17,7 @@ export class Request {
     private readonly _url: string = '';
 
     /** --- 要传递的参数 --- */
-    private _opt: types.INetOptions = {};
+    private _opt: net.IRequestOptions = {};
 
     public constructor(url: string) {
         this._url = url;
@@ -142,7 +142,7 @@ export class Request {
      * --- 发起请求 ---
      * @param cookie
      */
-    public async request(cookie?: Record<string, types.INetCookie>): Promise<response.Response> {
+    public async request(cookie?: Record<string, types.ICookie>): Promise<response.Response> {
         this._opt.cookie = cookie;
         return net.request(this._url, this._data, this._opt);
     }

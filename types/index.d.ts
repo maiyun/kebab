@@ -155,14 +155,14 @@ export interface IConfigConst {
 /** --- http headers --- */
 /* eslint-disable @typescript-eslint/naming-convention */
 export type THttpHeaders = http.IncomingHttpHeaders & {
-    'http-version'?: string;
+    'http-version'?: '1.1' | '2.0';
     'http-code'?: number;
     'http-url'?: string;
 };
 /* eslint-enable */
 
 /** --- Net Cookie 对象 --- */
-export interface INetCookie {
+export interface ICookie {
     'name': string;
     'value': string;
     /** --- 有效期秒级时间戳 --- */
@@ -171,23 +171,6 @@ export interface INetCookie {
     'domain': string;
     'secure': boolean;
     'httponly': boolean;
-}
-
-/** --- 请求的传入参数选项 --- */
-export interface INetOptions {
-    'method'?: 'GET' | 'POST' | 'OPTIONS';
-    'type'?: 'form' | 'json';
-    /** --- 秒数 --- */
-    'timeout'?: number;
-    'follow'?: number;
-    'hosts'?: Record<string, string>;
-    'save'?: string;
-    'local'?: string;
-    'headers'?: THttpHeaders;
-    /** --- 默认为 default --- */
-    'reuse'?: string;
-    /** --- cookie 托管对象 --- */
-    'cookie'?: Record<string, INetCookie>;
 }
 
 export interface IUrlParse {

@@ -164,6 +164,7 @@ export default class extends sCtr.Ctr {
             `<br><a href="${this._config.const.urlBase}test/net-error">View "test/net-error"</a>`,
             `<br><a href="${this._config.const.urlBase}test/net-hosts">View "test/net-hosts"</a>`,
             `<br><a href="${this._config.const.urlBase}test/net-rproxy/dist/core.js">View "test/net-rproxy/dist/core.js"</a> <a href="${this._config.const.urlBase}test/net-rproxy/package.json">View "package.json"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/net-mproxy">View "test/net-mproxy"</a>`,
 
             '<br><br><b>Scan:</b>',
             `<br><br><a href="${this._config.const.urlBase}test/scan?s=db">View "test/scan?s=db"</a>`,
@@ -1627,6 +1628,35 @@ error: <pre>${JSON.stringify(res.error, null, 4)}</pre>`);
             return false;
         }
         return 'Nothing';
+    }
+
+    public async netMproxy(): Promise<string | boolean> {
+        const echo = [];
+        const res = await lNet.get('https://cdn.jsdelivr.net/npm/deskrt@2.0.10/package.json', {
+            'mproxy': {
+                'url': `http${this._config.const.https ? 's' : ''}://${this._config.const.host}/test/net-mproxy1`,
+                'auth': '123456'
+            }
+        });
+        echo.push(`<pre>lNet.get('https://cdn.jsdelivr.net/npm/deskrt@2.0.10/package.json', {
+    'mproxy': {
+        'url': 'http${this._config.const.https ? 's' : ''}://${this._config.const.host}/test/net-mproxy1',
+        'auth': '123456'
+    }
+});</pre>
+        headers: <pre>${JSON.stringify(res.headers, null, 4)}</pre>
+        content: <pre>${(await res.getContent())?.toString() ?? 'null'}</pre>
+        error: ${JSON.stringify(res.error)}`);
+
+        return echo.join('') + '<br><br>' + this._getEnd();
+    }
+
+    public async netMproxy1(): Promise<string | boolean> {
+        const rtn = await lNet.mproxy(this, '123456');
+        if (rtn > 0) {
+            return false;
+        }
+        return 'Nothing(' + rtn + ')';
     }
 
     public async scan(): Promise<types.Json> {
