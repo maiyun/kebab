@@ -1634,13 +1634,13 @@ error: <pre>${JSON.stringify(res.error, null, 4)}</pre>`);
         const echo = [];
         const res = await lNet.get('https://cdn.jsdelivr.net/npm/deskrt@2.0.10/package.json', {
             'mproxy': {
-                'url': `http${this._config.const.https ? 's' : ''}://${this._config.const.host}/test/net-mproxy1`,
+                'url': this._internalUrl + 'test/net-mproxy1',
                 'auth': '123456'
             }
         });
         echo.push(`<pre>lNet.get('https://cdn.jsdelivr.net/npm/deskrt@2.0.10/package.json', {
     'mproxy': {
-        'url': 'http${this._config.const.https ? 's' : ''}://${this._config.const.host}/test/net-mproxy1',
+        'url': '${this._internalUrl}test/net-mproxy1',
         'auth': '123456'
     }
 });</pre>
