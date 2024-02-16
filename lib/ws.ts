@@ -43,6 +43,11 @@ export interface IConnectOptions {
     'mode'?: EFrameReceiveMode;
     /** --- 加密模式，默认 true --- */
     'masking'?: boolean;
+    /** --- 正向 mproxy 代理，url 如 wss://xxx/abc --- */
+    'mproxy'?: {
+        'url': string;
+        'auth': string;
+    };
 }
 
 const liwsServer = liws.createServer();
@@ -74,6 +79,8 @@ export class Socket {
         if (!uri.hostname) {
             return null;
         }
+        /** --- 正向代理的地址 --- */
+        const puri = opt.mproxy ? lText.parseUrl(opt.mproxy.url) : null;
         const timeout = opt.timeout ?? 10;
         const hosts = opt.hosts ?? {};
         const local = opt.local;

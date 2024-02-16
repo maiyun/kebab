@@ -148,7 +148,8 @@ export async function request(
     opt: IRequestOptions = {}
 ): Promise<response.Response> {
     const uri = text.parseUrl(u);
-    // let isSsl: boolean = false;
+    /** --- 正向代理的地址 --- */
+    const puri = opt.mproxy ? text.parseUrl(opt.mproxy.url) : null;
     const method = opt.method ?? 'GET';
     const type = opt.type ?? 'form';
     const timeout = opt.timeout ?? 10;
@@ -204,7 +205,7 @@ export async function request(
     let req: hc.IResponse;
     try {
         // --- 重定义 IP ---
-        const host = uri.hostname?.toLowerCase() ?? '';
+        const host = puri?.hostname?.toLocaleLowerCase() ?? uri.hostname?.toLowerCase() ?? '';
         if (!reuses[reuse]) {
             reuses[reuse] = hc.createHttpClient();
         }
