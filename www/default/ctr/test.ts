@@ -205,8 +205,9 @@ export default class extends sCtr.Ctr {
 
             '<br><br><b>Ws:</b>',
             `<br><br><a href="${this._config.const.urlBase}test/ws-server">View "test/ws-server"</a>`,
-            `<br><a href="${this._config.const.urlBase}test/ws-client">View "test/ws-client"</a>`,
             `<br><a href="${this._config.const.urlBase}test/ws-server?ac=rproxy">View ws rproxy</a>`,
+            `<br><a href="${this._config.const.urlBase}test/ws-client">View "test/ws-client"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/ws-client?ac=mproxy">View ws mproxy</a>`,
 
             '<br><br><b>Ssh:</b>',
             `<br><br><a href="${this._config.const.urlBase}test/ssh?type=shell">View "test/ssh?type=shell"</a>`,
@@ -2612,7 +2613,12 @@ function send() {
     }
 
     public async wsClient(): Promise<string> {
-        const ws = await lWs.connect('ws' + (this._config.const.https ? 's' : '') + '://' + this._config.const.host + '/test');
+        const ws = await lWs.connect('ws' + (this._config.const.https ? 's' : '') + '://' + this._config.const.host + '/test', {
+            'mproxy': this._get['ac'] === 'mproxy' ? {
+                'url': `ws${this._config.const.https ? 's' : ''}://${this._config.const.host}/mproxy`,
+                'auth': '123456'
+            } : undefined
+        });
         if (!ws) {
             return '<div>Connect "ws' + (this._config.const.https ? 's' : '') + '://' + this._config.const.host + '/test" failed.</div><br>' + this._getEnd();
         }

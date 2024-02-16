@@ -167,7 +167,7 @@ export class Ctr {
     }
 
     /**
-     * --- WebSocket 下当收到数据时会自动被调用的事件，即只文本和二进制数据 ---
+     * --- WebSocket 下当收到数据时会自动被调用的事件，即只文本和二进制数据，返回内容会被发送给 socket，但返回 false 连接会被中断 ---
      */
     public onData(data: Buffer | string, opcode: lWs.EOpcode): string | Buffer | object | void | Promise<string | Buffer | object | void>;
     public onData(): string {
@@ -722,6 +722,13 @@ export class Ctr {
      */
     protected _pong(): boolean {
         return this._socket.pong();
+    }
+
+    /**
+     * --- 主动关闭当前 socket 连接 ---
+     */
+    protected _end(): void {
+        this._socket.end();
     }
 
     /**

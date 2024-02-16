@@ -205,7 +205,7 @@ export async function request(
     let req: hc.IResponse;
     try {
         // --- 重定义 IP ---
-        const host = puri?.hostname?.toLocaleLowerCase() ?? uri.hostname?.toLowerCase() ?? '';
+        const host = puri?.hostname ?? uri.hostname ?? '';
         if (!reuses[reuse]) {
             reuses[reuse] = hc.createHttpClient();
         }
@@ -516,7 +516,7 @@ const proxyContinueHeaders = ['host', 'connection', 'http-version', 'http-code',
  * @param headers 剔除前的 header
  * @param res 直接设置头部而不返回，可置空
  */
-function filterProxyHeaders(headers: http.IncomingHttpHeaders | http2.IncomingHttpHeaders | types.THttpHeaders, res?: http2.Http2ServerResponse | http.ServerResponse<http.IncomingMessage>): Record<string, string | string[]> {
+export function filterProxyHeaders(headers: http.IncomingHttpHeaders | http2.IncomingHttpHeaders | types.THttpHeaders, res?: http2.Http2ServerResponse | http.ServerResponse<http.IncomingMessage>): Record<string, string | string[]> {
     const heads: Record<string, string | string[]> = {};
     for (const h in headers) {
         if (proxyContinueHeaders.includes(h)) {

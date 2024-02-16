@@ -283,6 +283,10 @@ export async function run(data: {
                                     break;
                                 }
                                 const wrtn = await (cctr as types.Json)['onData'](msg.data, msg.opcode);
+                                if (wrtn === false) {
+                                    wsSocket.end();
+                                    return;
+                                }
                                 if (!wrtn) {
                                     return;
                                 }

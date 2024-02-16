@@ -50,6 +50,37 @@ export interface IConnectOptions {
     };
 }
 
+/** --- 正向代理请求的传入参数选项 --- */
+export interface IMproxyOptions {
+    /** --- 秒数 --- */
+    'timeout'?: number;
+    'hosts'?: Record<string, string>;
+    'local'?: string;
+    'headers'?: types.THttpHeaders;
+    /** --- 小帧模式，默认 false --- */
+    'mode'?: EFrameReceiveMode;
+    /** --- 加密模式，默认 true --- */
+    'masking'?: boolean;
+}
+
+/** --- 反向代理请求的传入参数选项 --- */
+export interface IRproxyOptions {
+    /** --- 秒数 --- */
+    'timeout'?: number;
+    'hosts'?: Record<string, string>;
+    'local'?: string;
+    'headers'?: types.THttpHeaders;
+    /** --- 小帧模式，默认 false --- */
+    'mode'?: EFrameReceiveMode;
+    /** --- 加密模式，默认 true --- */
+    'masking'?: boolean;
+    /** --- 正向 mproxy 代理，url 如 wss://xxx/abc --- */
+    'mproxy'?: {
+        'url': string;
+        'auth': string;
+    };
+}
+
 const liwsServer = liws.createServer();
 
 export class Socket {
@@ -100,27 +131,37 @@ export class Socket {
             headers['cookie'] = lNet.buildCookieQuery(opt.cookie, uri);
         }
         // --- ssl ---
-        const ca: string | null = uri.protocol === 'wss:' ? await lNet.getCa() : null;
+        const ca: string | null = puri ?
+            puri.protocol === 'wss:' ? await lNet.getCa() : null :
+            uri.protocol === 'wss:' ? await lNet.getCa() : null;
         if (!ca && hosts[uri.hostname]) {
             // --- 没有 ca，但是要设置 额外的 host ---
             headers['host'] = uri.hostname + (uri.port ? ':' + uri.port : '');
         }
         try {
-            const cli = ca ?
+            // --- 重定义 IP ---
+            const host = puri?.hostname ?? uri.hostname ?? '';
+            const port = (puri ? puri.port : uri.port) ?? 443;
+            const path = puri ? puri.path + (puri.path?.includes('?') ? '&' : '?') + lText.queryStringify({
+                'url': u,
+                'auth': opt.mproxy?.auth ?? ''
+            }) : uri.path;
+            let cli = ca ?
                 await liws.wssConnect({
-                    'hostname': hosts[uri.hostname] ?? uri.hostname,
-                    'port': uri.port ? parseInt(uri.port) : 443,
-                    'path': uri.path,
-                    'servername': uri.hostname,
+                    'hostname': hosts[host] ?? host,
+                    'port': port,
+                    'path': path,
+                    'servername': host,
                     'headers': headers,
                     'connectTimeout': timeout * 1000,
                     'frameReceiveMode': mode,
-                    'localAddress': local
+                    'localAddress': local,
+                    'ca': ca
                 }) :
                 await liws.wsConnect({
-                    'hostname': hosts[uri.hostname] ?? uri.hostname,
-                    'port': uri.port ? parseInt(uri.port) : 80,
-                    'path': uri.path,
+                    'hostname': hosts[host] ?? host,
+                    'port': port,
+                    'path': path,
                     'headers': headers,
                     'connectTimeout': timeout * 1000,
                     'frameReceiveMode': mode,
@@ -235,11 +276,17 @@ export class Socket {
 
     /** --- 发送文本 --- */
     public writeText(data: string): boolean {
+        if (!this._ws.writable) {
+            return false;
+        }
         return this._ws.writeText(data);
     }
 
     /** --- 发送二进制 --- */
     public writeBinary(data: string | Buffer | (string | Buffer)[]): boolean {
+        if (!this._ws.writable) {
+            return false;
+        }
         return this._ws.writeBinary(data);
     }
 
@@ -310,6 +357,115 @@ export function createServer(request: http.IncomingMessage, socket: net.Socket) 
 }
 
 /**
+ * --- 绑定 socket 管道 ---
+ * @param s1 第一个 socket
+ * @param s2 第二个 socket
+ * @returns 
+ */
+function bindPipe(s1: Socket, s2: Socket): Promise<void> {
+    return new Promise<void>((resolve) => {
+        // --- 监听发送端的 ---
+        s1.on('message', (msg) => {
+            switch (msg.opcode) {
+                case EOpcode.TEXT:
+                case EOpcode.BINARY: {
+                    if (typeof msg.data === 'string') {
+                        s2.writeText(msg.data);
+                        break;
+                    }
+                    s2.writeBinary(msg.data);
+                    break;
+                }
+                case EOpcode.CLOSE: {
+                    s2.end();
+                    resolve();
+                    break;
+                }
+                case EOpcode.PING: {
+                    s2.ping(msg.data);
+                    break;
+                }
+                case EOpcode.PONG: {
+                    s2.pong(msg.data);
+                    break;
+                }
+            }
+        }).on('close', () => {
+            resolve();
+        }).on('error', () => {
+            resolve();
+        });
+        // --- 监听远程端的 ---
+        s2.on('message', (msg) => {
+            switch (msg.opcode) {
+                case EOpcode.TEXT:
+                case EOpcode.BINARY: {
+                    if (typeof msg.data === 'string') {
+                        s1.writeText(msg.data);
+                        break;
+                    }
+                    s1.writeBinary(msg.data);
+                    break;
+                }
+                case EOpcode.CLOSE: {
+                    s1.end();
+                    resolve();
+                    break;
+                }
+                case EOpcode.PING: {
+                    s1.ping(msg.data);
+                    break;
+                }
+                case EOpcode.PONG: {
+                    s1.pong(msg.data);
+                    break;
+                }
+            }
+        }).on('close', () => {
+            resolve();
+        }).on('error', () => {
+            resolve();
+        });
+    });
+}
+
+/**
+ * --- 正向 mproxy 代理，读取 get 的 url 为实际请求地址 ---
+ * --- get: url, auth ---
+ * @param ctr 当前控制器
+ * @param auth 校验字符串，读取 get 的 auth 和本参数做比对
+ * @param opt 参数
+ */
+export async function mproxy(
+    ctr: sCtr.Ctr,
+    auth: string,
+    opt: IMproxyOptions = {}
+): Promise<number> {
+    const req = ctr.getPrototype('_req');
+    /** --- 请求端产生的双向 socket --- */
+    const socket = ctr.getPrototype('_socket');
+    /** --- 客户端请求中的 get 的数据 --- */
+    const get = ctr.getPrototype('_get');
+    if (get['auth'] !== auth) {
+        return 0;
+    }
+    if (!get['url']) {
+        return -1;
+    }if (!opt.headers) {
+        opt.headers = {};
+    }
+    Object.assign(opt.headers, lNet.filterProxyHeaders(req.headers));
+    // --- 发起请求 ---
+    /** --- 远程端的双向 socket --- */
+    const rsocket = await connect(get['url'], opt);
+    if (!rsocket) {
+        return -2;
+    }
+    await bindPipe(socket, rsocket);
+    return 1;
+}
+
+/**
  * --- 反向代理，将本 socket 连接反代到其他网址，在 ws 的 onLoad 事件中使用 ---
  * @param ctr 当前控制器
  * @param url 反代真实请求地址，如有 get 需要自行添加
@@ -318,94 +474,21 @@ export function createServer(request: http.IncomingMessage, socket: net.Socket) 
 export async function rproxy(
     ctr: sCtr.Ctr,
     url: string,
-    opt: IConnectOptions = {}
+    opt: IRproxyOptions = {}
 ): Promise<boolean> {
     const req = ctr.getPrototype('_req');
     /** --- 请求端产生的双向 socket --- */
     const socket = ctr.getPrototype('_socket');
-    /** --- 不代理的 header --- */
-    const continueHeaders = ['host', 'connection', 'http-version', 'http-code', 'http-url'];
     if (!opt.headers) {
         opt.headers = {};
     }
-    for (const h in req.headers) {
-        if (continueHeaders.includes(h)) {
-            continue;
-        }
-        if (h.includes(':') || h.includes('(')) {
-            continue;
-        }
-        opt.headers[h] = req.headers[h];
-    }
+    Object.assign(opt.headers, lNet.filterProxyHeaders(req.headers));
     // --- 发起请求 ---
     /** --- 远程端的双向 socket --- */
     const rsocket = await connect(url, opt);
     if (!rsocket) {
         return false;
     }
-    await new Promise((resolve) => {
-        // --- 监听发送端的 ---
-        socket.on('message', (msg) => {
-            switch (msg.opcode) {
-                case EOpcode.TEXT:
-                case EOpcode.BINARY: {
-                    if (typeof msg.data === 'string') {
-                        rsocket.writeText(msg.data);
-                        break;
-                    }
-                    rsocket.writeBinary(msg.data);
-                    break;
-                }
-                case EOpcode.CLOSE: {
-                    rsocket.end();
-                    resolve(true);
-                    break;
-                }
-                case EOpcode.PING: {
-                    rsocket.ping(msg.data);
-                    break;
-                }
-                case EOpcode.PONG: {
-                    rsocket.pong(msg.data);
-                    break;
-                }
-            }
-        }).on('close', () => {
-            resolve(true);
-        }).on('error', () => {
-            resolve(true);
-        });
-        // --- 监听远程端的 ---
-        rsocket.on('message', (msg) => {
-            switch (msg.opcode) {
-                case EOpcode.TEXT:
-                case EOpcode.BINARY: {
-                    if (typeof msg.data === 'string') {
-                        socket.writeText(msg.data);
-                        break;
-                    }
-                    socket.writeBinary(msg.data);
-                    break;
-                }
-                case EOpcode.CLOSE: {
-                    socket.end();
-                    resolve(true);
-                    break;
-                }
-                case EOpcode.PING: {
-                    socket.ping(msg.data);
-                    break;
-                }
-                case EOpcode.PONG: {
-                    socket.pong(msg.data);
-                    break;
-                }
-            }
-        }).on('close', () => {
-            resolve(true);
-        }).on('error', () => {
-            resolve(true);
-        });
-    });
+    await bindPipe(socket, rsocket);
     return true;
 }
