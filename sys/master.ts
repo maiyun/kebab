@@ -177,6 +177,17 @@ async function createChildProcess(cpu: number): Promise<void> {
                     workerList[msg.pid].hbtime = Date.now();
                     break;
                 }
+                case 'global': {
+                    // --- 为所有子进程更新 global 变量 ---
+                    for (const pid in workerList) {
+                        workerList[pid].worker.send({
+                            'action': 'global',
+                            'key': msg.key,
+                            'data': msg.data
+                        });
+                    }
+                    break;
+                }
             }
         })().catch(function(e) {
             console.log('[createChildProcess] [message]', e);

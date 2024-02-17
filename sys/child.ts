@@ -581,6 +581,14 @@ process.on('message', function(msg: types.Json) {
                 process.disconnect();
                 break;
             }
+            case 'global': {
+                if (msg.data === undefined) {
+                    delete lCore.global[msg.key];
+                    break;
+                }
+                lCore.global[msg.key] = msg.data;
+                break;
+            }
         }
     })().catch(async function(e) {
         await lCore.log({

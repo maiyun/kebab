@@ -139,6 +139,7 @@ export default class extends sCtr.Ctr {
             `<br><a href="${this._config.const.urlBase}test/core-muid">View "test/core-muid"</a>`,
             `<br><a href="${this._config.const.urlBase}test/core-reload">View "test/core-reload"</a>`,
             `<br><a href="${this._config.const.urlBase}test/core-restart">View "test/core-restart"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/core-global">View "test/core-global"</a>`,
 
             '<br><br><b>Crypto:</b>',
             `<br><br><a href="${this._config.const.urlBase}test/crypto">View "test/crypto"</a>`,
@@ -882,6 +883,20 @@ for (let i = 0; i < 30000; ++i) {
     public coreRestart(): string {
         lCore.sendRestart();
         return 'The restart request has been sent, please review the console.<br><br>' + this._getEnd();
+    }
+
+    public async coreGlobal() {
+        const ts = lTime.stamp().toString();
+        const echo = [
+            `<pre>lCore.global.tglobal</pre>`,
+            lCore.global.tglobal === undefined ? 'undefined' : JSON.stringify(lCore.global.tglobal),
+            `<pre>lCore.setGlobal('tglobal', 'ts:${ts}');</pre>`
+        ];
+        lCore.setGlobal('tglobal', 'ts:' + ts);
+        await lCore.sleep(50);
+        echo.push(JSON.stringify(lCore.global.tglobal));
+
+        return echo.join('') + '<br><br>' + this._getEnd();
     }
 
     public crypto(): string {

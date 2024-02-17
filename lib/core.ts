@@ -32,17 +32,6 @@ export interface ICookieOptions {
     'samesite'?: 'None' | 'Lax' | 'Strict';
 }
 
-/** --- 跨进程全局变量 --- */
-export const global: Record<string, any> = {};
-
-export function setGlobal(key: string, val: any) {
-    process.send!({
-        'action': 'global',
-        'key': key,
-        'value': val
-    });
-}
-
 /**
  * --- 设置 cookie ---
  * @param ctr ctr 实例
@@ -391,6 +380,34 @@ export function sendRestart(): void {
     console.log('[ Child] Sending restart request...');
     process.send!({
         'action': 'restart'
+    });
+}
+
+/** --- 跨进程全局变量 --- */
+export const global: Record<string, string | number | boolean | Record<string, string | number | boolean>> = {};
+
+/**
+ * --- 设置跨线程的全局变量 ---
+ * @param key 变量名
+ * @param data 变量值
+ */
+export function setGlobal(key: string, data: string | number | boolean | Record<string, string | number | boolean>): void {
+    process.send!({
+        'action': 'global',
+        'key': key,
+        'data': data
+    });
+}
+
+/**
+ * --- 移除某个跨线程全局变量 ---
+ * @param key 变量名
+ */
+export function removeGlobal(key: string) {
+    process.send!({
+        'action': 'global',
+        'key': key,
+        'data': undefined
     });
 }
 
