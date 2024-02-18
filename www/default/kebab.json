@@ -16,5 +16,9 @@
     },
     "sql": {
         "pre": "m_"
+    },
+    "lang": {
+        "list": ["en", "sc", "tc"],
+        "direct": ["@", "article", "test"]
     }
 }

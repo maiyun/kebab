@@ -701,6 +701,14 @@ export class Ctr {
     }
 
     /**
+     * --- 发送结果对象文本 ---
+     * @param data 要发送的结果对象，如 [0, 'Failed.']
+     */
+    protected _writeResult(data: any): boolean {
+        return this._socket.writeResult(data);
+    }
+
+    /**
      * --- 发送 socket 二进制 ---
      * @param data 要发送的信息
      */

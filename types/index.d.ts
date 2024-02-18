@@ -72,8 +72,15 @@ export interface IConfig {
     };
     'sql': IConfigSql;
     'dns': IConfigDns;
+    'lang': IConfigLang;
 
     [key: string]: Record<string, Json>;
+}
+
+/** --- 动配数据库 --- */
+export interface IConfigLang {
+    'list': string[];
+    'direct': string[];
 }
 
 /** --- 动配数据库 --- */

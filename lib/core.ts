@@ -384,7 +384,7 @@ export function sendRestart(): void {
 }
 
 /** --- 跨进程全局变量 --- */
-export const global: Record<string, string | number | boolean | Record<string, string | number | boolean>> = {};
+export const global: Record<string, any> = {};
 
 /**
  * --- 设置跨线程的全局变量 ---

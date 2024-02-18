@@ -45,7 +45,7 @@ export async function run(data: {
     'rootPath': string;
     /** --- base url，如 /abc/vhost/，前后都带 / --- */
     'urlBase': string;
-    /** --- 前面不带 /，末尾不一定，以用户用户请求为准 --- */
+    /** --- 前面不带 /，末尾不一定，以用户请求为准 --- */
     'path': string;
 }): Promise<boolean> {
     // --- 检测 path 是否是静态文件 ---
@@ -156,8 +156,63 @@ export async function run(data: {
     if (path === '') {
         path = '@';
     }
-    // --- 检查路由表 ---
+    // --- 检测是否托管语言页面 ---
     const param: string[] = [];
+    if (config.lang && data.res) {
+        // --- 仅仅 res 模式支持 config.lang ---
+        if (path[2] !== '/') {
+            // --- 不管是首页还是 @ 页，都会到此处 ---
+            let isDirect = false;
+            if (!path) {
+                if (config.lang.direct.includes('@')) {
+                    isDirect = true;
+                }
+            }
+            else {
+                for (const ditem of config.lang.direct) {
+                    if (!path.startsWith(ditem)) {
+                        continue;
+                    }
+                    // --- 放行 ---
+                    isDirect = true;
+                    break;
+                }
+            }
+            if (!isDirect) {
+                // --- 不放行 ---
+                const alang = data.req.headers['accept-language']?.toLowerCase() ?? config.lang.list[0];
+                const apath = config.const.path + (config.const.qs ? '?' + config.const.qs : '');
+                for (let lang of config.lang.list) {
+                    if (lang === 'sc') {
+                        lang = 'cn';
+                    }
+                    else if (lang === 'tc') {
+                        lang = 'zh';
+                    }
+                    if (!alang.includes(lang)) {
+                        continue;
+                    }
+                    data.res.setHeader('location', config.const.urlBase + lang + '/' + apath);
+                    data.res.writeHead(302);
+                    data.res.end('');
+                    return true;
+                }
+                data.res.setHeader('location', config.const.urlBase + config.lang.list[0] + '/' + apath);
+                data.res.writeHead(302);
+                data.res.end('');
+                return true;
+            }
+        }
+        else {
+            // --- 已经是含语言的路径了 --
+            param.push(path.slice(0, 2));
+            path = path.slice(3);
+            if (!path) {
+                path = '@';
+            }
+        }
+    }
+    // --- 检查路由表 ---
     let match: RegExpExecArray | null = null;
     let pathLeft: string = '', pathRight: string = '';
     for (const rule in config.route) {
@@ -185,7 +240,7 @@ export async function run(data: {
     }
     // --- 若文件名为保留的 middle 将不允许进行 ---
     if (pathLeft.startsWith('middle')) {
-        const text = '[Error] Controller not found, path: ' + data.path + '.';
+        const text = '[Error] Controller not found, path: ' + path + '.';
         if (data.res) {
             if (config.route['#404']) {
                 data.res.setHeader('location', lText.urlResolve(config.const.urlBase, config.route['#404']));
@@ -303,7 +358,7 @@ export async function run(data: {
                                 }
                                 if (typeof wrtn === 'object') {
                                     // --- 返回的是数组，那么代表可能是 JSON，可能是对象序列 ---
-                                    wsSocket.writeText(lText.stringifyResult(wrtn));
+                                    wsSocket.writeResult(wrtn);
                                     return;
                                 }
                             }
@@ -376,10 +431,10 @@ export async function run(data: {
     if (rtn !== false) {
         // --- 只有不返回或返回 true 时才加载控制文件 ---
         // --- 判断真实控制器文件是否存在 ---
-        const filePath = (data.res ? config.const.ctrPath : config.const.wsPath) + pathLeft + '.js';
+        const filePath = config.const.ctrPath + pathLeft + '.js';
         if (!await lFs.isFile(filePath)) {
             // --- 指定的控制器不存在 ---
-            const text = '[Error] Controller not found, path: ' + data.path + '.';
+            const text = '[Error] Controller not found, path: ' + path + '.';
             if (config.route['#404']) {
                 data.res.setHeader('location', lText.urlResolve(config.const.urlBase, config.route['#404']));
                 data.res.writeHead(302);
@@ -435,7 +490,7 @@ export async function run(data: {
                 data.res.end('');
                 return true;
             }
-            const text = '[Error] Action not found, path: ' + data.path + '.';
+            const text = '[Error] Action not found, path: ' + path + '.';
             data.res.setHeader('content-type', 'text/html; charset=utf-8');
             data.res.setHeader('content-length', Buffer.byteLength(text));
             data.res.writeHead(404);
@@ -452,7 +507,7 @@ export async function run(data: {
                 data.res.end('');
                 return true;
             }
-            const text = '[Error] Action not found, path: ' + data.path + '.';
+            const text = '[Error] Action not found, path: ' + path + '.';
             data.res.setHeader('content-type', 'text/html; charset=utf-8');
             data.res.setHeader('content-length', Buffer.byteLength(text));
             data.res.writeHead(404);

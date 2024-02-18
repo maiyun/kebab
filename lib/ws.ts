@@ -282,6 +282,14 @@ export class Socket {
         return this._ws.writeText(data);
     }
 
+    /** --- 发送结果对象字符串 --- */
+    public writeResult(data: any): boolean {
+        if (!this._ws.writable) {
+            return false;
+        }
+        return this._ws.writeText(lText.stringifyResult(data));
+    }
+
     /** --- 发送二进制 --- */
     public writeBinary(data: string | Buffer | (string | Buffer)[]): boolean {
         if (!this._ws.writable) {

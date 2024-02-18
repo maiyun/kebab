@@ -472,3 +472,16 @@ export function stringifyResult(rtn: any): string {
     // --- 直接是个 json 对象 ---
     return JSON.stringify(rtn);
 }
+
+/**
+ * --- 将字符串解析味对象，返回 false 代表解析失败，Kebab true, Mutton false ---
+ * @param str 要解析的 json 字符串
+ */
+export function parseJson(str: string): any {
+    try {
+        return JSON.parse(str);
+    }
+    catch {
+        return false;
+    }
+}
