@@ -1651,13 +1651,15 @@ error: <pre>${JSON.stringify(res.error, null, 4)}</pre>`);
         const res = await lNet.get('https://cdn.jsdelivr.net/npm/deskrt@2.0.10/package.json', {
             'mproxy': {
                 'url': this._internalUrl + 'test/net-mproxy1',
-                'auth': '123456'
+                'auth': '123456',
+                'data': { 'test': '123' }
             }
         });
         echo.push(`<pre>lNet.get('https://cdn.jsdelivr.net/npm/deskrt@2.0.10/package.json', {
     'mproxy': {
         'url': '${this._internalUrl}test/net-mproxy1',
-        'auth': '123456'
+        'auth': '123456',
+        'data': { 'test': '123' }
     }
 });</pre>
         headers: <pre>${JSON.stringify(res.headers, null, 4)}</pre>
@@ -1668,6 +1670,8 @@ error: <pre>${JSON.stringify(res.error, null, 4)}</pre>`);
     }
 
     public async netMproxy1(): Promise<string | boolean> {
+        const data = lNet.mproxyData(this);
+        console.log('Got data', data);
         const rtn = await lNet.mproxy(this, '123456');
         if (rtn > 0) {
             return false;

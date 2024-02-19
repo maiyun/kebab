@@ -110,7 +110,7 @@ export interface IConfigDns {
 }
 
 /** --- 动配 kv --- */
-export interface IConfigKv  {
+export interface IConfigKv {
     'host': string;
     'port': number;
     'index': number;

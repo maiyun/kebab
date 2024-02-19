@@ -37,6 +37,7 @@ export interface IRequestOptions {
     'mproxy'?: {
         'url': string;
         'auth': string;
+        'data'?: any;
     };
     /** --- 默认为 default --- */
     'reuse'?: string;
@@ -68,6 +69,7 @@ export interface IRproxyOptions {
     'mproxy'?: {
         'url': string;
         'auth': string;
+        'data'?: any;
     };
     /** --- 默认为 default --- */
     'reuse'?: string;
@@ -212,7 +214,8 @@ export async function request(
         req = await reuses[reuse].request({
             'url': opt.mproxy ? opt.mproxy.url + (opt.mproxy.url.includes('?') ? '&' : '?') + lText.queryStringify({
                 'url': u,
-                'auth': opt.mproxy.auth
+                'auth': opt.mproxy.auth,
+                'data': opt.mproxy.data ? JSON.stringify(opt.mproxy.data) : '{}'
             }) : u,
             'method': method,
             'data': data,
@@ -581,6 +584,22 @@ export async function mproxy(
         });
     });
     return 1;
+}
+
+/**
+ * --- 获取 mproxy 的附加数据 ---
+ * @param ctr 当前控制器
+ */
+export function mproxyData(ctr: ctr.Ctr): any {
+    const get = ctr.getPrototype('_get');
+    if (!get['data']) {
+        return {};
+    }
+    const data = lText.parseJson(get['data']);
+    if (!data) {
+        return {};
+    }
+    return data;
 }
 
 /**
