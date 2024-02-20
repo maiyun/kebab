@@ -378,6 +378,46 @@ export class Pool {
         return conn ? conn.hKeys(key, this._etc) : [];
     }
 
+    public async lPush(key: string, values: Array<string | Buffer>): Promise<number> {
+        const conn = await this._getConnection();
+        return conn ? conn.lPush(key, values, this._etc) : 0;
+    }
+
+    public async rPush(key: string, values: Array<string | Buffer>): Promise<number> {
+        const conn = await this._getConnection();
+        return conn ? conn.rPush(key, values, this._etc) : 0;
+    }
+
+    public async bLMove(sourceKey: string, destKey: string, soo: 'LEFT' | 'RIGHT', deo: 'LEFT' | 'RIGHT', timeout: number): Promise<string | null> {
+        const conn = await this._getConnection();
+        return conn ? conn.bLMove(sourceKey, destKey, soo, deo, timeout, this._etc) : null;
+    }
+
+    public async lPop(key: string): Promise<string | null> {
+        const conn = await this._getConnection();
+        return conn ? conn.lPop(key, this._etc) : null;
+    }
+
+    public async rPop(key: string): Promise<string | null> {
+        const conn = await this._getConnection();
+        return conn ? conn.rPop(key, this._etc) : null;
+    }
+
+    public async bRPop(key: string | string[], timeout: number): Promise<Record<string, string>> {
+        const conn = await this._getConnection();
+        return conn ? conn.bRPop(key, timeout, this._etc) : {};
+    }
+
+    public async lRange(key: string, start: number, stop: number): Promise<string[]> {
+        const conn = await this._getConnection();
+        return conn ? conn.lRange(key, start, stop, this._etc) : [];
+    }
+
+    public async lLen(key: string): Promise<number> {
+        const conn = await this._getConnection();
+        return conn ? conn.lLen(key, this._etc) : 0;
+    }
+
     /**
      * --- 从连接池获取一个连接 ---
      */
@@ -1077,6 +1117,93 @@ end`;
         }
         catch {
             return [];
+        }
+    }
+
+    public async lPush(key: string, values: Array<string | Buffer>, etc: types.IConfigKv): Promise<number> {
+        this.refreshLast();
+        try {
+            return await this._link.lPush(etc.pre + key, values);
+        }
+        catch {
+            return 0;
+        }
+    }
+
+    public async rPush(key: string, values: Array<string | Buffer>, etc: types.IConfigKv): Promise<number> {
+        this.refreshLast();
+        try {
+            return await this._link.rPush(etc.pre + key, values);
+        }
+        catch {
+            return 0;
+        }
+    }
+
+    public async bLMove(sourceKey: string, destKey: string, soo: 'LEFT' | 'RIGHT', deo: 'LEFT' | 'RIGHT', timeout: number, etc: types.IConfigKv): Promise<string | null> {
+        this.refreshLast();
+        try {
+            const r = await this._link.command('BLMOVE', [etc.pre + sourceKey, etc.pre + destKey, soo, deo, timeout.toString()]);
+            if (r instanceof Buffer) {
+                return r.toString();
+            }
+            return null;
+        }
+        catch {
+            return null;
+        }
+    }
+
+    public async lPop(key: string, etc: types.IConfigKv): Promise<string | null> {
+        this.refreshLast();
+        try {
+            return await this._link.lPop(etc.pre + key);
+        }
+        catch {
+            return null;
+        }
+    }
+
+    public async rPop(key: string, etc: types.IConfigKv): Promise<string | null> {
+        this.refreshLast();
+        try {
+            return await this._link.rPop(etc.pre + key);
+        }
+        catch {
+            return null;
+        }
+    }
+
+    public async bRPop(key: string | string[], timeout: number, etc: types.IConfigKv): Promise<Record<string, string>> {
+        this.refreshLast();
+        try {
+            if (typeof key === 'string') {
+                key = [key];
+            }
+            return await this._link.bRPop(key.map(item => etc.pre + item), timeout);
+        }
+        catch {
+            return {};
+        }
+    }
+
+    public async lRange(key: string, start: number, stop: number, etc: types.IConfigKv): Promise<string[]> {
+        this.refreshLast();
+        try {
+            return await this._link.lRange(etc.pre + key, start, stop);
+        }
+        catch {
+            return [];
+        }
+    }
+
+    public async lLen(key: string, etc: types.IConfigKv): Promise<number> {
+        this.refreshLast();
+        try {
+            return await this._link.lLen(etc.pre + key);
+        }
+        catch {
+            return 0;
         }
     }
 

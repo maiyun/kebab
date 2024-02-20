@@ -73,6 +73,7 @@ export interface IConfig {
     'sql': IConfigSql;
     'dns': IConfigDns;
     'lang': IConfigLang;
+    's3': Record<string, IConfigS3>;
 
     [key: string]: Record<string, Json>;
 }
@@ -81,6 +82,14 @@ export interface IConfig {
 export interface IConfigLang {
     'list': string[];
     'direct': string[];
+}
+
+/** --- 动配对象存储信息 --- */
+export interface IConfigS3 {
+    /** --- cf r2 要用 --- */
+    'account'?: string;
+    'sid': string;
+    'skey': string;
 }
 
 /** --- 动配数据库 --- */

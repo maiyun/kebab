@@ -15,6 +15,7 @@ import * as lConsistent from '~/lib/consistent';
 import * as lSsh from '~/lib/ssh';
 import * as lJwt from '~/lib/jwt';
 import * as lWs from '~/lib/ws';
+import * as lS3 from '~/lib/s3';
 import * as sCtr from '~/sys/ctr';
 import * as def from '~/sys/def';
 import * as types from '~/types';
@@ -212,7 +213,10 @@ export default class extends sCtr.Ctr {
 
             '<br><br><b>Ssh:</b>',
             `<br><br><a href="${this._config.const.urlBase}test/ssh?type=shell">View "test/ssh?type=shell"</a>`,
-            `<br><a href="${this._config.const.urlBase}test/ssh?type=sftp">View "test/ssh?type=sftp"</a>`
+            `<br><a href="${this._config.const.urlBase}test/ssh?type=sftp">View "test/ssh?type=sftp"</a>`,
+            
+            '<br><br><b>S3:</b>',
+            `<br><br><a href="${this._config.const.urlBase}test/s3">View "test/s3"</a>`
         ];
         echo.push('<br><br>' + this._getEnd());
 
@@ -2751,6 +2755,26 @@ function send() {
         return '<a href="' + this._config.const.urlBase + 'test/ssh?type=shell">shell</a> | ' +
         '<a href="' + this._config.const.urlBase + 'test/ssh?type=sftp">sftp</a> | ' +
         '<a href="' + this._config.const.urlBase + 'test">Return</a>' + echo.join('') + this._getEnd();
+    }
+
+    public async s3(): Promise<string> {
+        const s3 = lS3.get(this, {
+            'service': lS3.SERVICE.AMAZON,
+            'region': 'ap-southeast-1',
+            'bucket': 'xxx'
+        });
+        const echo = [`<pre>const s3 = lS3.get(this, {
+    'service': lS3.SERVICE.AMAZON,
+    'region': 'ap-southeast-1',
+    'bucket': 'xxx'
+});</pre>`];
+        let r = await s3.putObject('a/b.txt', 'x');
+        echo.push(`<pre>await s3.putObject('a/b.txt', 'x');</pre>` + (r ? 'true' : 'false'));
+        r = await s3.headObject('a.txt');
+        echo.push(`<pre>await s3.headObject('a.txt');</pre>` + (r ? 'true' : 'false'));
+        r = await s3.deleteObjects(['a.txt', 'a/b.txt']);
+        echo.push(`<pre>s3.deleteObjects(['a.txt', 'a/b.txt']);</pre>` + (r ? 'true' : 'false'));
+        return echo.join('') + '<br><br>' + this._getEnd();
     }
 
     /**

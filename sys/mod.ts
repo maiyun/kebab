@@ -743,6 +743,9 @@ export default class Mod {
                     break;
                 }
                 if (r.error.errno !== 1062) {
+                    if (this._ctr) {
+                        await lCore.log(this._ctr, '[create0, mod] ' + JSON.stringify(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+                    }
                     return false;
                 }
             }
@@ -757,6 +760,9 @@ export default class Mod {
             }
             r = await this._db.execute(this._sql.getSql(), this._sql.getData());
             if (r.error) {
+                if (this._ctr) {
+                    await lCore.log(this._ctr, '[create1, mod] ' + JSON.stringify(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+                }
                 return false;
             }
         }

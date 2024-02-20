@@ -43,5 +43,11 @@
     },
     "sql": {
         "pre": "m_"
+    },
+    "s3": {
+        "AMAZON": {
+            "sid": "xx",
+            "skey": "xxx"
+        }
     }
 }
