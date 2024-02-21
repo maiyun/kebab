@@ -71,7 +71,7 @@ export interface IConfig {
         'ssl': boolean;
     };
     'sql': IConfigSql;
-    'dns': IConfigDns;
+    'dns': Record<string, IConfigDns>;
     'lang': IConfigLang;
     's3': Record<string, IConfigS3>;
 

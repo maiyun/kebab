@@ -1,7 +1,7 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2019-6-19
- * Last: 2022-09-12 20:58:07
+ * Last: 2022-09-12 20:58:07, 2024-2-21 17:55:54
  */
 
 // --- 库和定义 ---
@@ -18,15 +18,15 @@ import * as ctr from '~/sys/ctr';
  */
 
 /** --- 服务商定义 --- */
-export const SERVICE = {
-    'DNSPOD': 0,
-    'ALIBABA': 1
+export enum SERVICE {
+    'DNSPOD',
+    'ALIBABA'
 };
 
 /** --- 选项 --- */
 export interface IOptions {
     /** --- 服务商 ---- */
-    'service': number;
+    'service': SERVICE;
     /** --- 密钥键 --- */
     'secretId'?: string;
     /** --- 密钥值 --- */
@@ -104,11 +104,12 @@ export class Dns {
     private readonly _opt: IOptions;
 
     public constructor(ctr: ctr.Ctr, opt: IOptions) {
+        const config = ctr.getPrototype('_config');
         if (!opt.secretId) {
-            opt.secretId = ctr.getPrototype('_config').dns.sid;
+            opt.secretId = config.dns?.[SERVICE[opt.service]].sid;
         }
         if (!opt.secretKey) {
-            opt.secretKey = ctr.getPrototype('_config').dns.skey;
+            opt.secretKey = config.dns?.[SERVICE[opt.service]].skey;
         }
         this._opt = opt;
     }
