@@ -71,7 +71,7 @@ async function checkConnection(): Promise<void> {
             // --- 连接正在被使用，看看是否使用超过 10 分钟，超过则不是正常状态 ---
             if (connection.getLast() <= now - 600) {
                 // --- 10 分钟之前开始的 ---
-                console.log(`[child] [error] There is a transactional connection[${i}] that is not closed.`);
+                console.log(`[child] [db] [error] There is a transactional connection[${i}] that is not closed.`);
                 await connection.rollback();
             }
             continue;
@@ -412,9 +412,9 @@ export class Connection {
             this._using = false;
         }
         return {
-            packet: res[0],
-            fields: res[1],
-            error: null
+            'packet': res[0],
+            'fields': res[1],
+            'error': null
         };
     }
 

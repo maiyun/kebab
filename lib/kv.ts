@@ -1,7 +1,7 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2019-5-30 19:25:22
- * Last: 2020-3-28 18:54:04, 2022-09-12 23:24:45, 2022-09-22 01:06:22
+ * Last: 2020-3-28 18:54:04, 2022-09-12 23:24:45, 2022-09-22 01:06:22, 2024-2-21 13:32:56
  */
 
 // --- Pool 是使用时必须要一个用户创建一份的，Connection 是池子里获取的 ---
@@ -43,6 +43,17 @@ async function checkConnection(): Promise<void> {
             --i;
             continue;
         }
+        if (connection.isUsing()) {
+            // --- 连接正在被使用，看看是否使用超过 5 分钟，超过则不是正常状态 ---
+            if (connection.getLast() <= now - 300) {
+                // --- 10 分钟之前开始的 ---
+                console.log(`[kv] [error] There is a transactional connection[${i}] that is not closed.`);
+                await connection.end();
+                connections.splice(i, 1);
+                --i;
+            }
+            continue;
+        }
         // --- 检测 3 分钟内是否使用过 ---
         if (connection.getLast() > now - 180) {
             // --- 3 分钟内使用过，不管 ---
@@ -54,11 +65,11 @@ async function checkConnection(): Promise<void> {
         --i;
         continue;
     }
-    setTimeout(function() {
+    setTimeout(function () {
         checkConnection().catch(e => { console.log('[KV]', e); });
     }, 30000);
 }
-setTimeout(function() {
+setTimeout(function () {
     checkConnection().catch(e => { console.log('[KV]', e); });
 }, 30000);
 
@@ -85,7 +96,12 @@ export class Pool {
      */
     public async set(key: string, val: object | string | number, ttl: number = 0, mod: '' | 'nx' | 'xx' = ''): Promise<boolean> {
         const conn = await this._getConnection();
-        return conn ? conn.set(key, val, ttl, mod, this._etc) : false;
+        if (!conn) {
+            return false;
+        }
+        const r = await conn.set(key, val, ttl, mod, this._etc);
+        conn.used();
+        return r;
     }
 
     /**
@@ -96,7 +112,12 @@ export class Pool {
      */
     public async add(key: string, val: object | string | number, ttl: number = 0): Promise<boolean> {
         const conn = await this._getConnection();
-        return conn ? conn.add(key, val, ttl, this._etc) : false;
+        if (!conn) {
+            return false;
+        }
+        const r = await conn.add(key, val, ttl, this._etc);
+        conn.used();
+        return r;
     }
 
     /**
@@ -107,7 +128,12 @@ export class Pool {
      */
     public async replace(key: string, val: object | string | number, ttl: number = 0): Promise<boolean> {
         const conn = await this._getConnection();
-        return conn ? conn.replace(key, val, ttl, this._etc) : false;
+        if (!conn) {
+            return false;
+        }
+        const r = await conn.replace(key, val, ttl, this._etc);
+        conn.used();
+        return r;
     }
 
     /**
@@ -117,7 +143,12 @@ export class Pool {
      */
     public async append(key: string, val: string): Promise<boolean> {
         const conn = await this._getConnection();
-        return conn ? conn.append(key, val, this._etc) : false;
+        if (!conn) {
+            return false;
+        }
+        const r = await conn.append(key, val, this._etc);
+        conn.used();
+        return r;
     }
 
     /**
@@ -127,7 +158,12 @@ export class Pool {
      */
     public async prepend(key: string, val: string): Promise<boolean> {
         const conn = await this._getConnection();
-        return conn ? conn.prepend(key, val, this._etc) : false;
+        if (!conn) {
+            return false;
+        }
+        const r = await conn.prepend(key, val, this._etc);
+        conn.used();
+        return r;
     }
 
     /**
@@ -136,7 +172,12 @@ export class Pool {
      */
     public async exists(keys: string | string[]): Promise<number> {
         const conn = await this._getConnection();
-        return conn ? conn.exists(keys, this._etc) : 0;
+        if (!conn) {
+            return 0;
+        }
+        const r = await conn.exists(keys, this._etc);
+        conn.used();
+        return r;
     }
 
     /**
@@ -145,7 +186,12 @@ export class Pool {
      */
     public async get(key: string): Promise<string | null> {
         const conn = await this._getConnection();
-        return conn ? conn.get(key, this._etc) : null;
+        if (!conn) {
+            return null;
+        }
+        const r = await conn.get(key, this._etc);
+        conn.used();
+        return r;
     }
 
     /**
@@ -154,7 +200,12 @@ export class Pool {
      */
     public async ttl(key: string): Promise<number | null> {
         const conn = await this._getConnection();
-        return conn ? conn.ttl(key, this._etc) : null;
+        if (!conn) {
+            return null;
+        }
+        const r = await conn.ttl(key, this._etc);
+        conn.used();
+        return r;
     }
 
     /**
@@ -163,7 +214,12 @@ export class Pool {
      */
     public async pttl(key: string): Promise<number | null> {
         const conn = await this._getConnection();
-        return conn ? conn.pttl(key, this._etc) : null;
+        if (!conn) {
+            return null;
+        }
+        const r = await conn.pttl(key, this._etc);
+        conn.used();
+        return r;
     }
 
     /**
@@ -173,7 +229,9 @@ export class Pool {
     public async mGet(keys: string[]): Promise<Record<string, string | null>> {
         const conn = await this._getConnection();
         if (conn) {
-            return conn.mGet(keys, this._etc);
+            const r = await conn.mGet(keys, this._etc);
+            conn.used();
+            return r;
         }
         else {
             const rtn: Record<string, string | null> = {};
@@ -190,7 +248,12 @@ export class Pool {
      */
     public async getJson(key: string): Promise<any | null> {
         const conn = await this._getConnection();
-        return conn ? conn.getJson(key, this._etc) : null;
+        if (!conn) {
+            return null;
+        }
+        const r = await conn.getJson(key, this._etc);
+        conn.used();
+        return r;
     }
 
     /**
@@ -199,7 +262,12 @@ export class Pool {
      */
     public async del(keys: string | string[]): Promise<boolean> {
         const conn = await this._getConnection();
-        return conn ? conn.del(keys, this._etc) : false;
+        if (!conn) {
+            return false;
+        }
+        const r = await conn.del(keys, this._etc);
+        conn.used();
+        return r;
     }
 
     /**
@@ -209,7 +277,12 @@ export class Pool {
      */
     public async incr(key: string, num: number = 1): Promise<number | false> {
         const conn = await this._getConnection();
-        return conn ? conn.incr(key, num, this._etc) : false;
+        if (!conn) {
+            return false;
+        }
+        const r = await conn.incr(key, num, this._etc);
+        conn.used();
+        return r;
     }
 
     /**
@@ -219,7 +292,12 @@ export class Pool {
      */
     public async decr(key: string, num: number = 1): Promise<number | false> {
         const conn = await this._getConnection();
-        return conn ? conn.decr(key, num, this._etc) : false;
+        if (!conn) {
+            return false;
+        }
+        const r = await conn.decr(key, num, this._etc);
+        conn.used();
+        return r;
     }
 
     /**
@@ -229,7 +307,12 @@ export class Pool {
      */
     public async expire(key: string, ttl: number): Promise<boolean> {
         const conn = await this._getConnection();
-        return conn ? conn.expire(key, ttl, this._etc) : false;
+        if (!conn) {
+            return false;
+        }
+        const r = await conn.expire(key, ttl, this._etc);
+        conn.used();
+        return r;
     }
 
     /**
@@ -238,7 +321,12 @@ export class Pool {
      */
     public async keys(pattern: string): Promise<string[] | false> {
         const conn = await this._getConnection();
-        return conn ? conn.keys(pattern, this._etc) : false;
+        if (!conn) {
+            return false;
+        }
+        const r = await conn.keys(pattern, this._etc);
+        conn.used();
+        return r;
     }
 
     /**
@@ -249,7 +337,12 @@ export class Pool {
      */
     public async scan(cursor: number = 0, pattern: string = '*', count: number = 10): Promise<redis.IScanResult<string> | false> {
         const conn = await this._getConnection();
-        return conn ? conn.scan(cursor, pattern, count, this._etc) : false;
+        if (!conn) {
+            return false;
+        }
+        const r = await conn.scan(cursor, pattern, count, this._etc);
+        conn.used();
+        return r;
     }
 
     /**
@@ -257,7 +350,12 @@ export class Pool {
      */
     public async flushDb(): Promise<boolean> {
         const conn = await this._getConnection();
-        return conn ? conn.flushDb() : false;
+        if (!conn) {
+            return false;
+        }
+        const r = await conn.flushDb();
+        conn.used();
+        return r;
     }
 
     /**
@@ -265,7 +363,12 @@ export class Pool {
      */
     public async ping(): Promise<string | false> {
         const conn = await this._getConnection();
-        return conn ? conn.ping() : false;
+        if (!conn) {
+            return false;
+        }
+        const r = await conn.ping();
+        conn.used();
+        return r;
     }
 
     /**
@@ -277,7 +380,12 @@ export class Pool {
      */
     public async hSet(key: string, field: string, val: object | string | number, mod: '' | 'nx' = ''): Promise<boolean> {
         const conn = await this._getConnection();
-        return conn ? conn.hSet(key, field, val, mod, this._etc) : false;
+        if (!conn) {
+            return false;
+        }
+        const r = await conn.hSet(key, field, val, mod, this._etc);
+        conn.used();
+        return r;
     }
 
     /**
@@ -287,7 +395,12 @@ export class Pool {
      */
     public async hMSet(key: string, rows: Record<string, object | string | number>): Promise<boolean> {
         const conn = await this._getConnection();
-        return conn ? conn.hMSet(key, rows, this._etc) : false;
+        if (!conn) {
+            return false;
+        }
+        const r = await conn.hMSet(key, rows, this._etc);
+        conn.used();
+        return r;
     }
 
     /**
@@ -297,7 +410,12 @@ export class Pool {
      */
     public async hGet(key: string, field: string): Promise<string | null> {
         const conn = await this._getConnection();
-        return conn ? conn.hGet(key, field, this._etc) : null;
+        if (!conn) {
+            return null;
+        }
+        const r = await conn.hGet(key, field, this._etc);
+        conn.used();
+        return r;
     }
 
     /**
@@ -307,7 +425,12 @@ export class Pool {
      */
     public async hGetJson(key: string, field: string): Promise<any | null> {
         const conn = await this._getConnection();
-        return conn ? conn.hGetJson(key, field, this._etc) : null;
+        if (!conn) {
+            return null;
+        }
+        const r = await conn.hGetJson(key, field, this._etc);
+        conn.used();
+        return r;
     }
 
     /**
@@ -318,7 +441,9 @@ export class Pool {
     public async hMGet(key: string, fields: string[]): Promise<Record<string, string | null>> {
         const conn = await this._getConnection();
         if (conn) {
-            return conn.hMGet(key, fields, this._etc);
+            const r = await conn.hMGet(key, fields, this._etc);
+            conn.used();
+            return r;
         }
         else {
             const rtn: Record<string, string | null> = {};
@@ -335,7 +460,12 @@ export class Pool {
      */
     public async hGetAll(key: string): Promise<Record<string, string | null> | null> {
         const conn = await this._getConnection();
-        return conn ? conn.hGetAll(key, this._etc) : null;
+        if (!conn) {
+            return null;
+        }
+        const r = await conn.hGetAll(key, this._etc);
+        conn.used();
+        return r;
     }
 
     /**
@@ -345,7 +475,12 @@ export class Pool {
      */
     public async hDel(key: string, fields: string | string[]): Promise<number> {
         const conn = await this._getConnection();
-        return conn ? conn.hDel(key, fields, this._etc) : 0;
+        if (!conn) {
+            return 0;
+        }
+        const r = await conn.hDel(key, fields, this._etc);
+        conn.used();
+        return r;
     }
 
     /**
@@ -355,7 +490,12 @@ export class Pool {
      */
     public async hExists(key: string, field: string): Promise<boolean> {
         const conn = await this._getConnection();
-        return conn ? conn.hExists(key, field, this._etc) : false;
+        if (!conn) {
+            return false;
+        }
+        const r = await conn.hExists(key, field, this._etc);
+        conn.used();
+        return r;
     }
 
     /**
@@ -366,7 +506,12 @@ export class Pool {
      */
     public async hIncr(key: string, field: string, increment: number): Promise<number> {
         const conn = await this._getConnection();
-        return conn ? conn.hIncr(key, field, increment, this._etc) : 0;
+        if (!conn) {
+            return 0;
+        }
+        const r = await conn.hIncr(key, field, increment, this._etc);
+        conn.used();
+        return r;
     }
 
     /**
@@ -375,58 +520,104 @@ export class Pool {
      */
     public async hKeys(key: string): Promise<string[]> {
         const conn = await this._getConnection();
-        return conn ? conn.hKeys(key, this._etc) : [];
+        if (!conn) {
+            return [];
+        }
+        const r = await conn.hKeys(key, this._etc);
+        conn.used();
+        return r;
     }
 
     public async lPush(key: string, values: Array<string | Buffer>): Promise<number> {
         const conn = await this._getConnection();
-        return conn ? conn.lPush(key, values, this._etc) : 0;
+        if (!conn) {
+            return 0;
+        }
+        const r = await conn.lPush(key, values, this._etc);
+        conn.used();
+        return r;
     }
 
     public async rPush(key: string, values: Array<string | Buffer>): Promise<number> {
         const conn = await this._getConnection();
-        return conn ? conn.rPush(key, values, this._etc) : 0;
+        if (!conn) {
+            return 0;
+        }
+        const r = await conn.rPush(key, values, this._etc);
+        conn.used();
+        return r;
     }
 
     public async bLMove(sourceKey: string, destKey: string, soo: 'LEFT' | 'RIGHT', deo: 'LEFT' | 'RIGHT', timeout: number): Promise<string | null> {
         const conn = await this._getConnection();
-        return conn ? conn.bLMove(sourceKey, destKey, soo, deo, timeout, this._etc) : null;
+        if (!conn) {
+            return null;
+        }
+        const r = await conn.bLMove(sourceKey, destKey, soo, deo, timeout, this._etc);
+        conn.used();
+        return r;
     }
 
     public async lPop(key: string): Promise<string | null> {
         const conn = await this._getConnection();
-        return conn ? conn.lPop(key, this._etc) : null;
+        if (!conn) {
+            return null;
+        }
+        const r = await conn.lPop(key, this._etc);
+        conn.used();
+        return r;
     }
 
     public async rPop(key: string): Promise<string | null> {
         const conn = await this._getConnection();
-        return conn ? conn.rPop(key, this._etc) : null;
+        if (!conn) {
+            return null;
+        }
+        const r = await conn.rPop(key, this._etc);
+        conn.used();
+        return r;
     }
 
     public async bRPop(key: string | string[], timeout: number): Promise<Record<string, string>> {
         const conn = await this._getConnection();
-        return conn ? conn.bRPop(key, timeout, this._etc) : {};
+        if (!conn) {
+            return {};
+        }
+        const r = await conn.bRPop(key, timeout, this._etc);
+        conn.used();
+        return r;
     }
 
     public async lRange(key: string, start: number, stop: number): Promise<string[]> {
         const conn = await this._getConnection();
-        return conn ? conn.lRange(key, start, stop, this._etc) : [];
+        if (!conn) {
+            return [];
+        }
+        const r = await conn.lRange(key, start, stop, this._etc);
+        conn.used();
+        return r;
     }
 
     public async lLen(key: string): Promise<number> {
         const conn = await this._getConnection();
-        return conn ? conn.lLen(key, this._etc) : 0;
+        if (!conn) {
+            return 0;
+        }
+        const r = await conn.lLen(key, this._etc);
+        conn.used();
+        return r;
     }
 
     /**
-     * --- 从连接池获取一个连接 ---
+     * --- 从连接池获取一个连接，会被自动设置为使用中，需要在执行命令后解除占用 ---
      */
     private async _getConnection(): Promise<Connection | null> {
         let conn!: Connection;
         for (const connection of connections) {
             const etc = connection.getEtc();
             if (
-                (connection.isLost()) ||
+                connection.isLost() ||
+                connection.isUsing() ||
                 (etc.host !== this._etc.host) ||
                 (etc.port !== this._etc.port) ||
                 (etc.index !== this._etc.index)
@@ -435,6 +626,7 @@ export class Pool {
                 continue;
             }
             connection.refreshLast();
+            connection.setUsing();
             conn = connection;
             break;
         }
@@ -463,7 +655,8 @@ export class Pool {
             await link.select(this._etc.index);
             conn = new Connection(this._etc, link);
             conn.refreshLast();
-            link.on('error', function(err): void {
+            conn.setUsing();
+            link.on('error', function (err): void {
                 conn.setLost();
                 // console.log(`--- redis [${conn._etc.host}:${conn._etc.port}] error ---`);
                 console.log('[KV] [ERROR]', err);
@@ -481,6 +674,9 @@ export class Connection {
 
     /** --- kv 缓存连接对象 --- */
     private readonly _link: redis.ICommandClient;
+
+    /** --- 当前连接是否正在被独占使用 --- */
+    private _using: boolean = false;
 
     /** --- 当发生断开，则需从连接池移除连接 --- */
     private _lost: boolean = false;
@@ -520,6 +716,27 @@ export class Connection {
      */
     public isLost(): boolean {
         return this._lost;
+    }
+
+    /**
+     * --- 将本条连接设置占用中 ---
+     */
+    public setUsing(): void {
+        this._using = true;
+    }
+
+    /**
+     * --- 获取当前状态是否正在被使用中 ---
+     */
+    public isUsing(): boolean {
+        return this._using;
+    }
+
+    /**
+     * --- 取消占用 ---
+     */
+    public used(): void {
+        this._using = false;
     }
 
     /**
@@ -1235,7 +1452,8 @@ export function getConnectionList(): IConnectionInfo[] {
             'port': etc.port,
             'index': etc.index,
 
-            'lost': connection.isLost()
+            'lost': connection.isLost(),
+            'using': connection.isUsing()
         });
     }
     return list;
