@@ -639,14 +639,16 @@ export async function run(data: {
                     const json: Record<string, types.Json> = { 'result': rtn[0] };
                     if (rtn[1] !== undefined) {
                         if (typeof rtn[1] === 'object') {
-                            // --- [0, {'xx': 'xx'}] ---
-                            Object.assign(json, rtn[1]);
+                            // --- [0, ...{'xx': 'xx'}] ---
+                            for (let i = 1; i < rtn.length; ++i) {
+                                Object.assign(json, rtn[i]);
+                            }
                         }
                         else {
-                            // --- [0, 'xxx'], [0, 'xxx', {'xx': 'xx'}] ---
+                            // --- [0, 'xxx'], [0, 'xxx', ...{'xx': 'xx'}] ---
                             json['msg'] = rtn[1];
-                            if (rtn[2] !== undefined) {
-                                Object.assign(json, rtn[2]);
+                            for (let i = 2; i < rtn.length; ++i) {
+                                Object.assign(json, rtn[i]);
                             }
                         }
                     }
