@@ -207,7 +207,23 @@ export async function request(
     let req: hc.IResponse;
     try {
         // --- 重定义 IP ---
-        const host = puri?.hostname ?? uri.hostname ?? '';
+        const host = (puri ? puri.hostname : uri.hostname) ?? '';
+        if (!host) {
+            const res = new response.Response(null);
+            res.error = {
+                'name': 'Possible mProxy error',
+                'message': 'host not found'
+            };
+            return res;
+        }
+        if (hosts[host] !== undefined && !hosts[host]) {
+            const res = new response.Response(null);
+            res.error = {
+                'name': 'hosts error',
+                'message': 'hosts param error'
+            };
+            return res;
+        }
         if (!reuses[reuse]) {
             reuses[reuse] = hc.createHttpClient();
         }
