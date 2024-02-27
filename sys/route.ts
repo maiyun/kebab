@@ -183,13 +183,14 @@ export async function run(data: {
                 const alang = data.req.headers['accept-language']?.toLowerCase() ?? config.lang.list[0];
                 const apath = config.const.path + (config.const.qs ? '?' + config.const.qs : '');
                 for (let lang of config.lang.list) {
+                    let checkLang = lang;
                     if (lang === 'sc') {
-                        lang = 'cn';
+                        checkLang = 'cn';
                     }
                     else if (lang === 'tc') {
-                        lang = 'zh';
+                        checkLang = 'zh';
                     }
-                    if (!alang.includes(lang)) {
+                    if (!alang.includes(checkLang)) {
                         continue;
                     }
                     data.res.setHeader('location', config.const.urlBase + lang + '/' + apath);
