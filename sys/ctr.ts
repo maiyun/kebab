@@ -1,7 +1,7 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2020-3-14 17:24:38
- * Last: 2020-3-30 15:31:40, 2022-07-22 16:59:00, 2022-09-12 23:51:56, 2022-09-23 15:53:58, 2022-12-29 01:18:08, 2023-2-28 20:07:57, 2023-12-27 18:39:35
+ * Last: 2020-3-30 15:31:40, 2022-07-22 16:59:00, 2022-09-12 23:51:56, 2022-09-23 15:53:58, 2022-12-29 01:18:08, 2023-2-28 20:07:57, 2023-12-27 18:39:35, 2024-3-1 19:38:53
  */
 import * as http from 'http';
 import * as http2 from 'http2';
@@ -489,6 +489,24 @@ export class Ctr {
      */
     protected _getBasicAuth(user: string, pwd: string): string {
         return 'Basic ' + crypto.base64Encode(user + ':' + pwd);
+    }
+
+    /**
+     * --- 根据用户 ua 获取当前用户的设备类型 ---
+     */
+    protected _device(): 'android' | 'windows' | 'linux' | 'macintosh' | 'ipad' | 'unknown' {
+        const ua = this._req.headers['user-agent']?.toLowerCase();
+        if (!ua) {
+            return 'unknown';
+        }
+        const list = ['android', 'windows', 'linux', 'macintosh', 'ipad', 'unknown'];
+        for (const item of list) {
+            if (!ua.includes(item)) {
+                continue;
+            }
+            return item as any;
+        }
+        return 'unknown';
     }
 
     /** --- auth 对象，user, pwd --- */
