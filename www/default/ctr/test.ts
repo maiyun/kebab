@@ -2677,22 +2677,25 @@ function send() {
             return retur;
         }
 
-        const host = '192.168.31.102';
-        const user = 'yunboo';
-        const pwd = '2001';
+        const host = '1.1.1.1';
+        const port = 22;
+        const user = 'root';
+        const pwd = 'xxx';
 
         // --- 连接 ssh 服务器 ---
         let ms = Date.now();
         const ssh = await lSsh.get({
             'host': host,
+            'port': port,
             'username': user,
             'password': pwd
         });
         const echo: string[] = [
             `<pre>const ssh = await lSsh.get({
-    'host': host,
-    'username': user,
-    'password': pwd
+    'host': '${host}',
+    'port': ${port},
+    'username': '${user}',
+    'password': '${pwd}'
 });</pre>`
         ];
         if (!ssh) {
