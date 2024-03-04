@@ -1,13 +1,12 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2019-5-3 23:54
- * Last: 2020-3-31 15:01:07, 2020-4-9 22:28:50, 2022-07-22 14:19:46, 2022-9-29 22:11:07, 2023-5-1 18:26:57, 2024-1-12 13:32:00
+ * Last: 2020-3-31 15:01:07, 2020-4-9 22:28:50, 2022-07-22 14:19:46, 2022-9-29 22:11:07, 2023-5-1 18:26:57, 2024-1-12 13:32:00, 2024-3-4 16:49:19
  */
 import * as http2 from 'http2';
 import * as tls from 'tls';
 import * as net from 'net';
 import * as http from 'http';
-import * as stream from 'stream';
 import * as crypto from 'crypto';
 // --- 库和定义 ---
 import * as fs from '~/lib/fs';
@@ -100,8 +99,8 @@ async function run(): Promise<void> {
             return;
         }
         req.setTimeout(30 * 1000);
+        const key = host + req.url;
         (async function() {
-            const key = host + req.url;
             if (!linkCount[key]) {
                 linkCount[key] = 0;
             }
@@ -123,6 +122,10 @@ async function run(): Promise<void> {
                 'headers': {},
                 'input': ''
             }, '[child][http2][request]' + JSON.stringify((e.stack as string)).slice(1, -1), '-error');
+            --linkCount[key];
+            if (!linkCount[key]) {
+                delete linkCount[key];
+            }
         });
     }).on('tlsClientError', (err, socket) => {
         socket.destroy();
@@ -132,8 +135,8 @@ async function run(): Promise<void> {
             req.socket.destroy();
             return;
         }
+        const key = host + (req.url ?? '');
         (async function() {
-            const key = host + (req.url ?? '');
             if (!linkCount[key]) {
                 linkCount[key] = 0;
             }
@@ -155,6 +158,10 @@ async function run(): Promise<void> {
                 'headers': {},
                 'input': ''
             }, '[child][http2][upgrade]' + JSON.stringify((e.stack as string)).slice(1, -1), '-error');
+            --linkCount[key];
+            if (!linkCount[key]) {
+                delete linkCount[key];
+            }
         });
     }).listen(config.httpsPort);
     httpServer = http.createServer(function(req: http.IncomingMessage, res: http.ServerResponse): void {
@@ -164,8 +171,8 @@ async function run(): Promise<void> {
             return;
         }
         req.setTimeout(30 * 1000);
+        const key = host + (req.url ?? '');
         (async function() {
-            const key = host + (req.url ?? '');
             if (!linkCount[key]) {
                 linkCount[key] = 0;
             }
@@ -187,6 +194,10 @@ async function run(): Promise<void> {
                 'headers': {},
                 'input': ''
             }, '[child][http][request]' + JSON.stringify((e.stack as string)).slice(1, -1), '-error');
+            --linkCount[key];
+            if (!linkCount[key]) {
+                delete linkCount[key];
+            }
         });
     }).on('upgrade', function(req: http.IncomingMessage, socket: net.Socket): void {
         const host = (req.headers['host'] ?? '');
@@ -194,8 +205,8 @@ async function run(): Promise<void> {
             req.socket.destroy();
             return;
         }
+        const key = host + (req.url ?? '');
         (async function() {
-            const key = host + (req.url ?? '');
             if (!linkCount[key]) {
                 linkCount[key] = 0;
             }
@@ -217,6 +228,10 @@ async function run(): Promise<void> {
                 'headers': {},
                 'input': ''
             }, '[child][http][upgrade]' + JSON.stringify((e.stack as string)).slice(1, -1), '-error');
+            --linkCount[key];
+            if (!linkCount[key]) {
+                delete linkCount[key];
+            }
         });
     }).listen(config.httpPort);
 }
@@ -551,6 +566,8 @@ process.on('message', function(msg: types.Json) {
                 http2Server.close();
                 clearInterval(hbTimer);
                 // --- 等待连接全部断开 ---
+                /** --- 当前已等待时间，等待不超过 1 小时 --- */
+                let waiting = 0;
                 while (true) {
                     if (!Object.keys(linkCount).length) {
                         break;
@@ -573,13 +590,14 @@ process.on('message', function(msg: types.Json) {
                         'headers': {},
                         'input': ''
                     }, `[child] Worker ${process.pid} busy: ${str.join(',')}.`, '-error');
-                    await lCore.sleep(5000);
+                    await lCore.sleep(5_000);
+                    waiting += 5_000;
+                    if (waiting > 3600_000) {
+                        break;
+                    }
                 }
                 // --- 链接全部断开 ---
-                // eslint-disable-next-line no-console
-                console.log(`[child] Worker ${process.pid} has run disconnect().`);
-                process.disconnect();
-                break;
+                process.exit();
             }
             case 'global': {
                 if (msg.data === undefined) {
