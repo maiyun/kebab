@@ -47,7 +47,6 @@ async function run(): Promise<void> {
             }
             // --- 有子线程退出 ---
             if (code === 0) {
-                // --- 正常关闭（子进程 disconnect） ---
                 // --- 正常关闭，证明关闭前主进程已经重启新进程了，这里无需在 fork ---
                 console.log(`[master] Worker ${worker.process.pid} has been disconnected.`);
             }
