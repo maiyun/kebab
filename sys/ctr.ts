@@ -558,7 +558,7 @@ export class Ctr {
         if (!content) {
             return null;
         }
-        const json = JSON.parse(content);
+        const json = text.parseJson(content);
         loadedData[realPath] = json;
         return json;
     }
@@ -652,7 +652,7 @@ export class Ctr {
      */
     protected _getLocaleJsonString(): string {
         if (this._localeData[this._locale] !== undefined) {
-            return JSON.stringify(this._localeData[this._locale]);
+            return text.stringifyJson(this._localeData[this._locale]);
         }
         else {
             return '{}';

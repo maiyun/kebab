@@ -62,7 +62,7 @@ export async function run(data: {
         const configContent = await lFs.getContent(def.CONF_PATH + 'config.json', 'utf8');
         if (configContent) {
             /** --- 系统 config.json --- */
-            const config = JSON.parse(configContent);
+            const config = lText.parseJson(configContent);
             for (const name in config) {
                 lCore.globalConfig[name] = config[name];
             }
@@ -82,10 +82,10 @@ export async function run(data: {
             }
             return true;
         }
-        kebabConfigs[data.rootPath + 'kebab.json'] = JSON.parse(configContent);
+        kebabConfigs[data.rootPath + 'kebab.json'] = lText.parseJson(configContent);
         const routeContent = await lFs.getContent(data.rootPath + 'route.json', 'utf8');
         if (routeContent) {
-            kebabConfigs[data.rootPath + 'kebab.json'].route = JSON.parse(routeContent);
+            kebabConfigs[data.rootPath + 'kebab.json'].route = lText.parseJson(routeContent);
         }
         // --- 将全局的项目应用到 vhostConfigs 里，但当 vhostConfigs 有项，则不应用 ---
         for (const name in lCore.globalConfig) {
@@ -307,7 +307,7 @@ export async function run(data: {
             rtn = await (cctr as types.Json).onLoad();
         }
         catch (e: types.Json) {
-            await lCore.log(cctr, JSON.stringify((e.stack as string)).slice(1, -1), '-error');
+            await lCore.log(cctr, lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
             data.socket.destroy();
             return true;
         }
@@ -364,18 +364,18 @@ export async function run(data: {
                                 }
                             }
                             catch (e: any) {
-                                await lCore.log(cctr, JSON.stringify((e.stack as string)).slice(1, -1), '-error');
+                                await lCore.log(cctr, lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
                             }
                         }
                     }
                 }).on('error', async (e: any) => {
-                    await lCore.log(cctr, JSON.stringify((e.stack as string)).slice(1, -1), '-error');
+                    await lCore.log(cctr, lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
                 }).on('close', async () => {
                     try {
                         await (cctr as types.Json)['onClose']();
                     }
                     catch(e: any) {
-                        await lCore.log(cctr, JSON.stringify((e.stack as string)).slice(1, -1), '-error');
+                        await lCore.log(cctr, lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
                     }
                     resolve();
                 });
@@ -420,7 +420,7 @@ export async function run(data: {
         rtn = await (middle.onLoad() as types.Json);
     }
     catch (e: types.Json) {
-        await lCore.log(middle, '(E03)' + JSON.stringify((e.stack as string)).slice(1, -1), '-error');
+        await lCore.log(middle, '(E03)' + lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
         data.res.setHeader('content-type', 'text/html; charset=utf-8');
         data.res.setHeader('content-length', 25);
         data.res.writeHead(500);
@@ -534,7 +534,7 @@ export async function run(data: {
             httpCode = cctr.getPrototype('_httpCode');
         }
         catch (e: types.Json) {
-            await lCore.log(cctr, '(E04)' + JSON.stringify(e.stack).slice(1, -1), '-error');
+            await lCore.log(cctr, '(E04)' + lText.stringifyJson(e.stack).slice(1, -1), '-error');
             data.res.setHeader('content-type', 'text/html; charset=utf-8');
             data.res.setHeader('content-length', 25);
             data.res.writeHead(500);
@@ -653,7 +653,7 @@ export async function run(data: {
                             }
                         }
                     }
-                    const writeData = JSON.stringify(json);
+                    const writeData = lText.stringifyJson(json);
                     /** --- 当前的压缩对象 --- */
                     let compress: lZlib.ICompress | null = null;
                     if (!data.res.headersSent) {
@@ -707,7 +707,7 @@ export async function run(data: {
         }
         else {
             // --- 直接是个 json 对象 ---
-            const writeData = JSON.stringify(rtn);
+            const writeData = lText.stringifyJson(rtn);
             /** --- 当前的压缩对象 --- */
             let compress: lZlib.ICompress | null = null;
             if (!data.res.headersSent) {
@@ -827,7 +827,7 @@ function getPost(req: http2.Http2ServerRequest | http.IncomingMessage): Promise<
             // --- 判断 json 还是普通 ---
             if (ct.includes('json')) {
                 try {
-                    resolve([s, JSON.parse(s)]);
+                    resolve([s, lText.parseJson(s)]);
                 }
                 catch {
                     resolve(['', {}]);

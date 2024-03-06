@@ -12,6 +12,7 @@
 import * as redis from '@litert/redis';
 // --- 库和定义 ---
 import * as time from '~/lib/time';
+import * as text from '~/lib/text';
 import * as ctr from '~/sys/ctr';
 import * as types from '~/types';
 
@@ -769,7 +770,7 @@ export class Connection {
     public async set(key: string, val: object | string | number, ttl: number, mod: '' | 'nx' | 'xx', etc: types.IConfigKv): Promise<boolean> {
         this.refreshLast();
         if (typeof val !== 'string') {
-            val = JSON.stringify(val);
+            val = text.stringifyJson(val);
         }
         try {
             switch (mod) {
@@ -974,12 +975,8 @@ end`;
         if (v === null) {
             return null;
         }
-        try {
-            return JSON.parse(v);
-        }
-        catch {
-            return null;
-        }
+        const r = text.parseJson(v);
+        return r === false ? null : r;
     }
 
     /**
@@ -1157,7 +1154,7 @@ end`;
         this.refreshLast();
         try {
             if (typeof val !== 'string') {
-                val = JSON.stringify(val);
+                val = text.stringifyJson(val);
             }
             if (mod === 'nx') {
                 return await this._link.hSetNX(etc.pre + key, field, val);
@@ -1187,7 +1184,7 @@ end`;
             for (const i in rows) {
                 const val = rows[i];
                 if (typeof val === 'object') {
-                    rows[i] = JSON.stringify(val);
+                    rows[i] = text.stringifyJson(val);
                 }
             }
             await this._link.hMSet(etc.pre + key, rows as Record<string, string | number>);
@@ -1225,12 +1222,8 @@ end`;
         if (v === null) {
             return null;
         }
-        try {
-            return JSON.parse(v);
-        }
-        catch {
-            return null;
-        }
+        const r = text.parseJson(v);
+        return r === false ? null : v;
     }
 
     /**

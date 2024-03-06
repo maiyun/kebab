@@ -4,6 +4,7 @@
  * Last: 2020-3-29 19:37:25, 2022-07-24 22:38:11, 2023-5-24 18:49:18, 2023-6-13 22:20:21, 2023-12-11 13:58:54, 2023-12-14 13:14:40, 2023-12-21 00:04:40
  */
 
+import * as lText from '~/lib/text';
 // --- 第三方 ---
 import * as mysql2 from 'mysql2/promise';
 // --- 库和定义 ---
@@ -103,7 +104,7 @@ export class Sql {
                         else {
                             // --- v1: json ---
                             sql += '?, ';
-                            this._data.push(JSON.stringify(v1));
+                            this._data.push(lText.stringifyJson(v1));
                         }
                     }
                     else if (v1.x !== undefined) {
@@ -115,7 +116,7 @@ export class Sql {
                         else {
                             // --- v1: json ---
                             sql += '?, ';
-                            this._data.push(JSON.stringify(v1));
+                            this._data.push(lText.stringifyJson(v1));
                         }
                     }
                     else {
@@ -161,7 +162,7 @@ export class Sql {
                     else {
                         // --- v: json ---
                         values += '?, ';
-                        this._data.push(JSON.stringify(v));
+                        this._data.push(lText.stringifyJson(v));
                     }
                 }
                 else if (v.x !== undefined) {
@@ -173,7 +174,7 @@ export class Sql {
                     else {
                         // --- v: json ---
                         values += '?, ';
-                        this._data.push(JSON.stringify(v));
+                        this._data.push(lText.stringifyJson(v));
                     }
                 }
                 else {
@@ -337,7 +338,7 @@ export class Sql {
                     else {
                         // --- 8: json ---
                         sql += '?, ';
-                        this._data.push(JSON.stringify(v));
+                        this._data.push(lText.stringifyJson(v));
                     }
                 }
                 else if (v.x !== undefined) {
@@ -349,7 +350,7 @@ export class Sql {
                     else {
                         // --- v: json ---
                         sql += '?, ';
-                        this._data.push(JSON.stringify(v));
+                        this._data.push(lText.stringifyJson(v));
                     }
                 }
                 else {

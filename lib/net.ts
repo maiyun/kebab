@@ -13,7 +13,6 @@ import * as hc from '@litert/http-client';
 import * as fs from '~/lib/fs';
 import * as text from '~/lib/text';
 import * as time from '~/lib/time';
-import * as lText from '~/lib/text';
 import * as def from '~/sys/def';
 import * as ctr from '~/sys/ctr';
 import * as types from '~/types';
@@ -185,7 +184,7 @@ export async function request(
                 headers['content-type'] = 'application/x-www-form-urlencoded';
             }
             else {
-                data = JSON.stringify(data);
+                data = text.stringifyJson(data);
                 headers['content-type'] = 'application/json; charset=utf-8';
             }
         }
@@ -228,10 +227,10 @@ export async function request(
             reuses[reuse] = hc.createHttpClient();
         }
         req = await reuses[reuse].request({
-            'url': opt.mproxy ? opt.mproxy.url + (opt.mproxy.url.includes('?') ? '&' : '?') + lText.queryStringify({
+            'url': opt.mproxy ? opt.mproxy.url + (opt.mproxy.url.includes('?') ? '&' : '?') + text.queryStringify({
                 'url': u,
                 'auth': opt.mproxy.auth,
-                'data': opt.mproxy.data ? JSON.stringify(opt.mproxy.data) : '{}'
+                'data': opt.mproxy.data ? text.stringifyJson(opt.mproxy.data) : '{}'
             }) : u,
             'method': method,
             'data': data,
@@ -611,7 +610,7 @@ export function mproxyData(ctr: ctr.Ctr): any {
     if (!get['data']) {
         return {};
     }
-    const data = lText.parseJson(get['data']);
+    const data = text.parseJson(get['data']);
     if (!data) {
         return {};
     }

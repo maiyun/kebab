@@ -174,7 +174,7 @@ export class Dns {
                 if (!res) {
                     return res;
                 }
-                const json = JSON.parse(res.toString());
+                const json = text.parseJson(res.toString());
                 const r: IDomainList = {
                     'total': json.info.domain_total,
                     'list': []
@@ -201,7 +201,7 @@ export class Dns {
                 if (!res) {
                     return res;
                 }
-                const json = JSON.parse(res.toString());
+                const json = text.parseJson(res.toString());
                 const r: IDomainList = {
                     'total': json.TotalCount,
                     'list': []
@@ -252,7 +252,7 @@ export class Dns {
                 if (!res) {
                     return res;
                 }
-                const json = JSON.parse(res.toString());
+                const json = text.parseJson(res.toString());
                 const r: IAddDomainRecord = {
                     'success': json.record?.id ? true : false,
                     'id': json.record?.id ?? ''
@@ -275,7 +275,7 @@ export class Dns {
                 if (!res) {
                     return res;
                 }
-                const json = JSON.parse(res.toString());
+                const json = text.parseJson(res.toString());
                 const r: IAddDomainRecord = {
                     'success': json.RecordId !== undefined ? true : false,
                     'id': json.RecordId ?? ''
@@ -321,7 +321,7 @@ export class Dns {
                 if (!res) {
                     return res;
                 }
-                const json = JSON.parse(res.toString());
+                const json = text.parseJson(res.toString());
                 const r: IAddDomainRecord = {
                     'success': json.record?.id ? true : false,
                     'id': json.record?.id ?? ''
@@ -344,7 +344,7 @@ export class Dns {
                 if (!res) {
                     return res;
                 }
-                const json = JSON.parse(res.toString());
+                const json = text.parseJson(res.toString());
                 const r: IAddDomainRecord = {
                     'success': json.RecordId !== undefined ? true : false,
                     'id': json.RecordId ?? ''
@@ -375,7 +375,7 @@ export class Dns {
                 if (!res) {
                     return res;
                 }
-                const json = JSON.parse(res.toString());
+                const json = text.parseJson(res.toString());
                 return {
                     'success': json.status.code === '1' ? true : false
                 };
@@ -390,7 +390,7 @@ export class Dns {
                 if (!res) {
                     return res;
                 }
-                const json = JSON.parse(res.toString());
+                const json = text.parseJson(res.toString());
                 return {
                     'success': json.Code === undefined ? true : false
                 };

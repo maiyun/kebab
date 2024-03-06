@@ -7,6 +7,7 @@ import * as lSql from '~/lib/sql';
 import * as lDb from '~/lib/db';
 import * as lTime from '~/lib/time';
 import * as lCore from '~/lib/core';
+import * as lText from '~/lib/text';
 import * as sCtr from '~/sys/ctr';
 import * as types from '~/types';
 
@@ -744,7 +745,7 @@ export default class Mod {
                 }
                 if (r.error.errno !== 1062) {
                     if (this._ctr) {
-                        await lCore.log(this._ctr, '[create0, mod] ' + JSON.stringify(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+                        await lCore.log(this._ctr, '[create0, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
                     }
                     return false;
                 }
@@ -761,7 +762,7 @@ export default class Mod {
             r = await this._db.execute(this._sql.getSql(), this._sql.getData());
             if (r.error) {
                 if (this._ctr) {
-                    await lCore.log(this._ctr, '[create1, mod] ' + JSON.stringify(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+                    await lCore.log(this._ctr, '[create1, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
                 }
                 return false;
             }
@@ -940,7 +941,7 @@ export default class Mod {
         const r = await this._db.query(this._sql.getSql(), this._sql.getData());
         if (r.rows === null) {
             if (this._ctr) {
-                await lCore.log(this._ctr, '[all, mod] ' + JSON.stringify(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+                await lCore.log(this._ctr, '[all, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
             }
             return false;
         }
@@ -990,7 +991,7 @@ export default class Mod {
         const r = await this._db.query(this._sql.getSql(), this._sql.getData());
         if (r.rows === null) {
             if (this._ctr) {
-                await lCore.log(this._ctr, '[allArray, mod] ' + JSON.stringify(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+                await lCore.log(this._ctr, '[allArray, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
             }
             return false;
         }

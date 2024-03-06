@@ -23,6 +23,7 @@ import * as lDb from '~/lib/db';
 import * as lKv from '~/lib/kv';
 import * as lSql from '~/lib/sql';
 import * as lTime from '~/lib/time';
+import * as lText from '~/lib/text';
 import * as sCtr from '~/sys/ctr';
 
 /** --- Scan 设置的选项 --- */
@@ -103,12 +104,8 @@ export class Scan {
                 this._sql!.delete(this._name).where({
                     'id': data['id']
                 });
-                try {
-                    return JSON.parse(data['data']);
-                }
-                catch {
-                    return -3;
-                }
+                const r = lText.parseJson(data['data']);
+                return r === false ? -3 : r;
             }
             else if (data['time_update'] > 0) {
                 // --- 已被扫描 ---
@@ -330,7 +327,7 @@ export async function setData(
         // --- Db ---
         const sql = lSql.get(opt.sqlPre);
         sql.update(name, {
-            'data': JSON.stringify(data)
+            'data': lText.stringifyJson(data)
         }).where([
             {
                 'token': token,

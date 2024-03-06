@@ -490,7 +490,7 @@ export async function log(opt: sCtr.Ctr | ILogOptions, msg: string, fend: string
         lTime.stamp().toString() + '","' +
         urlFull + wpath + (Object.keys(get).length ? '?' + lText.queryStringify(get).replace(/"/g, '""') : '') + '","' +
         input.replace(/"/g, '""') + '","' +
-        JSON.stringify(post).replace(/"/g, '""') + '","' +
+        lText.stringifyJson(post).replace(/"/g, '""') + '","' +
         lText.queryStringify(cookie).replace(/"/g, '""') + '","' +
         (headers['user-agent']?.replace(/"/g, '""') ?? 'No HTTP_USER_AGENT') + '","' +
         realIp.replace(/"/g, '""') + '","' +

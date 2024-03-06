@@ -63,7 +63,7 @@ async function run(): Promise<void> {
         throw `File '${def.CONF_PATH}config.json' not found.`;
     }
     /** --- 系统 config.json --- */
-    const config = JSON.parse(configContent);
+    const config = lText.parseJson(configContent);
     for (const key in config) {
         lCore.globalConfig[key] = config[key];
     }
@@ -121,7 +121,7 @@ async function run(): Promise<void> {
                 'cookie': {},
                 'headers': {},
                 'input': ''
-            }, '[child][http2][request]' + JSON.stringify((e.stack as string)).slice(1, -1), '-error');
+            }, '[child][http2][request]' + lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
             --linkCount[key];
             if (!linkCount[key]) {
                 delete linkCount[key];
@@ -157,7 +157,7 @@ async function run(): Promise<void> {
                 'cookie': {},
                 'headers': {},
                 'input': ''
-            }, '[child][http2][upgrade]' + JSON.stringify((e.stack as string)).slice(1, -1), '-error');
+            }, '[child][http2][upgrade]' + lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
             --linkCount[key];
             if (!linkCount[key]) {
                 delete linkCount[key];
@@ -193,7 +193,7 @@ async function run(): Promise<void> {
                 'cookie': {},
                 'headers': {},
                 'input': ''
-            }, '[child][http][request]' + JSON.stringify((e.stack as string)).slice(1, -1), '-error');
+            }, '[child][http][request]' + lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
             --linkCount[key];
             if (!linkCount[key]) {
                 delete linkCount[key];
@@ -227,7 +227,7 @@ async function run(): Promise<void> {
                 'cookie': {},
                 'headers': {},
                 'input': ''
-            }, '[child][http][upgrade]' + JSON.stringify((e.stack as string)).slice(1, -1), '-error');
+            }, '[child][http][upgrade]' + lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
             --linkCount[key];
             if (!linkCount[key]) {
                 delete linkCount[key];
@@ -330,7 +330,7 @@ async function requestHandler(
                             'cookie': {},
                             'headers': {},
                             'input': ''
-                        }, '(E01)' + JSON.stringify((e.stack as string)).slice(1, -1), '-error');
+                        }, '(E01)' + lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
                         res.setHeader('content-type', 'text/html; charset=utf-8');
                         res.setHeader('content-length', 25);
                         res.writeHead(500);
@@ -377,7 +377,7 @@ async function requestHandler(
                         'cookie': {},
                         'headers': {},
                         'input': ''
-                    }, '(E02)' + JSON.stringify((e.stack as string)).slice(1, -1), '-error');
+                    }, '(E02)' + lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
                     res.setHeader('content-type', 'text/html; charset=utf-8');
                     res.setHeader('content-length', 25);
                     res.writeHead(500);
@@ -509,7 +509,7 @@ async function reload(): Promise<void> {
         if (!fstr) {
             continue;
         }
-        let list: types.IVhost | types.IVhost[] = JSON.parse(fstr);
+        let list: types.IVhost | types.IVhost[] = lText.parseJson(fstr);
         if (!Array.isArray(list)) {
             list = [list];
         }
@@ -522,7 +522,7 @@ async function reload(): Promise<void> {
     try {
         const certConfig = await fs.getContent(def.CONF_PATH + 'cert.json', 'utf8');
         if (certConfig) {
-            const certs = JSON.parse(certConfig);
+            const certs = lText.parseJson(certConfig);
             for (const item of certs) {
                 const key = await fs.getContent(lText.isRealPath(item.key) ? item.key : def.CERT_PATH + item.key, 'utf8');
                 const cert = await fs.getContent(lText.isRealPath(item.cert) ? item.cert : def.CERT_PATH + item.cert, 'utf8');
@@ -619,7 +619,7 @@ process.on('message', function(msg: types.Json) {
             'cookie': {},
             'headers': {},
             'input': ''
-        }, '[child][process][message]' + JSON.stringify((e.stack as string)).slice(1, -1), '-error');
+        }, '[child][process][message]' + lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
     });
 });
 

@@ -11,6 +11,7 @@ import * as mysql2 from 'mysql2/promise';
 // --- 库和定义 ---
 import * as time from '~/lib/time';
 import * as core from '~/lib/core';
+import * as text from '~/lib/text';
 import * as ctr from '~/sys/ctr';
 import * as types from '~/types';
 
@@ -229,7 +230,7 @@ export class Pool {
                     'cookie': {},
                     'headers': {},
                     'input': ''
-                }, '(db._getConnection)' + JSON.stringify(e.stack).slice(1, -1), '-error');
+                }, '(db._getConnection)' + text.stringifyJson(e.stack).slice(1, -1), '-error');
             }
         }
         return conn;

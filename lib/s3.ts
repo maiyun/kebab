@@ -9,6 +9,7 @@ import * as s3 from '@aws-sdk/client-s3';
 import * as stream from "stream";
 import * as sCtr from '~/sys/ctr';
 import * as lCore from '~/lib/core';
+import * as lText from '~/lib/text';
 
 /**
  * s3 文档：https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/client/s3/
@@ -112,7 +113,7 @@ export class S3 {
             return true;
         }
         catch (e: any) {
-            await lCore.log(this._ctr, '[putObject, s3] ' + JSON.stringify(e.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+            await lCore.log(this._ctr, '[putObject, s3] ' + lText.stringifyJson(e.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
             return false;
         }
     }
@@ -132,7 +133,7 @@ export class S3 {
             return r.Body;
         }
         catch (e: any) {
-            await lCore.log(this._ctr, '[getObject, s3] ' + JSON.stringify(e.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+            await lCore.log(this._ctr, '[getObject, s3] ' + lText.stringifyJson(e.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
             return false;
         }
     }
@@ -152,7 +153,7 @@ export class S3 {
             return true;
         }
         catch (e: any) {
-            await lCore.log(this._ctr, '[deleteObject, s3] ' + JSON.stringify(e.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+            await lCore.log(this._ctr, '[deleteObject, s3] ' + lText.stringifyJson(e.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
             return false;
         }
     }
@@ -174,7 +175,7 @@ export class S3 {
             return true;
         }
         catch (e: any) {
-            await lCore.log(this._ctr, '[deleteObjects, s3] ' + JSON.stringify(e.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+            await lCore.log(this._ctr, '[deleteObjects, s3] ' + lText.stringifyJson(e.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
             return false;
         }
     }
@@ -195,7 +196,7 @@ export class S3 {
         }
         catch (e: any) {
             if (e.$metadata?.httpStatusCode !== 404) {
-                await lCore.log(this._ctr, '[headObject, s3] ' + JSON.stringify(e.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+                await lCore.log(this._ctr, '[headObject, s3] ' + lText.stringifyJson(e.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
             }
             return false;
         }

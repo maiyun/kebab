@@ -24,6 +24,7 @@ import * as time from '~/lib/time';
 import * as db from '~/lib/db';
 import * as kv from '~/lib/kv';
 import * as sql from '~/lib/sql';
+import * as text from '~/lib/text';
 import * as ctr from '~/sys/ctr';
 
 export interface IOptions {
@@ -115,7 +116,7 @@ export class Session {
                 ]);
                 const data = await this._link.query(this._sql.getSql(), this._sql.getData());
                 if (data.rows?.[0]) {
-                    session = JSON.parse(data.rows[0].data);
+                    session = text.parseJson(data.rows[0].data);
                 }
                 else {
                     needInsert = true;
@@ -151,7 +152,7 @@ export class Session {
                     this._token = core.random(16, core.RANDOM_LUN);
                     this._sql.insert('session').values({
                         'token': this._token,
-                        'data': JSON.stringify([]),
+                        'data': '{}',
                         'time_update': tim,
                         'time_add': tim
                     });
@@ -200,7 +201,7 @@ export class Session {
         }
         else {
             this._sql.update('session', [{
-                'data': JSON.stringify(this._ctr.getPrototype('_session')),
+                'data': text.stringifyJson(this._ctr.getPrototype('_session')),
                 'time_update': time.stamp()
             }]).where([{
                 'token': this._token

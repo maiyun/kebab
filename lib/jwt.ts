@@ -7,6 +7,7 @@
 // --- 库和定义 ---
 import * as lCore from '~/lib/core';
 import * as lTime from '~/lib/time';
+import * as lText from '~/lib/text';
 import * as lCrypto from '~/lib/crypto';
 import * as kv from '~/lib/kv';
 import * as ctr from '~/sys/ctr';
@@ -103,11 +104,11 @@ export class Jwt {
         data['exp'] = time + this._ttl;
         data['token'] = token;
         // --- 拼装 ---
-        const header = lCrypto.base64Encode(JSON.stringify({
+        const header = lCrypto.base64Encode(lText.stringifyJson({
             'alg': 'HS256',
             'typ': 'JWT'
         }));
-        const payload = lCrypto.base64Encode(JSON.stringify(data));
+        const payload = lCrypto.base64Encode(lText.stringifyJson(data));
         const signature = lCrypto.hashHmac('sha256', header + '.' + payload, this._secret, 'base64');
         const jwt = header + '.' + payload + '.' + signature;
         if (!this._auth) {
@@ -219,7 +220,7 @@ export async function decode(ctr: ctr.Ctr, val: string, link?: kv.Pool, name: st
         if (!payload) {
             return false;
         }
-        const data = JSON.parse(payload);
+        const data = lText.parseJson(payload);
         if (!data) {
             return false;
         }
