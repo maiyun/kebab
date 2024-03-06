@@ -1,7 +1,7 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2019-5-15 16:49:39
- * Last: 2020-04-06 20:51:06, 2022-9-29 15:18:16, 2022-12-29 00:01:30
+ * Last: 2020-04-06 20:51:06, 2022-9-29 15:18:16, 2022-12-29 00:01:30, 2024-3-6 17:53:14
  */
 import * as def from '~/sys/def';
 import * as fs from './fs';
@@ -476,14 +476,43 @@ export function stringifyResult(rtn: any): string {
 }
 
 /**
- * --- 将字符串解析味对象，返回 false 代表解析失败，Kebab true, Mutton false ---
+ * --- 将字符串解析为对象，返回 false 代表解析失败，支持 BigInt，Kebab true, Mutton false ---
  * @param str 要解析的 json 字符串
  */
 export function parseJson(str: string): any {
     try {
-        return JSON.parse(str);
+        str = str.replace(/(".+?" *: *)([-+0-9]+)/g, (v, v1, v2) => {
+            return v1 + '"-mybigint-' + v2 + '"';
+        });
+        return JSON.parse(str, (k, v) => {
+            if (typeof v !== 'string') {
+                return v;
+            }
+            if (!v.startsWith('-mybigint-')) {
+                return v;
+            }
+            const int = v.slice(10);
+            if (parseInt(int) <= Number.MAX_SAFE_INTEGER) {
+                return int;
+            }
+            return BigInt(int);
+        });
     }
     catch {
         return false;
     }
+}
+
+/**
+ * --- 将对象解析为字符串，返回 false 代表解析失败，支持 BigInt，Kebab true, Mutton false ---
+ * @param obj 
+ * @returns 
+ */
+export function stringifyJson(obj: any): string {
+    return JSON.stringify(obj, (k, v) => {
+        if (typeof v === 'bigint') {
+            return '-mybigint-' + v.toString();
+        }
+        return v;
+    }).replace(/"-mybigint-([-+0-9]+?)"/g, '$1');
 }

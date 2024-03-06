@@ -1276,7 +1276,7 @@ echo[echo.length - 1] = echo[echo.length - 1].slice(0, -4);</pre>`);
         const echo = [];
 
         const res = await lNet.get('https://cdn.jsdelivr.net/npm/deskrt@2.0.10/package.json');
-        echo.push(`<pre>Net::get('https://cdn.jsdelivr.net/npm/deskrt@2.0.10/package.json');</pre>
+        echo.push(`<pre>Net.get('https://cdn.jsdelivr.net/npm/deskrt@2.0.10/package.json');</pre>
 headers: <pre>${JSON.stringify(res.headers, null, 4)}</pre>
 content: <pre>${(await res.getContent())?.toString() ?? 'null'}</pre>
 error: ${JSON.stringify(res.error)}`);
@@ -1289,7 +1289,7 @@ error: ${JSON.stringify(res.error)}`);
 
         const res = await lNet.get('https://cdn.jsdelivr.net/npm/deskrt@2.0.10/package.json');
         echo.push(
-            `<pre>Net::get('https://cdn.jsdelivr.net/npm/deskrt@2.0.10/package.json');</pre>
+            `<pre>Net.get('https://cdn.jsdelivr.net/npm/deskrt@2.0.10/package.json');</pre>
 headers: <pre>${JSON.stringify(res.headers, null, 4)}</pre>
 content: <pre>`,
             res,
@@ -2476,80 +2476,82 @@ const rtn = cons.migration(rows, newTables);</pre>`);
     }
 
     public text(): string {
-        const echo = `<pre>json_encode(Text::parseUrl('HtTp://uSer:pAss@sUBDom.TopdOm23.CoM:29819/Adm@xw2Ksiz/dszas?Mdi=KdiMs1&a=JDd#hehHe'))</pre>
+        const echo = `<pre>json_encode(lText.parseUrl('HtTp://uSer:pAss@sUBDom.TopdOm23.CoM:29819/Adm@xw2Ksiz/dszas?Mdi=KdiMs1&a=JDd#hehHe'))</pre>
 ${lText.htmlescape(JSON.stringify(lText.parseUrl('HtTp://uSer:pAss@sUBDom.TopdOm23.CoM:29819/Adm@xw2Ksiz/dszas?Mdi=KdiMs1&a=JDd#hehHe')))}
-<pre>json_encode(Text::parseUrl('HtTp://uSer@sUBDom.TopdOm23.CoM/Admx%20w2Ksiz/dszas'))</pre>
+<pre>json_encode(lText.parseUrl('HtTp://uSer@sUBDom.TopdOm23.CoM/Admx%20w2Ksiz/dszas'))</pre>
 ${lText.htmlescape(JSON.stringify(lText.parseUrl('HtTp://uSer@sUBDom.TopdOm23.CoM/Admx%20w2Ksiz/dszas')))}
-<pre>json_encode(Text::parseUrl('C:\\Windows\\Mi@sc'))</pre>
+<pre>json_encode(lText.parseUrl('C:\\Windows\\Mi@sc'))</pre>
 ${lText.htmlescape(JSON.stringify(lText.parseUrl('C:\\Windows\\Mi@sc')))}
-<pre>json_encode(Text::parseUrl('../../abc?q=e'))</pre>
+<pre>json_encode(lText.parseUrl('../../abc?q=e'))</pre>
 ${lText.htmlescape(JSON.stringify(lText.parseUrl('../../abc?q=e')))}
-<pre>Text::urlResolve('/', 'path?id=1');</pre>
+<pre>lText.urlResolve('/', 'path?id=1');</pre>
 ${lText.htmlescape(lText.urlResolve('/', 'path?id=1'))}
-<pre>Text::urlResolve('https://www.url.com/view/path', 'find');</pre>
+<pre>lText.urlResolve('https://www.url.com/view/path', 'find');</pre>
 ${lText.htmlescape(lText.urlResolve('https://www.url.com/view/path', 'find'))}
-<pre>Text::urlResolve('https://www.url.com/view/path', '/');</pre>
+<pre>lText.urlResolve('https://www.url.com/view/path', '/');</pre>
 ${lText.htmlescape(lText.urlResolve('https://www.url.com/view/path', '/'))}
-<pre>Text::urlResolve('https://www.url.com/view/path/oh', '../ok/./index.js');</pre>
+<pre>lText.urlResolve('https://www.url.com/view/path/oh', '../ok/./index.js');</pre>
 ${lText.htmlescape(lText.urlResolve('https://www.url.com/view/path/oh', '../ok/./index.js'))}
-<pre>Text::urlResolve('https://www.url.com/view/path/oh', '../hah/../dodo/../112/666/777/../en');</pre>
+<pre>lText.urlResolve('https://www.url.com/view/path/oh', '../hah/../dodo/../112/666/777/../en');</pre>
 ${lText.htmlescape(lText.urlResolve('https://www.url.com/view/path/oh', '../hah/../dodo/../112/666/777/../en'))}
-<pre>Text::urlResolve('/hehe/ooo/', '../../../../../index.html');</pre>
+<pre>lText.urlResolve('/hehe/ooo/', '../../../../../index.html');</pre>
 ${lText.htmlescape(lText.urlResolve('/hehe/ooo/', '../../../../../index.html'))}
-<pre>Text::urlResolve('https://www.url.com/view/path', '/xxx/yyy');</pre>
+<pre>lText.urlResolve('https://www.url.com/view/path', '/xxx/yyy');</pre>
 ${lText.htmlescape(lText.urlResolve('https://www.url.com/view/path', '/xxx/yyy'))}
-<pre>Text::urlResolve('/', '//www.url.com/path');</pre>
+<pre>lText.urlResolve('/', '//www.url.com/path');</pre>
 ${lText.htmlescape(lText.urlResolve('/', '//www.url.com/path'))}
-<pre>Text::urlResolve('http://www.url.com/path', 'hTtps://www.url.com/path');</pre>
+<pre>lText.urlResolve('http://www.url.com/path', 'hTtps://www.url.com/path');</pre>
 ${lText.htmlescape(lText.urlResolve('http://www.url.com/path', 'hTtps://www.url.com/path'))}
-<pre>Text::urlResolve('hTtp://www.url.com/path?ok=b', '?do=some');</pre>
+<pre>lText.urlResolve('hTtp://www.url.com/path?ok=b', '?do=some');</pre>
 ${lText.htmlescape(lText.urlResolve('hTtp://www.url.com/path?ok=b', '?do=some'))}
-<pre>Text::urlResolve('/', 'C:\\Windows\\Boot');</pre>
+<pre>lText.urlResolve('/', 'C:\\Windows\\Boot');</pre>
 ${lText.htmlescape(lText.urlResolve('/', 'C:\\Windows\\Boot'))}
-<pre>Text::urlResolve('C:\\Windows\\Misc', '/');</pre>
+<pre>lText.urlResolve('C:\\Windows\\Misc', '/');</pre>
 ${lText.htmlescape(lText.urlResolve('C:\\Windows\\Misc', '/'))}
-<pre>Text::urlResolve('C:\\Windows\\Misc', '/xxx/yyy');</pre>
+<pre>lText.urlResolve('C:\\Windows\\Misc', '/xxx/yyy');</pre>
 ${lText.htmlescape(lText.urlResolve('C:\\Windows\\Misc', '/xxx/yyy'))}
-<pre>Text::urlResolve('/abc/def/', '');</pre>
+<pre>lText.urlResolve('/abc/def/', '');</pre>
 ${lText.htmlescape(lText.urlResolve('/abc/def/', ''))}
-<pre>Text::isEMail('test@gmail.com');</pre>
+<pre>lText.isEMail('test@gmail.com');</pre>
 ${JSON.stringify(lText.isEMail('test@gmail.com'))}
-<pre>Text::isEMail('test@x');</pre>
+<pre>lText.isEMail('test@x');</pre>
 ${JSON.stringify(lText.isEMail('test@x'))}
-<pre>Text::isIPv4('192.168.0.1');</pre>
+<pre>lText.isIPv4('192.168.0.1');</pre>
 ${JSON.stringify(lText.isIPv4('192.168.0.1'))}
-<pre>Text::isIPv4('192.168.0');</pre>
+<pre>lText.isIPv4('192.168.0');</pre>
 ${JSON.stringify(lText.isIPv4('192.168.0'))}
-<pre>Text::isIPv6(':');</pre>
+<pre>lText.isIPv6(':');</pre>
 ${JSON.stringify(lText.isIPv6(':'))}
-<pre>Text::isIPv6('::');</pre>
+<pre>lText.isIPv6('::');</pre>
 ${JSON.stringify(lText.isIPv6('::'))}
-<pre>Text::isIPv6('::1');</pre>
+<pre>lText.isIPv6('::1');</pre>
 ${JSON.stringify(lText.isIPv6('::1'))}
-<pre>Text::isIPv6('::FFFF:C0A8:0201');</pre>
+<pre>lText.isIPv6('::FFFF:C0A8:0201');</pre>
 ${JSON.stringify(lText.isIPv6('::FFFF:C0A8:0201'))}
-<pre>Text::isIPv6('2031:0000:1F1F:0000:0000:0100:11A0:ADDF');</pre>
+<pre>lText.isIPv6('2031:0000:1F1F:0000:0000:0100:11A0:ADDF');</pre>
 ${JSON.stringify(lText.isIPv6('2031:0000:1F1F:0000:0000:0100:11A0:ADDF'))}
-<pre>Text::isIPv6('2031:0000:1F1F:0000:0000:0100:11A0:ADDF:AZ');</pre>
+<pre>lText.isIPv6('2031:0000:1F1F:0000:0000:0100:11A0:ADDF:AZ');</pre>
 ${JSON.stringify(lText.isIPv6('2031:0000:1F1F:0000:0000:0100:11A0:ADDF:AZ'))}
-<pre>Text::isIPv6('::FFFF:192.168.0.1');</pre>
+<pre>lText.isIPv6('::FFFF:192.168.0.1');</pre>
 ${JSON.stringify(lText.isIPv6('::FFFF:192.168.0.1'))}
-<pre>Text::isDomain('::FFFF:192.168.0.1');</pre>
+<pre>lText.isDomain('::FFFF:192.168.0.1');</pre>
 ${JSON.stringify(lText.isDomain('::FFFF:192.168.0.1'))}
-<pre>Text::isDomain('www.xxx.com.cn');</pre>
+<pre>lText.isDomain('www.xxx.com.cn');</pre>
 ${JSON.stringify(lText.isDomain('www.xxx.com.cn'))}
-<pre>Text::isDomain('com');</pre>
+<pre>lText.isDomain('com');</pre>
 ${JSON.stringify(lText.isDomain('com'))}
-<pre>Text::parseDomain('www.xxx.com.cn');</pre>
+<pre>lText.parseDomain('www.xxx.com.cn');</pre>
 ${JSON.stringify(lText.parseDomain('www.xxx.com.cn'))}
-<pre>Text::parseDomain('www.xxx.us');</pre>
+<pre>lText.parseDomain('www.xxx.us');</pre>
 ${JSON.stringify(lText.parseDomain('www.xxx.us'))}
-<pre>Text::parseDomain('xxx.co.jp');</pre>
+<pre>lText.parseDomain('xxx.co.jp');</pre>
 ${JSON.stringify(lText.parseDomain('xxx.co.jp'))}
-<pre>Text::parseDomain('js.cn');</pre>
+<pre>lText.parseDomain('js.cn');</pre>
 ${JSON.stringify(lText.parseDomain('js.cn'))}
-<pre>Text::parseDomain('xxx.cn');</pre>
-${JSON.stringify(lText.parseDomain('xxx.cn'))}`;
+<pre>lText.parseDomain('xxx.cn');</pre>
+${JSON.stringify(lText.parseDomain('xxx.cn'))}
+<pre>lText.parseJson('{"num":90071992547409993149,"num2":3242354,"num3":"16565","str":"abc","bool":false}');</pre>
+${lText.stringifyJson(lText.parseJson('{"num":90071992547409993149,"num2":3242354,"num3":"16565","str":"abc","bool":false}'))}`;
         return echo + '<br><br>' + this._getEnd();
     }
 
