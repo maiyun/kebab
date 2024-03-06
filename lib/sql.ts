@@ -353,6 +353,11 @@ export class Sql {
                         this._data.push(lText.stringifyJson(v));
                     }
                 }
+                else if (typeof v === 'object') {
+                    // --- 8: json, Kebab ---
+                    sql += '?, ';
+                    this._data.push(JSON.stringify(v));
+                }
                 else {
                     // --- 2, 3 ---
                     const isf = this._isField(v);
