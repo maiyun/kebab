@@ -491,11 +491,12 @@ export function parseJson(str: string): any {
             if (!v.startsWith('-mybigint-')) {
                 return v;
             }
-            const int = v.slice(10);
-            if (parseInt(int) <= Number.MAX_SAFE_INTEGER) {
+            const ints = v.slice(10);
+            const int = parseInt(ints);
+            if (int <= Number.MAX_SAFE_INTEGER) {
                 return int;
             }
-            return BigInt(int);
+            return BigInt(ints);
         });
     }
     catch {
