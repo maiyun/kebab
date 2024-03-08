@@ -505,8 +505,8 @@ export function parseJson(str: string): any {
 }
 
 /**
- * --- 将对象解析为字符串，返回 false 代表解析失败，支持 BigInt，Kebab true, Mutton false ---
- * @param obj 
+ * --- 将对象转换为 json 字符串，返回 false 代表解析失败，支持 BigInt，Kebab true, Mutton false ---
+ * @param obj 要转换的 json 对象
  * @returns 
  */
 export function stringifyJson(obj: any): string {
