@@ -1,7 +1,7 @@
 /**
  * Project: Kebab, User: Tang Rukun, JianSuoQiYue
  * Date: 2024-2-18 18:32:45
- * Last: 2024-2-18 18:32:47
+ * Last: 2024-2-18 18:32:47, 2024-3-16 16:42:27
  */
 
 // --- 库和定义 ---
@@ -34,7 +34,7 @@ export interface IOptions {
     /** --- 密钥值 --- */
     'secretKey'?: string;
     /** --- 区域 --- */
-    'region': string;
+    'region'?: string;
     /** --- 预定义 bucket --- */
     'bucket'?: string;
 }
@@ -52,17 +52,21 @@ export class S3 {
         this._ctr = ctr;
         const config = ctr.getPrototype('_config');
         if (!opt.account) {
-            opt.account = config.s3?.[SERVICE[opt.service]].account ?? '';
+            opt.account = config.s3?.[SERVICE[opt.service]]?.account ?? '';
         }
         if (!opt.secretId) {
-            opt.secretId = config.s3?.[SERVICE[opt.service]].sid ?? '';
+            opt.secretId = config.s3?.[SERVICE[opt.service]]?.sid ?? '';
         }
         if (!opt.secretKey) {
-            opt.secretKey = config.s3?.[SERVICE[opt.service]].skey ?? '';
+            opt.secretKey = config.s3?.[SERVICE[opt.service]]?.skey ?? '';
         }
-        if (opt.bucket) {
-            this._bucket = opt.bucket;
+        if (!opt.region) {
+            opt.region = config.s3?.[SERVICE[opt.service]]?.region ?? '';
         }
+        if (!opt.bucket) {
+            opt.bucket = config.s3?.[SERVICE[opt.service]]?.bucket ?? '';
+        }
+        this._bucket = opt.bucket;
         let endpoint: string | undefined = undefined;
         switch (opt.service) {
             case SERVICE.TENCENT: {

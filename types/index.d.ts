@@ -90,6 +90,8 @@ export interface IConfigS3 {
     'account'?: string;
     'sid': string;
     'skey': string;
+    'region': string;
+    'bucket': string;
 }
 
 /** --- 动配数据库 --- */
