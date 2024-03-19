@@ -481,8 +481,8 @@ export function stringifyResult(rtn: any): string {
  */
 export function parseJson(str: string): any {
     try {
-        str = str.replace(/(".+?" *: *)([-+0-9]+)/g, (v, v1, v2) => {
-            return v1 + '"-mybigint-' + v2 + '"';
+        str = str.replace(/("[\w-]+?" *: *)([-+0-9]+)([ \r\n]*[,}]|$)/g, (v, v1, v2, v3) => {
+            return v1 + '"-mybigint-' + v2 + '"' + v3;
         });
         return JSON.parse(str, (k, v) => {
             if (typeof v !== 'string') {

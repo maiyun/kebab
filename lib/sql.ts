@@ -5,6 +5,7 @@
  */
 
 import * as lText from '~/lib/text';
+import * as lCore from '~/lib/core';
 // --- 第三方 ---
 import * as mysql2 from 'mysql2/promise';
 // --- 库和定义 ---
@@ -296,7 +297,7 @@ export class Sql {
                 'type' => ['(CASE `id` WHEN 1 THEN ? WHEN 2 THEN ? END)', ['val1', 'val2']],     // 5
                 'point' => { 'x': 0, 'y': 0 },  // 6
                 'polygon' => [ [ { 'x': 0, 'y': 0 }, { ... } ], [ ... ] ],   // 7
-                'json' => { 'a': 1, 'b': { 'c': 2 } }        // 8
+                'json' => { 'a': 1, 'b': { 'c': 2 }, 'c': [ { 'c': 2 } ] }        // 8
             }
         ]
         */
@@ -316,14 +317,22 @@ export class Sql {
                 }
             }
             else {
-                // --- 2, 3, 4, 5, 6, 7 ---
+                // --- 2, 3, 4, 5, 6, 7, 8(2) ---
                 sql += this.field(k) + ' = ';
                 if (Array.isArray(v)) {
                     if (v[0][0]?.x === undefined) {
-                        // --- 4, 5 ---
-                        sql += this.field(v[0]) + ', ';
-                        if (v[1] !== undefined) {
-                            this._data.push(...v[1]);
+                        // --- 4, 5, 8(2) ---
+                        if (typeof v[0] === 'object') {
+                            // --- 8(2), v: json ---
+                            sql += '?, ';
+                            this._data.push(lText.stringifyJson(v));
+                        }
+                        else {
+                            // --- 4, 5 ---
+                            sql += this.field(v[0]) + ', ';
+                            if (v[1] !== undefined) {
+                                this._data.push(...v[1]);
+                            }
                         }
                     }
                     else if (v[0][0]?.y !== undefined) {
@@ -360,6 +369,21 @@ export class Sql {
                 }
                 else {
                     // --- 2, 3 ---
+                    if (v === undefined || Number.isNaN(v)) {
+                        // --- 异常情况 ---
+                        lCore.log({
+                            'path': '',
+                            'urlFull': '',
+                            'hostname': '',
+                            'req': null,
+                            'get': {},
+                            'post': {},
+                            'cookie': {},
+                            'headers': {},
+                            'input': ''
+                        }, '(sql._updateSub) value error, key: ' + k, '-error');
+                        return '';
+                    }
                     const isf = this._isField(v);
                     if (isf[0]) {
                         // --- 3: field ---
