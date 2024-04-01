@@ -24,8 +24,17 @@ export class Sql {
     private _data: types.DbValue[] = [];
 
     // --- 实例化 ---
-    public constructor(pre?: string) {
+    public constructor(pre?: string, opt: {
+        'data'?: types.DbValue[];
+        'sql'?: string;
+    } = {}) {
         this._pre = pre ?? '';
+        if (opt.data) {
+            this._data = lCore.clone(opt.data);
+        }
+        if (opt.sql) {
+            this._sql = [opt.sql];
+        }
     }
 
     // --- 前导 ---
@@ -412,6 +421,17 @@ export class Sql {
     }
 
     /**
+     * --- 联查另一个 sql 对象 ---
+     * @param sql sql 对象
+     */
+    public unionAll(lsql: Sql): this {
+        this._data = this._data.concat(lsql.getData());
+        this._sql.push(' UNION ALL ');
+        this._sql.push(lsql.getSql());
+        return this;
+    }
+
+    /**
      * --- join 方法 ---
      * @param f 表名
      * @param s ON 信息
@@ -702,6 +722,32 @@ export class Sql {
         return this;
     }
 
+    /**
+     * --- 创建一个本对象的一个新的 sql 对象拷贝 ---
+     * @param table 可为空，可设置新对象的 table 名变化
+     */
+    public copy(f?: string | string[]): Sql {
+        let sql = this._sql.join('');
+        if (f && this._sql[0]) {
+            let table = '';
+            if (typeof f === 'string') {
+                table = this.field(f, this._pre);
+            }
+            else {
+                // --- f: ['user', 'order'] ---
+                for (const i of f) {
+                    table += this.field(i, this._pre) + ', ';
+                }
+                table = table.slice(0, -2);
+            }
+            sql = this._sql[0].replace(/FROM [`\w, ]+/, 'FROM ' + table) + this._sql.slice(1).join('');
+        }
+        return get(this.getPre(), {
+            'data': this._data,
+            'sql': sql
+        });
+    }
+
     // --- 操作 ---
 
     /**
@@ -872,8 +918,11 @@ export class Sql {
 
 }
 
-export function get(ctrPre?: ctr.Ctr | string): Sql {
-    return new Sql(ctrPre instanceof ctr.Ctr ? ctrPre.getPrototype('_config').sql.pre : ctrPre);
+export function get(ctrPre?: ctr.Ctr | string, opt: {
+    'data'?: types.DbValue[];
+    'sql'?: string;
+} = {}): Sql {
+    return new Sql(ctrPre instanceof ctr.Ctr ? ctrPre.getPrototype('_config').sql.pre : ctrPre, opt);
 }
 
 /**

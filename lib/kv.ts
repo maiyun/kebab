@@ -45,8 +45,8 @@ async function checkConnection(): Promise<void> {
             continue;
         }
         if (connection.isUsing()) {
-            // --- 连接正在被使用，看看是否使用超过 5 分钟，超过则不是正常状态 ---
-            if (connection.getLast() <= now - 300) {
+            // --- 连接正在被使用，看看是否使用超过 3 分钟，超过则不是正常状态 ---
+            if (connection.getLast() <= now - 180) {
                 // --- 10 分钟之前开始的 ---
                 console.log(`[kv] [error] There is a transactional connection[${i}] that is not closed.`);
                 await connection.end();

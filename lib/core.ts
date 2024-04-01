@@ -471,12 +471,12 @@ export async function log(opt: sCtr.Ctr | ILogOptions, msg: string, fend: string
     const clientIp = req ? ip(headers, req) : '';
 
     const [y, m, d, h] = lTime.format(null, 'Y-m-d-H').split('-');
-    let path = def.LOG_PATH + hostname + '/' + y + '/' + m + '/' + d + '/';
+    let path = def.LOG_PATH + hostname + fend + '/' + y + '/' + m + '/' + d + '/';
     const rtn = await lFs.mkdir(path, 0o777);
     if (!rtn) {
         return;
     }
-    path += h + fend + '.csv';
+    path += h + '.csv';
     if (!await lFs.isFile(path)) {
         if (!await lFs.putContent(path, 'TIME,UNIX,URL,RAWPOST,POST,COOKIE,USER_AGENT,REALIP,CLIENTIP,MESSAGE\n', {
             'encoding': 'utf8',
@@ -500,4 +500,60 @@ export async function log(opt: sCtr.Ctr | ILogOptions, msg: string, fend: string
         'mode': 0o777,
         'flag': 'a'
     });
+}
+
+/**
+ * --- 完整的克隆一份数组/对象，Kebab: yes, Mutton: no ---
+ * @param obj 要克隆的对象
+ */
+export function clone(obj: Record<string, any> | any[]): any[] | any {
+    let newObj: any = {};
+    if (obj instanceof Array) {
+        newObj = [];
+        for (let i = 0; i < obj.length; ++i) {
+            if (obj[i] instanceof Date) {
+                newObj[i] = new Date(obj[i].getTime());
+            }
+            else if (obj[i] instanceof FormData) {
+                const fd = new FormData();
+                for (const item of obj[i]) {
+                    fd.append(item[0], item[1]);
+                }
+                newObj[i] = fd;
+            }
+            else if (obj[i] === null) {
+                newObj[i] = null;
+            }
+            else if (typeof obj[i] === 'object') {
+                newObj[i] = clone(obj[i]);
+            }
+            else {
+                newObj[i] = obj[i];
+            }
+        }
+    }
+    else {
+        for (const key in obj) {
+            if (obj[key] instanceof Date) {
+                newObj[key] = new Date(obj[key].getTime());
+            }
+            else if (obj[key] instanceof FormData) {
+                const fd = new FormData();
+                for (const item of obj[key]) {
+                    fd.append(item[0], item[1]);
+                }
+                newObj[key] = fd;
+            }
+            else if (obj[key] === null) {
+                newObj[key] = null;
+            }
+            else if (typeof obj[key] === 'object') {
+                newObj[key] = clone(obj[key]);
+            }
+            else {
+                newObj[key] = obj[key];
+            }
+        }
+    }
+    return newObj;
 }

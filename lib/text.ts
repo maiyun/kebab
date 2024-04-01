@@ -374,15 +374,21 @@ export function queryStringify(query: Record<string, any>): string {
 export function queryParse(query: string): Record<string, string | string[]> {
     const ret: Record<string, string | string[]> = {};
     const arrayKeys: Record<string, boolean> = {};
-    for (const i of query.split('&')) {
+    const arr = query.split('&');
+    for (const i of arr) {
         if (!i.length) {
             continue;
         }
-
         const pos = i.indexOf('=');
 
         const key = decodeURIComponent(pos === -1 ? i : i.slice(0, pos));
-        const value = pos === -1 ? '' : decodeURIComponent(i.slice(pos + 1));
+        let value = '';
+        try {
+            value = pos === -1 ? '' : decodeURIComponent(i.slice(pos + 1));
+        }
+        catch {
+            value = pos === -1 ? '' : i.slice(pos + 1);
+        }
 
         if (arrayKeys[key]) {
             (ret[key] as string[]).push(value);

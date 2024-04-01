@@ -1,7 +1,7 @@
 /**
  * Project: Mutton, User: JianSuoQiYue
  * Date: 2019-6-4 21:35
- * Last: 2020-4-14 13:33:51, 2022-07-23 16:01:34, 2022-09-06 22:59:26, 2023-5-24 19:11:37, 2023-6-13 21:47:58, 2023-7-10 18:54:03, 2023-8-23 17:03:16, 2023-12-11 15:21:22, 2023-12-20 23:12:03, 2024-3-8 16:05:29
+ * Last: 2020-4-14 13:33:51, 2022-07-23 16:01:34, 2022-09-06 22:59:26, 2023-5-24 19:11:37, 2023-6-13 21:47:58, 2023-7-10 18:54:03, 2023-8-23 17:03:16, 2023-12-11 15:21:22, 2023-12-20 23:12:03, 2024-3-8 16:05:29, 2024-3-20 19:58:15
  */
 import * as lSql from '~/lib/sql';
 import * as lDb from '~/lib/db';
@@ -1066,6 +1066,20 @@ export default class Mod {
         return this.first(lock, true);
     }
 
+    /**
+     * --- 联合查询表数据 ---
+     * @param f 要联合查询的表列表，或单个表
+     */
+    public unionAll(f: string | string[]): this {
+        if (typeof f === 'string') {
+            f = [f];
+        }
+        for (const item of f) {
+            this._sql.unionAll(this._sql.copy(item));
+        }
+        return this;
+    }
+
     public async all(): Promise<false | Rows<this>>;
     public async all(key: string): Promise<false | Record<string, this>>;
     /**
@@ -1191,7 +1205,7 @@ export default class Mod {
      * --- 获取总条数，自动抛弃 LIMIT，仅用于获取数据的情况（select） ---
      */
     public async total(): Promise<number> {
-        const sql: string = this._sql.getSql().replace(/SELECT .+? FROM/, 'SELECT COUNT(*) AS `count` FROM').replace(/ LIMIT [0-9 ,]+/, '');
+        const sql: string = this._sql.getSql().replace(/SELECT .+? FROM/, 'SELECT COUNT(*) AS `count` FROM').replace(/ LIMIT [0-9 ,]+/g, '');
         const r = await this._db.query(sql, this._sql.getData());
         if (r.rows === null) {
             await lCore.log(this._ctr ?? {
@@ -1207,10 +1221,11 @@ export default class Mod {
             }, '[total, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
             return 0;
         }
-        if (r.rows[0]) {
-            return r.rows[0].count;
+        let count = 0;
+        for (const item of r.rows) {
+            count += item.count;
         }
-        return 0;
+        return count;
     }
 
     /**
@@ -1233,10 +1248,11 @@ export default class Mod {
             }, '[count, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
             return 0;
         }
-        if (r.rows[0]) {
-            return r.rows[0].count;
+        let count = 0;
+        for (const item of r.rows) {
+            count += item.count;
         }
-        return 0;
+        return count;
     }
 
     /**
