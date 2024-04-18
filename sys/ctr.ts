@@ -1,7 +1,7 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2020-3-14 17:24:38
- * Last: 2020-3-30 15:31:40, 2022-07-22 16:59:00, 2022-09-12 23:51:56, 2022-09-23 15:53:58, 2022-12-29 01:18:08, 2023-2-28 20:07:57, 2023-12-27 18:39:35, 2024-3-1 19:38:53
+ * Last: 2020-3-30 15:31:40, 2022-07-22 16:59:00, 2022-09-12 23:51:56, 2022-09-23 15:53:58, 2022-12-29 01:18:08, 2023-2-28 20:07:57, 2023-12-27 18:39:35, 2024-3-1 19:38:53, 2024-4-9 16:03:58
  */
 import * as http from 'http';
 import * as http2 from 'http2';
@@ -528,6 +528,9 @@ export class Ctr {
         }
         else if (this._post['_auth']) {
             auth = this._post['_auth'];
+        }
+        if (typeof auth !== 'string') {
+            return false;
         }
         let authArr = auth.split(' ');
         if (authArr[1] === undefined) {

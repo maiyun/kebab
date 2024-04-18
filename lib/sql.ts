@@ -1,7 +1,7 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2019-5-27 20:18:50
- * Last: 2020-3-29 19:37:25, 2022-07-24 22:38:11, 2023-5-24 18:49:18, 2023-6-13 22:20:21, 2023-12-11 13:58:54, 2023-12-14 13:14:40, 2023-12-21 00:04:40
+ * Last: 2020-3-29 19:37:25, 2022-07-24 22:38:11, 2023-5-24 18:49:18, 2023-6-13 22:20:21, 2023-12-11 13:58:54, 2023-12-14 13:14:40, 2023-12-21 00:04:40, 2024-4-11 19:29:29
  */
 
 import * as lText from '~/lib/text';
@@ -87,7 +87,22 @@ export class Sql {
                 sql += '(';
                 for (const v1 of v) {
                     // --- v1 是项目值，如 {'x': 1, 'y': 2}, 'string', 0 ---
-                    if (v1 === null) {
+                    if (v1 === undefined || Number.isNaN(v1)) {
+                        // --- 异常情况 ---
+                        lCore.log({
+                            'path': '',
+                            'urlFull': '',
+                            'hostname': '',
+                            'req': null,
+                            'get': {},
+                            'post': {},
+                            'cookie': {},
+                            'headers': {},
+                            'input': ''
+                        }, '(sql.values) value error', '-error');
+                        sql += `'', `;
+                    }
+                    else if (v1 === null) {
                         sql += 'NULL, ';
                     }
                     else if (typeof v1 === 'string' || typeof v1 === 'number') {
@@ -145,7 +160,22 @@ export class Sql {
             for (const k in cs) {
                 const v = cs[k];
                 sql += this.field(k) + ', ';
-                if (v === null) {
+                if (v === undefined || Number.isNaN(v)) {
+                    // --- 异常情况 ---
+                    lCore.log({
+                        'path': '',
+                        'urlFull': '',
+                        'hostname': '',
+                        'req': null,
+                        'get': {},
+                        'post': {},
+                        'cookie': {},
+                        'headers': {},
+                        'input': ''
+                    }, '(sql.values) value error', '-error');
+                    values += `'', `;
+                }
+                else if (v === null) {
                     values += 'NULL, ';
                 }
                 else if (typeof v === 'string' || typeof v === 'number') {
@@ -328,7 +358,22 @@ export class Sql {
             else {
                 // --- 2, 3, 4, 5, 6, 7, 8(2) ---
                 sql += this.field(k) + ' = ';
-                if (Array.isArray(v)) {
+                if (v === undefined || Number.isNaN(v)) {
+                    // --- 异常情况 ---
+                    lCore.log({
+                        'path': '',
+                        'urlFull': '',
+                        'hostname': '',
+                        'req': null,
+                        'get': {},
+                        'post': {},
+                        'cookie': {},
+                        'headers': {},
+                        'input': ''
+                    }, '(sql._updateSub) value error, key: ' + k, '-error');
+                    sql += '"", ';
+                }
+                else if (Array.isArray(v)) {
                     if (v[0][0]?.x === undefined) {
                         // --- 4, 5, 8(2) ---
                         if (typeof v[0] === 'object') {
@@ -378,21 +423,6 @@ export class Sql {
                 }
                 else {
                     // --- 2, 3 ---
-                    if (v === undefined || Number.isNaN(v)) {
-                        // --- 异常情况 ---
-                        lCore.log({
-                            'path': '',
-                            'urlFull': '',
-                            'hostname': '',
-                            'req': null,
-                            'get': {},
-                            'post': {},
-                            'cookie': {},
-                            'headers': {},
-                            'input': ''
-                        }, '(sql._updateSub) value error, key: ' + k, '-error');
-                        return '';
-                    }
                     const isf = this._isField(v);
                     if (isf[0]) {
                         // --- 3: field ---
@@ -527,6 +557,7 @@ export class Sql {
      * --- 4. 'type': ['1', '2'] ---
      * --- 5. '$or': [{'city': 'bj'}, {'city': 'sh'}, [['age', '>', '10']]], 'type': '2' ---
      * --- 6. 'city_in' => '#city_out' ---
+     * --- 7. ['JSON_CONTAINS(`uid`, ?)', ['hello']] ---
      * @param s 筛选数据
      */
     public where(s: string | types.Json): this {
@@ -565,8 +596,16 @@ export class Sql {
         for (const k in s) {
             const v = s[k];
             if (/^[0-9]+$/.test(k)) {
-                // --- 2, 3 ---
-                if (v[2] === null) {
+                // --- 2, 3, 7 ---
+                if (v[2] === undefined) {
+                    // --- 7 ---
+                    sql += this.field(v[0]) + ', ';
+                    if (v[1] !== undefined) {
+                        this._data.push(...v[1]);
+                    }
+                }
+                else if (v[2] === null) {
+                    // --- 3: null ---
                     let opera = v[1];
                     if (opera === '!=' || opera === '!==' || opera === '<>') {
                         opera = 'IS NOT';
