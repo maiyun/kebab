@@ -26,14 +26,14 @@ export class Sql {
     // --- 实例化 ---
     public constructor(pre?: string, opt: {
         'data'?: types.DbValue[];
-        'sql'?: string;
+        'sql'?: string[];
     } = {}) {
         this._pre = pre ?? '';
         if (opt.data) {
-            this._data = lCore.clone(opt.data);
+            this._data = opt.data;
         }
         if (opt.sql) {
-            this._sql = [opt.sql];
+            this._sql = opt.sql;
         }
     }
 
@@ -549,6 +549,9 @@ export class Sql {
         return this;
     }
 
+    /** --- where 的 data 的开始处和结束处 --- */
+    private _whereDataPosition = [0, 0];
+
     /**
      * --- 筛选器 ---
      * --- 1. 'city': 'bj', 'type': '2' ---
@@ -561,10 +564,12 @@ export class Sql {
      * @param s 筛选数据
      */
     public where(s: string | types.Json): this {
+        this._whereDataPosition[0] = this._data.length;
         if (typeof s === 'string') {
             // --- string ---
             if (s !== '') {
                 this._sql.push(' WHERE ' + s);
+                this._whereDataPosition[1] = this._data.length;
             }
         }
         else {
@@ -586,11 +591,15 @@ export class Sql {
                     this._sql.push(' WHERE ' + whereSub);
                 }
             }
+            this._whereDataPosition[1] = this._data.length;
         }
         return this;
     }
 
-    private _whereSub(s: types.Json): string {
+    private _whereSub(s: types.Json, data?: any[]): string {
+        if (!data) {
+            data = this._data;
+        }
         s = aoMix(s);
         let sql = '';
         for (const k in s) {
@@ -599,9 +608,9 @@ export class Sql {
                 // --- 2, 3, 7 ---
                 if (v[2] === undefined) {
                     // --- 7 ---
-                    sql += this.field(v[0]) + ', ';
+                    sql += this.field(v[0]) + ' AND ';
                     if (v[1] !== undefined) {
-                        this._data.push(...v[1]);
+                        data.push(...v[1]);
                     }
                 }
                 else if (v[2] === null) {
@@ -623,7 +632,7 @@ export class Sql {
                     sql += this.field(v[0]) + ' ' + v[1].toUpperCase() + ' (';
                     for (const v1 of v[2]) {
                         sql += '?, ';
-                        this._data.push(v1);
+                        data.push(v1);
                     }
                     sql = sql.slice(0, -2) + ') AND ';
                 }
@@ -636,7 +645,7 @@ export class Sql {
                     }
                     else {
                         sql += this.field(v[0]) + ' ' + v[1] + ' ? AND ';
-                        this._data.push(v[2]);
+                        data.push(v[2]);
                     }
                 }
             }
@@ -650,10 +659,10 @@ export class Sql {
                         // --- v1 是 {'city': 'bj'} ---
                         v1 = aoMix(v1);
                         if (Object.keys(v1).length > 1) {
-                            sql += '(' + this._whereSub(v1) + ')' + sp;
+                            sql += '(' + this._whereSub(v1, data) + ')' + sp;
                         }
                         else {
-                            sql += this._whereSub(v1) + sp;
+                            sql += this._whereSub(v1, data) + sp;
                         }
                     }
                     sql = sql.slice(0, -sp.length) + ') AND ';
@@ -673,7 +682,7 @@ export class Sql {
                         }
                         else {
                             sql += this.field(k) + ' = ? AND ';
-                            this._data.push(isf[1]);
+                            data.push(isf[1]);
                         }
                     }
                     else {
@@ -682,7 +691,7 @@ export class Sql {
                             sql += this.field(k) + ' IN (';
                             for (const v1 of v) {
                                 sql += '?, ';
-                                this._data.push(v1);
+                                data.push(v1);
                             }
                             sql = sql.slice(0, -2) + ') AND ';
                         }
@@ -763,11 +772,70 @@ export class Sql {
 
     /**
      * --- 创建一个本对象的一个新的 sql 对象拷贝 ---
-     * @param table 可为空，可设置新对象的 table 名变化
+     * @param f 可为空，可设置新对象的 table 名变化
      */
-    public copy(f?: string | string[]): Sql {
-        let sql = this._sql.join('');
-        if (f && this._sql[0]) {
+    public copy(f?: string | string[], opt: {
+        'where'?: string | types.Json;
+    } = {}): Sql {
+        const sql: string[] = lCore.clone(this._sql);
+        const data: any[] = lCore.clone(this._data);
+        if (opt.where !== undefined) {
+            if (typeof opt.where === 'string') {
+                // --- string ---
+                for (let i = 0; i < sql.length; ++i) {
+                    if (!sql[i].startsWith(' WHERE ')) {
+                        continue;
+                    }
+                    sql[i] = opt.where ? (' WHERE ' + opt.where) : '';
+                    data.splice(
+                        this._whereDataPosition[0],
+                        this._whereDataPosition[1] - this._whereDataPosition[0]
+                    );
+                    break;
+                }
+            }
+            else {
+                // --- array ---
+                let go: boolean = false;
+                if (Array.isArray(opt.where)) {
+                    if (opt.where.length) {
+                        go = true;
+                    }
+                }
+                else {
+                    if (Object.keys(opt.where).length) {
+                        go = true;
+                    }
+                }
+                // --- 找到原来的 where ---
+                for (let i = 0; i < sql.length; ++i) {
+                    if (!sql[i].startsWith(' WHERE ')) {
+                        continue;
+                    }
+                    if (go) {
+                        // --- 修改 where ---
+                        const d: any[] = [];
+                        sql[i] = ' WHERE ' + this._whereSub(opt.where, d);
+                        data.splice(
+                            this._whereDataPosition[0],
+                            this._whereDataPosition[1] - this._whereDataPosition[0],
+                            ...d
+                        );
+                    }
+                    else {
+                        // --- 清除 where ---
+                        sql.splice(i, 1);
+                        data.splice(
+                            this._whereDataPosition[0],
+                            this._whereDataPosition[1] - this._whereDataPosition[0]
+                        );
+                    }
+                    break;
+                }
+            }
+        }
+        // --- 替换表名 ---
+        if (f && sql[0]) {
             let table = '';
             if (typeof f === 'string') {
                 table = this.field(f, this._pre);
@@ -779,10 +847,10 @@ export class Sql {
                 }
                 table = table.slice(0, -2);
             }
-            sql = this._sql[0].replace(/FROM [`\w, ]+/, 'FROM ' + table) + this._sql.slice(1).join('');
+            sql[0] = sql[0].replace(/FROM [`\w, ]+/, 'FROM ' + table);
         }
         return get(this.getPre(), {
-            'data': this._data,
+            'data': data,
             'sql': sql
         });
     }
@@ -957,9 +1025,14 @@ export class Sql {
 
 }
 
+/**
+ * --- 创建 sql 对象 ---
+ * @param ctrPre ctr 对象或 pre 表前缀
+ * @param opt 
+ */
 export function get(ctrPre?: ctr.Ctr | string, opt: {
     'data'?: types.DbValue[];
-    'sql'?: string;
+    'sql'?: string[];
 } = {}): Sql {
     return new Sql(ctrPre instanceof ctr.Ctr ? ctrPre.getPrototype('_config').sql.pre : ctrPre, opt);
 }
