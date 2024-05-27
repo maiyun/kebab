@@ -117,10 +117,8 @@ async function run(): Promise<void> {
                 'hostname': '',
                 'req': req,
                 'get': {},
-                'post': {},
                 'cookie': {},
-                'headers': {},
-                'input': ''
+                'headers': {}
             }, '[child][http2][request]' + lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
             --linkCount[key];
             if (!linkCount[key]) {
@@ -153,10 +151,8 @@ async function run(): Promise<void> {
                 'hostname': '',
                 'req': req,
                 'get': {},
-                'post': {},
                 'cookie': {},
-                'headers': {},
-                'input': ''
+                'headers': {}
             }, '[child][http2][upgrade]' + lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
             --linkCount[key];
             if (!linkCount[key]) {
@@ -189,10 +185,8 @@ async function run(): Promise<void> {
                 'hostname': '',
                 'req': req,
                 'get': {},
-                'post': {},
                 'cookie': {},
-                'headers': {},
-                'input': ''
+                'headers': {}
             }, '[child][http][request]' + lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
             --linkCount[key];
             if (!linkCount[key]) {
@@ -223,10 +217,8 @@ async function run(): Promise<void> {
                 'hostname': '',
                 'req': req,
                 'get': {},
-                'post': {},
                 'cookie': {},
-                'headers': {},
-                'input': ''
+                'headers': {}
             }, '[child][http][upgrade]' + lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
             --linkCount[key];
             if (!linkCount[key]) {
@@ -326,10 +318,8 @@ async function requestHandler(
                             'hostname': uri.hostname ?? '',
                             'req': req,
                             'get': uri.query ? lText.queryParse(uri.query) : {},
-                            'post': {},
                             'cookie': {},
-                            'headers': {},
-                            'input': ''
+                            'headers': {}
                         }, '(E01)' + lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
                         res.setHeader('content-type', 'text/html; charset=utf-8');
                         res.setHeader('content-length', 25);
@@ -373,10 +363,8 @@ async function requestHandler(
                         'hostname': uri.hostname ?? '',
                         'req': req,
                         'get': uri.query ? lText.queryParse(uri.query) : {},
-                        'post': {},
                         'cookie': {},
-                        'headers': {},
-                        'input': ''
+                        'headers': {}
                     }, '(E02)' + lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
                     res.setHeader('content-type', 'text/html; charset=utf-8');
                     res.setHeader('content-length', 25);
@@ -585,10 +573,8 @@ process.on('message', function(msg: types.Json) {
                         'hostname': '',
                         'req': null,
                         'get': {},
-                        'post': {},
                         'cookie': {},
-                        'headers': {},
-                        'input': ''
+                        'headers': {}
                     }, `[child] Worker ${process.pid} busy: ${str.join(',')}.`, '-error');
                     await lCore.sleep(5_000);
                     waiting += 5_000;
@@ -615,10 +601,8 @@ process.on('message', function(msg: types.Json) {
             'hostname': '',
             'req': null,
             'get': {},
-            'post': {},
             'cookie': {},
-            'headers': {},
-            'input': ''
+            'headers': {}
         }, '[child][process][message]' + lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
     });
 });

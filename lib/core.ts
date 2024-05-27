@@ -418,10 +418,8 @@ export interface ILogOptions {
     'hostname': string;
     'req': http2.Http2ServerRequest | http.IncomingMessage | null;
     'get': Record<string, types.Json>;
-    'post': Record<string, types.Json>;
     'cookie': Record<string, string>;
     'headers': http.IncomingHttpHeaders;
-    'input': string;
 }
 
 /**
@@ -434,9 +432,7 @@ export async function log(opt: sCtr.Ctr | ILogOptions, msg: string, fend: string
     let req: http2.Http2ServerRequest | http.IncomingMessage | null;
     let headers: http.IncomingHttpHeaders;
     let get: Record<string, types.Json>;
-    let post: Record<string, types.Json>;
     let cookie: Record<string, string>;
-    let input: string;
     let wpath: string;
     let urlFull: string;
     let hostname: string;
@@ -444,9 +440,7 @@ export async function log(opt: sCtr.Ctr | ILogOptions, msg: string, fend: string
         req = opt.getPrototype('_req');
         headers = opt.getPrototype('_headers');
         get = opt.getPrototype('_get');
-        post = opt.getPrototype('_post');
         cookie = opt.getPrototype('_cookie');
-        input = opt.getPrototype('_input');
         const config = opt.getPrototype('_config');
         wpath = config.const.path;
         urlFull = config.const.urlFull;
@@ -456,9 +450,7 @@ export async function log(opt: sCtr.Ctr | ILogOptions, msg: string, fend: string
         req = opt.req;
         headers = opt.headers;
         get = opt.get;
-        post = opt.post;
         cookie = opt.cookie;
-        input = opt.input;
         wpath = opt.path;
         urlFull = opt.urlFull;
         hostname = opt.hostname;
@@ -478,7 +470,7 @@ export async function log(opt: sCtr.Ctr | ILogOptions, msg: string, fend: string
     }
     path += h + '.csv';
     if (!await lFs.isFile(path)) {
-        if (!await lFs.putContent(path, 'TIME,UNIX,URL,RAWPOST,POST,COOKIE,USER_AGENT,REALIP,CLIENTIP,MESSAGE\n', {
+        if (!await lFs.putContent(path, 'TIME,UNIX,URL,COOKIE,USER_AGENT,REALIP,CLIENTIP,MESSAGE\n', {
             'encoding': 'utf8',
             'mode': 0o777
         })) {
@@ -489,8 +481,6 @@ export async function log(opt: sCtr.Ctr | ILogOptions, msg: string, fend: string
         lTime.format(null, 'H:i:s') + '","' +
         lTime.stamp().toString() + '","' +
         urlFull + wpath + (Object.keys(get).length ? '?' + lText.queryStringify(get).replace(/"/g, '""') : '') + '","' +
-        input.replace(/"/g, '""') + '","' +
-        lText.stringifyJson(post).replace(/"/g, '""') + '","' +
         lText.queryStringify(cookie).replace(/"/g, '""') + '","' +
         (headers['user-agent']?.replace(/"/g, '""') ?? 'No HTTP_USER_AGENT') + '","' +
         realIp.replace(/"/g, '""') + '","' +

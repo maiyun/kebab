@@ -2378,6 +2378,7 @@ Result:<pre id="result">Nothing.</pre>`);
                 echo.push(`<pre>sql.field('a\\'bc');</pre>` + sql.field('a\'bc'));
                 echo.push(`<pre>sql.field('\`a\`WHERE\`q\` = SUM(0) AND \`b\` = "abc" LEFT JOIN \`abc\`');</pre>` + sql.field('`a`WHERE`q` = SUM(0) AND `b` = "abc" LEFT JOIN `abc`'));
                 echo.push(`<pre>sql.field('TEST(UTC_TIMESTAMP)');</pre>` + sql.field('TEST(UTC_TIMESTAMP)'));
+                echo.push(`<pre>sql.field('*');</pre>` + sql.field('*'));
                 break;
             }
         }

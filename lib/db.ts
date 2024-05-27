@@ -69,10 +69,19 @@ async function checkConnection(): Promise<void> {
             continue;
         }
         if (connection.isUsing()) {
-            // --- 连接正在被使用，看看是否使用超过 3 分钟，超过则不是正常状态 ---
-            if (connection.getLast() <= now - 180) {
+            // --- 连接正在被使用，看看是否空闲了超过 2 分钟，超过则不是正常状态 ---
+            if (connection.getLast() <= now - 120) {
                 // --- 10 分钟之前开始的 ---
-                console.log(`[child] [db] [error] There is a transactional connection[${i}] that is not closed.`);
+                console.log(`[child] [db] [error] There is a transactional connection[${i}] that is not closed, last sql: ${connection.getLastSql()}.`);
+                await core.log({
+                    'path': '',
+                    'urlFull': '',
+                    'hostname': '',
+                    'req': null,
+                    'get': {},
+                    'cookie': {},
+                    'headers': {}
+                }, `(db.checkConnection)There is a transactional connection[${i}] that is not closed, last sql: ${connection.getLastSql()}.`, '-error');
                 await connection.rollback();
             }
             continue;
@@ -226,10 +235,8 @@ export class Pool {
                     'hostname': '',
                     'req': null,
                     'get': {},
-                    'post': {},
                     'cookie': {},
-                    'headers': {},
-                    'input': ''
+                    'headers': {}
                 }, '(db._getConnection)' + text.stringifyJson(e.stack).slice(1, -1), '-error');
             }
         }
@@ -249,6 +256,9 @@ export class Pool {
 export class Connection {
     /** --- 本连接最后一次使用时间 --- */
     private _last: number = 0;
+
+    /** --- 最后一次执行的 sql 模板字符串 --- */
+    private _lastSql: string = '';
 
     /** --- 数据库连接对象 --- */
     private readonly _link: mysql2.Connection;
@@ -283,6 +293,13 @@ export class Connection {
      */
     public getLast(): number {
         return this._last;
+    }
+
+    /**
+     * --- 获取最后一次执行的 sql 模板字符串 ---
+     */
+    public getLastSql(): string {
+        return this._lastSql;
     }
 
     /**
@@ -364,6 +381,7 @@ export class Connection {
         let res;
         try {
             this.refreshLast();
+            this._lastSql = sql;
             res = await this._link.query(sql, values) as [any[], mysql2.FieldPacket[]];
         }
         catch (e: any) {
@@ -396,6 +414,7 @@ export class Connection {
         let res;
         try {
             this.refreshLast();
+            this._lastSql = sql;
             res = await this._link.execute(sql, values) as [mysql2.OkPacket, mysql2.FieldPacket[]];
         }
         catch (e: any) {

@@ -181,10 +181,8 @@ export default class Mod {
                 'hostname': '',
                 'req': null,
                 'get': {},
-                'post': {},
                 'cookie': {},
-                'headers': {},
-                'input': ''
+                'headers': {}
             }, '[insert, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
             return false;
         }
@@ -235,10 +233,8 @@ export default class Mod {
                 'hostname': '',
                 'req': null,
                 'get': {},
-                'post': {},
                 'cookie': {},
-                'headers': {},
-                'input': ''
+                'headers': {}
             }, '[insertDuplicate, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
             return false;
         }
@@ -305,10 +301,8 @@ export default class Mod {
                 'hostname': '',
                 'req': null,
                 'get': {},
-                'post': {},
                 'cookie': {},
-                'headers': {},
-                'input': ''
+                'headers': {}
             }, '[removeByWhere, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
             return false;
         }
@@ -417,10 +411,8 @@ export default class Mod {
                 'hostname': '',
                 'req': null,
                 'get': {},
-                'post': {},
                 'cookie': {},
-                'headers': {},
-                'input': ''
+                'headers': {}
             }, '[updateByWhere, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
             return false;
         }
@@ -691,10 +683,8 @@ export default class Mod {
                 'hostname': '',
                 'req': null,
                 'get': {},
-                'post': {},
                 'cookie': {},
-                'headers': {},
-                'input': ''
+                'headers': {}
             }, '[primarys, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
             return false;
         }
@@ -805,10 +795,8 @@ export default class Mod {
                         'hostname': '',
                         'req': null,
                         'get': {},
-                        'post': {},
                         'cookie': {},
-                        'headers': {},
-                        'input': ''
+                        'headers': {}
                     }, '[create0, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
                     return false;
                 }
@@ -830,10 +818,8 @@ export default class Mod {
                     'hostname': '',
                     'req': null,
                     'get': {},
-                    'post': {},
                     'cookie': {},
-                    'headers': {},
-                    'input': ''
+                    'headers': {}
                 }, '[create1, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
                 return false;
             }
@@ -868,10 +854,8 @@ export default class Mod {
                 'hostname': '',
                 'req': null,
                 'get': {},
-                'post': {},
                 'cookie': {},
-                'headers': {},
-                'input': ''
+                'headers': {}
             }, '[replace, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
             return false;
         }
@@ -906,10 +890,8 @@ export default class Mod {
                 'hostname': '',
                 'req': null,
                 'get': {},
-                'post': {},
                 'cookie': {},
-                'headers': {},
-                'input': ''
+                'headers': {}
             }, '[refresh, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
             return false;
         }
@@ -947,10 +929,8 @@ export default class Mod {
                 'hostname': '',
                 'req': null,
                 'get': {},
-                'post': {},
                 'cookie': {},
-                'headers': {},
-                'input': ''
+                'headers': {}
             }, '[save, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
             return false;
         }
@@ -991,10 +971,8 @@ export default class Mod {
                 'hostname': '',
                 'req': null,
                 'get': {},
-                'post': {},
                 'cookie': {},
-                'headers': {},
-                'input': ''
+                'headers': {}
             }, '[remove, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
             return false;
         }
@@ -1035,10 +1013,8 @@ export default class Mod {
                 'hostname': '',
                 'req': null,
                 'get': {},
-                'post': {},
                 'cookie': {},
-                'headers': {},
-                'input': ''
+                'headers': {}
             }, '[first, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
             return false;
         }
@@ -1069,13 +1045,52 @@ export default class Mod {
     /**
      * --- 联合查询表数据 ---
      * @param f 要联合查询的表列表，或单个表
+     * @param type 类型
      */
-    public unionAll(f: string | string[]): this {
+    public union(f: string | types.IModUnionItem | string[] | types.IModUnionItem[], type: string = ''): this {
         if (typeof f === 'string') {
+            f = {
+                'field': f
+            };
+        }
+        if (!Array.isArray(f)) {
             f = [f];
         }
-        for (const item of f) {
-            this._sql.unionAll(this._sql.copy(item));
+        for (let item of f) {
+            if (typeof item === 'string') {
+                item = {
+                    'field': item
+                };
+            }
+            this._sql.union(this._sql.copy(item.field, {
+                'where': item.where
+            }), type);
+        }
+        return this;
+    }
+
+    /**
+     * --- 所有联合查询表数据 ---
+     * @param f 要联合查询的表列表，或单个表
+     */
+    public unionAll(f: string | types.IModUnionItem | string[] | types.IModUnionItem[]): this {
+        if (typeof f === 'string') {
+            f = {
+                'field': f
+            };
+        }
+        if (!Array.isArray(f)) {
+            f = [f];
+        }
+        for (let item of f) {
+            if (typeof item === 'string') {
+                item = {
+                    'field': item
+                };
+            }
+            this._sql.unionAll(this._sql.copy(item.field, {
+                'where': item.where
+            }));
         }
         return this;
     }
@@ -1095,10 +1110,8 @@ export default class Mod {
                 'hostname': '',
                 'req': null,
                 'get': {},
-                'post': {},
                 'cookie': {},
-                'headers': {},
-                'input': ''
+                'headers': {}
             }, '[all, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
             return false;
         }
@@ -1153,10 +1166,8 @@ export default class Mod {
                 'hostname': '',
                 'req': null,
                 'get': {},
-                'post': {},
                 'cookie': {},
-                'headers': {},
-                'input': ''
+                'headers': {}
             }, '[allArray, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
             return false;
         }
@@ -1185,10 +1196,8 @@ export default class Mod {
                 'hostname': '',
                 'req': null,
                 'get': {},
-                'post': {},
                 'cookie': {},
-                'headers': {},
-                'input': ''
+                'headers': {}
             }, '[explain, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
             return false;
         }
@@ -1204,8 +1213,8 @@ export default class Mod {
     /**
      * --- 获取总条数，自动抛弃 LIMIT，仅用于获取数据的情况（select） ---
      */
-    public async total(): Promise<number> {
-        const sql: string = this._sql.getSql().replace(/SELECT .+? FROM/, 'SELECT COUNT(*) AS `count` FROM').replace(/ LIMIT [0-9 ,]+/g, '');
+    public async total(f: string = '*'): Promise<number> {
+        const sql: string = this._sql.getSql().replace(/SELECT .+? FROM/, 'SELECT COUNT(' + this._sql.field(f) + ') AS `count` FROM').replace(/ LIMIT [0-9 ,]+/g, '');
         const r = await this._db.query(sql, this._sql.getData());
         if (r.rows === null) {
             await lCore.log(this._ctr ?? {
@@ -1214,10 +1223,8 @@ export default class Mod {
                 'hostname': '',
                 'req': null,
                 'get': {},
-                'post': {},
                 'cookie': {},
-                'headers': {},
-                'input': ''
+                'headers': {}
             }, '[total, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
             return 0;
         }
@@ -1241,10 +1248,8 @@ export default class Mod {
                 'hostname': '',
                 'req': null,
                 'get': {},
-                'post': {},
                 'cookie': {},
-                'headers': {},
-                'input': ''
+                'headers': {}
             }, '[count, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
             return 0;
         }

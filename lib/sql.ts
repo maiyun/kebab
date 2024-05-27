@@ -95,10 +95,8 @@ export class Sql {
                             'hostname': '',
                             'req': null,
                             'get': {},
-                            'post': {},
                             'cookie': {},
-                            'headers': {},
-                            'input': ''
+                            'headers': {}
                         }, '(sql.values) value error', '-error');
                         sql += `'', `;
                     }
@@ -168,10 +166,8 @@ export class Sql {
                         'hostname': '',
                         'req': null,
                         'get': {},
-                        'post': {},
                         'cookie': {},
-                        'headers': {},
-                        'input': ''
+                        'headers': {}
                     }, '(sql.values) value error', '-error');
                     values += `'', `;
                 }
@@ -366,10 +362,8 @@ export class Sql {
                         'hostname': '',
                         'req': null,
                         'get': {},
-                        'post': {},
                         'cookie': {},
-                        'headers': {},
-                        'input': ''
+                        'headers': {}
                     }, '(sql._updateSub) value error, key: ' + k, '-error');
                     sql += '"", ';
                 }
@@ -453,12 +447,21 @@ export class Sql {
     /**
      * --- 联查另一个 sql 对象 ---
      * @param sql sql 对象
+     * @param type 类型
      */
-    public unionAll(lsql: Sql): this {
+    public union(lsql: Sql, type: string = ''): this {
         this._data = this._data.concat(lsql.getData());
-        this._sql.push(' UNION ALL ');
+        this._sql.push(' UNION ' + (type ? type + ' ' : ''));
         this._sql.push(lsql.getSql());
         return this;
+    }
+
+    /**
+     * --- 所有联查另一个 sql 对象 ---
+     * @param sql sql 对象
+     */
+    public unionAll(lsql: Sql): this {
+        return this.union(lsql, 'ALL');
     }
 
     /**

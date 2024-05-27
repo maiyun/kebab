@@ -204,3 +204,8 @@ export interface IUrlParse {
     'query': string | null;
     'hash': string | null;
 }
+
+export interface IModUnionItem {
+    'field': string;
+    'where'?: any;
+}
