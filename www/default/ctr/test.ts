@@ -2576,7 +2576,9 @@ ${JSON.stringify(lText.parseDomain('js.cn'))}
 <pre>lText.parseDomain('xxx.cn');</pre>
 ${JSON.stringify(lText.parseDomain('xxx.cn'))}
 <pre>lText.parseJson('{"num":90071992547409993149,"num2":3242354,"num3":"16565","str":"abc","bool":false}');</pre>
-${lText.stringifyJson(lText.parseJson('{"num":90071992547409993149,"num2":3242354,"num3":"16565","str":"abc","bool":false}'))}`;
+${lText.stringifyJson(lText.parseJson('{"num":90071992547409993149,"num2":3242354,"num3":"16565","str":"abc","bool":false}'))}
+<pre>lText.isIdCardCN('110101200007284901')</pre>
+${JSON.stringify(lText.isIdCardCN('110101200007284901'))}`;
         return echo + '<br><br>' + this._getEnd();
     }
 

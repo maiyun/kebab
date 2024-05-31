@@ -1,7 +1,7 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2019-5-15 16:49:39
- * Last: 2020-04-06 20:51:06, 2022-9-29 15:18:16, 2022-12-29 00:01:30, 2024-3-6 17:53:14
+ * Last: 2020-04-06 20:51:06, 2022-9-29 15:18:16, 2022-12-29 00:01:30, 2024-3-6 17:53:14, 2024-5-31 17:29:52
  */
 import * as def from '~/sys/def';
 import * as fs from './fs';
@@ -331,7 +331,7 @@ export function isIdCardCN(idcard: string): boolean {
     // --- 取出本码 ---
     const idcardBase = idcard.slice(0, 17);
     // --- 取出校验码 ---
-    const verifyCode = idcard.slice(17, 1);
+    const verifyCode = idcard.slice(17, 18);
     // --- 加权因子 ---
     const factor = [7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2];
     // --- 校验码对应值 ---
@@ -339,7 +339,7 @@ export function isIdCardCN(idcard: string): boolean {
     // --- 根据前17位计算校验码 ---
     let total = BigInt(0);
     for (let i = 0; i < 17; i++) {
-        total += BigInt(idcardBase.slice(i, 1)) * BigInt(factor[i]);
+        total += BigInt(idcardBase.slice(i, i + 1)) * BigInt(factor[i]);
     }
     // --- 取模 ---
     const mod = total % BigInt(11);
