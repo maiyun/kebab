@@ -507,7 +507,7 @@ export class Sql {
      * @param suf 表后缀
      */
     public innerJoin(f: string, s: types.Json = [], suf: string = ''): this {
-        return this.join(f, s, suf);
+        return this.join(f, s, 'INNER', suf);
     }
 
     /**
