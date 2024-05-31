@@ -1,7 +1,7 @@
 /**
  * Project: Kebab, User: Tang Rukun, JianSuoQiYue
  * Date: 2024-2-18 18:32:45
- * Last: 2024-2-18 18:32:47, 2024-3-16 16:42:27
+ * Last: 2024-2-18 18:32:47, 2024-3-16 16:42:27, 2024-5-31 21:36:26
  */
 
 // --- 库和定义 ---
@@ -104,14 +104,18 @@ export class S3 {
      * --- 上传对象 --
      * @param key 对象路径
      * @param content 内容
+     * @param length 设置 contentLength，如果是流模式则需要设置此项
      * @param bucket bucket 名
      */
-    public async putObject(key: string, content: string | Buffer | stream.Readable, bucket?: string): Promise<boolean> {
+    public async putObject(
+        key: string, content: string | Buffer | stream.Readable, length?: number, bucket?: string
+    ): Promise<boolean> {
         try {
             const po = new s3.PutObjectCommand({
                 'Bucket': bucket ?? this._bucket,
                 'Key': key,
-                'Body': content
+                'Body': content,
+                'ContentLength': length
             });
             await this._link.send(po);
             return true;
