@@ -1,7 +1,7 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2019-4-15 13:40
- * Last: 2020-4-14 13:52:00, 2022-09-07 01:43:31, 2023-12-29 17:24:03, 2024-2-7 00:28:50
+ * Last: 2020-4-14 13:52:00, 2022-09-07 01:43:31, 2023-12-29 17:24:03, 2024-2-7 00:28:50, 2024-6-6 15:15:54
  */
 import * as http from 'http';
 import * as http2 from 'http2';
@@ -814,12 +814,12 @@ function getPost(req: http2.Http2ServerRequest | http.IncomingMessage): Promise<
             return;
         }
         // --- json 或普通 post ---
-        const str: string[] = [];
+        let buffer: Buffer = Buffer.from('');
         req.on('data', function(chunk: Buffer) {
-            str.push(chunk.toString());
+            buffer = Buffer.concat([buffer, chunk], buffer.length + chunk.length);
         });
         req.on('end', function() {
-            const s = str.join('');
+            const s = buffer.toString();
             if (!s) {
                 resolve(['', {}]);
                 return;
