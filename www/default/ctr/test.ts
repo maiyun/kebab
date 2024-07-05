@@ -214,7 +214,7 @@ export default class extends sCtr.Ctr {
             '<br><br><b>Ssh:</b>',
             `<br><br><a href="${this._config.const.urlBase}test/ssh?type=shell">View "test/ssh?type=shell"</a>`,
             `<br><a href="${this._config.const.urlBase}test/ssh?type=sftp">View "test/ssh?type=sftp"</a>`,
-            
+
             '<br><br><b>S3:</b>',
             `<br><br><a href="${this._config.const.urlBase}test/s3">View "test/s3"</a>`
         ];
@@ -889,7 +889,7 @@ for (let i = 0; i < 30000; ++i) {
         return 'The restart request has been sent, please review the console.<br><br>' + this._getEnd();
     }
 
-    public async coreGlobal() {
+    public async coreGlobal(): Promise<string> {
         const ts = lTime.stamp().toString();
         const echo = [
             `<pre>lCore.global.tglobal</pre>`,
@@ -2676,23 +2676,27 @@ function send() {
         }
         const echo: string[] = ['<div>Connected "ws' + (this._config.const.https ? 's' : '') + '://' + this._config.const.host + '/test".</div>'];
         // --- 绑定事件 ---
-        await new Promise<void>(async (resolve) => {
-            ws.on('message', (frame) => {
-                echo.push('<div>Server: ' + frame.data.toString() + '.</div>');
+        await new Promise<void>((resolve) => {
+            (async () => {
+                ws.on('message', (frame) => {
+                    echo.push('<div>Server: ' + frame.data.toString() + '.</div>');
+                });
+                ws.on('close', () => {
+                    resolve();
+                });
+                ws.writeText('Hello: clientws');
+                echo.push('<div>Client: send "Hello: clientws".</div>');
+                await lCore.sleep(1000);
+                ws.writeText('aaa');
+                await lCore.sleep(1000);
+                ws.writeText('abc');
+                await lCore.sleep(1000);
+                ws.writeText('ok');
+                await lCore.sleep(1000);
+                ws.end();
+            })().catch(() => {
+                //
             });
-            ws.on('close', () => {
-                resolve();
-            });
-            ws.writeText('Hello: clientws');
-            echo.push('<div>Client: send "Hello: clientws".</div>');
-            await lCore.sleep(1000);
-            ws.writeText('aaa');
-            await lCore.sleep(1000);
-            ws.writeText('abc');
-            await lCore.sleep(1000);
-            ws.writeText('ok');
-            await lCore.sleep(1000);
-            ws.end();
         });
 
         return echo.join('') + '<br>' + this._getEnd();
@@ -2791,7 +2795,7 @@ function send() {
 
     public async s3(): Promise<string> {
         const s3 = lS3.get(this, {
-            'service': lS3.SERVICE.AMAZON,
+            'service': lS3.ESERVICE.AMAZON,
             'region': 'ap-southeast-1',
             'bucket': 'xxx'
         });
