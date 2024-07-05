@@ -146,7 +146,7 @@ export class Socket {
                 'url': u,
                 'auth': opt.mproxy?.auth ?? ''
             }) : uri.path;
-            let cli = ca ?
+            const cli = ca ?
                 await liws.wssConnect({
                     'hostname': hosts[host] ?? host,
                     'port': port,
@@ -179,35 +179,39 @@ export class Socket {
 
     /** --- 创建成功后第一时间绑定事件 --- */
     private _bindEvent(): void {
-        this._ws.on('message', async (msg) => {
-            if (msg.opcode === EOpcode.CLOSE) {
-                return;
-            }
-            let data: Buffer | string = '';
-            if ('data' in msg) {
-                data = Buffer.concat(msg.data);
-                if (msg.opcode === EOpcode.TEXT) {
-                    data = data.toString();
+        this._ws.on('message', (msg): void => {
+            (async (): Promise<void> => {
+                if (msg.opcode === EOpcode.CLOSE) {
+                    return;
                 }
-            }
-            else {
-                data = await (msg.opcode === EOpcode.TEXT ? msg.toString() : msg.toBuffer());
-            }
-            this._on.message({
-                'opcode': msg.opcode,
-                'data': data
+                let data: Buffer | string = '';
+                if ('data' in msg) {
+                    data = Buffer.concat(msg.data);
+                    if (msg.opcode === EOpcode.TEXT) {
+                        data = data.toString();
+                    }
+                }
+                else {
+                    data = await (msg.opcode === EOpcode.TEXT ? msg.toString() : msg.toBuffer());
+                }
+                this._on.message({
+                    'opcode': msg.opcode,
+                    'data': data
+                }) as any;
+            })().catch(() => {
+                // --- nothing ---
             });
         }).on('error', (e) => {
-            this._on.error(e);
+            this._on.error(e) as any;
         }).on('close', () => {
-            this._on.close();
+            this._on.close() as any;
         });
     }
 
     /** --- 还未开启监听时来的数据将存在这里 --- */
-    private _waitMsg: Array<{
-        'opcode': EOpcode,
-        'data': Buffer | string
+    private readonly _waitMsg: Array<{
+        'opcode': EOpcode;
+        'data': Buffer | string;
     }> = [];
 
     /** --- 还未开启 error 监听时产生的 error 错误对象 --- */
@@ -219,23 +223,23 @@ export class Socket {
     /** --- 未绑定自定义监听事件的默认执行函数 --- */
     private _on = {
         'message': (msg: {
-            'opcode': EOpcode,
-            'data': Buffer | string
-        }): void => {
+            'opcode': EOpcode;
+            'data': Buffer | string;
+        }): void | Promise<void> => {
             this._waitMsg.push(msg);
         },
-        'error': (e: any) => {
+        'error': (e: any): void | Promise<void> => {
             this._error = e;
         },
-        'close': () => {
+        'close': (): void | Promise<void> => {
             this._close = true;
         }
     };
 
     /** --- 绑定监听 --- */
     public on(event: 'message', cb: (msg: {
-        'opcode': EOpcode,
-        'data': Buffer | string
+        'opcode': EOpcode;
+        'data': Buffer | string;
     }) => void | Promise<void>): this;
     public on(event: 'error', cb: (error: any) => void | Promise<void>): this;
     public on(event: 'close', cb: () => void | Promise<void>): this;
@@ -244,7 +248,7 @@ export class Socket {
         switch (event) {
             case 'message': {
                 for (const item of this._waitMsg) {
-                    cb(item);
+                    cb(item) as any;
                 }
                 break;
             }
@@ -252,7 +256,7 @@ export class Socket {
                 if (!this._error) {
                     break;
                 }
-                cb(this._error);
+                cb(this._error) as any;
                 break;
             }
             default: {
@@ -260,7 +264,7 @@ export class Socket {
                 if (!this._close) {
                     break;
                 }
-                cb();
+                cb() as any;
             }
         }
         return this;
@@ -283,7 +287,7 @@ export class Socket {
     }
 
     /** --- 发送结果对象字符串 --- */
-    public writeResult(data: any): boolean {
+    public writeResult(data: types.Json): boolean {
         if (!this._ws.writable) {
             return false;
         }
@@ -291,7 +295,7 @@ export class Socket {
     }
 
     /** --- 发送二进制 --- */
-    public writeBinary(data: string | Buffer | (string | Buffer)[]): boolean {
+    public writeBinary(data: string | Buffer | Array<string | Buffer>): boolean {
         if (!this._ws.writable) {
             return false;
         }
@@ -349,8 +353,7 @@ export class Socket {
  * @param u 以 ws, wss 开头的地址
  * @param opt 参数
  */
-export function connect(u: string, opt: IConnectOptions = {}
-) {
+export function connect(u: string, opt: IConnectOptions = {}): Promise<Socket | null> {
     const s = new Socket();
     return s.connect(u, opt);
 }
@@ -360,7 +363,7 @@ export function connect(u: string, opt: IConnectOptions = {}
  * @param request Http 请求端
  * @param socket 响应双向 socket
  */
-export function createServer(request: http.IncomingMessage, socket: net.Socket) {
+export function createServer(request: http.IncomingMessage, socket: net.Socket): Socket {
     return new Socket(request, socket);
 }
 
@@ -368,7 +371,6 @@ export function createServer(request: http.IncomingMessage, socket: net.Socket) 
  * --- 绑定 socket 管道 ---
  * @param s1 第一个 socket
  * @param s2 第二个 socket
- * @returns 
  */
 function bindPipe(s1: Socket, s2: Socket): Promise<void> {
     return new Promise<void>((resolve) => {
@@ -396,6 +398,9 @@ function bindPipe(s1: Socket, s2: Socket): Promise<void> {
                 case EOpcode.PONG: {
                     s2.pong(msg.data);
                     break;
+                }
+                default: {
+                    // --- EOpcode.CONTINUATION ---
                 }
             }
         }).on('close', () => {
@@ -428,6 +433,9 @@ function bindPipe(s1: Socket, s2: Socket): Promise<void> {
                     s1.pong(msg.data);
                     break;
                 }
+                default: {
+                    // --- EOpcode.CONTINUATION ---
+                }
             }
         }).on('close', () => {
             resolve();
@@ -459,7 +467,8 @@ export async function mproxy(
     }
     if (!get['url']) {
         return -1;
-    }if (!opt.headers) {
+    }
+    if (!opt.headers) {
         opt.headers = {};
     }
     Object.assign(opt.headers, lNet.filterProxyHeaders(req.headers));

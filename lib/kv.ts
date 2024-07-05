@@ -66,11 +66,11 @@ async function checkConnection(): Promise<void> {
         --i;
         continue;
     }
-    setTimeout(function () {
+    setTimeout(function() {
         checkConnection().catch(e => { console.log('[KV]', e); });
     }, 30000);
 }
-setTimeout(function () {
+setTimeout(function() {
     checkConnection().catch(e => { console.log('[KV]', e); });
 }, 30000);
 
@@ -657,7 +657,7 @@ export class Pool {
             conn = new Connection(this._etc, link);
             conn.refreshLast();
             conn.setUsing();
-            link.on('error', function (err): void {
+            link.on('error', function(err): void {
                 conn.setLost();
                 // console.log(`--- redis [${conn._etc.host}:${conn._etc.port}] error ---`);
                 console.log('[KV] [ERROR]', err);

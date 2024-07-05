@@ -584,6 +584,7 @@ process.on('message', function(msg: types.Json) {
                 }
                 // --- 链接全部断开 ---
                 process.exit();
+                break;
             }
             case 'global': {
                 if (msg.data === undefined) {

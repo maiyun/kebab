@@ -54,7 +54,7 @@ export class Connection {
         const start = options.start;
         const end = options.end;
         return new Promise((resolve) => {
-            if (start || end) {
+            if (start ?? end) {
                 const rs = this.createReadStream(path, {
                     'encoding': encoding,
                     'start': start,

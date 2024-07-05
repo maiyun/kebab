@@ -1,6 +1,7 @@
 {
     "httpPort": 8080,
     "httpsPort": 4333,
+    "rpcPort": 10631,
 
     "set": {
         "timezone": 8,

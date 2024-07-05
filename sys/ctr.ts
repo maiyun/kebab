@@ -169,7 +169,7 @@ export class Ctr {
     /**
      * --- WebSocket 下当收到数据时会自动被调用的事件，即只文本和二进制数据，返回内容会被发送给 socket，但返回 false 连接会被中断 ---
      */
-    public onData(data: Buffer | string, opcode: lWs.EOpcode): string | Buffer | object | void | Promise<string | Buffer | object | void>;
+    public onData(data: Buffer | string, opcode: lWs.EOpcode): types.Json;
     public onData(): string {
         return '';
     }
@@ -179,8 +179,8 @@ export class Ctr {
      * @param data 数据
      * @param opcode opcode
      */
-    public onMessage(data: Buffer | string, opcode: lWs.EOpcode): void | boolean | Promise<void | boolean>;
-    public onMessage(): void {
+    public onMessage(data: Buffer | string, opcode: lWs.EOpcode): undefined | boolean | Promise<undefined | boolean>;
+    public onMessage(): undefined {
         return;
 
     }
@@ -725,7 +725,7 @@ export class Ctr {
      * --- 发送结果对象文本 ---
      * @param data 要发送的结果对象，如 [0, 'Failed.']
      */
-    protected _writeResult(data: any): boolean {
+    protected _writeResult(data: types.Json): boolean {
         return this._socket.writeResult(data);
     }
 

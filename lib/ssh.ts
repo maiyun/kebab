@@ -10,13 +10,13 @@ import * as ssh2 from 'ssh2';
 import * as shell from './ssh/shell';
 import * as sftp from './ssh/sftp';
 
-interface ExtOptions {
+interface IExtOptions {
     'mproxy'?: {
         'host': string;
         'port': number;
         'username': string;
         'password': string;
-    }
+    };
 }
 
 /** 主连接对象 */
@@ -36,7 +36,7 @@ export class Connection {
      * --- 发起连接 ---
      * @param opt 选项
      */
-    public connect(opt: ssh2.ConnectConfig & ExtOptions): Promise<boolean> {
+    public connect(opt: ssh2.ConnectConfig & IExtOptions): Promise<boolean> {
         return new Promise((resolve) => {
             if (!opt.mproxy) {
                 this._client.on('error', function() {
@@ -105,8 +105,8 @@ export class Connection {
      */
     public exec(command: string): Promise<Buffer | false> {
         return new Promise((resolve) => {
-            this._client.exec(command, function(err: Error | undefined, channel: ssh2.ClientChannel | undefined): void {
-                if (err || !channel) {
+            this._client.exec(command, function(err?: Error, channel?: ssh2.ClientChannel): void {
+                if (err ?? !channel) {
                     resolve(false);
                     return;
                 }
@@ -128,7 +128,7 @@ export class Connection {
     public getShell(): Promise<shell.Connection | null> {
         return new Promise((resolve) => {
             this._client.shell(function(err, channel) {
-                if (err || !channel) {
+                if (err ?? !channel) {
                     resolve(null);
                     return;
                 }
@@ -143,7 +143,7 @@ export class Connection {
     public getSftp(): Promise<sftp.Connection | null> {
         return new Promise((resolve) => {
             this._client.sftp((err, ssftp) => {
-                if (err || !ssftp) {
+                if (err ?? !ssftp) {
                     resolve(null);
                     return;
                 }
@@ -184,7 +184,7 @@ export class Connection {
  * --- 创建一个 SSH 连接 ---
  * @param opt 选项
  */
-export async function get(opt: ssh2.ConnectConfig & ExtOptions): Promise<Connection | null> {
+export async function get(opt: ssh2.ConnectConfig & IExtOptions): Promise<Connection | null> {
     const conn = new Connection();
     const rtn = await conn.connect(opt);
     return rtn ? conn : null;

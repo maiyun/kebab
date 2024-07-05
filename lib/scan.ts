@@ -279,7 +279,7 @@ export async function scanned(
         if (r.error) {
             return false;
         }
-        if (r.packet?.changedRows && r.packet.changedRows > 0) {
+        if (r.packet?.affectedRows && r.packet.affectedRows > 0) {
             return true;
         }
     }
@@ -339,7 +339,7 @@ export async function setData(
         if (r.error) {
             return false;
         }
-        if (r.packet?.changedRows && r.packet?.changedRows > 0) {
+        if (r.packet?.affectedRows && r.packet?.affectedRows > 0) {
             return true;
         }
     }

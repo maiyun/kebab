@@ -28,7 +28,7 @@ export interface IData {
 
 /** --- exec 返回对象 --- */
 export interface IPacket {
-    'packet': mysql2.OkPacket | null;
+    'packet': mysql2.ResultSetHeader | null;
     'fields': mysql2.FieldPacket[];
     'error': {
         'message': string;
@@ -378,11 +378,11 @@ export class Connection {
      * @param values 要替换的 data 数据
      */
     public async query(sql: string, values?: any[] | Record<string, any>): Promise<IData> {
-        let res;
+        let res: [any[], mysql2.FieldPacket[]];
         try {
             this.refreshLast();
             this._lastSql = sql;
-            res = await this._link.query(sql, values) as [any[], mysql2.FieldPacket[]];
+            res = await this._link.query(sql, values);
         }
         catch (e: any) {
             if (!this._transaction) {
@@ -411,11 +411,11 @@ export class Connection {
      * @param values 要替换的 data 数据
      */
     public async execute(sql: string, values?: any[] | Record<string, any>): Promise<IPacket> {
-        let res;
+        let res: [mysql2.ResultSetHeader, mysql2.FieldPacket[]];
         try {
             this.refreshLast();
             this._lastSql = sql;
-            res = await this._link.execute(sql, values) as [mysql2.OkPacket, mysql2.FieldPacket[]];
+            res = await this._link.execute(sql, values);
         }
         catch (e: any) {
             if (!this._transaction) {

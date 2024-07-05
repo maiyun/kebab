@@ -6,7 +6,7 @@
 
 // --- 库和定义 ---
 import * as s3 from '@aws-sdk/client-s3';
-import * as stream from "stream";
+import * as stream from 'stream';
 import * as sCtr from '~/sys/ctr';
 import * as lCore from '~/lib/core';
 import * as lText from '~/lib/text';
@@ -16,17 +16,17 @@ import * as lText from '~/lib/text';
  */
 
 /** --- 服务商定义 --- */
-export enum SERVICE {
+export enum ESERVICE {
     'AMAZON',
     'TENCENT',
     'ALIBABA',
     'CF'
-};
+}
 
 /** --- 选项 --- */
 export interface IOptions {
     /** --- 服务商 ---- */
-    'service': SERVICE;
+    'service': ESERVICE;
     /** --- cf r2 使用 --- */
     'account'?: string;
     /** --- 密钥键 --- */
@@ -52,34 +52,37 @@ export class S3 {
         this._ctr = ctr;
         const config = ctr.getPrototype('_config');
         if (!opt.account) {
-            opt.account = config.s3?.[SERVICE[opt.service]]?.account ?? '';
+            opt.account = config.s3?.[ESERVICE[opt.service]]?.account ?? '';
         }
         if (!opt.secretId) {
-            opt.secretId = config.s3?.[SERVICE[opt.service]]?.sid ?? '';
+            opt.secretId = config.s3?.[ESERVICE[opt.service]]?.sid ?? '';
         }
         if (!opt.secretKey) {
-            opt.secretKey = config.s3?.[SERVICE[opt.service]]?.skey ?? '';
+            opt.secretKey = config.s3?.[ESERVICE[opt.service]]?.skey ?? '';
         }
         if (!opt.region) {
-            opt.region = config.s3?.[SERVICE[opt.service]]?.region ?? '';
+            opt.region = config.s3?.[ESERVICE[opt.service]]?.region ?? '';
         }
         if (!opt.bucket) {
-            opt.bucket = config.s3?.[SERVICE[opt.service]]?.bucket ?? '';
+            opt.bucket = config.s3?.[ESERVICE[opt.service]]?.bucket ?? '';
         }
         this._bucket = opt.bucket;
-        let endpoint: string | undefined = undefined;
+        let endpoint: string | undefined;
         switch (opt.service) {
-            case SERVICE.TENCENT: {
+            case ESERVICE.TENCENT: {
                 endpoint = `https://cos.${opt.region}.myqcloud.com`;
                 break;
             }
-            case SERVICE.ALIBABA: {
+            case ESERVICE.ALIBABA: {
                 endpoint = `https://oss-${opt.region}.aliyuncs.com`;
                 break;
             }
-            case SERVICE.CF: {
+            case ESERVICE.CF: {
                 endpoint = `https://${opt.account}.r2.cloudflarestorage.com`;
                 break;
+            }
+            default: {
+                endpoint = undefined;
             }
         }
         this._link = new s3.S3Client({
@@ -131,6 +134,7 @@ export class S3 {
      * @param key 对象路径
      * @param bucket bucket 名
      */
+    // eslint-disable-next-line @typescript-eslint/explicit-function-return-type, @typescript-eslint/explicit-module-boundary-types
     public async getObject(key: string, bucket?: string) {
         try {
             const go = new s3.GetObjectCommand({

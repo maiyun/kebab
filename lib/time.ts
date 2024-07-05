@@ -4,7 +4,6 @@
  * Last: 2020-3-29 23:41:21, 2024-1-18 17:16:50
  */
 import * as sCtr from '~/sys/ctr';
-import * as text from '~/lib/text';
 
 export interface IOptions {
     /** --- 时区 --- */

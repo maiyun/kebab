@@ -18,15 +18,15 @@ import * as ctr from '~/sys/ctr';
  */
 
 /** --- 服务商定义 --- */
-export enum SERVICE {
+export enum ESERVICE {
     'DNSPOD',
     'ALIBABA'
-};
+}
 
 /** --- 选项 --- */
 export interface IOptions {
     /** --- 服务商 ---- */
-    'service': SERVICE;
+    'service': ESERVICE;
     /** --- 密钥键 --- */
     'secretId'?: string;
     /** --- 密钥值 --- */
@@ -80,7 +80,7 @@ export enum ERecordLine {
 }
 
 const recordLine = {
-    [SERVICE.DNSPOD]: [
+    [ESERVICE.DNSPOD]: [
         '默认',
         '电信',
         '联通',
@@ -88,7 +88,7 @@ const recordLine = {
         '教育网',
         '境外'
     ],
-    [SERVICE.ALIBABA]: [
+    [ESERVICE.ALIBABA]: [
         'default',
         'telecom',
         'unicom',
@@ -106,10 +106,10 @@ export class Dns {
     public constructor(ctr: ctr.Ctr, opt: IOptions) {
         const config = ctr.getPrototype('_config');
         if (!opt.secretId) {
-            opt.secretId = config.dns?.[SERVICE[opt.service]].sid;
+            opt.secretId = config.dns?.[ESERVICE[opt.service]].sid;
         }
         if (!opt.secretKey) {
-            opt.secretKey = config.dns?.[SERVICE[opt.service]].skey;
+            opt.secretKey = config.dns?.[ESERVICE[opt.service]].skey;
         }
         this._opt = opt;
     }
@@ -126,7 +126,7 @@ export class Dns {
         }
         switch (this._opt.service) {
             // --- DNSPod ---
-            case SERVICE.DNSPOD: {
+            case ESERVICE.DNSPOD: {
                 const data = Object.assign({
                     'login_token': (this._opt.secretId ?? '') + '.' + (this._opt.secretKey ?? ''),
                     'format': 'json'
@@ -136,7 +136,7 @@ export class Dns {
                 return net.post('https://dnsapi.cn/' + path, data); // 境外 api 会自动调度到香港服务器
             }
             // --- 阿里云 ---
-            case SERVICE.ALIBABA: {
+            case ESERVICE.ALIBABA: {
                 const getData = core.objectSort(Object.assign({
                     'Format': 'JSON',
                     'Version': '2015-01-09',
@@ -164,7 +164,7 @@ export class Dns {
     }): Promise<IDomainList | null> {
         switch (this._opt.service) {
             // --- DNSPod ---
-            case SERVICE.DNSPOD: {
+            case ESERVICE.DNSPOD: {
                 const rtn = await this._send({
                     '_path': 'Domain.List',
                     'offset': opt.offset ?? 0,
@@ -190,7 +190,7 @@ export class Dns {
                 return r;
             }
             // --- 阿里云 ---
-            case SERVICE.ALIBABA: {
+            case ESERVICE.ALIBABA: {
                 const length = opt.length ?? 20;
                 const rtn = await this._send({
                     'Action': 'DescribeDomains',
@@ -237,13 +237,13 @@ export class Dns {
         const ttl = opt.ttl ?? 600;
         switch (this._opt.service) {
             // --- DNSPod ---
-            case SERVICE.DNSPOD: {
+            case ESERVICE.DNSPOD: {
                 const rtn = await this._send({
                     '_path': 'Record.Create',
                     'domain': opt.domain,
                     'sub_domain': opt.sub,
                     'record_type': opt.type,
-                    'record_line': recordLine[SERVICE.DNSPOD][line],
+                    'record_line': recordLine[ESERVICE.DNSPOD][line],
                     'value': opt.value,
                     'ttl': ttl,
                     'mx': opt.mx
@@ -260,13 +260,13 @@ export class Dns {
                 return r;
             }
             // --- 阿里云 ---
-            case SERVICE.ALIBABA: {
+            case ESERVICE.ALIBABA: {
                 const rtn = await this._send({
                     'Action': 'AddDomainRecord',
                     'DomainName': opt.domain,
                     'RR': opt.sub,
                     'Type': opt.type,
-                    'Line': recordLine[SERVICE.ALIBABA][line],
+                    'Line': recordLine[ESERVICE.ALIBABA][line],
                     'Value': opt.value,
                     'TTL': ttl,
                     'Priority': opt.mx
@@ -304,7 +304,7 @@ export class Dns {
         const ttl = opt.ttl ?? 600;
         switch (this._opt.service) {
             // --- DNSPod ---
-            case SERVICE.DNSPOD: {
+            case ESERVICE.DNSPOD: {
                 // --- DNSPod 必须传 domain ---
                 const rtn = await this._send({
                     '_path': 'Record.Modify',
@@ -312,7 +312,7 @@ export class Dns {
                     'record_id': opt.record,
                     'sub_domain': opt.sub,
                     'record_type': opt.type,
-                    'record_line': recordLine[SERVICE.DNSPOD][line],
+                    'record_line': recordLine[ESERVICE.DNSPOD][line],
                     'value': opt.value,
                     'ttl': ttl,
                     'mx': opt.mx
@@ -329,13 +329,13 @@ export class Dns {
                 return r;
             }
             // --- 阿里云 ---
-            case SERVICE.ALIBABA: {
+            case ESERVICE.ALIBABA: {
                 const rtn = await this._send({
                     'Action': 'UpdateDomainRecord',
                     'RecordId': opt.record,
                     'RR': opt.sub,
                     'Type': opt.type,
-                    'Line': recordLine[SERVICE.ALIBABA][line],
+                    'Line': recordLine[ESERVICE.ALIBABA][line],
                     'Value': opt.value,
                     'TTL': ttl,
                     'Priority': opt.mx
@@ -365,7 +365,7 @@ export class Dns {
     }): Promise<{ 'success': boolean; } | null> {
         switch (this._opt.service) {
             // --- DNSPod ---
-            case SERVICE.DNSPOD: {
+            case ESERVICE.DNSPOD: {
                 const rtn = await this._send({
                     '_path': 'Record.Remove',
                     'domain': opt.domain,
@@ -381,7 +381,7 @@ export class Dns {
                 };
             }
             // --- 阿里云 ---
-            case SERVICE.ALIBABA: {
+            case ESERVICE.ALIBABA: {
                 const rtn = await this._send({
                     'Action': 'DeleteDomainRecord',
                     'RecordId': opt.id

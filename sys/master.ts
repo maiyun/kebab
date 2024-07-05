@@ -1,13 +1,16 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2019-5-2 21:03:42
- * Last: 2020-3-7 10:33:17, 2022-07-22 13:40:10, 2022-09-06 22:40:58, 2024-2-7 01:44:59
+ * Last: 2020-3-7 10:33:17, 2022-07-22 13:40:10, 2022-09-06 22:40:58, 2024-2-7 01:44:59, 2024-7-2 15:17:09
  */
 import * as os from 'os';
 import * as cluster from 'cluster';
 import * as http from 'http';
 // --- 库和定义 ---
+import * as def from '~/sys/def';
 import * as lCore from '~/lib/core';
+import * as lFs from '~/lib/fs';
+import * as lText from '~/lib/text';
 
 /** --- 当前运行中的子进程列表 --- */
 const workerList: Record<string, {
@@ -23,6 +26,16 @@ const workerList: Record<string, {
  * --- 最终调用执行的函数块 ---
  */
 async function run(): Promise<void> {
+    // --- 读取配置文件 ---
+    const configContent = await lFs.getContent(def.CONF_PATH + 'config.json', 'utf8');
+    if (!configContent) {
+        throw `File '${def.CONF_PATH}config.json' not found.`;
+    }
+    /** --- 系统 config.json --- */
+    const config = lText.parseJson(configContent);
+    for (const key in config) {
+        lCore.globalConfig[key] = config[key];
+    }
     // --- 监听 CMD 命令 ---
     createRpcListener();
     // --- 30 秒检测一次是否有丢失的子进程 ---
@@ -39,7 +52,7 @@ async function run(): Promise<void> {
     }
     cluster.default.on('listening', function(worker, address) {
         // --- 子进程开始监听 ---
-        console.log(`[master] Listening: worker ${worker.process.pid}, Address: ${address.address}:${address.port}.`);
+        console.log(`[master] Listening: worker ${worker.process.pid ?? 'undefined'}, Address: ${address.address}:${address.port}.`);
     }).on('exit', function(worker, code) {
         (async function() {
             if (!worker.process.pid) {
@@ -95,7 +108,7 @@ function createRpcListener(): void {
         })().catch(function(e) {
             console.log('[master] [createRpcListener]', e);
         });
-    }).listen(10631, '127.0.0.1');
+    }).listen(lCore.globalConfig.rpcPort, '127.0.0.1');
 }
 
 /**

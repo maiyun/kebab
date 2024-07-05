@@ -182,7 +182,7 @@ export async function run(data: {
                 // --- 不放行 ---
                 const alang = data.req.headers['accept-language']?.toLowerCase() ?? config.lang.list[0];
                 const apath = config.const.path + (config.const.qs ? '?' + config.const.qs : '');
-                for (let lang of config.lang.list) {
+                for (const lang of config.lang.list) {
                     let checkLang = lang;
                     if (lang === 'sc') {
                         checkLang = 'cn';
@@ -366,6 +366,10 @@ export async function run(data: {
                             catch (e: any) {
                                 await lCore.log(cctr, lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
                             }
+                            break;
+                        }
+                        default: {
+                            // --- nothing ---
                         }
                     }
                 }).on('error', async (e: any) => {
@@ -374,7 +378,7 @@ export async function run(data: {
                     try {
                         await (cctr as types.Json)['onClose']();
                     }
-                    catch(e: any) {
+                    catch (e: any) {
                         await lCore.log(cctr, lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
                     }
                     resolve();

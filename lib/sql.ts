@@ -97,7 +97,9 @@ export class Sql {
                             'get': {},
                             'cookie': {},
                             'headers': {}
-                        }, '(sql.values) value error', '-error');
+                        }, '(sql.values) value error', '-error').catch(() => {
+                            //
+                        });
                         sql += `'', `;
                     }
                     else if (v1 === null) {
@@ -168,7 +170,9 @@ export class Sql {
                         'get': {},
                         'cookie': {},
                         'headers': {}
-                    }, '(sql.values) value error', '-error');
+                    }, '(sql.values) value error', '-error').catch(() => {
+                        //
+                    });
                     values += `'', `;
                 }
                 else if (v === null) {
@@ -329,10 +333,12 @@ export class Sql {
                 'type': '6',        // 2
                 'type': '#type2',   // 3
                 'type': ['type3'],  // 4
-                'type' => ['(CASE `id` WHEN 1 THEN ? WHEN 2 THEN ? END)', ['val1', 'val2']],     // 5
-                'point' => { 'x': 0, 'y': 0 },  // 6
-                'polygon' => [ [ { 'x': 0, 'y': 0 }, { ... } ], [ ... ] ],   // 7
-                'json' => { 'a': 1, 'b': { 'c': 2 }, 'c': [ { 'c': 2 } ] }        // 8
+                'type': ['(CASE `id` WHEN 1 THEN ? WHEN 2 THEN ? END)', ['val1', 'val2']],     // 5
+                'point': { 'x': 0, 'y': 0 },  // 6
+                'polygon': [ [ { 'x': 0, 'y': 0 }, { ... } ], [ ... ] ],          // 7
+                'json': { 'a': 1, 'b': { 'c': 2 }, 'c': [ { 'c': 2 } ] },         // 8
+                'json2': {},        // 9
+                'json3': [],        // 10
             }
         ]
         */
@@ -364,13 +370,15 @@ export class Sql {
                         'get': {},
                         'cookie': {},
                         'headers': {}
-                    }, '(sql._updateSub) value error, key: ' + k, '-error');
+                    }, '(sql._updateSub) value error, key: ' + k, '-error').catch(() => {
+                        //
+                    });
                     sql += '"", ';
                 }
                 else if (Array.isArray(v)) {
-                    if (v[0][0]?.x === undefined) {
+                    if (v[0]?.[0]?.x === undefined) {
                         // --- 4, 5, 8(2) ---
-                        if (typeof v[0] === 'object') {
+                        if (!v.length || typeof v[0] === 'object') {
                             // --- 8(2), v: json ---
                             sql += '?, ';
                             this._data.push(lText.stringifyJson(v));
@@ -383,7 +391,7 @@ export class Sql {
                             }
                         }
                     }
-                    else if (v[0][0]?.y !== undefined) {
+                    else if (v[0]?.[0]?.y !== undefined) {
                         // --- 7 ---
                         sql += 'ST_POLYGONFROMTEXT(?), ';
                         this._data.push(`POLYGON(${v.map((item) => {
@@ -1031,7 +1039,7 @@ export class Sql {
 /**
  * --- 创建 sql 对象 ---
  * @param ctrPre ctr 对象或 pre 表前缀
- * @param opt 
+ * @param opt 参数
  */
 export function get(ctrPre?: ctr.Ctr | string, opt: {
     'data'?: types.DbValue[];

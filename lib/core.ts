@@ -1,7 +1,7 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2019-5-3 23:54
- * Last: 2020-4-11 22:34:58, 2022-10-2 14:13:06, 2022-12-28 20:33:24, 2023-12-15 11:49:02
+ * Last: 2020-4-11 22:34:58, 2022-10-2 14:13:06, 2022-12-28 20:33:24, 2023-12-15 11:49:02, 2024-7-2 15:23:35
  */
 import * as cp from 'child_process';
 import * as http from 'http';
@@ -20,6 +20,7 @@ import * as types from '~/types';
 export const globalConfig: types.IConfig & {
     'httpPort': number;
     'httpsPort': number;
+    'rpcPort': number;
 } = {} as types.Json;
 
 /** --- Cookie 设置的选项 --- */
@@ -88,7 +89,7 @@ export const RANDOM_LN = RANDOM_L + RANDOM_N;
 export const RANDOM_LU = RANDOM_L + RANDOM_U;
 export const RANDOM_LUN = RANDOM_L + RANDOM_U + RANDOM_N;
 export const RANDOM_V = 'ACEFGHJKLMNPRSTWXY34567';
-export const RANDOM_LUNS = RANDOM_LUN + '()`~!@#$%^&*-+=_|{}[]:;"<>,.?/]';
+export const RANDOM_LUNS = RANDOM_LUN + '()`~!@#$%^&*-+=_|{}[]:;"<>,.?/]"';
 
 /**
  * --- 生成随机字符串 ---
@@ -248,8 +249,11 @@ export const REAL_IP_CF = 'cf-connecting-ip';
  */
 export function realIP(ctr: sCtr.Ctr, name: string = ''): string {
     const headers: http.IncomingHttpHeaders = ctr.getPrototype('_headers');
-    if ((name !== '') && (typeof headers[name] === 'string')) {
-        return headers[name] as string;
+    if (name !== '') {
+        const value = headers[name];
+        if (typeof value === 'string') {
+            return value;
+        }
     }
     const req: http2.Http2ServerRequest | http.IncomingMessage = ctr.getPrototype('_req');
     return req.socket.remoteAddress ?? '';
@@ -391,7 +395,7 @@ export const global: Record<string, any> = {};
  * @param key 变量名
  * @param data 变量值
  */
-export function setGlobal(key: string, data: string | number | boolean | Record<string, string | number | boolean>): void {
+export function setGlobal(key: string, data: types.Json): void {
     process.send!({
         'action': 'global',
         'key': key,
@@ -403,7 +407,7 @@ export function setGlobal(key: string, data: string | number | boolean | Record<
  * --- 移除某个跨线程全局变量 ---
  * @param key 变量名
  */
-export function removeGlobal(key: string) {
+export function removeGlobal(key: string): void {
     process.send!({
         'action': 'global',
         'key': key,

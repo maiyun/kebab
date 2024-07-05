@@ -445,7 +445,7 @@ export function getFilename(path: string): string {
  * --- 将普通的返回 JSON 对象序列化为字符串，Mutton 不能使用 ---
  * @param o 返回 JSON 对象
  */
-export function stringifyResult(rtn: any): string {
+export function stringifyResult(rtn: types.Json): string {
     if (Array.isArray(rtn)) {
         // --- [0, 'xxx'] 模式 ---
         if (rtn.length === 0) {
@@ -513,9 +513,8 @@ export function parseJson(str: string): any {
 /**
  * --- 将对象转换为 json 字符串，返回 false 代表解析失败，支持 BigInt，Kebab true, Mutton false ---
  * @param obj 要转换的 json 对象
- * @returns 
  */
-export function stringifyJson(obj: any): string {
+export function stringifyJson(obj: types.Json): string {
     return JSON.stringify(obj, (k, v) => {
         if (typeof v === 'bigint') {
             return '-mybigint-' + v.toString();

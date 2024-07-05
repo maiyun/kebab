@@ -277,12 +277,14 @@ export async function request(
         res.setContent(total.toString());
     }
     res.headers = req.headers as types.THttpHeaders;
-    res.headers['http-version'] = '1.1';
     switch (req.protocol) {
         case hc.EProtocol.HTTPS_2:
         case hc.EProtocol.HTTP_2: {
             req.headers['http-version'] = '2.0';
             break;
+        }
+        default: {
+            res.headers['http-version'] = '1.1';
         }
     }
     res.headers['http-code'] = req.statusCode;
@@ -534,7 +536,10 @@ const proxyContinueHeaders = ['host', 'connection', 'http-version', 'http-code',
  * @param headers 剔除前的 header
  * @param res 直接设置头部而不返回，可置空
  */
-export function filterProxyHeaders(headers: http.IncomingHttpHeaders | http2.IncomingHttpHeaders | types.THttpHeaders, res?: http2.Http2ServerResponse | http.ServerResponse<http.IncomingMessage>): Record<string, string | string[]> {
+export function filterProxyHeaders(
+    headers: http.IncomingHttpHeaders | http2.IncomingHttpHeaders | types.THttpHeaders,
+    res?: http2.Http2ServerResponse | http.ServerResponse
+): Record<string, string | string[]> {
     const heads: Record<string, string | string[]> = {};
     for (const h in headers) {
         if (proxyContinueHeaders.includes(h)) {
