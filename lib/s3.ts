@@ -1,7 +1,7 @@
 /**
  * Project: Kebab, User: Tang Rukun, JianSuoQiYue
  * Date: 2024-2-18 18:32:45
- * Last: 2024-2-18 18:32:47, 2024-3-16 16:42:27, 2024-5-31 21:36:26
+ * Last: 2024-2-18 18:32:47, 2024-3-16 16:42:27, 2024-5-31 21:36:26, 2024-7-8 00:28:42
  */
 
 // --- 库和定义 ---
@@ -144,8 +144,8 @@ export class S3 {
             const r = await this._link.send(go);
             return r.Body;
         }
-        catch (e: any) {
-            await lCore.log(this._ctr, '[getObject, s3] ' + lText.stringifyJson(e.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+        catch {
+            // await lCore.log(this._ctr, '[getObject, s3] ' + lText.stringifyJson(e.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
             return false;
         }
     }
@@ -164,8 +164,8 @@ export class S3 {
             await this._link.send(doc);
             return true;
         }
-        catch (e: any) {
-            await lCore.log(this._ctr, '[deleteObject, s3] ' + lText.stringifyJson(e.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+        catch {
+            // await lCore.log(this._ctr, '[deleteObject, s3] ' + lText.stringifyJson(e.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
             return false;
         }
     }
