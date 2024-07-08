@@ -259,7 +259,7 @@ export class Ctr {
             const lastK = c - 1;
             if ((val[lastK][0] === undefined) || (val[lastK][1] === undefined) || !Number.isInteger(val[lastK][0]) || (typeof val[lastK][1] !== 'string')) {
                 rtn[0] = 0;
-                rtn[1] = 'Param error';
+                rtn[1] = 'Param error(' + key + ')';
                 return false;
             }
             for (let k = 0; k < lastK; ++k) {
