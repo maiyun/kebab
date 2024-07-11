@@ -1,11 +1,12 @@
 /**
  * Project: Kebab, User: Tang Rukun, JianSuoQiYue
  * Date: 2024-2-18 18:32:45
- * Last: 2024-2-18 18:32:47, 2024-3-16 16:42:27, 2024-5-31 21:36:26, 2024-7-8 00:28:42
+ * Last: 2024-2-18 18:32:47, 2024-3-16 16:42:27, 2024-5-31 21:36:26, 2024-7-8 00:28:42, 2024-7-11 12:14:53
  */
 
 // --- 库和定义 ---
 import * as s3 from '@aws-sdk/client-s3';
+import * as ls from '@aws-sdk/lib-storage';
 import * as stream from 'stream';
 import * as sCtr from '~/sys/ctr';
 import * as lCore from '~/lib/core';
@@ -104,7 +105,7 @@ export class S3 {
     }
 
     /**
-     * --- 上传对象 --
+     * --- 上传对象（可传流且也可无需设置 length） --
      * @param key 对象路径
      * @param content 内容
      * @param length 设置 contentLength，如果是流模式则需要设置此项
@@ -114,13 +115,16 @@ export class S3 {
         key: string, content: string | Buffer | stream.Readable, length?: number, bucket?: string
     ): Promise<boolean> {
         try {
-            const po = new s3.PutObjectCommand({
-                'Bucket': bucket ?? this._bucket,
-                'Key': key,
-                'Body': content,
-                'ContentLength': length
+            const upload = new ls.Upload({
+                'client': this._link,
+                'params': {
+                    'Bucket': bucket ?? this._bucket,
+                    'Key': key,
+                    'Body': content,
+                    'ContentLength': length
+                }
             });
-            await this._link.send(po);
+            await upload.done();
             return true;
         }
         catch (e: any) {
