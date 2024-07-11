@@ -1379,7 +1379,7 @@ export default class Mod {
      * @param c 字段字符串或数组
      * @param d 排序规则
      */
-    public by(c: string | string[], d: 'DESC' | 'ASC' = 'DESC'): this {
+    public by(c: string | Array<string | string[]>, d: 'DESC' | 'ASC' = 'DESC'): this {
         this._sql.by(c, d);
         return this;
     }
