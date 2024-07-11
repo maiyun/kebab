@@ -98,7 +98,7 @@ async function run(): Promise<void> {
             req.socket.destroy();
             return;
         }
-        req.setTimeout(30 * 1000);
+        req.setTimeout(30_000);
         const key = host + req.url;
         (async function() {
             if (!linkCount[key]) {
@@ -166,7 +166,7 @@ async function run(): Promise<void> {
             req.socket.destroy();
             return;
         }
-        req.setTimeout(30 * 1000);
+        req.setTimeout(30_000);
         const key = host + (req.url ?? '');
         (async function() {
             if (!linkCount[key]) {
