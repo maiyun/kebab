@@ -1,7 +1,7 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2019-4-15 13:40
- * Last: 2020-4-13 15:34:45, 2022-09-12 13:10:34, 2023-5-24 18:29:38
+ * Last: 2020-4-13 15:34:45, 2022-09-12 13:10:34, 2023-5-24 18:29:38, 2024-7-11 14:37:54
  */
 
 // --- Pool 是使用时必须要一个用户创建一份的，Connection 是池子里获取的 ---
@@ -10,6 +10,7 @@
 import * as mysql2 from 'mysql2/promise';
 // --- 库和定义 ---
 import * as time from '~/lib/time';
+import * as lSql from '~/lib/sql';
 import * as core from '~/lib/core';
 import * as text from '~/lib/text';
 import * as ctr from '~/sys/ctr';
@@ -72,7 +73,15 @@ async function checkConnection(): Promise<void> {
             // --- 连接正在被使用，看看是否空闲了超过 2 分钟，超过则不是正常状态 ---
             if (connection.getLast() <= now - 120) {
                 // --- 10 分钟之前开始的 ---
-                console.log(`[child] [db] [error] There is a transactional connection[${i}] that is not closed, last sql: ${connection.getLastSql()}.`);
+                const ls = connection.getLastSql();
+                const sql = ls[1] ?? ls[0];
+                console.log(`[child] [db] [error] There is a transactional connection[${i}] that is not closed, last sql: ${sql?.sql ?? 'undefined'}.`);
+                const newarr = ls.map(item => {
+                    if (!item.values) {
+                        return item.sql;
+                    }
+                    return lSql.format(item.sql, item.values);
+                });
                 await core.log({
                     'path': '',
                     'urlFull': '',
@@ -81,7 +90,7 @@ async function checkConnection(): Promise<void> {
                     'get': {},
                     'cookie': {},
                     'headers': {}
-                }, `(db.checkConnection)There is a transactional connection[${i}] that is not closed, last sql: ${connection.getLastSql()}.`, '-error');
+                }, `(db.checkConnection)There is a transactional connection[${i}] that is not closed, last sql: ${newarr.join(', ')}.`, '-error');
                 await connection.rollback();
             }
             continue;
@@ -122,7 +131,7 @@ export class Pool {
      * @param sql 执行的 SQL 字符串
      * @param values 要替换的 data 数据
      */
-    public async query(sql: string, values?: any[] | Record<string, any>): Promise<IData> {
+    public async query(sql: string, values?: types.DbValue[]): Promise<IData> {
         ++this._queries;
         // --- 获取并自动 using  ---
         try {
@@ -147,7 +156,7 @@ export class Pool {
      * @param sql 执行的 SQL 字符串
      * @param values 要替换的 data 数据
      */
-    public async execute(sql: string, values?: any[] | Record<string, any>): Promise<IPacket> {
+    public async execute(sql: string, values?: types.DbValue[]): Promise<IPacket> {
         ++this._queries;
         try {
             const conn = await this._getConnection();
@@ -257,8 +266,11 @@ export class Connection {
     /** --- 本连接最后一次使用时间 --- */
     private _last: number = 0;
 
-    /** --- 最后一次执行的 sql 模板字符串 --- */
-    private _lastSql: string = '';
+    /** --- 最后两次执行的 sql 完整串 --- */
+    private readonly _lastSql: Array<{
+        'sql': string;
+        'values'?: types.DbValue[];
+    }> = [];
 
     /** --- 数据库连接对象 --- */
     private readonly _link: mysql2.Connection;
@@ -296,9 +308,12 @@ export class Connection {
     }
 
     /**
-     * --- 获取最后一次执行的 sql 模板字符串 ---
+     * --- 获取最后两次执行的 sql 字符串 ---
      */
-    public getLastSql(): string {
+    public getLastSql(): Array<{
+        'sql': string;
+        'values'?: types.DbValue[];
+    }> {
         return this._lastSql;
     }
 
@@ -377,11 +392,17 @@ export class Connection {
      * @param sql 执行的 SQL 字符串
      * @param values 要替换的 data 数据
      */
-    public async query(sql: string, values?: any[] | Record<string, any>): Promise<IData> {
+    public async query(sql: string, values?: types.DbValue[]): Promise<IData> {
         let res: [any[], mysql2.FieldPacket[]];
         try {
             this.refreshLast();
-            this._lastSql = sql;
+            if (this._lastSql.length === 2) {
+                this._lastSql.splice(0, 1);
+            }
+            this._lastSql.push({
+                'sql': sql,
+                'values': values
+            });
             res = await this._link.query(sql, values);
         }
         catch (e: any) {
@@ -410,11 +431,17 @@ export class Connection {
      * @param sql 执行的 SQL 字符串
      * @param values 要替换的 data 数据
      */
-    public async execute(sql: string, values?: any[] | Record<string, any>): Promise<IPacket> {
+    public async execute(sql: string, values?: types.DbValue[]): Promise<IPacket> {
         let res: [mysql2.ResultSetHeader, mysql2.FieldPacket[]];
         try {
             this.refreshLast();
-            this._lastSql = sql;
+            if (this._lastSql.length === 2) {
+                this._lastSql.splice(0, 1);
+            }
+            this._lastSql.push({
+                'sql': sql,
+                'values': values
+            });
             res = await this._link.execute(sql, values);
         }
         catch (e: any) {
