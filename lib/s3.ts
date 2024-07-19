@@ -113,7 +113,7 @@ export class S3 {
      */
     public async putObject(
         key: string, content: string | Buffer | stream.Readable, length?: number, bucket?: string
-    ): Promise<boolean> {
+    ): Promise<s3.CompleteMultipartUploadCommandOutput | false> {
         try {
             const upload = new ls.Upload({
                 'client': this._link,
@@ -125,7 +125,7 @@ export class S3 {
                 }
             });
             const res = await upload.done();
-            return (res.Location && res.Bucket && res.Key) ? true : false;
+            return (res.Location && res.Bucket && res.Key) ? res : false;
         }
         catch (e: any) {
             await lCore.log(this._ctr, '[putObject, s3] ' + lText.stringifyJson(e.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');

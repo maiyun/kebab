@@ -2804,9 +2804,9 @@ function send() {
     'region': 'ap-southeast-1',
     'bucket': 'xxx'
 });</pre>`];
-        let r = await s3.putObject('a/b.txt', 'x');
-        echo.push(`<pre>await s3.putObject('a/b.txt', 'x');</pre>` + (r ? 'true' : 'false'));
-        r = await s3.headObject('a.txt');
+        const putr = await s3.putObject('a/b.txt', 'x');
+        echo.push(`<pre>await s3.putObject('a/b.txt', 'x');</pre>` + (putr ? JSON.stringify(putr) : 'false'));
+        let r = await s3.headObject('a.txt');
         echo.push(`<pre>await s3.headObject('a.txt');</pre>` + (r ? 'true' : 'false'));
         r = await s3.deleteObjects(['a.txt', 'a/b.txt']);
         echo.push(`<pre>s3.deleteObjects(['a.txt', 'a/b.txt']);</pre>` + (r ? 'true' : 'false'));
