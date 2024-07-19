@@ -1,7 +1,7 @@
 /**
  * Project: Kebab, User: Tang Rukun, JianSuoQiYue
  * Date: 2024-2-18 18:32:45
- * Last: 2024-2-18 18:32:47, 2024-3-16 16:42:27, 2024-5-31 21:36:26, 2024-7-8 00:28:42, 2024-7-11 12:14:53
+ * Last: 2024-2-18 18:32:47, 2024-3-16 16:42:27, 2024-5-31 21:36:26, 2024-7-8 00:28:42, 2024-7-19 11:32:43
  */
 
 // --- 库和定义 ---
@@ -124,8 +124,8 @@ export class S3 {
                     'ContentLength': length
                 }
             });
-            await upload.done();
-            return true;
+            const res = await upload.done();
+            return (res.Location && res.Bucket && res.Key) ? true : false;
         }
         catch (e: any) {
             await lCore.log(this._ctr, '[putObject, s3] ' + lText.stringifyJson(e.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
