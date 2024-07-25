@@ -98,7 +98,6 @@ async function run(): Promise<void> {
             req.socket.destroy();
             return;
         }
-        req.setTimeout(30_000);
         const key = host + req.url;
         (async function() {
             if (!linkCount[key]) {
@@ -166,7 +165,6 @@ async function run(): Promise<void> {
             req.socket.destroy();
             return;
         }
-        req.setTimeout(30_000);
         const key = host + (req.url ?? '');
         (async function() {
             if (!linkCount[key]) {
@@ -239,6 +237,23 @@ async function requestHandler(
     res: http2.Http2ServerResponse | http.ServerResponse,
     https: boolean
 ): Promise<void> {
+    // --- 打开计时器 ---
+    const timer = {
+        'timer': {} as NodeJS.Timeout,
+        'callback': () => {
+            if (!req.socket.writable) {
+                return;
+            }
+            if (res.headersSent) {
+                // --- 已经开始输出的，需要用户自行处理 ---
+                return;
+            }
+            res.setHeader('content-length', 37);
+            res.writeHead(504);
+            res.end('<h1>504 Gateway Timeout</h1><hr>Kebab');
+        }
+    };
+    timer.timer = setTimeout(timer.callback, 30_000);
     // --- 设置服务器名版本 ---
     res.setHeader('Server', 'Kebab/' + def.VER);
     // --- 当前 uri ---
@@ -306,7 +321,8 @@ async function requestHandler(
                             'uri': uri,
                             'rootPath': rootPath + now,
                             'urlBase': '/' + now,
-                            'path': path.slice(('/' + pathList.slice(0, i).join('/')).length + 1)
+                            'path': path.slice(('/' + pathList.slice(0, i).join('/')).length + 1),
+                            'timer': timer
                         })) {
                             return;
                         }
@@ -351,7 +367,8 @@ async function requestHandler(
                         'uri': uri,
                         'rootPath': rootPath + now,
                         'urlBase': '/' + now,
-                        'path': path.slice(1)
+                        'path': path.slice(1),
+                        'timer': timer
                     })) {
                         return;
                     }

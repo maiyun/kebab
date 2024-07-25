@@ -47,6 +47,11 @@ export async function run(data: {
     'urlBase': string;
     /** --- 前面不带 /，末尾不一定，以用户请求为准 --- */
     'path': string;
+    /** --- timeout timer --- */
+    'timer'?: {
+        'timer': NodeJS.Timeout;
+        'callback': () => void;
+    };
 }): Promise<boolean> {
     // --- 检测 path 是否是静态文件 ---
     if (/^(stc\/.*|favicon.\w+?\??.*|apple[\w-]+?\.png\??.*|[\w-]+?\.txt\??.*|[\w-]+?\.html\??.*)/.test(data.path)) {
@@ -398,6 +403,9 @@ export async function run(data: {
     const middleCtr = (await import(config.const.ctrPath + 'middle')).default as typeof sCtr.Ctr;
     const middle: sCtr.Ctr = new middleCtr(config, data.req, data.res);
     // --- 对信息进行初始化 ---
+    if (data.timer) {
+        middle.setPrototype('_timer', data.timer);
+    }
     // --- 路由定义的参数序列 ---
     middle.setPrototype('_param', param);
     // --- action 名 ---
@@ -456,6 +464,7 @@ export async function run(data: {
         const ctrCtr: typeof sCtr.Ctr = (await import(filePath)).default;
         const cctr: sCtr.Ctr = new ctrCtr(config, data.req, data.res ?? data.socket!);
         // --- 对信息进行初始化 ---
+        cctr.setPrototype('_timer', middle.getPrototype('_timer'));
         // --- 路由定义的参数序列 ---
         cctr.setPrototype('_param', param);
         cctr.setPrototype('_action', middle.getPrototype('_action'));

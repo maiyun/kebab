@@ -124,6 +124,36 @@ export class Ctr {
         this._cacheTTL = config.set.cacheTtl;
     }
 
+    /** --- 当前用户连接是否还在连接中 --- */
+    public get isAvail(): boolean {
+        return this._req.socket.writable;
+    }
+
+    /** --- timeout 的 timer --- */
+    protected _timer?: {
+        'timer': NodeJS.Timeout;
+        'callback': () => void;
+    };
+
+    private _timeout: number = 30_000;
+
+    /** --- 获取当前过期时间 --- */
+    public get timeout(): number {
+        return this._timeout;
+    }
+
+    /**
+     * --- 设置当前过期时间 ---
+     */
+    public set timeout(num: number) {
+        if (!this._timer) {
+            return;
+        }
+        this._timeout = num;
+        clearTimeout(this._timer.timer);
+        this._timer.timer = setTimeout(this._timer.callback, num);
+    }
+
     // --- Kebab 结束 ---
 
     /** --- 获取类内部的 prototype --- */
