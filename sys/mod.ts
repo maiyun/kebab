@@ -1,7 +1,7 @@
 /**
  * Project: Mutton, User: JianSuoQiYue
  * Date: 2019-6-4 21:35
- * Last: 2020-4-14 13:33:51, 2022-07-23 16:01:34, 2022-09-06 22:59:26, 2023-5-24 19:11:37, 2023-6-13 21:47:58, 2023-7-10 18:54:03, 2023-8-23 17:03:16, 2023-12-11 15:21:22, 2023-12-20 23:12:03, 2024-3-8 16:05:29, 2024-3-20 19:58:15
+ * Last: 2020-4-14 13:33:51, 2022-07-23 16:01:34, 2022-09-06 22:59:26, 2023-5-24 19:11:37, 2023-6-13 21:47:58, 2023-7-10 18:54:03, 2023-8-23 17:03:16, 2023-12-11 15:21:22, 2023-12-20 23:12:03, 2024-3-8 16:05:29, 2024-3-20 19:58:15, 2024-8-11 21:14:54
  */
 import * as lSql from '~/lib/sql';
 import * as lDb from '~/lib/db';
@@ -31,8 +31,8 @@ class Rows<T extends Mod> implements types.Rows<T> {
     }
 
     /** --- 转换为数组对象 --- */
-    public toArray(): Array<Record<string, types.DbValue>> {
-        const arr: Array<Record<string, types.DbValue>> = [];
+    public toArray(): Array<Record<string, any>> {
+        const arr: Array<Record<string, any>> = [];
         for (const item of this._items) {
             arr.push(item.toArray());
         }
@@ -81,7 +81,7 @@ export default class Mod {
     protected _updates: Record<string, boolean> = {};
 
     /** --- 模型获取的属性 --- */
-    protected _data: Record<string, types.DbValue> = {};
+    protected _data: Record<string, any> = {};
 
     /** --- 当前选择的分表 _ 后缀 --- */
     protected _index: string | null = null;
@@ -105,7 +105,7 @@ export default class Mod {
         'ctr'?: sCtr.Ctr;
         'index'?: string;
         'alias'?: string;
-        'row'?: Record<string, types.DbValue>;
+        'row'?: Record<string, any>;
         'select'?: string | string[];
         'where'?: string | types.Json;
         'raw'?: boolean;
@@ -167,8 +167,8 @@ export default class Mod {
      */
     public static async insert(
         db: lDb.Pool | lDb.Connection,
-        cs: string[] | Record<string, types.DbValue>,
-        vs?: types.DbValue[] | types.DbValue[][],
+        cs: string[] | Record<string, any>,
+        vs?: any[] | any[][],
         opt: { 'pre'?: sCtr.Ctr | string; 'index'?: string; } = {}
     ): Promise<boolean | null | false> {
         const sq = lSql.get(opt.pre);
@@ -201,8 +201,8 @@ export default class Mod {
      * @param opt 选项
      */
     public static insertSql(
-        cs: string[] | Record<string, types.DbValue>,
-        vs?: types.DbValue[] | types.DbValue[][],
+        cs: string[] | Record<string, any>,
+        vs?: any[] | any[][],
         opt: { 'pre'?: sCtr.Ctr | string; 'index'?: string; } = {}
     ): string {
         const sq = lSql.get(opt.pre);
@@ -219,7 +219,7 @@ export default class Mod {
      */
     public static async insertDuplicate(
         db: lDb.Pool | lDb.Connection,
-        data: Record<string, types.DbValue>,
+        data: Record<string, any>,
         update: types.Json,
         opt: { 'pre'?: sCtr.Ctr | string; 'index'?: string; } = {}
     ): Promise<boolean | null> {
@@ -474,7 +474,7 @@ export default class Mod {
         db: lDb.Pool | lDb.Connection,
         c: string | string[],
         opt: { 'ctr'?: sCtr.Ctr; 'pre'?: string; 'index'?: string; 'alias'?: string; } = {}
-    ): T & Record<string, types.DbValue> {
+    ): T & Record<string, any> {
         return new this({
             'db': db,
             'ctr': opt.ctr,
@@ -482,7 +482,7 @@ export default class Mod {
             'select': c,
             'index': opt.index,
             'alias': opt.alias
-        }) as T & Record<string, types.DbValue>;
+        }) as T & Record<string, any>;
     }
 
     /**
@@ -495,7 +495,7 @@ export default class Mod {
         db: lDb.Pool | lDb.Connection,
         s: string | types.Json = '',
         opt: { 'ctr'?: sCtr.Ctr; 'raw'?: boolean; 'pre'?: string; 'index'?: string; } = {}
-    ): T & Record<string, types.DbValue> {
+    ): T & Record<string, any> {
         return new this({
             'db': db,
             'ctr': opt.ctr,
@@ -503,7 +503,7 @@ export default class Mod {
             'where': s,
             'raw': opt.raw,
             'index': opt.index
-        }) as T & Record<string, types.DbValue>;
+        }) as T & Record<string, any>;
     }
 
     /**
@@ -534,7 +534,7 @@ export default class Mod {
         db: lDb.Pool | lDb.Connection,
         val: string | number | null,
         opt: { 'ctr'?: sCtr.Ctr; 'lock'?: boolean; 'raw'?: boolean; 'pre'?: string; 'index'?: string; } = {}
-    ): Promise<false | null | (T & Record<string, types.DbValue>)> {
+    ): Promise<false | null | (T & Record<string, any>)> {
         return (new this({
             'db': db,
             'ctr': opt.ctr,
@@ -544,7 +544,7 @@ export default class Mod {
             }],
             'raw': opt.raw,
             'index': opt.index
-        }) as T & Record<string, types.DbValue>).first(opt.lock);
+        }) as T & Record<string, any>).first(opt.lock);
     }
 
     public static async one(
@@ -558,7 +558,7 @@ export default class Mod {
             'select'?: string | string[];
             'array': true;
         }
-    ): Promise<false | null | Record<string, types.DbValue>>;
+    ): Promise<false | null | Record<string, any>>;
     public static async one<T extends Mod>(
         db: lDb.Pool | lDb.Connection,
         s: string | types.Json,
@@ -570,7 +570,7 @@ export default class Mod {
             'select'?: string | string[];
             'array'?: false;
         }
-    ): Promise<false | null | (T & Record<string, types.DbValue>)>;
+    ): Promise<false | null | (T & Record<string, any>)>;
     /**
      * --- 通过 where 条件筛选单条数据 ---
      * @param db 数据库对象
@@ -588,7 +588,7 @@ export default class Mod {
             'select'?: string | string[];
             'array'?: boolean;
         } = {}
-    ): Promise<false | null | (T & Record<string, types.DbValue>) | Record<string, types.DbValue>> {
+    ): Promise<false | null | (T & Record<string, any>) | Record<string, any>> {
         if (!opt.index) {
             const o = new this({
                 'select': opt.select,
@@ -641,7 +641,7 @@ export default class Mod {
             'index'?: string | string[];
             'select'?: string | string[];
         } = {}
-    ): Promise<false | null | Record<string, types.DbValue>> {
+    ): Promise<false | null | Record<string, any>> {
         (opt as types.Json).array = true;
         return this.one(db, s, opt);
     }
@@ -656,7 +656,7 @@ export default class Mod {
         db: lDb.Pool | lDb.Connection,
         where: string | types.Json = '',
         opt: { 'ctr'?: sCtr.Ctr; 'raw'?: boolean; 'pre'?: string; 'index'?: string; } = {}
-    ): Promise<types.DbValue[] | false> {
+    ): Promise<any[] | false> {
         const sq = lSql.get(opt.pre ?? opt.ctr);
         if (this._$soft && !opt.raw) {
             // --- 不包含已删除 ---
@@ -688,7 +688,7 @@ export default class Mod {
             }, '[primarys, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
             return false;
         }
-        const primarys: types.DbValue[] = [];
+        const primarys: any[] = [];
         for (const row of r.rows) {
             primarys.push(row[this._$primary]);
         }
@@ -701,8 +701,8 @@ export default class Mod {
      */
     public static toArrayByRecord<T extends Mod>(
         obj: Record<string, T>
-    ): Record<string, Record<string, types.DbValue>> {
-        const rtn: Record<string, Record<string, types.DbValue>> = {};
+    ): Record<string, Record<string, any>> {
+        const rtn: Record<string, Record<string, any>> = {};
         for (const key in obj) {
             rtn[key] = obj[key].toArray();
         }
@@ -718,7 +718,7 @@ export default class Mod {
      * @param n 字符串或键/值
      * @param v 可能是数字
      */
-    public set<T extends this, TK extends keyof T>(n: TK | Record<TK, types.DbValue>, v?: T[TK]): void {
+    public set<T extends this, TK extends keyof T>(n: TK | Record<TK, any>, v?: T[TK]): void {
         if (typeof n === 'object') {
             // --- { x: y } ---
             for (const k in n) {
@@ -747,7 +747,7 @@ export default class Mod {
      * --- 获取一个字段值
      * @param n 字段名
      */
-    public get(n: string): types.DbValue {
+    public get(n: string): any {
         return this._data[n];
     }
 
@@ -758,7 +758,7 @@ export default class Mod {
      */
     public async create(notWhere?: string | types.Json, table?: string): Promise<boolean> {
         const cstr = this.constructor as Record<string, types.Json>;
-        const updates: Record<string, types.DbValue> = {};
+        const updates: Record<string, any> = {};
         for (const k in this._updates) {
             updates[k] = this._data[k];
         }
@@ -840,7 +840,7 @@ export default class Mod {
      */
     public async replace(): Promise<boolean> {
         const cstr = this.constructor as Record<string, types.Json>;
-        const updates: Record<string, types.DbValue> = {};
+        const updates: Record<string, any> = {};
         for (const k in this._updates) {
             updates[k] = this._data[k];
         }
@@ -911,7 +911,7 @@ export default class Mod {
      */
     public async save(): Promise<boolean> {
         const cstr = this.constructor as Record<string, types.Json>;
-        const updates: Record<string, types.DbValue> = {};
+        const updates: Record<string, any> = {};
         for (const k in this._updates) {
             updates[k] = this._data[k];
         }
@@ -987,11 +987,11 @@ export default class Mod {
     public async first(
         lock: boolean,
         array: true
-    ): Promise<false | null | Record<string, types.DbValue>>;
+    ): Promise<false | null | Record<string, any>>;
     public async first(
         lock?: boolean,
         array?: false
-    ): Promise<false | null | (this & Record<string, types.DbValue>)>;
+    ): Promise<false | null | (this & Record<string, any>)>;
     /**
      * --- 获取数据库第一个对象 ---
      * @param lock 是否加锁
@@ -1000,7 +1000,7 @@ export default class Mod {
     public async first(
         lock: boolean = false,
         array: boolean = false
-    ): Promise<false | null | (this & Record<string, types.DbValue>) | Record<string, types.DbValue>> {
+    ): Promise<false | null | (this & Record<string, any>) | Record<string, any>> {
         this._sql.limit(1);
         if (lock) {
             this._sql.lock();
@@ -1027,9 +1027,9 @@ export default class Mod {
         for (const k in r.rows[0]) {
             const v = r.rows[0][k];
             this._data[k] = v;
-            (this as unknown as Record<string, types.DbValue>)[k] = v;
+            (this as unknown as Record<string, any>)[k] = v;
         }
-        return this as this & Record<string, types.DbValue>;
+        return this as this & Record<string, any>;
     }
 
     /**
@@ -1038,16 +1038,20 @@ export default class Mod {
      */
     public async firstArray(
         lock: boolean = false
-    ): Promise<Record<string, types.DbValue> | false | null> {
+    ): Promise<Record<string, any> | false | null> {
         return this.first(lock, true);
     }
 
     /**
      * --- 联合查询表数据 ---
-     * @param f 要联合查询的表列表，或单个表
+     * @param f 要联合查询的表列表、单个表、sql 对象
      * @param type 类型
      */
-    public union(f: string | types.IModUnionItem | string[] | types.IModUnionItem[], type: string = ''): this {
+    public union(f: lSql.Sql | string | types.IModUnionItem | string[] | types.IModUnionItem[], type: string = ''): this {
+        if (f instanceof lSql.Sql) {
+            this._sql.union(f, type);
+            return this;
+        }
         if (typeof f === 'string') {
             f = {
                 'field': f
@@ -1071,9 +1075,13 @@ export default class Mod {
 
     /**
      * --- 所有联合查询表数据 ---
-     * @param f 要联合查询的表列表，或单个表
+     * @param f 要联合查询的表列表、单个表、sql 对象
      */
-    public unionAll(f: string | types.IModUnionItem | string[] | types.IModUnionItem[]): this {
+    public unionAll(f: lSql.Sql | string | types.IModUnionItem | string[] | types.IModUnionItem[]): this {
+        if (f instanceof lSql.Sql) {
+            this._sql.unionAll(f);
+            return this;
+        }
         if (typeof f === 'string') {
             f = {
                 'field': f
@@ -1147,16 +1155,16 @@ export default class Mod {
         return new Rows<this>(list);
     }
 
-    public async allArray(): Promise<false | Array<Record<string, types.DbValue>>>;
-    public async allArray(key: string): Promise<false | Record<string, Record<string, types.DbValue>>>;
+    public async allArray(): Promise<false | Array<Record<string, any>>>;
+    public async allArray(key: string): Promise<false | Record<string, Record<string, any>>>;
     /**
      * --- 获取列表（得到的为原生对象或数组，不是模型） ---
      * @param key 是否以某个字段为主键
      */
     public async allArray(key?: string): Promise<
         false |
-        Array<Record<string, types.DbValue>> |
-        Record<string, Record<string, types.DbValue>>
+        Array<Record<string, any>> |
+        Record<string, Record<string, any>>
     > {
         const r = await this._db.query(this._sql.getSql(), this._sql.getData());
         if (r.rows === null) {
@@ -1172,7 +1180,7 @@ export default class Mod {
             return false;
         }
         if (key) {
-            const list: Record<string, Record<string, types.DbValue>> = {};
+            const list: Record<string, Record<string, any>> = {};
             for (const row of r.rows) {
                 list[row[key]] = row;
             }
@@ -1182,12 +1190,12 @@ export default class Mod {
     }
 
     public async explain(all?: false): Promise<false | string>;
-    public async explain(all: true): Promise<false | Record<string, types.DbValue>>;
+    public async explain(all: true): Promise<false | Record<string, any>>;
     /**
      * --- 获取数查询（SELECT）扫描情况，获取字符串或kv数组 ---
      * @param all 是否获取完全的情况，默认不获取，只返回扫描情况
      */
-    public async explain(all = false): Promise<false | string | Record<string, types.DbValue>> {
+    public async explain(all = false): Promise<false | string | Record<string, any>> {
         const r = await this._db.query('EXPLAIN ' + this._sql.getSql(), this._sql.getData());
         if (r.rows === null) {
             await lCore.log(this._ctr ?? {
@@ -1432,7 +1440,7 @@ export default class Mod {
     /**
      * --- 获取全部 data ---
      */
-    public getData(): types.DbValue[] {
+    public getData(): any[] {
         return this._sql.getData();
     }
 
@@ -1441,14 +1449,14 @@ export default class Mod {
      * @param sql sql 语句
      * @param data 数据
      */
-    public format(sql?: string, data?: types.DbValue[]): string {
+    public format(sql?: string, data?: any[]): string {
         return this._sql.format(sql, data);
     }
 
     /**
      * --- 获取值对象 ---
      */
-    public toArray(): Record<string, types.DbValue> {
+    public toArray(): Record<string, any> {
         return this._data;
     }
 

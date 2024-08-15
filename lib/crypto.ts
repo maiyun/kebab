@@ -187,3 +187,11 @@ export function base64Decode(data: string, encoding: 'utf8' | 'buffer' = 'utf8')
     }
     return buffer.toString('utf8');
 }
+
+/**
+ * --- 生成 uuid ---
+ * @param options 选项
+ */
+export function uuid(options?: crypto.RandomUUIDOptions): string {
+    return crypto.randomUUID(options);
+}

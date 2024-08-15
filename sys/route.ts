@@ -316,7 +316,7 @@ export async function run(data: {
             data.socket.destroy();
             return true;
         }
-        if (rtn !== false) {
+        if (rtn === undefined || rtn === true) {
             await new Promise<void>(function(resolve) {
                 wsSocket.on('message', async function(msg): Promise<void> {
                     switch (msg.opcode) {
@@ -441,7 +441,7 @@ export async function run(data: {
     }
     let cacheTTL: number = middle.getPrototype('_cacheTTL');
     let httpCode: number = middle.getPrototype('_httpCode');
-    if (rtn !== false) {
+    if (rtn === undefined || rtn === true) {
         // --- 只有不返回或返回 true 时才加载控制文件 ---
         // --- 判断真实控制器文件是否存在 ---
         const filePath = config.const.ctrPath + pathLeft + '.js';
@@ -532,7 +532,7 @@ export async function run(data: {
         try {
             rtn = await (cctr.onLoad() as types.Json);
             // --- 执行 action ---
-            if (rtn !== false) {
+            if (rtn === undefined || rtn === true) {
                 rtn = await (cctr as types.Json)[pathRight]();
                 rtn = await (cctr.onUnload(rtn) as types.Json);
                 rtn = await (middle.onUnload(rtn) as types.Json);
@@ -867,7 +867,7 @@ export function getFormData(
 ): Promise<{
     'post': Record<string, types.Json>;
     'files': Record<string, types.IPostFile | types.IPostFile[]>;
-}> {
+} | false> {
     return new Promise(function(resolve) {
         const ct = req.headers['content-type'] ?? '';
         if (!ct) {
@@ -1062,6 +1062,9 @@ export function getFormData(
                     }
                 }
             }
+        });
+        req.on('error', function() {
+            resolve(false);
         });
         req.on('end', function() {
             readEnd = true;

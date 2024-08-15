@@ -137,6 +137,7 @@ export default class extends sCtr.Ctr {
             `<br><a href="${this._config.const.urlBase}test/core-rand">View "test/core-rand"</a>`,
             `<br><a href="${this._config.const.urlBase}test/core-convert62">View "test/core-convert62"</a>`,
             `<br><a href="${this._config.const.urlBase}test/core-purify">View "test/core-purify"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/core-checktype">View "test/core-checktype"</a>`,
             `<br><a href="${this._config.const.urlBase}test/core-muid">View "test/core-muid"</a>`,
             `<br><a href="${this._config.const.urlBase}test/core-reload">View "test/core-reload"</a>`,
             `<br><a href="${this._config.const.urlBase}test/core-restart">View "test/core-restart"</a>`,
@@ -284,10 +285,11 @@ Result:<pre id="result">Nothing.</pre>${this._getEnd()}`;
     'he': ['require', [0, 'The he param does not exist.']],
     'num': ['> 10', [0, 'The num param must > 10.']],
     'reg': ['/^[A-CX-Z5-7]+$/', [0, 'The reg param is incorrect.']],
-    'arr': [['a', 'x', 'hehe'], [0, 'The arr param is incorrect.']]
+    'arr': [['a', 'x', 'hehe'], [0, 'The arr param is incorrect.']],
+    'type': [{ 'type': { 'a': 1, 'b': '' } }, [0, 'The reg param is incorrect']]
 }</pre>`];
 
-        const post = [
+        const post: any[] = [
             {},
             {
                 'he': 'ok'
@@ -312,9 +314,26 @@ Result:<pre id="result">Nothing.</pre>${this._getEnd()}`;
                 'num': '12',
                 'reg': 'BBB6YYY6',
                 'arr': 'hehe'
+            },
+            {
+                'he': 'ok',
+                'num': '12',
+                'reg': 'BBB6YYY6',
+                'arr': 'hehe',
+                'type': { 'a': false, 'b': '1' }
+            },
+            {
+                'he': 'ok',
+                'num': '12',
+                'reg': 'BBB6YYY6',
+                'arr': 'hehe',
+                'type': { 'a': 0, 'b': 'ok' }
             }
         ];
         for (const item of post) {
+            if (item.type) {
+                item.type = JSON.stringify(item.type);
+            }
             const p = lText.queryStringify(item);
             echo.push(`<input type="button" value="Post '${p}'" onclick="post('${p}')"><br>`);
         }
@@ -357,13 +376,19 @@ function postFd() {
     }
 
     public async ctrCheckinput1(): Promise<types.Json[]> {
-        await this._handleFormData();
+        if (!await this._handleFormData()) {
+            return [0];
+        }
         const retur: types.Json[] = [];
+        if (this._post['type']) {
+            this._post['type'] = JSON.parse(this._post['type']);
+        }
         if (!this._checkInput(this._post, {
             'he': ['require', [0, 'The he param does not exist.']],
             'num': ['> 10', [0, 'The num param must > 10.']],
             'reg': ['/^[A-CX-Z5-7]+$/', [0, 'The reg param is incorrect.']],
-            'arr': [['a', 'x', 'hehe'], [0, 'The arr param is incorrect.']]
+            'arr': [['a', 'x', 'hehe'], [0, 'The arr param is incorrect.']],
+            'type': [{ 'type': { 'a': 1, 'b': '' } }, [0, 'The type param is incorrect']]
         }, retur)) {
             return retur;
         }
@@ -815,6 +840,124 @@ const base64 = cap.getBase64();</pre>phrase:`];
     </body>
 </html>`;
         return '<pre>lCore.purify(`' + lText.htmlescape(html) + '`);</pre>' + lText.htmlescape(lCore.purify(html)) + '<br><br>' + this._getEnd();
+    }
+
+    public coreChecktype(): string {
+        const type1 = {
+            'a': '1',
+            'b': 0,
+            'c': false,
+            'd': {
+                'e': 0,
+                'f': false,
+                'g': [
+                    {
+                        'h': 0
+                    }
+                ]
+            }
+        };
+        const type2 = [
+            {
+                'a': '',
+                'b': '1',
+                'c': /^a.c$/
+            }
+        ];
+        const o1 = 0;
+        const o2 = {
+            'a': '',
+            'b': ''
+        };
+        const o3 = [{
+            'a': '',
+            'b': 'ok',
+            'c': 'acd'
+        }];
+        const o4 = {
+            'a': 'aaa',
+            'b': 21424,
+            'c': true,
+            'd': {
+                'e': 0,
+                'f': false,
+                'g': 'ok'
+            }
+        };
+        const o5 = {
+            'a': 'aaa',
+            'b': 21424,
+            'c': true,
+            'd': {
+                'e': 0,
+                'f': false,
+                'g': [
+                    {
+                        'x': 'ok'
+                    }
+                ]
+            }
+        };
+        const o6 = {
+            'a': 'aaa',
+            'b': 21424,
+            'c': true,
+            'd': {
+                'e': 0,
+                'f': false,
+                'g': [
+                    {
+                        'h': 138
+                    }
+                ]
+            }
+        };
+        const o7 = [
+            {
+                'a': '',
+                'b': 'ok'
+            },
+            {
+                'a': '',
+                'b': 'ok2'
+            },
+            {
+                'a': '',
+                'b': 0
+            }
+        ];
+        const o8 = [{
+            'a': '',
+            'b': 'ok',
+            'c': 'abc'
+        }];
+        return `type1:<pre>${JSON.stringify(type1)}</pre>
+type2:<pre>${JSON.stringify(type2)}</pre>
+o1:<pre>${JSON.stringify(o1)}</pre>
+lCore.checkType(o1, type1): ${lCore.checkType(o1, type1)}<br>
+lCore.checkType(o1, type2): ${lCore.checkType(o1, type2)}<br><br>
+o2:<pre>${JSON.stringify(o2)}</pre>
+lCore.checkType(o2, type1): ${lCore.checkType(o2, type1)}<br>
+lCore.checkType(o2, type2): ${lCore.checkType(o2, type2)}<br><br>
+o3:<pre>${JSON.stringify(o3)}</pre>
+lCore.checkType(o3, type1): ${lCore.checkType(o3, type1)}<br>
+lCore.checkType(o3, type2): ${lCore.checkType(o3, type2)}<br><br>
+o4:<pre>${JSON.stringify(o4)}</pre>
+lCore.checkType(o4, type1): ${lCore.checkType(o4, type1)}<br>
+lCore.checkType(o4, type2): ${lCore.checkType(o4, type2)}<br><br>
+o5:<pre>${JSON.stringify(o5)}</pre>
+lCore.checkType(o5, type1): ${lCore.checkType(o5, type1)}<br>
+lCore.checkType(o5, type2): ${lCore.checkType(o5, type2)}<br><br>
+o6:<pre>${JSON.stringify(o6)}</pre>
+lCore.checkType(o6, type1): ${lCore.checkType(o6, type1)}<br>
+lCore.checkType(o6, type2): ${lCore.checkType(o6, type2)}<br><br>
+o7:<pre>${JSON.stringify(o7)}</pre>
+lCore.checkType(o7, type1): ${lCore.checkType(o7, type1)}<br>
+lCore.checkType(o7, type2): ${lCore.checkType(o7, type2)}<br><br>
+o8:<pre>${JSON.stringify(o8)}</pre>
+lCore.checkType(o8, type1): ${lCore.checkType(o8, type1)}<br>
+lCore.checkType(o8, type2): ${lCore.checkType(o8, type2)}
+<br><br>${this._getEnd()}`;
     }
 
     public coreMuid(): string {
@@ -1346,7 +1489,9 @@ error: ${JSON.stringify(res.error)}`);
     }
 
     public async netFormTest(): Promise<string> {
-        await this._handleFormData();
+        if (!await this._handleFormData()) {
+            return '';
+        }
         const echo = [
             '<pre>',
             JSON.stringify(this._post, null, 4),
@@ -1395,7 +1540,9 @@ error: ${JSON.stringify(res.error)}`);
     }
 
     public async netUpload1(): Promise<string> {
-        await this._handleFormData();
+        if (!await this._handleFormData()) {
+            return '{}';
+        }
         return JSON.stringify(this._post, null, 4) + '\n\n' + JSON.stringify(this._files, null, 4);
     }
 

@@ -1,7 +1,7 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2019-6-6 12:04:15
- * Last: 2020-3-29 23:41:21, 2024-1-18 17:16:50
+ * Last: 2020-3-29 23:41:21, 2024-1-18 17:16:50, 2024-8-5 10:55:21
  */
 import * as sCtr from '~/sys/ctr';
 
@@ -11,6 +11,13 @@ export interface IOptions {
     /** --- 字符串、时间戳（秒或毫秒） --- */
     'data'?: string | number;
 }
+
+/** --- 一小时的秒数 --- */
+export const HOUR = 3600;
+/** --- 一天的秒数 --- */
+export const DAY = 86400;
+/** --- 一年（365 天） */
+export const YEAR = 31536000;
 
 /** --- 星期名 --- */
 const dayNames: string[][] = [

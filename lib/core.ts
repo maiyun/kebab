@@ -176,6 +176,64 @@ export function purify(text: string): string {
 }
 
 /**
+ * --- 判断一个对象是否符合示例组，返回空字符串代表校验通过，返回：应该的类型:位置:传入的类型 ---
+ * @param val 对象
+ * @param type 示例组
+ * @param tree 当前树，无需传入
+ */
+export function checkType(val: any, type: any, tree: string = 'root'): string {
+    /** --- 要校验的对象 --- */
+    const vtype = typeof val;
+    if (Array.isArray(type)) {
+        // --- 数组的话 ---
+        if (!Array.isArray(val)) {
+            return 'array:' + tree + ':' + vtype;
+        }
+        for (let i = 0; i < val.length; ++i) {
+            const res = checkType(val[i], type[0], tree + '.' + i.toString());
+            if (res) {
+                return res;
+            }
+        }
+        return '';
+    }
+    if (type instanceof RegExp) {
+        // --- 正则 ---
+        return type.test(val) ? '' : 'regexp:' + tree + ':' + vtype;
+    }
+    /** --- 要符合的类型 --- */
+    const ttype = typeof type;
+    if (val === undefined || val === null) {
+        return ttype + ':' + tree + ':' + (val === undefined ? 'undefined' : 'null');
+    }
+    if (ttype === 'string') {
+        if (vtype !== 'string') {
+            return 'string:' + tree + ':' + vtype;
+        }
+        if (type) {
+            return val ? '' : 'require:' + tree + ':' + vtype;
+        }
+        return '';
+    }
+    if (ttype === 'object') {
+        if (vtype !== 'object') {
+            return 'object:' + tree + ':' + vtype;
+        }
+        if (Array.isArray(val)) {
+            return 'object:' + tree + ':array';
+        }
+        for (const key in type) {
+            const res = checkType(val[key], type[key], tree + '.' + key);
+            if (res) {
+                return res;
+            }
+        }
+        return '';
+    }
+    return vtype === ttype ? '' : ttype + ':' + tree + ':' + vtype;
+}
+
+/**
  * --- 获取 MUID ---
  * @param ctr Ctr 对象
  * @param opt len: 8 - 32, 默认 8; bin: 是否含有大小写, 默认 true; key: 多样性混合, 默认空; insert: 插入指定字符, 最好不超过 2 字符，默认空，num: 是否含有数字，默认 true

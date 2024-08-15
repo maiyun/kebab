@@ -91,7 +91,7 @@ export class Ctr {
     // --- Kebab: true，Mutton: false，全局常量等对象 ---
 
     /** --- 当前语言名 --- */
-    private _locale: string = 'en';
+    protected _locale: string = 'en';
 
     /** --- vhost 的 kebab.json 以及全局常量 --- */
     protected readonly _config!: types.IConfig;
@@ -322,6 +322,18 @@ export class Ctr {
                     if (!v.test(input[key])) {
                         rtn[0] = val[lastK][0];
                         rtn[1] = val[lastK][1];
+                        if (val[lastK][2]) {
+                            rtn[2] = val[lastK][2];
+                        }
+                        return false;
+                    }
+                }
+                else if (typeof v === 'object' && v.type !== undefined) {
+                    // --- core.checkType ---
+                    const r = core.checkType(input[key], v.type);
+                    if (r) {
+                        rtn[0] = val[lastK][0];
+                        rtn[1] = typeof val[lastK][1] === 'string' ? val[lastK][1] + '(' + r + ')' : val[lastK][1];
                         if (val[lastK][2]) {
                             rtn[2] = val[lastK][2];
                         }
@@ -708,7 +720,7 @@ export class Ctr {
         this._res.setHeader('access-control-allow-headers', '*');
         this._res.setHeader('access-control-allow-methods', '*');
         if (this._req.method === 'OPTIONS') {
-            this._res.setHeader('access-control-max-age', '3600');
+            this._res.setHeader('access-control-max-age', '600');
             return false;
         }
         return true;
@@ -800,14 +812,18 @@ export class Ctr {
             onfiledata?: (chunk: Buffer) => void;
             onfileend?: () => void;
         } = {}
-    ): Promise<void> {
+    ): Promise<boolean> {
         const rtn = await sRoute.getFormData(this._req, events);
+        if (!rtn) {
+            return false;
+        }
         for (const key in rtn.post) {
             this._post[key] = rtn.post[key];
         }
         for (const key in rtn.files) {
             this._files[key] = rtn.files[key];
         }
+        return true;
     }
 
 }

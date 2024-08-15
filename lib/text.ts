@@ -183,29 +183,37 @@ export function urlAtom(url: string): string {
     return url;
 }
 
+export const REGEXP_EMAIL = /^[-_\w.]+@[-_\w.]+\.([a-zA-Z]+)$/i;
+
 /**
  * --- 是否是邮件地址 ---
  * @param email
  */
 export function isEMail(email: string): boolean {
-    return /^[-_\w.]+@[-_\w.]+\.([a-zA-Z]+)$/i.test(email);
+    return REGEXP_EMAIL.test(email);
 }
+
+export const REGEXP_IPV4 = /^[0-9]{1,3}(\.[0-9]{1,3}){3}$/i;
 
 /**
  * --- 是否是 IPv4 ---
  * @param ip
  */
 export function isIPv4(ip: string): boolean {
-    return /^[0-9]{1,3}(\.[0-9]{1,3}){3}$/.test(ip);
+    return REGEXP_IPV4.test(ip);
 }
+
+export const REGEXP_IPV6 = /^(\w*?:){2,7}[\w.]*$/i;
 
 /**
  * --- 是否是 IPv6 ---
  * @param ip
  */
 export function isIPv6(ip: string): boolean {
-    return /^(\w*?:){2,7}[\w.]*$/.test(ip + ':');
+    return REGEXP_IPV6.test(ip + ':');
 }
+
+export const REGEXP_DOMAIN = /^.+?\.((?![0-9]).)+$/i;
 
 /**
  * --- 判断是否是域名 ---
@@ -213,7 +221,17 @@ export function isIPv6(ip: string): boolean {
  * @return bool
  */
 export function isDomain(domain: string): boolean {
-    return /^.+?\.((?![0-9]).)+$/i.test(domain);
+    return REGEXP_DOMAIN.test(domain);
+}
+
+export const REGEXP_ASCII = /^[\x20-\x7E]*$/;
+
+/**
+ * --- 判断是否在 ascii 字符集内，仅可输入部分 ---
+ * @param text 要判断的文本
+ */
+export function isAscii(text: string): boolean {
+    return REGEXP_ASCII.test(text);
 }
 
 /**
@@ -357,13 +375,22 @@ export function isIdCardCN(idcard: string): boolean {
 /**
  * --- 将对象转换为 query string ---
  * @param query 要转换的对象
+ * @param encode 是否转义
  */
-export function queryStringify(query: Record<string, any>): string {
+export function queryStringify(query: Record<string, any>, encode: boolean = true): string {
+    if (encode) {
+        return Object.entries(query).map(([k, v]) => {
+            if (Array.isArray(v)) {
+                return v.map((i) => `${encodeURIComponent(k)}=${encodeURIComponent(i)}`).join('&');
+            }
+            return `${encodeURIComponent(k)}=${encodeURIComponent(v)}`;
+        }).join('&');
+    }
     return Object.entries(query).map(([k, v]) => {
         if (Array.isArray(v)) {
-            return v.map((i) => `${encodeURIComponent(k)}=${encodeURIComponent(`${i}`)}`).join('&');
+            return v.map((i) => `${k}=${i}}`).join('&');
         }
-        return `${encodeURIComponent(k)}=${encodeURIComponent(`${v}`)}`;
+        return `${k}=${v}`;
     }).join('&');
 }
 
