@@ -197,12 +197,15 @@ export function checkType(val: any, type: any, tree: string = 'root'): string {
         }
         return '';
     }
-    if (type instanceof RegExp) {
-        // --- 正则 ---
-        return type.test(val) ? '' : 'regexp:' + tree + ':' + vtype;
-    }
     /** --- 要符合的类型 --- */
     const ttype = typeof type;
+    if (type instanceof RegExp) {
+        // --- 正则 ---
+        if (vtype !== 'string') {
+            return 'regexp:' + tree + ':' + vtype;
+        }
+        return type.test(val) ? '' : 'regexp:' + tree + ':' + vtype;
+    }
     if (val === undefined || val === null) {
         return ttype + ':' + tree + ':' + (val === undefined ? 'undefined' : 'null');
     }
