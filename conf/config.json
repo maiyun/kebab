@@ -2,6 +2,19 @@
     "httpPort": 8082,
     "httpsPort": 4335,
     "rpcPort": 10633,
+    "rpcSecret": "MUSTCHANGE",
+    "irpPort": 8090,
+    "irpSecret": "MUSTCHANGE",
+    "irpEnabled": true,
+    "irp": [
+        {
+            "name": "test",
+            "host": "127.0.0.1",
+            "port": 8090,
+            "secret": "MUSTCHANGE",
+            "enabled": true
+        }
+    ],
 
     "set": {
         "timezone": 8,

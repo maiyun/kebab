@@ -16,6 +16,7 @@ import * as lSsh from '~/lib/ssh';
 import * as lJwt from '~/lib/jwt';
 import * as lWs from '~/lib/ws';
 import * as lS3 from '~/lib/s3';
+import * as lZip from '~/lib/zip';
 import * as sCtr from '~/sys/ctr';
 import * as def from '~/sys/def';
 import * as types from '~/types';
@@ -116,6 +117,7 @@ export default class extends sCtr.Ctr {
             `<br><a href="${this._config.const.urlBase}test/ctr-httpcode">View "test/ctr-httpcode"</a>`,
             `<br><a href="${this._config.const.urlBase}test/ctr-cross">View "test/ctr-cross"</a>`,
             `<br><a href="${this._config.const.urlBase}test/ctr-readable">View "test/ctr-readable"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/ctr-asynctask">View "test/ctr-asynctask"</a>`,
 
             '<br><br><b>Middle:</b>',
             `<br><br><a href="${this._config.const.urlBase}test/middle">View "test/middle"</a>`,
@@ -139,6 +141,7 @@ export default class extends sCtr.Ctr {
             `<br><a href="${this._config.const.urlBase}test/core-purify">View "test/core-purify"</a>`,
             `<br><a href="${this._config.const.urlBase}test/core-checktype">View "test/core-checktype"</a>`,
             `<br><a href="${this._config.const.urlBase}test/core-muid">View "test/core-muid"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/core-getlog">View "test/core-getlog"</a>`,
             `<br><a href="${this._config.const.urlBase}test/core-reload">View "test/core-reload"</a>`,
             `<br><a href="${this._config.const.urlBase}test/core-restart">View "test/core-restart"</a>`,
             `<br><a href="${this._config.const.urlBase}test/core-global">View "test/core-global"</a>`,
@@ -217,7 +220,10 @@ export default class extends sCtr.Ctr {
             `<br><a href="${this._config.const.urlBase}test/ssh?type=sftp">View "test/ssh?type=sftp"</a>`,
 
             '<br><br><b>S3:</b>',
-            `<br><br><a href="${this._config.const.urlBase}test/s3">View "test/s3"</a>`
+            `<br><br><a href="${this._config.const.urlBase}test/s3">View "test/s3"</a>`,
+
+            '<br><br><b>Zip:</b>',
+            `<br><br><a href="${this._config.const.urlBase}test/zip">View "test/zip"</a>`,
         ];
         echo.push('<br><br>' + this._getEnd());
 
@@ -452,6 +458,19 @@ Result:<pre id="result">Nothing.</pre>` + this._getEnd();
     public ctrReadable(): fs.ReadStream {
         this._res.setHeader('content-type', 'text/plain; charset=utf-8');
         return lFs.createReadStream(def.ROOT_PATH + 'sys/route.js');
+    }
+
+    public ctrAsynctask(): any[] {
+        this._asyncTask(async () => {
+            console.log('ASYNCTASK IN');
+            await lCore.sleep(1000);
+            console.log('ASYNCTASK TIME1');
+            await lCore.sleep(1000);
+            console.log('ASYNCTASK TIME2');
+            await lCore.sleep(1000);
+            console.log('ASYNCTASK OVER');
+        });
+        return [1];
     }
 
     public async modTest(): Promise<types.Json[] | string | boolean> {
@@ -1022,13 +1041,38 @@ for (let i = 0; i < 30000; ++i) {
         return echo.join('') + this._getEnd();
     }
 
-    public coreReload(): string {
-        lCore.sendReload();
+    public async coreGetlog(): Promise<string> {
+        const path = lTime.format(null, 'Y/m/d/H');
+        const list = await lCore.getLog({
+            'host': this._config.const.hostname,
+            'path': path,
+            'fend': '-visit',
+        });
+        const echo: string[] = [];
+        echo.push('<table style="width: 100%;"><tr>');
+        if (list) {
+            for (const row of list) {
+                echo.push('<tr>');
+                for (const item of row) {
+                    echo.push('<td>' + lText.htmlescape(item) + '</td>');
+                }
+                echo.push('</tr>');
+            }
+        }
+        else {
+            echo.push('<th>' + JSON.stringify(list) + '</th></tr>');
+        }
+        echo.push('</table>');
+        return echo.join('') + '<br>' + this._getEnd();
+    }
+
+    public async coreReload(): Promise<string> {
+        await lCore.sendReload();
         return 'The reload request has been sent, please review the console.<br><br>' + this._getEnd();
     }
 
-    public coreRestart(): string {
-        lCore.sendRestart();
+    public async coreRestart(): Promise<string> {
+        await lCore.sendRestart();
         return 'The restart request has been sent, please review the console.<br><br>' + this._getEnd();
     }
 
@@ -1039,7 +1083,7 @@ for (let i = 0; i < 30000; ++i) {
             lCore.global.tglobal === undefined ? 'undefined' : JSON.stringify(lCore.global.tglobal),
             `<pre>lCore.setGlobal('tglobal', 'ts:${ts}');</pre>`
         ];
-        lCore.setGlobal('tglobal', 'ts:' + ts);
+        await lCore.setGlobal('tglobal', 'ts:' + ts);
         await lCore.sleep(50);
         echo.push(JSON.stringify(lCore.global.tglobal));
 
@@ -2278,30 +2322,30 @@ Result:<pre id="result">Nothing.</pre>`);
 <b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
 <b>format() :</b> ${sql.format(s, sd)}<hr>`);
 
-                s = sql.select(['order.no', 'user.nick'], ['order']).leftJoin('user', { 'order.user_id': '#user.id', 'state': '1' }).getSql();
+                s = sql.select(['order.no', 'user.nick'], ['order']).leftJoin('user', { 'order.user_id': lSql.column('user.id'), 'state': '1' }).getSql();
                 sd = sql.getData();
-                echo.push(`<pre>sql.select(['order.no', 'user.nick'], ['order']).leftJoin('user', { 'order.user_id': '#user.id', 'state': '1' });</pre>
+                echo.push(`<pre>sql.select(['order.no', 'user.nick'], ['order']).leftJoin('user', { 'order.user_id': lSql.column('user.id'), 'state': '1' });</pre>
 <b>getSql() :</b> ${s}<br>
 <b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
 <b>format() :</b> ${sql.format(s, sd)}<hr>`);
 
-                s = sql.select(['o.*', 'u.nick as unick'], ['order o']).leftJoin('`user` AS u', { 'o.user_id': '#u.id', 'state': '1' }).getSql();
+                s = sql.select(['o.*', 'u.nick as unick'], ['order o']).leftJoin('`user` AS u', { 'o.user_id': lSql.column('u.id'), 'state': '1' }).getSql();
                 sd = sql.getData();
-                echo.push(`<pre>sql.select(['o.*', 'u.nick as unick'], ['order o']).leftJoin('\`user\` AS u', { 'o.user_id': '#u.id', 'state': '1' });</pre>
+                echo.push(`<pre>sql.select(['o.*', 'u.nick as unick'], ['order o']).leftJoin('\`user\` AS u', { 'o.user_id': lSql.column('u.id'), 'state': '1' });</pre>
 <b>getSql() :</b> ${s}<br>
 <b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
 <b>format() :</b> ${sql.format(s, sd)}<hr>`);
 
-                s = sql.select(['SUM(user.age) age', 'UTC_TIMESTAMP', 'FROM_UNIXTIME(user.time, \'%Y-%m\') as time'], 'order').leftJoin('user', { 'order.user_id': '#user.id' }).getSql();
+                s = sql.select(['SUM(user.age) age', 'UTC_TIMESTAMP', 'FROM_UNIXTIME(user.time, \'%Y-%m\') as time'], 'order').leftJoin('user', { 'order.user_id': lSql.column('user.id') }).getSql();
                 sd = sql.getData();
-                echo.push(`<pre>sql.select(['SUM(user.age) age', 'UTC_TIMESTAMP', 'FROM_UNIXTIME(user.time, \\'%Y-%m\\') as time'], 'order').leftJoin('user', { 'order.user_id': '#user.id' });</pre>
+                echo.push(`<pre>sql.select(['SUM(user.age) age', 'UTC_TIMESTAMP', 'FROM_UNIXTIME(user.time, \\'%Y-%m\\') as time'], 'order').leftJoin('user', { 'order.user_id': lSql.column('user.id') });</pre>
 <b>getSql() :</b> ${s}<br>
 <b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
 <b>format() :</b> ${sql.format(s, sd)}<hr>`);
 
-                s = sql.select('*', 'order').leftJoin('user', { 'order.user_id': '#user.id' }, '_0').leftJoin('group a', { 'order.group_id': '#a.id' }, '_0').getSql();
+                s = sql.select('*', 'order').leftJoin('user', { 'order.user_id': lSql.column('user.id') }, '_0').leftJoin('group a', { 'order.group_id': lSql.column('a.id') }, '_0').getSql();
                 sd = sql.getData();
-                echo.push(`<pre>sql.select('*', 'order').leftJoin('user', { 'order.user_id': '#user.id' }, '_0').leftJoin('group a', { 'order.group_id': '#a.id' }, '_0');</pre>
+                echo.push(`<pre>sql.select('*', 'order').leftJoin('user', { 'order.user_id': lSql.column('user.id') }, '_0').leftJoin('group a', { 'order.group_id': lSql.column('a.id') }, '_0');</pre>
 <b>getSql() :</b> ${s}<br>
 <b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
 <b>format() :</b> ${sql.format(s, sd)}<hr>`);
@@ -2325,9 +2369,9 @@ Result:<pre id="result">Nothing.</pre>`);
             case 'update': {
                 // --- 1, 2 ---
 
-                let s = sql.update('user', [['age', '+', '1'], { 'name': 'Serene', 'nick': '#name' }, ['year', '+', '#age']]).where({ 'name': 'Ah' }).getSql();
+                let s = sql.update('user', [['age', '+', '1'], { 'name': 'Serene', 'nick': lSql.column('name') }, ['year', '+', lSql.column('age')]]).where({ 'name': 'Ah' }).getSql();
                 let sd = sql.getData();
-                echo.push(`<pre>sql.update('user', [['age', '+', '1'], { 'name': 'Serene', 'nick': '#name' }, ['year', '+', '#age']]).where({ 'name': 'Ah' });</pre>
+                echo.push(`<pre>sql.update('user', [['age', '+', '1'], { 'name': 'Serene', 'nick': lSql.column('name') }, ['year', '+', lSql.column('age')]]).where({ 'name': 'Ah' });</pre>
 <b>getSql() :</b> ${s}<br>
 <b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
 <b>format() :</b> ${sql.format(s, sd)}<hr>`);
@@ -2343,9 +2387,9 @@ Result:<pre id="result">Nothing.</pre>`);
 
                 // --- # ---
 
-                s = sql.update('user', { 'age': '#age_verify', 'date': '##', 'he': ['he2'] }).where({ 'date_birth': '2001' }).getSql();
+                s = sql.update('user', { 'age': lSql.column('age_verify'), 'date': '#12', 'he': ['he2'] }).where({ 'date_birth': '2001' }).getSql();
                 sd = sql.getData();
-                echo.push(`<pre>sql.update('user', { 'age': '#age_verify', 'date': '##', 'he': ['he2'] }).where({ 'date_birth': '2001' });</pre>
+                echo.push(`<pre>sql.update('user', { 'age': lSql.column('age_verify'), 'date': '#12', 'he': ['he2'] }).where({ 'date_birth': '2001' });</pre>
 <b>getSql() :</b> ${s}<br>
 <b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
 <b>format() :</b> ${sql.format(s, sd)}<hr>`);
@@ -2422,11 +2466,11 @@ Result:<pre id="result">Nothing.</pre>`);
 <b>format() :</b> ${sql.format(s, sd)}<hr>`);
 
                 s = sql.select('*', 'user').where({
-                    'time_verify': '#time_add'
+                    'time_verify': lSql.column('time_add')
                 }).getSql();
                 sd = sql.getData();
                 echo.push(`<pre>sql.select('*', 'user').where({
-    'time_verify': '#time_add'
+    'time_verify': lSql.column('time_add')
 });</pre>
 <b>getSql() :</b> ${s}<br>
 <b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
@@ -2958,6 +3002,35 @@ function send() {
         r = await s3.deleteObjects(['a.txt', 'a/b.txt']);
         echo.push(`<pre>s3.deleteObjects(['a.txt', 'a/b.txt']);</pre>` + (r ? 'true' : 'false'));
         return echo.join('') + '<br><br>' + this._getEnd();
+    }
+
+    public async zip(): Promise<string> {
+        const path = def.WWW_PATH + 'default/data/test.zip';
+        const echo: string[] = ['Path: ' + path + '<br><br>'];
+        const buf = await lFs.getContent(path);
+        if (!buf) {
+            return 'Failed<br><br>' + this._getEnd();
+        }
+        const z = await lZip.get(buf);
+        if (!z) {
+            return 'Failed<br><br>' + this._getEnd();
+        }
+        const ls = await z.getList();
+        echo.push('<table style="width: 100%;"><tr>');
+        if (Object.keys(ls).length) {
+            for (const path in ls) {
+                echo.push('<tr>');
+                echo.push('<td>' + lText.htmlescape(path) + '</td>');
+                echo.push('<td>' + lText.sizeFormat(z.stats(path)?.uncompressedSize ?? 0) + '</td>');
+                echo.push('<td>' + Object.prototype.toString.call(ls[path]) + '</td>');
+                echo.push('</tr>');
+            }
+        }
+        else {
+            echo.push('<th>Empty</th></tr>');
+        }
+        echo.push('</table>');
+        return echo.join('') + '<br>' + this._getEnd();
     }
 
     /**

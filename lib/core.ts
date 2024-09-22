@@ -10,6 +10,7 @@ import * as stream from 'stream';
 import * as lTime from '~/lib/time';
 import * as lFs from '~/lib/fs';
 import * as lText from '~/lib/text';
+import * as lNet from '~/lib/net';
 import * as lCrypto from '~/lib/crypto';
 import * as lResponse from '~/lib/net/response';
 import * as sCtr from '~/sys/ctr';
@@ -21,6 +22,17 @@ export const globalConfig: types.IConfig & {
     'httpPort': number;
     'httpsPort': number;
     'rpcPort': number;
+    'rpcSecret': string;
+    'irpPort': number;
+    'irpSecret': string;
+    'irpEnabled': boolean;
+    'irp': Array<{
+        'name': string;
+        'host': string;
+        'port': number;
+        'secret': string;
+        'enabled': boolean;
+    }>;
 } = {} as types.Json;
 
 /** --- Cookie 设置的选项 --- */
@@ -206,17 +218,18 @@ export function checkType(val: any, type: any, tree: string = 'root'): string {
         }
         return type.test(val) ? '' : 'regexp:' + tree + ':' + vtype;
     }
-    if (val === undefined || val === null) {
-        return ttype + ':' + tree + ':' + (val === undefined ? 'undefined' : 'null');
-    }
     if (ttype === 'string') {
-        if (vtype !== 'string') {
+        if (vtype !== 'string' && val !== undefined && val !== null) {
             return 'string:' + tree + ':' + vtype;
         }
+        // --- 是字符串、undefined、null ---
         if (type) {
             return val ? '' : 'require:' + tree + ':' + vtype;
         }
         return '';
+    }
+    if (val === undefined || val === null) {
+        return ttype + ':' + tree + ':' + (val === undefined ? 'undefined' : 'null');
     }
     if (ttype === 'object') {
         if (vtype !== 'object') {
@@ -425,27 +438,77 @@ export function exec(command: string): Promise<string | false> {
 }
 
 /**
- * --- 向主进程发送广播将进行 reload 操作，等待回传 ---
+ * --- 向主进程（或局域网同代码机子）发送广播将进行 reload 操作，等待回传 ---
  * --- 主要作用除代码热更新以外的其他情况 ---
  */
-export function sendReload(): void {
-    // eslint-disable-next-line no-console
-    console.log('[ Child] Sending reload request...');
-    process.send!({
-        'action': 'reload'
-    });
+export async function sendReload(hosts?: string[]): Promise<string[]> {
+    if (!hosts) {
+        // --- 本地模式 ---
+        // eslint-disable-next-line no-console
+        console.log('[ Child] Sending reload request...');
+        process.send!({
+            'action': 'reload'
+        });
+        return [];
+    }
+    // --- 局域网模式 ---
+    const time = lTime.stamp();
+    /** --- 返回成功的 host --- */
+    const rtn: string[] = [];
+    for (const host of hosts) {
+        const res = await lNet.get('http://' + host + ':' + globalConfig.rpcPort.toString() + '/' + lCrypto.aesEncrypt(lText.stringifyJson({
+            'action': 'reload',
+            'time': time
+        }), globalConfig.rpcSecret), {
+            'timeout': 2
+        });
+        const content = await res.getContent();
+        if (!content) {
+            continue;
+        }
+        const str = content.toString();
+        if (str === 'Done') {
+            rtn.push(host);
+        }
+    }
+    return rtn;
 }
 
 /**
- * --- 向主进程发送广播将进行 restart 操作，停止监听并启动新进程，老进程在连接全部断开后自行销毁 ---
+ * --- 向主进程（或局域网同代码机子）发送广播将进行 restart 操作，停止监听并启动新进程，老进程在连接全部断开后自行销毁 ---
  * --- 主要用作不间断的代码热更新 ---
  */
-export function sendRestart(): void {
-    // eslint-disable-next-line no-console
-    console.log('[ Child] Sending restart request...');
-    process.send!({
-        'action': 'restart'
-    });
+export async function sendRestart(hosts?: string[]): Promise<string[]> {
+    if (!hosts) {
+        // --- 本地模式 ---
+        // eslint-disable-next-line no-console
+        console.log('[ Child] Sending restart request...');
+        process.send!({
+            'action': 'restart'
+        });
+        return [];
+    }
+    // --- 局域网模式 ---
+    const time = lTime.stamp();
+    /** --- 返回成功的 host --- */
+    const rtn: string[] = [];
+    for (const host of hosts) {
+        const res = await lNet.get('http://' + host + ':' + globalConfig.rpcPort.toString() + '/' + lCrypto.aesEncrypt(lText.stringifyJson({
+            'action': 'restart',
+            'time': time
+        }), globalConfig.rpcSecret), {
+            'timeout': 2
+        });
+        const content = await res.getContent();
+        if (!content) {
+            continue;
+        }
+        const str = content.toString();
+        if (str === 'Done') {
+            rtn.push(host);
+        }
+    }
+    return rtn;
 }
 
 /** --- 跨进程全局变量 --- */
@@ -455,25 +518,85 @@ export const global: Record<string, any> = {};
  * --- 设置跨线程的全局变量 ---
  * @param key 变量名
  * @param data 变量值
+ * @param hosts 局域网列表
  */
-export function setGlobal(key: string, data: types.Json): void {
-    process.send!({
-        'action': 'global',
-        'key': key,
-        'data': data
-    });
+export async function setGlobal(key: string, data: types.Json, hosts?: string[]): Promise<string[]> {
+    if (!hosts) {
+        // --- 本地模式 ---
+        process.send!({
+            'action': 'global',
+            'key': key,
+            'data': data
+        });
+        return [];
+    }
+    // --- 局域网模式 ---
+    const time = lTime.stamp();
+    /** --- 返回成功的 host --- */
+    const rtn: string[] = [];
+    for (const host of hosts) {
+        const res = await lNet.get('http://' + host + ':' + globalConfig.rpcPort.toString() + '/' + lCrypto.aesEncrypt(lText.stringifyJson({
+            'action': 'global',
+            'time': time
+        }), globalConfig.rpcSecret), {
+            'timeout': 2
+        });
+        const content = await res.getContent();
+        if (!content) {
+            continue;
+        }
+        const str = content.toString();
+        if (str === 'Done') {
+            rtn.push(host);
+        }
+    }
+    return rtn;
 }
 
 /**
  * --- 移除某个跨线程全局变量 ---
  * @param key 变量名
+ * @param hosts 局域网列表
  */
-export function removeGlobal(key: string): void {
-    process.send!({
-        'action': 'global',
-        'key': key,
-        'data': undefined
-    });
+export async function removeGlobal(key: string, hosts?: string[]): Promise<string[]> {
+    return setGlobal(key, null, hosts);
+}
+
+/**
+ * --- 上传并覆盖代码文件，config.json、kebab.json、.js.map、.ts, .gitignore 不会被覆盖和新建 ---
+ * @param sourcePath zip 文件
+ * @param path 要覆盖的路径，无所谓是否 / 开头 / 结尾
+ * @param hosts 局域网多机部署，不设置默认本机部署
+ */
+export async function updateCode(sourcePath: string, path: string, hosts?: string[]): Promise<string[]> {
+    if (!hosts) {
+        hosts = ['127.0.0.1'];
+    }
+    const time = lTime.stamp();
+    /** --- 返回成功的 host --- */
+    const rtn: string[] = [];
+    for (const host of hosts) {
+        const fd = lNet.getFormData();
+        if (!await fd.putFile('file', sourcePath)) {
+            continue;
+        }
+        fd.putString('path', path);
+        const res = await lNet.post('http://' + host + ':' + globalConfig.rpcPort.toString() + '/' + lCrypto.aesEncrypt(lText.stringifyJson({
+            'action': 'code',
+            'time': time
+        }), globalConfig.rpcSecret), fd, {
+            'timeout': 2
+        });
+        const content = await res.getContent();
+        if (!content) {
+            continue;
+        }
+        const str = content.toString();
+        if (str === 'Done') {
+            rtn.push(host);
+        }
+    }
+    return rtn;
 }
 
 /** --- log 设置的选项 --- */
@@ -549,11 +672,113 @@ export async function log(opt: sCtr.Ctr | ILogOptions, msg: string, fend: string
         lText.queryStringify(cookie).replace(/"/g, '""') + '","' +
         (headers['user-agent']?.replace(/"/g, '""') ?? 'No HTTP_USER_AGENT') + '","' +
         realIp.replace(/"/g, '""') + '","' +
-        clientIp.replace(/"/g, '""') + '","' +
-        msg.replace(/"/g, '""') + '"\n', {
+        clientIp.replace(/"/g, '""') + '",' +
+        JSON.stringify(msg.replace(/"/g, '""')) + '\n', {
         'encoding': 'utf8',
         'mode': 0o777,
         'flag': 'a'
+    });
+}
+
+/**
+ * --- 获取日志内容为一个数组 ---
+ * @param opt 参数
+ */
+export async function getLog(opt: {
+    /** --- 如 127.0.0.1 --- */
+    'host': string;
+    /** --- 如 2024/08/01/22 --- */
+    'path': string;
+    /** --- 如 -error --- */
+    'fend'?: string;
+    /** --- 仅显示被搜索到的行 --- */
+    'search'?: string;
+    /** --- 跳过条数 --- */
+    'offset'?: number;
+    /** --- 最大限制，默认 100 --- */
+    'limit'?: number;
+}): Promise<string[][] | null | false> {
+    const path = def.LOG_PATH + opt.host + (opt.fend ?? '') + '/' + opt.path + '.csv';
+    if (!await lFs.isFile(path)) {
+        return null;
+    }
+    /** --- 剩余 limit --- */
+    let limit = opt.limit ?? 100;
+    /** --- 剩余 offset --- */
+    let offset = opt.offset ?? 0;
+    return new Promise<string[][] | null | false>((resolve) => {
+        const list: string[][] = [];
+        /** --- 当前行号 --- */
+        let line = 0;
+        /** --- 当前行数据 --- */
+        let packet = '';
+        lFs.createReadStream(path, {
+            'encoding': 'utf8'
+        }).on('data', (buf: string) => {
+            while (true) {
+                // --- 分包 ---
+                const index = buf.indexOf('\n');
+                if (index === -1) {
+                    // --- 本次包还没有结束 ---
+                    packet += buf;
+                    break;
+                }
+                // --- 本次行结束了 ---
+                if (limit === 0) {
+                    break;
+                }
+                packet += buf.slice(0, index);
+                buf = buf.slice(index + 1);
+                ++line;
+                // --- 先执行下本次完成的 ---
+                if (line > 1) {
+                    if (offset === 0) {
+                        if (!opt.search || packet.includes(opt.search)) {
+                            const result: string[] = [];
+                            let currentField = '';
+                            let inQuotes = false;
+                            for (let i = 0; i < packet.length; ++i) {
+                                const char = packet[i];
+                                if (char === '"') {
+                                    if (inQuotes && packet[i + 1] === '"') {
+                                        currentField += '"';
+                                        ++i;
+                                    }
+                                    else {
+                                        inQuotes = !inQuotes;
+                                    }
+                                }
+                                else if (char === ',' && !inQuotes) {
+                                    result.push(currentField);
+                                    currentField = '';
+                                }
+                                else {
+                                    currentField += char;
+                                }
+                            }
+                            result.push(currentField);
+                            list.push(result);
+                            --limit;
+                        }
+                    }
+                    else {
+                        --offset;
+                    }
+                }
+                // --- 处理结束 ---
+                packet = '';
+                // --- 看看还有没有后面的粘连包 ---
+                if (!buf.length) {
+                    // --- 没粘连包 ---
+                    break;
+                }
+                // --- 有粘连包 ---
+            }
+        }).on('end', () => {
+            resolve(list);
+        }).on('error', () => {
+            resolve(false);
+        });
     });
 }
 

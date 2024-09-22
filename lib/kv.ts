@@ -1,7 +1,7 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2019-5-30 19:25:22
- * Last: 2020-3-28 18:54:04, 2022-09-12 23:24:45, 2022-09-22 01:06:22, 2024-2-21 13:32:56
+ * Last: 2020-3-28 18:54:04, 2022-09-12 23:24:45, 2022-09-22 01:06:22, 2024-2-21 13:32:56, 2024-8-21 16:59:57
  */
 
 // --- Pool 是使用时必须要一个用户创建一份的，Connection 是池子里获取的 ---
@@ -219,6 +219,20 @@ export class Pool {
             return null;
         }
         const r = await conn.pttl(key, this._etc);
+        conn.used();
+        return r;
+    }
+
+    /**
+     * --- 批量获取值 ---
+     * @param keys key 序列
+     */
+    public async mSet(rows: Record<string, string | Buffer>): Promise<boolean> {
+        const conn = await this._getConnection();
+        if (!conn) {
+            return false;
+        }
+        const r = await conn.mSet(rows, this._etc);
         conn.used();
         return r;
     }
@@ -966,6 +980,30 @@ end`;
     }
 
     /**
+     * --- 批量设置哈希值 ---
+     * @param key key 名
+     * @param rows key / val 数组
+     * @param etc
+     */
+    public async mSet(
+        rows: Record<string, string | Buffer>,
+        etc: types.IConfigKv
+    ): Promise<boolean> {
+        this.refreshLast();
+        try {
+            const rtn: Record<string, string | Buffer> = {};
+            for (const key in rows) {
+                rtn[etc.pre + key] = rows[key];
+            }
+            await this._link.mSet(rtn);
+            return true;
+        }
+        catch {
+            return false;
+        }
+    }
+
+    /**
      * --- 获取 json 对象 ---
      * @param key
      * @param etc
@@ -1353,11 +1391,7 @@ end`;
     public async bLMove(sourceKey: string, destKey: string, soo: 'LEFT' | 'RIGHT', deo: 'LEFT' | 'RIGHT', timeout: number, etc: types.IConfigKv): Promise<string | null> {
         this.refreshLast();
         try {
-            const r = await this._link.command('BLMOVE', [etc.pre + sourceKey, etc.pre + destKey, soo, deo, timeout.toString()]);
-            if (r instanceof Buffer) {
-                return r.toString();
-            }
-            return null;
+            return await this._link.bLMove(etc.pre + sourceKey, etc.pre + destKey, soo, deo, timeout);
         }
         catch {
             return null;

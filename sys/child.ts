@@ -54,19 +54,8 @@ const linkCount: Record<string, number> = {};
  * --- 最终调用执行的函数块，创建 http 服务器等 ---
  */
 async function run(): Promise<void> {
-    // --- 加载 vhosts、sni 证书 ---
+    // --- 加载 全局、vhosts、sni 证书 ---
     await reload();
-
-    // --- 加载系统全局 config.json ---
-    const configContent = await fs.getContent(def.CONF_PATH + 'config.json', 'utf8');
-    if (!configContent) {
-        throw `File '${def.CONF_PATH}config.json' not found.`;
-    }
-    /** --- 系统 config.json --- */
-    const config = lText.parseJson(configContent);
-    for (const key in config) {
-        lCore.globalConfig[key] = config[key];
-    }
 
     // --- 创建服务器并启动（支持 http2/https/http/websocket） ---
     http2Server = http2.createSecureServer({
@@ -158,7 +147,7 @@ async function run(): Promise<void> {
                 delete linkCount[key];
             }
         });
-    }).listen(config.httpsPort);
+    }).listen(lCore.globalConfig.httpsPort);
     httpServer = http.createServer(function(req: http.IncomingMessage, res: http.ServerResponse): void {
         const host = (req.headers['host'] ?? '');
         if (!host) {
@@ -223,7 +212,7 @@ async function run(): Promise<void> {
                 delete linkCount[key];
             }
         });
-    }).listen(config.httpPort);
+    }).listen(lCore.globalConfig.httpPort);
 }
 
 /**
@@ -240,6 +229,7 @@ async function requestHandler(
     // --- 打开计时器 ---
     const timer = {
         'timer': {} as NodeJS.Timeout,
+        'timeout': 30_000,
         'callback': () => {
             if (!req.socket.writable) {
                 return;
@@ -253,7 +243,7 @@ async function requestHandler(
             res.end('<h1>504 Gateway Timeout</h1><hr>Kebab');
         }
     };
-    timer.timer = setTimeout(timer.callback, 30_000);
+    timer.timer = setTimeout(timer.callback, timer.timeout);
     // --- 设置服务器名版本 ---
     res.setHeader('Server', 'Kebab/' + def.VER);
     // --- 当前 uri ---
@@ -499,12 +489,20 @@ async function upgradeHandler(req: http.IncomingMessage, socket: net.Socket, htt
 }
 
 /**
- * --- 加载/重载 vhosts 信息、清空证书信息、清空全局 config、重新加载证书。（清除动态 kebab.json 信息、data 信息、语言包信息） ---
+ * --- 加载/重载 vhosts 信息、重新加载全局 config、重新加载证书。（清除动态 kebab.json 信息、data 信息、语言包信息） ---
  */
 async function reload(): Promise<void> {
-    // --- 清除全局 config，下次 run 时就会重新加载了（/conf/config.json） ---
+    // --- 清除全局 config，并重新加载全局信息 ---
+    const configContent = await fs.getContent(def.CONF_PATH + 'config.json', 'utf8');
+    if (!configContent) {
+        throw `File '${def.CONF_PATH}config.json' not found.`;
+    }
+    const config = lText.parseJson(configContent);
     for (const key in lCore.globalConfig) {
         delete lCore.globalConfig[key];
+    }
+    for (const key in config) {
+        lCore.globalConfig[key] = config[key];
     }
     // --- 重新加载 VHOST 信息（/conf/vhost/） ---
     const files = await fs.readDir(def.VHOST_PATH);
@@ -593,8 +591,8 @@ process.on('message', function(msg: types.Json) {
                         'cookie': {},
                         'headers': {}
                     }, `[child] Worker ${process.pid} busy: ${str.join(',')}.`, '-error');
-                    await lCore.sleep(5_000);
-                    waiting += 5_000;
+                    await lCore.sleep(30_000);
+                    waiting += 30_000;
                     if (waiting > 3600_000) {
                         break;
                     }
@@ -604,8 +602,15 @@ process.on('message', function(msg: types.Json) {
                 break;
             }
             case 'global': {
-                if (msg.data === undefined) {
+                if (msg.data === undefined || msg.data === null) {
                     delete lCore.global[msg.key];
+                    break;
+                }
+                if (msg.key === '__init__') {
+                    // --- 初始化 ---
+                    for (const key in msg.data) {
+                        lCore.global[key] = msg.data[key];
+                    }
                     break;
                 }
                 lCore.global[msg.key] = msg.data;

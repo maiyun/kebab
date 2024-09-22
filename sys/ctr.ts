@@ -132,14 +132,13 @@ export class Ctr {
     /** --- timeout 的 timer --- */
     protected _timer?: {
         'timer': NodeJS.Timeout;
+        'timeout': number;
         'callback': () => void;
     };
 
-    private _timeout: number = 30_000;
-
     /** --- 获取当前过期时间 --- */
     public get timeout(): number {
-        return this._timeout;
+        return this._timer?.timeout ?? 30_000;
     }
 
     /**
@@ -149,9 +148,50 @@ export class Ctr {
         if (!this._timer) {
             return;
         }
-        this._timeout = num;
+        this._timer.timeout = num;
         clearTimeout(this._timer.timer);
         this._timer.timer = setTimeout(this._timer.callback, num);
+    }
+
+    /** --- 一些需要等待的事项的记录（异步任务、事务） --- */
+    private readonly _waitInfo = {
+        'asyncTask': {
+            'count': 0,
+            'resolve': () => {
+                // --- NOTHING ---
+            },
+            'callback': function() {
+                return new Promise<void>((resolve) => {
+                    this.resolve = resolve;
+                });
+            }
+        },
+        'transaction': 0
+    };
+
+    /**
+     * --- 执行一段跳出堆栈的异步代码，代码执行完成前，热更新不会杀死当面进程 且 ftmp 临时文件不会被清除 ---
+     * @param func 异步代码
+     */
+    protected _asyncTask(func: () => void | Promise<void>): void {
+        ++this._waitInfo.asyncTask.count;
+        setTimeout((): void => {
+            (async () => {
+                await func();
+                --this._waitInfo.asyncTask.count;
+                if (!this._waitInfo.asyncTask.count) {
+                    this._waitInfo.asyncTask.resolve();
+                }
+            })().catch(async (e) => {
+                console.log('[ERROR][CTR][ASYNCTASK]', e);
+                await core.log(this, '(ctr.asyncTask)' + text.stringifyJson(e.stack).slice(1, -1), '-error');
+                --this._waitInfo.asyncTask.count;
+                if (!this._waitInfo.asyncTask.count) {
+                    this._waitInfo.asyncTask.resolve();
+                }
+            });
+        }, 0);
+
     }
 
     // --- Kebab 结束 ---
@@ -319,7 +359,7 @@ export class Ctr {
                 }
                 else if (v instanceof RegExp) {
                     // --- 正则 ---
-                    if (!v.test(input[key])) {
+                    if (input[key] !== null && !v.test(input[key])) {
                         rtn[0] = val[lastK][0];
                         rtn[1] = val[lastK][1];
                         if (val[lastK][2]) {
@@ -330,14 +370,16 @@ export class Ctr {
                 }
                 else if (typeof v === 'object' && v.type !== undefined) {
                     // --- core.checkType ---
-                    const r = core.checkType(input[key], v.type);
-                    if (r) {
-                        rtn[0] = val[lastK][0];
-                        rtn[1] = typeof val[lastK][1] === 'string' ? val[lastK][1] + '(' + r + ')' : val[lastK][1];
-                        if (val[lastK][2]) {
-                            rtn[2] = val[lastK][2];
+                    if (input[key] !== null) {
+                        const r = core.checkType(input[key], v.type);
+                        if (r) {
+                            rtn[0] = val[lastK][0];
+                            rtn[1] = typeof val[lastK][1] === 'string' ? val[lastK][1] + '(' + r + ')' : val[lastK][1];
+                            if (val[lastK][2]) {
+                                rtn[2] = val[lastK][2];
+                            }
+                            return false;
                         }
-                        return false;
                     }
                 }
                 else {

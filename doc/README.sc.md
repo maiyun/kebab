@@ -153,7 +153,7 @@ const userList = await User.where<User>(this, db, [
 ### Sql 库自动增加表前缀和包裹字符“`”
 
 ```typescript
-sql.select(['SUM(user.age) age'], 'order').leftJoin('user', {'order.user_id': '#user.id'});
+sql.select(['SUM(user.age) age'], 'order').leftJoin('user', {'order.user_id': lSql.column('user.id')});
 ```
 
 将输出：

@@ -1,7 +1,7 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2019-4-15 13:40
- * Last: 2020-4-13 15:34:45, 2022-09-12 13:10:34, 2023-5-24 18:29:38, 2024-7-11 14:37:54
+ * Last: 2020-4-13 15:34:45, 2022-09-12 13:10:34, 2023-5-24 18:29:38, 2024-7-11 14:37:54, 2024-8-25 00:32:53, 2024-9-22 17:30:47
  */
 
 // --- Pool 是使用时必须要一个用户创建一份的，Connection 是池子里获取的 ---
@@ -70,9 +70,9 @@ async function checkConnection(): Promise<void> {
             continue;
         }
         if (connection.isUsing()) {
-            // --- 连接正在被使用，看看是否空闲了超过 2 分钟，超过则不是正常状态 ---
-            if (connection.getLast() <= now - 120) {
-                // --- 10 分钟之前开始的 ---
+            // --- 连接正在被使用，看看是否空闲了超过 1 分钟，超过则不是正常状态 ---
+            if (connection.getLast() <= now - 60) {
+                // --- 1 分钟之前开始的 ---
                 const ls = connection.getLastSql();
                 const sql = ls[1] ?? ls[0];
                 console.log(`[child] [db] [error] There is a transactional connection[${i}] that is not closed, last sql: ${sql?.sql ?? 'undefined'}.`);
@@ -134,21 +134,19 @@ export class Pool {
     public async query(sql: string, values?: types.DbValue[]): Promise<IData> {
         ++this._queries;
         // --- 获取并自动 using  ---
-        try {
-            const conn = await this._getConnection();
-            // --- 执行一次后自动解除 using ---
-            return await conn.query(sql, values);
-        }
-        catch (e: any) {
+        const conn = await this._getConnection();
+        if (!conn) {
             return {
                 'rows': null,
                 'fields': [],
                 'error': {
-                    'message': e.toString(),
-                    'errno': e.errno
+                    'message': 'null',
+                    'errno': 0
                 }
             };
         }
+        // --- 执行一次后自动解除 using ---
+        return conn.query(sql, values);
     }
 
     /**
@@ -158,44 +156,39 @@ export class Pool {
      */
     public async execute(sql: string, values?: types.DbValue[]): Promise<IPacket> {
         ++this._queries;
-        try {
-            const conn = await this._getConnection();
-            return await conn.execute(sql, values);
-        }
-        catch (e: any) {
+        const conn = await this._getConnection();
+        if (!conn) {
             return {
                 'packet': null,
                 'fields': [],
                 'error': {
-                    'message': e.toString(),
-                    'errno': e.errno
+                    'message': 'null',
+                    'errno': 0
                 }
             };
         }
+        return conn.execute(sql, values);
     }
 
     /**
-     * --- 开启事务，返回连接对象并锁定连接，别人任何人不可用 ---
+     * --- 开启事务，返回事务对象并锁定连接，别人任何人不可用，有 ctr 的话必传 this，独立执行时可传 null ---
      */
-    public async beginTransaction(): Promise<Connection | null> {
-        try {
-            const conn = await this._getConnection();
-            if (!await conn.beginTransaction()) {
-                return null;
-            }
-            return conn;
-        }
-        catch {
+    public async beginTransaction(ctr: ctr.Ctr | null): Promise<Transaction | null> {
+        const conn = await this._getConnection();
+        if (!conn) {
             return null;
         }
+        if (!await conn.beginTransaction()) {
+            return null;
+        }
+        return new Transaction(ctr, conn);
     }
 
     /**
-     * --- 获取一个连接，自动变为 using 状态，；连接失败会抛出错误 ---
-     * @throw e
+     * --- 获取一个连接，自动变为 using 状态，；连接失败会返回 null ---
      */
-    private async _getConnection(): Promise<Connection> {
-        let conn!: Connection;
+    private async _getConnection(): Promise<Connection | null> {
+        let conn: Connection | null = null;
         for (const connection of connections) {
             const etc = connection.getEtc();
             if (
@@ -225,16 +218,17 @@ export class Pool {
                     'database': this._etc.name,
                     'user': this._etc.user,
                     'password': this._etc.pwd,
-                    'connectTimeout': 5000
+                    'connectTimeout': 3000
                 });
-                conn = new Connection(this._etc, link);
-                conn.using();
+                const c = new Connection(this._etc, link);
+                c.using();
                 link.on('error', function(err: mysql2.QueryError): void {
-                    conn.setLost();
+                    c.setLost();
                     if (err.code !== 'PROTOCOL_CONNECTION_LOST') {
                         console.log(err);
                     }
                 });
+                conn = c;
                 connections.push(conn);
             }
             catch (e: any) {
@@ -257,6 +251,173 @@ export class Pool {
      */
     public getQueries(): number {
         return this._queries;
+    }
+
+}
+
+/** --- 事务连接对象，commit 和 rollback 后将无法使用 --- */
+export class Transaction {
+
+    /** --- SQL 执行次数 --- */
+    private _queries: number = 0;
+
+    /** --- 连接对象 --- */
+    private _conn: Connection | null;
+
+    private readonly _ctr: ctr.Ctr | null;
+
+    // --- 事务时长监听 timer ---
+    private readonly _timer: {
+        'warning'?: NodeJS.Timeout;
+        'danger'?: NodeJS.Timeout;
+    } = {
+            'warning': undefined,
+            'danger': undefined
+        };
+
+    public constructor(ctr: ctr.Ctr | null, conn: Connection, opts: {
+        'warning'?: number;
+        'danger'?: number;
+    } = {}) {
+        // --- 进来的连接对象直接是事务独占模式 ---
+        this._ctr = ctr;
+        if (ctr) {
+            ++ctr.getPrototype('_waitInfo').transaction;
+        }
+        this._conn = conn;
+        // --- 事务时长监听 ---
+        const warning = opts.warning ?? 1_500;
+        this._timer.warning = setTimeout(() => {
+            this._timer.warning = undefined;
+            console.log('[WARNING][DB][Transaction] time too long, ms:', warning, this._ctr?.getPrototype('_config').const.path ?? 'no ctr');
+        }, warning);
+        const danger = opts.danger ?? 5_000;
+        this._timer.danger = setTimeout(() => {
+            this._timer.danger = undefined;
+            console.log('[DANGER][DB][Transaction] time too long, ms:', danger, this._ctr?.getPrototype('_config').const.path ?? 'no ctr');
+        }, danger);
+    }
+
+    /**
+     * --- 在事务连接中执行一条 SQL ---
+     * @param sql 执行的 SQL 字符串
+     * @param values 要替换的 data 数据
+     */
+    public async query(sql: string, values?: types.DbValue[]): Promise<IData> {
+        if (!this._conn) {
+            // --- 当前连接已不可用 ---
+            console.log('[ERROR][DB][Transaction.query] has been closed.', this._ctr?.getPrototype('_config').const.path ?? 'no ctr', sql);
+            await core.log({
+                'path': '',
+                'urlFull': '',
+                'hostname': '',
+                'req': null,
+                'get': {},
+                'cookie': {},
+                'headers': {}
+            }, '(db.Transaction.query) has been closed, ' + (this._ctr?.getPrototype('_config').const.path ?? 'no ctr') + ': ' + sql, '-error');
+            return {
+                'rows': null,
+                'fields': [],
+                'error': {
+                    'message': 'null',
+                    'errno': 0
+                }
+            };
+        }
+        ++this._queries;
+        return this._conn.query(sql, values);
+    }
+
+    /**
+     * --- 执行一条 SQL 并获得影响行数对象 packet，连接失败抛出错误 ---
+     * @param sql 执行的 SQL 字符串
+     * @param values 要替换的 data 数据
+     */
+    public async execute(sql: string, values?: types.DbValue[]): Promise<IPacket> {
+        if (!this._conn) {
+            // --- 当前连接已不可用 ---
+            console.log('[ERROR][DB][Transaction.execute] has been closed.', this._ctr?.getPrototype('_config').const.path ?? 'no ctr', sql);
+            await core.log({
+                'path': '',
+                'urlFull': '',
+                'hostname': '',
+                'req': null,
+                'get': {},
+                'cookie': {},
+                'headers': {}
+            }, '(db.Transaction.execute) has been closed, ' + (this._ctr?.getPrototype('_config').const.path ?? 'no ctr') + ': ' + sql, '-error');
+            return {
+                'packet': null,
+                'fields': [],
+                'error': {
+                    'message': 'null',
+                    'errno': 0
+                }
+            };
+        }
+        ++this._queries;
+        return this._conn.execute(sql, values);
+    }
+
+    public async commit(): Promise<boolean> {
+        if (!this._conn) {
+            // --- 当前连接已不可用 ---
+            console.log('[ERROR][DB][Transaction.commit] has been closed.', this._ctr?.getPrototype('_config').const.path ?? 'no ctr');
+            await core.log({
+                'path': '',
+                'urlFull': '',
+                'hostname': '',
+                'req': null,
+                'get': {},
+                'cookie': {},
+                'headers': {}
+            }, '(db.Transaction.commit) has been closed: ' + (this._ctr?.getPrototype('_config').const.path ?? 'no ctr'), '-error');
+            return false;
+        }
+        const r = await this._conn.commit();
+        if (!r) {
+            return false;
+        }
+        this._conn = null;
+        if (this._ctr) {
+            --this._ctr.getPrototype('_waitInfo').transaction;
+        }
+        clearTimeout(this._timer.warning);
+        this._timer.warning = undefined;
+        clearTimeout(this._timer.danger);
+        this._timer.danger = undefined;
+        return true;
+    }
+
+    public async rollback(): Promise<boolean> {
+        if (!this._conn) {
+            // --- 当前连接已不可用 ---
+            console.log('[ERROR][DB][Transaction.rollback] has been closed.', this._ctr?.getPrototype('_config').const.path ?? 'no ctr');
+            await core.log({
+                'path': '',
+                'urlFull': '',
+                'hostname': '',
+                'req': null,
+                'get': {},
+                'cookie': {},
+                'headers': {}
+            }, '(db.Transaction.rollback) has been closed: ' + (this._ctr?.getPrototype('_config').const.path ?? 'no ctr'), '-error');
+            return false;
+        }
+        const r = await this._conn.rollback();
+        if (!r) {
+            return false;
+        }
+        this._conn = null;
+        if (this._ctr) {
+            --this._ctr.getPrototype('_waitInfo').transaction;
+        }
+        clearTimeout(this._timer.warning);
+        this._timer.warning = undefined;
+        clearTimeout(this._timer.danger);
+        this._timer.danger = undefined;
+        return true;
     }
 
 }

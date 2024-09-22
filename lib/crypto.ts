@@ -1,7 +1,7 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2019-4-2 14:01:06
- * Last: 2020-3-12 14:05:24, 2022-09-12 11:52:35
+ * Last: 2020-3-12 14:05:24, 2022-09-12 11:52:35, 2024-9-8 17:09:39
  */
 import * as crypto from 'crypto';
 // --- 库和定义 ---
@@ -13,8 +13,8 @@ export const AES_256_ECB = 'AES-256-ECB';      // 如果未设置 iv，则默认
 export const AES_256_CBC = 'AES-256-CBC';
 export const AES_256_CFB = 'AES-256-CFB';      // 一般用这个，设置 $iv，自动就切换成了这个
 
-export function aesEncrypt(original: string | Buffer, key: string, iv: string, method: string, output: 'buffer'): Buffer | false;
-export function aesEncrypt(original: string | Buffer, key: string, iv?: string, method?: string, output?: 'base64'): string | false;
+export function aesEncrypt(original: string | Buffer, key: crypto.CipherKey, iv: string, method: string, output: 'buffer'): Buffer | false;
+export function aesEncrypt(original: string | Buffer, key: crypto.CipherKey, iv?: string, method?: string, output?: 'base64'): string | false;
 /**
  * --- AES 加密 ---
  * @param original 原始字符串
@@ -22,12 +22,12 @@ export function aesEncrypt(original: string | Buffer, key: string, iv?: string, 
  * @param iv 向量 16 个英文字母和数字
  * @param method 加密方法
  */
-export function aesEncrypt(original: string | Buffer, key: string, iv: string = '', method: string = AES_256_ECB, output: 'base64' | 'buffer' = 'base64'): string | Buffer | false {
+export function aesEncrypt(original: string | Buffer, key: crypto.CipherKey, iv: string = '', method: string = AES_256_ECB, output: 'base64' | 'buffer' = 'base64'): string | Buffer | false {
     try {
         if (iv !== '') {
             method = method === AES_256_ECB ? AES_256_CFB : method;
         }
-        if (key.length < 32) {
+        if (typeof key === 'string' && key.length < 32) {
             key = hashHmac('md5', key, 'MaiyunSalt');
         }
         const cip = crypto.createCipheriv(method, key, iv);
@@ -56,8 +56,8 @@ export function aesEncrypt(original: string | Buffer, key: string, iv: string = 
         return false;
     }
 }
-export function aesDecrypt(encrypt: string | Buffer, key: string, iv: string, method: string, output: 'buffer'): Buffer | false;
-export function aesDecrypt(encrypt: string | Buffer, key: string, iv?: string, method?: string, output?: 'binary'): string | false;
+export function aesDecrypt(encrypt: string | Buffer, key: crypto.CipherKey, iv: string, method: string, output: 'buffer'): Buffer | false;
+export function aesDecrypt(encrypt: string | Buffer, key: crypto.CipherKey, iv?: string, method?: string, output?: 'binary'): string | false;
 /**
  * --- AES 解密 ---
  * @param encrypt 需解密的字符串
@@ -65,12 +65,12 @@ export function aesDecrypt(encrypt: string | Buffer, key: string, iv?: string, m
  * @param iv 向量 16 个英文字母和数字
  * @param method 加密方法
  */
-export function aesDecrypt(encrypt: string | Buffer, key: string, iv: string = '', method: string = AES_256_ECB, output: 'binary' | 'buffer' = 'binary'): string | Buffer | false {
+export function aesDecrypt(encrypt: string | Buffer, key: crypto.CipherKey, iv: string = '', method: string = AES_256_ECB, output: 'binary' | 'buffer' = 'binary'): string | Buffer | false {
     try {
         if (iv !== '') {
             method = method === AES_256_ECB ? AES_256_CFB : method;
         }
-        if (key.length < 32) {
+        if (typeof key === 'string' && key.length < 32) {
             key = hashHmac('md5', key, 'MaiyunSalt');
         }
         const cip = crypto.createDecipheriv(method, key, iv);
@@ -102,22 +102,16 @@ export function aesDecrypt(encrypt: string | Buffer, key: string, iv: string = '
 
 // --- 以下是 Mutton: false, Kebab: true ---
 
-export function hashHmac(algorithm: string, data: Buffer | string, key?: string, format?: 'hex' | 'base64'): string;
-export function hashHmac(algorithm: string, data: Buffer | string, key: string | undefined, format: 'buffer'): Buffer;
+export function hashHmac(algorithm: string, data: Buffer | string, key?: crypto.CipherKey, format?: 'hex' | 'base64'): string;
+export function hashHmac(algorithm: string, data: Buffer | string, key: crypto.CipherKey | undefined, format: 'buffer'): Buffer;
 /**
  * --- hash 或 hmac 加密 ---
  * @param algorithm 加密方式
  * @param data 源数据
  * @param key 设置则采用 hmac 加密
  */
-export function hashHmac(algorithm: string, data: Buffer | string, key?: string, format: 'hex' | 'base64' | 'buffer' = 'hex'): string | Buffer {
-    let cry: crypto.Hash | crypto.Hmac;
-    if (key) {
-        cry = crypto.createHmac(algorithm, key);
-    }
-    else {
-        cry = crypto.createHash(algorithm);
-    }
+export function hashHmac(algorithm: string, data: Buffer | string, key?: crypto.CipherKey, format: 'hex' | 'base64' | 'buffer' = 'hex'): string | Buffer {
+    const cry = key ? crypto.createHmac(algorithm, key) : crypto.createHash(algorithm);
     cry.update(data);
     if (format === 'buffer') {
         return cry.digest();
@@ -127,23 +121,17 @@ export function hashHmac(algorithm: string, data: Buffer | string, key?: string,
     }
 }
 
-export function hashHmacFile(algorithm: string, path: string, key?: string, encoding?: 'hex' | 'base64' | 'base64url'): Promise<string | false>;
-export function hashHmacFile(algorithm: string, path: string, key: string, encoding: 'buffer'): Promise<Buffer | false>;
+export function hashHmacFile(algorithm: string, path: string, key?: crypto.CipherKey, encoding?: 'hex' | 'base64' | 'base64url'): Promise<string | false>;
+export function hashHmacFile(algorithm: string, path: string, key: crypto.CipherKey, encoding: 'buffer'): Promise<Buffer | false>;
 /**
  * --- hash 或 hmac 加密文件 ---
  * @param algorithm 加密方式
  * @param path 文件路径
  * @param key 设置则采用 hmac 加密
  */
-export function hashHmacFile(algorithm: string, path: string, key?: string, encoding: 'hex' | 'base64' | 'base64url' | 'buffer' = 'hex'): Promise<string | Buffer | false> {
+export function hashHmacFile(algorithm: string, path: string, key?: crypto.CipherKey, encoding: 'hex' | 'base64' | 'base64url' | 'buffer' = 'hex'): Promise<string | Buffer | false> {
     return new Promise(function(resolve) {
-        let cry: crypto.Hmac | crypto.Hash;
-        if (key) {
-            cry = crypto.createHmac(algorithm, key);
-        }
-        else {
-            cry = crypto.createHash(algorithm);
-        }
+        const cry = key ? crypto.createHmac(algorithm, key) : crypto.createHash(algorithm);
         const rs = fs.createReadStream(path);
         rs.on('data', function(chunk: Buffer) {
             cry.update(chunk);

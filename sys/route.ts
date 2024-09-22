@@ -50,6 +50,7 @@ export async function run(data: {
     /** --- timeout timer --- */
     'timer'?: {
         'timer': NodeJS.Timeout;
+        'timeout': number;
         'callback': () => void;
     };
 }): Promise<boolean> {
@@ -62,25 +63,14 @@ export async function run(data: {
         data.res.setHeader('expires', 'Mon, 26 Jul 1994 05:00:00 GMT');
         data.res.setHeader('cache-control', 'no-store');
     }
-    // --- 判断全局 config 是否已经加载过读取过 ---
-    if (lCore.globalConfig.httpPort === undefined) {
-        const configContent = await lFs.getContent(def.CONF_PATH + 'config.json', 'utf8');
-        if (configContent) {
-            /** --- 系统 config.json --- */
-            const config = lText.parseJson(configContent);
-            for (const name in config) {
-                lCore.globalConfig[name] = config[name];
-            }
-        }
-    }
     // --- 判断 kebab config 是否已经读取过 ---
     if (!kebabConfigs[data.rootPath + 'kebab.json']) {
         const configContent = await lFs.getContent(data.rootPath + 'kebab.json', 'utf8');
         if (!configContent) {
             if (data.res) {
-                data.res.setHeader('content-length', 45);
+                data.res.setHeader('content-length', 53);
                 data.res.writeHead(500);
-                data.res.end('<h1>500 File config.json can not be read</h1><hr>Kebab');
+                data.res.end('<h1>500 File kebab.json can not be read</h1><hr>Kebab');
             }
             else {
                 data.socket?.destroy();
@@ -402,6 +392,8 @@ export async function run(data: {
     // --- 加载中间控制器 ---
     const middleCtr = (await import(config.const.ctrPath + 'middle')).default as typeof sCtr.Ctr;
     const middle: sCtr.Ctr = new middleCtr(config, data.req, data.res);
+    /** --- 可能存在的最终控制器 --- */
+    let cctr: sCtr.Ctr | null = null;
     // --- 对信息进行初始化 ---
     if (data.timer) {
         middle.setPrototype('_timer', data.timer);
@@ -462,9 +454,10 @@ export async function run(data: {
         }
         // --- 加载控制器文件 ---
         const ctrCtr: typeof sCtr.Ctr = (await import(filePath)).default;
-        const cctr: sCtr.Ctr = new ctrCtr(config, data.req, data.res ?? data.socket!);
+        cctr = new ctrCtr(config, data.req, data.res ?? data.socket!);
         // --- 对信息进行初始化 ---
         cctr.setPrototype('_timer', middle.getPrototype('_timer'));
+        cctr.setPrototype('_waitInfo', middle.getPrototype('_waitInfo'));
         // --- 路由定义的参数序列 ---
         cctr.setPrototype('_param', param);
         cctr.setPrototype('_action', middle.getPrototype('_action'));
@@ -536,7 +529,6 @@ export async function run(data: {
                 rtn = await (cctr as types.Json)[pathRight]();
                 rtn = await (cctr.onUnload(rtn) as types.Json);
                 rtn = await (middle.onUnload(rtn) as types.Json);
-                await unlinkUploadFiles(cctr);
                 const sess = cctr.getPrototype('_sess');
                 if (sess) {
                     await sess.update();
@@ -552,6 +544,7 @@ export async function run(data: {
             data.res.setHeader('content-length', 25);
             data.res.writeHead(500);
             data.res.end('<h1>500 Server Error</h1><hr>Kebab');
+            await waitCtr(cctr);
             return true;
         }
     }
@@ -581,6 +574,7 @@ export async function run(data: {
             // --- 如果当前还没结束，则强制关闭连接，一切 pipe 请自行在方法中 await，否则会被中断 ---
             data.res.end('');
         }
+        await waitCtr(cctr ?? middle);
         return true;
     }
     if (typeof rtn === 'string' || rtn instanceof Buffer) {
@@ -754,6 +748,7 @@ export async function run(data: {
             data.res.end('<h1>500 Internal server error</h1><hr>Kebab');
         }
     }
+    await waitCtr(cctr ?? middle);
     return true;
 }
 
@@ -797,6 +792,28 @@ export async function unlinkUploadFiles(cctr: sCtr.Ctr): Promise<void> {
             await lFs.unlink(file.path);
         }
     }
+}
+
+/**
+ * --- 等待异步任务结束，并删除临时文件，如果结束后还有事务没关闭，则会在本函数中打印控制台并且写入 log 文件 ---
+ * --- 此时其实已经给客户端返回了，此处等待不消耗客户端的等待时间 ---
+ * @param cctr 要等待的控制器 ---
+ */
+export async function waitCtr(cctr: sCtr.Ctr): Promise<void> {
+    // --- 先判断异步任务是否结束 ---
+    const waitInfo = cctr.getPrototype('_waitInfo');
+    if (waitInfo.asyncTask.count) {
+        await waitInfo.asyncTask.callback();
+    }
+    // --- 判断事务 ---
+    if (waitInfo.transaction) {
+        // --- 有事务未关闭 ---
+        const msg = ' transaction(' + waitInfo.transaction + ') not be closed';
+        console.log('[ERROR][ROUTE][WAITCTR] ' + msg + ': ', cctr.getPrototype('_config').const.path);
+        await lCore.log(cctr, msg, '-error');
+    }
+    // --- 彻底结束，删除文件 ---
+    await unlinkUploadFiles(cctr);
 }
 
 /**

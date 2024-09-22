@@ -87,7 +87,7 @@ export default class Mod {
     protected _index: string | null = null;
 
     /** --- 数据库连接对象 --- */
-    protected _db!: lDb.Pool | lDb.Connection;
+    protected _db!: lDb.Pool | lDb.Transaction;
 
     /** --- Sql 对象 --- */
     protected _sql!: lSql.Sql;
@@ -101,7 +101,7 @@ export default class Mod {
      * @param opt 选项
      */
     public constructor(opt: {
-        'db': lDb.Pool | lDb.Connection;
+        'db': lDb.Pool | lDb.Transaction;
         'ctr'?: sCtr.Ctr;
         'index'?: string;
         'alias'?: string;
@@ -158,6 +158,15 @@ export default class Mod {
 
     // --- 静态方法 ---
 
+    /** --- 创建字段对象 --- */
+    public static column(field: string): {
+        'type': 'column';
+        'token': string;
+        'value': string;
+    } {
+        return lSql.column(field);
+    }
+
     /**
      * --- 添加一个序列 ---
      * @param db 数据库对象
@@ -166,7 +175,7 @@ export default class Mod {
      * @param opt 选项
      */
     public static async insert(
-        db: lDb.Pool | lDb.Connection,
+        db: lDb.Pool | lDb.Transaction,
         cs: string[] | Record<string, any>,
         vs?: any[] | any[][],
         opt: { 'pre'?: sCtr.Ctr | string; 'index'?: string; } = {}
@@ -218,7 +227,7 @@ export default class Mod {
      * @param opt 选项
      */
     public static async insertDuplicate(
-        db: lDb.Pool | lDb.Connection,
+        db: lDb.Pool | lDb.Transaction,
         data: Record<string, any>,
         update: types.Json,
         opt: { 'pre'?: sCtr.Ctr | string; 'index'?: string; } = {}
@@ -253,7 +262,7 @@ export default class Mod {
      * @param opt 选项
      */
     public static async removeByWhere(
-        db: lDb.Pool | lDb.Connection,
+        db: lDb.Pool | lDb.Transaction,
         where: string | types.Json,
         opt: {
             'raw'?: boolean;
@@ -319,7 +328,7 @@ export default class Mod {
      * @param opt 选项
      */
     public static removeByWhereSql(
-        db: lDb.Pool | lDb.Connection,
+        db: lDb.Pool | lDb.Transaction,
         where: string | types.Json,
         opt: {
             'raw'?: boolean;
@@ -370,7 +379,7 @@ export default class Mod {
      * @param opt 选项
      */
     public static async updateByWhere(
-        db: lDb.Pool | lDb.Connection,
+        db: lDb.Pool | lDb.Transaction,
         data: types.Json,
         where: string | types.Json,
         opt: {
@@ -471,7 +480,7 @@ export default class Mod {
      * @param opt 选项
      */
     public static select<T extends Mod>(
-        db: lDb.Pool | lDb.Connection,
+        db: lDb.Pool | lDb.Transaction,
         c: string | string[],
         opt: { 'ctr'?: sCtr.Ctr; 'pre'?: string; 'index'?: string; 'alias'?: string; } = {}
     ): T & Record<string, any> {
@@ -492,7 +501,7 @@ export default class Mod {
      * @param opt 选项
      */
     public static where<T extends Mod>(
-        db: lDb.Pool | lDb.Connection,
+        db: lDb.Pool | lDb.Transaction,
         s: string | types.Json = '',
         opt: { 'ctr'?: sCtr.Ctr; 'raw'?: boolean; 'pre'?: string; 'index'?: string; } = {}
     ): T & Record<string, any> {
@@ -512,7 +521,7 @@ export default class Mod {
      * @param opt 选项
      */
     public static getCreate<T extends Mod>(
-        db: lDb.Pool | lDb.Connection,
+        db: lDb.Pool | lDb.Transaction,
         opt: { 'ctr'?: sCtr.Ctr; 'pre'?: string; 'index'?: string; } = {}
     ): T {
         return new this({
@@ -531,7 +540,7 @@ export default class Mod {
      * @param opt 选项
      */
     public static find<T extends Mod>(
-        db: lDb.Pool | lDb.Connection,
+        db: lDb.Pool | lDb.Transaction,
         val: string | number | null,
         opt: { 'ctr'?: sCtr.Ctr; 'lock'?: boolean; 'raw'?: boolean; 'pre'?: string; 'index'?: string; } = {}
     ): Promise<false | null | (T & Record<string, any>)> {
@@ -548,7 +557,7 @@ export default class Mod {
     }
 
     public static async one(
-        db: lDb.Pool | lDb.Connection,
+        db: lDb.Pool | lDb.Transaction,
         s: string | types.Json,
         opt: {
             'ctr'?: sCtr.Ctr;
@@ -560,7 +569,7 @@ export default class Mod {
         }
     ): Promise<false | null | Record<string, any>>;
     public static async one<T extends Mod>(
-        db: lDb.Pool | lDb.Connection,
+        db: lDb.Pool | lDb.Transaction,
         s: string | types.Json,
         opt: {
             'ctr'?: sCtr.Ctr;
@@ -578,7 +587,7 @@ export default class Mod {
      * @param opt 选项
      */
     public static async one<T extends Mod>(
-        db: lDb.Pool | lDb.Connection,
+        db: lDb.Pool | lDb.Transaction,
         s: string | types.Json,
         opt: {
             'ctr'?: sCtr.Ctr;
@@ -632,7 +641,7 @@ export default class Mod {
      * @param opt 选项
      */
     public static async oneArray(
-        db: lDb.Pool | lDb.Connection,
+        db: lDb.Pool | lDb.Transaction,
         s: string | types.Json,
         opt: {
             'ctr'?: sCtr.Ctr;
@@ -653,7 +662,7 @@ export default class Mod {
      * @param opt 选项
      */
     public static async primarys(
-        db: lDb.Pool | lDb.Connection,
+        db: lDb.Pool | lDb.Transaction,
         where: string | types.Json = '',
         opt: { 'ctr'?: sCtr.Ctr; 'raw'?: boolean; 'pre'?: string; 'index'?: string; } = {}
     ): Promise<any[] | false> {
@@ -1222,7 +1231,10 @@ export default class Mod {
      * --- 获取总条数，自动抛弃 LIMIT，仅用于获取数据的情况（select） ---
      */
     public async total(f: string = '*'): Promise<number> {
-        const sql: string = this._sql.getSql().replace(/SELECT .+? FROM/, 'SELECT COUNT(' + this._sql.field(f) + ') AS `count` FROM').replace(/ LIMIT [0-9 ,]+/g, '');
+        const sql: string = this._sql.getSql()
+            .replace(/SELECT .+? FROM/, 'SELECT COUNT(' + this._sql.field(f) + ') AS `count` FROM')
+            .replace(/ LIMIT [0-9 ,]+/g, '')
+            .replace(/ ORDER BY [\w`,. ]+(DESC|ASC)?/g, '');
         const r = await this._db.query(sql, this._sql.getData());
         if (r.rows === null) {
             await lCore.log(this._ctr ?? {
@@ -1273,9 +1285,10 @@ export default class Mod {
      * @param s ON 信息
      * @param type 类型
      * @param index 给本表增加 index 分表项
+     * @param pre 前缀
      */
-    public join(f: string, s: types.Json = [], type: string = 'INNER', index: string = ''): this {
-        this._sql.join(f, s, type, index ? '_' + index : '');
+    public join(f: string, s: types.Json = [], type: string = 'INNER', index: string = '', pre: string = ''): this {
+        this._sql.join(f, s, type, index ? '_' + index : '', pre);
         return this;
     }
 
@@ -1285,8 +1298,8 @@ export default class Mod {
      * @param s ON 信息
      * @param index 给本表增加 index 分表项
      */
-    public leftJoin(f: string, s: types.Json, index: string = ''): this {
-        this._sql.leftJoin(f, s, index ? '_' + index : '');
+    public leftJoin(f: string, s: types.Json, index: string = '', pre: string = ''): this {
+        this._sql.leftJoin(f, s, index ? '_' + index : '', pre);
         return this;
     }
 
@@ -1296,8 +1309,8 @@ export default class Mod {
      * @param s ON 信息
      * @param index 给本表增加 index 分表项
      */
-    public rightJoin(f: string, s: types.Json, index: string = ''): this {
-        this._sql.rightJoin(f, s, index ? '_' + index : '');
+    public rightJoin(f: string, s: types.Json, index: string = '', pre: string = ''): this {
+        this._sql.rightJoin(f, s, index ? '_' + index : '', pre);
         return this;
     }
 
@@ -1307,8 +1320,8 @@ export default class Mod {
      * @param s ON 信息
      * @param index 给本表增加 index 分表项
      */
-    public innerJoin(f: string, s: types.Json, index: string = ''): this {
-        this._sql.innerJoin(f, s, index ? '_' + index : '');
+    public innerJoin(f: string, s: types.Json, index: string = '', pre: string = ''): this {
+        this._sql.innerJoin(f, s, index ? '_' + index : '', pre);
         return this;
     }
 
@@ -1318,8 +1331,8 @@ export default class Mod {
      * @param s ON 信息
      * @param index 给本表增加 index 分表项
      */
-    public fullJoin(f: string, s: types.Json, index: string = ''): this {
-        this._sql.fullJoin(f, s, index ? '_' + index : '');
+    public fullJoin(f: string, s: types.Json, index: string = '', pre: string = ''): this {
+        this._sql.fullJoin(f, s, index ? '_' + index : '', pre);
         return this;
     }
 
@@ -1329,8 +1342,8 @@ export default class Mod {
      * @param s ON 信息
      * @param index 给本表增加 index 分表项
      */
-    public crossJoin(f: string, s: types.Json, index: string = ''): this {
-        this._sql.crossJoin(f, s, index ? '_' + index : '');
+    public crossJoin(f: string, s: types.Json, index: string = '', pre: string = ''): this {
+        this._sql.crossJoin(f, s, index ? '_' + index : '', pre);
         return this;
     }
 

@@ -153,7 +153,7 @@ const userList = await User.where<User>(this, db, [
 ### Sql Library Automatically Adds Table Prefixes and Wrapping Characters "`"
 
 ```typescript
-sql.select(['SUM(user.age) age'], 'order').leftJoin('user', {'order.user_id': '#user.id'});
+sql.select(['SUM(user.age) age'], 'order').leftJoin('user', {'order.user_id': lSql.column('user.id')});
 ```
 
 The output will be:

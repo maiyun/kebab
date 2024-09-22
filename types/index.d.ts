@@ -209,3 +209,60 @@ export interface IModUnionItem {
     'field': string;
     'where'?: any;
 }
+
+// -------------------------
+// -------- zip lib --------
+// -------------------------
+
+export interface IZipItem {
+    'name': string;
+    'compressedSize': number;
+    'uncompressedSize': number;
+    'date': Date;
+    'isFile': boolean;
+    'isDirectory': boolean;
+    'path': string;
+}
+
+export interface IZipStats {
+    'compressedSize': number;
+    'uncompressedSize': number;
+    'date': Date;
+    'isFile': boolean;
+    'isDirectory': boolean;
+}
+
+export interface IZipOutputByType {
+    'base64': string;
+    'string': string;
+    'text': string;
+    'binarystring': string;
+    'array': number[];
+    'uint8array': Uint8Array;
+    'arraybuffer': ArrayBuffer;
+    'blob': Blob;
+    'nodebuffer': Buffer;
+}
+
+export type TZipOutputType = keyof IZipOutputByType;
+
+export interface IZipInputByType {
+    'base64': string;
+    'string': string;
+    'text': string;
+    'binarystring': string;
+    'array': number[];
+    'uint8array': Uint8Array;
+    'arraybuffer': ArrayBuffer;
+    'blob': Blob;
+    'nodebuffer': Buffer;
+}
+
+export type TZipInputType = keyof IZipInputByType;
+
+export type TZipInputFileFormat = IZipInputByType[keyof IZipInputByType];
+
+export interface IZipMetadata {
+    'percent': number;
+    'currentFile': string | null;
+}

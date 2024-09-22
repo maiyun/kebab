@@ -1,7 +1,7 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2019-5-27 20:18:50
- * Last: 2020-3-29 19:37:25, 2022-07-24 22:38:11, 2023-5-24 18:49:18, 2023-6-13 22:20:21, 2023-12-11 13:58:54, 2023-12-14 13:14:40, 2023-12-21 00:04:40, 2024-4-11 19:29:29
+ * Last: 2020-3-29 19:37:25, 2022-07-24 22:38:11, 2023-5-24 18:49:18, 2023-6-13 22:20:21, 2023-12-11 13:58:54, 2023-12-14 13:14:40, 2023-12-21 00:04:40, 2024-4-11 19:29:29, 2024-9-2 17:15:28
  */
 
 import * as lText from '~/lib/text';
@@ -11,6 +11,9 @@ import * as mysql2 from 'mysql2/promise';
 // --- 库和定义 ---
 import * as ctr from '~/sys/ctr';
 import * as types from '~/types';
+
+/** --- filed 用 token --- */
+let columnToken = '';
 
 export class Sql {
 
@@ -110,14 +113,17 @@ export class Sql {
                         this._data.push(v1);
                     }
                     else if (Array.isArray(v1)) {
-                        if (v1[0][0]?.x === undefined) {
+                        if (
+                            v1[0]?.[0]?.x === undefined && typeof v1[0] === 'string' &&
+                            v1[0].includes('(') && v1[0].includes(')')
+                        ) {
                             // --- v1: ['POINT(?)', ['20']] ---
                             sql += this.field(v1[0]) + ', ';
                             if (v1[1]) {
                                 this._data.push(...v1[1]);
                             }
                         }
-                        else if (v1[0][0]?.y !== undefined) {
+                        else if (v1[0]?.[0]?.y !== undefined) {
                             // --- v1: [[{'x': 1, 'y': 2}, { ... }], [{ ... }, { ... }]] ---
                             sql += 'ST_POLYGONFROMTEXT(?), ';
                             this._data.push(`POLYGON(${v1.map((item) => {
@@ -144,9 +150,19 @@ export class Sql {
                             this._data.push(lText.stringifyJson(v1));
                         }
                     }
-                    else {
+                    else if (v1 instanceof Buffer) {
+                        // --- Buffer ---
                         sql += '?, ';
-                        this._data.push(v1);
+                        this._data.push(v);
+                    }
+                    else if (this._isField(v1)) {
+                        // --- 3 ---
+                        sql += this.field(v1.value) + ', ';
+                    }
+                    else {
+                        // --- json ---
+                        sql += '?, ';
+                        this._data.push(lText.stringifyJson(v1));
                     }
                 }
                 sql = sql.slice(0, -2) + '), ';
@@ -183,14 +199,17 @@ export class Sql {
                     this._data.push(v);
                 }
                 else if (Array.isArray(v)) {
-                    if (v[0][0]?.x === undefined) {
+                    if (
+                        v[0]?.[0]?.x === undefined && typeof v[0] === 'string' &&
+                        v[0].includes('(') && v[0].includes(')')
+                    ) {
                         // --- v: ['POINT(?)', ['20']] ---
                         values += this.field(v[0]) + ', ';
                         if (v[1] !== undefined) {
                             this._data.push(...v[1]);
                         }
                     }
-                    else if (v[0][0]?.y !== undefined) {
+                    else if (v[0]?.[0]?.y !== undefined) {
                         // --- v: [[{'x': 1, 'y': 2}, { ... }], [{ ... }, { ... }]] ---
                         values += 'ST_POLYGONFROMTEXT(?), ';
                         this._data.push(`POLYGON(${v.map((item) => {
@@ -217,7 +236,17 @@ export class Sql {
                         this._data.push(lText.stringifyJson(v));
                     }
                 }
+                else if (v instanceof Buffer) {
+                    // --- Buffer ---
+                    sql += '?, ';
+                    this._data.push(v);
+                }
+                else if (this._isField(v)) {
+                    // --- 3 ---
+                    sql += this.field(v.value) + ', ';
+                }
                 else {
+                    // --- json ---
                     values += '?, ';
                     this._data.push(v);
                 }
@@ -331,14 +360,13 @@ export class Sql {
             ['total', '+', '1'],    // 1, '1' 可能也是 1 数字类型
             {
                 'type': '6',        // 2
-                'type': '#type2',   // 3
-                'type': ['type3'],  // 4
+                'type': column('type2'),   // 3
+                // 'type': ['type3'],  // 4 - 此写法已被禁止，请用 (3) 代替
                 'type': ['(CASE `id` WHEN 1 THEN ? WHEN 2 THEN ? END)', ['val1', 'val2']],     // 5
                 'point': { 'x': 0, 'y': 0 },  // 6
                 'polygon': [ [ { 'x': 0, 'y': 0 }, { ... } ], [ ... ] ],          // 7
-                'json': { 'a': 1, 'b': { 'c': 2 }, 'c': [ { 'c': 2 } ] },         // 8
-                'json2': {},        // 9
-                'json3': [],        // 10
+                'json': { 'a': 1, 'b': { 'c': 2 }, 'c': [ { 'c': 2 } ] },         // 8 - 对象类 json，可能为空对象
+                'json2': ['abc']    // 9 - 数组类 json，可能为空数组
             }
         ]
         */
@@ -348,17 +376,18 @@ export class Sql {
             const v = s[k];
             if (/^[0-9]+$/.test(k)) {
                 // --- 1 ---
-                const isf = this._isField(v[2]);
-                if (isf[0]) {
-                    sql += this.field(v[0]) + ' = ' + this.field(v[0]) + ' ' + (v[1] as string) + ' ' + this.field(isf[1]) + ', ';
+                const nv = v[2];
+                const isf = this._isField(nv);
+                if (isf) {
+                    sql += this.field(v[0]) + ' = ' + this.field(v[0]) + ' ' + (v[1] as string) + ' ' + this.field(nv.value) + ', ';
                 }
                 else {
                     sql += this.field(v[0]) + ' = ' + this.field(v[0]) + ' ' + (v[1] as string) + ' ?, ';
-                    this._data.push(isf[1]);
+                    this._data.push(nv);
                 }
             }
             else {
-                // --- 2, 3, 4, 5, 6, 7, 8(2) ---
+                // --- 2, 3, 4, 5, 6, 7, 8 ---
                 sql += this.field(k) + ' = ';
                 if (v === undefined || Number.isNaN(v)) {
                     // --- 异常情况 ---
@@ -375,20 +404,23 @@ export class Sql {
                     });
                     sql += '"", ';
                 }
+                else if (v === null) {
+                    sql += 'NULL, ';
+                }
+                else if (typeof v === 'string' || typeof v === 'number') {
+                    // --- 2 ---
+                    sql += '?, ';
+                    this._data.push(v);
+                }
                 else if (Array.isArray(v)) {
-                    if (v[0]?.[0]?.x === undefined) {
-                        // --- 4, 5, 8(2) ---
-                        if (!v.length || typeof v[0] === 'object') {
-                            // --- 8(2), v: json ---
-                            sql += '?, ';
-                            this._data.push(lText.stringifyJson(v));
-                        }
-                        else {
-                            // --- 4, 5 ---
-                            sql += this.field(v[0]) + ', ';
-                            if (v[1] !== undefined) {
-                                this._data.push(...v[1]);
-                            }
+                    if (
+                        v[0]?.[0]?.x === undefined && typeof v[0] === 'string' &&
+                        v[0].includes('(') && v[0].includes(')')
+                    ) {
+                        // --- 4, 5: ['(CASE `id` WHEN 1 THEN ? WHEN 2 THEN ? END)', ['val1', 'val2']] ---
+                        sql += this.field(v[0]) + ', ';
+                        if (v[1] !== undefined) {
+                            this._data.push(...v[1]);
                         }
                     }
                     else if (v[0]?.[0]?.y !== undefined) {
@@ -401,7 +433,7 @@ export class Sql {
                         }).join(', ')})`);
                     }
                     else {
-                        // --- 8: json ---
+                        // --- v: json ---
                         sql += '?, ';
                         this._data.push(lText.stringifyJson(v));
                     }
@@ -414,27 +446,30 @@ export class Sql {
                     }
                     else {
                         // --- v: json ---
-                        sql += '?, ';
-                        this._data.push(lText.stringifyJson(v));
+                        if (this._isField(v)) {
+                            // --- 3 ---
+                            sql += this.field(v.value) + ', ';
+                        }
+                        else {
+                            // --- 8 ---
+                            sql += '?, ';
+                            this._data.push(lText.stringifyJson(v));
+                        }
                     }
                 }
-                else if (typeof v === 'object') {
-                    // --- 8: json, Kebab ---
+                else if (v instanceof Buffer) {
+                    // --- Buffer ---
                     sql += '?, ';
-                    this._data.push(JSON.stringify(v));
+                    this._data.push(v);
+                }
+                else if (this._isField(v)) {
+                    // --- 3 ---
+                    sql += this.field(v.value) + ', ';
                 }
                 else {
-                    // --- 2, 3 ---
-                    const isf = this._isField(v);
-                    if (isf[0]) {
-                        // --- 3: field ---
-                        sql += this.field(isf[1]) + ', ';
-                    }
-                    else {
-                        // --- 2 ---
-                        sql += '?, ';
-                        this._data.push(isf[1]);
-                    }
+                    // --- json ---
+                    sql += '?, ';
+                    this._data.push(lText.stringifyJson(v));
                 }
             }
         }
@@ -478,9 +513,15 @@ export class Sql {
      * @param s ON 信息
      * @param type 类型
      * @param suf 表后缀
+     * @param pre 表前缀，仅在 join 非默认表前缀时填写
      */
-    public join(f: string, s: types.Json = [], type: string = 'INNER', suf: string = ''): this {
-        let sql = ' ' + type + ' JOIN ' + this.field(f, this._pre, suf ? ('#' + suf) : '');
+    public join(f: string, s: types.Json = [], type: string = 'INNER', suf: string = '', pre: string = ''): this {
+        let field = this.field(f, pre || this._pre, suf ? ('#' + suf) : '');
+        if (pre) {
+            // --- 处理不同 pre 的 as 前缀问题 ---
+            field = field.replace(new RegExp(`AS \`${pre}(.+?)\``), `AS \`${this._pre}$1\``);
+        }
+        let sql = ' ' + type + ' JOIN ' + field;
         if (Array.isArray(s) ? s.length : Object.keys(s).length) {
             sql += ' ON ' + this._whereSub(s);
         }
@@ -493,9 +534,10 @@ export class Sql {
      * @param f 表名
      * @param s ON 信息
      * @param suf 表后缀
+     * @param pre 表前缀，仅在 join 非默认表前缀时填写
      */
-    public leftJoin(f: string, s: types.Json = [], suf: string = ''): this {
-        return this.join(f, s, 'LEFT', suf);
+    public leftJoin(f: string, s: types.Json = [], suf: string = '', pre: string = ''): this {
+        return this.join(f, s, 'LEFT', suf, pre);
     }
 
     /**
@@ -503,9 +545,10 @@ export class Sql {
      * @param f 表名
      * @param s ON 信息
      * @param suf 表后缀
+     * @param pre 表前缀，仅在 join 非默认表前缀时填写
      */
-    public rightJoin(f: string, s: types.Json = [], suf: string = ''): this {
-        return this.join(f, s, 'RIGHT', suf);
+    public rightJoin(f: string, s: types.Json = [], suf: string = '', pre: string = ''): this {
+        return this.join(f, s, 'RIGHT', suf, pre);
     }
 
     /**
@@ -513,9 +556,10 @@ export class Sql {
      * @param f 表名
      * @param s ON 信息
      * @param suf 表后缀
+     * @param pre 表前缀，仅在 join 非默认表前缀时填写
      */
-    public innerJoin(f: string, s: types.Json = [], suf: string = ''): this {
-        return this.join(f, s, 'INNER', suf);
+    public innerJoin(f: string, s: types.Json = [], suf: string = '', pre: string = ''): this {
+        return this.join(f, s, 'INNER', suf, pre);
     }
 
     /**
@@ -523,9 +567,10 @@ export class Sql {
      * @param f 表名
      * @param s ON 信息
      * @param suf 表后缀
+     * @param pre 表前缀，仅在 join 非默认表前缀时填写
      */
-    public fullJoin(f: string, s: types.Json = [], suf: string = ''): this {
-        return this.join(f, s, 'FULL', suf);
+    public fullJoin(f: string, s: types.Json = [], suf: string = '', pre: string = ''): this {
+        return this.join(f, s, 'FULL', suf, pre);
     }
 
     /**
@@ -533,9 +578,10 @@ export class Sql {
      * @param f 表名
      * @param s ON 信息
      * @param suf 表后缀
+     * @param pre 表前缀，仅在 join 非默认表前缀时填写
      */
-    public crossJoin(f: string, s: types.Json = [], suf: string = ''): this {
-        return this.join(f, s, 'CROSS', suf);
+    public crossJoin(f: string, s: types.Json = [], suf: string = '', pre: string = ''): this {
+        return this.join(f, s, 'CROSS', suf, pre);
     }
 
     /**
@@ -570,7 +616,7 @@ export class Sql {
      * --- 3. ['type', 'in', ['1', '2']] ---
      * --- 4. 'type': ['1', '2'] ---
      * --- 5. '$or': [{'city': 'bj'}, {'city': 'sh'}, [['age', '>', '10']]], 'type': '2' ---
-     * --- 6. 'city_in' => '#city_out' ---
+     * --- 6. 'city_in': column('city_out') ---
      * --- 7. ['JSON_CONTAINS(`uid`, ?)', ['hello']] ---
      * @param s 筛选数据
      */
@@ -648,15 +694,16 @@ export class Sql {
                     sql = sql.slice(0, -2) + ') AND ';
                 }
                 else {
-                    // --- 2 ---
-                    const isf = this._isField(v[2]);
-                    if (isf[0]) {
-                        // --- field ---
-                        sql += this.field(v[0]) + ' ' + v[1] + ' ' + this.field(isf[1]) + ' AND ';
+                    // --- 2, 6 ---
+                    const nv = v[2];
+                    const isf = this._isField(nv);
+                    if (isf) {
+                        // --- 6. field ---
+                        sql += this.field(v[0]) + ' ' + v[1] + ' ' + this.field(nv.value) + ' AND ';
                     }
                     else {
                         sql += this.field(v[0]) + ' ' + v[1] + ' ? AND ';
-                        data.push(v[2]);
+                        data.push(nv);
                     }
                 }
             }
@@ -684,17 +731,13 @@ export class Sql {
                         sql += this.field(k) + ' IS NULL AND ';
                     }
                     else if (typeof v === 'string' || typeof v === 'number') {
-                        // --- 1, 6 ---
-                        // --- 'city': 'bj', 'city_in': '#city_out' ---
-                        const isf = this._isField(v);
-                        if (isf[0]) {
-                            // --- 6 ---
-                            sql += this.field(k) + ' = ' + this.field(isf[1]) + ' AND ';
-                        }
-                        else {
-                            sql += this.field(k) + ' = ? AND ';
-                            data.push(isf[1]);
-                        }
+                        // --- 1 ---
+                        sql += this.field(k) + ' = ? AND ';
+                        data.push(v);
+                    }
+                    else if (this._isField(v)) {
+                        // --- 6 ---
+                        sql += this.field(k) + ' = ' + this.field(v.value) + ' AND ';
                     }
                     else {
                         // --- 4 - 'type': ['1', '2'] ---
@@ -1013,25 +1056,18 @@ export class Sql {
     }
 
     /**
-     * --- 判断用户输入值是否是 field 还是普通字符串 ---
+     * --- 判断传入值是否是 field，还是别的对象 ---
      * @param str
      */
-    private _isField(str: string | number): [boolean, string | number] {
-        if ((typeof str === 'string') && str[0] && (str[0].startsWith('#')) && str[1]) {
-            if (str[1] === '#') {
-                // --- 不是 field ---
-                return [false, str.slice(1)];
-            }
-            else {
-                // --- 是 field ---
-                str = str.slice(1);
-                return [true, str];
-            }
+    private _isField(arg: any): arg is {
+        'type': 'column';
+        'token': string;
+        'value': string;
+    } {
+        if (arg.type !== 'column' || arg.token !== columnToken || arg.value === undefined) {
+            return false;
         }
-        else {
-            // --- 肯定不是 field ---
-            return [false, str];
-        }
+        return true;
     }
 
 }
@@ -1079,4 +1115,20 @@ export function aoMix(arr: types.Json): Record<string, string | number | types.J
         }
     }
     return mix;
+}
+
+/** --- 创建字段对象 --- */
+export function column(field: string): {
+    'type': 'column';
+    'token': string;
+    'value': string;
+} {
+    if (!columnToken) {
+        columnToken = lCore.random(8, lCore.RANDOM_LUNS);
+    }
+    return {
+        'token': columnToken,
+        'type': 'column',
+        'value': field
+    };
 }

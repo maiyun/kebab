@@ -8,9 +8,13 @@ import * as cluster from 'cluster';
 import * as http from 'http';
 // --- 库和定义 ---
 import * as def from '~/sys/def';
+import * as sRoute from '~/sys/route';
 import * as lCore from '~/lib/core';
 import * as lFs from '~/lib/fs';
 import * as lText from '~/lib/text';
+import * as lCrypto from '~/lib/crypto';
+import * as lTime from '~/lib/time';
+import * as lZip from '~/lib/zip';
 
 /** --- 当前运行中的子进程列表 --- */
 const workerList: Record<string, {
@@ -36,7 +40,7 @@ async function run(): Promise<void> {
     for (const key in config) {
         lCore.globalConfig[key] = config[key];
     }
-    // --- 监听 CMD 命令 ---
+    // --- 监听 RPC 命令 ---
     createRpcListener();
     // --- 30 秒检测一次是否有丢失的子进程 ---
     setInterval(function() {
@@ -77,38 +81,139 @@ async function run(): Promise<void> {
 }
 
 /**
- * --- 创建 RPC 监听，用来监听 cmd 传递过来的数据，并广播给所有子进程 ---
+ * --- 创建 RPC 监听，用来监听 cmd 或局域网传递过来的数据，并广播给所有子进程，cmd 部分代码在 cmd 中实现 ---
  */
 function createRpcListener(): void {
     http.createServer(function(req: http.IncomingMessage, res: http.ServerResponse) {
         (async function() {
-            /** --- cmds 结果例如 ["reload"] --- */
-            const cmds = (req.url ?? '').slice(2).split(',');
-            if (cmds.includes('reload')) {
-                // --- 为所有子线程发送 reload 信息 ---
-                for (const pid in workerList) {
-                    workerList[pid].worker.send({
-                        'action': 'reload'
-                    });
+            /** --- 当前时间戳 --- */
+            const time = lTime.stamp();
+            /** --- cmd 数据对象 --- */
+            const cmd = lCrypto.aesDecrypt((req.url ?? '').slice(1), lCore.globalConfig.rpcSecret);
+            if (!cmd) {
+                res.end('Error');
+                return;
+            }
+            const msg = lText.parseJson(cmd);
+            if (!msg) {
+                res.end('Failed');
+                return;
+            }
+            if (msg.time < time - 10) {
+                res.end('Timeout');
+                return;
+            }
+            if (lCore.globalConfig.rpcSecret === 'MUSTCHANGE') {
+                res.end('rpcSecret need be "' + lCore.random(32, lCore.RANDOM_LUN) + '"');
+                return;
+            }
+            switch (msg.action) {
+                case 'reload': {
+                    // --- 为所有子线程发送 reload 信息 ---
+                    for (const pid in workerList) {
+                        workerList[pid].worker.send({
+                            'action': 'reload'
+                        });
+                    }
+                    break;
+                }
+                case 'restart': {
+                    // --- 为所有子线程发送 stop 信息 ---
+                    for (const pid in workerList) {
+                        workerList[pid].worker.send({
+                            'action': 'stop'
+                        });
+                        // --- 开启新线程 ---
+                        await createChildProcess(workerList[pid].cpu);
+                        // --- 删除记录 ---
+                        delete workerList[pid];
+                    }
+                    break;
+                }
+                case 'global': {
+                    // --- 为所有子进程更新 global 变量 ---
+                    for (const pid in workerList) {
+                        workerList[pid].worker.send({
+                            'action': 'global',
+                            'key': msg.key,
+                            'data': msg.data
+                        });
+                    }
+                    // --- 更新 master 的数据 ---
+                    if (msg.data === undefined || msg.data === null) {
+                        delete lCore.global[msg.key];
+                        break;
+                    }
+                    lCore.global[msg.key] = msg.data;
+                    break;
+                }
+                case 'code': {
+                    // --- 更新 code 代码包 ---
+                    const rtn = await sRoute.getFormData(req);
+                    if (!rtn) {
+                        res.end('Abnormal');
+                        return;
+                    }
+                    const file = rtn.files['file'];
+                    if (!file || Array.isArray(file)) {
+                        res.end('Abnormal');
+                        return;
+                    }
+                    let path = rtn.post['path'];
+                    if (path.startsWith('/')) {
+                        path = path.slice(1);
+                    }
+                    if (path.endsWith('/')) {
+                        path = path.slice(0, -1);
+                    }
+                    if (!await lFs.isDir(def.ROOT_PATH + path)) {
+                        return [];
+                    }
+                    const buf = await lFs.getContent(file.path);
+                    if (!buf) {
+                        return [];
+                    }
+                    const zip = await lZip.get(buf);
+                    if (!zip) {
+                        return [];
+                    }
+                    const ls = await zip.getList();
+                    for (const path in ls) {
+                        /** --- 带 / 开头的文件完整路径 --- */
+                        const fpath = path.startsWith('/') ? path : '/' + path;
+                        /** --- 最后一个 / 的所在位置 --- */
+                        const lio = fpath.lastIndexOf('/');
+                        /** --- 纯路径，不以 / 开头 --- */
+                        const pat = fpath.slice(1, lio + 1);
+                        /** --- 纯文件名 --- */
+                        const fname = fpath.slice(lio + 1);
+                        if (fname === 'config.json' || fname === 'kebab.json') {
+                            // --- 特殊文件不能覆盖 ---
+                            continue;
+                        }
+                        if (fname.endsWith('.js.map') || fname.endsWith('.ts') || fname.endsWith('.gitignore')) {
+                            // --- 测试或开发文件不覆盖 ---
+                            continue;
+                        }
+                        // --- 看文件夹是否存在 ---
+                        if (!await lFs.isDir(def.ROOT_PATH + pat)) {
+                            await lFs.mkdir(def.ROOT_PATH + pat);
+                        }
+                        // --- 覆盖或创建文件 ---
+                        await lFs.putContent(def.ROOT_PATH + pat + fname, ls[path]);
+                    }
+                    break;
+                }
+                default: {
+                    res.end('Not command: ' + msg.action);
+                    return;
                 }
             }
-            if (cmds.includes('restart')) {
-                // --- 为所有子线程发送 stop 信息 ---
-                for (const pid in workerList) {
-                    workerList[pid].worker.send({
-                        'action': 'stop'
-                    });
-                    // --- 开启新线程 ---
-                    await createChildProcess(workerList[pid].cpu);
-                    // --- 删除记录 ---
-                    delete workerList[pid];
-                }
-            }
-            res.end('Done.');
+            res.end('Done');
         })().catch(function(e) {
             console.log('[master] [createRpcListener]', e);
         });
-    }).listen(lCore.globalConfig.rpcPort, '127.0.0.1');
+    }).listen(lCore.globalConfig.rpcPort);
 }
 
 /**
@@ -179,6 +284,23 @@ async function createChildProcess(cpu: number): Promise<void> {
                     }
                     break;
                 }
+                case 'global': {
+                    // --- 为所有子进程更新 global 变量 ---
+                    for (const pid in workerList) {
+                        workerList[pid].worker.send({
+                            'action': 'global',
+                            'key': msg.key,
+                            'data': msg.data
+                        });
+                    }
+                    // --- 更新 master 的数据 ---
+                    if (msg.data === undefined || msg.data === null) {
+                        delete lCore.global[msg.key];
+                        break;
+                    }
+                    lCore.global[msg.key] = msg.data;
+                    break;
+                }
                 case 'hbtime': {
                     // --- 获得子进程发来的 10 秒一次的心跳 ---
                     if (!workerList[msg.pid]) {
@@ -189,22 +311,19 @@ async function createChildProcess(cpu: number): Promise<void> {
                     workerList[msg.pid].hbtime = Date.now();
                     break;
                 }
-                case 'global': {
-                    // --- 为所有子进程更新 global 变量 ---
-                    for (const pid in workerList) {
-                        workerList[pid].worker.send({
-                            'action': 'global',
-                            'key': msg.key,
-                            'data': msg.data
-                        });
-                    }
-                    break;
-                }
             }
         })().catch(function(e) {
             console.log('[createChildProcess] [message]', e);
         });
     });
+    // --- 将主线程的全局变量传给这个新建的子线程 ---
+    if (Object.keys(lCore.global).length) {
+        worker.send({
+            'action': 'global',
+            'key': '__init__',
+            'data': lCore.global
+        });
+    }
 }
 
 run().catch(function(e): void {

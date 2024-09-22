@@ -108,20 +108,37 @@ export class S3 {
      * --- 上传对象（可传流且也可无需设置 length） --
      * @param key 对象路径
      * @param content 内容
-     * @param length 设置 contentLength，如果是流模式则需要设置此项
+     * @param length 设置 contentLength，如果是流模式则需要设置此项，也可以设置为对象参数
      * @param bucket bucket 名
      */
     public async putObject(
-        key: string, content: string | Buffer | stream.Readable, length?: number, bucket?: string
+        key: string, content: string | Buffer | stream.Readable, length?: number | {
+            'length'?: number;
+            'type'?: string;
+            'disposition'?: string;
+            'bucket'?: string;
+        }, bucket?: string
     ): Promise<s3.CompleteMultipartUploadCommandOutput | false> {
         try {
+            /** --- content type --- */
+            let type: string | undefined = undefined;
+            /** --- content disposition --- */
+            let disposition: string | undefined = undefined;
+            if (typeof length !== 'number') {
+                type = length?.type;
+                disposition = length?.disposition;
+                bucket = length?.bucket;
+                length = length?.length;
+            }
             const upload = new ls.Upload({
                 'client': this._link,
                 'params': {
                     'Bucket': bucket ?? this._bucket,
                     'Key': key,
                     'Body': content,
-                    'ContentLength': length
+                    'ContentLength': length,
+                    'ContentType': type,
+                    'ContentDisposition': disposition
                 }
             });
             const res = await upload.done();
