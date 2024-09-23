@@ -565,16 +565,21 @@ export async function removeGlobal(key: string, hosts?: string[]): Promise<strin
 /**
  * --- 上传并覆盖代码文件，config.json、kebab.json、.js.map、.ts, .gitignore 不会被覆盖和新建 ---
  * @param sourcePath zip 文件
- * @param path 要覆盖的路径，无所谓是否 / 开头 / 结尾
+ * @param path 要覆盖到的路径，无所谓是否 / 开头 / 结尾，是对方 kebab 的根据路开始算起
  * @param hosts 局域网多机部署，不设置默认本机部署
  */
-export async function updateCode(sourcePath: string, path: string, hosts?: string[]): Promise<string[]> {
+export async function updateCode(sourcePath: string, path: string, hosts?: string[]): Promise<Record<string, {
+    'result': boolean;
+    'return': string;
+}>> {
     if (!hosts) {
         hosts = ['127.0.0.1'];
     }
-    const time = lTime.stamp();
     /** --- 返回成功的 host --- */
-    const rtn: string[] = [];
+    const rtn: Record<string, {
+        'result': boolean;
+        'return': string;
+    }> = {};
     for (const host of hosts) {
         const fd = lNet.getFormData();
         if (!await fd.putFile('file', sourcePath)) {
@@ -583,18 +588,23 @@ export async function updateCode(sourcePath: string, path: string, hosts?: strin
         fd.putString('path', path);
         const res = await lNet.post('http://' + host + ':' + globalConfig.rpcPort.toString() + '/' + lCrypto.aesEncrypt(lText.stringifyJson({
             'action': 'code',
-            'time': time
+            'time': lTime.stamp()
         }), globalConfig.rpcSecret), fd, {
-            'timeout': 2
+            'timeout': 4
         });
         const content = await res.getContent();
         if (!content) {
+            rtn[host] = {
+                'result': false,
+                'return': 'Network error'
+            };
             continue;
         }
         const str = content.toString();
-        if (str === 'Done') {
-            rtn.push(host);
-        }
+        rtn[host] = {
+            'result': str === 'Done' ? true : false,
+            'return': str
+        };
     }
     return rtn;
 }

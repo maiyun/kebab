@@ -779,10 +779,12 @@ function getWsCtrName(path: string): string {
 
 /**
  * --- 删除本次请求所有已上传的临时文件, Mutton: false, Kebab: true ---
- * @param cctr Ctr 对象
+ * @param cctr Ctr 对象 或 files
  */
-export async function unlinkUploadFiles(cctr: sCtr.Ctr): Promise<void> {
-    const cfiles = cctr.getPrototype('_files');
+export async function unlinkUploadFiles(
+    cctr: sCtr.Ctr | Record<string, types.IPostFile | types.IPostFile[]>
+): Promise<void> {
+    const cfiles = cctr instanceof sCtr.Ctr ? cctr.getPrototype('_files') : cctr;
     for (const name in cfiles) {
         let files = cfiles[name];
         if (!Array.isArray(files)) {

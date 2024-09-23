@@ -145,6 +145,7 @@ export default class extends sCtr.Ctr {
             `<br><a href="${this._config.const.urlBase}test/core-reload">View "test/core-reload"</a>`,
             `<br><a href="${this._config.const.urlBase}test/core-restart">View "test/core-restart"</a>`,
             `<br><a href="${this._config.const.urlBase}test/core-global">View "test/core-global"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/core-updatecode">View "test/core-updatecode"</a>`,
 
             '<br><br><b>Crypto:</b>',
             `<br><br><a href="${this._config.const.urlBase}test/crypto">View "test/crypto"</a>`,
@@ -1064,6 +1065,18 @@ for (let i = 0; i < 30000; ++i) {
         }
         echo.push('</table>');
         return echo.join('') + '<br>' + this._getEnd();
+    }
+
+    public async coreUpdatecode(): Promise<string> {
+        const zip = `${this._config.const.dataPath}test.zip`;
+        const to = 'www/default/data/';
+        const echo: string[] = [
+            `zip: ${zip}<br>
+to: ${to}`
+        ];
+        const list = await lCore.updateCode(zip, to);
+        echo.push(`<pre>const list = lCore.updateCode(zip, to);</pre>${JSON.stringify(list)}`);
+        return echo.join('') + '<br><br>' + this._getEnd();
     }
 
     public async coreReload(): Promise<string> {
@@ -3005,7 +3018,7 @@ function send() {
     }
 
     public async zip(): Promise<string> {
-        const path = def.WWW_PATH + 'default/data/test.zip';
+        const path = this._config.const.dataPath + 'test.zip';
         const echo: string[] = ['Path: ' + path + '<br><br>'];
         const buf = await lFs.getContent(path);
         if (!buf) {

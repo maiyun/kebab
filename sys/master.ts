@@ -99,7 +99,7 @@ function createRpcListener(): void {
                 res.end('Failed');
                 return;
             }
-            if (msg.time < time - 10) {
+            if (msg.time < time - 5) {
                 res.end('Timeout');
                 return;
             }
@@ -157,6 +157,7 @@ function createRpcListener(): void {
                     const file = rtn.files['file'];
                     if (!file || Array.isArray(file)) {
                         res.end('Abnormal');
+                        await sRoute.unlinkUploadFiles(rtn.files);
                         return;
                     }
                     let path = rtn.post['path'];
@@ -166,24 +167,35 @@ function createRpcListener(): void {
                     if (path.endsWith('/')) {
                         path = path.slice(0, -1);
                     }
-                    if (!await lFs.isDir(def.ROOT_PATH + path)) {
-                        return [];
+                    /** --- 最终更新的根目录，以 / 结尾，但用户传入的无所谓 --- */
+                    let to = def.ROOT_PATH + path;
+                    if (!to.endsWith('/')) {
+                        to += '/';
+                    }
+                    if (!await lFs.isDir(to)) {
+                        res.end('Path not found: ' + to);
+                        await sRoute.unlinkUploadFiles(rtn.files);
+                        return;
                     }
                     const buf = await lFs.getContent(file.path);
                     if (!buf) {
-                        return [];
+                        res.end('System error');
+                        await sRoute.unlinkUploadFiles(rtn.files);
+                        return;
                     }
                     const zip = await lZip.get(buf);
                     if (!zip) {
-                        return [];
+                        res.end('Zip error');
+                        await sRoute.unlinkUploadFiles(rtn.files);
+                        return;
                     }
                     const ls = await zip.getList();
                     for (const path in ls) {
-                        /** --- 带 / 开头的文件完整路径 --- */
+                        /** --- 带 / 开头的 zip 中文件完整路径 --- */
                         const fpath = path.startsWith('/') ? path : '/' + path;
                         /** --- 最后一个 / 的所在位置 --- */
                         const lio = fpath.lastIndexOf('/');
-                        /** --- 纯路径，不以 / 开头 --- */
+                        /** --- 纯路径，不以 / 开头，以 / 结尾，若是根路径就是空字符串 --- */
                         const pat = fpath.slice(1, lio + 1);
                         /** --- 纯文件名 --- */
                         const fname = fpath.slice(lio + 1);
@@ -196,12 +208,13 @@ function createRpcListener(): void {
                             continue;
                         }
                         // --- 看文件夹是否存在 ---
-                        if (!await lFs.isDir(def.ROOT_PATH + pat)) {
-                            await lFs.mkdir(def.ROOT_PATH + pat);
+                        if (pat && !await lFs.isDir(to + pat)) {
+                            await lFs.mkdir(to + pat);
                         }
                         // --- 覆盖或创建文件 ---
-                        await lFs.putContent(def.ROOT_PATH + pat + fname, ls[path]);
+                        await lFs.putContent(to + pat + fname, ls[path]);
                     }
+                    await sRoute.unlinkUploadFiles(rtn.files);
                     break;
                 }
                 default: {
