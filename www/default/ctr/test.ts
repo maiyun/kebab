@@ -17,6 +17,7 @@ import * as lJwt from '~/lib/jwt';
 import * as lWs from '~/lib/ws';
 import * as lS3 from '~/lib/s3';
 import * as lZip from '~/lib/zip';
+import * as lBuffer from '~/lib/buffer';
 import * as sCtr from '~/sys/ctr';
 import * as def from '~/sys/def';
 import * as types from '~/types';
@@ -225,6 +226,9 @@ export default class extends sCtr.Ctr {
 
             '<br><br><b>Zip:</b>',
             `<br><br><a href="${this._config.const.urlBase}test/zip">View "test/zip"</a>`,
+
+            '<br><br><b>Buffer:</b>',
+            `<br><br><a href="${this._config.const.urlBase}test/buffer">View "test/buffer"</a>`,
         ];
         echo.push('<br><br>' + this._getEnd());
 
@@ -3044,6 +3048,32 @@ function send() {
         }
         echo.push('</table>');
         return echo.join('') + '<br>' + this._getEnd();
+    }
+
+    public buffer(): string {
+        // --- 写 ---
+        const writer = lBuffer.getWriter(8);
+        writer.writeUInt8(8);
+        writer.writeUInt16BE(2024);
+        writer.writeBCDString('1213141516');
+        const b = writer.get();
+        const echo: string[] = [`<pre>const buf = lBuffer.getWriter(8);
+writer.writeUInt8(8);
+writer.writeUInt16BE(2024);
+writer.writeBCDString('1213141516');
+const b = writer.get();</pre>${b.toString('hex').replace(/(.{2})/g, '$1 ')}`];
+        // --- 读 ---
+        const reader = lBuffer.getReader(b);
+        const rtn: any[] = [];
+        rtn.push(reader.readUInt8());
+        rtn.push(reader.readUInt16BE());
+        rtn.push(reader.readBCDString());
+        echo.push(`<pre>const reader = lBuffer.getReader(b);
+const rtn: any[] = [];
+rtn.push(reader.readUInt8());
+rtn.push(reader.readUInt16BE());
+rtn.push(reader.readBCDString());</pre>${JSON.stringify(rtn)}`);
+        return echo.join('') + '<br><br>' + this._getEnd();
     }
 
     /**
