@@ -1073,7 +1073,7 @@ for (let i = 0; i < 30000; ++i) {
 
     public async coreUpdatecode(): Promise<string> {
         const zip = `${this._config.const.dataPath}test.zip`;
-        const to = 'www/default/data/';
+        const to = '';
         const echo: string[] = [
             `zip: ${zip}<br>
 to: ${to}`
@@ -1107,7 +1107,7 @@ to: ${to}`
         return echo.join('') + '<br><br>' + this._getEnd();
     }
 
-    public crypto(): string {
+    public async crypto(): Promise<string> {
         const echo = ['<b>AES-256-ECB:</b>'];
 
         const key = 'testkeyatestkeyatestkeyatestkeya';
@@ -1159,6 +1159,30 @@ JSON.stringify(orig);</pre>${JSON.stringify(orig)}`);
         orig = lCrypto.aesDecrypt(text || '', key, 'otherIv', lCrypto.AES_256_CBC);
         echo.push(`<pre>orig = lCrypto.aesDecrypt(text || '', key, 'otherIv', lCrypto.AES_256_CBC);
 JSON.stringify(orig);</pre>${JSON.stringify(orig)}`);
+
+        // ----------
+
+        const res = await lCrypto.generateKeyPair('ec', {
+            'namedCurve': 'sm2',
+            'privateKeyEncoding': {
+                'type': 'sec1'
+            }
+        });
+        echo.push(`<pre>const res = lCrypto.generateKeyPair('ec', {
+    'namedCurve': 'sm2',
+    'privateKeyEncoding': {
+        'type': 'sec1'
+    }
+});
+JSON.stringify(res);</pre>${JSON.stringify(res)}`);
+
+        const sign = lCrypto.sign('Hello MAIYUN.NET', res.private, 'base64', 'sm3');
+        echo.push(`<pre>const sign = lCrypto.sign('Hello MAIYUN.NET', res.private, 'base64', 'sm3');
+JSON.stringify(sign);</pre>${JSON.stringify(sign)}`);
+
+        const r = lCrypto.verify('Hello MAIYUN.NET', res.public, Buffer.from(sign, 'base64'), 'sm3');
+        echo.push(`<pre>const r = lCrypto.verify('Hello MAIYUN.NET', res.public, Buffer.from(sign, 'base64'), 'sm3');
+JSON.stringify(r);</pre>${JSON.stringify(r)}`);
 
         return echo.join('') + '<br><br>' + this._getEnd();
     }

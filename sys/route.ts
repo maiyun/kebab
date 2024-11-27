@@ -810,7 +810,7 @@ export async function waitCtr(cctr: sCtr.Ctr): Promise<void> {
     // --- 判断事务 ---
     if (waitInfo.transaction) {
         // --- 有事务未关闭 ---
-        const msg = ' transaction(' + waitInfo.transaction + ') not be closed';
+        const msg = 'transaction(' + waitInfo.transaction + ') not be closed';
         console.log('[ERROR][ROUTE][WAITCTR] ' + msg + ': ', cctr.getPrototype('_config').const.path);
         await lCore.log(cctr, msg, '-error');
     }

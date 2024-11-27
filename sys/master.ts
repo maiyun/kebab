@@ -6,6 +6,9 @@
 import * as os from 'os';
 import * as cluster from 'cluster';
 import * as http from 'http';
+import * as net from 'net';
+// --- 第三方 ---
+import * as ws from '@litert/websocket';
 // --- 库和定义 ---
 import * as def from '~/sys/def';
 import * as sRoute from '~/sys/route';
@@ -15,6 +18,7 @@ import * as lText from '~/lib/text';
 import * as lCrypto from '~/lib/crypto';
 import * as lTime from '~/lib/time';
 import * as lZip from '~/lib/zip';
+import * as lWs from '~/lib/ws';
 
 /** --- 当前运行中的子进程列表 --- */
 const workerList: Record<string, {
@@ -42,6 +46,8 @@ async function run(): Promise<void> {
     }
     // --- 监听 RPC 命令 ---
     createRpcListener();
+    // --- 监听 IRP 中转 ---
+    createIrpListener();
     // --- 30 秒检测一次是否有丢失的子进程 ---
     setInterval(function() {
         checkWorkerLost().catch(function(e) {
@@ -199,7 +205,7 @@ function createRpcListener(): void {
                         const pat = fpath.slice(1, lio + 1);
                         /** --- 纯文件名 --- */
                         const fname = fpath.slice(lio + 1);
-                        if (fname === 'config.json' || fname === 'kebab.json') {
+                        if ((pat === 'conf/' && fname === 'config.json') || fname === 'kebab.json') {
                             // --- 特殊文件不能覆盖 ---
                             continue;
                         }
@@ -215,6 +221,15 @@ function createRpcListener(): void {
                         await lFs.putContent(to + pat + fname, ls[path]);
                     }
                     await sRoute.unlinkUploadFiles(rtn.files);
+                    // --- 检查是否更新 config ---
+                    if (rtn.post['config'] === '1') {
+                        const configContent = await lFs.getContent(def.CONF_PATH + 'config.json', 'utf8');
+                        if (configContent) {
+                            await lFs.putContent(def.CONF_PATH + 'config.json', configContent.replace(/"staticVer": ".+?"/, `"staticVer": "${lTime.format(null, 'YmdHis')}"`), {
+                                'encoding': 'utf8'
+                            });
+                        }
+                    }
                     break;
                 }
                 default: {
@@ -227,6 +242,129 @@ function createRpcListener(): void {
             console.log('[master] [createRpcListener]', e);
         });
     }).listen(lCore.globalConfig.rpcPort);
+}
+
+// --- IRP - TODO ---
+
+/** --- 当前连接中的 irp 连接（客户端 -> 服务端） --- */
+const irpConnection: Record<string, Record<string, {
+    'id': number;
+    'last': number;
+    'using': boolean;
+    'link': lWs.Socket;
+}>> = {};
+
+/** --- 当前的 irp 连接自增 id --- */
+let irpId = 0;
+
+/**
+ * --- 创建 IRP 局域网中转，用来监听 IRP 客户端接入后再中转给本连接，真正客户访问时再反代给这个连接，实现桥接 ---
+ */
+function createIrpListener(): void {
+    http.createServer(function(req: http.IncomingMessage, res: http.ServerResponse) {
+        // --- Server 进入的 ---
+        /** --- 当前时间戳 --- */
+        const time = lTime.stamp();
+        /** --- cmd 数据对象 --- */
+        const cmd = lCrypto.aesDecrypt((req.url ?? '').slice(1), lCore.globalConfig.rpcSecret);
+        if (!cmd) {
+            res.end('---IRP-MSG---Error');
+            return;
+        }
+        const msg = lText.parseJson(cmd);
+        if (!msg) {
+            res.end('---IRP-MSG---Failed');
+            return;
+        }
+        if (msg.time < time - 5) {
+            res.end('---IRP-MSG---Timeout');
+            return;
+        }
+        if (lCore.globalConfig.rpcSecret === 'MUSTCHANGE') {
+            res.end('---IRP-MSG---irpSecret need be "' + lCore.random(32, lCore.RANDOM_LUN) + '"');
+            return;
+        }
+        switch (msg.action) {
+            case 'server': {
+
+                break;
+            }
+            default: {
+                res.end('---IRP-MSG---Not command: ' + msg.action);
+                return;
+            }
+        }
+        res.end('---IRP-MSG---Done');
+    }).on('upgrade', function(req: http.IncomingMessage, socket: net.Socket): void {
+        // --- 只接收 WebSocket 连接 ---
+        const wsSocket = lWs.createServer(req, socket);
+        /** --- 当前时间戳 --- */
+        const time = lTime.stamp();
+        /** --- cmd 数据对象 --- */
+        const cmd = lCrypto.aesDecrypt((req.url ?? '').slice(1), lCore.globalConfig.rpcSecret);
+        if (!cmd) {
+            wsSocket.end();
+            return;
+        }
+        const msg = lText.parseJson(cmd);
+        if (!msg) {
+            wsSocket.end();
+            return;
+        }
+        if (msg.time < time - 5) {
+            wsSocket.end();
+            return;
+        }
+        if (lCore.globalConfig.irpSecret === 'MUSTCHANGE') {
+            wsSocket.writeText('irpSecret need be "' + lCore.random(32, lCore.RANDOM_LUN) + '"');
+            wsSocket.end();
+            return;
+        }
+        // --- 鉴权通过 ---
+        if (irpConnection[msg.name] === undefined) {
+            irpConnection[msg.name] = {};
+        }
+        const id = ++irpId;
+        irpConnection[msg.name][id.toString()] = {
+            'id': id,
+            'last': time,
+            'using': false,
+            'link': wsSocket
+        };
+        wsSocket.on('message', function(msg): void {
+            switch (msg.opcode) {
+                case ws.EOpcode.CLOSE: {
+                    wsSocket.end();
+                    break;
+                }
+                case ws.EOpcode.PING: {
+                    wsSocket.pong();
+                    break;
+                }
+                case ws.EOpcode.BINARY:
+                case ws.EOpcode.TEXT: {
+                    wsSocket.end();
+                    break;
+                }
+                default: {
+                    // --- nothing ---
+                }
+            }
+        }).on('error', () => {
+            wsSocket.end();
+            if (irpConnection[msg.name][id.toString()]) {
+                delete irpConnection[msg.name][id.toString()];
+            }
+        }).on('close', () => {
+            // --- CLOSE ---
+            if (!wsSocket.ended) {
+                wsSocket.end();
+            }
+            if (irpConnection[msg.name][id.toString()]) {
+                delete irpConnection[msg.name][id.toString()];
+            }
+        });
+    }).listen(lCore.globalConfig.irpPort);
 }
 
 /**

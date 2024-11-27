@@ -238,12 +238,12 @@ export class Sql {
                 }
                 else if (v instanceof Buffer) {
                     // --- Buffer ---
-                    sql += '?, ';
+                    values += '?, ';
                     this._data.push(v);
                 }
                 else if (this._isField(v)) {
                     // --- 3 ---
-                    sql += this.field(v.value) + ', ';
+                    values += this.field(v.value) + ', ';
                 }
                 else {
                     // --- json ---

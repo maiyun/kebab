@@ -1,7 +1,7 @@
 /**
  * Project: Mutton, User: JianSuoQiYue
  * Date: 2019-6-4 21:35
- * Last: 2020-4-14 13:33:51, 2022-07-23 16:01:34, 2022-09-06 22:59:26, 2023-5-24 19:11:37, 2023-6-13 21:47:58, 2023-7-10 18:54:03, 2023-8-23 17:03:16, 2023-12-11 15:21:22, 2023-12-20 23:12:03, 2024-3-8 16:05:29, 2024-3-20 19:58:15, 2024-8-11 21:14:54
+ * Last: 2020-4-14 13:33:51, 2022-07-23 16:01:34, 2022-09-06 22:59:26, 2023-5-24 19:11:37, 2023-6-13 21:47:58, 2023-7-10 18:54:03, 2023-8-23 17:03:16, 2023-12-11 15:21:22, 2023-12-20 23:12:03, 2024-3-8 16:05:29, 2024-3-20 19:58:15, 2024-8-11 21:14:54, 2024-10-5 14:00:22
  */
 import * as lSql from '~/lib/sql';
 import * as lDb from '~/lib/db';
@@ -83,8 +83,17 @@ export default class Mod {
     /** --- 模型获取的属性 --- */
     protected _data: Record<string, any> = {};
 
-    /** --- 当前选择的分表 _ 后缀 --- */
-    protected _index: string | null = null;
+    /** --- 当前选择的分表 _ 后缀，多个代表联查 --- */
+    protected _index: string[] | null = null;
+
+    /** --- 必须追加的数据筛选 key 与 values，仅单表模式有效 --- */
+    protected _contain: {
+        'key': string;
+        'list': string[];
+    } | null = null;
+
+    /** --- 已算出的 total --- */
+    protected _total: number[] = [];
 
     /** --- 数据库连接对象 --- */
     protected _db!: lDb.Pool | lDb.Transaction;
@@ -103,11 +112,15 @@ export default class Mod {
     public constructor(opt: {
         'db': lDb.Pool | lDb.Transaction;
         'ctr'?: sCtr.Ctr;
-        'index'?: string;
+        'index'?: string | string[];
         'alias'?: string;
         'row'?: Record<string, any>;
         'select'?: string | string[];
         'where'?: string | types.Json;
+        'contain'?: {
+            'key': string;
+            'list': string[];
+        };
         'raw'?: boolean;
         'pre'?: string;
     }) {
@@ -118,7 +131,10 @@ export default class Mod {
         /** --- 新建 sql 对象 --- */
         this._sql = lSql.get(opt.pre ?? opt.ctr);
         if (opt.index) {
-            this._index = opt.index;
+            this._index = typeof opt.index === 'string' ? [opt.index] : [...new Set(opt.index)];
+        }
+        if (opt.contain) {
+            this._contain = opt.contain;
         }
         // --- 第三个参数用于内部数据导入，将 data 数据合并到本实例化类 ---
         if (opt.row) {
@@ -134,7 +150,7 @@ export default class Mod {
             this._sql.select(
                 select,
                 ((this.constructor as Record<string, types.Json>)._$table as string) +
-                (this._index !== null ? ('_' + this._index) : '') +
+                (this._index !== null ? ('_' + this._index[0]) : '') +
                 (opt.alias ? ' ' + opt.alias : '')
             );
         }
@@ -482,7 +498,14 @@ export default class Mod {
     public static select<T extends Mod>(
         db: lDb.Pool | lDb.Transaction,
         c: string | string[],
-        opt: { 'ctr'?: sCtr.Ctr; 'pre'?: string; 'index'?: string; 'alias'?: string; } = {}
+        opt: {
+            'ctr'?: sCtr.Ctr; 'pre'?: string;
+            'index'?: string | string[]; 'alias'?: string;
+            'contain'?: {
+                'key': string;
+                'list': string[];
+            };
+        } = {}
     ): T & Record<string, any> {
         return new this({
             'db': db,
@@ -490,7 +513,8 @@ export default class Mod {
             'pre': opt.pre,
             'select': c,
             'index': opt.index,
-            'alias': opt.alias
+            'alias': opt.alias,
+            'contain': opt.contain
         }) as T & Record<string, any>;
     }
 
@@ -503,7 +527,13 @@ export default class Mod {
     public static where<T extends Mod>(
         db: lDb.Pool | lDb.Transaction,
         s: string | types.Json = '',
-        opt: { 'ctr'?: sCtr.Ctr; 'raw'?: boolean; 'pre'?: string; 'index'?: string; } = {}
+        opt: {
+            'ctr'?: sCtr.Ctr; 'raw'?: boolean; 'pre'?: string; 'index'?: string | string[];
+            'contain'?: {
+                'key': string;
+                'list': string[];
+            };
+        } = {}
     ): T & Record<string, any> {
         return new this({
             'db': db,
@@ -511,7 +541,8 @@ export default class Mod {
             'pre': opt.pre,
             'where': s,
             'raw': opt.raw,
-            'index': opt.index
+            'index': opt.index,
+            'contain': opt.contain
         }) as T & Record<string, any>;
     }
 
@@ -565,6 +596,7 @@ export default class Mod {
             'pre'?: string;
             'index'?: string | string[];
             'select'?: string | string[];
+            'by'?: [string | string[], 'DESC' | 'ASC'];
             'array': true;
         }
     ): Promise<false | null | Record<string, any>>;
@@ -577,6 +609,7 @@ export default class Mod {
             'pre'?: string;
             'index'?: string | string[];
             'select'?: string | string[];
+            'by'?: [string | string[], 'DESC' | 'ASC'];
             'array'?: false;
         }
     ): Promise<false | null | (T & Record<string, any>)>;
@@ -595,6 +628,7 @@ export default class Mod {
             'pre'?: string;
             'index'?: string | string[];
             'select'?: string | string[];
+            'by'?: [string | string[], 'DESC' | 'ASC'];
             'array'?: boolean;
         } = {}
     ): Promise<false | null | (T & Record<string, any>) | Record<string, any>> {
@@ -607,11 +641,12 @@ export default class Mod {
                 'where': s,
                 'raw': opt.raw
             }) as T;
+            if (opt.by) {
+                o.by(opt.by[0], opt.by[1]);
+            }
             return opt.array ? o.firstArray() : o.first();
         }
-        if (typeof opt.index === 'string') {
-            opt.index = [opt.index];
-        }
+        opt.index = typeof opt.index === 'string' ? [opt.index] : [...new Set(opt.index)];
         for (const item of opt.index) {
             const row = new this({
                 'select': opt.select,
@@ -622,6 +657,9 @@ export default class Mod {
                 'raw': opt.raw,
                 'index': item
             }) as T;
+            if (opt.by) {
+                row.by(opt.by[0], opt.by[1]);
+            }
             const rowr = await (opt.array ? row.firstArray() : row.first());
             if (rowr) {
                 return rowr;
@@ -772,7 +810,7 @@ export default class Mod {
             updates[k] = this._data[k];
         }
         if (!table) {
-            table = (cstr._$table as string) + (this._index ? ('_' + this._index) : '');
+            table = (cstr._$table as string) + (this._index ? ('_' + this._index[0]) : '');
         }
 
         let r: lDb.IPacket | null = null;
@@ -785,7 +823,7 @@ export default class Mod {
                 updates[cstr._$key] = this._keyGenerator();
                 this._data[cstr._$key] = updates[cstr._$key];
                 (this as types.Json)[cstr._$key] = updates[cstr._$key];
-                this._sql.insert((cstr._$table as string) + (this._index ? ('_' + this._index) : ''));
+                this._sql.insert((cstr._$table as string) + (this._index ? ('_' + this._index[0]) : ''));
                 if (notWhere) {
                     this._sql.notExists(table, updates, notWhere);
                 }
@@ -812,7 +850,7 @@ export default class Mod {
             }
         }
         else {
-            this._sql.insert((cstr._$table as string) + (this._index ? ('_' + this._index) : ''));
+            this._sql.insert((cstr._$table as string) + (this._index ? ('_' + this._index[0]) : ''));
             if (notWhere) {
                 this._sql.notExists(table, updates, notWhere);
             }
@@ -821,15 +859,17 @@ export default class Mod {
             }
             r = await this._db.execute(this._sql.getSql(), this._sql.getData());
             if (r.error) {
-                await lCore.log(this._ctr ?? {
-                    'path': '',
-                    'urlFull': '',
-                    'hostname': '',
-                    'req': null,
-                    'get': {},
-                    'cookie': {},
-                    'headers': {}
-                }, '[create1, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+                if (r.error.errno !== 1062) {
+                    await lCore.log(this._ctr ?? {
+                        'path': '',
+                        'urlFull': '',
+                        'hostname': '',
+                        'req': null,
+                        'get': {},
+                        'cookie': {},
+                        'headers': {}
+                    }, '[create1, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+                }
                 return false;
             }
         }
@@ -854,7 +894,7 @@ export default class Mod {
             updates[k] = this._data[k];
         }
 
-        this._sql.replace((cstr._$table as string) + (this._index ? ('_' + this._index) : '')).values(updates);
+        this._sql.replace((cstr._$table as string) + (this._index ? ('_' + this._index[0]) : '')).values(updates);
         const r = await this._db.execute(this._sql.getSql(), this._sql.getData());
         if (r.packet === null) {
             await lCore.log(this._ctr ?? {
@@ -885,7 +925,7 @@ export default class Mod {
      */
     public async refresh(lock = false): Promise<boolean | null> {
         const cstr = this.constructor as Record<string, types.Json>;
-        this._sql.select('*', (cstr._$table as string) + (this._index ? ('_' + this._index) : '')).where([{
+        this._sql.select('*', (cstr._$table as string) + (this._index ? ('_' + this._index[0]) : '')).where([{
             [cstr._$primary]: this._data[cstr._$primary]
         }]);
         if (lock) {
@@ -927,7 +967,7 @@ export default class Mod {
         if (Object.keys(updates).length === 0) {
             return true;
         }
-        this._sql.update((cstr._$table as string) + (this._index ? ('_' + this._index) : ''), [updates]).where([{
+        this._sql.update((cstr._$table as string) + (this._index ? ('_' + this._index[0]) : ''), [updates]).where([{
             [cstr._$primary]: this._data[cstr._$primary]
         }]);
         const r = await this._db.execute(this._sql.getSql(), this._sql.getData());
@@ -960,7 +1000,7 @@ export default class Mod {
         const tim = lTime.stamp();
         const cstr = this.constructor as Record<string, types.Json>;
         if (cstr._$soft && !raw) {
-            this._sql.update((cstr._$table as string) + (this._index ? ('_' + this._index) : ''), [{
+            this._sql.update((cstr._$table as string) + (this._index ? ('_' + this._index[0]) : ''), [{
                 'time_remove': tim
             }]).where([{
                 [cstr._$primary]: this._data[cstr._$primary],
@@ -968,7 +1008,7 @@ export default class Mod {
             }]);
         }
         else {
-            this._sql.delete((cstr._$table as string) + (this._index ? ('_' + this._index) : '')).where([{
+            this._sql.delete((cstr._$table as string) + (this._index ? ('_' + this._index[0]) : '')).where([{
                 [cstr._$primary]: this._data[cstr._$primary]
             }]);
         }
@@ -1119,6 +1159,96 @@ export default class Mod {
      * @param key 是否以某个字段为主键
      */
     public async all(key?: string): Promise<false | Rows<this> | Record<string, this>> {
+        this._total.length = 0;
+        if (this._index && this._index.length > 1) {
+            // --- 多表 ---
+            const sql = this._sql.getSql();
+            /** --- 返回的最终 list --- */
+            const list: Record<string, this> | this[] = key ? {} : [];
+            /** --- 用户传输的起始值 --- */
+            const limit = [this._limit[0] ?? 0, this._limit[1] ?? 200];
+            /** --- 已过的 offset，-1 代表不再计算 offset 了 --- */
+            let offset = 0;
+            /** --- 剩余条数 --- */
+            let remain = limit[1];
+            for (let i = 0; i < this._index.length; ++i) {
+                // --- 先计算 total ---
+                let tsql = this._formatTotal(sql);
+                if (i > 0) {
+                    tsql = tsql.replace(/(FROM [a-zA-Z0-9`_.]+?_)[0-9_]+/, '$1' + this._index[i]);
+                }
+                const tr = await this._db.query(tsql, this._sql.getData());
+                if (tr.rows === null) {
+                    return false;
+                }
+                let count = 0;
+                for (const item of tr.rows) {
+                    count += item.count;
+                }
+                this._total.push(count);
+                if (remain === 0) {
+                    // --- 下一个表需要接着执行 total 计算，所以不能 break ---
+                    continue;
+                }
+                // --- 开始查数据 ---
+                /** --- 差值 --- */
+                let cz = 0;
+                if (offset > -1) {
+                    cz = limit[0] - offset;
+                    if (cz >= count) {
+                        offset += count;
+                        continue;
+                    }
+                }
+                const lsql = sql.replace(/ LIMIT [0-9 ,]/g, ` LIMIT ${cz}, ${remain}`);
+                const r = await this._db.query(lsql, this._sql.getData());
+                if (r.rows === null) {
+                    await lCore.log(this._ctr ?? {
+                        'path': '',
+                        'urlFull': '',
+                        'hostname': '',
+                        'req': null,
+                        'get': {},
+                        'cookie': {},
+                        'headers': {}
+                    }, '[all, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+                    return false;
+                }
+                if (key) {
+                    for (const row of r.rows) {
+                        const obj = new (this.constructor as new (
+                            o: Record<string, types.Json>
+                        ) => this)({
+                            'db': this._db,
+                            'ctr': this._ctr,
+                            'pre': this._sql.getPre(),
+                            'row': row,
+                            'index': this._index
+                        });
+                        (list as Record<string, this>)[row[key]] = obj;
+                        --remain;
+                    }
+                    continue;
+                }
+                for (const row of r.rows) {
+                    const obj = new (this.constructor as new (
+                        o: Record<string, types.Json>
+                    ) => this)({
+                        'db': this._db,
+                        'ctr': this._ctr,
+                        'pre': this._sql.getPre(),
+                        'row': row,
+                        'index': this._index
+                    });
+                    (list as this[]).push(obj);
+                    --remain;
+                }
+                continue;
+            }
+            return Array.isArray(list) ? new Rows<this>(list) : list;
+        }
+        // --- 单表 ---
+        const contain = this._contain ? lCore.clone(this._contain.list) : null;
         const r = await this._db.query(this._sql.getSql(), this._sql.getData());
         if (r.rows === null) {
             await lCore.log(this._ctr ?? {
@@ -1131,6 +1261,24 @@ export default class Mod {
                 'headers': {}
             }, '[all, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
             return false;
+        }
+        // --- 检查没被查到的必包含项 ---
+        for (const row of r.rows) {
+            if (this._contain && contain) {
+                const io = contain.indexOf(row[this._contain.key]);
+                if (io !== -1) {
+                    contain.splice(io, 1);
+                }
+            }
+        }
+        let cr: lDb.IData | null = null;
+        if (this._contain && contain?.length) {
+            const csql = this._sql.copy(undefined, {
+                'where': {
+                    [this._contain.key]: this._contain.list
+                }
+            });
+            cr = await this._db.query(csql.getSql(), csql.getData());
         }
         if (key) {
             const list: Record<string, this> = {};
@@ -1145,6 +1293,21 @@ export default class Mod {
                     'index': this._index
                 });
                 list[row[key]] = obj;
+            }
+            // --- 有没有必须包含的项 ---
+            if (cr?.rows) {
+                for (const crow of cr.rows) {
+                    const obj = new (this.constructor as new (
+                        o: Record<string, types.Json>
+                    ) => this)({
+                        'db': this._db,
+                        'ctr': this._ctr,
+                        'pre': this._sql.getPre(),
+                        'row': crow,
+                        'index': this._index
+                    });
+                    list[crow[key]] = obj;
+                }
             }
             return list;
         }
@@ -1161,6 +1324,21 @@ export default class Mod {
             });
             list.push(obj);
         }
+        // --- 有没有必须包含的项 ---
+        if (cr?.rows) {
+            for (const crow of cr.rows) {
+                const obj = new (this.constructor as new (
+                    o: Record<string, types.Json>
+                ) => this)({
+                    'db': this._db,
+                    'ctr': this._ctr,
+                    'pre': this._sql.getPre(),
+                    'row': crow,
+                    'index': this._index
+                });
+                list.push(obj);
+            }
+        }
         return new Rows<this>(list);
     }
 
@@ -1175,6 +1353,80 @@ export default class Mod {
         Array<Record<string, any>> |
         Record<string, Record<string, any>>
     > {
+        this._total.length = 0;
+        if (this._index && this._index.length > 1) {
+            // --- 多表 ---
+            let sql = this._sql.getSql();
+            /** --- 返回的最终 list --- */
+            const list: Record<string, Record<string, any>> | any[] = key ? {} : [];
+            /** --- 用户传输的起始值 --- */
+            const limit = [this._limit[0] ?? 0, this._limit[1] ?? 200];
+            /** --- 已过的 offset，-1 代表不再计算 offset 了 --- */
+            let offset = 0;
+            /** --- 剩余条数 --- */
+            let remain = limit[1];
+            for (let i = 0; i < this._index.length; ++i) {
+                // --- 先计算 total ---
+                if (i > 0) {
+                    sql = sql.replace(/(FROM [a-zA-Z0-9`_.]+?_)[0-9_]+/, '$1' + this._index[i]);
+                }
+                const tsql = this._formatTotal(sql);
+                const tr = await this._db.query(tsql, this._sql.getData());
+                if (tr.rows === null) {
+                    return false;
+                }
+                let count = 0;
+                for (const item of tr.rows) {
+                    count += item.count;
+                }
+                this._total.push(count);
+                if (remain === 0) {
+                    // --- 下一个表需要接着执行 total 计算，所以不能 break ---
+                    continue;
+                }
+                // --- 开始查数据 ---
+                /** --- 差值 --- */
+                let cz = 0;
+                if (offset > -1) {
+                    cz = limit[0] - offset;
+                    if (cz >= count) {
+                        offset += count;
+                        continue;
+                    }
+                    // --- 在本表开始找之后，后面表无需再跳过 ---
+                    offset = -1;
+                }
+                const lsql = sql.replace(/ LIMIT [0-9 ,]+/g, ` LIMIT ${cz}, ${remain}`);
+                const r = await this._db.query(lsql, this._sql.getData());
+                if (r.rows === null) {
+                    await lCore.log(this._ctr ?? {
+                        'path': '',
+                        'urlFull': '',
+                        'hostname': '',
+                        'req': null,
+                        'get': {},
+                        'cookie': {},
+                        'headers': {}
+                    }, '[allArray, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+                    return false;
+                }
+                if (key) {
+                    for (const row of r.rows) {
+                        (list as Record<string, Record<string, any>>)[row[key]] = row;
+                        --remain;
+                    }
+                    continue;
+                }
+                for (const row of r.rows) {
+                    (list as any[]).push(row);
+                    --remain;
+                }
+                continue;
+            }
+            return list;
+        }
+        // --- 单表 ---
+        const contain = this._contain ? lCore.clone(this._contain.list) : null;
         const r = await this._db.query(this._sql.getSql(), this._sql.getData());
         if (r.rows === null) {
             await lCore.log(this._ctr ?? {
@@ -1188,12 +1440,42 @@ export default class Mod {
             }, '[allArray, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
             return false;
         }
+        // --- 检查没被查到的必包含项 ---
+        for (const row of r.rows) {
+            if (this._contain && contain) {
+                const io = contain.indexOf(row[this._contain.key]);
+                if (io !== -1) {
+                    contain.splice(io, 1);
+                }
+            }
+        }
+        let cr: lDb.IData | null = null;
+        if (this._contain && contain?.length) {
+            const csql = this._sql.copy(undefined, {
+                'where': {
+                    [this._contain.key]: this._contain.list
+                }
+            });
+            cr = await this._db.query(csql.getSql(), csql.getData());
+        }
         if (key) {
             const list: Record<string, Record<string, any>> = {};
             for (const row of r.rows) {
                 list[row[key]] = row;
             }
+            // --- 有没有必须包含的项 ---
+            if (cr?.rows) {
+                for (const crow of cr.rows) {
+                    list[crow[key]] = crow;
+                }
+            }
             return list;
+        }
+        // --- 有没有必须包含的项 ---
+        if (cr?.rows) {
+            for (const crow of cr.rows) {
+                r.rows.push(crow);
+            }
         }
         return r.rows;
     }
@@ -1227,14 +1509,25 @@ export default class Mod {
         return r.rows[0];
     }
 
+    private _formatTotal(sql: string, f: string = '*'): string {
+        return sql
+            .replace(/SELECT .+? FROM/g, 'SELECT COUNT(' + this._sql.field(f) + ') AS `count` FROM')
+            .replace(/ LIMIT [0-9 ,]+/g, '')
+            .replace(/ ORDER BY [\w`,. ]+(DESC|ASC)?/g, '');
+    }
+
     /**
      * --- 获取总条数，自动抛弃 LIMIT，仅用于获取数据的情况（select） ---
      */
     public async total(f: string = '*'): Promise<number> {
-        const sql: string = this._sql.getSql()
-            .replace(/SELECT .+? FROM/, 'SELECT COUNT(' + this._sql.field(f) + ') AS `count` FROM')
-            .replace(/ LIMIT [0-9 ,]+/g, '')
-            .replace(/ ORDER BY [\w`,. ]+(DESC|ASC)?/g, '');
+        if (this._total.length) {
+            let count = 0;
+            for (const item of this._total) {
+                count += item;
+            }
+            return count;
+        }
+        const sql: string = this._formatTotal(this._sql.getSql(), f);
         const r = await this._db.query(sql, this._sql.getData());
         if (r.rows === null) {
             await lCore.log(this._ctr ?? {
@@ -1414,6 +1707,9 @@ export default class Mod {
         return this;
     }
 
+    /** --- 设置的 limit --- */
+    private _limit: number[] = [0, 0];
+
     /**
      * --- LIMIT ---
      * @param a 起始
@@ -1421,6 +1717,7 @@ export default class Mod {
      */
     public limit(a: number, b: number = 0): this {
         this._sql.limit(a, b);
+        this._limit = [a, b];
         return this;
     }
 
@@ -1430,7 +1727,9 @@ export default class Mod {
      * @param page 当前页数
      */
     public page(count: number, page: number = 1): this {
-        this._sql.limit(count * (page - 1), count);
+        const a = count * (page - 1);
+        this._sql.limit(a, count);
+        this._limit = [a, count];
         return this;
     }
 
@@ -1440,6 +1739,18 @@ export default class Mod {
      */
     public append(sql: string): this {
         this._sql.append(sql);
+        return this;
+    }
+
+    /**
+     * --- 设置闭包含数据 ---
+     * @param contain 设置项
+     */
+    public contain(contain: {
+        'key': string;
+        'list': string[];
+    } ): this {
+        this._contain = contain;
         return this;
     }
 

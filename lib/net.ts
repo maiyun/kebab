@@ -240,7 +240,7 @@ export async function request(
             'ca': ca,
             'connectionOptions': {
                 'remoteHost': hosts[host]
-            }
+            },
         });
     }
     catch (err: types.Json) {

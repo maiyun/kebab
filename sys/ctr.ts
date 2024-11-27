@@ -775,7 +775,8 @@ export class Ctr {
      * @param key
      * @param data 要替换的数据
      */
-    protected _l(key: string, data?: string[]): string {
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    public _l(key: string, data?: string[]): string {
         if (!this._localeData[this._locale]) {
             return '[LocaleError]' + key;
         }

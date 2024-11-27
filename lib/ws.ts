@@ -11,6 +11,9 @@ import * as liws from '@litert/websocket';
 // --- 库 ---
 import * as lText from '~/lib/text';
 import * as lNet from '~/lib/net';
+import * as lCore from '~/lib/core';
+import * as lCrypto from '~/lib/crypto';
+import * as lTime from '~/lib/time';
 import * as sCtr from '~/sys/ctr';
 
 /** --- 一般用 SIMPLE --- */
@@ -479,6 +482,46 @@ export async function mproxy(
         return -2;
     }
     await bindPipe(socket, rsocket);
+    return 1;
+}
+
+/**
+ * --- server 接收方调用的函数 ---
+ * --- get: token, auth ---
+ * @param ctr 当前控制器
+ * @param name 代号
+ * @param token token
+ * @param auth 校验字符串，读取 get 的 auth 和本参数做比对
+ */
+export async function irp(
+    ctr: sCtr.Ctr,
+    name: string,
+    token: string,
+    auth: string,
+): Promise<number> {
+    /** --- 请求端产生的双向 socket --- */
+    const socket = ctr.getPrototype('_socket');
+    /** --- 客户端请求中的 get 的数据 --- */
+    const get = ctr.getPrototype('_get');
+    if (get['name'] !== name) {
+        return 0;
+    }
+    if (get['token'] !== token) {
+        return -1;
+    }
+    if (get['auth'] !== auth) {
+        return -2;
+    }
+    const time = lTime.stamp();
+    /** --- 本机 master 的 irp 中转 ws --- */
+    const msocket = await connect('ws://127.0.0.1:' + lCore.globalConfig.irpPort + '/' + lCrypto.aesEncrypt(lText.stringifyJson({
+        'name': get['name'],
+        'time': time
+    }), lCore.globalConfig.irpSecret));
+    if (!msocket) {
+        return -3;
+    }
+    await bindPipe(socket, msocket);
     return 1;
 }
 

@@ -25,12 +25,11 @@ export const globalConfig: types.IConfig & {
     'rpcSecret': string;
     'irpPort': number;
     'irpSecret': string;
-    'irpEnabled': boolean;
     'irp': Array<{
         'name': string;
-        'host': string;
-        'port': number;
-        'secret': string;
+        'url': string;
+        'token': string;
+        'auth': string;
         'enabled': boolean;
     }>;
 } = {} as types.Json;
@@ -351,7 +350,7 @@ export function sleep(ms: number): Promise<void> {
  * --- 将对象进行升序排列 ---
  * @param o 要重排的对象
  */
-export function objectSort(o: Record<string, types.Json>): types.Json {
+export function objectSort<T extends Record<string, any>>(o: T): T {
     const ordered: types.Json = {};
     const list = Object.keys(o).sort();
     for (const key of list) {
@@ -567,8 +566,11 @@ export async function removeGlobal(key: string, hosts?: string[]): Promise<strin
  * @param sourcePath zip 文件
  * @param path 要覆盖到的路径，无所谓是否 / 开头 / 结尾，是对方 kebab 的根据路开始算起
  * @param hosts 局域网多机部署，不设置默认本机部署
+ * @param config 是否自动更新 config 的 set.staticVer 为最新，默认更新
  */
-export async function updateCode(sourcePath: string, path: string, hosts?: string[]): Promise<Record<string, {
+export async function updateCode(
+    sourcePath: string, path: string, hosts?: string[], config: boolean = true
+): Promise<Record<string, {
     'result': boolean;
     'return': string;
 }>> {
@@ -586,6 +588,7 @@ export async function updateCode(sourcePath: string, path: string, hosts?: strin
             continue;
         }
         fd.putString('path', path);
+        fd.putString('config', config ? '1' : '0');
         const res = await lNet.post('http://' + host + ':' + globalConfig.rpcPort.toString() + '/' + lCrypto.aesEncrypt(lText.stringifyJson({
             'action': 'code',
             'time': lTime.stamp()
