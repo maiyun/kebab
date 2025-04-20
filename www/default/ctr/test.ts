@@ -3171,7 +3171,7 @@ rtn.push(reader.readBCDString());</pre>${JSON.stringify(rtn)}`);
     public async lan(): Promise<string> {
         const echo: string[] = [];
 
-        const r = lLan.card();
+        const r = await lLan.card();
         echo.push(`<pre>lLan.card();</pre>` + JSON.stringify(r));
 
         const r2 = await lLan.scan();
