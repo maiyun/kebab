@@ -166,7 +166,7 @@ export default class Mod {
             }
         }
         /** --- 是否有 select --- */
-        const select = opt.select ? opt.select : (opt.where ? '*' : '');
+        const select = opt.select ?? (opt.where ? '*' : '');
         if (select) {
             this._sql.select(
                 select,
@@ -868,7 +868,7 @@ export default class Mod {
                         'get': {},
                         'cookie': {},
                         'headers': {}
-                    }, '[create0, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+                    }, '[create0, mod] [' + table + '] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
                     return false;
                 }
             }
@@ -892,7 +892,7 @@ export default class Mod {
                         'get': {},
                         'cookie': {},
                         'headers': {}
-                    }, '[create1, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+                    }, '[create1, mod] [' + table + '] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
                 }
                 return false;
             }
