@@ -32,6 +32,8 @@ export const globalConfig: types.IConfig & {
         'auth': string;
         'enabled': boolean;
     }>;
+    'debug': boolean;
+    'max': number;
 } = {} as types.Json;
 
 /** --- Cookie 设置的选项 --- */
@@ -237,11 +239,22 @@ export function checkType(val: any, type: any, tree: string = 'root'): string {
         if (Array.isArray(val)) {
             return 'object:' + tree + ':array';
         }
+        if (!Object.keys(type).length) {
+            return '';
+        }
+        // --- 先判断每个值是否相等 ---
         for (const key in type) {
             const res = checkType(val[key], type[key], tree + '.' + key);
             if (res) {
                 return res;
             }
+        }
+        // --- 再判断是否传了类型限定中没有的值 ---
+        for (const key in val) {
+            if (type[key] !== undefined) {
+                continue;
+            }
+            return `undefined:${tree}.${key}:${typeof val[key]}`;
         }
         return '';
     }
@@ -571,9 +584,9 @@ export async function removeGlobal(key: string, hosts?: string[]): Promise<strin
 export async function updateCode(
     sourcePath: string, path: string, hosts?: string[], config: boolean = true
 ): Promise<Record<string, {
-    'result': boolean;
-    'return': string;
-}>> {
+        'result': boolean;
+        'return': string;
+    }>> {
     if (!hosts) {
         hosts = ['127.0.0.1'];
     }
@@ -727,7 +740,10 @@ export async function getLog(opt: {
         let packet = '';
         lFs.createReadStream(path, {
             'encoding': 'utf8'
-        }).on('data', (buf: string) => {
+        }).on('data', (buf) => {
+            if (typeof buf !== 'string') {
+                return;
+            }
             while (true) {
                 // --- 分包 ---
                 const index = buf.indexOf('\n');
@@ -849,4 +865,27 @@ export function clone(obj: Record<string, any> | any[]): any[] | any {
         }
     }
     return newObj;
+}
+
+/**
+ * --- 打印调试信息，线上环境不会打印 ---
+ * @param message 参数
+ * @param optionalParams 参数
+ */
+export function debug(message?: any, ...optionalParams: any[]): void {
+    if (!globalConfig.debug) {
+        return;
+    }
+    // eslint-disable-next-line no-console
+    console.debug(message, ...optionalParams);
+}
+
+/**
+ * --- 向控制台直接显示内容，一般情况下禁止使用 ---
+ * @param message 参数
+ * @param optionalParams 参数
+ */
+export function display(message?: any, ...optionalParams: any[]): void {
+    // eslint-disable-next-line no-console
+    console.log(message, ...optionalParams);
 }

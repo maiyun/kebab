@@ -117,10 +117,27 @@ export function get(ctr: sCtr.Ctr, opt: IOptions = {}): Time {
 /**
  * --- 获取秒级时间戳 ---
  * @param date Date 对象可选
+ * @param zone 时区小时或 ctr 对象，如 8，设置 null 则以系统时区为准
  */
-export function stamp(date?: Date): number {
+export function stamp(date?: Date | string, zone?: number | sCtr.Ctr | null): number {
     if (date) {
-        return Math.floor(date.getTime() / 1000);
+        if (date instanceof Date) {
+            return Math.floor(date.getTime() / 1000);
+        }
+        if (zone === null || zone === undefined) {
+            zone = -(new Date()).getTimezoneOffset();
+        }
+        else if (zone instanceof sCtr.Ctr) {
+            zone = zone.getPrototype('_config').set.timezone * 60;
+        }
+        else {
+            zone *= 60;
+        }
+        /** --- 时区是否是负数 --- */
+        const negative = zone < 0;
+        /** --- 时区绝对值 --- */
+        const zoneabs = Math.abs(zone);
+        return Math.floor((new Date(`${date} ${negative ? '-' : '+'}${Math.floor(zoneabs / 60)}:${zoneabs % 60}`)).getTime() / 1000);
     }
     else {
         return Math.floor(Date.now() / 1000);
@@ -128,10 +145,18 @@ export function stamp(date?: Date): number {
 }
 
 /**
+ * --- 是否是毫秒 ---
+ * @param time 要判断的时间戳
+ */
+export function isMs(time: number): boolean {
+    return time > 1000000000000 ? true : false;
+}
+
+/**
  * --- 将时间对象转换为时间字符串 ---
  * @param zone 时区小时或 ctr 对象，如 8，设置 null 则以系统时区为准
  * @param f 转换格式
- * @param date 时间对象或毫秒级数字，如果是秒请乘以 1000
+ * @param date 时间对象或秒/毫秒级数字，如果是秒请乘以 1000
  */
 export function format(zone: number | sCtr.Ctr | null, f: string, date?: Date | number): string {
     const over: string[] = [];
@@ -139,7 +164,7 @@ export function format(zone: number | sCtr.Ctr | null, f: string, date?: Date | 
         date = new Date();
     }
     else if (typeof date === 'number') {
-        date = new Date(date);
+        date = new Date(isMs(date) ? date : date * 1000);
     }
     if (zone === null) {
         zone = (-date.getTimezoneOffset()) / 60;

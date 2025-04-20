@@ -14,6 +14,8 @@
             "enabled": true
         }
     ],
+    "debug": true,
+    "max": 64,
 
     "set": {
         "timezone": 8,

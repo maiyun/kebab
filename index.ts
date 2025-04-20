@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-floating-promises */
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2019-3-29 18:55:35

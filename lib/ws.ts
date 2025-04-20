@@ -1,7 +1,7 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2019-6-2 20:42
- * Last: 2020-4-9 22:33:11, 2022-09-13 13:32:01, 2022-12-30 19:13:07, 2024-2-6 23:53:45
+ * Last: 2020-4-9 22:33:11, 2022-09-13 13:32:01, 2022-12-30 19:13:07, 2024-2-6 23:53:45, 2024-12-23 01:33:16, 2025-1-28 21:05:51
  */
 import * as http from 'http';
 import * as net from 'net';
@@ -91,14 +91,19 @@ export class Socket {
     /** --- 当前的 ws 对象 --- */
     private _ws!: liws.IWebSocket | liws.IClient;
 
-    public constructor(request?: http.IncomingMessage, socket?: net.Socket) {
+    public constructor(request?: http.IncomingMessage, socket?: net.Socket, options: {
+        'headers'?: http.OutgoingHttpHeaders;
+        'timeout'?: number;
+    } = {}) {
         if (!request || !socket) {
             return;
         }
         // --- 一定是 server 模式 ---
         this._ws = liwsServer.accept({
             'request': request,
-            'socket': socket
+            'socket': socket,
+            'headers': options.headers,
+            'timeout': options.timeout
         });
         this._bindEvent();
     }
@@ -204,8 +209,12 @@ export class Socket {
             })().catch(() => {
                 // --- nothing ---
             });
+        }).on('drain', () => {
+            this._on.drain() as any;
         }).on('error', (e) => {
             this._on.error(e) as any;
+        }).on('end', () => {
+            this._on.end() as any;
         }).on('close', () => {
             this._on.close() as any;
         });
@@ -225,17 +234,23 @@ export class Socket {
 
     /** --- 未绑定自定义监听事件的默认执行函数 --- */
     private _on = {
-        'message': (msg: {
+        message: (msg: {
             'opcode': EOpcode;
             'data': Buffer | string;
         }): void | Promise<void> => {
             this._waitMsg.push(msg);
         },
-        'error': (e: any): void | Promise<void> => {
+        drain: (): void | Promise<void> => {
+            // --- nothing ---
+        },
+        error: (e: any): void | Promise<void> => {
             this._error = e;
         },
-        'close': (): void | Promise<void> => {
+        close: (): void | Promise<void> => {
             this._close = true;
+        },
+        end: (): void | Promise<void> => {
+            // --- nothing ---
         }
     };
 
@@ -245,7 +260,7 @@ export class Socket {
         'data': Buffer | string;
     }) => void | Promise<void>): this;
     public on(event: 'error', cb: (error: any) => void | Promise<void>): this;
-    public on(event: 'close', cb: () => void | Promise<void>): this;
+    public on(event: 'drain' | 'close' | 'end', cb: () => void | Promise<void>): this;
     public on(event: keyof typeof this._on, cb: (param?: any) => void | Promise<void>): this {
         this._on[event] = cb;
         switch (event) {
@@ -260,6 +275,10 @@ export class Socket {
                     break;
                 }
                 cb(this._error) as any;
+                break;
+            }
+            case 'end': {
+                cb() as any;
                 break;
             }
             default: {
@@ -366,8 +385,11 @@ export function connect(u: string, opt: IConnectOptions = {}): Promise<Socket | 
  * @param request Http 请求端
  * @param socket 响应双向 socket
  */
-export function createServer(request: http.IncomingMessage, socket: net.Socket): Socket {
-    return new Socket(request, socket);
+export function createServer(request: http.IncomingMessage, socket: net.Socket, options: {
+    'headers'?: http.OutgoingHttpHeaders;
+    'timeout'?: number;
+} = {}): Socket {
+    return new Socket(request, socket, options);
 }
 
 /**
@@ -408,8 +430,6 @@ function bindPipe(s1: Socket, s2: Socket): Promise<void> {
             }
         }).on('close', () => {
             resolve();
-        }).on('error', () => {
-            resolve();
         });
         // --- 监听远程端的 ---
         s2.on('message', (msg) => {
@@ -441,8 +461,6 @@ function bindPipe(s1: Socket, s2: Socket): Promise<void> {
                 }
             }
         }).on('close', () => {
-            resolve();
-        }).on('error', () => {
             resolve();
         });
     });

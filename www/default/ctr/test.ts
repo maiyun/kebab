@@ -18,6 +18,7 @@ import * as lWs from '~/lib/ws';
 import * as lS3 from '~/lib/s3';
 import * as lZip from '~/lib/zip';
 import * as lBuffer from '~/lib/buffer';
+import * as lLan from '~/lib/lan';
 import * as sCtr from '~/sys/ctr';
 import * as def from '~/sys/def';
 import * as types from '~/types';
@@ -119,6 +120,7 @@ export default class extends sCtr.Ctr {
             `<br><a href="${this._config.const.urlBase}test/ctr-cross">View "test/ctr-cross"</a>`,
             `<br><a href="${this._config.const.urlBase}test/ctr-readable">View "test/ctr-readable"</a>`,
             `<br><a href="${this._config.const.urlBase}test/ctr-asynctask">View "test/ctr-asynctask"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/ctr-timeout">View "test/ctr-timeout"</a>`,
 
             '<br><br><b>Middle:</b>',
             `<br><br><a href="${this._config.const.urlBase}test/middle">View "test/middle"</a>`,
@@ -229,6 +231,9 @@ export default class extends sCtr.Ctr {
 
             '<br><br><b>Buffer:</b>',
             `<br><br><a href="${this._config.const.urlBase}test/buffer">View "test/buffer"</a>`,
+
+            '<br><br><b>Lan:</b>',
+            `<br><br><a href="${this._config.const.urlBase}test/lan">View "test/lan"</a>`,
         ];
         echo.push('<br><br>' + this._getEnd());
 
@@ -295,9 +300,11 @@ Result:<pre id="result">Nothing.</pre>${this._getEnd()}`;
 <pre>{
     'he': ['require', [0, 'The he param does not exist.']],
     'num': ['> 10', [0, 'The num param must > 10.']],
+    'num2': ['> 0', '<= 100', [0, 'The num2 param must > 0.']],
     'reg': ['/^[A-CX-Z5-7]+$/', [0, 'The reg param is incorrect.']],
     'arr': [['a', 'x', 'hehe'], [0, 'The arr param is incorrect.']],
-    'type': [{ 'type': { 'a': 1, 'b': '' } }, [0, 'The reg param is incorrect']]
+    'type': [{ 'type': { 'a': 1, 'b': '' } }, [0, 'The reg param is incorrect']],
+    'json': [{ 'type': { 'a': '1', 'b': [ { 'c': 1 } ] } }, [0, 'The type param is incorrect']],
 }</pre>`];
 
         const post: any[] = [
@@ -308,6 +315,10 @@ Result:<pre id="result">Nothing.</pre>${this._getEnd()}`;
             {
                 'he': 'ok',
                 'num': '5'
+            },
+            {
+                'he': 'ok',
+                'num2': '0'
             },
             {
                 'he': 'ok',
@@ -339,14 +350,48 @@ Result:<pre id="result">Nothing.</pre>${this._getEnd()}`;
                 'reg': 'BBB6YYY6',
                 'arr': 'hehe',
                 'type': { 'a': 0, 'b': 'ok' }
+            },
+            {
+                'he': 'ok',
+                'num': '12',
+                'reg': 'BBB6YYY6',
+                'arr': 'hehe',
+                'type': { 'a': 0, 'b': 'ok' },
+                'json': { 'a': 'a', 'b': [] },
+            },
+            {
+                'he': 'ok',
+                'num': '12',
+                'reg': 'BBB6YYY6',
+                'arr': 'hehe',
+                'type': { 'a': 0, 'b': 'ok' },
+                'json': { 'a': 'a', 'b': [ { 'c': 'a' } ] },
+            },
+            {
+                'he': 'ok',
+                'num': '12',
+                'reg': 'BBB6YYY6',
+                'arr': 'hehe',
+                'type': { 'a': 0, 'b': 'ok' },
+                'json': { 'a': 'a', 'b': [ { 'c': 1, 'd': 2 } ] },
+            },
+            {
+                'he': 'ok',
+                'num': '12',
+                'reg': 'BBB6YYY6',
+                'arr': 'hehe',
+                'type': { 'a': 0, 'b': 'ok' },
+                'json': { 'a': 'a', 'b': [ { 'c': 1 } ] },
             }
         ];
         for (const item of post) {
             if (item.type) {
                 item.type = JSON.stringify(item.type);
             }
-            const p = lText.queryStringify(item);
-            echo.push(`<input type="button" value="Post '${p}'" onclick="post('${p}')"><br>`);
+            if (item.json) {
+                item.json = JSON.stringify(item.json);
+            }
+            echo.push(`<input type="button" value="Post '${lText.queryStringify(item, false).replace(/"/g, '&quot;')}'" onclick="post('${lText.queryStringify(item)}')"><br>`);
         }
 
         echo.push(`<input type="button" value="Post FormData (fd.append('he', 'ho'))" onclick="postFd()"><br>`);
@@ -392,14 +437,22 @@ function postFd() {
         }
         const retur: types.Json[] = [];
         if (this._post['type']) {
-            this._post['type'] = JSON.parse(this._post['type']);
+            this._post['type'] = lText.parseJson(this._post['type']);
+        }
+        if (this._post['json']) {
+            this._post['json'] = lText.parseJson(this._post['json']);
+        }
+        if (this._post['num2'] !== undefined) {
+            this._post['num2'] = parseFloat(this._post['num2']);
         }
         if (!this._checkInput(this._post, {
             'he': ['require', [0, 'The he param does not exist.']],
             'num': ['> 10', [0, 'The num param must > 10.']],
+            'num2': ['> 0', '<= 100', [0, 'The num2 param must > 0.']],
             'reg': ['/^[A-CX-Z5-7]+$/', [0, 'The reg param is incorrect.']],
             'arr': [['a', 'x', 'hehe'], [0, 'The arr param is incorrect.']],
-            'type': [{ 'type': { 'a': 1, 'b': '' } }, [0, 'The type param is incorrect']]
+            'type': [{ 'type': { 'a': 1, 'b': '' } }, [0, 'The type param is incorrect']],
+            'json': [{ 'type': { 'a': '1', 'b': [ { 'c': 1 } ] } }, [0, 'The type param is incorrect']],
         }, retur)) {
             return retur;
         }
@@ -467,15 +520,29 @@ Result:<pre id="result">Nothing.</pre>` + this._getEnd();
 
     public ctrAsynctask(): any[] {
         this._asyncTask(async () => {
-            console.log('ASYNCTASK IN');
+            lCore.debug('ASYNCTASK IN');
             await lCore.sleep(1000);
-            console.log('ASYNCTASK TIME1');
+            lCore.debug('ASYNCTASK TIME1');
             await lCore.sleep(1000);
-            console.log('ASYNCTASK TIME2');
+            lCore.debug('ASYNCTASK TIME2');
             await lCore.sleep(1000);
-            console.log('ASYNCTASK OVER');
+            lCore.debug('ASYNCTASK OVER');
         });
         return [1];
+    }
+
+    public async ctrTimeout(): Promise<any[]> {
+        this.timeout = 70_000;
+        const echo = ['1'];
+        await lCore.sleep(15_000);
+        echo.push('2');
+        await lCore.sleep(15_000);
+        echo.push('3');
+        await lCore.sleep(15_000);
+        echo.push('4');
+        await lCore.sleep(15_000);
+        echo.push('5');
+        return [1, echo];
     }
 
     public async modTest(): Promise<types.Json[] | string | boolean> {
@@ -1907,7 +1974,7 @@ error: <pre>${JSON.stringify(res.error, null, 4)}</pre>`);
 
     public async netMproxy1(): Promise<string | boolean> {
         const data = lNet.mproxyData(this);
-        console.log('Got data', data);
+        lCore.debug('Got data', data);
         const rtn = await lNet.mproxy(this, '123456');
         if (rtn > 0) {
             return false;
@@ -2410,9 +2477,9 @@ Result:<pre id="result">Nothing.</pre>`);
             case 'update': {
                 // --- 1, 2 ---
 
-                let s = sql.update('user', [['age', '+', '1'], { 'name': 'Serene', 'nick': lSql.column('name') }, ['year', '+', lSql.column('age')]]).where({ 'name': 'Ah' }).getSql();
+                let s = sql.update('user', [['age', '+', '1'], ['month', '=', '5'], { 'name': 'Serene', 'nick': lSql.column('name') }, ['year', '+', lSql.column('age')]]).where({ 'name': 'Ah' }).getSql();
                 let sd = sql.getData();
-                echo.push(`<pre>sql.update('user', [['age', '+', '1'], { 'name': 'Serene', 'nick': lSql.column('name') }, ['year', '+', lSql.column('age')]]).where({ 'name': 'Ah' });</pre>
+                echo.push(`<pre>sql.update('user', [['age', '+', '1'], ['month', '=', '5'], { 'name': 'Serene', 'nick': lSql.column('name') }, ['year', '+', lSql.column('age')]]).where({ 'name': 'Ah' });</pre>
 <b>getSql() :</b> ${s}<br>
 <b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
 <b>format() :</b> ${sql.format(s, sd)}<hr>`);
@@ -2465,9 +2532,9 @@ Result:<pre id="result">Nothing.</pre>`);
                 break;
             }
             case 'where': {
-                let s = sql.select('*', 'user').where([{ 'city': 'la' }, ['age', '>', '10'], ['level', 'in', ['1', '2', '3']]]).getSql();
+                let s = sql.select('*', 'user').where([{ 'city': 'la' }, ['age', '>', '10'], ['level', 'in', ['1', '2', '3']], ['age + age2 + age3 + 10', '>', 20]]).getSql();
                 let sd = sql.getData();
-                echo.push(`<pre>sql.select('*', 'user').where([{ 'city': 'la' }, ['age', '>', '10'], ['level', 'in', ['1', '2', '3']]]);</pre>
+                echo.push(`<pre>sql.select('*', 'user').where([{ 'city': 'la' }, ['age', '>', '10'], ['level', 'in', ['1', '2', '3']], ['age + age2 + age3 + 10', '>', 20]]);</pre>
 <b>getSql() :</b> ${s}<br>
 <b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
 <b>format() :</b> ${sql.format(s, sd)}<hr>`);
@@ -2610,6 +2677,7 @@ Result:<pre id="result">Nothing.</pre>`);
                 echo.push(`<pre>sql.field('a\\'bc');</pre>` + sql.field('a\'bc'));
                 echo.push(`<pre>sql.field('\`a\`WHERE\`q\` = SUM(0) AND \`b\` = "abc" LEFT JOIN \`abc\`');</pre>` + sql.field('`a`WHERE`q` = SUM(0) AND `b` = "abc" LEFT JOIN `abc`'));
                 echo.push(`<pre>sql.field('TEST(UTC_TIMESTAMP)');</pre>` + sql.field('TEST(UTC_TIMESTAMP)'));
+                echo.push(`<pre>sql.field('a + b + 10 + c');</pre>` + sql.field('a + b + 10 + c'));
                 echo.push(`<pre>sql.field('*');</pre>` + sql.field('*'));
                 break;
             }
@@ -3038,10 +3106,10 @@ function send() {
 });</pre>`];
         const putr = await s3.putObject('a/b.txt', 'x');
         echo.push(`<pre>await s3.putObject('a/b.txt', 'x');</pre>` + (putr ? JSON.stringify(putr) : 'false'));
-        let r = await s3.headObject('a.txt');
-        echo.push(`<pre>await s3.headObject('a.txt');</pre>` + (r ? 'true' : 'false'));
-        r = await s3.deleteObjects(['a.txt', 'a/b.txt']);
-        echo.push(`<pre>s3.deleteObjects(['a.txt', 'a/b.txt']);</pre>` + (r ? 'true' : 'false'));
+        const r = await s3.headObject('a.txt');
+        echo.push(`<pre>await s3.headObject('a.txt');</pre>` + (r ? JSON.stringify(r) : 'false'));
+        const r2 = await s3.deleteObjects(['a.txt', 'a/b.txt']);
+        echo.push(`<pre>s3.deleteObjects(['a.txt', 'a/b.txt']);</pre>` + (r2 ? 'true' : 'false'));
         return echo.join('') + '<br><br>' + this._getEnd();
     }
 
@@ -3097,6 +3165,18 @@ const rtn: any[] = [];
 rtn.push(reader.readUInt8());
 rtn.push(reader.readUInt16BE());
 rtn.push(reader.readBCDString());</pre>${JSON.stringify(rtn)}`);
+        return echo.join('') + '<br><br>' + this._getEnd();
+    }
+
+    public async lan(): Promise<string> {
+        const echo: string[] = [];
+
+        const r = lLan.card();
+        echo.push(`<pre>lLan.card();</pre>` + JSON.stringify(r));
+
+        const r2 = await lLan.scan();
+        echo.push(`<pre>await lLan.scan();</pre>` + JSON.stringify(r2));
+
         return echo.join('') + '<br><br>' + this._getEnd();
     }
 

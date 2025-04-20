@@ -26,9 +26,9 @@ export function generateKeyPair(type: string, options: {
         'format'?: 'pem' | 'der';
     };
 } = {}): Promise<{
-    'public': string | Buffer;
-    'private': string | Buffer;
-}> {
+        'public': string | Buffer;
+        'private': string | Buffer;
+    }> {
     return new Promise((resolve) => {
         if (options.modulusLength === undefined) {
             options.modulusLength = 2048;
@@ -332,7 +332,7 @@ export function hashHmacFile(algorithm: string, path: string, key?: crypto.Ciphe
     return new Promise(function(resolve) {
         const cry = key ? crypto.createHmac(algorithm, key) : crypto.createHash(algorithm);
         const rs = fs.createReadStream(path);
-        rs.on('data', function(chunk: Buffer) {
+        rs.on('data', (chunk) => {
             cry.update(chunk);
         }).on('end', function() {
             if (encoding === 'buffer') {

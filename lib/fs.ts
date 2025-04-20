@@ -49,7 +49,10 @@ export async function getContent(path: string, options?: BufferEncoding | {
                 'end': end
             });
             const data: Buffer[] = [];
-            rs.on('data', function(chunk: Buffer) {
+            rs.on('data', (chunk) => {
+                if (!(chunk instanceof Buffer)) {
+                    return;
+                }
                 data.push(chunk);
             }).on('end', function() {
                 const buf = Buffer.concat(data);

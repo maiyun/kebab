@@ -1,7 +1,7 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2020-3-14 17:24:38
- * Last: 2020-3-30 15:31:40, 2022-07-22 16:59:00, 2022-09-12 23:51:56, 2022-09-23 15:53:58, 2022-12-29 01:18:08, 2023-2-28 20:07:57, 2023-12-27 18:39:35, 2024-3-1 19:38:53, 2024-4-9 16:03:58
+ * Last: 2020-3-30 15:31:40, 2022-07-22 16:59:00, 2022-09-12 23:51:56, 2022-09-23 15:53:58, 2022-12-29 01:18:08, 2023-2-28 20:07:57, 2023-12-27 18:39:35, 2024-3-1 19:38:53, 2024-4-9 16:03:58, 2025-2-12 18:55:44
  */
 import * as http from 'http';
 import * as http2 from 'http2';
@@ -111,15 +111,12 @@ export class Ctr {
     public constructor(
         config: types.IConfig,
         req: http2.Http2ServerRequest | http.IncomingMessage,
-        res: http2.Http2ServerResponse | http.ServerResponse | lWs.Socket
+        res?: http2.Http2ServerResponse | http.ServerResponse
     ) {
         this._config = config;
         this._req = req;
-        if (res instanceof http2.Http2ServerResponse || res instanceof http.ServerResponse) {
+        if (res) {
             this._res = res;
-        }
-        else {
-            this._socket = res;
         }
         this._cacheTTL = config.set.cacheTtl;
     }
@@ -214,7 +211,7 @@ export class Ctr {
     public setPrototype(
         name: string,
         val: string | string[] |
-        http.IncomingHttpHeaders | Record<string, types.Json> | session.Session | null
+        http.IncomingHttpHeaders | Record<string, types.Json> | session.Session | lWs.Socket | null
     ): void {
         (this as types.Json)[name] = val;
     }
@@ -237,6 +234,16 @@ export class Ctr {
     }
 
     /**
+     * --- WebSocket 下在建立 Server 连接之前可对 WebSocket 的信息进行配置 ---
+     */
+    public onUpgrade(): {
+        'headers'?: http.OutgoingHttpHeaders;
+        'timeout'?: number;
+    } {
+        return {};
+    }
+
+    /**
      * --- WebSocket 下当收到数据时会自动被调用的事件，即只文本和二进制数据，返回内容会被发送给 socket，但返回 false 连接会被中断 ---
      */
     public onData(data: Buffer | string, opcode: lWs.EOpcode): types.Json;
@@ -253,6 +260,13 @@ export class Ctr {
     public onMessage(): undefined {
         return;
 
+    }
+
+    /**
+     * --- WebSocket 下连接恢复可写入状态后会调用此事件，可重写此方法 ---
+     */
+    public onDrain(): void | Promise<void> {
+        return;
     }
 
     /**
@@ -395,6 +409,30 @@ export class Ctr {
                             }
                             break;
                         }
+                        case 'int':
+                        case 'integer': {
+                            if (input[key] && (typeof input[key] !== 'number') && !Number.isSafeInteger(input[key])) {
+                                rtn[0] = val[lastK][0];
+                                rtn[1] = val[lastK][1];
+                                if (val[lastK][2]) {
+                                    rtn[2] = val[lastK][2];
+                                }
+                                return false;
+                            }
+                            break;
+                        }
+                        case 'float':
+                        case 'double': {
+                            if (input[key] && (typeof input[key] !== 'number')) {
+                                rtn[0] = val[lastK][0];
+                                rtn[1] = val[lastK][1];
+                                if (val[lastK][2]) {
+                                    rtn[2] = val[lastK][2];
+                                }
+                                return false;
+                            }
+                            break;
+                        }
                         case 'num':
                         case 'number': {
                             if (input[key] && (typeof input[key] !== 'number') && !/^[0-9]+\.?[0-9]*$/.test(input[key])) {
@@ -445,7 +483,7 @@ export class Ctr {
                         }
                         default: {
                             let match: RegExpExecArray | null;
-                            if (input[key]) {
+                            if (input[key] !== null) {
                                 if (v[0] === '/') {
                                     // --- 正则 ---
                                     if (!(new RegExp(v.slice(1, -1))).test(input[key])) {

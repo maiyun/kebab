@@ -223,10 +223,12 @@ export class Pool {
                 const c = new Connection(this._etc, link);
                 c.using();
                 link.on('error', function(err: mysql2.QueryError): void {
-                    c.setLost();
                     if (err.code !== 'PROTOCOL_CONNECTION_LOST') {
                         console.log(err);
                     }
+                    c.setLost();
+                }).on('end', function() {
+                    c.setLost();
                 });
                 conn = c;
                 connections.push(conn);

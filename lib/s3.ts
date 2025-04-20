@@ -218,14 +218,13 @@ export class S3 {
      * @param key 对象路径
      * @param bucket bucket 名
      */
-    public async headObject(key: string, bucket?: string): Promise<boolean> {
+    public async headObject(key: string, bucket?: string): Promise<s3.HeadObjectCommandOutput | false> {
         try {
             const ho = new s3.HeadObjectCommand({
                 'Bucket': bucket ?? this._bucket,
                 'Key': key
             });
-            await this._link.send(ho);
-            return true;
+            return await this._link.send(ho);
         }
         catch (e: any) {
             if (e.$metadata?.httpStatusCode !== 404) {

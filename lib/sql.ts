@@ -248,7 +248,7 @@ export class Sql {
                 else {
                     // --- json ---
                     values += '?, ';
-                    this._data.push(v);
+                    this._data.push(lText.stringifyJson(v));
                 }
             }
             sql = sql.slice(0, -2) + ') VALUES (' + values.slice(0, -2) + ')';
@@ -379,10 +379,20 @@ export class Sql {
                 const nv = v[2];
                 const isf = this._isField(nv);
                 if (isf) {
-                    sql += this.field(v[0]) + ' = ' + this.field(v[0]) + ' ' + (v[1] as string) + ' ' + this.field(nv.value) + ', ';
+                    if (v[1] === '=') {
+                        sql += this.field(v[0]) + ' = ' + this.field(nv.value) + ', ';
+                    }
+                    else {
+                        sql += this.field(v[0]) + ' = ' + this.field(v[0]) + ' ' + v[1] + ' ' + this.field(nv.value) + ', ';
+                    }
                 }
                 else {
-                    sql += this.field(v[0]) + ' = ' + this.field(v[0]) + ' ' + (v[1] as string) + ' ?, ';
+                    if (v[1] === '=') {
+                        sql += this.field(v[0]) + ' = ?, ';
+                    }
+                    else {
+                        sql += this.field(v[0]) + ' = ' + this.field(v[0]) + ' ' + v[1] + ' ?, ';
+                    }
                     this._data.push(nv);
                 }
             }
@@ -984,7 +994,13 @@ export class Sql {
         const loStr = str.toLowerCase();
         const asPos = loStr.indexOf(' as ');
         if (asPos === -1) {
-            const spacePos = str.lastIndexOf(' ');
+            // --- 没有 as ---
+            let spacePos = str.lastIndexOf(' ');
+            // --- 有可能有 aa + bb + cc + 10 这种情况 ---
+            if (!/^[a-zA-Z_)]$/.test(str[spacePos - 1])) {
+                // --- 连接符 ---
+                spacePos = -1;
+            }
             if (spacePos !== -1) {
                 const spaceRight = str.slice(spacePos + 1);
                 if (/^[a-zA-Z_`][\w`]*$/.test(spaceRight)) {
@@ -1047,7 +1063,8 @@ export class Sql {
             return '`' + this._pre + l[0] + suf + '`.' + w + right;
         }
         else {
-            return left.replace(/([(, ])([a-zA-Z`_][\w`_.]*)(?=[), ])/g, (
+            // return left.replace(/([(, ])([a-zA-Z`_][\w`_.]*)(?=[), ])/g, (
+            return left.replace(/(^|[(, ])([a-zA-Z`_][\w`_.]*)(?=[), ]|$)/g, (
                 t: string, t1: string, t2: string
             ): string => {
                 return t1 + this.field(t2, pre, suf);

@@ -1,7 +1,7 @@
 /**
  * Project: Mutton, User: JianSuoQiYue
  * Date: 2019-6-4 21:35
- * Last: 2020-4-14 13:33:51, 2022-07-23 16:01:34, 2022-09-06 22:59:26, 2023-5-24 19:11:37, 2023-6-13 21:47:58, 2023-7-10 18:54:03, 2023-8-23 17:03:16, 2023-12-11 15:21:22, 2023-12-20 23:12:03, 2024-3-8 16:05:29, 2024-3-20 19:58:15, 2024-8-11 21:14:54, 2024-10-5 14:00:22
+ * Last: 2020-4-14 13:33:51, 2022-07-23 16:01:34, 2022-09-06 22:59:26, 2023-5-24 19:11:37, 2023-6-13 21:47:58, 2023-7-10 18:54:03, 2023-8-23 17:03:16, 2023-12-11 15:21:22, 2023-12-20 23:12:03, 2024-3-8 16:05:29, 2024-3-20 19:58:15, 2024-8-11 21:14:54, 2024-10-5 14:00:22, 2024-12-14 19:58:34
  */
 import * as lSql from '~/lib/sql';
 import * as lDb from '~/lib/db';
@@ -37,6 +37,27 @@ class Rows<T extends Mod> implements types.Rows<T> {
             arr.push(item.toArray());
         }
         return arr;
+    }
+
+    /** --- 根据规则筛掉项，predicate 返回 true 代表保留 --- */
+    public filter(predicate: (value: T, index: number) => boolean): Rows<T> {
+        const items: T[] = [];
+        for (let i = 0; i < this._items.length; ++i) {
+            if (!predicate(this._items[i], i)) {
+                continue;
+            }
+            items.push(this._items[i]);
+        }
+        return new Rows<T>(items);
+    }
+
+    /** --- 重塑对象内容 --- */
+    public map<TU>(allbackfn: (value: T, index: number) => TU): TU[] {
+        const items: TU[] = [];
+        for (let i = 0; i < this._items.length; ++i) {
+            items.push(allbackfn(this._items[i], i));
+        }
+        return items;
     }
 
     public [Symbol.iterator](): Iterator<T> {
@@ -208,7 +229,7 @@ export default class Mod {
                 'get': {},
                 'cookie': {},
                 'headers': {}
-            }, '[insert, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+            }, '[insert, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1), '-error');
             return false;
         }
         if (r.packet.affectedRows > 0) {
@@ -758,18 +779,21 @@ export default class Mod {
 
     // --- 动态方法 ---
 
-    public set<T extends this, TK extends keyof T>(n: Record<TK, T[TK]>): void;
+    public set<T extends this, TK extends keyof T>(n: Record<TK, T[TK] | undefined>): void;
     public set<T extends this, TK extends keyof T>(n: TK, v: T[TK]): void;
     /**
      * --- 设置一个/多个属性 ---
      * @param n 字符串或键/值
      * @param v 可能是数字
      */
-    public set<T extends this, TK extends keyof T>(n: TK | Record<TK, any>, v?: T[TK]): void {
+    public set<T extends this, TK extends keyof T>(n: TK | Record<TK, T[TK] | undefined>, v?: T[TK]): void {
         if (typeof n === 'object') {
             // --- { x: y } ---
             for (const k in n) {
                 const v = n[k];
+                if (v === undefined) {
+                    continue;
+                }
                 // --- 强制更新，因为有的可能就是要强制更新既然设置了 ---
                 this._updates[k] = true;
                 this._data[k] = v;
@@ -956,16 +980,16 @@ export default class Mod {
     }
 
     /**
-     * --- 更新 set 的数据到数据库 ---
+     * --- 更新 set 的数据到数据库，有未保存数据时才保存 ---
      */
     public async save(): Promise<boolean> {
+        if (Object.keys(this._updates).length === 0) {
+            return true;
+        }
         const cstr = this.constructor as Record<string, types.Json>;
         const updates: Record<string, any> = {};
         for (const k in this._updates) {
             updates[k] = this._data[k];
-        }
-        if (Object.keys(updates).length === 0) {
-            return true;
         }
         this._sql.update((cstr._$table as string) + (this._index ? ('_' + this._index[0]) : ''), [updates]).where([{
             [cstr._$primary]: this._data[cstr._$primary]
@@ -1162,7 +1186,7 @@ export default class Mod {
         this._total.length = 0;
         if (this._index && this._index.length > 1) {
             // --- 多表 ---
-            const sql = this._sql.getSql();
+            let sql = this._sql.getSql();
             /** --- 返回的最终 list --- */
             const list: Record<string, this> | this[] = key ? {} : [];
             /** --- 用户传输的起始值 --- */
@@ -1173,10 +1197,10 @@ export default class Mod {
             let remain = limit[1];
             for (let i = 0; i < this._index.length; ++i) {
                 // --- 先计算 total ---
-                let tsql = this._formatTotal(sql);
                 if (i > 0) {
-                    tsql = tsql.replace(/(FROM [a-zA-Z0-9`_.]+?_)[0-9_]+/, '$1' + this._index[i]);
+                    sql = sql.replace(/(FROM [a-zA-Z0-9`_.]+?_)[0-9_]+/, '$1' + this._index[i]);
                 }
+                const tsql = this._formatTotal(sql);
                 const tr = await this._db.query(tsql, this._sql.getData());
                 if (tr.rows === null) {
                     return false;
@@ -1510,10 +1534,14 @@ export default class Mod {
     }
 
     private _formatTotal(sql: string, f: string = '*'): string {
-        return sql
-            .replace(/SELECT .+? FROM/g, 'SELECT COUNT(' + this._sql.field(f) + ') AS `count` FROM')
+        sql = sql
             .replace(/ LIMIT [0-9 ,]+/g, '')
             .replace(/ ORDER BY [\w`,. ]+(DESC|ASC)?/g, '');
+        if (sql.includes(' GROUP BY ')) {
+            return 'SELECT COUNT(0) AS `count` FROM(' + sql + ') AS `f`';
+        }
+        return sql
+            .replace(/SELECT .+? FROM/g, 'SELECT COUNT(' + this._sql.field(f) + ') AS `count` FROM');
     }
 
     /**
@@ -1782,6 +1810,46 @@ export default class Mod {
      */
     public toArray(): Record<string, any> {
         return this._data;
+    }
+
+    /**
+     * --- 获取当前设置要提交的数据 ---
+     */
+    public updates(): Record<string, any> {
+        const updates: Record<string, any> = {};
+        for (const k in this._updates) {
+            updates[k] = this._data[k];
+        }
+        return updates;
+    }
+
+    /**
+     * --- 当前是否设置了未保存 --=
+     */
+    public unsaved(): boolean {
+        return Object.keys(this._updates).length ? true : false;
+    }
+
+    /**
+     * --- 获取字段的可用语种文本 ---
+     * @param col 字段名
+     * @param lang 当前请求语种，如 sc
+     */
+    public langText(col: string, lang: string): string {
+        const key = `${col}_${lang}`;
+        if (this._data[key]) {
+            return this._data[key];
+        }
+        if (lang !== 'en' && this._data[`${col}_en`]) {
+            return this._data[`${col}_en`];
+        }
+        for (const k in this._data) {
+            if (k.startsWith(`${col}_`) && this._data[k]) {
+                // --- 符合要求的字段并且字段有值（不为空） ---
+                return this._data[k];
+            }
+        }
+        return '';
     }
 
     /**

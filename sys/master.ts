@@ -57,7 +57,8 @@ async function run(): Promise<void> {
     // --- 启动进程 ---
     const cpuLength = os.cpus().length;
     console.log('[master] [run] CPU LENGTH: ' + cpuLength.toString());
-    for (let i = 0; i < cpuLength; ++i) {
+    const cpuLengthMax = cpuLength > lCore.globalConfig.max ? lCore.globalConfig.max : cpuLength;
+    for (let i = 0; i < cpuLengthMax; ++i) {
         await createChildProcess(i);
     }
     cluster.default.on('listening', function(worker, address) {

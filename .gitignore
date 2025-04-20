@@ -1,8 +1,11 @@
 .vscode/
+.VSCodeCounter/
 .vs/
 /conf/cert/*
 ftmp/*.ftmp
 log/**/
 node_modules/
 *.js
+!eslint.config.js
 *.js.map
+package-lock.json

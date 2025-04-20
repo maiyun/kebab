@@ -146,8 +146,11 @@ export class FormData extends stream.Readable {
             // --- 创建流 ---
             this._fileReading = true;
             const fileReadable = fs.createReadStream(item.path);
-            fileReadable.on('data', (chunk: Buffer): void => {
-                this._sent += Buffer.byteLength(chunk);
+            fileReadable.on('data', (chunk): void => {
+                if (!(chunk instanceof Buffer)) {
+                    return;
+                }
+                this._sent += chunk.byteLength;
                 this.push(chunk);
             });
             fileReadable.on('end', () => {

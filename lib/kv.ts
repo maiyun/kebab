@@ -675,6 +675,8 @@ export class Pool {
                 conn.setLost();
                 // console.log(`--- redis [${conn._etc.host}:${conn._etc.port}] error ---`);
                 console.log('[KV] [ERROR]', err);
+            }).on('close', () => {
+                conn.setLost();
             });
             connections.push(conn);
         }

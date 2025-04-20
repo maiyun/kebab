@@ -287,9 +287,19 @@ export async function run(data: {
         }
         // --- 加载控制器文件 ---
         const ctrCtr: typeof sCtr.Ctr = (await import(filePath)).default;
+        const cctr: sCtr.Ctr = new ctrCtr(config, data.req);
         // --- 先处理 web socket 的情况 ---
-        const wsSocket = lWs.createServer(data.req, data.socket);
-        const cctr: sCtr.Ctr = new ctrCtr(config, data.req, wsSocket);
+        let wsSocket: lWs.Socket;
+        try {
+            const options = await (cctr as types.Json).onUpgrade();
+            wsSocket = lWs.createServer(data.req, data.socket, options);
+            cctr.setPrototype('_socket', wsSocket);
+        }
+        catch (e: types.Json) {
+            await lCore.log(cctr, lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
+            data.socket.destroy();
+            return true;
+        }
         cctr.setPrototype('_param', param);
         cctr.setPrototype('_action', pathRight);
         cctr.setPrototype('_headers', headers);
@@ -366,6 +376,13 @@ export async function run(data: {
                         default: {
                             // --- nothing ---
                         }
+                    }
+                }).on('drain', async () => {
+                    try {
+                        await (cctr as types.Json)['onDrain']();
+                    }
+                    catch (e: any) {
+                        await lCore.log(cctr, lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
                     }
                 }).on('error', async (e: any) => {
                     await lCore.log(cctr, lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
@@ -489,7 +506,7 @@ export async function run(data: {
             return true;
         }
         // --- 检测 action 是否存在，以及排除内部方法 ---
-        if (pathRight.startsWith('_') || pathRight === 'onLoad' || pathRight === 'onData' || pathRight === 'onClose' || pathRight === 'setPrototype' || pathRight === 'getPrototype' || pathRight === 'getAuthorization') {
+        if (pathRight.startsWith('_') || pathRight === 'onUpgrade' || pathRight === 'onLoad' || pathRight === 'onData' || pathRight === 'onDrain' || pathRight === 'onClose' || pathRight === 'setPrototype' || pathRight === 'getPrototype' || pathRight === 'getAuthorization') {
             // --- _ 开头的 action 是内部方法，不允许访问 ---
             if (config.route['#404']) {
                 data.res.setHeader('location', lText.urlResolve(config.const.urlBase, config.route['#404']));

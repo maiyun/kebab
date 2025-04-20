@@ -549,3 +549,58 @@ export function stringifyJson(obj: types.Json): string {
         return v;
     }).replace(/"-mybigint-([-+0-9]+?)"/g, '$1');
 }
+
+/**
+ * --- 为解决精度问题，将字符串数字转换为整数显示 ---
+ * --- 以下几个示例都是当 digits 为 2 时 ---
+ * --- str 传入 '1.234'，返回 123 ---
+ * --- str 传入 '1.235'，返回 124 ---
+ * --- str 传入 '1.1'，返回 110 ---
+ * --- str 传入 '6'，返回 600 ---
+ * @param str 要转换的数字字符串
+ * @param digits 小数点右移位数
+ */
+export function str2int(str: string, digits: number = 3): number {
+    const num = parseFloat(str);
+    /** --- 位数，如 1000 --- */
+    const factor = Math.pow(10, digits);
+    return Math.round(num * factor);
+}
+
+/**
+ * --- 为解决精度问题，将整数转换为小数字符串 ---
+ * --- 以下几个示例都是当 digits 为 3、decimal 为 2 时 ---
+ * --- int 传入 2341，返回 '2.34' ---
+ * --- int 传入 2345，返回 '2.35' ---
+ * --- int 传入 23，返回 '0.02' ---
+ * --- int 传入 2，返回 '0.00' ---
+ * @param int 要转换的整数
+ * @param digits 小数点左移位数
+ * @param decimal 最终保留的小数位数
+ */
+export function int2str(int: number, digits: number = 4, decimal: number = 2): string {
+    /** --- 正负符号 --- */
+    const sign = int < 0 ? '-' : '';
+    const absInt = Math.abs(int);
+    let intStr = absInt.toString();
+    // --- 补前导零至长度 digits + 1 ---
+    while (intStr.length < digits + 1) {
+        intStr = '0' + intStr;
+    }
+    /** --- 整数部分字符串 --- */
+    const intPart = intStr.slice(0, intStr.length - digits);
+    /** --- 小数部分字符串 --- */
+    const decPart = intStr.slice(intStr.length - digits);
+    /** --- 小数部分数字 --- */
+    const decNum = parseInt(decPart);
+    /** --- 要除的数 --- */
+    const div = Math.pow(10, digits - decimal);
+    const round = Math.round(decNum / div);
+    const carry = Math.floor(round / Math.pow(10, decimal));
+    const newDecPart = round % Math.pow(10, decimal);
+
+    const intNum = parseInt(intPart, 10) + carry;
+    const decResult = newDecPart.toString().padStart(decimal, '0');
+
+    return `${sign}${intNum}${decResult ? `.${decResult}` : ''}`;
+}
