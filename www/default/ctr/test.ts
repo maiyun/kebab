@@ -2544,6 +2544,16 @@ Result:<pre id="result">Nothing.</pre>`);
                         'type': '1'
                     }, {
                         'type': '2'
+                    }],
+                    '$or-2': [{
+                        'type2': '3'
+                    }, {
+                        'type2': '4'
+                    }],
+                    '$or-other': [{
+                        'type3': '5'
+                    }, {
+                        'type3': '6'
                     }]
                 }).getSql();
                 sd = sql.getData();
@@ -2552,6 +2562,16 @@ Result:<pre id="result">Nothing.</pre>`);
         'type': '1'
     }, {
         'type': '2'
+    }],
+    '$or-2': [{
+        'type2': '3'
+    }, {
+        'type2': '4'
+    }],
+    '$or-other': [{
+        'type3': '5'
+    }, {
+        'type3': '6'
     }]
 });</pre>
 <b>getSql() :</b> ${s}<br>

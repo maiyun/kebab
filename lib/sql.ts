@@ -721,7 +721,7 @@ export class Sql {
                 // --- 1, 4, 5, 6 ---
                 if (k.startsWith('$')) {
                     // --- 5 - '$or': [{'city': 'bj'}, {'city': 'sh'}] ---
-                    const sp = ' ' + k.slice(1).toUpperCase() + ' ';
+                    const sp = ' ' + k.slice(1).split('-')[0].toUpperCase() + ' ';
                     sql += '(';
                     for (let v1 of v) {
                         // --- v1 是 {'city': 'bj'} ---

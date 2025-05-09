@@ -422,13 +422,17 @@ export default class Mod {
         opt: {
             'raw'?: boolean;
             'pre'?: sCtr.Ctr | string;
-            'index'?: string;
+            'index'?: string | string[];
             'by'?: [string | string[], 'DESC' | 'ASC'];
             'limit'?: [number, number?];
         } = {}
     ): Promise<number | false | null> {
-        const sq = lSql.get(opt.pre);
-        sq.update(this._$table + (opt.index ? ('_' + opt.index) : ''), data);
+        if (typeof opt.index === 'string') {
+            opt.index = [opt.index];
+        }
+        else if (!opt.index) {
+            opt.index = [''];
+        }
         if (this._$soft && !opt.raw) {
             if (typeof where === 'string') {
                 where = '(' + where + ') AND `time_remove` = 0';
@@ -442,30 +446,35 @@ export default class Mod {
                 where['time_remove'] = 0;
             }
         }
-        sq.where(where);
-        if (opt.by) {
-            sq.by(opt.by[0], opt.by[1]);
+        let ar = 0;
+        for (const index of opt.index) {
+            const sq = lSql.get(opt.pre);
+            sq.update(this._$table + (index ? ('_' + index) : ''), data);
+            sq.where(where);
+            if (opt.by) {
+                sq.by(opt.by[0], opt.by[1]);
+            }
+            if (opt.limit) {
+                sq.limit(opt.limit[0], opt.limit[1]);
+            }
+            const r = await db.execute(sq.getSql(), sq.getData());
+            if (r.packet === null) {
+                await lCore.log(opt.pre instanceof sCtr.Ctr ? opt.pre : {
+                    'path': '',
+                    'urlFull': '',
+                    'hostname': '',
+                    'req': null,
+                    'get': {},
+                    'cookie': {},
+                    'headers': {}
+                }, '[updateByWhere, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+                return false;
+            }
+            if (r.packet.affectedRows > 0) {
+                ar += r.packet.affectedRows;
+            }
         }
-        if (opt.limit) {
-            sq.limit(opt.limit[0], opt.limit[1]);
-        }
-        const r = await db.execute(sq.getSql(), sq.getData());
-        if (r.packet === null) {
-            await lCore.log(opt.pre instanceof sCtr.Ctr ? opt.pre : {
-                'path': '',
-                'urlFull': '',
-                'hostname': '',
-                'req': null,
-                'get': {},
-                'cookie': {},
-                'headers': {}
-            }, '[updateByWhere, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
-            return false;
-        }
-        if (r.packet.affectedRows > 0) {
-            return r.packet.affectedRows;
-        }
-        return null;
+        return ar ? ar : null;
     }
 
     /**
