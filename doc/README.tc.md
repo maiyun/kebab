@@ -24,7 +24,7 @@ Node 22+
 
 ## 安装
 
-執行 `npm i kebab` 安裝最新版，安裝完成後執行 `npx kebab init` 初始化，再執行 `npx kebab` 啟動專案。
+執行 `npm i @maiyunnet/kebab` 安裝最新版，安裝完成後執行 `npx kebab init` 初始化，再執行 `npx kebab` 啟動專案。
 
 ## 庫
 

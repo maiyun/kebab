@@ -24,9 +24,7 @@ Node 22 +
 
 ## 安装
 
-执行 `npm i kebab` 安装最新版，安装后，执行 `npx kebab init` 进行初始化，然后执行 `npx kebab` 启动项目。
-
-下载最新的发行包，解压后即可开始开发，开启 TypeScript 编译并执行 `node ./index` 可运行网站。
+执行 `npm i @maiyunnet/kebab` 安装最新版，安装后，执行 `npx kebab init` 进行初始化，然后执行 `npx kebab` 启动项目。
 
 ## 库
 

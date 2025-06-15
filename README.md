@@ -24,7 +24,7 @@ Node 22+
 
 ## Installation
 
-Run `npm i kebab` to install the latest version. After installation, run `npx kebab init` to initialize, then run `npx kebab` to start the project.
+Run `npm i @maiyunnet/kebab` to install the latest version. After installation, run `npx kebab init` to initialize, then run `npx kebab` to start the project.
 
 ## Library
 
