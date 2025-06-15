@@ -1,7 +1,7 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2019-4-15 13:40
- * Last: 2020-4-14 13:52:00, 2022-09-07 01:43:31, 2023-12-29 17:24:03, 2024-2-7 00:28:50, 2024-6-6 15:15:54
+ * Last: 2020-4-14 13:52:00, 2022-09-07 01:43:31, 2023-12-29 17:24:03, 2024-2-7 00:28:50, 2024-6-6 15:15:54, 2025-6-13 19:23:53
  */
 import * as http from 'http';
 import * as http2 from 'http2';
@@ -19,7 +19,7 @@ import * as lTime from '~/lib/time';
 import * as lResponse from '~/lib/net/response';
 import * as lWs from '~/lib/ws';
 import * as sCtr from './ctr';
-import * as def from '~/sys/def';
+import * as kebab from '~/index';
 import * as types from '~/types';
 
 /** --- 动态层 kebab.json 缓存（文件路径: 最终合并值） --- */
@@ -271,9 +271,7 @@ export async function run(data: {
     for (const key in data.req.headers) {
         headers[key.toLowerCase()] = data.req.headers[key];
     }
-    if (!headers['authorization']) {
-        headers['authorization'] = '';
-    }
+    headers['authorization'] ??= '';
     /** --- 开发者返回值 --- */
     let rtn: types.Json;
 
@@ -603,7 +601,7 @@ export async function run(data: {
                 data.res.setHeader('content-type', 'text/html; charset=utf-8');
             }
             if (Buffer.byteLength(rtn) >= 1024) {
-                compress = lZlib.createCompress(data.req.headers['accept-encoding'] as string ?? '');
+                compress = lZlib.createCompress(data.req.headers['accept-encoding'] ?? '');
                 if (compress) {
                     data.res.setHeader('content-encoding', compress.type);
                 }
@@ -630,7 +628,7 @@ export async function run(data: {
             if (!data.res.getHeader('content-type')) {
                 data.res.setHeader('content-type', 'text/html; charset=utf-8');
             }
-            compress = lZlib.createCompress(data.req.headers['accept-encoding'] as string ?? '');
+            compress = lZlib.createCompress(data.req.headers['accept-encoding'] ?? '');
             if (compress) {
                 data.res.setHeader('content-encoding', compress.type);
             }
@@ -683,7 +681,7 @@ export async function run(data: {
                     if (!data.res.headersSent) {
                         data.res.setHeader('content-type', 'application/json; charset=utf-8');
                         if (Buffer.byteLength(writeData) >= 1024) {
-                            compress = lZlib.createCompress(data.req.headers['accept-encoding'] as string ?? '');
+                            compress = lZlib.createCompress(data.req.headers['accept-encoding'] ?? '');
                             if (compress) {
                                 data.res.setHeader('content-encoding', compress.type);
                             }
@@ -709,7 +707,7 @@ export async function run(data: {
                         if (!data.res.getHeader('content-type')) {
                             data.res.setHeader('content-type', 'text/html; charset=utf-8');
                         }
-                        compress = lZlib.createCompress(data.req.headers['accept-encoding'] as string ?? '');
+                        compress = lZlib.createCompress(data.req.headers['accept-encoding'] ?? '');
                         if (compress) {
                             data.res.setHeader('content-encoding', compress.type);
                         }
@@ -737,7 +735,7 @@ export async function run(data: {
             if (!data.res.headersSent) {
                 data.res.setHeader('content-type', 'application/json; charset=utf-8');
                 if (Buffer.byteLength(writeData) >= 1024) {
-                    compress = lZlib.createCompress(data.req.headers['accept-encoding'] as string ?? '');
+                    compress = lZlib.createCompress(data.req.headers['accept-encoding'] ?? '');
                     if (compress) {
                         data.res.setHeader('content-encoding', compress.type);
                     }
@@ -828,7 +826,7 @@ export async function waitCtr(cctr: sCtr.Ctr): Promise<void> {
     if (waitInfo.transaction) {
         // --- 有事务未关闭 ---
         const msg = 'transaction(' + waitInfo.transaction + ') not be closed';
-        console.log('[ERROR][ROUTE][WAITCTR] ' + msg + ': ', cctr.getPrototype('_config').const.path);
+        lCore.display('[ERROR][ROUTE][WAITCTR] ' + msg + ': ', cctr.getPrototype('_config').const.path);
         await lCore.log(cctr, msg, '-error');
     }
     // --- 彻底结束，删除文件 ---
@@ -997,7 +995,7 @@ export function getFormData(
                                     date.getUTCDate().toString().padStart(2, '0') +
                                     date.getUTCHours().toString().padStart(2, '0') +
                                     date.getUTCMinutes().toString().padStart(2, '0') + '_' + lCore.random() + '.ftmp';
-                                ftmpStream = lFs.createWriteStream(def.FTMP_PATH + ftmpName);
+                                ftmpStream = lFs.createWriteStream(kebab.FTMP_CWD + ftmpName);
                                 ftmpSize = 0;
                             }
                             else {
@@ -1077,7 +1075,7 @@ export function getFormData(
                                 'name': fname,
                                 'origin': fileName,
                                 'size': ftmpSize,
-                                'path': def.FTMP_PATH + ftmpName
+                                'path': kebab.FTMP_CWD + ftmpName
                             };
                             if (rtn.files[name]) {
                                 if (Array.isArray(rtn.files[name])) {

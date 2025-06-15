@@ -1,12 +1,12 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2020-3-14 17:24:38
- * Last: 2020-3-30 15:31:40, 2022-07-22 16:59:00, 2022-09-12 23:51:56, 2022-09-23 15:53:58, 2022-12-29 01:18:08, 2023-2-28 20:07:57, 2023-12-27 18:39:35, 2024-3-1 19:38:53, 2024-4-9 16:03:58, 2025-2-12 18:55:44
+ * Last: 2020-3-30 15:31:40, 2022-07-22 16:59:00, 2022-09-12 23:51:56, 2022-09-23 15:53:58, 2022-12-29 01:18:08, 2023-2-28 20:07:57, 2023-12-27 18:39:35, 2024-3-1 19:38:53, 2024-4-9 16:03:58, 2025-2-12 18:55:44, 2025-6-12 16:56:08
  */
 import * as http from 'http';
 import * as http2 from 'http2';
 import * as ejs from 'ejs';
-import * as core from '../lib/core';
+import * as lCore from '../lib/core';
 import * as fs from '../lib/fs';
 import * as crypto from '../lib/crypto';
 import * as session from '../lib/session';
@@ -49,7 +49,7 @@ export class Ctr {
     /** --- 当前的 action 名 --- */
     protected _action = '';
 
-    /** --- 请求的 header 列表 --- */
+    /** --- 请求的 header 列表，key 均为小写 --- */
     protected _headers: http.IncomingHttpHeaders = {};
 
     /** --- GET 数据 --- */
@@ -180,8 +180,8 @@ export class Ctr {
                     this._waitInfo.asyncTask.resolve();
                 }
             })().catch(async (e) => {
-                console.log('[ERROR][CTR][ASYNCTASK]', e);
-                await core.log(this, '(ctr.asyncTask)' + text.stringifyJson(e.stack).slice(1, -1), '-error');
+                lCore.display('[ERROR][CTR][ASYNCTASK]', e);
+                await lCore.log(this, '(ctr.asyncTask)' + text.stringifyJson(e.stack).slice(1, -1), '-error');
                 --this._waitInfo.asyncTask.count;
                 if (!this._waitInfo.asyncTask.count) {
                     this._waitInfo.asyncTask.resolve();
@@ -312,7 +312,7 @@ export class Ctr {
         data.l = (key: string, data?: string[]): string => {
             return this._l(key, data);
         };
-        return core.purify(ejs.render(content, data));
+        return lCore.purify(ejs.render(content, data));
     }
 
     /**
@@ -385,7 +385,7 @@ export class Ctr {
                 else if (typeof v === 'object' && v.type !== undefined) {
                     // --- core.checkType ---
                     if (input[key] !== null) {
-                        const r = core.checkType(input[key], v.type);
+                        const r = lCore.checkType(input[key], v.type);
                         if (r) {
                             rtn[0] = val[lastK][0];
                             rtn[1] = typeof val[lastK][1] === 'string' ? val[lastK][1] + '(' + r + ')' : val[lastK][1];
@@ -578,9 +578,7 @@ export class Ctr {
     protected _checkXInput(
         input: Record<string, types.Json>, rule: Record<string, types.Json[]>, rtn: types.Json[]
     ): boolean {
-        if (rule['_xsrf'] === undefined) {
-            rule['_xsrf'] = ['require', this._cookie['XSRF-TOKEN'], [0, 'Bad request, no permission.']];
-        }
+        rule['_xsrf'] ??= ['require', this._cookie['XSRF-TOKEN'], [0, 'Bad request, no permission.']];
         return this._checkInput(input, rule, rtn);
     }
 
@@ -591,9 +589,9 @@ export class Ctr {
     protected _enabledXsrf(): void {
         // --- 设置 XSRF 值 ---
         if (this._cookie['XSRF-TOKEN'] === undefined) {
-            const xsrf = core.random(16, core.RANDOM_LUN);
+            const xsrf = lCore.random(16, lCore.RANDOM_LUN);
             this._xsrf = xsrf;
-            core.setCookie(this, 'XSRF-TOKEN', xsrf, {
+            lCore.setCookie(this, 'XSRF-TOKEN', xsrf, {
                 'path': '/',
                 'httponly': true
             });
@@ -735,9 +733,7 @@ export class Ctr {
                     return false;
                 }
                 this._locale = loc;
-                if (localeData[lPath] === undefined) {
-                    localeData[lPath] = {};
-                }
+                localeData[lPath] ??= {};
                 this._loadLocaleDeep(lPath, locData);
                 localeFiles.push(lPath);
             }
@@ -745,9 +741,7 @@ export class Ctr {
                 this._locale = loc;
             }
             // --- 缓存中一定有文件 ---
-            if (this._localeData[loc] === undefined) {
-                this._localeData[loc] = {};
-            }
+            this._localeData[loc] ??= {};
             for (const key in localeData[lPath]) {
                 this._localeData[loc][key] = localeData[lPath][key];
             }

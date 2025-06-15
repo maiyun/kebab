@@ -20,15 +20,15 @@
 
 ## 環境
 
-Node 16+
+Node 22+
 
 ## 安装
 
-下載最新的發行包，解壓后即可開始開發，開啟 TypeScript 編譯並執行 `node ./index` 可運行網站。
+執行 `npm i kebab` 安裝最新版，安裝完成後執行 `npx kebab init` 初始化，再執行 `npx kebab` 啟動專案。
 
 ## 庫
 
-Captcha, Consistent, Crypto, Db (MySQL), Dns (DNSPod, Alibaba Cloud), Fs, Kv (Redis), Net, Scan, Session, Sql, Ssh (Shell, Sftp), Text, Time, Ws, Zlib.
+Buffer, Captcha, Consistent, Core, Crypto, Db (MySQL), Dns (DNSPod, Alibaba Cloud), Fs, Jwt, Kv (Redis), Lan, Net, S3, Scan, Session, Sql, Ssh (Shell, Sftp), Text, Time, Ws, Zip, Zlib.
 
 ## 部分特性
 

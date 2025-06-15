@@ -1,16 +1,13 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2019-5-2 21:03:42
- * Last: 2020-3-7 10:33:17, 2022-07-22 13:40:10, 2022-09-06 22:40:58, 2024-2-7 01:44:59, 2024-7-2 15:17:09
+ * Last: 2020-3-7 10:33:17, 2022-07-22 13:40:10, 2022-09-06 22:40:58, 2024-2-7 01:44:59, 2024-7-2 15:17:09, 2025-6-13 13:06:43
  */
 import * as os from 'os';
 import * as cluster from 'cluster';
 import * as http from 'http';
-import * as net from 'net';
-// --- 第三方 ---
-import * as ws from '@litert/websocket';
 // --- 库和定义 ---
-import * as def from '~/sys/def';
+import * as kebab from '~/index';
 import * as sRoute from '~/sys/route';
 import * as lCore from '~/lib/core';
 import * as lFs from '~/lib/fs';
@@ -18,7 +15,6 @@ import * as lText from '~/lib/text';
 import * as lCrypto from '~/lib/crypto';
 import * as lTime from '~/lib/time';
 import * as lZip from '~/lib/zip';
-import * as lWs from '~/lib/ws';
 
 /** --- 当前运行中的子进程列表 --- */
 const workerList: Record<string, {
@@ -35,9 +31,9 @@ const workerList: Record<string, {
  */
 async function run(): Promise<void> {
     // --- 读取配置文件 ---
-    const configContent = await lFs.getContent(def.CONF_PATH + 'config.json', 'utf8');
+    const configContent = await lFs.getContent(kebab.CONF_CWD + 'config.json', 'utf8');
     if (!configContent) {
-        throw `File '${def.CONF_PATH}config.json' not found.`;
+        throw `File '${kebab.CONF_CWD}config.json' not found.`;
     }
     /** --- 系统 config.json --- */
     const config = lText.parseJson(configContent);
@@ -46,24 +42,22 @@ async function run(): Promise<void> {
     }
     // --- 监听 RPC 命令 ---
     createRpcListener();
-    // --- 监听 IRP 中转 ---
-    createIrpListener();
     // --- 30 秒检测一次是否有丢失的子进程 ---
     setInterval(function() {
         checkWorkerLost().catch(function(e) {
-            console.log('[master] [run] [checkWorkerLost]', e);
+            lCore.display('[master] [run] [checkWorkerLost]', e);
         });
     }, 30000);
     // --- 启动进程 ---
     const cpuLength = os.cpus().length;
-    console.log('[master] [run] CPU LENGTH: ' + cpuLength.toString());
+    lCore.display('[master] [run] CPU LENGTH: ' + cpuLength.toString());
     const cpuLengthMax = cpuLength > lCore.globalConfig.max ? lCore.globalConfig.max : cpuLength;
     for (let i = 0; i < cpuLengthMax; ++i) {
         await createChildProcess(i);
     }
     cluster.default.on('listening', function(worker, address) {
         // --- 子进程开始监听 ---
-        console.log(`[master] Listening: worker ${worker.process.pid ?? 'undefined'}, Address: ${address.address}:${address.port}.`);
+        lCore.display(`[master] Listening: worker ${worker.process.pid ?? 'undefined'}, Address: ${address.address}:${address.port}.`);
     }).on('exit', function(worker, code) {
         (async function() {
             if (!worker.process.pid) {
@@ -72,17 +66,17 @@ async function run(): Promise<void> {
             // --- 有子线程退出 ---
             if (code === 0) {
                 // --- 正常关闭，证明关闭前主进程已经重启新进程了，这里无需在 fork ---
-                console.log(`[master] Worker ${worker.process.pid} has been disconnected.`);
+                lCore.display(`[master] Worker ${worker.process.pid} has been disconnected.`);
             }
             else {
                 // --- 中断，致命错误，需要重新启动一个新线程 ---
-                console.log(`[master] Worker ${worker.process.pid} has collapsed.`);
+                lCore.display(`[master] Worker ${worker.process.pid} has collapsed.`);
                 const cpu = workerList[worker.process.pid].cpu;
                 delete workerList[worker.process.pid];
                 await createChildProcess(cpu);
             }
         })().catch(function(e) {
-            console.log('[master] [cluster] [exit]', e);
+            lCore.display('[master] [cluster] [exit]', e);
         });
     });
 }
@@ -175,7 +169,7 @@ function createRpcListener(): void {
                         path = path.slice(0, -1);
                     }
                     /** --- 最终更新的根目录，以 / 结尾，但用户传入的无所谓 --- */
-                    let to = def.ROOT_PATH + path;
+                    let to = kebab.ROOT_CWD + path;
                     if (!to.endsWith('/')) {
                         to += '/';
                     }
@@ -224,9 +218,9 @@ function createRpcListener(): void {
                     await sRoute.unlinkUploadFiles(rtn.files);
                     // --- 检查是否更新 config ---
                     if (rtn.post['config'] === '1') {
-                        const configContent = await lFs.getContent(def.CONF_PATH + 'config.json', 'utf8');
+                        const configContent = await lFs.getContent(kebab.CONF_CWD + 'config.json', 'utf8');
                         if (configContent) {
-                            await lFs.putContent(def.CONF_PATH + 'config.json', configContent.replace(/"staticVer": ".+?"/, `"staticVer": "${lTime.format(null, 'YmdHis')}"`), {
+                            await lFs.putContent(kebab.CONF_CWD + 'config.json', configContent.replace(/"staticVer": ".+?"/, `"staticVer": "${lTime.format(null, 'YmdHis')}"`), {
                                 'encoding': 'utf8'
                             });
                         }
@@ -240,132 +234,9 @@ function createRpcListener(): void {
             }
             res.end('Done');
         })().catch(function(e) {
-            console.log('[master] [createRpcListener]', e);
+            lCore.display('[master] [createRpcListener]', e);
         });
     }).listen(lCore.globalConfig.rpcPort);
-}
-
-// --- IRP - TODO ---
-
-/** --- 当前连接中的 irp 连接（客户端 -> 服务端） --- */
-const irpConnection: Record<string, Record<string, {
-    'id': number;
-    'last': number;
-    'using': boolean;
-    'link': lWs.Socket;
-}>> = {};
-
-/** --- 当前的 irp 连接自增 id --- */
-let irpId = 0;
-
-/**
- * --- 创建 IRP 局域网中转，用来监听 IRP 客户端接入后再中转给本连接，真正客户访问时再反代给这个连接，实现桥接 ---
- */
-function createIrpListener(): void {
-    http.createServer(function(req: http.IncomingMessage, res: http.ServerResponse) {
-        // --- Server 进入的 ---
-        /** --- 当前时间戳 --- */
-        const time = lTime.stamp();
-        /** --- cmd 数据对象 --- */
-        const cmd = lCrypto.aesDecrypt((req.url ?? '').slice(1), lCore.globalConfig.rpcSecret);
-        if (!cmd) {
-            res.end('---IRP-MSG---Error');
-            return;
-        }
-        const msg = lText.parseJson(cmd);
-        if (!msg) {
-            res.end('---IRP-MSG---Failed');
-            return;
-        }
-        if (msg.time < time - 5) {
-            res.end('---IRP-MSG---Timeout');
-            return;
-        }
-        if (lCore.globalConfig.rpcSecret === 'MUSTCHANGE') {
-            res.end('---IRP-MSG---irpSecret need be "' + lCore.random(32, lCore.RANDOM_LUN) + '"');
-            return;
-        }
-        switch (msg.action) {
-            case 'server': {
-
-                break;
-            }
-            default: {
-                res.end('---IRP-MSG---Not command: ' + msg.action);
-                return;
-            }
-        }
-        res.end('---IRP-MSG---Done');
-    }).on('upgrade', function(req: http.IncomingMessage, socket: net.Socket): void {
-        // --- 只接收 WebSocket 连接 ---
-        const wsSocket = lWs.createServer(req, socket);
-        /** --- 当前时间戳 --- */
-        const time = lTime.stamp();
-        /** --- cmd 数据对象 --- */
-        const cmd = lCrypto.aesDecrypt((req.url ?? '').slice(1), lCore.globalConfig.rpcSecret);
-        if (!cmd) {
-            wsSocket.end();
-            return;
-        }
-        const msg = lText.parseJson(cmd);
-        if (!msg) {
-            wsSocket.end();
-            return;
-        }
-        if (msg.time < time - 5) {
-            wsSocket.end();
-            return;
-        }
-        if (lCore.globalConfig.irpSecret === 'MUSTCHANGE') {
-            wsSocket.writeText('irpSecret need be "' + lCore.random(32, lCore.RANDOM_LUN) + '"');
-            wsSocket.end();
-            return;
-        }
-        // --- 鉴权通过 ---
-        if (irpConnection[msg.name] === undefined) {
-            irpConnection[msg.name] = {};
-        }
-        const id = ++irpId;
-        irpConnection[msg.name][id.toString()] = {
-            'id': id,
-            'last': time,
-            'using': false,
-            'link': wsSocket
-        };
-        wsSocket.on('message', function(msg): void {
-            switch (msg.opcode) {
-                case ws.EOpcode.CLOSE: {
-                    wsSocket.end();
-                    break;
-                }
-                case ws.EOpcode.PING: {
-                    wsSocket.pong();
-                    break;
-                }
-                case ws.EOpcode.BINARY:
-                case ws.EOpcode.TEXT: {
-                    wsSocket.end();
-                    break;
-                }
-                default: {
-                    // --- nothing ---
-                }
-            }
-        }).on('error', () => {
-            wsSocket.end();
-            if (irpConnection[msg.name][id.toString()]) {
-                delete irpConnection[msg.name][id.toString()];
-            }
-        }).on('close', () => {
-            // --- CLOSE ---
-            if (!wsSocket.ended) {
-                wsSocket.end();
-            }
-            if (irpConnection[msg.name][id.toString()]) {
-                delete irpConnection[msg.name][id.toString()];
-            }
-        });
-    }).listen(lCore.globalConfig.irpPort);
 }
 
 /**
@@ -380,7 +251,7 @@ async function checkWorkerLost(): Promise<void> {
             continue;
         }
         // --- 异常，也可能主线程因为各种原因休眠，不过无论如何都要将原线程关闭，要不然原线程又发心跳包，就捕获不到了 ---
-        console.log(`[master] Worker ${pid} lost.`);
+        lCore.display(`[master] Worker ${pid} lost.`);
         workerList[pid].worker.send({
             'action': 'stop'
         });
@@ -407,8 +278,8 @@ async function createChildProcess(cpu: number): Promise<void> {
     if (!os.type().toLowerCase().includes('windows')) {
         // --- 非 Windows ---
         const cpr = await lCore.exec(`taskset -cp ${cpu} ${worker.process.pid}`);
-        console.log(cpr);
-        console.log(`[master] Worker ${worker.process.pid} start on cpu #${cpu}.`);
+        lCore.display(cpr);
+        lCore.display(`[master] Worker ${worker.process.pid} start on cpu #${cpu}.`);
     }
     // --- 监听子进程发来的讯息，并扩散给所有子进程 ---
     worker.on('message', function(msg) {
@@ -457,7 +328,7 @@ async function createChildProcess(cpu: number): Promise<void> {
                     // --- 获得子进程发来的 10 秒一次的心跳 ---
                     if (!workerList[msg.pid]) {
                         // --- 线程存在，主进程记录里没找到 ---
-                        console.log(`[master] Worker ${msg.pid} not found.`);
+                        lCore.display(`[master] Worker ${msg.pid} not found.`);
                         break;
                     }
                     workerList[msg.pid].hbtime = Date.now();
@@ -465,7 +336,7 @@ async function createChildProcess(cpu: number): Promise<void> {
                 }
             }
         })().catch(function(e) {
-            console.log('[createChildProcess] [message]', e);
+            lCore.display('[createChildProcess] [message]', e);
         });
     });
     // --- 将主线程的全局变量传给这个新建的子线程 ---
@@ -479,6 +350,6 @@ async function createChildProcess(cpu: number): Promise<void> {
 }
 
 run().catch(function(e): void {
-    console.log('[master] ------ [Process fatal Error] ------');
-    console.error(e);
+    lCore.display('[master] ------ [Process fatal Error] ------');
+    lCore.display(e);
 });

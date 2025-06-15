@@ -1,27 +1,33 @@
-/* eslint-disable @typescript-eslint/no-floating-promises */
 /**
  * Project: Kebab, User: JianSuoQiYue
- * Date: 2019-3-29 18:55:35
- * Last: 2020-3-6 22:19:37, 2022-3-30 01:01:22, 2022-9-27 16:11:40
+ * Date: 2019-3-30 12:46:41
+ * Last: 2020-3-8 21:04:24, 2022-07-22 14:20:34, 2023-5-24 01:34:57, 2025-6-13 14:49:27
+ * --- 本文件用来定义每个目录实体地址的常量 ---
  */
-// git config core.ignorecase false
 
-import cluster from 'cluster';
-// --- 第三方 ---
-import 'ts-alias-loader';
+/** --- 当前系统版本号 --- */
+export const VER = '2.0.0';
 
-// --- 初始化 ---
-// --- 一定要分别隔离加载 Master 和 Child 代码，防止执行串了 ---
-if (cluster.isPrimary) {
-    if (process.argv.length > 2) {
-        // --- 传入的命令方式启动，则执行 RPC 相关命令 ---
-        import('./sys/cmd');
-    }
-    else {
-        // --- 正常启动 ---
-        import('./sys/master');
-    }
-}
-else {
-    import('./sys/child');
-}
+// --- 服务端用的路径 ---
+
+/** --- /xxx/xxx --- */
+const dirname = __dirname.replace(/\\/g, '/');
+
+/** --- 框架根目录，以 / 结尾  --- */
+export const ROOT_PATH = dirname + '/';
+export const LIB_PATH = ROOT_PATH + 'lib/';
+export const SYS_PATH = ROOT_PATH + 'sys/';
+
+const cwd = process.cwd().replace(/\\/g, '/');
+
+/** --- 执行根目录，以 / 结尾 --- */
+export const ROOT_CWD = cwd + '/';
+export const CONF_CWD = ROOT_CWD + 'conf/';
+export const CERT_CWD = CONF_CWD + 'cert/';
+export const VHOST_CWD = CONF_CWD + 'vhost/';
+export const LIB_CWD = ROOT_CWD + 'lib/';
+export const LOG_CWD = ROOT_CWD + 'log/';
+export const WWW_CWD = ROOT_CWD + 'www/';
+export const IND_CWD = ROOT_CWD + 'ind/';
+export const FTMP_CWD = ROOT_CWD + 'ftmp/';
+export const MOD_CWD = ROOT_CWD + 'mod/';

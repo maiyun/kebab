@@ -74,6 +74,7 @@ export interface IConfig {
     'dns': Record<string, IConfigDns>;
     'lang': IConfigLang;
     's3': Record<string, IConfigS3>;
+    'turnstile': IConfigTurnstile;
 
     [key: string]: Record<string, Json>;
 }
@@ -92,6 +93,20 @@ export interface IConfigS3 {
     'skey': string;
     'region': string;
     'bucket': string;
+}
+
+/** --- 动配对象存储信息 --- */
+export interface IConfigTurnstile {
+    'CF': {
+        'sid': string;
+        'skey': string;
+    },
+    'TENCENT': {
+        'sid': string;
+        'skey': string;
+        'aid': string;
+        'akey': string;
+    }
 }
 
 /** --- 动配数据库 --- */

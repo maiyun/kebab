@@ -12,10 +12,10 @@ import * as crypto from 'crypto';
 import * as fs from '~/lib/fs';
 import * as lCore from '~/lib/core';
 import * as lText from '~/lib/text';
-import * as def from '~/sys/def';
-import * as ctr from '~/sys/ctr';
+import * as sCtr from '~/sys/ctr';
+import * as kebab from '~/index';
 // --- 初始化 ---
-import * as route from '~/sys/route';
+import * as sRoute from '~/sys/route';
 import * as types from '~/types';
 
 /** --- 10 秒往主线程发送一次心跳的 Timer --- */
@@ -245,7 +245,7 @@ async function requestHandler(
     };
     timer.timer = setTimeout(timer.callback, timer.timeout);
     // --- 设置服务器名版本 ---
-    res.setHeader('Server', 'Kebab/' + def.VER);
+    res.setHeader('Server', 'Kebab/' + kebab.VER);
     // --- 当前 uri ---
     let host = req.headers[':authority'];
     if (host === undefined || typeof host !== 'string') {
@@ -270,8 +270,9 @@ async function requestHandler(
         return;
         */
     }
+    const vhostRoot = vhost.root.replace(/\${example}/g, kebab.ROOT_PATH + 'www/example/');
     /** --- 网站绝对根目录，末尾带 / --- */
-    let rootPath = lText.isRealPath(vhost.root) ? vhost.root : def.WWW_PATH + vhost.root;
+    let rootPath = lText.isRealPath(vhostRoot) ? vhostRoot : kebab.WWW_CWD + vhostRoot;
     if (!rootPath.endsWith('/')) {
         rootPath += '/';
     }
@@ -305,7 +306,7 @@ async function requestHandler(
                 if (stat) {
                     // --- 动态层，交给 Route 处理器 ---
                     try {
-                        if (await route.run({
+                        if (await sRoute.run({
                             'req': req,
                             'res': res,
                             'uri': uri,
@@ -351,7 +352,7 @@ async function requestHandler(
             if (stat) {
                 // --- 动态层，交给 Route 处理器 ---
                 try {
-                    if (await route.run({
+                    if (await sRoute.run({
                         'req': req,
                         'res': res,
                         'uri': uri,
@@ -413,8 +414,9 @@ async function upgradeHandler(req: http.IncomingMessage, socket: net.Socket, htt
         socket.destroy();
         return;
     }
+    const vhostRoot = vhost.root.replace(/\${example}/g, kebab.ROOT_PATH + 'www/example/');
     /** --- 网站绝对根目录，末尾带 / --- */
-    let rootPath = lText.isRealPath(vhost.root) ? vhost.root : def.WWW_PATH + vhost.root;
+    let rootPath = lText.isRealPath(vhostRoot) ? vhostRoot : kebab.WWW_CWD + vhostRoot;
     if (!rootPath.endsWith('/')) {
         rootPath += '/';
     }
@@ -444,7 +446,7 @@ async function upgradeHandler(req: http.IncomingMessage, socket: net.Socket, htt
                 stat = await fs.stats(rootPath + now + 'kebab.json');
                 if (stat) {
                     // --- 动态层，交给 Route 处理器 ---
-                    if (await route.run({
+                    if (await sRoute.run({
                         'req': req,
                         'socket': socket,
                         'uri': uri,
@@ -471,7 +473,7 @@ async function upgradeHandler(req: http.IncomingMessage, socket: net.Socket, htt
             const stat = await fs.stats(rootPath + now + 'kebab.json');
             if (stat) {
                 // --- 动态层，交给 Route 处理器 ---
-                if (await route.run({
+                if (await sRoute.run({
                     'req': req,
                     'socket': socket,
                     'uri': uri,
@@ -493,9 +495,9 @@ async function upgradeHandler(req: http.IncomingMessage, socket: net.Socket, htt
  */
 async function reload(): Promise<void> {
     // --- 清除全局 config，并重新加载全局信息 ---
-    const configContent = await fs.getContent(def.CONF_PATH + 'config.json', 'utf8');
+    const configContent = await fs.getContent(kebab.CONF_CWD + 'config.json', 'utf8');
     if (!configContent) {
-        throw `File '${def.CONF_PATH}config.json' not found.`;
+        throw `File '${kebab.CONF_CWD}config.json' not found.`;
     }
     const config = lText.parseJson(configContent);
     for (const key in lCore.globalConfig) {
@@ -505,10 +507,13 @@ async function reload(): Promise<void> {
         lCore.globalConfig[key] = config[key];
     }
     // --- 重新加载 VHOST 信息（/conf/vhost/） ---
-    const files = await fs.readDir(def.VHOST_PATH);
+    const files = await fs.readDir(kebab.VHOST_CWD);
     vhosts = [];
     for (const file of files) {
-        const fstr = await fs.getContent(def.VHOST_PATH + file.name, 'utf8');
+        if (!file.name.endsWith('.json')) {
+            continue;
+        }
+        const fstr = await fs.getContent(kebab.VHOST_CWD + file.name, 'utf8');
         if (!fstr) {
             continue;
         }
@@ -523,12 +528,12 @@ async function reload(): Promise<void> {
     // --- 重新加载证书对 ---
     certList.length = 0;
     try {
-        const certConfig = await fs.getContent(def.CONF_PATH + 'cert.json', 'utf8');
+        const certConfig = await fs.getContent(kebab.CONF_CWD + 'cert.json', 'utf8');
         if (certConfig) {
             const certs = lText.parseJson(certConfig);
             for (const item of certs) {
-                const key = await fs.getContent(lText.isRealPath(item.key) ? item.key : def.CERT_PATH + item.key, 'utf8');
-                const cert = await fs.getContent(lText.isRealPath(item.cert) ? item.cert : def.CERT_PATH + item.cert, 'utf8');
+                const key = await fs.getContent(lText.isRealPath(item.key) ? item.key : kebab.CERT_CWD + item.key, 'utf8');
+                const cert = await fs.getContent(lText.isRealPath(item.cert) ? item.cert : kebab.CERT_CWD + item.cert, 'utf8');
                 if (!cert || !key) {
                     continue;
                 }
@@ -549,8 +554,8 @@ async function reload(): Promise<void> {
     }
     certHostIndex = {};
     // --- 其他操作 ---
-    route.clearKebabConfigs();
-    ctr.clearLocaleData();
+    sRoute.clearKebabConfigs();
+    sCtr.clearLocaleData();
 }
 
 // --- 接收主进程回传信号，主要用来 reload，restart ---

@@ -1,7 +1,7 @@
 /**
  * Project: Kebab, User: Tang Rukun, JianSuoQiYue
  * Date: 2024-2-18 18:32:45
- * Last: 2024-2-18 18:32:47, 2024-3-16 16:42:27, 2024-5-31 21:36:26, 2024-7-8 00:28:42, 2024-7-19 11:32:43
+ * Last: 2024-2-18 18:32:47, 2024-3-16 16:42:27, 2024-5-31 21:36:26, 2024-7-8 00:28:42, 2024-7-19 11:32:43, 2025-6-10 21:45:34
  */
 
 // --- 库和定义 ---
@@ -52,21 +52,11 @@ export class S3 {
     public constructor(ctr: sCtr.Ctr, opt: IOptions) {
         this._ctr = ctr;
         const config = ctr.getPrototype('_config');
-        if (!opt.account) {
-            opt.account = config.s3?.[ESERVICE[opt.service]]?.account ?? '';
-        }
-        if (!opt.secretId) {
-            opt.secretId = config.s3?.[ESERVICE[opt.service]]?.sid ?? '';
-        }
-        if (!opt.secretKey) {
-            opt.secretKey = config.s3?.[ESERVICE[opt.service]]?.skey ?? '';
-        }
-        if (!opt.region) {
-            opt.region = config.s3?.[ESERVICE[opt.service]]?.region ?? '';
-        }
-        if (!opt.bucket) {
-            opt.bucket = config.s3?.[ESERVICE[opt.service]]?.bucket ?? '';
-        }
+        opt.account ??= config.s3?.[ESERVICE[opt.service]]?.account ?? '';
+        opt.secretId ??= config.s3?.[ESERVICE[opt.service]]?.sid ?? '';
+        opt.secretKey ??= config.s3?.[ESERVICE[opt.service]]?.skey ?? '';
+        opt.region ??= config.s3?.[ESERVICE[opt.service]]?.region ?? '';
+        opt.bucket ??= config.s3?.[ESERVICE[opt.service]]?.bucket ?? '';
         this._bucket = opt.bucket;
         let endpoint: string | undefined;
         switch (opt.service) {
@@ -155,7 +145,7 @@ export class S3 {
      * @param key 对象路径
      * @param bucket bucket 名
      */
-    // eslint-disable-next-line @typescript-eslint/explicit-function-return-type, @typescript-eslint/explicit-module-boundary-types
+    // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
     public async getObject(key: string, bucket?: string) {
         try {
             const go = new s3.GetObjectCommand({

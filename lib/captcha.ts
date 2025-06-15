@@ -1,14 +1,14 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2019-6-7 12:14:31
- * Last: 2020-3-11 23:33:19, 2022-09-12 10:38:24, 2022-12-29 01:16:26, 2024-4-1 16:40:42
+ * Last: 2020-3-11 23:33:19, 2022-09-12 10:38:24, 2022-12-29 01:16:26, 2024-4-1 16:40:42, 2025-6-13 19:45:30
  */
 import * as svgCaptcha from 'svg-captcha';
 import * as mime from '@litert/mime';
 import * as core from '~/lib/core';
-import * as def from '~/sys/def';
+import * as kebab from '~/index';
 
-svgCaptcha.loadFont(def.LIB_PATH + 'captcha/zcool-addict-italic.ttf');
+svgCaptcha.loadFont(kebab.LIB_PATH + 'captcha/zcool-addict-italic.ttf');
 
 export class Captcha {
 

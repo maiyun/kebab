@@ -4,6 +4,10 @@
 
 [简体中文](./CHANGELOG.sc.md) | [繁體中文](./CHANGELOG.tc.md)
 
+## 2.0.0
+
+[\*] Major update and a fresh start. Going forward, the CHANGELOG will no longer be updated. All update information will be published under the MAIYUN.NET account on MAIYUN.NET.
+
 ## 1.1.0
 
 [+] Added `getRange` method to the Consistent library.  

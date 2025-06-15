@@ -4,6 +4,10 @@
 
 [简体中文](./CHANGELOG.sc.md) | [English](./CHANGELOG.md)
 
+## 2.0.0
+
+[\*] 重磅更新，全新起點。未來將不再更新 CHANGELOG，所有更新資訊將統一發布於 MAIYUN.NET 的 MAIYUN.NET 帳號下。
+
 ## 1.1.0
 
 [+] Consistent 庫新增 getRange 方法。  

@@ -20,15 +20,15 @@ Simple, easy-to-use, and fully-featured Node.js framework that is ready-to-use o
 
 ## Requirement
 
-Node 16+
+Node 22+
 
 ## Installation
 
-Download the latest release package, extract it, and start developing. To run the website, enable TypeScript compilation and execute `node ./index`.
+Run `npm i kebab` to install the latest version. After installation, run `npx kebab init` to initialize, then run `npx kebab` to start the project.
 
 ## Library
 
-Captcha, Consistent, Crypto, Db (MySQL), Dns (DNSPod, Alibaba Cloud), Fs, Kv (Redis), Net, Scan, Session, Sql, Ssh (Shell, Sftp), Text, Time, Ws, Zlib.
+Buffer, Captcha, Consistent, Core, Crypto, Db (MySQL), Dns (DNSPod, Alibaba Cloud), Fs, Jwt, Kv (Redis), Lan, Net, S3, Scan, Session, Sql, Ssh (Shell, Sftp), Text, Time, Ws, Zip, Zlib.
 
 ## Partial Features
 

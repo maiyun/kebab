@@ -2,7 +2,7 @@
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2019-5-15 22:47
  * CA: https://curl.haxx.se/ca/cacert.pem
- * Last: 2020-4-9 20:11:02, 2022-09-22 14:30:13, 2024-1-1 21:32:26, 2024-1-12 13:01:54
+ * Last: 2020-4-9 20:11:02, 2022-09-22 14:30:13, 2024-1-1 21:32:26, 2024-1-12 13:01:54, 2025-6-13 13:20:52
  */
 import * as stream from 'stream';
 import * as http from 'http';
@@ -13,7 +13,7 @@ import * as hc from '@litert/http-client';
 import * as fs from '~/lib/fs';
 import * as text from '~/lib/text';
 import * as time from '~/lib/time';
-import * as def from '~/sys/def';
+import * as kebab from '~/index';
 import * as ctr from '~/sys/ctr';
 import * as types from '~/types';
 // --- 自己 ---
@@ -82,7 +82,7 @@ export async function getCa(): Promise<string> {
     if (ca) {
         return ca;
     }
-    ca = (await fs.getContent(def.LIB_PATH + 'net/cacert.pem', 'utf8')) ?? '';
+    ca = (await fs.getContent(kebab.LIB_PATH + 'net/cacert.pem', 'utf8')) ?? '';
     return ca;
 }
 
@@ -165,9 +165,7 @@ export async function request(
             headers[key.toLowerCase()] = opt.headers[key];
         }
     }
-    if (!headers['user-agent']) {
-        headers['user-agent'] = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36';
-    }
+    headers['user-agent'] ??= 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36';
     // --- DATA ---
     if (method === 'GET') {
         if (data && !(data instanceof stream.Readable) && !Buffer.isBuffer(data)) {
@@ -327,7 +325,7 @@ export function setCookie(cookie: Record<string, types.ICookie>, name: string, v
     'httponly'?: boolean;
 } = {}): void {
     const tim = time.stamp();
-    const ttl = !opt.ttl ? 0 : opt['ttl'];
+    const ttl = opt.ttl ?? 0;
     domain = domain.split(':')[0];
     const domainN = domain.startsWith('.') ? domain.slice(1) : domain;
 
@@ -359,9 +357,7 @@ async function buildCookieObject(
     uri: types.IUrlParse
 ): Promise<void> {
     const tim = time.stamp();
-    if (!uri.path) {
-        uri.path = '/';
-    }
+    uri.path ??= '/';
     for (const setCookie of setCookies) {
         const cookieTmp: Record<string, string> = {};
         const list = setCookie.split(';');
@@ -469,9 +465,7 @@ export function buildCookieQuery(cookie: Record<string, types.ICookie>, uri: typ
             delete cookie[key];
             continue;
         }
-        if (!uri.path) {
-            uri.path = '/';
-        }
+        uri.path ??= '/';
         if (item.secure && (uri.protocol === 'https')) {
             continue;
         }
@@ -585,9 +579,7 @@ export async function mproxy(
         return -1;
     }
     (opt as types.Json).method = req.method ?? 'GET';
-    if (!opt.headers) {
-        opt.headers = {};
-    }
+    opt.headers ??= {};
     Object.assign(opt.headers, filterProxyHeaders(req.headers));
     // --- 发起请求 ---
     const rres = await request(get['url'], req.headers['content-type']?.includes('form-data') ? req : input, opt);
@@ -648,9 +640,7 @@ export async function rproxy(
         /** --- 要拼接的地址 --- */
         const lpath = path.slice(key.length);
         (opt as types.Json).method = req.method ?? 'GET';
-        if (!opt.headers) {
-            opt.headers = {};
-        }
+        opt.headers ??= {};
         Object.assign(opt.headers, filterProxyHeaders(req.headers));
         // --- 发起请求 ---
         const rres = await request(route[key] + lpath, req.headers['content-type']?.includes('form-data') ? req : input, opt);

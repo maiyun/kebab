@@ -1,7 +1,7 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2019-6-19
- * Last: 2022-09-12 20:58:07, 2024-2-21 17:55:54
+ * Last: 2022-09-12 20:58:07, 2024-2-21 17:55:54, 2025-6-13 19:08:56
  */
 
 // --- 库和定义 ---
@@ -105,12 +105,8 @@ export class Dns {
 
     public constructor(ctr: ctr.Ctr, opt: IOptions) {
         const config = ctr.getPrototype('_config');
-        if (!opt.secretId) {
-            opt.secretId = config.dns?.[ESERVICE[opt.service]].sid;
-        }
-        if (!opt.secretKey) {
-            opt.secretKey = config.dns?.[ESERVICE[opt.service]].skey;
-        }
+        opt.secretId ??= config.dns?.[ESERVICE[opt.service]].sid;
+        opt.secretKey ??= config.dns?.[ESERVICE[opt.service]].skey;
         this._opt = opt;
     }
 

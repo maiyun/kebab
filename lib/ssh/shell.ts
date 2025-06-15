@@ -22,14 +22,20 @@ export class Connection {
      */
     public send(cmd: string | Buffer, encoding?: BufferEncoding): Promise<boolean> {
         return new Promise((resolve) => {
-            this._client.write(cmd, encoding, function(err) {
-                if (err) {
+            const cb = (e: any): void => {
+                if (e) {
                     resolve(false);
                 }
                 else {
                     resolve(true);
                 }
-            });
+            };
+            if (encoding) {
+                this._client.write(cmd, encoding, cb);
+            }
+            else {
+                this._client.write(cmd, cb);
+            }
         });
     }
 
@@ -70,9 +76,16 @@ export class Connection {
      */
     public close(cmd?: string | Buffer, encoding?: BufferEncoding): Promise<void> {
         return new Promise((resolve) => {
-            this._client.end(cmd, encoding, function() {
-                resolve();
-            });
+            if (encoding) {
+                this._client.end(cmd, encoding, () => {
+                    resolve();
+                });
+            }
+            else {
+                this._client.end(cmd, () => {
+                    resolve();
+                });
+            }
         });
     }
 

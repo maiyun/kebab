@@ -1,7 +1,7 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2019-5-3 23:54
- * Last: 2020-4-11 22:34:58, 2022-10-2 14:13:06, 2022-12-28 20:33:24, 2023-12-15 11:49:02, 2024-7-2 15:23:35
+ * Last: 2020-4-11 22:34:58, 2022-10-2 14:13:06, 2022-12-28 20:33:24, 2023-12-15 11:49:02, 2024-7-2 15:23:35, 2025-6-13 19:45:53
  */
 import * as cp from 'child_process';
 import * as http from 'http';
@@ -14,7 +14,7 @@ import * as lNet from '~/lib/net';
 import * as lCrypto from '~/lib/crypto';
 import * as lResponse from '~/lib/net/response';
 import * as sCtr from '~/sys/ctr';
-import * as def from '~/sys/def';
+import * as kebab from '~/index';
 import * as types from '~/types';
 
 /** --- 全局参数 --- */
@@ -23,15 +23,6 @@ export const globalConfig: types.IConfig & {
     'httpsPort': number;
     'rpcPort': number;
     'rpcSecret': string;
-    'irpPort': number;
-    'irpSecret': string;
-    'irp': Array<{
-        'name': string;
-        'url': string;
-        'token': string;
-        'auth': string;
-        'enabled': boolean;
-    }>;
     'debug': boolean;
     'max': number;
 } = {} as types.Json;
@@ -587,9 +578,7 @@ export async function updateCode(
         'result': boolean;
         'return': string;
     }>> {
-    if (!hosts) {
-        hosts = ['127.0.0.1'];
-    }
+    hosts ??= ['127.0.0.1'];
     /** --- 返回成功的 host --- */
     const rtn: Record<string, {
         'result': boolean;
@@ -677,7 +666,7 @@ export async function log(opt: sCtr.Ctr | ILogOptions, msg: string, fend: string
     const clientIp = req ? ip(headers, req) : '';
 
     const [y, m, d, h] = lTime.format(null, 'Y-m-d-H').split('-');
-    let path = def.LOG_PATH + hostname + fend + '/' + y + '/' + m + '/' + d + '/';
+    let path = kebab.LOG_CWD + hostname + fend + '/' + y + '/' + m + '/' + d + '/';
     const rtn = await lFs.mkdir(path, 0o777);
     if (!rtn) {
         return;
@@ -724,7 +713,7 @@ export async function getLog(opt: {
     /** --- 最大限制，默认 100 --- */
     'limit'?: number;
 }): Promise<string[][] | null | false> {
-    const path = def.LOG_PATH + opt.host + (opt.fend ?? '') + '/' + opt.path + '.csv';
+    const path = kebab.LOG_CWD + opt.host + (opt.fend ?? '') + '/' + opt.path + '.csv';
     if (!await lFs.isFile(path)) {
         return null;
     }

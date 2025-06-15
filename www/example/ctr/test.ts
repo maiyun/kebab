@@ -20,7 +20,7 @@ import * as lZip from '~/lib/zip';
 import * as lBuffer from '~/lib/buffer';
 import * as lLan from '~/lib/lan';
 import * as sCtr from '~/sys/ctr';
-import * as def from '~/sys/def';
+import * as kebab from '~/index';
 import * as types from '~/types';
 // --- mod ---
 import mTest from '../mod/test';
@@ -31,11 +31,18 @@ export default class extends sCtr.Ctr {
     private _internalUrl: string = '';
 
     public onLoad(): Array<string | number> | boolean {
-        if (this._config.const.hostname !== '127.0.0.1' && this._config.const.hostname !== '172.17.0.1' && this._config.const.hostname !== 'localhost' && this._config.const.hostname !== 'local-test.brc-app.com' && !this._config.const.hostname.startsWith('192.168.')) {
-            return [0, 'Please use 127.0.0.1 to access the file (' + this._config.const.host + ').'];
+        if (
+            this._config.const.hostname !== '127.0.0.1' && this._config.const.hostname !== '172.17.0.1' &&
+            this._config.const.hostname !== 'localhost' && this._config.const.hostname !== 'local-test.brc-app.com' &&
+            !this._config.const.hostname.startsWith('192.168.')
+        ) {
+            return [0, 'Please use 127.0.0.1 or local to access the file (' + this._config.const.host + ').'];
         }
         const realIp = lCore.realIP(this);
-        if ((this._config.const.hostname === '127.0.0.1' || this._config.const.hostname === 'localhost') && (realIp === '172.17.0.1')) {
+        if (
+            (this._config.const.hostname === '127.0.0.1' || this._config.const.hostname === 'localhost') &&
+            (realIp === '172.17.0.1')
+        ) {
             this._internalUrl = 'http' + (this._config.const.https ? 's' : '') + '://' + realIp + this._config.const.urlBase;
         }
         else {
@@ -65,7 +72,7 @@ export default class extends sCtr.Ctr {
 
     public index(): string {
         const echo: string[] = [
-            'Hello world! Welcome to use <strong>Kebab ' + def.VER + '</strong>!',
+            'Hello world! Welcome to use <strong>Kebab ' + kebab.VER + '</strong>!',
 
             '<br><br>Node Version: ' + process.version,
             '<br>HOST: ' + this._config.const.host,
@@ -515,7 +522,7 @@ Result:<pre id="result">Nothing.</pre>` + this._getEnd();
 
     public ctrReadable(): fs.ReadStream {
         this._res.setHeader('content-type', 'text/plain; charset=utf-8');
-        return lFs.createReadStream(def.ROOT_PATH + 'sys/route.js');
+        return lFs.createReadStream(kebab.SYS_PATH + 'route.js');
     }
 
     public ctrAsynctask(): any[] {
@@ -1674,9 +1681,9 @@ error: ${JSON.stringify(res.error)}`);
 
         const fd = lNet.getFormData();
         fd.putString('a', '1');
-        await fd.putFile('file', def.LIB_PATH + 'net/cacert.pem');
-        await fd.putFile('multiple', def.LIB_PATH + 'net/cacert.pem');
-        await fd.putFile('multiple', def.LIB_PATH + 'net/cacert.pem');
+        await fd.putFile('file', kebab.LIB_PATH + 'net/cacert.pem');
+        await fd.putFile('multiple', kebab.LIB_PATH + 'net/cacert.pem');
+        await fd.putFile('multiple', kebab.LIB_PATH + 'net/cacert.pem');
         const res = await lNet.post(this._internalUrl + 'test/net-upload1', fd);
         echo.push(`<pre>const fd = lNet.getFormData();
 fd.putString('a', '1');
@@ -1842,7 +1849,7 @@ lCore.setCookie(this, 'test10', 'httponly', {
 
         const res = await lNet.get('https://cdn.jsdelivr.net/npm/deskrt@2.0.10/package.json', {
             'follow': 5,
-            'save': def.LOG_PATH + 'test-must-remove.json'
+            'save': kebab.LOG_CWD + 'test-must-remove.json'
         });
         echo.push(`<pre>lNet.get('https://cdn.jsdelivr.net/npm/deskrt@2.0.10/package.json', {
     'follow': 5,

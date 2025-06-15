@@ -1,9 +1,9 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2019-5-15 16:49:39
- * Last: 2020-04-06 20:51:06, 2022-9-29 15:18:16, 2022-12-29 00:01:30, 2024-3-6 17:53:14, 2024-5-31 17:29:52
+ * Last: 2020-04-06 20:51:06, 2022-9-29 15:18:16, 2022-12-29 00:01:30, 2024-3-6 17:53:14, 2024-5-31 17:29:52, 2025-6-13 15:47:02
  */
-import * as def from '~/sys/def';
+import * as kebab from '~/index';
 import * as fs from './fs';
 import * as types from '~/types';
 
@@ -143,7 +143,7 @@ export function urlResolve(from: string, to: string): string {
         }
     }
     // --- 处理后面的尾随路径 ---
-    let abs = (f.auth ? f.auth + '@' : '') + (f.host ? f.host : '');
+    let abs = (f.auth ? f.auth + '@' : '') + (f.host ?? '');
     if (to.startsWith('/')) {
         // -- abs 类似是 /xx/xx ---
         abs += to;
@@ -279,7 +279,7 @@ export async function parseDomain(domain: string): Promise<IDomain> {
     }
     else {
         if (!tldList) {
-            tldList = JSON.parse(await fs.getContent(def.LIB_PATH + 'text/tld.json', 'utf8') ?? '[]');
+            tldList = JSON.parse(await fs.getContent(kebab.LIB_PATH + 'text/tld.json', 'utf8') ?? '[]');
         }
         const last2 = (arr[arr.length - 2] + '.' + arr[arr.length - 1]).toLowerCase();
         if (tldList.includes(last2)) {
@@ -540,14 +540,15 @@ export function parseJson(str: string): any {
 /**
  * --- 将对象转换为 json 字符串，返回 false 代表解析失败，支持 BigInt，Kebab true, Mutton false ---
  * @param obj 要转换的 json 对象
+ * @param space 美化方式
  */
-export function stringifyJson(obj: types.Json): string {
+export function stringifyJson(obj: types.Json, space?: string | number): string {
     return JSON.stringify(obj, (k, v) => {
         if (typeof v === 'bigint') {
             return '-mybigint-' + v.toString();
         }
         return v;
-    }).replace(/"-mybigint-([-+0-9]+?)"/g, '$1');
+    }, space).replace(/"-mybigint-([-+0-9]+?)"/g, '$1');
 }
 
 /**
