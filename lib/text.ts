@@ -552,6 +552,14 @@ export function stringifyJson(obj: types.Json, space?: string | number): string 
 }
 
 /**
+ * --- 判断一个值是否是虚假的（为 null/undefined/空字符串/false/0 等） ---
+ * @param val 要判断的值
+ */
+export function isFalsy(val: any): boolean {
+    return (val === null || val === undefined || val === '' || val === false || val === 0) ? true : false;
+}
+
+/**
  * --- 为解决精度问题，将字符串数字转换为整数显示 ---
  * --- 以下几个示例都是当 digits 为 2 时 ---
  * --- str 传入 '1.234'，返回 123 ---

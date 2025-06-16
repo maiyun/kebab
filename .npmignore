@@ -4,6 +4,5 @@ node_modules/
 .gitignore
 .npmrc
 .npmignore
-tsconfig.json
 .DS_Store
 /doc/
