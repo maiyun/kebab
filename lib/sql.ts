@@ -664,9 +664,7 @@ export class Sql {
     }
 
     private _whereSub(s: types.Json, data?: any[]): string {
-        if (!data) {
-            data = this._data;
-        }
+        data ??= this._data;
         s = aoMix(s);
         let sql = '';
         for (const k in s) {

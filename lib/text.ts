@@ -551,12 +551,23 @@ export function stringifyJson(obj: types.Json, space?: string | number): string 
     }, space).replace(/"-mybigint-([-+0-9]+?)"/g, '$1');
 }
 
+type TFalsy = false | '' | 0 | null | undefined | typeof NaN;
+
 /**
- * --- 判断一个值是否是虚假的（为 null/undefined/空字符串/false/0 等） ---
+ * --- 判断一个值是否是虚假的（为 null/undefined/空字符串/false/0） ---
  * @param val 要判断的值
  */
-export function isFalsy(val: any): boolean {
-    return (val === null || val === undefined || val === '' || val === false || val === 0) ? true : false;
+export function isFalsy(val: any): val is TFalsy {
+    return (val === null) || (val === undefined) || (val === '') || (val === false) || (val === 0);
+}
+
+/**
+ * --- 类似 || 运算符的效果 ---
+ * @param v1 比对值
+ * @param v2 比对值
+ */
+export function logicalOr<T, T2>(v1: T, v2: T2): [T] extends [TFalsy] ? T2 : T {
+    return (isFalsy(v1) ? v2 : v1) as any;
 }
 
 /**
