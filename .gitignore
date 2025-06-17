@@ -9,3 +9,5 @@ node_modules/
 !eslint.config.js
 *.js.map
 package-lock.json
+*.d.ts
+!/types/*.d.ts
