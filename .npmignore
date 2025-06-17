@@ -1,6 +1,8 @@
+.vscode/
+.VSCodeCounter/
+.vs/
 .git/
 node_modules/
-.eslintrc
 .gitignore
 .npmrc
 .npmignore
