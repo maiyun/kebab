@@ -551,6 +551,15 @@ export function stringifyJson(obj: types.Json, space?: string | number): string 
     }, space).replace(/"-mybigint-([-+0-9]+?)"/g, '$1');
 }
 
+/**
+ * --- 输出文本格式的 buffer ---
+ * @param buf 原始 buffer
+ */
+export function stringifyBuffer(buf: Buffer): string {
+    const arr = buf.toString('hex').match(/.{1,2}/g);
+    return `<Buffer ${arr ? arr.join(' ') : ''}>`;
+}
+
 type TFalsy = false | '' | 0 | null | undefined | typeof NaN;
 
 /**

@@ -1222,7 +1222,6 @@ orig ? 'true' : 'false';</pre>${orig ? 'true' : 'false'}`);
 
         text = lCrypto.aesEncrypt('Original text', key, iv, lCrypto.AES_256_CBC);
         echo.push(`<pre>const key = 'testkeyatestkeyatestkeyatestkeya';
-const text = lCrypto.aesEncrypt('Original text', key);
 text = lCrypto.aesEncrypt('Original text', key, iv, lCrypto.AES_256_CBC);
 JSON.stringify(text);</pre>${JSON.stringify(text)}`);
 
@@ -1234,7 +1233,34 @@ JSON.stringify(orig);</pre>${JSON.stringify(orig)}`);
         echo.push(`<pre>orig = lCrypto.aesDecrypt(text || '', key, 'otherIv', lCrypto.AES_256_CBC);
 JSON.stringify(orig);</pre>${JSON.stringify(orig)}`);
 
+        // --- gcm ---
+
+        echo.push('<br><br><b>AES-256-GCM (TEXT):</b>');
+
+        text = lCrypto.gcmEncrypt('Original text', key);
+        echo.push(`<pre>const key = 'testkeyatestkeyatestkeyatestkeya';
+text = lCrypto.gcmEncrypt('Original text', key);
+JSON.stringify(text);</pre>${lText.htmlescape(JSON.stringify(text))}`);
+
+        orig = lCrypto.gcmDecrypt(text || '', key);
+        echo.push(`<pre>orig = lCrypto.gcmDecrypt(text || '', key);
+JSON.stringify(orig);</pre>${JSON.stringify(orig)}`);
+
+        echo.push('<br><br><b>AES-256-GCM (BUFFER):</b>');
+
+        const buffer = lCrypto.gcmEncrypt(Buffer.from('Original text'), key, 'buffer');
+        echo.push(`<pre>const key = 'testkeyatestkeyatestkeyatestkeya';
+const buffer = lCrypto.gcmEncrypt(Buffer.from('Original text'), key);
+console.log(buffer);</pre>${buffer ? lText.htmlescape(lText.stringifyBuffer(buffer)) : 'false'}`);
+
+        const origBuffer = lCrypto.gcmDecrypt(buffer || Buffer.from(''), key, 'buffer');
+        echo.push(`<pre>const origBuffer = lCrypto.gcmDecrypt(buffer || Buffer.from(''), key, 'buffer');
+console.log(origBuffer);</pre>${origBuffer ? lText.htmlescape(lText.stringifyBuffer(origBuffer)) : 'false'}
+<pre>JSON.stringify(origBuffer ? origBuffer.toString() : false);</pre>${JSON.stringify(origBuffer ? origBuffer.toString() : false)}`);
+
         // ----------
+
+        echo.push('<br><br><b>EC:</b>');
 
         const res = await lCrypto.generateKeyPair('ec', {
             'namedCurve': 'sm2',

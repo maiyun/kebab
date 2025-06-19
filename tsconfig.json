@@ -1,7 +1,6 @@
 {
     "compilerOptions": {
         "module": "CommonJS",
-        "removeComments": true,
         "preserveConstEnums": true, // 保留 const 和 enum 声明
         "outDir": "./",
         "sourceMap": false,
@@ -9,6 +8,7 @@
         "strict": true,             // 严格模式
         "declaration": true,        // d.ts
         "declarationMap": false,    // d.ts 的 map
+        "removeComments": false,
         "newLine": "LF",
         "paths": {
             "~/*": ["./*"]
