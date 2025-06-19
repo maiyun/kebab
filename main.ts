@@ -7,6 +7,8 @@
 // git config core.ignorecase false
 
 import cluster from 'cluster';
+// --- 虽然框架本身不用，但是业务侧会用到，所以这个库不能删 ---
+import 'ts-alias-loader';
 
 // --- 初始化 ---
 // --- 一定要分别隔离加载 Master 和 Child 代码，防止执行串了 ---
