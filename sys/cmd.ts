@@ -137,6 +137,16 @@ async function run(): Promise<void> {
         config.s3['TENCENT'].skey = '';
         config.s3['TENCENT'].region = '';
         config.s3['TENCENT'].bucket = '';
+        // --- config - turnstile ---
+        config.turnstile ??= {};
+        config.turnstile['CF'] ??= {};
+        config.turnstile['CF'].sid ??= '';
+        config.turnstile['CF'].skey ??= '';
+        config.turnstile['TENCENT'] ??= {};
+        config.turnstile['TENCENT'].sid ??= '';
+        config.turnstile['TENCENT'].skey ??= '';
+        config.turnstile['TENCENT'].aid ??= '';
+        config.turnstile['TENCENT'].akey ??= '';
         // --- 保存 config.json ---
         if (!await lFs.putContent(kebab.CONF_CWD + 'config.json', lText.stringifyJson(config, 4))) {
             lCore.display('KEBAB', 'CREATE', 'FILE', kebab.CONF_CWD + 'config.json', '[FAILED]');
