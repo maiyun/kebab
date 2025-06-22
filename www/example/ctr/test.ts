@@ -583,6 +583,7 @@ Result:<pre id="result">Nothing.</pre>` + this._getEnd();
                 'ctr': this
             });
             test.set({
+                'name': 'nam' + lCore.rand(0, 3).toString(),
                 'point': { 'x': lCore.rand(0, 99), 'y': lCore.rand(0, 99) },
                 'polygon': [
                     [
@@ -602,6 +603,7 @@ const test = mTest.getCreate<mTest>(db, {
     'ctr': this
 });
 test.set({
+    'name': 'nam' + lCore.rand(0, 4).toString(),
     'point': { 'x': lCore.rand(0, 99), 'y': lCore.rand(0, 99) },
     'polygon': [
         [
@@ -813,6 +815,7 @@ CREATE TABLE \`m_test_data_0\` (
             'ctr': this
         });
         test.set({
+            'name': lCore.random(4),
             'token': lCore.random(lCore.rand(8, 32)),
             'point': {
                 'x': 10,

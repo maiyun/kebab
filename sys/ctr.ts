@@ -794,7 +794,7 @@ export class Ctr {
         this._res.setHeader('access-control-allow-headers', '*');
         this._res.setHeader('access-control-allow-methods', '*');
         if (this._req.method === 'OPTIONS') {
-            this._res.setHeader('access-control-max-age', '600');
+            this._res.setHeader('access-control-max-age', '3600');
             return false;
         }
         return true;

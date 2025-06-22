@@ -95,6 +95,9 @@ export default class Mod {
     /** --- 设置后将由 _keyGenerator 函数生成唯一字段 --- */
     protected static _$key: string = '';
 
+    /** --- 若使用 _$key 并且有多个 unique 索引，这里指定 _$key 的索引名 --- */
+    protected static _$index: string = '';
+
     /** ---- 可开启软删软更新软新增 --- */
     protected static _$soft: boolean = false;
 
@@ -430,8 +433,8 @@ export default class Mod {
         if (typeof opt.index === 'string') {
             opt.index = [opt.index];
         }
-        else if (!opt.index) {
-            opt.index = [''];
+        else {
+            opt.index ??= [''];
         }
         if (this._$soft && !opt.raw) {
             if (typeof where === 'string') {
@@ -842,9 +845,7 @@ export default class Mod {
         for (const k in this._updates) {
             updates[k] = this._data[k];
         }
-        if (!table) {
-            table = (cstr._$table as string) + (this._index ? ('_' + this._index[0]) : '');
-        }
+        table ??= (cstr._$table as string) + (this._index ? ('_' + this._index[0]) : '');
 
         let r: lDb.IPacket | null = null;
         if ((cstr._$key !== '') && (updates[cstr._$key] === undefined)) {
@@ -868,18 +869,29 @@ export default class Mod {
                 if (!r.error) {
                     break;
                 }
-                if (r.error.errno !== 1062) {
-                    await lCore.log(this._ctr ?? {
-                        'path': '',
-                        'urlFull': '',
-                        'hostname': '',
-                        'req': null,
-                        'get': {},
-                        'cookie': {},
-                        'headers': {}
-                    }, '[create0, mod] [' + table + '] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
-                    return false;
+                if (r.error.errno === 1062) {
+                    // --- 与唯一键冲突 ---
+                    if (!cstr._$index) {
+                        // --- 没设置 index，那就当做是本次生成的 key 重复了 ---
+                        continue;
+                    }
+                    const match = /for key '([\w.]+)'/.exec(r.error.message);
+                    if (match?.[1].includes(cstr._$index)) {
+                        // --- 确实重复了 ---
+                        continue;
+                    }
                 }
+                // --- 未处理的错误 ---
+                await lCore.log(this._ctr ?? {
+                    'path': '',
+                    'urlFull': '',
+                    'hostname': '',
+                    'req': null,
+                    'get': {},
+                    'cookie': {},
+                    'headers': {}
+                }, '[create0, mod] [' + table + '] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+                return false;
             }
         }
         else {
