@@ -100,7 +100,7 @@ export function verify(
  * @param buffer 数据
  */
 export function publicEncrypt(
-    key: crypto.RsaPublicKey | crypto.RsaPrivateKey | crypto.KeyLike, buffer: NodeJS.ArrayBufferView
+    key: crypto.RsaPublicKey | crypto.RsaPrivateKey | crypto.KeyLike, buffer: NodeJS.ArrayBufferView | string
 ): Buffer {
     return crypto.publicEncrypt(key, buffer);
 }
@@ -110,7 +110,9 @@ export function publicEncrypt(
  * @param key 私钥
  * @param buffer 数据
  */
-export function privateEncrypt(key: crypto.RsaPrivateKey | crypto.KeyLike, buffer: NodeJS.ArrayBufferView): Buffer {
+export function privateEncrypt(
+    key: crypto.RsaPrivateKey | crypto.KeyLike, buffer: NodeJS.ArrayBufferView | string
+): Buffer {
     return crypto.privateEncrypt(key, buffer);
 }
 
@@ -120,7 +122,7 @@ export function privateEncrypt(key: crypto.RsaPrivateKey | crypto.KeyLike, buffe
  * @param buffer 数据
  */
 export function publicDecrypt(
-    key: crypto.RsaPublicKey | crypto.RsaPrivateKey | crypto.KeyLike, buffer: NodeJS.ArrayBufferView
+    key: crypto.RsaPublicKey | crypto.RsaPrivateKey | crypto.KeyLike, buffer: NodeJS.ArrayBufferView | string
 ): Buffer {
     return crypto.publicDecrypt(key, buffer);
 }
@@ -130,7 +132,9 @@ export function publicDecrypt(
  * @param key 私钥
  * @param buffer 数据
  */
-export function privateDecrypt(key: crypto.RsaPrivateKey | crypto.KeyLike, buffer: NodeJS.ArrayBufferView): Buffer {
+export function privateDecrypt(
+    key: crypto.RsaPrivateKey | crypto.KeyLike, buffer: NodeJS.ArrayBufferView | string
+): Buffer {
     return crypto.privateDecrypt(key, buffer);
 }
 
