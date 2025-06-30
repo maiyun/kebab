@@ -1460,9 +1460,7 @@ end`;
  * @param etc 配置信息可留空
  */
 export function get(ctr: ctr.Ctr, etc?: types.IConfigKv): Pool {
-    if (!etc) {
-        etc = ctr.getPrototype('_config').kv;
-    }
+    etc ??= ctr.getPrototype('_config').kv;
     return new Pool(ctr, etc);
 }
 
