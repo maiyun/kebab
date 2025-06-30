@@ -257,7 +257,8 @@ export default class extends sCtr.Ctr {
 
     public view(): Promise<string> {
         return this._loadView('test', {
-            'test': 'ok'
+            'test': 'ok',
+            'debug': true,
         });
     }
 

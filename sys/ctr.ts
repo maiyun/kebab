@@ -312,7 +312,7 @@ export class Ctr {
         data.l = (key: string, data?: string[]): string => {
             return this._l(key, data);
         };
-        return lCore.purify(ejs.render(content, data));
+        return lCore.purify(ejs.render(content, data, {}));
     }
 
     /**
