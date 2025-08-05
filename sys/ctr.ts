@@ -71,10 +71,10 @@ export class Ctr {
     protected _cookie: Record<string, string> = {};
 
     /** --- Jwt 数组 --- */
-    protected _jwt: Record<string, types.Json> = {};
+    protected _jwt: Record<string, any> = {};
 
     /** --- Session 数组 --- */
-    protected _session: Record<string, types.Json> = {};
+    protected _session: Record<string, any> = {};
 
     /** --- Session --- 对象 */
     protected _sess: session.Session | null = null;

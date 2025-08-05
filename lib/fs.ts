@@ -35,8 +35,8 @@ export async function getContent(path: string, options?: BufferEncoding | {
             'encoding': options
         };
     }
-    else if (!options) {
-        options = {};
+    else {
+        options ??= {};
     }
     const encoding = options.encoding;
     const start = options.start;
@@ -317,6 +317,14 @@ export async function readDir(path: string, encoding?: BufferEncoding): Promise<
             }
             list.push(item);
         }
+        // --- 将 list 根据先目录后文件排序，如果是同是目录或文件，则以名称排序 ---
+        list.sort((a, b) => {
+            // --- 目录排在文件前面 ---
+            if (a.isDirectory() && !b.isDirectory()) return -1;
+            if (!a.isDirectory() && b.isDirectory()) return 1;
+            // --- 同类型按名称排序 ---
+            return a.name.localeCompare(b.name);
+        });
         return list;
     }
     catch {
@@ -402,8 +410,8 @@ export function createReadStream(path: string, options?: BufferEncoding | {
             'encoding': options
         };
     }
-    else if (!options) {
-        options = {};
+    else {
+        options ??= {};
     }
     return fs.createReadStream(path, {
         'flags': options.flags,
@@ -449,8 +457,8 @@ export function createWriteStream(path: string, options?: BufferEncoding | {
             'encoding': options
         };
     }
-    else if (!options) {
-        options = {};
+    else {
+        options ??= {};
     }
     return fs.createWriteStream(path, {
         'flags': options.flags,
@@ -473,9 +481,7 @@ export async function readToResponse(path: string,
     res: http2.Http2ServerResponse | http.ServerResponse,
     stat?: fs.Stats | null
 ): Promise<void> {
-    if (!stat) {
-        stat = await stats(path);
-    }
+    stat ??= await stats(path);
     if (!stat) {
         res.setHeader('content-length', 22);
         res.writeHead(404);
@@ -508,7 +514,7 @@ export async function readToResponse(path: string,
     // --- 设置 type ---
     res.setHeader('content-type', mimeData.mime + charset);
     // --- 判断客户端支持的压缩模式 ---
-    const encoding = req.headers['accept-encoding'] as string ?? '';
+    const encoding = req.headers['accept-encoding'] ?? '';
     if (mimeData.compressible && (stat.size >= 1024)) {
         // --- 压缩 ---
         const compress = await zlib.compress(encoding, await getContent(path));

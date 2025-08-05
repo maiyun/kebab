@@ -294,7 +294,7 @@ export async function run(data: {
             cctr.setPrototype('_socket', wsSocket);
         }
         catch (e: types.Json) {
-            await lCore.log(cctr, lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
+            lCore.log(cctr, lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
             data.socket.destroy();
             return true;
         }
@@ -304,13 +304,13 @@ export async function run(data: {
         cctr.setPrototype('_get', get);
         cctr.setPrototype('_cookie', cookies);
 
-        await lCore.log(cctr, '', '-visit');
+        lCore.log(cctr, '', '-visit');
 
         try {
             rtn = await (cctr as types.Json).onLoad();
         }
         catch (e: types.Json) {
-            await lCore.log(cctr, lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
+            lCore.log(cctr, lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
             data.socket.destroy();
             return true;
         }
@@ -367,7 +367,7 @@ export async function run(data: {
                                 }
                             }
                             catch (e: any) {
-                                await lCore.log(cctr, lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
+                                lCore.log(cctr, lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
                             }
                             break;
                         }
@@ -380,16 +380,16 @@ export async function run(data: {
                         await (cctr as types.Json)['onDrain']();
                     }
                     catch (e: any) {
-                        await lCore.log(cctr, lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
+                        lCore.log(cctr, lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
                     }
-                }).on('error', async (e: any) => {
-                    await lCore.log(cctr, lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
+                }).on('error', (e: any) => {
+                    lCore.log(cctr, lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
                 }).on('close', async () => {
                     try {
                         await (cctr as types.Json)['onClose']();
                     }
                     catch (e: any) {
-                        await lCore.log(cctr, lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
+                        lCore.log(cctr, lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
                     }
                     resolve();
                 });
@@ -439,7 +439,7 @@ export async function run(data: {
         rtn = await (middle.onLoad() as types.Json);
     }
     catch (e: types.Json) {
-        await lCore.log(middle, '(E03)' + lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
+        lCore.log(middle, '(E03)' + lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
         data.res.setHeader('content-type', 'text/html; charset=utf-8');
         data.res.setHeader('content-length', 25);
         data.res.writeHead(500);
@@ -495,7 +495,7 @@ export async function run(data: {
         cctr.setPrototype('_xsrf', middle.getPrototype('_xsrf'));
         cctr.setPrototype('_httpCode', middle.getPrototype('_httpCode'));
 
-        await lCore.log(cctr, '', '-visit');
+        lCore.log(cctr, '', '-visit');
 
         // --- 强制 HTTPS ---
         if (config.set.mustHttps && !config.const.https) {
@@ -554,7 +554,7 @@ export async function run(data: {
             httpCode = cctr.getPrototype('_httpCode');
         }
         catch (e: types.Json) {
-            await lCore.log(cctr, '(E04)' + lText.stringifyJson(e.stack).slice(1, -1), '-error');
+            lCore.log(cctr, '(E04)' + lText.stringifyJson(e.stack).slice(1, -1), '-error');
             data.res.setHeader('content-type', 'text/html; charset=utf-8');
             data.res.setHeader('content-length', 25);
             data.res.writeHead(500);
@@ -827,7 +827,7 @@ export async function waitCtr(cctr: sCtr.Ctr): Promise<void> {
         // --- 有事务未关闭 ---
         const msg = 'transaction(' + waitInfo.transaction + ') not be closed';
         lCore.display('[ERROR][ROUTE][WAITCTR] ' + msg + ': ', cctr.getPrototype('_config').const.path);
-        await lCore.log(cctr, msg, '-error');
+        lCore.log(cctr, msg, '-error');
     }
     // --- 彻底结束，删除文件 ---
     await unlinkUploadFiles(cctr);

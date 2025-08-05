@@ -88,7 +88,7 @@ export class Session {
 
         this._link = link;
         if (link instanceof db.Pool) {
-            this._sql = sql.get(pre ? pre : ctr);
+            this._sql = sql.get(pre ?? ctr);
             await this._gc();    // --- 执行 gc ---
         }
 

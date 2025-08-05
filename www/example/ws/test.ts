@@ -12,7 +12,7 @@ export default class extends sCtr.Ctr {
                 return;
             }
             this._writeText('Other message, host: ' + this._config.const.host);
-        }, 2000);
+        }, 2_000);
         return true;
     }
 
@@ -25,6 +25,7 @@ export default class extends sCtr.Ctr {
             return 'Base64: ' + lCrypto.base64Encode(data);
         }
         // --- 用户消息 ---
+        console.log('[' + Date.now() + '] WebSocket test onData, data: ' + data);
         return '<b>' + this._nick + ':</b> ' + data;
     }
 

@@ -571,6 +571,14 @@ export function isFalsy(val: any): val is TFalsy {
 }
 
 /**
+ * --- 判断一个值是否是真实的（不为 null/undefined/空字符串/false/0） ---
+ * @param val 要判断的值
+ */
+export function isTruthy(val: any): val is Exclude<typeof val, TFalsy> {
+    return !isFalsy(val);
+}
+
+/**
  * --- 类似 || 运算符的效果 ---
  * @param v1 比对值
  * @param v2 比对值

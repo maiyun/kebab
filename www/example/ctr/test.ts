@@ -152,6 +152,7 @@ export default class extends sCtr.Ctr {
             `<br><a href="${this._config.const.urlBase}test/core-checktype">View "test/core-checktype"</a>`,
             `<br><a href="${this._config.const.urlBase}test/core-muid">View "test/core-muid"</a>`,
             `<br><a href="${this._config.const.urlBase}test/core-getlog">View "test/core-getlog"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/core-ls">View "test/core-ls"</a>`,
             `<br><a href="${this._config.const.urlBase}test/core-reload">View "test/core-reload"</a>`,
             `<br><a href="${this._config.const.urlBase}test/core-restart">View "test/core-restart"</a>`,
             `<br><a href="${this._config.const.urlBase}test/core-global">View "test/core-global"</a>`,
@@ -1127,13 +1128,14 @@ for (let i = 0; i < 30000; ++i) {
     public async coreGetlog(): Promise<string> {
         const path = lTime.format(null, 'Y/m/d/H');
         const list = await lCore.getLog({
-            'host': this._config.const.hostname,
+            'hostname': this._config.const.hostname,
             'path': path,
             'fend': '-visit',
         });
         const echo: string[] = [];
-        echo.push('<table style="width: 100%;"><tr>');
+        echo.push('<table style="width: 100%;">');
         if (list) {
+            echo.push('<tr><th>TIME</th><th>UNIX</th><th>URL</th><th>COOKIE</th><th>SESSION</th><th>JWT</th><th>USER_AGENT</th><th>REALIP</th><th>CLIENTIP</th><th>MESSAGE</th></tr>');
             for (const row of list) {
                 echo.push('<tr>');
                 for (const item of row) {
@@ -1143,7 +1145,42 @@ for (let i = 0; i < 30000; ++i) {
             }
         }
         else {
-            echo.push('<th>' + JSON.stringify(list) + '</th></tr>');
+            echo.push('<tr><th>' + JSON.stringify(list) + '</th></tr>');
+        }
+        echo.push('</table>');
+        return echo.join('') + '<br>' + this._getEnd();
+    }
+
+    public async coreLs(): Promise<string> {
+        const echo: string[] = [
+            './'
+        ];
+        const list = await lCore.ls({
+            'path': './',
+        });
+        echo.push('<table style="width: 100%;">');
+        for (const item of list) {
+            echo.push('<tr>');
+            echo.push('<td>' + lText.htmlescape(item.name) + '</td>');
+            echo.push('<td>isDirectory:' + (item.isDirectory ? 'true' : 'false') + '</td>');
+            echo.push('<td>isFile:' + (item.isFile ? 'true' : 'false') + '</td>');
+            echo.push('<td>isSymbolicLink:' + (item.isSymbolicLink ? 'true' : 'false') + '</td>');
+            echo.push('</tr>');
+        }
+        echo.push('</table>');
+        // --- source/ ---
+        echo.push('source/');
+        const list2 = await lCore.ls({
+            'path': 'source/',
+        });
+        echo.push('<table style="width: 100%;">');
+        for (const item of list2) {
+            echo.push('<tr>');
+            echo.push('<td>' + lText.htmlescape(item.name) + '</td>');
+            echo.push('<td>isDirectory:' + (item.isDirectory ? 'true' : 'false') + '</td>');
+            echo.push('<td>isFile:' + (item.isFile ? 'true' : 'false') + '</td>');
+            echo.push('<td>isSymbolicLink:' + (item.isSymbolicLink ? 'true' : 'false') + '</td>');
+            echo.push('</tr>');
         }
         echo.push('</table>');
         return echo.join('') + '<br>' + this._getEnd();
@@ -2964,6 +3001,7 @@ ${lTime.format(null, 'd|D|j|l|N|w|Y|y|F|M|m|H|h|i|s|T')}`;
 <div style="margin-top: 10px; display: flex;">
     <input id="text" style="flex: 1;">
     <input id="send" type="button" value="Send" onclick="send()" disabled style="margin-left: 10px;">
+    <input type="button" value="!Ping" onclick="pinging = !pinging; this.value = pinging ? 'Ping' : '!Ping';" style="margin-left: 10px;">
 </div>
 <script>
 var ws = null;
@@ -2974,6 +3012,12 @@ var stopEl = document.getElementById('stop');
 
 var textEl = document.getElementById('text');
 var sendEl = document.getElementById('send');
+
+function dateStr() {
+    const date = new Date();
+    return date.getHours().toString().padStart(2, '0') + ':' + date.getMinutes().toString().padStart(2, '0') + ':' + date.getSeconds().toString().padStart(2, '0');
+}
+
 function enter() {
     var nick = nickEl.value.trim();
     if (nick === '') {
@@ -2982,27 +3026,27 @@ function enter() {
     }
     nickEl.disabled = true;
     btnEl.disabled = true;
-    listEl.insertAdjacentHTML('afterbegin', '<div>Connecting...</div>');
+    listEl.insertAdjacentHTML('afterbegin', '<div>[' + dateStr() + '] Connecting...</div>');
     ws = new WebSocket('ws${this._config.const.https ? 's' : ''}://${this._config.const.host}/${this._get['ac'] === 'rproxy' ? 'rproxy' : 'test'}');
     ws.onopen = function() {
-        listEl.insertAdjacentHTML('afterbegin', '<div>Event: onOpen.</div>');
+        listEl.insertAdjacentHTML('afterbegin', '<div>[' + dateStr() + '] Event: onOpen.</div>');
         ws.send('Hello: ' + nick);
-        listEl.insertAdjacentHTML('afterbegin', '<div>Client: send "Hello: ' + nick + '".</div>');
+        listEl.insertAdjacentHTML('afterbegin', '<div>[' + dateStr() + '] Client: send "Hello: ' + nick + '".</div>');
         stopEl.disabled = false;
         sendEl.disabled = false;
     };
     ws.onmessage = function(ev) {
-        listEl.insertAdjacentHTML('afterbegin', '<div>Server: ' + ev.data + '.</div>');
+        listEl.insertAdjacentHTML('afterbegin', '<div>[' + dateStr() + '] Server: ' + ev.data + '.</div>');
     };
     ws.onclose = function() {
-        listEl.insertAdjacentHTML('afterbegin', '<div>Event: onClose.</div>');
+        listEl.insertAdjacentHTML('afterbegin', '<div>[' + dateStr() + '] Event: onClose.</div>');
         nickEl.disabled = false;
         btnEl.disabled = false;
         stopEl.disabled = true;
         sendEl.disabled = true;
     };
     ws.onerror = function(ev) {
-        listEl.insertAdjacentHTML('afterbegin', '<div>Event: onError.</div>');
+        listEl.insertAdjacentHTML('afterbegin', '<div>[' + dateStr() + '] Event: onError.</div>');
         nickEl.disabled = false;
         btnEl.disabled = false;
         stopEl.disabled = true;
@@ -3017,6 +3061,16 @@ function send() {
     ws.send(textEl.value);
     textEl.value = '';
 }
+var pinging = false;
+setInterval(() => {
+    if (!ws) {
+        return;
+    }
+    if (!pinging) {
+        return;
+    }
+    ws.send('ping');
+}, 5_000);
 </script>`;
         return echo + '<br>' + this._getEnd();
     }

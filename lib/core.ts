@@ -25,6 +25,7 @@ export const globalConfig: types.IConfig & {
     'rpcSecret': string;
     'debug': boolean;
     'max': number;
+    'hosts': string[];
 } = {} as types.Json;
 
 /** --- Cookie 设置的选项 --- */
@@ -444,7 +445,7 @@ export function exec(command: string): Promise<string | false> {
  * --- 向主进程（或局域网同代码机子）发送广播将进行 reload 操作，等待回传 ---
  * --- 主要作用除代码热更新以外的其他情况 ---
  */
-export async function sendReload(hosts?: string[]): Promise<string[]> {
+export async function sendReload(hosts?: string[] | 'config'): Promise<string[]> {
     if (!hosts) {
         // --- 本地模式 ---
         // eslint-disable-next-line no-console
@@ -453,6 +454,9 @@ export async function sendReload(hosts?: string[]): Promise<string[]> {
             'action': 'reload'
         });
         return [];
+    }
+    if (hosts === 'config') {
+        hosts = globalConfig.hosts;
     }
     // --- 局域网模式 ---
     const time = lTime.stamp();
@@ -481,7 +485,7 @@ export async function sendReload(hosts?: string[]): Promise<string[]> {
  * --- 向主进程（或局域网同代码机子）发送广播将进行 restart 操作，停止监听并启动新进程，老进程在连接全部断开后自行销毁 ---
  * --- 主要用作不间断的代码热更新 ---
  */
-export async function sendRestart(hosts?: string[]): Promise<string[]> {
+export async function sendRestart(hosts?: string[] | 'config'): Promise<string[]> {
     if (!hosts) {
         // --- 本地模式 ---
         // eslint-disable-next-line no-console
@@ -490,6 +494,9 @@ export async function sendRestart(hosts?: string[]): Promise<string[]> {
             'action': 'restart'
         });
         return [];
+    }
+    if (hosts === 'config') {
+        hosts = globalConfig.hosts;
     }
     // --- 局域网模式 ---
     const time = lTime.stamp();
@@ -518,12 +525,12 @@ export async function sendRestart(hosts?: string[]): Promise<string[]> {
 export const global: Record<string, any> = {};
 
 /**
- * --- 设置跨线程的全局变量 ---
+ * --- 设置跨线程/跨内网服务器的全局变量 ---
  * @param key 变量名
  * @param data 变量值
  * @param hosts 局域网列表
  */
-export async function setGlobal(key: string, data: types.Json, hosts?: string[]): Promise<string[]> {
+export async function setGlobal(key: string, data: types.Json, hosts?: string[] | 'config'): Promise<string[]> {
     if (!hosts) {
         // --- 本地模式 ---
         process.send!({
@@ -532,6 +539,9 @@ export async function setGlobal(key: string, data: types.Json, hosts?: string[])
             'data': data
         });
         return [];
+    }
+    if (hosts === 'config') {
+        hosts = globalConfig.hosts;
     }
     // --- 局域网模式 ---
     const time = lTime.stamp();
@@ -557,7 +567,7 @@ export async function setGlobal(key: string, data: types.Json, hosts?: string[])
 }
 
 /**
- * --- 移除某个跨线程全局变量 ---
+ * --- 移除某个跨线程/跨内网服务器全局变量 ---
  * @param key 变量名
  * @param hosts 局域网列表
  */
@@ -571,13 +581,18 @@ export async function removeGlobal(key: string, hosts?: string[]): Promise<strin
  * @param path 要覆盖到的路径，无所谓是否 / 开头 / 结尾，是对方 kebab 的根据路开始算起
  * @param hosts 局域网多机部署，不设置默认本机部署
  * @param config 是否自动更新 config 的 set.staticVer 为最新，默认更新
+ * @param strict 严格模式，只有存在的文件才会被覆盖，不存在则中途直接报错，默认为 true
  */
 export async function updateCode(
-    sourcePath: string, path: string, hosts?: string[], config: boolean = true
+    sourcePath: string, path: string, hosts?: string[] | 'config', config: boolean = true,
+    strict: boolean = true
 ): Promise<Record<string, {
         'result': boolean;
         'return': string;
     }>> {
+    if (hosts === 'config') {
+        hosts = globalConfig.hosts;
+    }
     hosts ??= ['127.0.0.1'];
     /** --- 返回成功的 host --- */
     const rtn: Record<string, {
@@ -591,6 +606,7 @@ export async function updateCode(
         }
         fd.putString('path', path);
         fd.putString('config', config ? '1' : '0');
+        fd.putString('strict', strict ? '1' : '0');
         const res = await lNet.post('http://' + host + ':' + globalConfig.rpcPort.toString() + '/' + lCrypto.aesEncrypt(lText.stringifyJson({
             'action': 'code',
             'time': lTime.stamp()
@@ -616,13 +632,15 @@ export async function updateCode(
 
 /** --- log 设置的选项 --- */
 export interface ILogOptions {
-    'path': string;
-    'urlFull': string;
-    'hostname': string;
-    'req': http2.Http2ServerRequest | http.IncomingMessage | null;
-    'get': Record<string, types.Json>;
-    'cookie': Record<string, string>;
-    'headers': http.IncomingHttpHeaders;
+    'path'?: string;
+    'urlFull'?: string;
+    'hostname'?: string;
+    'req'?: http2.Http2ServerRequest | http.IncomingMessage | null;
+    'get'?: Record<string, types.Json>;
+    'cookie'?: Record<string, string>;
+    'jwt'?: Record<string, any>;
+    'session'?: Record<string, any>;
+    'headers'?: http.IncomingHttpHeaders;
 }
 
 /**
@@ -631,67 +649,79 @@ export interface ILogOptions {
  * @param fend 文件名追加
  * @param opt 选项
  */
-export async function log(opt: sCtr.Ctr | ILogOptions, msg: string, fend: string = ''): Promise<void> {
-    let req: http2.Http2ServerRequest | http.IncomingMessage | null;
-    let headers: http.IncomingHttpHeaders;
-    let get: Record<string, types.Json>;
-    let cookie: Record<string, string>;
-    let wpath: string;
-    let urlFull: string;
-    let hostname: string;
-    if (opt instanceof sCtr.Ctr) {
-        req = opt.getPrototype('_req');
-        headers = opt.getPrototype('_headers');
-        get = opt.getPrototype('_get');
-        cookie = opt.getPrototype('_cookie');
-        const config = opt.getPrototype('_config');
-        wpath = config.const.path;
-        urlFull = config.const.urlFull;
-        hostname = config.const.hostname;
-    }
-    else {
-        req = opt.req;
-        headers = opt.headers;
-        get = opt.get;
-        cookie = opt.cookie;
-        wpath = opt.path;
-        urlFull = opt.urlFull;
-        hostname = opt.hostname;
-    }
-    if (hostname === '') {
-        hostname = 'system';
-    }
+export function log(opt: sCtr.Ctr | ILogOptions, msg: string, fend: string = ''): void {
+    (async () => {
+        let req: http2.Http2ServerRequest | http.IncomingMessage | null;
+        let headers: http.IncomingHttpHeaders;
+        let get: Record<string, types.Json>;
+        let cookie: Record<string, string>;
+        let jwt: Record<string, any>;
+        let session: Record<string, any>;
+        let wpath: string;
+        let urlFull: string;
+        let hostname: string;
+        if (opt instanceof sCtr.Ctr) {
+            req = opt.getPrototype('_req');
+            headers = opt.getPrototype('_headers');
+            get = opt.getPrototype('_get');
+            cookie = opt.getPrototype('_cookie');
+            jwt = opt.getPrototype('_jwt');
+            session = opt.getPrototype('_session');
+            const config = opt.getPrototype('_config');
+            wpath = config.const.path;
+            urlFull = config.const.urlFull;
+            hostname = config.const.hostname;
+        }
+        else {
+            req = opt.req ?? null;
+            headers = opt.headers ?? {};
+            get = opt.get ?? {};
+            cookie = opt.cookie ?? {};
+            jwt = opt.jwt ?? {};
+            session = opt.session ?? {};
+            wpath = opt.path ?? '';
+            urlFull = opt.urlFull ?? '';
+            hostname = opt.hostname ?? '';
+        }
+        if (hostname === '') {
+            hostname = 'system';
+        }
 
-    const realIp = req?.socket.remoteAddress ?? '';
-    const clientIp = req ? ip(headers, req) : '';
+        const realIp = req?.socket.remoteAddress ?? '';
+        const clientIp = req ? ip(headers, req) : '';
 
-    const [y, m, d, h] = lTime.format(null, 'Y-m-d-H').split('-');
-    let path = kebab.LOG_CWD + hostname + fend + '/' + y + '/' + m + '/' + d + '/';
-    const rtn = await lFs.mkdir(path, 0o777);
-    if (!rtn) {
-        return;
-    }
-    path += h + '.csv';
-    if (!await lFs.isFile(path)) {
-        if (!await lFs.putContent(path, 'TIME,UNIX,URL,COOKIE,USER_AGENT,REALIP,CLIENTIP,MESSAGE\n', {
-            'encoding': 'utf8',
-            'mode': 0o777
-        })) {
+        const [y, m, d, h] = lTime.format(null, 'Y-m-d-H').split('-');
+        let path = kebab.LOG_CWD + hostname + fend + '/' + y + '/' + m + '/' + d + '/';
+        const rtn = await lFs.mkdir(path, 0o777);
+        if (!rtn) {
             return;
         }
-    }
-    await lFs.putContent(path, '"' +
-        lTime.format(null, 'H:i:s') + '","' +
-        lTime.stamp().toString() + '","' +
-        urlFull + wpath + (Object.keys(get).length ? '?' + lText.queryStringify(get).replace(/"/g, '""') : '') + '","' +
-        lText.queryStringify(cookie).replace(/"/g, '""') + '","' +
-        (headers['user-agent']?.replace(/"/g, '""') ?? 'No HTTP_USER_AGENT') + '","' +
-        realIp.replace(/"/g, '""') + '","' +
-        clientIp.replace(/"/g, '""') + '",' +
-        JSON.stringify(msg.replace(/"/g, '""')) + '\n', {
-        'encoding': 'utf8',
-        'mode': 0o777,
-        'flag': 'a'
+        path += h + '.csv';
+        if (!await lFs.isFile(path)) {
+            if (!await lFs.putContent(path, 'TIME,UNIX,URL,COOKIE,SESSION,JWT,USER_AGENT,REALIP,CLIENTIP,MESSAGE\n', {
+                'encoding': 'utf8',
+                'mode': 0o777
+            })) {
+                return;
+            }
+        }
+        await lFs.putContent(path, '"' +
+            lTime.format(null, 'H:i:s') + '","' +
+            lTime.stamp().toString() + '","' +
+            urlFull + wpath + (Object.keys(get).length ? '?' + lText.queryStringify(get).replace(/"/g, '""') : '') + '","' +
+            lText.queryStringify(cookie).replace(/"/g, '""') + '","' +
+            lText.stringifyJson(jwt).replace(/"/g, '""') + '","' +
+            lText.stringifyJson(session).replace(/"/g, '""') + '","' +
+            (headers['user-agent']?.replace(/"/g, '""') ?? 'No HTTP_USER_AGENT') + '","' +
+            realIp.replace(/"/g, '""') + '","' +
+            clientIp.replace(/"/g, '""') + '","' +
+            JSON.stringify(msg).slice(1, -1).replace(/"/g, '""') + '"\n', {
+            'encoding': 'utf8',
+            'mode': 0o777,
+            'flag': 'a'
+        });
+    })().catch((e) => {
+        display('[CORE] [log]', e);
     });
 }
 
@@ -701,103 +731,87 @@ export async function log(opt: sCtr.Ctr | ILogOptions, msg: string, fend: string
  */
 export async function getLog(opt: {
     /** --- 如 127.0.0.1 --- */
-    'host': string;
+    'hostname': string;
     /** --- 如 2024/08/01/22 --- */
     'path': string;
     /** --- 如 -error --- */
     'fend'?: string;
     /** --- 仅显示被搜索到的行 --- */
     'search'?: string;
+    /** --- 跳过的字节数，默认不跳过 --- */
+    'start'?: number;
     /** --- 跳过条数 --- */
     'offset'?: number;
     /** --- 最大限制，默认 100 --- */
     'limit'?: number;
+    /** --- 获取局域网服务器的日志，为空代表获取本机的 --- */
+    'host'?: string;
 }): Promise<string[][] | null | false> {
-    const path = kebab.LOG_CWD + opt.host + (opt.fend ?? '') + '/' + opt.path + '.csv';
-    if (!await lFs.isFile(path)) {
-        return null;
-    }
-    /** --- 剩余 limit --- */
-    let limit = opt.limit ?? 100;
-    /** --- 剩余 offset --- */
-    let offset = opt.offset ?? 0;
-    return new Promise<string[][] | null | false>((resolve) => {
-        const list: string[][] = [];
-        /** --- 当前行号 --- */
-        let line = 0;
-        /** --- 当前行数据 --- */
-        let packet = '';
-        lFs.createReadStream(path, {
-            'encoding': 'utf8'
-        }).on('data', (buf) => {
-            if (typeof buf !== 'string') {
-                return;
-            }
-            while (true) {
-                // --- 分包 ---
-                const index = buf.indexOf('\n');
-                if (index === -1) {
-                    // --- 本次包还没有结束 ---
-                    packet += buf;
-                    break;
-                }
-                // --- 本次行结束了 ---
-                if (limit === 0) {
-                    break;
-                }
-                packet += buf.slice(0, index);
-                buf = buf.slice(index + 1);
-                ++line;
-                // --- 先执行下本次完成的 ---
-                if (line > 1) {
-                    if (offset === 0) {
-                        if (!opt.search || packet.includes(opt.search)) {
-                            const result: string[] = [];
-                            let currentField = '';
-                            let inQuotes = false;
-                            for (let i = 0; i < packet.length; ++i) {
-                                const char = packet[i];
-                                if (char === '"') {
-                                    if (inQuotes && packet[i + 1] === '"') {
-                                        currentField += '"';
-                                        ++i;
-                                    }
-                                    else {
-                                        inQuotes = !inQuotes;
-                                    }
-                                }
-                                else if (char === ',' && !inQuotes) {
-                                    result.push(currentField);
-                                    currentField = '';
-                                }
-                                else {
-                                    currentField += char;
-                                }
-                            }
-                            result.push(currentField);
-                            list.push(result);
-                            --limit;
-                        }
-                    }
-                    else {
-                        --offset;
-                    }
-                }
-                // --- 处理结束 ---
-                packet = '';
-                // --- 看看还有没有后面的粘连包 ---
-                if (!buf.length) {
-                    // --- 没粘连包 ---
-                    break;
-                }
-                // --- 有粘连包 ---
-            }
-        }).on('end', () => {
-            resolve(list);
-        }).on('error', () => {
-            resolve(false);
-        });
+    opt.host ??= '127.0.0.1';
+    // --- 局域网模式 ---
+    const time = lTime.stamp();
+    const res = await lNet.get('http://' + opt.host + ':' + globalConfig.rpcPort.toString() + '/' + lCrypto.aesEncrypt(lText.stringifyJson({
+        'action': 'log',
+        'time': time,
+        'hostname': opt.hostname,
+        'path': opt.path,
+        'fend': opt.fend,
+        'search': opt.search,
+        'start': opt.start,
+        'offset': opt.offset,
+        'limit': opt.limit,
+    }), globalConfig.rpcSecret), {
+        'timeout': 2
     });
+    const content = await res.getContent();
+    if (!content) {
+        return false;
+    }
+    const str = content.toString();
+    const j = lText.parseJson(str);
+    if (!j) {
+        return false;
+    }
+    return j.data;
+}
+
+/**
+ * --- 获取目录内文件/文件夹列表 ---
+ * @param opt 参数
+ */
+export async function ls(opt: {
+    /** --- 如 2024/08/01/22，无所谓开头结尾 --- */
+    'path': string;
+    'encoding'?: BufferEncoding;
+    /** --- 获取局域网服务器的目录列表，为空代表获取本机的 --- */
+    'host'?: string;
+}): Promise<Array<{
+        'isFile': boolean;
+        'isDirectory': boolean;
+        'isSymbolicLink': boolean;
+        'name': string;
+    }>> {
+    opt.host ??= '127.0.0.1';
+    // --- 局域网模式 ---
+    const time = lTime.stamp();
+    const res = await lNet.get('http://' + opt.host + ':' + globalConfig.rpcPort.toString() + '/' + lCrypto.aesEncrypt(lText.stringifyJson({
+        'action': 'ls',
+        'time': time,
+        'path': opt.path,
+        'encoding': opt.encoding,
+    }), globalConfig.rpcSecret), {
+        'timeout': 2
+    });
+    const content = await res.getContent();
+    if (!content) {
+        return [];
+    }
+    const str = content.toString();
+    const j = lText.parseJson(str);
+    if (!j) {
+        return [];
+    }
+    return j.data;
 }
 
 /**

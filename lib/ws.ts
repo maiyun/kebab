@@ -100,7 +100,7 @@ export class Socket {
             'request': request,
             'socket': socket,
             'headers': options.headers,
-            'timeout': options.timeout
+            'timeout': options.timeout,
         });
         this._bindEvent();
     }

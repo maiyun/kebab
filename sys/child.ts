@@ -30,13 +30,16 @@ const hbTimer = setInterval(function() {
 }, 10_000);
 
 /** --- 加载的证书列表（path: { sc, cert }） --- */
-const certList: Array<{
+let certList: Array<{
     'sc': tls.SecureContext;
     'cert': crypto.X509Certificate;
 }> = [];
 
 /** --- server: index --- */
 let certHostIndex: Record<string, number> = {};
+
+/** --- 最后一次加载证书到内存的时间 --- */
+let certLastLoad: number = 0;
 
 /** --- 当前的虚拟主机配置列表 - 读取于 conf/vhost/*.json --- */
 let vhosts: types.IVhost[] = [];
@@ -61,6 +64,12 @@ async function run(): Promise<void> {
     http2Server = http2.createSecureServer({
         // eslint-disable-next-line @typescript-eslint/naming-convention
         'SNICallback': (servername, cb) => {
+            if (Date.now() - certLastLoad > 60_000 * 60 * 24) {
+                // --- 不能用异步，不要干扰 SNI 进程 ---
+                reloadCert().catch(e => {
+                    lCore.display('[CHILD][run] reloadCert error', e);
+                });
+            }
             const i = certHostIndex[servername];
             if (i !== undefined) {
                 cb(null, certList[i].sc);
@@ -98,16 +107,8 @@ async function run(): Promise<void> {
             if (!linkCount[key]) {
                 delete linkCount[key];
             }
-        })().catch(async function(e) {
-            await lCore.log({
-                'path': '',
-                'urlFull': '',
-                'hostname': '',
-                'req': req,
-                'get': {},
-                'cookie': {},
-                'headers': {}
-            }, '[child][http2][request]' + lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
+        })().catch(function(e) {
+            lCore.log({}, '[CHILD][http2][request] ' + lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
             --linkCount[key];
             if (!linkCount[key]) {
                 delete linkCount[key];
@@ -132,16 +133,8 @@ async function run(): Promise<void> {
             if (!linkCount[key]) {
                 delete linkCount[key];
             }
-        })().catch(async function(e) {
-            await lCore.log({
-                'path': '',
-                'urlFull': '',
-                'hostname': '',
-                'req': req,
-                'get': {},
-                'cookie': {},
-                'headers': {}
-            }, '[child][http2][upgrade]' + lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
+        })().catch(function(e) {
+            lCore.log({}, '[CHILD][http2][upgrade] ' + lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
             --linkCount[key];
             if (!linkCount[key]) {
                 delete linkCount[key];
@@ -165,16 +158,8 @@ async function run(): Promise<void> {
             if (!linkCount[key]) {
                 delete linkCount[key];
             }
-        })().catch(async function(e) {
-            await lCore.log({
-                'path': '',
-                'urlFull': '',
-                'hostname': '',
-                'req': req,
-                'get': {},
-                'cookie': {},
-                'headers': {}
-            }, '[child][http][request]' + lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
+        })().catch(function(e) {
+            lCore.log({}, '[CHILD][http][request] ' + lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
             --linkCount[key];
             if (!linkCount[key]) {
                 delete linkCount[key];
@@ -197,16 +182,8 @@ async function run(): Promise<void> {
             if (!linkCount[key]) {
                 delete linkCount[key];
             }
-        })().catch(async function(e) {
-            await lCore.log({
-                'path': '',
-                'urlFull': '',
-                'hostname': '',
-                'req': req,
-                'get': {},
-                'cookie': {},
-                'headers': {}
-            }, '[child][http][upgrade]' + lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
+        })().catch(function(e) {
+            lCore.log({}, '[CHILD][http][upgrade] ' + lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
             --linkCount[key];
             if (!linkCount[key]) {
                 delete linkCount[key];
@@ -318,8 +295,8 @@ async function requestHandler(
                             return;
                         }
                     }
-                    catch (e: types.Json) {
-                        await lCore.log({
+                    catch (e: any) {
+                        lCore.log({
                             'path': path.slice(('/' + pathList.slice(0, i).join('/')).length + 1),
                             'urlFull': (uri.protocol ?? '') + '//' + (uri.host ?? '') + '/' + now,
                             'hostname': uri.hostname ?? '',
@@ -327,7 +304,7 @@ async function requestHandler(
                             'get': uri.query ? lText.queryParse(uri.query) : {},
                             'cookie': {},
                             'headers': {}
-                        }, '(E01)' + lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
+                        }, '[CHILD][requestHandler][E0]' + lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
                         res.setHeader('content-type', 'text/html; charset=utf-8');
                         res.setHeader('content-length', 25);
                         res.writeHead(500);
@@ -364,16 +341,8 @@ async function requestHandler(
                         return;
                     }
                 }
-                catch (e: types.Json) {
-                    await lCore.log({
-                        'path': path.slice(1),
-                        'urlFull': (uri.protocol ?? '') + '//' + (uri.host ?? '') + '/' + now,
-                        'hostname': uri.hostname ?? '',
-                        'req': req,
-                        'get': uri.query ? lText.queryParse(uri.query) : {},
-                        'cookie': {},
-                        'headers': {}
-                    }, '(E02)' + lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
+                catch (e: any) {
+                    lCore.log({}, '[CHILD][requestHandler][E1]' + lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
                     res.setHeader('content-type', 'text/html; charset=utf-8');
                     res.setHeader('content-length', 25);
                     res.writeHead(500);
@@ -526,7 +495,21 @@ async function reload(): Promise<void> {
         }
     }
     // --- 重新加载证书对 ---
-    certList.length = 0;
+    await reloadCert();
+    // --- 其他操作 ---
+    sRoute.clearKebabConfigs();
+    sCtr.clearLocaleData();
+}
+
+/**
+ * --- 重新加载证书对 ---
+ */
+async function reloadCert(): Promise<void> {
+    certLastLoad = Date.now();
+    const cl: Array<{
+        'sc': tls.SecureContext;
+        'cert': crypto.X509Certificate;
+    }> = [];
     try {
         const certConfig = await fs.getContent(kebab.CONF_CWD + 'cert.json', 'utf8');
         if (certConfig) {
@@ -542,7 +525,7 @@ async function reload(): Promise<void> {
                     'key': key,
                     'cert': cert
                 });
-                certList.push({
+                cl.push({
                     'cert': certo,
                     'sc': sc
                 });
@@ -552,10 +535,8 @@ async function reload(): Promise<void> {
     catch {
         // --- NOTHING ---
     }
+    certList = cl;
     certHostIndex = {};
-    // --- 其他操作 ---
-    sRoute.clearKebabConfigs();
-    sCtr.clearLocaleData();
 }
 
 // --- 接收主进程回传信号，主要用来 reload，restart ---
@@ -585,17 +566,8 @@ process.on('message', function(msg: types.Json) {
                     for (const key in linkCount) {
                         str.push(key + ':' + linkCount[key].toString());
                     }
-                    // eslint-disable-next-line no-console
-                    console.log(`[child] Worker ${process.pid} busy: ${str.join(',')}.`);
-                    await lCore.log({
-                        'path': '',
-                        'urlFull': '',
-                        'hostname': '',
-                        'req': null,
-                        'get': {},
-                        'cookie': {},
-                        'headers': {}
-                    }, `[child] Worker ${process.pid} busy: ${str.join(',')}.`, '-error');
+                    lCore.display(`[CHILD] Worker ${process.pid} busy: ${str.join(',')}.`);
+                    lCore.log({}, `[CHILD] Worker ${process.pid} busy: ${str.join(',')}.`, '-error');
                     await lCore.sleep(30_000);
                     waiting += 30_000;
                     if (waiting > 3600_000) {
@@ -622,16 +594,8 @@ process.on('message', function(msg: types.Json) {
                 break;
             }
         }
-    })().catch(async function(e) {
-        await lCore.log({
-            'path': '',
-            'urlFull': '',
-            'hostname': '',
-            'req': null,
-            'get': {},
-            'cookie': {},
-            'headers': {}
-        }, '[child][process][message]' + lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
+    })().catch(function(e) {
+        lCore.log({}, '[CHILD][process][message] ' + lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
     });
 });
 

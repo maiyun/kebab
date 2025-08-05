@@ -78,6 +78,7 @@ async function run(): Promise<void> {
         config.rpcSecret ??= 'MUSTCHANGE';
         config.debug ??= true;
         config.max ??= 64;
+        config.hosts ??= [];
         // --- config - set ---
         config.set ??= {};
         config.set.timezone ??= 8;

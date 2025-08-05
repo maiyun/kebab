@@ -105,7 +105,7 @@ function createRpcListener(): void {
                 return;
             }
             if (lCore.globalConfig.rpcSecret === 'MUSTCHANGE') {
-                res.end('rpcSecret need be "' + lCore.random(32, lCore.RANDOM_LUN) + '"');
+                res.end(`The rpcSecret is not set. It's recommended to set it to: ${lCore.random(32, lCore.RANDOM_LUN)}`);
                 return;
             }
             switch (msg.action) {
@@ -210,9 +210,19 @@ function createRpcListener(): void {
                         }
                         // --- 看文件夹是否存在 ---
                         if (pat && !await lFs.isDir(to + pat)) {
+                            if (rtn.post['strict'] === '1') {
+                                res.end('Path not found: ' + to + pat);
+                                await sRoute.unlinkUploadFiles(rtn.files);
+                                return;
+                            }
                             await lFs.mkdir(to + pat);
                         }
                         // --- 覆盖或创建文件 ---
+                        if ((rtn.post['strict'] === '1') && !await lFs.isFile(to + pat + fname)) {
+                            res.end('Path not found: ' + to + pat + fname);
+                            await sRoute.unlinkUploadFiles(rtn.files);
+                            return;
+                        }
                         await lFs.putContent(to + pat + fname, ls[path]);
                     }
                     await sRoute.unlinkUploadFiles(rtn.files);
@@ -226,6 +236,118 @@ function createRpcListener(): void {
                         }
                     }
                     break;
+                }
+                case 'log': {
+                    // --- 获取日志信息 ---
+                    const path = kebab.LOG_CWD + msg.hostname + (msg.fend ?? '') + '/' + msg.path + '.csv';
+                    if (!await lFs.isFile(path)) {
+                        res.end(lText.stringifyJson({
+                            'result': 1,
+                            'data': false,
+                        }));
+                        return;
+                    }
+                    /** --- 剩余 limit --- */
+                    let limit = msg.limit ?? 100;
+                    /** --- 剩余 offset --- */
+                    let offset = msg.offset ?? 0;
+                    const rtn = await new Promise<string[][] | null | false>((resolve) => {
+                        const list: string[][] = [];
+                        /** --- 当前行号 --- */
+                        let line = 0;
+                        /** --- 当前行数据 --- */
+                        let packet = '';
+                        lFs.createReadStream(path, {
+                            'encoding': 'utf8',
+                            'start': msg.start,
+                        }).on('data', (buf) => {
+                            if (typeof buf !== 'string') {
+                                return;
+                            }
+                            while (true) {
+                                // --- 分包 ---
+                                const index = buf.indexOf('\n');
+                                if (index === -1) {
+                                    // --- 本次包还没有结束 ---
+                                    packet += buf;
+                                    break;
+                                }
+                                // --- 本次行结束了 ---
+                                if (limit === 0) {
+                                    break;
+                                }
+                                packet += buf.slice(0, index);
+                                buf = buf.slice(index + 1);
+                                ++line;
+                                // --- 先执行下本次完成的 ---
+                                if (line > 1) {
+                                    if (offset === 0) {
+                                        if (!msg.search || packet.includes(msg.search)) {
+                                            const result: string[] = [];
+                                            let currentField = '';
+                                            let inQuotes = false;
+                                            for (let i = 0; i < packet.length; ++i) {
+                                                const char = packet[i];
+                                                if (char === '"') {
+                                                    if (inQuotes && packet[i + 1] === '"') {
+                                                        currentField += '"';
+                                                        ++i;
+                                                    }
+                                                    else {
+                                                        inQuotes = !inQuotes;
+                                                    }
+                                                }
+                                                else if (char === ',' && !inQuotes) {
+                                                    result.push(currentField);
+                                                    currentField = '';
+                                                }
+                                                else {
+                                                    currentField += char;
+                                                }
+                                            }
+                                            result.push(currentField);
+                                            list.push(result);
+                                            --limit;
+                                        }
+                                    }
+                                    else {
+                                        --offset;
+                                    }
+                                }
+                                // --- 处理结束 ---
+                                packet = '';
+                                // --- 看看还有没有后面的粘连包 ---
+                                if (!buf.length) {
+                                    // --- 没粘连包 ---
+                                    break;
+                                }
+                                // --- 有粘连包 ---
+                            }
+                        }).on('end', () => {
+                            resolve(list);
+                        }).on('error', () => {
+                            resolve(false);
+                        });
+                    });
+                    res.end(lText.stringifyJson({
+                        'result': 1,
+                        'data': rtn,
+                    }));
+                    return;
+                }
+                case 'ls': {
+                    // --- 获取目录内文件/文件夹列表 ---
+                    const path = lText.urlResolve(kebab.ROOT_CWD, msg.path);
+                    res.end(lText.stringifyJson({
+                        'result': 1,
+                        'data': (await lFs.readDir(path, msg.encoding)).map(item => ({
+                            'isFile': item.isFile(),
+                            'isDirectory': item.isDirectory(),
+                            'isSymbolicLink': item.isSymbolicLink(),
+                            'name': item.name,
+                        })),
+                    }));
+                    return;
                 }
                 default: {
                     res.end('Not command: ' + msg.action);

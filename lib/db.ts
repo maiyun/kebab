@@ -1,7 +1,7 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2019-4-15 13:40
- * Last: 2020-4-13 15:34:45, 2022-09-12 13:10:34, 2023-5-24 18:29:38, 2024-7-11 14:37:54, 2024-8-25 00:32:53, 2024-9-22 17:30:47
+ * Last: 2020-4-13 15:34:45, 2022-09-12 13:10:34, 2023-5-24 18:29:38, 2024-7-11 14:37:54, 2024-8-25 00:32:53, 2024-9-22 17:30:47, 2025-8-3 20:24:03
  */
 
 // --- Pool 是使用时必须要一个用户创建一份的，Connection 是池子里获取的 ---
@@ -11,8 +11,8 @@ import * as mysql2 from 'mysql2/promise';
 // --- 库和定义 ---
 import * as time from '~/lib/time';
 import * as lSql from '~/lib/sql';
-import * as core from '~/lib/core';
-import * as text from '~/lib/text';
+import * as lCore from '~/lib/core';
+import * as lText from '~/lib/text';
 import * as ctr from '~/sys/ctr';
 import * as types from '~/types';
 
@@ -74,23 +74,14 @@ async function checkConnection(): Promise<void> {
             if (connection.getLast() <= now - 60) {
                 // --- 1 分钟之前开始的 ---
                 const ls = connection.getLastSql();
-                const sql = ls[1] ?? ls[0];
-                console.log(`[child] [db] [error] There is a transactional connection[${i}] that is not closed, last sql: ${sql?.sql ?? 'undefined'}.`);
                 const newarr = ls.map(item => {
                     if (!item.values) {
                         return item.sql;
                     }
                     return lSql.format(item.sql, item.values);
                 });
-                await core.log({
-                    'path': '',
-                    'urlFull': '',
-                    'hostname': '',
-                    'req': null,
-                    'get': {},
-                    'cookie': {},
-                    'headers': {}
-                }, `(db.checkConnection)There is a transactional connection[${i}] that is not closed, last sql: ${newarr.join(', ')}.`, '-error');
+                lCore.display(`[DB][error] There is a transactional connection[${i}] that is not closed, last sql: ${newarr.join(', ')}.`);
+                lCore.log({}, `[DB][checkConnection] There is a transactional connection[${i}] that is not closed, last sql: ${newarr.join(', ')}.`, '-error');
                 await connection.rollback();
             }
             continue;
@@ -106,12 +97,12 @@ async function checkConnection(): Promise<void> {
         --i;
     }
     setTimeout(function() {
-        checkConnection().catch(e => { console.log('[DB]', e); });
-    }, 30000);
+        checkConnection().catch(e => { lCore.display('[DB][checkConnection]', e); });
+    }, 30_000);
 }
 setTimeout(function() {
-    checkConnection().catch(e => { console.log('[DB]', e); });
-}, 30000);
+    checkConnection().catch(e => { lCore.display('[DB][checkConnection]', e); });
+}, 30_000);
 
 /** --- 数据库连接池对象 --- */
 export class Pool {
@@ -224,7 +215,7 @@ export class Pool {
                 c.using();
                 link.on('error', function(err: mysql2.QueryError): void {
                     if (err.code !== 'PROTOCOL_CONNECTION_LOST') {
-                        console.log(err);
+                        lCore.display('[DB][_getConnection]', err);
                     }
                     c.setLost();
                 }).on('end', function() {
@@ -234,15 +225,7 @@ export class Pool {
                 connections.push(conn);
             }
             catch (e: any) {
-                await core.log({
-                    'path': '',
-                    'urlFull': '',
-                    'hostname': '',
-                    'req': null,
-                    'get': {},
-                    'cookie': {},
-                    'headers': {}
-                }, '(db._getConnection)' + text.stringifyJson(e.stack).slice(1, -1), '-error');
+                lCore.log({}, '[DB][Pool][_getConnection]' + lText.stringifyJson(e.stack).slice(1, -1), '-error');
             }
         }
         return conn;
@@ -291,12 +274,12 @@ export class Transaction {
         const warning = opts.warning ?? 1_500;
         this._timer.warning = setTimeout(() => {
             this._timer.warning = undefined;
-            console.log('[WARNING][DB][Transaction] time too long, ms:', warning, this._ctr?.getPrototype('_config').const.path ?? 'no ctr');
+            lCore.display('[WARNING][DB][Transaction] time too long, ms: ' + warning + ' ' + (this._ctr?.getPrototype('_config').const.path ?? 'no ctr'));
         }, warning);
         const danger = opts.danger ?? 5_000;
         this._timer.danger = setTimeout(() => {
             this._timer.danger = undefined;
-            console.log('[DANGER][DB][Transaction] time too long, ms:', danger, this._ctr?.getPrototype('_config').const.path ?? 'no ctr');
+            lCore.display('[DANGER][DB][Transaction] time too long, ms:', danger, this._ctr?.getPrototype('_config').const.path ?? 'no ctr');
         }, danger);
     }
 
@@ -308,16 +291,8 @@ export class Transaction {
     public async query(sql: string, values?: types.DbValue[]): Promise<IData> {
         if (!this._conn) {
             // --- 当前连接已不可用 ---
-            console.log('[ERROR][DB][Transaction.query] has been closed.', this._ctr?.getPrototype('_config').const.path ?? 'no ctr', sql);
-            await core.log({
-                'path': '',
-                'urlFull': '',
-                'hostname': '',
-                'req': null,
-                'get': {},
-                'cookie': {},
-                'headers': {}
-            }, '(db.Transaction.query) has been closed, ' + (this._ctr?.getPrototype('_config').const.path ?? 'no ctr') + ': ' + sql, '-error');
+            lCore.display('[DB][Transaction][query] has been closed ' + (this._ctr?.getPrototype('_config').const.path ?? 'no ctr') + ': ' + sql);
+            lCore.log({}, '[DB][Transaction][query] has been closed ' + (this._ctr?.getPrototype('_config').const.path ?? 'no ctr') + ': ' + sql, '-error');
             return {
                 'rows': null,
                 'fields': [],
@@ -339,16 +314,8 @@ export class Transaction {
     public async execute(sql: string, values?: types.DbValue[]): Promise<IPacket> {
         if (!this._conn) {
             // --- 当前连接已不可用 ---
-            console.log('[ERROR][DB][Transaction.execute] has been closed.', this._ctr?.getPrototype('_config').const.path ?? 'no ctr', sql);
-            await core.log({
-                'path': '',
-                'urlFull': '',
-                'hostname': '',
-                'req': null,
-                'get': {},
-                'cookie': {},
-                'headers': {}
-            }, '(db.Transaction.execute) has been closed, ' + (this._ctr?.getPrototype('_config').const.path ?? 'no ctr') + ': ' + sql, '-error');
+            lCore.display('[DB][Transaction][execute] has been closed ' + (this._ctr?.getPrototype('_config').const.path ?? 'no ctr') + ': ' + sql);
+            lCore.log({}, '(db.Transaction.execute) has been closed ' + (this._ctr?.getPrototype('_config').const.path ?? 'no ctr') + ': ' + sql, '-error');
             return {
                 'packet': null,
                 'fields': [],
@@ -365,16 +332,8 @@ export class Transaction {
     public async commit(): Promise<boolean> {
         if (!this._conn) {
             // --- 当前连接已不可用 ---
-            console.log('[ERROR][DB][Transaction.commit] has been closed.', this._ctr?.getPrototype('_config').const.path ?? 'no ctr');
-            await core.log({
-                'path': '',
-                'urlFull': '',
-                'hostname': '',
-                'req': null,
-                'get': {},
-                'cookie': {},
-                'headers': {}
-            }, '(db.Transaction.commit) has been closed: ' + (this._ctr?.getPrototype('_config').const.path ?? 'no ctr'), '-error');
+            lCore.display('[DB][Transaction][commit] has been closed ' + (this._ctr?.getPrototype('_config').const.path ?? 'no ctr'));
+            lCore.log({}, '[DB][Transaction][commit] has been closed ' + (this._ctr?.getPrototype('_config').const.path ?? 'no ctr'), '-error');
             return false;
         }
         const r = await this._conn.commit();
@@ -395,16 +354,8 @@ export class Transaction {
     public async rollback(): Promise<boolean> {
         if (!this._conn) {
             // --- 当前连接已不可用 ---
-            console.log('[ERROR][DB][Transaction.rollback] has been closed.', this._ctr?.getPrototype('_config').const.path ?? 'no ctr');
-            await core.log({
-                'path': '',
-                'urlFull': '',
-                'hostname': '',
-                'req': null,
-                'get': {},
-                'cookie': {},
-                'headers': {}
-            }, '(db.Transaction.rollback) has been closed: ' + (this._ctr?.getPrototype('_config').const.path ?? 'no ctr'), '-error');
+            lCore.display('[DB][Transaction][rollback] has been closed: ' + (this._ctr?.getPrototype('_config').const.path ?? 'no ctr'));
+            lCore.log({}, '[DB][Transaction][rollback] has been closed: ' + (this._ctr?.getPrototype('_config').const.path ?? 'no ctr'), '-error');
             return false;
         }
         const r = await this._conn.rollback();
@@ -566,7 +517,11 @@ export class Connection {
                 'sql': sql,
                 'values': values
             });
+            const time = Date.now();
             res = await this._link.query(sql, values);
+            if (Date.now() - time > 200) {
+                lCore.log({}, '[WARNING][DB][Connection][query] slow sql 200ms: ' + sql, '-warning');
+            }
         }
         catch (e: any) {
             if (!this._transaction) {
@@ -605,7 +560,11 @@ export class Connection {
                 'sql': sql,
                 'values': values
             });
+            const time = Date.now();
             res = await this._link.execute(sql, values);
+            if (Date.now() - time > 200) {
+                lCore.log({}, '[WARNING][DB][Connection][execute] slow sql 200ms: ' + sql, '-warning');
+            }
         }
         catch (e: any) {
             if (!this._transaction) {

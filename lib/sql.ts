@@ -1,7 +1,7 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2019-5-27 20:18:50
- * Last: 2020-3-29 19:37:25, 2022-07-24 22:38:11, 2023-5-24 18:49:18, 2023-6-13 22:20:21, 2023-12-11 13:58:54, 2023-12-14 13:14:40, 2023-12-21 00:04:40, 2024-4-11 19:29:29, 2024-9-2 17:15:28
+ * Last: 2020-3-29 19:37:25, 2022-07-24 22:38:11, 2023-5-24 18:49:18, 2023-6-13 22:20:21, 2023-12-11 13:58:54, 2023-12-14 13:14:40, 2023-12-21 00:04:40, 2024-4-11 19:29:29, 2024-9-2 17:15:28, 2025-8-3 21:28:18
  */
 
 import * as lText from '~/lib/text';
@@ -92,17 +92,7 @@ export class Sql {
                     // --- v1 是项目值，如 {'x': 1, 'y': 2}, 'string', 0 ---
                     if (v1 === undefined || Number.isNaN(v1)) {
                         // --- 异常情况 ---
-                        lCore.log({
-                            'path': '',
-                            'urlFull': '',
-                            'hostname': '',
-                            'req': null,
-                            'get': {},
-                            'cookie': {},
-                            'headers': {}
-                        }, '(sql.values) value error', '-error').catch(() => {
-                            //
-                        });
+                        lCore.log({}, '[SQL][values] value error', '-error');
                         sql += `'', `;
                     }
                     else if (v1 === null) {
@@ -178,17 +168,7 @@ export class Sql {
                 sql += this.field(k) + ', ';
                 if (v === undefined || Number.isNaN(v)) {
                     // --- 异常情况 ---
-                    lCore.log({
-                        'path': '',
-                        'urlFull': '',
-                        'hostname': '',
-                        'req': null,
-                        'get': {},
-                        'cookie': {},
-                        'headers': {}
-                    }, '(sql.values) value error', '-error').catch(() => {
-                        //
-                    });
+                    lCore.log({}, '[SQL][values] value error', '-error');
                     values += `'', `;
                 }
                 else if (v === null) {
@@ -401,17 +381,7 @@ export class Sql {
                 sql += this.field(k) + ' = ';
                 if (v === undefined || Number.isNaN(v)) {
                     // --- 异常情况 ---
-                    lCore.log({
-                        'path': '',
-                        'urlFull': '',
-                        'hostname': '',
-                        'req': null,
-                        'get': {},
-                        'cookie': {},
-                        'headers': {}
-                    }, '(sql._updateSub) value error, key: ' + k, '-error').catch(() => {
-                        //
-                    });
+                    lCore.log({}, '[SQL][_updateSub] value error, key: ' + k, '-error');
                     sql += '"", ';
                 }
                 else if (v === null) {

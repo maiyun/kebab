@@ -100,7 +100,7 @@ export class Jwt {
     public renew(): string {
         const time = lTime.stamp();
         const data = this._ctr.getPrototype('_jwt');
-        const token = data['token'] ? data['token'] : lCore.random(16, lCore.RANDOM_LUN);
+        const token = lText.isFalsy(data['token']) ? lCore.random(16, lCore.RANDOM_LUN) : data['token'];
         data['exp'] = time + this._ttl;
         data['token'] = token;
         // --- 拼装 ---
