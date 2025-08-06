@@ -135,7 +135,7 @@ export class S3 {
             return (res.Location && res.Bucket && res.Key) ? res : false;
         }
         catch (e: any) {
-            await lCore.log(this._ctr, '[putObject, s3] ' + lText.stringifyJson(e.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+            lCore.log(this._ctr, '[S3][putObject] ' + lText.stringifyJson(e.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
             return false;
         }
     }
@@ -198,7 +198,7 @@ export class S3 {
             return true;
         }
         catch (e: any) {
-            await lCore.log(this._ctr, '[deleteObjects, s3] ' + lText.stringifyJson(e.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+            lCore.log(this._ctr, '[S3][deleteObjects] ' + lText.stringifyJson(e.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
             return false;
         }
     }
@@ -218,7 +218,7 @@ export class S3 {
         }
         catch (e: any) {
             if (e.$metadata?.httpStatusCode !== 404) {
-                await lCore.log(this._ctr, '[headObject, s3] ' + lText.stringifyJson(e.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+                lCore.log(this._ctr, '[S3][headObject] ' + lText.stringifyJson(e.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
             }
             return false;
         }

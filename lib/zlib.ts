@@ -23,9 +23,7 @@ export interface ICompressBuffer {
  * @param options 选项
  */
 export function createGzip(options: zlib.ZlibOptions = {}): zlib.Gzip {
-    if (!options.level) {
-        options.level = 7;
-    }
+    options.level ??= 7;
     return zlib.createGzip(options);
 }
 
@@ -41,9 +39,7 @@ export function createGunzip(): zlib.Gunzip {
  * @param options 选项
  */
 export function createDeflate(options: zlib.ZlibOptions = {}): zlib.Deflate {
-    if (!options.level) {
-        options.level = 7;
-    }
+    options.level ??= 7;
     return zlib.createDeflate(options);
 }
 
@@ -59,9 +55,7 @@ export function createInflate(): zlib.Inflate {
  * @param options 选项
  */
 export function createBrotliCompress(options: zlib.ZlibOptions = {}): zlib.BrotliCompress {
-    if (!options.level) {
-        options.level = 7;
-    }
+    options.level ??= 7;
     return zlib.createBrotliCompress(options);
 }
 
@@ -78,9 +72,7 @@ export function createBrotliDecompress(): zlib.BrotliDecompress {
  * @param options 选项
  */
 export function createCompress(types: string, options: zlib.ZlibOptions = {}): ICompress | null {
-    if (!options.level) {
-        options.level = 7;
-    }
+    options.level ??= 7;
     const type = getTypeByTypes(types);
     if (!type) {
         return null;
@@ -147,9 +139,7 @@ export function createDecompress(types: string): ICompress | null {
  * @param options 选项
  */
 export function gzip(buffer: zlib.InputType, options: zlib.ZlibOptions = {}): Promise<Buffer | null> {
-    if (!options.level) {
-        options.level = 7;
-    }
+    options.level ??= 7;
     return new Promise(function(resolve) {
         zlib.gzip(buffer, options, function(error: Error | null, result: Buffer) {
             if (error) {
@@ -185,9 +175,7 @@ export function gunzip(buffer: zlib.InputType): Promise<Buffer | null> {
  * @param options 选项
  */
 export function deflate(buffer: zlib.InputType, options: zlib.ZlibOptions = {}): Promise<Buffer | null> {
-    if (!options.level) {
-        options.level = 7;
-    }
+    options.level ??= 7;
     return new Promise(function(resolve) {
         zlib.deflate(buffer, options, function(error: Error | null, result: Buffer) {
             if (error) {
@@ -223,9 +211,7 @@ export function inflate(buffer: zlib.InputType): Promise<Buffer | null> {
  * @param options 选项
  */
 export function brotliCompress(buffer: zlib.InputType, options: zlib.ZlibOptions = {}): Promise<Buffer | null> {
-    if (!options.level) {
-        options.level = 7;
-    }
+    options.level ??= 7;
     return new Promise(function(resolve) {
         zlib.brotliCompress(buffer, options, function(error: Error | null, result: Buffer) {
             if (error) {

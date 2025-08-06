@@ -224,15 +224,7 @@ export default class Mod {
         sq.insert(this._$table + (opt.index ? ('_' + opt.index) : '')).values(cs, vs);
         const r = await db.execute(sq.getSql(), sq.getData());
         if (r.packet === null) {
-            await lCore.log(opt.pre instanceof sCtr.Ctr ? opt.pre : {
-                'path': '',
-                'urlFull': '',
-                'hostname': '',
-                'req': null,
-                'get': {},
-                'cookie': {},
-                'headers': {}
-            }, '[insert, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1), '-error');
+            lCore.log(opt.pre instanceof sCtr.Ctr ? opt.pre : {}, '[insert, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1), '-error');
             return false;
         }
         if (r.packet.affectedRows > 0) {
@@ -276,15 +268,7 @@ export default class Mod {
         sq.insert(this._$table + (opt.index ? ('_' + opt.index) : '')).values(data).duplicate(update);
         const r = await db.execute(sq.getSql(), sq.getData());
         if (r.packet === null) {
-            await lCore.log(opt.pre instanceof sCtr.Ctr ? opt.pre : {
-                'path': '',
-                'urlFull': '',
-                'hostname': '',
-                'req': null,
-                'get': {},
-                'cookie': {},
-                'headers': {}
-            }, '[insertDuplicate, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+            lCore.log(opt.pre instanceof sCtr.Ctr ? opt.pre : {}, '[insertDuplicate, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
             return false;
         }
         if (r.packet.affectedRows > 0) {
@@ -344,15 +328,7 @@ export default class Mod {
         }
         const r = await db.execute(sq.getSql(), sq.getData());
         if (r.packet === null) {
-            await lCore.log(opt.pre instanceof sCtr.Ctr ? opt.pre : {
-                'path': '',
-                'urlFull': '',
-                'hostname': '',
-                'req': null,
-                'get': {},
-                'cookie': {},
-                'headers': {}
-            }, '[removeByWhere, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+            lCore.log(opt.pre instanceof sCtr.Ctr ? opt.pre : {}, '[removeByWhere, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
             return false;
         }
         if (r.packet.affectedRows > 0) {
@@ -462,15 +438,7 @@ export default class Mod {
             }
             const r = await db.execute(sq.getSql(), sq.getData());
             if (r.packet === null) {
-                await lCore.log(opt.pre instanceof sCtr.Ctr ? opt.pre : {
-                    'path': '',
-                    'urlFull': '',
-                    'hostname': '',
-                    'req': null,
-                    'get': {},
-                    'cookie': {},
-                    'headers': {}
-                }, '[updateByWhere, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+                lCore.log(opt.pre instanceof sCtr.Ctr ? opt.pre : {}, '[updateByWhere, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
                 return false;
             }
             if (r.packet.affectedRows > 0) {
@@ -757,15 +725,7 @@ export default class Mod {
         sq.select(this._$primary, this._$table + (opt.index ? ('_' + opt.index) : '')).where(where);
         const r = await db.query(sq.getSql(), sq.getData());
         if (r.rows === null) {
-            await lCore.log(opt.ctr ?? {
-                'path': '',
-                'urlFull': '',
-                'hostname': '',
-                'req': null,
-                'get': {},
-                'cookie': {},
-                'headers': {}
-            }, '[primarys, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+            lCore.log(opt.ctr ?? {}, '[primarys, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
             return false;
         }
         const primarys: any[] = [];
@@ -882,15 +842,7 @@ export default class Mod {
                     }
                 }
                 // --- 未处理的错误 ---
-                await lCore.log(this._ctr ?? {
-                    'path': '',
-                    'urlFull': '',
-                    'hostname': '',
-                    'req': null,
-                    'get': {},
-                    'cookie': {},
-                    'headers': {}
-                }, '[create0, mod] [' + table + '] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+                lCore.log(this._ctr ?? {}, '[create0, mod] [' + table + '] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
                 return false;
             }
         }
@@ -905,15 +857,7 @@ export default class Mod {
             r = await this._db.execute(this._sql.getSql(), this._sql.getData());
             if (r.error) {
                 if (r.error.errno !== 1062) {
-                    await lCore.log(this._ctr ?? {
-                        'path': '',
-                        'urlFull': '',
-                        'hostname': '',
-                        'req': null,
-                        'get': {},
-                        'cookie': {},
-                        'headers': {}
-                    }, '[create1, mod] [' + table + '] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+                    lCore.log(this._ctr ?? {}, '[create1, mod] [' + table + '] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
                 }
                 return false;
             }
@@ -942,15 +886,7 @@ export default class Mod {
         this._sql.replace((cstr._$table as string) + (this._index ? ('_' + this._index[0]) : '')).values(updates);
         const r = await this._db.execute(this._sql.getSql(), this._sql.getData());
         if (r.packet === null) {
-            await lCore.log(this._ctr ?? {
-                'path': '',
-                'urlFull': '',
-                'hostname': '',
-                'req': null,
-                'get': {},
-                'cookie': {},
-                'headers': {}
-            }, '[replace, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+            lCore.log(this._ctr ?? {}, '[replace, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
             return false;
         }
         if (r.packet.affectedRows > 0) {
@@ -978,15 +914,7 @@ export default class Mod {
         }
         const r = await this._db.query(this._sql.getSql(), this._sql.getData());
         if (r.rows === null) {
-            await lCore.log(this._ctr ?? {
-                'path': '',
-                'urlFull': '',
-                'hostname': '',
-                'req': null,
-                'get': {},
-                'cookie': {},
-                'headers': {}
-            }, '[refresh, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+            lCore.log(this._ctr ?? {}, '[refresh, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
             return false;
         }
         if (r.rows.length === 0) {
@@ -1017,15 +945,7 @@ export default class Mod {
         }]);
         const r = await this._db.execute(this._sql.getSql(), this._sql.getData());
         if (r.packet === null) {
-            await lCore.log(this._ctr ?? {
-                'path': '',
-                'urlFull': '',
-                'hostname': '',
-                'req': null,
-                'get': {},
-                'cookie': {},
-                'headers': {}
-            }, '[save, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+            lCore.log(this._ctr ?? {}, '[save, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
             return false;
         }
         if (r.packet.affectedRows > 0) {
@@ -1059,15 +979,7 @@ export default class Mod {
         }
         const r = await this._db.execute(this._sql.getSql(), this._sql.getData());
         if (r.packet === null) {
-            await lCore.log(this._ctr ?? {
-                'path': '',
-                'urlFull': '',
-                'hostname': '',
-                'req': null,
-                'get': {},
-                'cookie': {},
-                'headers': {}
-            }, '[remove, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+            lCore.log(this._ctr ?? {}, '[remove, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
             return false;
         }
         if (r.packet.affectedRows > 0) {
@@ -1101,15 +1013,7 @@ export default class Mod {
         }
         const r = await this._db.query(this._sql.getSql(), this._sql.getData());
         if (r.rows === null) {
-            await lCore.log(this._ctr ?? {
-                'path': '',
-                'urlFull': '',
-                'hostname': '',
-                'req': null,
-                'get': {},
-                'cookie': {},
-                'headers': {}
-            }, '[first, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+            lCore.log(this._ctr ?? {}, '[first, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
             return false;
         }
         if (r.rows.length === 0) {
@@ -1248,15 +1152,7 @@ export default class Mod {
                 const lsql = sql.replace(/ LIMIT [0-9 ,]/g, ` LIMIT ${cz}, ${remain}`);
                 const r = await this._db.query(lsql, this._sql.getData());
                 if (r.rows === null) {
-                    await lCore.log(this._ctr ?? {
-                        'path': '',
-                        'urlFull': '',
-                        'hostname': '',
-                        'req': null,
-                        'get': {},
-                        'cookie': {},
-                        'headers': {}
-                    }, '[all, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+                    lCore.log(this._ctr ?? {}, '[all, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
                     return false;
                 }
                 if (key) {
@@ -1296,15 +1192,7 @@ export default class Mod {
         const contain = this._contain ? lCore.clone(this._contain.list) : null;
         const r = await this._db.query(this._sql.getSql(), this._sql.getData());
         if (r.rows === null) {
-            await lCore.log(this._ctr ?? {
-                'path': '',
-                'urlFull': '',
-                'hostname': '',
-                'req': null,
-                'get': {},
-                'cookie': {},
-                'headers': {}
-            }, '[all, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+            lCore.log(this._ctr ?? {}, '[all, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
             return false;
         }
         // --- 检查没被查到的必包含项 ---
@@ -1444,15 +1332,7 @@ export default class Mod {
                 const lsql = sql.replace(/ LIMIT [0-9 ,]+/g, ` LIMIT ${cz}, ${remain}`);
                 const r = await this._db.query(lsql, this._sql.getData());
                 if (r.rows === null) {
-                    await lCore.log(this._ctr ?? {
-                        'path': '',
-                        'urlFull': '',
-                        'hostname': '',
-                        'req': null,
-                        'get': {},
-                        'cookie': {},
-                        'headers': {}
-                    }, '[allArray, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+                    lCore.log(this._ctr ?? {}, '[allArray, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
                     return false;
                 }
                 if (key) {
@@ -1474,15 +1354,7 @@ export default class Mod {
         const contain = this._contain ? lCore.clone(this._contain.list) : null;
         const r = await this._db.query(this._sql.getSql(), this._sql.getData());
         if (r.rows === null) {
-            await lCore.log(this._ctr ?? {
-                'path': '',
-                'urlFull': '',
-                'hostname': '',
-                'req': null,
-                'get': {},
-                'cookie': {},
-                'headers': {}
-            }, '[allArray, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+            lCore.log(this._ctr ?? {}, '[allArray, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
             return false;
         }
         // --- 检查没被查到的必包含项 ---
@@ -1534,15 +1406,7 @@ export default class Mod {
     public async explain(all = false): Promise<false | string | Record<string, any>> {
         const r = await this._db.query('EXPLAIN ' + this._sql.getSql(), this._sql.getData());
         if (r.rows === null) {
-            await lCore.log(this._ctr ?? {
-                'path': '',
-                'urlFull': '',
-                'hostname': '',
-                'req': null,
-                'get': {},
-                'cookie': {},
-                'headers': {}
-            }, '[explain, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+            lCore.log(this._ctr ?? {}, '[explain, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
             return false;
         }
         if (!r.rows[0]) {
@@ -1579,15 +1443,7 @@ export default class Mod {
         const sql: string = this._formatTotal(this._sql.getSql(), f);
         const r = await this._db.query(sql, this._sql.getData());
         if (r.rows === null) {
-            await lCore.log(this._ctr ?? {
-                'path': '',
-                'urlFull': '',
-                'hostname': '',
-                'req': null,
-                'get': {},
-                'cookie': {},
-                'headers': {}
-            }, '[total, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+            lCore.log(this._ctr ?? {}, '[total, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
             return 0;
         }
         let count = 0;
@@ -1604,15 +1460,7 @@ export default class Mod {
         const sql: string = this._sql.getSql().replace(/SELECT .+? FROM/, 'SELECT COUNT(*) AS `count` FROM');
         const r = await this._db.query(sql, this._sql.getData());
         if (r.rows === null) {
-            await lCore.log(this._ctr ?? {
-                'path': '',
-                'urlFull': '',
-                'hostname': '',
-                'req': null,
-                'get': {},
-                'cookie': {},
-                'headers': {}
-            }, '[count, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+            lCore.log(this._ctr ?? {}, '[count, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
             return 0;
         }
         let count = 0;

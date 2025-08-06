@@ -1,9 +1,16 @@
 import * as sCtr from '~/sys/ctr';
 import * as lCrypto from '~/lib/crypto';
+import * as http from 'http';
 
 export default class extends sCtr.Ctr {
 
     private _nick: string = '';
+
+    public onUpgrade(): { 'headers'?: http.OutgoingHttpHeaders; 'timeout'?: number; } {
+        return {
+            'timeout': 60_000 * 2,
+        };
+    }
 
     public onLoad(): boolean {
         console.log('WebSocket test onLoad.');
@@ -25,7 +32,8 @@ export default class extends sCtr.Ctr {
             return 'Base64: ' + lCrypto.base64Encode(data);
         }
         // --- 用户消息 ---
-        console.log('[' + Date.now() + '] WebSocket test onData, data: ' + data);
+        const date = new Date();
+        console.log('[' + date.getHours().toString().padStart(2, '0') + ':' + date.getMinutes().toString().padStart(2, '0') + ':' + date.getSeconds().toString().padStart(2, '0') + '] WebSocket test onData, data: ' + data);
         return '<b>' + this._nick + ':</b> ' + data;
     }
 

@@ -179,9 +179,9 @@ export class Ctr {
                 if (!this._waitInfo.asyncTask.count) {
                     this._waitInfo.asyncTask.resolve();
                 }
-            })().catch(async (e) => {
+            })().catch(e => {
                 lCore.display('[ERROR][CTR][ASYNCTASK]', e);
-                await lCore.log(this, '(ctr.asyncTask)' + text.stringifyJson(e.stack).slice(1, -1), '-error');
+                lCore.log(this, '[CTR][_asyncTask] ' + text.stringifyJson(e.stack).slice(1, -1), '-error');
                 --this._waitInfo.asyncTask.count;
                 if (!this._waitInfo.asyncTask.count) {
                     this._waitInfo.asyncTask.resolve();

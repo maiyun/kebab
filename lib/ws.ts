@@ -424,6 +424,7 @@ function bindPipe(s1: Socket, s2: Socket): Promise<void> {
                 }
             }
         }).on('close', () => {
+            s2.end();
             resolve();
         });
         // --- 监听远程端的 ---
@@ -456,6 +457,7 @@ function bindPipe(s1: Socket, s2: Socket): Promise<void> {
                 }
             }
         }).on('close', () => {
+            s1.end();
             resolve();
         });
     });
@@ -520,4 +522,64 @@ export async function rproxy(
     }
     await bindPipe(socket, rsocket);
     return true;
+}
+
+/**
+ * --- 反向代理，将本 websocket 连接反代到其他真正的 socket，在 ws 的 onLoad 事件中使用 ---
+ * @param ctr 当前控制器
+ * @param host 反代真实请求地址
+ * @param port 反代真实请求端口
+ * @param opt 参数
+ */
+export async function rsocket(
+    ctr: sCtr.Ctr,
+    host: string,
+    port: number
+): Promise<boolean> {
+    return new Promise<boolean>(resolve => {
+        /** --- 请求端产生的双向 ws --- */
+        const ws = ctr.getPrototype('_socket');
+        /** --- 对端真实 tcp socket --- */
+        const socket = new net.Socket();
+        socket.connect(port, host, () => {
+            // --- 连接成功 ---
+            // --- 监听发送端的 ---
+            ws.on('message', msg => {
+                switch (msg.opcode) {
+                    case EOpcode.TEXT:
+                    case EOpcode.BINARY: {
+                        socket.write(msg.data);
+                        break;
+                    }
+                    case EOpcode.CLOSE: {
+                        socket.end();
+                        resolve(true);
+                        break;
+                    }
+                    case EOpcode.PING: {
+                        ws.pong();
+                        break;
+                    }
+                    case EOpcode.PONG: {
+                        break;
+                    }
+                    default: {
+                        // --- EOpcode.CONTINUATION ---
+                    }
+                }
+            }).on('close', () => {
+                socket.end();
+                resolve(true);
+            });
+            // --- 监听远程端的 ---
+            socket.on('data', data => {
+                ws.writeBinary(data);
+            }).on('close', () => {
+                ws.end();
+                resolve(true);
+            });
+        }).on('error', () => {
+            resolve(false);
+        });
+    });
 }

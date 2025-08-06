@@ -33,9 +33,7 @@ export class Reader {
 
     /** --- 读取一个 BCD 编码的字符串（每个字节表示两个数字）--- */
     public readBCDString(length?: number): string {
-        if (length === undefined) {
-            length = this._buffer.length - this._offset;
-        }
+        length ??= this._buffer.length - this._offset;
         let str = '';
         for (let i = 0; i < length; i++) {
             const byte = this._buffer.readUInt8(this._offset + i);
@@ -48,9 +46,7 @@ export class Reader {
 
     /** --- 读取普通 string --- */
     public readString(length?: number, encoding: BufferEncoding = 'utf8'): string {
-        if (length === undefined) {
-            length = this._buffer.length - this._offset;
-        }
+        length ??= this._buffer.length - this._offset;
         const buf: number[] = [];
         for (let i = 0; i < length; i++) {
             const byte = this._buffer.readUInt8(this._offset + i);
@@ -65,9 +61,7 @@ export class Reader {
 
     /** --- 读取 Buffer --- */
     public readBuffer(length?: number): Buffer {
-        if (length === undefined) {
-            length = this._buffer.length - this._offset;
-        }
+        length ??= this._buffer.length - this._offset;
         return this._buffer.subarray(this._offset, this._offset += length);
     }
 

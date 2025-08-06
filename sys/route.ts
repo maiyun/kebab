@@ -290,6 +290,8 @@ export async function run(data: {
         let wsSocket: lWs.Socket;
         try {
             const options = await (cctr as types.Json).onUpgrade();
+            // --- 默认无消息发送 3 分钟 ---
+            options.timeout ??= 60_000 * 3;
             wsSocket = lWs.createServer(data.req, data.socket, options);
             cctr.setPrototype('_socket', wsSocket);
         }

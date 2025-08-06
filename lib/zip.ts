@@ -162,15 +162,9 @@ export class Zip {
      * @param opt 选项
      */
     public readDir(path?: string, opt: { 'hasChildren'?: boolean; 'hasDir'?: boolean; 'pathAsKey'?: boolean; } = {}): Record<string, types.IZipItem> | types.IZipItem[] {
-        if (opt.hasChildren === undefined) {
-            opt.hasChildren = false;
-        }
-        if (opt.hasDir === undefined) {
-            opt.hasDir = true;
-        }
-        if (opt.pathAsKey === undefined) {
-            opt.pathAsKey = false;
-        }
+        opt.hasChildren ??= false;
+        opt.hasDir ??= true;
+        opt.pathAsKey ??= false;
 
         if (!path) {
             path = this._path;
@@ -290,7 +284,7 @@ export class Zip {
      */
     private _refreshList(): void {
         const list: Record<string, Record<string, types.IZipItem>> = {};
-        // eslint-disable-next-line @litert/rules/disable-for-each-method
+        // eslint-disable-next-line @litert/disable-for-each-method
         this._zip.forEach(function(relativePath: string, item: jszip.JSZipObject) {
             if (relativePath.startsWith('/')) {
                 relativePath = relativePath.slice(1);
