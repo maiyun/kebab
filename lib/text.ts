@@ -583,7 +583,7 @@ export function isTruthy(val: any): val is Exclude<typeof val, TFalsy> {
  * @param v1 比对值
  * @param v2 比对值
  */
-export function logicalOr<T, T2>(v1: T, v2: T2): [T] extends [TFalsy] ? T2 : T {
+export function logicalOr<T, T2>(v1: T, v2: T2): T extends TFalsy ? T2 : T {
     return (isFalsy(v1) ? v2 : v1) as any;
 }
 

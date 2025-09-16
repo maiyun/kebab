@@ -23,7 +23,7 @@ import * as response from './net/response.js';
 
 /** --- 请求的传入参数选项 --- */
 export interface IRequestOptions {
-    'method'?: 'GET' | 'POST' | 'OPTIONS';
+    'method'?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'OPTIONS';
     'type'?: 'form' | 'json';
     /** --- 秒数 --- */
     'timeout'?: number;

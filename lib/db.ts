@@ -220,7 +220,7 @@ export class Pool {
                     }
                     c.setLost();
                 }).on('end', function() {
-                    lCore.debug('[DB][_getConnection] connection end.');
+                    // lCore.debug('[DB][_getConnection] connection end.');
                     c.setLost();
                 });
                 conn = c;
