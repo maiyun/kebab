@@ -1,6 +1,6 @@
-import * as lCore from '~/lib/core';
-import sMod from '~/sys/mod';
-import types from '~/types';
+import * as lCore from '~/lib/core.js';
+import sMod from '~/sys/mod.js';
+import * as types from '~/types/index.js';
 
 /*
 CREATE TABLE `m_test`  (

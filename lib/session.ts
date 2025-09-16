@@ -19,13 +19,13 @@ CREATE TABLE `session` (
 */
 
 // --- 库和定义 ---
-import * as core from '~/lib/core';
-import * as time from '~/lib/time';
-import * as db from '~/lib/db';
-import * as kv from '~/lib/kv';
-import * as sql from '~/lib/sql';
-import * as text from '~/lib/text';
-import * as ctr from '~/sys/ctr';
+import * as core from '~/lib/core.js';
+import * as time from '~/lib/time.js';
+import * as db from '~/lib/db.js';
+import * as kv from '~/lib/kv.js';
+import * as sql from '~/lib/sql.js';
+import * as text from '~/lib/text.js';
+import * as ctr from '~/sys/ctr.js';
 
 export interface IOptions {
     'name'?: string;
@@ -68,10 +68,10 @@ export class Session {
         opt: IOptions = {}
     ): Promise<boolean> {
         const config = ctr.getPrototype('_config');
-        const ssl = opt.ssl ?? config.session.ssl;
+        const ssl = opt.ssl ?? config.session.ssl ?? false;
         const pre = opt.sqlPre ?? null;
         this._name = opt.name ?? config.session.name;
-        this._ttl = opt.ttl ?? config.session.ttl;
+        this._ttl = opt.ttl ?? config.session.ttl ?? 172800;
         const tim: number = time.stamp();
         this._ctr = ctr;
 

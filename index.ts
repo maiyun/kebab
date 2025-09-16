@@ -9,12 +9,13 @@
  */
 
 /** --- 当前系统版本号 --- */
-export const VER = '2.0.16';
+export const VER = '3.0.0';
 
 // --- 服务端用的路径 ---
 
+const imu = import.meta.url.replace('file://', '').replace(/^\/(\w:)/, '$1').replace(/\\/g, '/');
 /** --- /xxx/xxx --- */
-const dirname = __dirname.replace(/\\/g, '/');
+const dirname = imu.slice(0, imu.lastIndexOf('/'));
 
 /** --- 框架根目录，以 / 结尾  --- */
 export const ROOT_PATH = dirname + '/';

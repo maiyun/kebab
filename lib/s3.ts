@@ -8,9 +8,9 @@
 import * as s3 from '@aws-sdk/client-s3';
 import * as ls from '@aws-sdk/lib-storage';
 import * as stream from 'stream';
-import * as sCtr from '~/sys/ctr';
-import * as lCore from '~/lib/core';
-import * as lText from '~/lib/text';
+import * as sCtr from '~/sys/ctr.js';
+import * as lCore from '~/lib/core.js';
+import * as lText from '~/lib/text.js';
 
 /**
  * s3 文档：https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/client/s3/
@@ -52,24 +52,23 @@ export class S3 {
     public constructor(ctr: sCtr.Ctr, opt: IOptions) {
         this._ctr = ctr;
         const config = ctr.getPrototype('_config');
-        opt.account ??= config.s3?.[ESERVICE[opt.service]]?.account ?? '';
-        opt.secretId ??= config.s3?.[ESERVICE[opt.service]]?.sid ?? '';
-        opt.secretKey ??= config.s3?.[ESERVICE[opt.service]]?.skey ?? '';
-        opt.region ??= config.s3?.[ESERVICE[opt.service]]?.region ?? '';
-        opt.bucket ??= config.s3?.[ESERVICE[opt.service]]?.bucket ?? '';
-        this._bucket = opt.bucket;
+        const account = config.s3?.[ESERVICE[opt.service]]?.account ?? '';
+        const secretId = config.s3?.[ESERVICE[opt.service]]?.sid ?? '';
+        const secretKey = config.s3?.[ESERVICE[opt.service]]?.skey ?? '';
+        const region = config.s3?.[ESERVICE[opt.service]]?.region ?? '';
+        this._bucket = config.s3?.[ESERVICE[opt.service]]?.bucket ?? '';
         let endpoint: string | undefined;
         switch (opt.service) {
             case ESERVICE.TENCENT: {
-                endpoint = `https://cos.${opt.region}.myqcloud.com`;
+                endpoint = `https://cos.${region}.myqcloud.com`;
                 break;
             }
             case ESERVICE.ALIBABA: {
-                endpoint = `https://oss-${opt.region}.aliyuncs.com`;
+                endpoint = `https://oss-${region}.aliyuncs.com`;
                 break;
             }
             case ESERVICE.CF: {
-                endpoint = `https://${opt.account}.r2.cloudflarestorage.com`;
+                endpoint = `https://${account}.r2.cloudflarestorage.com`;
                 break;
             }
             default: {
@@ -77,12 +76,12 @@ export class S3 {
             }
         }
         this._link = new s3.S3Client({
-            'region': opt.region,
+            'region': region,
             'credentials': {
-                'accessKeyId': opt.secretId,
-                'secretAccessKey': opt.secretKey
+                'accessKeyId': secretId,
+                'secretAccessKey': secretKey,
             },
-            'endpoint': endpoint
+            'endpoint': endpoint,
         });
     }
 

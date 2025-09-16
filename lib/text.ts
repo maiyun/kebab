@@ -3,9 +3,9 @@
  * Date: 2019-5-15 16:49:39
  * Last: 2020-04-06 20:51:06, 2022-9-29 15:18:16, 2022-12-29 00:01:30, 2024-3-6 17:53:14, 2024-5-31 17:29:52, 2025-6-13 15:47:02
  */
-import * as kebab from '~/index';
-import * as fs from './fs';
-import * as types from '~/types';
+import * as kebab from '~/index.js';
+import * as fs from './fs.js';
+import * as types from '~/types/index.js';
 
 /**
  * --- 将文件大小格式化为带单位的字符串 ---

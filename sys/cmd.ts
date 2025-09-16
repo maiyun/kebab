@@ -4,12 +4,12 @@
  * Last: 2020-3-7 23:51:18, 2022-07-22 14:14:09, 2022-9-27 14:52:19, 2023-5-23 21:42:46, 2024-7-2 15:12:28
  */
 import * as http from 'http';
-import * as lFs from '~/lib/fs';
-import * as lText from '~/lib/text';
-import * as lTime from '~/lib/time';
-import * as lCore from '~/lib/core';
-import * as lCrypto from '~/lib/crypto';
-import * as kebab from '~/index';
+import * as lFs from '~/lib/fs.js';
+import * as lText from '~/lib/text.js';
+import * as lTime from '~/lib/time.js';
+import * as lCore from '~/lib/core.js';
+import * as lCrypto from '~/lib/crypto.js';
+import * as kebab from '~/index.js';
 
 /** --- 解析命令 --- */
 const cmds = process.argv.slice(2);
@@ -199,7 +199,7 @@ async function run(): Promise<void> {
             return;
         }
         // --- 载入独立文件入口 ---
-        import('../ind/' + cmds[1] + '/index').catch((e) => {
+        import('../ind/' + cmds[1] + '/index.js').catch((e) => {
             lCore.display('CMD ERROR', 'E', e);
         });
     }

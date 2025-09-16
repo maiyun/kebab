@@ -11,16 +11,16 @@ import * as stream from 'stream';
 // --- 第三方 ---
 import * as ws from '@litert/websocket';
 // --- 库和定义 ---
-import * as lFs from '~/lib/fs';
-import * as lZlib from '~/lib/zlib';
-import * as lCore from '~/lib/core';
-import * as lText from '~/lib/text';
-import * as lTime from '~/lib/time';
-import * as lResponse from '~/lib/net/response';
-import * as lWs from '~/lib/ws';
-import * as sCtr from './ctr';
-import * as kebab from '~/index';
-import * as types from '~/types';
+import * as lFs from '~/lib/fs.js';
+import * as lZlib from '~/lib/zlib.js';
+import * as lCore from '~/lib/core.js';
+import * as lText from '~/lib/text.js';
+import * as lTime from '~/lib/time.js';
+import * as lResponse from '~/lib/net/response.js';
+import * as lWs from '~/lib/ws.js';
+import * as sCtr from './ctr.js';
+import * as kebab from '~/index.js';
+import * as types from '~/types/index.js';
 
 /** --- 动态层 kebab.json 缓存（文件路径: 最终合并值） --- */
 let kebabConfigs: Record<string, types.IConfig> = {};
@@ -114,8 +114,9 @@ export async function run(data: {
 
         // --- 环境判断 ---
 
-        'mobile': data.req.headers['user-agent'] ? data.req.headers['user-agent'].includes('mobile') : false,
-        'wechat': data.req.headers['user-agent'] ? data.req.headers['user-agent'].includes('micromessenger') : false,
+        'mobile': data.req.headers['user-agent'] ? data.req.headers['user-agent'].toLowerCase().includes('mobile') : false,
+        'wechat': data.req.headers['user-agent'] ? data.req.headers['user-agent'].toLowerCase().includes('micromessenger') : false,
+        'miniprogram': data.req.headers['referer'] ? (data.req.headers['referer'].toLowerCase().startsWith('https://servicewechat.com/') ? 'wechat' : '') : '',
         'https': data.uri.protocol === 'https' ? true : false,
         'host': data.uri.host ?? '',
         'hostname': data.uri.hostname ?? '',
@@ -284,7 +285,7 @@ export async function run(data: {
             return true;
         }
         // --- 加载控制器文件 ---
-        const ctrCtr: typeof sCtr.Ctr = (await import(filePath)).default;
+        const ctrCtr: typeof sCtr.Ctr = (await import((!filePath.startsWith('/') ? '/' : '') + filePath)).default;
         const cctr: sCtr.Ctr = new ctrCtr(config, data.req);
         // --- 先处理 web socket 的情况 ---
         let wsSocket: lWs.Socket;
@@ -407,7 +408,7 @@ export async function run(data: {
         return true;
     }
     // --- 加载中间控制器 ---
-    const middleCtr = (await import(config.const.ctrPath + 'middle')).default as typeof sCtr.Ctr;
+    const middleCtr = (await import((!config.const.ctrPath.startsWith('/') ? '/' : '') + config.const.ctrPath + 'middle.js')).default as typeof sCtr.Ctr;
     const middle: sCtr.Ctr = new middleCtr(config, data.req, data.res);
     /** --- 可能存在的最终控制器 --- */
     let cctr: sCtr.Ctr | null = null;
@@ -470,7 +471,7 @@ export async function run(data: {
             return true;
         }
         // --- 加载控制器文件 ---
-        const ctrCtr: typeof sCtr.Ctr = (await import(filePath)).default;
+        const ctrCtr: typeof sCtr.Ctr = (await import((!filePath.startsWith('/') ? '/' : '') + filePath)).default;
         cctr = new ctrCtr(config, data.req, data.res ?? data.socket!);
         // --- 对信息进行初始化 ---
         cctr.setPrototype('_timer', middle.getPrototype('_timer'));

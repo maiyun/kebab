@@ -15,13 +15,13 @@ import 'ts-alias-loader';
 if (cluster.isPrimary) {
     if (process.argv.length > 2) {
         // --- 传入的命令方式启动，则执行 RPC 相关命令 ---
-        import('./sys/cmd');
+        import('./sys/cmd.js');
     }
     else {
         // --- 正常启动 ---
-        import('./sys/master');
+        import('./sys/master.js');
     }
 }
 else {
-    import('./sys/child');
+    import('./sys/child.js');
 }

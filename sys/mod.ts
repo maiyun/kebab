@@ -3,13 +3,18 @@
  * Date: 2019-6-4 21:35
  * Last: 2020-4-14 13:33:51, 2022-07-23 16:01:34, 2022-09-06 22:59:26, 2023-5-24 19:11:37, 2023-6-13 21:47:58, 2023-7-10 18:54:03, 2023-8-23 17:03:16, 2023-12-11 15:21:22, 2023-12-20 23:12:03, 2024-3-8 16:05:29, 2024-3-20 19:58:15, 2024-8-11 21:14:54, 2024-10-5 14:00:22, 2024-12-14 19:58:34
  */
-import * as lSql from '~/lib/sql';
-import * as lDb from '~/lib/db';
-import * as lTime from '~/lib/time';
-import * as lCore from '~/lib/core';
-import * as lText from '~/lib/text';
-import * as sCtr from '~/sys/ctr';
-import * as types from '~/types';
+import * as lSql from '~/lib/sql.js';
+import * as lDb from '~/lib/db.js';
+import * as lTime from '~/lib/time.js';
+import * as lCore from '~/lib/core.js';
+import * as lText from '~/lib/text.js';
+import * as sCtr from '~/sys/ctr.js';
+import * as types from '~/types/index.js';
+
+/** --- 只获取变量 --- */
+type TOnlyProperties<T> = {
+    [K in keyof T as T[K] extends (...args: any[]) => any ? never : K]: T[K]
+};
 
 /** --- 条数列表 --- */
 class Rows<T extends Mod> implements types.Rows<T> {
@@ -1189,6 +1194,7 @@ export default class Mod {
             return Array.isArray(list) ? new Rows<this>(list) : list;
         }
         // --- 单表 ---
+        /** --- 要追加的 values --- */
         const contain = this._contain ? lCore.clone(this._contain.list) : null;
         const r = await this._db.query(this._sql.getSql(), this._sql.getData());
         if (r.rows === null) {
@@ -1208,7 +1214,7 @@ export default class Mod {
         if (this._contain && contain?.length) {
             const csql = this._sql.copy(undefined, {
                 'where': {
-                    [this._contain.key]: this._contain.list
+                    [this._contain.key]: contain,
                 }
             });
             cr = await this._db.query(csql.getSql(), csql.getData());
@@ -1370,7 +1376,7 @@ export default class Mod {
         if (this._contain && contain?.length) {
             const csql = this._sql.copy(undefined, {
                 'where': {
-                    [this._contain.key]: this._contain.list
+                    [this._contain.key]: contain,
                 }
             });
             cr = await this._db.query(csql.getSql(), csql.getData());
@@ -1677,8 +1683,9 @@ export default class Mod {
     /**
      * --- 获取值对象 ---
      */
-    public toArray(): Record<string, any> {
-        return this._data;
+    public toArray<TC extends abstract new (...args: any) => any>():
+        TOnlyProperties<InstanceType<TC>> & Record<string, any> {
+        return this._data as any;
     }
 
     /**

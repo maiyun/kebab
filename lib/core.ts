@@ -7,15 +7,15 @@ import * as cp from 'child_process';
 import * as http from 'http';
 import * as http2 from 'http2';
 import * as stream from 'stream';
-import * as lTime from '~/lib/time';
-import * as lFs from '~/lib/fs';
-import * as lText from '~/lib/text';
-import * as lNet from '~/lib/net';
-import * as lCrypto from '~/lib/crypto';
-import * as lResponse from '~/lib/net/response';
-import * as sCtr from '~/sys/ctr';
-import * as kebab from '~/index';
-import * as types from '~/types';
+import * as lTime from '~/lib/time.js';
+import * as lFs from '~/lib/fs.js';
+import * as lText from '~/lib/text.js';
+import * as lNet from '~/lib/net.js';
+import * as lCrypto from '~/lib/crypto.js';
+import * as lResponse from '~/lib/net/response.js';
+import * as sCtr from '~/sys/ctr.js';
+import * as kebab from '~/index.js';
+import * as types from '~/types/index.js';
 
 /** --- 全局参数 --- */
 export const globalConfig: types.IConfig & {
@@ -818,7 +818,7 @@ export async function ls(opt: {
  * --- 完整的克隆一份数组/对象，Kebab: yes, Mutton: no ---
  * @param obj 要克隆的对象
  */
-export function clone(obj: Record<string, any> | any[]): any[] | any {
+export function clone<T>(obj: T): T {
     let newObj: any = {};
     if (obj instanceof Array) {
         newObj = [];

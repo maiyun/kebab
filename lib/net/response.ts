@@ -5,7 +5,7 @@
  */
 import * as hc from '@litert/http-client';
 import * as nStream from 'stream';
-import * as types from '~/types';
+import * as types from '~/types/index.js';
 
 export class Response {
 

@@ -7,9 +7,9 @@ import * as fs from 'fs';
 import * as http from 'http';
 import * as http2 from 'http2';
 import * as mime from '@litert/mime';
-import * as text from './text';
-import * as core from './core';
-import * as zlib from './zlib';
+import * as text from './text.js';
+import * as core from './core.js';
+import * as zlib from './zlib.js';
 
 export function getContent(path: string, options?: {
     'start'?: number;

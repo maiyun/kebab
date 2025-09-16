@@ -6,8 +6,8 @@
 import * as stream from 'stream';
 import * as ssh2 from 'ssh2';
 // --- 库和定义 ---
-import * as core from '~/lib/core';
-import * as text from '~/lib/text';
+import * as core from '~/lib/core.js';
+import * as text from '~/lib/text.js';
 
 export class Connection {
 
@@ -47,9 +47,7 @@ export class Connection {
                 'encoding': options
             };
         }
-        else if (!options) {
-            options = {};
-        }
+        options ??= {};
         const encoding = options.encoding;
         const start = options.start;
         const end = options.end;
@@ -423,9 +421,7 @@ export class Connection {
                 'encoding': options
             };
         }
-        else if (!options) {
-            options = {};
-        }
+        options ??= {};
         return this._client.createWriteStream(path, options);
     }
 

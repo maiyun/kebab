@@ -3,11 +3,12 @@
 .vs/
 .git/
 node_modules/
+eslint.config.cjs
 .gitignore
-.npmrc
 .npmignore
 .DS_Store
 /doc/
 *.ts
 !*.d.ts
 tsconfig.json
+package-lock.json

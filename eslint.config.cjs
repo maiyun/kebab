@@ -16,7 +16,10 @@ module.exports = [
         rules: {
             '@typescript-eslint/no-explicit-any': 'off',
             '@typescript-eslint/explicit-module-boundary-types': 'off',
-            'max-lines': ['warn', 5000]
+            '@typescript-eslint/no-empty-function': 'off',
+            '@typescript-eslint/no-this-alias': 'off',
+            '@typescript-eslint/unbound-method': 'off',
+            'max-lines': ['warn', 5000],
         }
     }
 ];

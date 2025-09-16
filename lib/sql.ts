@@ -4,13 +4,13 @@
  * Last: 2020-3-29 19:37:25, 2022-07-24 22:38:11, 2023-5-24 18:49:18, 2023-6-13 22:20:21, 2023-12-11 13:58:54, 2023-12-14 13:14:40, 2023-12-21 00:04:40, 2024-4-11 19:29:29, 2024-9-2 17:15:28, 2025-8-3 21:28:18
  */
 
-import * as lText from '~/lib/text';
-import * as lCore from '~/lib/core';
+import * as lText from '~/lib/text.js';
+import * as lCore from '~/lib/core.js';
 // --- 第三方 ---
 import * as mysql2 from 'mysql2/promise';
 // --- 库和定义 ---
-import * as ctr from '~/sys/ctr';
-import * as types from '~/types';
+import * as ctr from '~/sys/ctr.js';
+import * as types from '~/types/index.js';
 
 /** --- filed 用 token --- */
 let columnToken = '';

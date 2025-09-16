@@ -1,5 +1,6 @@
-import * as sCtr from '~/sys/ctr';
-import * as lCrypto from '~/lib/crypto';
+import * as sCtr from '~/sys/ctr.js';
+import * as lCrypto from '~/lib/crypto.js';
+import * as lCore from '~/lib/core.js';
 import * as http from 'http';
 
 export default class extends sCtr.Ctr {
@@ -13,7 +14,7 @@ export default class extends sCtr.Ctr {
     }
 
     public onLoad(): boolean {
-        console.log('WebSocket test onLoad.');
+        lCore.debug('WebSocket test onLoad.');
         setTimeout(() => {
             if (!this._nick) {
                 return;
@@ -33,12 +34,12 @@ export default class extends sCtr.Ctr {
         }
         // --- 用户消息 ---
         const date = new Date();
-        console.log('[' + date.getHours().toString().padStart(2, '0') + ':' + date.getMinutes().toString().padStart(2, '0') + ':' + date.getSeconds().toString().padStart(2, '0') + '] WebSocket test onData, data: ' + data);
+        lCore.debug('[' + date.getHours().toString().padStart(2, '0') + ':' + date.getMinutes().toString().padStart(2, '0') + ':' + date.getSeconds().toString().padStart(2, '0') + '] WebSocket test onData, data: ' + data);
         return '<b>' + this._nick + ':</b> ' + data;
     }
 
     public onClose(): void {
-        console.log('WebSocket test onClose, nick: ' + this._nick);
+        lCore.debug('WebSocket test onClose, nick: ' + this._nick);
         this._nick = '';
     }
 

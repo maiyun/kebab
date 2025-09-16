@@ -1,4 +1,4 @@
-<p align="center"><img src="./doc/icon.svg" width="68" height="68" alt="Kebab"></p>
+<p align="center"><img src="./doc/icon.png" width="64" height="64" alt="Kebab"></p>
 <p align="center">
     <a href="https://github.com/maiyun/kebab/blob/master/LICENSE">
         <img alt="License" src="https://img.shields.io/github/license/maiyun/kebab?color=blue" />
@@ -191,10 +191,6 @@ See: /test/ctr-checkinput
 ### Other Examples
 
 You can visit /test/ to see more examples.
-
-## Changelog
-
-[Changelog](./doc/CHANGELOG.md)
 
 ## License
 

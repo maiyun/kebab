@@ -6,9 +6,9 @@
 import * as tc from 'tencentcloud-sdk-nodejs';
 
 // --- 库和定义 ---
-import * as lNet from '~/lib/net';
-import * as lText from '~/lib/text';
-import * as sCtr from '~/sys/ctr';
+import * as lNet from '~/lib/net.js';
+import * as lText from '~/lib/text.js';
+import * as sCtr from '~/sys/ctr.js';
 
 /**
  * 0. CloudFlare：https://developers.cloudflare.com/turnstile/get-started/server-side-validation/

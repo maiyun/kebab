@@ -10,16 +10,16 @@ import * as http2 from 'http2';
 // --- 第三方 ---
 import * as hc from '@litert/http-client';
 // --- 库和定义 ---
-import * as fs from '~/lib/fs';
-import * as text from '~/lib/text';
-import * as time from '~/lib/time';
-import * as kebab from '~/index';
-import * as ctr from '~/sys/ctr';
-import * as types from '~/types';
+import * as fs from '~/lib/fs.js';
+import * as text from '~/lib/text.js';
+import * as time from '~/lib/time.js';
+import * as kebab from '~/index.js';
+import * as ctr from '~/sys/ctr.js';
+import * as types from '~/types/index.js';
 // --- 自己 ---
-import * as fd from './net/formdata';
-import * as lRequest from './net/request';
-import * as response from './net/response';
+import * as fd from './net/formdata.js';
+import * as lRequest from './net/request.js';
+import * as response from './net/response.js';
 
 /** --- 请求的传入参数选项 --- */
 export interface IRequestOptions {
@@ -237,7 +237,7 @@ export async function request(
             'localAddress': local,
             'ca': ca,
             'connectionOptions': {
-                'remoteHost': hosts[host]
+                'remoteHost': hosts[host],
             },
         });
     }

@@ -1,4 +1,4 @@
-<p align="center"><img src="./icon.svg" width="68" height="68" alt="Kebab"></p>
+<p align="center"><img src="./icon.png" width="64" height="64" alt="Kebab"></p>
 <p align="center">
     <a href="https://github.com/maiyun/kebab/blob/master/LICENSE">
         <img alt="License" src="https://img.shields.io/github/license/maiyun/kebab?color=blue" />
@@ -193,10 +193,6 @@ return this._l('copy');
 ### 其他演示
 
 你可以訪問 /test/ 來查看更多示例。
-
-## 更新日誌
-
-[更新日誌](CHANGELOG.tc.md)
 
 ## 許可
 

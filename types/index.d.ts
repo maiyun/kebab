@@ -162,6 +162,7 @@ export interface IConfigConst {
 
     'mobile': boolean;
     'wechat': boolean;
+    'miniprogram': '' | 'wechat';
     'https': boolean;
     'host': string;
     'hostname': string;

@@ -7,8 +7,8 @@
 // --- 第三方 ---
 import * as ssh2 from 'ssh2';
 // --- 自己 ---
-import * as shell from './ssh/shell';
-import * as sftp from './ssh/sftp';
+import * as shell from './ssh/shell.js';
+import * as sftp from './ssh/sftp.js';
 
 interface IExtOptions {
     'mproxy'?: {

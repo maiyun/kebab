@@ -5,8 +5,8 @@
  */
 import * as stream from 'stream';
 import * as mime from '@litert/mime';
-import * as core from '~/lib/core';
-import * as fs from '~/lib/fs';
+import * as core from '~/lib/core.js';
+import * as fs from '~/lib/fs.js';
 
 /** --- Item 对象 --- */
 export interface IItem {

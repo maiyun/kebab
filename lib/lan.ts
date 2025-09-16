@@ -1,5 +1,5 @@
 import * as os from 'os';
-import * as lCore from '~/lib/core';
+import * as lCore from '~/lib/core.js';
 
 /**
  * --- 获取当前网卡的 IP、MAC 信息 ---

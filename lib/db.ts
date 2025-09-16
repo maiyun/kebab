@@ -9,12 +9,12 @@
 // --- 第三方 ---
 import * as mysql2 from 'mysql2/promise';
 // --- 库和定义 ---
-import * as time from '~/lib/time';
-import * as lSql from '~/lib/sql';
-import * as lCore from '~/lib/core';
-import * as lText from '~/lib/text';
-import * as ctr from '~/sys/ctr';
-import * as types from '~/types';
+import * as lTime from '~/lib/time.js';
+import * as lSql from '~/lib/sql.js';
+import * as lCore from '~/lib/core.js';
+import * as lText from '~/lib/text.js';
+import * as sCtr from '~/sys/ctr.js';
+import * as types from '~/types/index.js';
 
 /** --- query 返回的数据 --- */
 export interface IData {
@@ -56,10 +56,10 @@ export interface IConnectionInfo {
 const connections: Connection[] = [];
 
 /**
- * --- 计划任务 30 秒一次，关闭超过 3 分钟不活动的连接，回滚独占时间过长的连接 ---
+ * --- 计划任务 10 秒一次，关闭超过 30 秒不活动的连接，回滚独占时间过长的连接 ---
  */
 async function checkConnection(): Promise<void> {
-    const now: number = time.stamp();
+    const now: number = lTime.stamp();
     for (let i = 0; i < connections.length; ++i) {
         const connection = connections[i];
         if (connection.isLost()) {
@@ -70,9 +70,9 @@ async function checkConnection(): Promise<void> {
             continue;
         }
         if (connection.isUsing()) {
-            // --- 连接正在被使用，看看是否空闲了超过 1 分钟，超过则不是正常状态 ---
-            if (connection.getLast() <= now - 60) {
-                // --- 1 分钟之前开始的 ---
+            // --- 连接正在被使用，看看是否空闲了超过 30 秒，超过则不是正常状态 ---
+            if (connection.getLast() <= now - 30) {
+                // --- 30 秒之前开始的 ---
                 const ls = connection.getLastSql();
                 const newarr = ls.map(item => {
                     if (!item.values) {
@@ -80,29 +80,30 @@ async function checkConnection(): Promise<void> {
                     }
                     return lSql.format(item.sql, item.values);
                 });
-                lCore.display(`[DB][error] There is a transactional connection[${i}] that is not closed, last sql: ${newarr.join(', ')}.`);
-                lCore.log({}, `[DB][checkConnection] There is a transactional connection[${i}] that is not closed, last sql: ${newarr.join(', ')}.`, '-error');
+                const msg = `[DB][checkConnection] There is a transactional connection[${i}] that is not closed, last sql: ${newarr.join(', ')}.`;
+                lCore.display(msg);
+                lCore.log({}, msg, '-error');
                 await connection.rollback();
             }
             continue;
         }
         // --- 目前未被使用中的连接 ---
-        if (connection.getLast() > now - 180) {
-            // --- 3 分钟内使用过，不管 ---
+        if (connection.getLast() > now - 30) {
+            // --- 30 秒内使用过，不管 ---
             continue;
         }
-        // --- 超 3 分钟未被使用，则关闭 ---
+        // --- 超 30 秒未被使用，则关闭 ---
         await connection.end();
         connections.splice(i, 1);
         --i;
     }
     setTimeout(function() {
         checkConnection().catch(e => { lCore.display('[DB][checkConnection]', e); });
-    }, 30_000);
+    }, 10_000);
 }
 setTimeout(function() {
     checkConnection().catch(e => { lCore.display('[DB][checkConnection]', e); });
-}, 30_000);
+}, 10_000);
 
 /** --- 数据库连接池对象 --- */
 export class Pool {
@@ -164,7 +165,7 @@ export class Pool {
     /**
      * --- 开启事务，返回事务对象并锁定连接，别人任何人不可用，有 ctr 的话必传 this，独立执行时可传 null ---
      */
-    public async beginTransaction(ctr: ctr.Ctr | null): Promise<Transaction | null> {
+    public async beginTransaction(ctr: sCtr.Ctr | null): Promise<Transaction | null> {
         const conn = await this._getConnection();
         if (!conn) {
             return null;
@@ -209,7 +210,7 @@ export class Pool {
                     'database': this._etc.name,
                     'user': this._etc.user,
                     'password': this._etc.pwd,
-                    'connectTimeout': 3000
+                    'connectTimeout': 3_000,
                 });
                 const c = new Connection(this._etc, link);
                 c.using();
@@ -219,13 +220,16 @@ export class Pool {
                     }
                     c.setLost();
                 }).on('end', function() {
+                    lCore.debug('[DB][_getConnection] connection end.');
                     c.setLost();
                 });
                 conn = c;
                 connections.push(conn);
             }
             catch (e: any) {
-                lCore.log({}, '[DB][Pool][_getConnection]' + lText.stringifyJson(e.stack).slice(1, -1), '-error');
+                const msg = '[DB][_getConnection] ' + lText.stringifyJson(e.stack).slice(1, -1);
+                lCore.debug(msg);
+                lCore.log({}, msg, '-error');
             }
         }
         return conn;
@@ -249,7 +253,7 @@ export class Transaction {
     /** --- 连接对象 --- */
     private _conn: Connection | null;
 
-    private readonly _ctr: ctr.Ctr | null;
+    private readonly _ctr: sCtr.Ctr | null;
 
     // --- 事务时长监听 timer ---
     private readonly _timer: {
@@ -260,7 +264,7 @@ export class Transaction {
             'danger': undefined
         };
 
-    public constructor(ctr: ctr.Ctr | null, conn: Connection, opts: {
+    public constructor(ctr: sCtr.Ctr | null, conn: Connection, opts: {
         'warning'?: number;
         'danger'?: number;
     } = {}) {
@@ -484,7 +488,7 @@ export class Connection {
      * --- 设定最后使用时间 ---
      */
     public refreshLast(): void {
-        this._last = time.stamp();
+        this._last = lTime.stamp();
     }
 
     /**
@@ -648,8 +652,8 @@ export class Connection {
  * --- 获取 Db Pool 对象 ---
  * @param etc 配置信息可留空
  */
-export function get(ctrEtc: ctr.Ctr | types.IConfigDb): Pool {
-    const etc = ctrEtc instanceof ctr.Ctr ? ctrEtc.getPrototype('_config').db : ctrEtc;
+export function get(ctrEtc: sCtr.Ctr | types.IConfigDb): Pool {
+    const etc = ctrEtc instanceof sCtr.Ctr ? ctrEtc.getPrototype('_config').db : ctrEtc;
     return new Pool(etc);
 }
 

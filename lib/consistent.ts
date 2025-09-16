@@ -3,7 +3,7 @@
  * Date: 2022-09-12 10:51:16
  * Last: 2022-09-12 10:51:20, 2023-3-17 10:52:04, 2023-11-15 11:45:28
  */
-import * as crypto from '~/lib/crypto';
+import * as crypto from '~/lib/crypto.js';
 
 export class Consistent {
 

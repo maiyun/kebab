@@ -11,10 +11,11 @@
 // --- 第三方 ---
 import * as redis from '@litert/redis';
 // --- 库和定义 ---
-import * as time from '~/lib/time';
-import * as text from '~/lib/text';
-import * as ctr from '~/sys/ctr';
-import * as types from '~/types';
+import * as lTime from '~/lib/time.js';
+import * as lText from '~/lib/text.js';
+import * as lCore from '~/lib/core.js';
+import * as sCtr from '~/sys/ctr.js';
+import * as types from '~/types/index.js';
 
 /** --- 连接信息 --- */
 export interface IConnectionInfo {
@@ -31,10 +32,10 @@ export interface IConnectionInfo {
 const connections: Connection[] = [];
 
 /**
- * --- 计划任务 30 秒一次，关闭超过 3 分钟不活动的连接 ---
+ * --- 计划任务 10 秒一次，关闭超过 30 秒不活动的连接 ---
  */
 async function checkConnection(): Promise<void> {
-    const now: number = time.stamp();
+    const now: number = lTime.stamp();
     for (let i = 0; i < connections.length; ++i) {
         const connection = connections[i];
         if (connection.isLost()) {
@@ -45,41 +46,42 @@ async function checkConnection(): Promise<void> {
             continue;
         }
         if (connection.isUsing()) {
-            // --- 连接正在被使用，看看是否使用超过 3 分钟，超过则不是正常状态 ---
-            if (connection.getLast() <= now - 180) {
-                // --- 10 分钟之前开始的 ---
-                console.log(`[kv] [error] There is a transactional connection[${i}] that is not closed.`);
+            // --- 连接正在被使用，看看是否使用超过 30 秒，超过则不是正常状态 ---
+            if (connection.getLast() <= now - 30) {
+                // --- 30 秒之前开始的 ---
+                const msg = `[KV][checkConnection] There is a transactional connection[${i}] that is not closed.`;
+                lCore.display(msg);
+                lCore.log({}, msg, '-error');
                 await connection.end();
                 connections.splice(i, 1);
                 --i;
             }
             continue;
         }
-        // --- 检测 3 分钟内是否使用过 ---
-        if (connection.getLast() > now - 180) {
-            // --- 3 分钟内使用过，不管 ---
+        // --- 检测 30 秒内是否使用过 ---
+        if (connection.getLast() > now - 30) {
+            // --- 30 秒内使用过，不管 ---
             continue;
         }
-        // --- 超 3 分钟未被使用，则关闭 ---
+        // --- 超 30 秒未被使用，则关闭 ---
         await connection.end();
         connections.splice(i, 1);
         --i;
-        continue;
     }
     setTimeout(function() {
-        checkConnection().catch(e => { console.log('[KV]', e); });
-    }, 30000);
+        checkConnection().catch(() => {});
+    }, 10_000);
 }
 setTimeout(function() {
-    checkConnection().catch(e => { console.log('[KV]', e); });
-}, 30000);
+    checkConnection().catch(() => {});
+}, 10_000);
 
 export class Pool {
 
     /** --- 当前 Pool 对象的 kv 连接信息 --- */
     private readonly _etc: types.IConfigKv;
 
-    public constructor(ctr: ctr.Ctr, etc?: types.IConfigKv) {
+    public constructor(ctr: sCtr.Ctr, etc?: types.IConfigKv) {
         if (etc) {
             this._etc = etc;
         }
@@ -674,7 +676,7 @@ export class Pool {
             link.on('error', function(err): void {
                 conn.setLost();
                 // console.log(`--- redis [${conn._etc.host}:${conn._etc.port}] error ---`);
-                console.log('[KV] [ERROR]', err);
+                lCore.debug('[KV][ERROR]', err);
             }).on('close', () => {
                 conn.setLost();
             });
@@ -760,7 +762,7 @@ export class Connection {
      * --- 设定最后使用时间 ---
      */
     public refreshLast(): void {
-        this._last = time.stamp();
+        this._last = lTime.stamp();
     }
 
     /**
@@ -786,7 +788,7 @@ export class Connection {
     public async set(key: string, val: object | string | number, ttl: number, mod: '' | 'nx' | 'xx', etc: types.IConfigKv): Promise<boolean> {
         this.refreshLast();
         if (typeof val !== 'string') {
-            val = text.stringifyJson(val);
+            val = lText.stringifyJson(val);
         }
         try {
             switch (mod) {
@@ -1015,7 +1017,7 @@ end`;
         if (v === null) {
             return null;
         }
-        const r = text.parseJson(v);
+        const r = lText.parseJson(v);
         return r === false ? null : r;
     }
 
@@ -1194,7 +1196,7 @@ end`;
         this.refreshLast();
         try {
             if (typeof val !== 'string') {
-                val = text.stringifyJson(val);
+                val = lText.stringifyJson(val);
             }
             if (mod === 'nx') {
                 return await this._link.hSetNX(etc.pre + key, field, val);
@@ -1224,7 +1226,7 @@ end`;
             for (const i in rows) {
                 const val = rows[i];
                 if (typeof val === 'object') {
-                    rows[i] = text.stringifyJson(val);
+                    rows[i] = lText.stringifyJson(val);
                 }
             }
             await this._link.hMSet(etc.pre + key, rows as Record<string, string | number>);
@@ -1262,7 +1264,7 @@ end`;
         if (v === null) {
             return null;
         }
-        const r = text.parseJson(v);
+        const r = lText.parseJson(v);
         return r === false ? null : v;
     }
 
@@ -1459,7 +1461,7 @@ end`;
  * --- 获取 Kv Pool 对象 ---
  * @param etc 配置信息可留空
  */
-export function get(ctr: ctr.Ctr, etc?: types.IConfigKv): Pool {
+export function get(ctr: sCtr.Ctr, etc?: types.IConfigKv): Pool {
     etc ??= ctr.getPrototype('_config').kv;
     return new Pool(ctr, etc);
 }

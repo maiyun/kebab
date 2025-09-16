@@ -1,11 +1,14 @@
 .vscode/
 .VSCodeCounter/
 .vs/
+.git/
 node_modules/
 .DS_Store
-*.js
-!eslint.config.js
-*.js.map
+*.d.ts
+!/types/*.d.ts
 package-lock.json
+
+*.js
+*.js.map
 *.d.ts
 !/types/*.d.ts

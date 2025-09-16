@@ -1,30 +1,30 @@
 import * as fs from 'fs';
 // --- 库和定义 ---
-import * as lCore from '~/lib/core';
-import * as lNet from '~/lib/net';
-import * as lDb from '~/lib/db';
-import * as lFs from '~/lib/fs';
-import * as lText from '~/lib/text';
-import * as lCrypto from '~/lib/crypto';
-import * as lKv from '~/lib/kv';
-import * as lCaptcha from '~/lib/captcha';
-import * as lTime from '~/lib/time';
-import * as lScan from '~/lib/scan';
-import * as lSql from '~/lib/sql';
-import * as lConsistent from '~/lib/consistent';
-import * as lSsh from '~/lib/ssh';
-import * as lJwt from '~/lib/jwt';
-import * as lWs from '~/lib/ws';
-import * as lS3 from '~/lib/s3';
-import * as lZip from '~/lib/zip';
-import * as lBuffer from '~/lib/buffer';
-import * as lLan from '~/lib/lan';
-import * as sCtr from '~/sys/ctr';
-import * as kebab from '~/index';
-import * as types from '~/types';
+import * as lCore from '~/lib/core.js';
+import * as lNet from '~/lib/net.js';
+import * as lDb from '~/lib/db.js';
+import * as lFs from '~/lib/fs.js';
+import * as lText from '~/lib/text.js';
+import * as lCrypto from '~/lib/crypto.js';
+import * as lKv from '~/lib/kv.js';
+import * as lCaptcha from '~/lib/captcha.js';
+import * as lTime from '~/lib/time.js';
+import * as lScan from '~/lib/scan.js';
+import * as lSql from '~/lib/sql.js';
+import * as lConsistent from '~/lib/consistent.js';
+import * as lSsh from '~/lib/ssh.js';
+import * as lJwt from '~/lib/jwt.js';
+import * as lWs from '~/lib/ws.js';
+import * as lS3 from '~/lib/s3.js';
+import * as lZip from '~/lib/zip.js';
+import * as lBuffer from '~/lib/buffer.js';
+import * as lLan from '~/lib/lan.js';
+import * as sCtr from '~/sys/ctr.js';
+import * as kebab from '~/index.js';
+import * as types from '~/types/index.js';
 // --- mod ---
-import mTest from '../mod/test';
-import mTestData from '../mod/testdata';
+import mTest from '../mod/test.js';
+import mTestData from '../mod/testdata.js';
 
 export default class extends sCtr.Ctr {
 
@@ -81,8 +81,7 @@ export default class extends sCtr.Ctr {
             '<br>PATH: ' + this._config.const.path,
             '<br>QS: ' + this._config.const.qs,
             '<br>HTTPS: ' + (this._config.const.https ? 'true' : 'false'),
-
-            '<br><br>MOBILE: ' + (this._config.const.mobile ? 'true' : 'false'),
+            '<br>MOBILE: ' + (this._config.const.mobile ? 'true' : 'false'),
             '<br>Real IP: ' + lCore.ip(this),
             '<br>Client IP: ' + lCore.realIP(this),
 
@@ -3300,3 +3299,37 @@ rtn.push(reader.readBCDString());</pre>${JSON.stringify(rtn)}`);
     }
 
 }
+
+// --- 下面是测试代码 ---
+
+/*
+class B {
+
+    public a: number = 0;
+
+    protected _data = {
+        'a': 0,
+    };
+
+    public self(): this {
+        return this;
+    }
+
+    public selfArray(): this[] {
+        return [this];
+    }
+
+    public static get<T extends B>(): T & Record<string, any> {
+        return new this() as T & Record<string, any>;
+    }
+
+}
+
+const d = B.get();
+const e = d.self();
+console.log('e', e);    // --- B & Record<string, any> ---
+const ea = d.selfArray();
+console.log('ea', ea);  // --- (B & Record<string, any>)[] ---
+
+// --- 测试代码结束 ---
+//*/

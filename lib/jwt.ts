@@ -5,13 +5,13 @@
  */
 
 // --- 库和定义 ---
-import * as lCore from '~/lib/core';
-import * as lTime from '~/lib/time';
-import * as lText from '~/lib/text';
-import * as lCrypto from '~/lib/crypto';
-import * as kv from '~/lib/kv';
-import * as ctr from '~/sys/ctr';
-import * as types from '~/types';
+import * as lCore from '~/lib/core.js';
+import * as lTime from '~/lib/time.js';
+import * as lText from '~/lib/text.js';
+import * as lCrypto from '~/lib/crypto.js';
+import * as kv from '~/lib/kv.js';
+import * as ctr from '~/sys/ctr.js';
+import * as types from '~/types/index.js';
 
 export interface IOptions {
     'name'?: string;

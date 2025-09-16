@@ -5,13 +5,13 @@
  */
 import * as http from 'http';
 import * as net from 'net';
-import * as types from '~/types';
+import * as types from '~/types/index.js';
 // --- 第三方 ---
 import * as liws from '@litert/websocket';
 // --- 库 ---
-import * as lText from '~/lib/text';
-import * as lNet from '~/lib/net';
-import * as sCtr from '~/sys/ctr';
+import * as lText from '~/lib/text.js';
+import * as lNet from '~/lib/net.js';
+import * as sCtr from '~/sys/ctr.js';
 
 /** --- 一般用 SIMPLE --- */
 export enum EFrameReceiveMode {

@@ -3,7 +3,7 @@
  * Date: 2019-6-6 12:04:15
  * Last: 2020-3-29 23:41:21, 2024-1-18 17:16:50, 2024-8-5 10:55:21
  */
-import * as sCtr from '~/sys/ctr';
+import * as sCtr from '~/sys/ctr.js';
 
 export interface IOptions {
     /** --- 时区 --- */
@@ -172,6 +172,7 @@ export function format(zone: number | sCtr.Ctr | null, f: string, date?: Date | 
     else if (zone instanceof sCtr.Ctr) {
         zone = zone.getPrototype('_config').set.timezone;
     }
+    zone ??= (-date.getTimezoneOffset()) / 60;
     if (zone !== 0) {
         date = new Date(date.getTime() + zone * 60 * 60 * 1000);
     }

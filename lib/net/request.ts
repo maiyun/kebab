@@ -4,9 +4,9 @@
  * Last: 2020-4-9 20:47:58, 2022-09-10 01:35:34
  */
 import * as stream from 'stream';
-import * as net from '~/lib/net';
-import * as response from './response';
-import * as types from '~/types';
+import * as net from '~/lib/net.js';
+import * as response from './response.js';
+import * as types from '~/types/index.js';
 
 export class Request {
 
@@ -131,9 +131,7 @@ export class Request {
      * @param val
      */
     public setHeader(name: string, val: string): this {
-        if (!this._opt['headers']) {
-            this._opt['headers'] = {};
-        }
+        this._opt['headers'] ??= {};
         this._opt['headers'][name] = val;
         return this;
     }
