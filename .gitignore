@@ -9,6 +9,7 @@ node_modules/
 package-lock.json
 
 *.js
+!bin/kebab.js
 *.js.map
 *.d.ts
 !/types/*.d.ts
