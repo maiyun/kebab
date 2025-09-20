@@ -28,7 +28,7 @@ Run `npm i @maiyunnet/kebab` to install the latest version. After installation, 
 
 ## Library
 
-Buffer, Captcha, Consistent, Core, Crypto, Db (MySQL), Dns (DNSPod, Alibaba Cloud), Fs, Jwt, Kv (Redis), Lan, Net, S3, Scan, Session, Sql, Ssh (Shell, Sftp), Text, Time, Ws, Zip, Zlib.
+Buffer, Captcha, Consistent, Core, Cron, Crypto, Db (MySQL), Dns (DNSPod, Alibaba Cloud), Fs, Jwt, Kv (Redis), Lan, Net, S3, Scan, Session, Sql, Ssh (Shell, Sftp), Text, Time, Ws, Zip, Zlib.
 
 ## Partial Features
 

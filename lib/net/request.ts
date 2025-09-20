@@ -4,9 +4,9 @@
  * Last: 2020-4-9 20:47:58, 2022-09-10 01:35:34
  */
 import * as stream from 'stream';
-import * as net from '~/lib/net.js';
+import * as net from '#lib/net.js';
 import * as response from './response.js';
-import * as types from '~/types/index.js';
+import * as types from '#types/index.js';
 
 export class Request {
 
@@ -140,7 +140,7 @@ export class Request {
      * --- 发起请求 ---
      * @param cookie
      */
-    public async request(cookie?: Record<string, types.ICookie>): Promise<response.Response> {
+    public request(cookie?: Record<string, types.ICookie>): Promise<response.Response> {
         this._opt.cookie = cookie;
         return net.request(this._url, this._data, this._opt);
     }

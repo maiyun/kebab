@@ -3,13 +3,13 @@
  * Date: 2019-6-4 21:35
  * Last: 2020-4-14 13:33:51, 2022-07-23 16:01:34, 2022-09-06 22:59:26, 2023-5-24 19:11:37, 2023-6-13 21:47:58, 2023-7-10 18:54:03, 2023-8-23 17:03:16, 2023-12-11 15:21:22, 2023-12-20 23:12:03, 2024-3-8 16:05:29, 2024-3-20 19:58:15, 2024-8-11 21:14:54, 2024-10-5 14:00:22, 2024-12-14 19:58:34
  */
-import * as lSql from '~/lib/sql.js';
-import * as lDb from '~/lib/db.js';
-import * as lTime from '~/lib/time.js';
-import * as lCore from '~/lib/core.js';
-import * as lText from '~/lib/text.js';
-import * as sCtr from '~/sys/ctr.js';
-import * as types from '~/types/index.js';
+import * as lSql from '#lib/sql.js';
+import * as lDb from '#lib/db.js';
+import * as lTime from '#lib/time.js';
+import * as lCore from '#lib/core.js';
+import * as lText from '#lib/text.js';
+import * as sCtr from '#sys/ctr.js';
+import * as types from '#types/index.js';
 
 /** --- 只获取变量 --- */
 type TOnlyProperties<T> = {
@@ -213,7 +213,7 @@ export default class Mod {
     }
 
     /**
-     * --- 添加一个序列 ---
+     * --- 添加一个序列（允许超过 65536 的占位符会被拆分多次执行） ---
      * @param db 数据库对象
      * @param cs 字段列表
      * @param vs 数据列表
@@ -226,18 +226,41 @@ export default class Mod {
         opt: { 'pre'?: sCtr.Ctr | string; 'index'?: string; } = {}
     ): Promise<boolean | null | false> {
         const sq = lSql.get(opt.pre);
-        sq.insert(this._$table + (opt.index ? ('_' + opt.index) : '')).values(cs, vs);
-        const r = await db.execute(sq.getSql(), sq.getData());
-        if (r.packet === null) {
-            lCore.log(opt.pre instanceof sCtr.Ctr ? opt.pre : {}, '[insert, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1), '-error');
-            return false;
+        if (!vs) {
+            // --- 单行 ---
+            sq.insert(this._$table + (opt.index ? ('_' + opt.index) : ''));
+            sq.values(cs);
+            const r = await db.execute(sq.getSql(), sq.getData());
+            if (r.packet === null) {
+                lCore.log(opt.pre instanceof sCtr.Ctr ? opt.pre : {}, '[insert, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1), '-error');
+                return false;
+            }
+            return r.packet.affectedRows > 0 ? true : null;
         }
-        if (r.packet.affectedRows > 0) {
-            return true;
+        // --- 可能是多行 ---
+        if (vs.some(item => !Array.isArray(item))) {
+            vs = [vs];
         }
-        else {
+        /** --- 每条数据的列数 --- */
+        const len = vs[0].length;
+        /** --- 每批次最多能容纳的行数 --- */
+        const line = Math.floor(65535 / len);
+        /** --- 总批次数量 --- */
+        const batch = Math.ceil(vs.length / line);
+        for (let i = 0; i < batch; ++i) {
+            sq.insert(this._$table + (opt.index ? ('_' + opt.index) : ''));
+            sq.values(cs, vs.slice(i * line, (i + 1) * line));
+            const r = await db.execute(sq.getSql(), sq.getData());
+            if (r.packet === null) {
+                lCore.log(opt.pre instanceof sCtr.Ctr ? opt.pre : {}, '[insert, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1), '-error');
+                return false;
+            }
+            if (r.packet.affectedRows > 0) {
+                continue;
+            }
             return null;
         }
+        return true;
     }
 
     /**

@@ -11,7 +11,7 @@
         "declarationMap": false,    // d.ts 的 map
         "newLine": "LF",
         "paths": {
-            "~/*": ["./*"]
+            "#*": ["./*"]
         },
         "moduleResolution": "node",
         "resolveJsonModule": true,

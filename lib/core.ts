@@ -7,15 +7,15 @@ import * as cp from 'child_process';
 import * as http from 'http';
 import * as http2 from 'http2';
 import * as stream from 'stream';
-import * as lTime from '~/lib/time.js';
-import * as lFs from '~/lib/fs.js';
-import * as lText from '~/lib/text.js';
-import * as lNet from '~/lib/net.js';
-import * as lCrypto from '~/lib/crypto.js';
-import * as lResponse from '~/lib/net/response.js';
-import * as sCtr from '~/sys/ctr.js';
-import * as kebab from '~/index.js';
-import * as types from '~/types/index.js';
+import * as lTime from '#lib/time.js';
+import * as lFs from '#lib/fs.js';
+import * as lText from '#lib/text.js';
+import * as lNet from '#lib/net.js';
+import * as lCrypto from '#lib/crypto.js';
+import * as lResponse from '#lib/net/response.js';
+import * as sCtr from '#sys/ctr.js';
+import * as kebab from '#index.js';
+import * as types from '#types/index.js';
 
 /** --- 全局参数 --- */
 export const globalConfig: types.IConfig & {
@@ -187,7 +187,7 @@ export function purify(text: string): string {
  * @param tree 当前树，无需传入
  */
 export function checkType(val: any, type: any, tree: string = 'root'): string {
-    /** --- 要校验的对象 --- */
+    /** --- 要校验的对象类型 --- */
     const vtype = typeof val;
     if (Array.isArray(type)) {
         // --- 数组的话 ---
@@ -212,13 +212,19 @@ export function checkType(val: any, type: any, tree: string = 'root'): string {
         return type.test(val) ? '' : 'regexp:' + tree + ':' + vtype;
     }
     if (ttype === 'string') {
+        // --- 示例组在是字符串的前提下，判断是否是必填项 ---
         if (vtype !== 'string' && val !== undefined && val !== null) {
+            // --- 用户值不是字符串，也不是未填，那直接失败 ---
             return 'string:' + tree + ':' + vtype;
         }
-        // --- 是字符串、undefined、null ---
+        // --- 是字符串 或 undefined 或 null ---
         if (type) {
-            return val ? '' : 'require:' + tree + ':' + vtype;
+            // --- 示例组有值，必然必填 ---
+            return val ?
+                '' :    // --- 有值，直接成功 ---
+                'string:' + tree + ':' + vtype;
         }
+        // --- 示例组无值，用户值有没有值都成功 ---
         return '';
     }
     if (val === undefined || val === null) {
@@ -236,14 +242,24 @@ export function checkType(val: any, type: any, tree: string = 'root'): string {
         }
         // --- 先判断每个值是否相等 ---
         for (const key in type) {
-            const res = checkType(val[key], type[key], tree + '.' + key);
+            // --- 先判断是否是可选值 ---
+            /** --- 示例组的 key 可能是 x? --- */
+            let k = key;
+            if (key.endsWith('?')) {
+                k = key.slice(0, -1);
+                if (val[k] === undefined || val[k] === null) {
+                    // --- 示例允许为空且用户值为空，则跳过 ---
+                    continue;
+                }
+            }
+            const res = checkType(val[k], type[key], tree + '.' + k);
             if (res) {
                 return res;
             }
         }
         // --- 再判断是否传了类型限定中没有的值 ---
         for (const key in val) {
-            if (type[key] !== undefined) {
+            if (type[key] !== undefined || type[key + '?'] !== undefined) {
                 continue;
             }
             return `undefined:${tree}.${key}:${typeof val[key]}`;

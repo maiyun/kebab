@@ -1,27 +1,28 @@
 import * as fs from 'fs';
 // --- 库和定义 ---
-import * as lCore from '~/lib/core.js';
-import * as lNet from '~/lib/net.js';
-import * as lDb from '~/lib/db.js';
-import * as lFs from '~/lib/fs.js';
-import * as lText from '~/lib/text.js';
-import * as lCrypto from '~/lib/crypto.js';
-import * as lKv from '~/lib/kv.js';
-import * as lCaptcha from '~/lib/captcha.js';
-import * as lTime from '~/lib/time.js';
-import * as lScan from '~/lib/scan.js';
-import * as lSql from '~/lib/sql.js';
-import * as lConsistent from '~/lib/consistent.js';
-import * as lSsh from '~/lib/ssh.js';
-import * as lJwt from '~/lib/jwt.js';
-import * as lWs from '~/lib/ws.js';
-import * as lS3 from '~/lib/s3.js';
-import * as lZip from '~/lib/zip.js';
-import * as lBuffer from '~/lib/buffer.js';
-import * as lLan from '~/lib/lan.js';
-import * as sCtr from '~/sys/ctr.js';
-import * as kebab from '~/index.js';
-import * as types from '~/types/index.js';
+import * as lCore from '#lib/core.js';
+import * as lNet from '#lib/net.js';
+import * as lDb from '#lib/db.js';
+import * as lFs from '#lib/fs.js';
+import * as lText from '#lib/text.js';
+import * as lCrypto from '#lib/crypto.js';
+import * as lKv from '#lib/kv.js';
+import * as lCaptcha from '#lib/captcha.js';
+import * as lTime from '#lib/time.js';
+import * as lScan from '#lib/scan.js';
+import * as lSql from '#lib/sql.js';
+import * as lConsistent from '#lib/consistent.js';
+import * as lSsh from '#lib/ssh.js';
+import * as lJwt from '#lib/jwt.js';
+import * as lWs from '#lib/ws.js';
+import * as lS3 from '#lib/s3.js';
+import * as lZip from '#lib/zip.js';
+import * as lBuffer from '#lib/buffer.js';
+import * as lLan from '#lib/lan.js';
+import * as lCron from '#lib/cron.js';
+import * as sCtr from '#sys/ctr.js';
+import * as kebab from '#index.js';
+import * as types from '#types/index.js';
 // --- mod ---
 import mTest from '../mod/test.js';
 import mTestData from '../mod/testdata.js';
@@ -136,6 +137,7 @@ export default class extends sCtr.Ctr {
             '<br><br><b style="color: red;">In a production environment, please delete "mod/test.ts", "mod/testdata.ts" files.</b>',
             `<br><a href="${this._config.const.urlBase}test/mod-test">Click to see an example of a Test model</a>`,
             `<br><a href="${this._config.const.urlBase}test/mod-split">View "test/mod-split"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/mod-insert">View "test/mod-insert"</a>`,
 
             '<br><br><b>Library test:</b>',
 
@@ -241,6 +243,9 @@ export default class extends sCtr.Ctr {
 
             '<br><br><b>Lan:</b>',
             `<br><br><a href="${this._config.const.urlBase}test/lan">View "test/lan"</a>`,
+
+            '<br><br><b>Cron:</b>',
+            `<br><br><a href="${this._config.const.urlBase}test/cron">View "test/cron"</a>`,
         ];
         echo.push('<br><br>' + this._getEnd());
 
@@ -313,6 +318,7 @@ Result:<pre id="result">Nothing.</pre>${this._getEnd()}`;
     'arr': [['a', 'x', 'hehe'], [0, 'The arr param is incorrect.']],
     'type': [{ 'type': { 'a': 1, 'b': '' } }, [0, 'The reg param is incorrect']],
     'json': [{ 'type': { 'a': '1', 'b': [ { 'c': 1 } ] } }, [0, 'The type param is incorrect']],
+    'json2': [{ 'type': { 'a': '1', 'b': 0, 'c?': { 'd': '1' } } }, [0, 'The json2 param is incorrect']],
 }</pre>`];
 
         const post: any[] = [
@@ -390,7 +396,27 @@ Result:<pre id="result">Nothing.</pre>${this._getEnd()}`;
                 'arr': 'hehe',
                 'type': { 'a': 0, 'b': 'ok' },
                 'json': { 'a': 'a', 'b': [ { 'c': 1 } ] },
-            }
+            },
+            {
+                'he': 'ok',
+                'json2': { },
+            },
+            {
+                'he': 'ok',
+                'json2': { 'a': '1' },
+            },
+            {
+                'he': 'ok',
+                'json2': { 'a': '1', 'c': { 'd': '1' } },
+            },
+            {
+                'he': 'ok',
+                'json2': { 'a': '1', 'b': 1 },
+            },
+            {
+                'he': 'ok',
+                'json2': { 'a': '1', 'b': 1, 'c': { 'd': '1' } },
+            },
         ];
         for (const item of post) {
             if (item.type) {
@@ -398,6 +424,9 @@ Result:<pre id="result">Nothing.</pre>${this._getEnd()}`;
             }
             if (item.json) {
                 item.json = JSON.stringify(item.json);
+            }
+            if (item.json2) {
+                item.json2 = JSON.stringify(item.json2);
             }
             echo.push(`<input type="button" value="Post '${lText.queryStringify(item, false).replace(/"/g, '&quot;')}'" onclick="post('${lText.queryStringify(item)}')"><br>`);
         }
@@ -450,6 +479,9 @@ function postFd() {
         if (this._post['json']) {
             this._post['json'] = lText.parseJson(this._post['json']);
         }
+        if (this._post['json2']) {
+            this._post['json2'] = lText.parseJson(this._post['json2']);
+        }
         if (this._post['num2'] !== undefined) {
             this._post['num2'] = parseFloat(this._post['num2']);
         }
@@ -460,7 +492,8 @@ function postFd() {
             'reg': ['/^[A-CX-Z5-7]+$/', [0, 'The reg param is incorrect.']],
             'arr': [['a', 'x', 'hehe'], [0, 'The arr param is incorrect.']],
             'type': [{ 'type': { 'a': 1, 'b': '' } }, [0, 'The type param is incorrect']],
-            'json': [{ 'type': { 'a': '1', 'b': [ { 'c': 1 } ] } }, [0, 'The type param is incorrect']],
+            'json': [{ 'type': { 'a': '1', 'b': [ { 'c': 1 } ] } }, [0, 'The json param is incorrect']],
+            'json2': [{ 'type': { 'a': '1', 'b': 0, 'c?': { 'd': '1' } } }, [0, 'The json2 param is incorrect']],
         }, retur)) {
             return retur;
         }
@@ -864,6 +897,25 @@ CREATE TABLE \`m_test_data_0\` (
         return [1, { 'id': id, 'index': index }];
     }
 
+    public async modInsert(): Promise<string> {
+        const echo = ['<b style="color: red;">In a production environment, please delete "mod/test.php" and "mod/testdata.php" files.</b>'];
+        const db = lDb.get(this);
+        const datas: any[][] = [];
+        for (let i = 0; i < 20; ++i) {
+            datas.push([
+                lCore.rand(100000, 999999),
+                lCore.random(16, lCore.RANDOM_LUNS),
+                lTime.stamp(),
+            ]);
+        }
+        const res = await mTestData.insert(db, ['test_id', 'content', 'time_add'], datas, {
+            'pre': this,
+            'index': '0',
+        });
+        echo.push('<br><br>Result: ' + JSON.stringify(res));
+        return echo.join('') + '<br><br>' + this._getEnd();
+    }
+
     public captchaFastbuild(): string {
         return lCaptcha.get(400, 100).getBuffer();
     }
@@ -1063,7 +1115,7 @@ lCore.checkType(o8, type2): ${lCore.checkType(o8, type2)}
     }
 
     public coreMuid(): string {
-        const ac = this._get['ac'] ? this._get['ac'] : '';
+        const ac = lText.isTruthy(this._get['ac']) ? this._get['ac'] : '';
 
         const echo = [
             '<a href="' + this._config.const.urlBase + 'test/core-muid">Default</a> | ' +
@@ -1230,12 +1282,12 @@ to: ${to}`
 const text = lCrypto.aesEncrypt('Original text', key);
 JSON.stringify(text);</pre>${JSON.stringify(text)}`);
 
-        let orig = lCrypto.aesDecrypt(text || '', key);
-        echo.push(`<pre>let orig = lCrypto.aesDecrypt(text || '', key);
+        let orig = lCrypto.aesDecrypt(lText.logicalOr(text, ''), key);
+        echo.push(`<pre>let orig = lCrypto.aesDecrypt(lText.logicalOr(text, ''), key);
 JSON.stringify(orig);</pre>${JSON.stringify(orig)}`);
 
-        orig = lCrypto.aesDecrypt(text || '', 'otherKey');
-        echo.push(`<pre>orig = lCrypto.aesDecrypt(text || '', 'otherKey');
+        orig = lCrypto.aesDecrypt(lText.logicalOr(text, ''), 'otherKey');
+        echo.push(`<pre>orig = lCrypto.aesDecrypt(lText.logicalOr(text, ''), 'otherKey');
 JSON.stringify(orig);</pre>${JSON.stringify(orig)}`);
 
         // ----------
@@ -1248,12 +1300,12 @@ JSON.stringify(orig);</pre>${JSON.stringify(orig)}`);
 text = lCrypto.aesEncrypt('Original text', key, iv);
 JSON.stringify(text);</pre>${JSON.stringify(text)}`);
 
-        orig = lCrypto.aesDecrypt(text || '', key, iv);
-        echo.push(`<pre>orig = lCrypto.aesDecrypt(text || '', key, iv);
+        orig = lCrypto.aesDecrypt(lText.logicalOr(text, ''), key, iv);
+        echo.push(`<pre>orig = lCrypto.aesDecrypt(lText.logicalOr(text, ''), key, iv);
 JSON.stringify(orig);</pre>${JSON.stringify(orig)}`);
 
-        orig = lCrypto.aesDecrypt(text || '', key, 'otherIv');
-        echo.push(`<pre>orig = lCrypto.aesDecrypt(text || '', key, 'otherIv');
+        orig = lCrypto.aesDecrypt(lText.logicalOr(text, ''), key, 'otherIv');
+        echo.push(`<pre>orig = lCrypto.aesDecrypt(lText.logicalOr(text, ''), key, 'otherIv');
 orig ? 'true' : 'false';</pre>${orig ? 'true' : 'false'}`);
 
         // ----------
@@ -1265,12 +1317,12 @@ orig ? 'true' : 'false';</pre>${orig ? 'true' : 'false'}`);
 text = lCrypto.aesEncrypt('Original text', key, iv, lCrypto.AES_256_CBC);
 JSON.stringify(text);</pre>${JSON.stringify(text)}`);
 
-        orig = lCrypto.aesDecrypt(text || '', key, iv, lCrypto.AES_256_CBC);
-        echo.push(`<pre>orig = lCrypto.aesDecrypt(text || '', key, iv, lCrypto.AES_256_CBC);
+        orig = lCrypto.aesDecrypt(lText.logicalOr(text, ''), key, iv, lCrypto.AES_256_CBC);
+        echo.push(`<pre>orig = lCrypto.aesDecrypt(lText.logicalOr(text, ''), key, iv, lCrypto.AES_256_CBC);
 JSON.stringify(orig);</pre>${JSON.stringify(orig)}`);
 
-        orig = lCrypto.aesDecrypt(text || '', key, 'otherIv', lCrypto.AES_256_CBC);
-        echo.push(`<pre>orig = lCrypto.aesDecrypt(text || '', key, 'otherIv', lCrypto.AES_256_CBC);
+        orig = lCrypto.aesDecrypt(lText.logicalOr(text, ''), key, 'otherIv', lCrypto.AES_256_CBC);
+        echo.push(`<pre>orig = lCrypto.aesDecrypt(lText.logicalOr(text, ''), key, 'otherIv', lCrypto.AES_256_CBC);
 JSON.stringify(orig);</pre>${JSON.stringify(orig)}`);
 
         // --- gcm ---
@@ -1282,8 +1334,8 @@ JSON.stringify(orig);</pre>${JSON.stringify(orig)}`);
 text = lCrypto.gcmEncrypt('Original text', key);
 JSON.stringify(text);</pre>${lText.htmlescape(JSON.stringify(text))}`);
 
-        orig = lCrypto.gcmDecrypt(text || '', key);
-        echo.push(`<pre>orig = lCrypto.gcmDecrypt(text || '', key);
+        orig = lCrypto.gcmDecrypt(lText.logicalOr(text, ''), key);
+        echo.push(`<pre>orig = lCrypto.gcmDecrypt(lText.logicalOr(text, ''), key);
 JSON.stringify(orig);</pre>${JSON.stringify(orig)}`);
 
         echo.push('<br><br><b>AES-256-GCM (BUFFER):</b>');
@@ -1293,7 +1345,7 @@ JSON.stringify(orig);</pre>${JSON.stringify(orig)}`);
 const buffer = lCrypto.gcmEncrypt(Buffer.from('Original text'), key);
 console.log(buffer);</pre>${buffer ? lText.htmlescape(lText.stringifyBuffer(buffer)) : 'false'}`);
 
-        const origBuffer = lCrypto.gcmDecrypt(buffer || Buffer.from(''), key, 'buffer');
+        const origBuffer = lCrypto.gcmDecrypt(lText.isTruthy(buffer) ? buffer : Buffer.from(''), key, 'buffer');
         echo.push(`<pre>const origBuffer = lCrypto.gcmDecrypt(buffer || Buffer.from(''), key, 'buffer');
 console.log(origBuffer);</pre>${origBuffer ? lText.htmlescape(lText.stringifyBuffer(origBuffer)) : 'false'}
 <pre>JSON.stringify(origBuffer ? origBuffer.toString() : false);</pre>${JSON.stringify(origBuffer ? origBuffer.toString() : false)}`);
@@ -1623,7 +1675,7 @@ echo[echo.length - 1] = echo[echo.length - 1].slice(0, -4);</pre>`);
 
             echo.push("<pre>JSON.stringify(await kv.get('test'));</pre>" + JSON.stringify(await kv.get('test')));
 
-            echo.push("<pre>JSON.stringify(await kv.set('test', $value ? $value : 'ok'));</pre>" + JSON.stringify(await kv.set('test', value ? value : 'ok')));
+            echo.push("<pre>JSON.stringify(await kv.set('test', $value ? $value : 'ok'));</pre>" + JSON.stringify(await kv.set('test', lText.isTruthy(value) ? value : 'ok')));
 
             echo.push("<pre>JSON.stringify(await kv.get('test'));</pre>" + JSON.stringify(await kv.get('test')));
         }
@@ -2252,8 +2304,8 @@ function confirm() {
             echo.push(`await this._startSession(link, false, {'ttl': 60});
 JSON.stringify(this._session);</pre>` + lText.htmlescape(JSON.stringify(this._session)));
 
-            this._session['value'] = this._get['value'] ? this._get['value'] : 'ok';
-            echo.push(`<pre>this._session['value'] = '${this._get['value'] ? this._get['value'] : 'ok'}';
+            this._session['value'] = lText.logicalOr(this._get['value'], 'ok');
+            echo.push(`<pre>this._session['value'] = '${lText.logicalOr(this._get['value'], 'ok')}';
 JSON.stringify(this._session);</pre>` + lText.htmlescape(JSON.stringify(this._session)));
 
             return '<a href="' + this._config.const.urlBase + 'test/session?s=' + this._get['s'] + '">Default</a> | ' +
@@ -3288,6 +3340,40 @@ rtn.push(reader.readBCDString());</pre>${JSON.stringify(rtn)}`);
         echo.push(`<pre>await lLan.scan();</pre>` + JSON.stringify(r2));
 
         return echo.join('') + '<br><br>' + this._getEnd();
+    }
+
+    public async cron(): Promise<string> {
+        // --- 注意，这个只是演示，你实际需要在 ind 目录中创建计划任务 ---
+        // --- 并用 --ind 单线程模式运行 ---
+        const echo: string[] = [];
+        let rtn = await lCron.regular({
+            'name': 'test',
+            'date': {
+                'month': -1,
+                'day': -1,
+                'hour': -1,
+                'minute': -1,
+                'week': -1,
+            },
+            'callback': (date) => {
+                lCore.debug(`[${date}] test task run`);
+            },
+        });
+        echo.push(`<pre>await lCron.regular({
+    'name': 'test',
+    'date': {
+        'month': -1,
+        'day': -1,
+        'hour': -1,
+        'minute': -1,
+        'week': -1,
+    },
+    'callback': (date) => {
+        lCore.debug(\`[\${date}] test task run\`);
+    },
+});</pre>${JSON.stringify(rtn)}
+<pre>${JSON.stringify(lCron.getRegulars(), null, 4)}</pre>`);
+        return echo.join('') + '<br>' + this._getEnd();
     }
 
     /**

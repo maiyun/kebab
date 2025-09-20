@@ -11,11 +11,11 @@
 // --- 第三方 ---
 import * as redis from '@litert/redis';
 // --- 库和定义 ---
-import * as lTime from '~/lib/time.js';
-import * as lText from '~/lib/text.js';
-import * as lCore from '~/lib/core.js';
-import * as sCtr from '~/sys/ctr.js';
-import * as types from '~/types/index.js';
+import * as lTime from '#lib/time.js';
+import * as lText from '#lib/text.js';
+import * as lCore from '#lib/core.js';
+import * as sCtr from '#sys/ctr.js';
+import * as types from '#types/index.js';
 
 /** --- 连接信息 --- */
 export interface IConnectionInfo {
@@ -58,12 +58,19 @@ async function checkConnection(): Promise<void> {
             }
             continue;
         }
-        // --- 检测 30 秒内是否使用过 ---
-        if (connection.getLast() > now - 30) {
-            // --- 30 秒内使用过，不管 ---
+        if (connection.getLast() <= now - 30) {
+            // --- 超 30 秒未被使用，则关闭 ---
+            await connection.end();
+            connections.splice(i, 1);
+            --i;
             continue;
         }
-        // --- 超 30 秒未被使用，则关闭 ---
+        // --- 30 秒内使用过，看看连接是否正常 ---
+        if (await connection.ping(false)) {
+            // --- 正常 ---
+            continue;
+        }
+        // --- 连接有问题，直接关闭 ---
         await connection.end();
         connections.splice(i, 1);
         --i;
@@ -677,6 +684,8 @@ export class Pool {
                 conn.setLost();
                 // console.log(`--- redis [${conn._etc.host}:${conn._etc.port}] error ---`);
                 lCore.debug('[KV][ERROR]', err);
+            }).on('end', () => {
+                conn.setLost();
             }).on('close', () => {
                 conn.setLost();
             });
@@ -1173,9 +1182,12 @@ end`;
 
     /**
      * --- 发送 ping ---
+     * @param last 是否刷新最后使用时间（默认刷新）
      */
-    public async ping(): Promise<false | string> {
-        this.refreshLast();
+    public async ping(last = true): Promise<false | string> {
+        if (last) {
+            this.refreshLast();
+        }
         try {
             return (await this._link.ping()) === 'PONG' ? 'PONG' : false;
         }

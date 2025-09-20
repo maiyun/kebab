@@ -11,16 +11,16 @@ import * as stream from 'stream';
 // --- 第三方 ---
 import * as ws from '@litert/websocket';
 // --- 库和定义 ---
-import * as lFs from '~/lib/fs.js';
-import * as lZlib from '~/lib/zlib.js';
-import * as lCore from '~/lib/core.js';
-import * as lText from '~/lib/text.js';
-import * as lTime from '~/lib/time.js';
-import * as lResponse from '~/lib/net/response.js';
-import * as lWs from '~/lib/ws.js';
+import * as lFs from '#lib/fs.js';
+import * as lZlib from '#lib/zlib.js';
+import * as lCore from '#lib/core.js';
+import * as lText from '#lib/text.js';
+import * as lTime from '#lib/time.js';
+import * as lResponse from '#lib/net/response.js';
+import * as lWs from '#lib/ws.js';
 import * as sCtr from './ctr.js';
-import * as kebab from '~/index.js';
-import * as types from '~/types/index.js';
+import * as kebab from '#index.js';
+import * as types from '#types/index.js';
 
 /** --- 动态层 kebab.json 缓存（文件路径: 最终合并值） --- */
 let kebabConfigs: Record<string, types.IConfig> = {};
@@ -140,10 +140,10 @@ export async function run(data: {
         'urlStcFull': ''
     };
     config.const.urlStcFull = config.const.urlFull + 'stc/';
-    if (!config.set.staticPath) {
+    if (lText.isFalsy(config.set.staticPath)) {
         config.set.staticPath = config.const.urlStc;
     }
-    if (!config.set.staticPathFull) {
+    if (lText.isFalsy(config.set.staticPathFull)) {
         config.set.staticPathFull = config.const.urlStcFull;
     }
     // --- data.path 是安全的，不会是 ../../ 来访问到了外层，已经做过处理 ---
@@ -278,7 +278,7 @@ export async function run(data: {
 
     if (data.socket && data.req instanceof http.IncomingMessage) {
         // --- socket 模式，判断真实控制器文件是否存在 ---
-        const filePath = config.const.wsPath + pathLeft + '.js';
+        const filePath = config.const.wsPath + pathLeft + '';
         if (!await lFs.isFile(filePath)) {
             // --- 指定的控制器不存在 ---
             data.socket?.destroy();

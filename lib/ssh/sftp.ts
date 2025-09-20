@@ -6,8 +6,8 @@
 import * as stream from 'stream';
 import * as ssh2 from 'ssh2';
 // --- 库和定义 ---
-import * as core from '~/lib/core.js';
-import * as text from '~/lib/text.js';
+import * as core from '#lib/core.js';
+import * as text from '#lib/text.js';
 
 export class Connection {
 

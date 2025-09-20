@@ -4,7 +4,7 @@
  * Last: 2020-4-10 16:08:32, 2022-12-30 00:03:40, 2023-4-22 21:06:57
  */
 import * as ssh2 from 'ssh2';
-import * as lCore from '~/lib/core.js';
+import * as lCore from '#lib/core.js';
 
 export class Connection {
 

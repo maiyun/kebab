@@ -3,7 +3,7 @@
  * Date: 2019-6-6 12:04:15
  * Last: 2020-3-29 23:41:21, 2024-1-18 17:16:50, 2024-8-5 10:55:21
  */
-import * as sCtr from '~/sys/ctr.js';
+import * as sCtr from '#sys/ctr.js';
 
 export interface IOptions {
     /** --- 时区 --- */

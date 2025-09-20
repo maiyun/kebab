@@ -8,9 +8,9 @@
 import * as s3 from '@aws-sdk/client-s3';
 import * as ls from '@aws-sdk/lib-storage';
 import * as stream from 'stream';
-import * as sCtr from '~/sys/ctr.js';
-import * as lCore from '~/lib/core.js';
-import * as lText from '~/lib/text.js';
+import * as sCtr from '#sys/ctr.js';
+import * as lCore from '#lib/core.js';
+import * as lText from '#lib/text.js';
 
 /**
  * s3 文档：https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/client/s3/

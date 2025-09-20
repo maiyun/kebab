@@ -5,12 +5,12 @@
  */
 
 // --- 库和定义 ---
-import * as net from '~/lib/net.js';
-import * as core from '~/lib/core.js';
-import * as text from '~/lib/text.js';
-import * as crypto from '~/lib/crypto.js';
-import * as response from '~/lib/net/response.js';
-import * as ctr from '~/sys/ctr.js';
+import * as net from '#lib/net.js';
+import * as core from '#lib/core.js';
+import * as text from '#lib/text.js';
+import * as crypto from '#lib/crypto.js';
+import * as response from '#lib/net/response.js';
+import * as ctr from '#sys/ctr.js';
 
 /**
  * 0.DNSPod：https://www.dnspod.cn/docs/index.html（腾讯云也请使用 DNSPod 的 API）
@@ -129,7 +129,7 @@ export class Dns {
                 }, obj);
                 const path = data['_path'] as string;
                 delete data['_path'];
-                return net.post('https://dnsapi.cn/' + path, data); // 境外 api 会自动调度到香港服务器
+                return await net.post('https://dnsapi.cn/' + path, data); // 境外 api 会自动调度到香港服务器
             }
             // --- 阿里云 ---
             case ESERVICE.ALIBABA: {
@@ -144,7 +144,7 @@ export class Dns {
                 }, obj));
                 const urlRight = text.queryStringify(getData);
                 const signature = crypto.hashHmac('sha1', `GET&${encodeURIComponent('/')}&${encodeURIComponent(urlRight)}`, (this._opt.secretKey ?? '') + '&', 'base64');
-                return net.get(`https://alidns.aliyuncs.com/?${urlRight}&Signature=${encodeURIComponent(signature)}`); // 境外 api 会自动调度到新加坡服务器
+                return await net.get(`https://alidns.aliyuncs.com/?${urlRight}&Signature=${encodeURIComponent(signature)}`); // 境外 api 会自动调度到新加坡服务器
             }
         }
         return new response.Response(null);

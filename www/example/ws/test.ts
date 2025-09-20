@@ -1,6 +1,6 @@
-import * as sCtr from '~/sys/ctr.js';
-import * as lCrypto from '~/lib/crypto.js';
-import * as lCore from '~/lib/core.js';
+import * as sCtr from '#sys/ctr.js';
+import * as lCrypto from '#lib/crypto.js';
+import * as lCore from '#lib/core.js';
 import * as http from 'http';
 
 export default class extends sCtr.Ctr {

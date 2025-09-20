@@ -1,6 +1,6 @@
-import * as sCtr from '~/sys/ctr.js';
-import * as lWs from '~/lib/ws.js';
-import * as lCore from '~/lib/core.js';
+import * as sCtr from '#sys/ctr.js';
+import * as lWs from '#lib/ws.js';
+import * as lCore from '#lib/core.js';
 
 export default class extends sCtr.Ctr {
 

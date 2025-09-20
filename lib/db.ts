@@ -9,12 +9,12 @@
 // --- 第三方 ---
 import * as mysql2 from 'mysql2/promise';
 // --- 库和定义 ---
-import * as lTime from '~/lib/time.js';
-import * as lSql from '~/lib/sql.js';
-import * as lCore from '~/lib/core.js';
-import * as lText from '~/lib/text.js';
-import * as sCtr from '~/sys/ctr.js';
-import * as types from '~/types/index.js';
+import * as lTime from '#lib/time.js';
+import * as lSql from '#lib/sql.js';
+import * as lCore from '#lib/core.js';
+import * as lText from '#lib/text.js';
+import * as sCtr from '#sys/ctr.js';
+import * as types from '#types/index.js';
 
 /** --- query 返回的数据 --- */
 export interface IData {
@@ -87,12 +87,19 @@ async function checkConnection(): Promise<void> {
             }
             continue;
         }
-        // --- 目前未被使用中的连接 ---
-        if (connection.getLast() > now - 30) {
-            // --- 30 秒内使用过，不管 ---
+        if (connection.getLast() <= now - 30) {
+            // --- 超 30 秒未被使用，则关闭 ---
+            await connection.end();
+            connections.splice(i, 1);
+            --i;
             continue;
         }
-        // --- 超 30 秒未被使用，则关闭 ---
+        // --- 30 秒内使用过，看看连接是否正常 ---
+        if (await connection.isAvailable(false)) {
+            // --- 正常 ---
+            continue;
+        }
+        // --- 连接有问题，直接关闭 ---
         await connection.end();
         connections.splice(i, 1);
         --i;
@@ -215,12 +222,14 @@ export class Pool {
                 const c = new Connection(this._etc, link);
                 c.using();
                 link.on('error', function(err: mysql2.QueryError): void {
-                    if (err.code !== 'PROTOCOL_CONNECTION_LOST') {
-                        lCore.display('[DB][_getConnection]', err);
-                    }
                     c.setLost();
-                }).on('end', function() {
+                    if (err.code !== 'PROTOCOL_CONNECTION_LOST') {
+                        lCore.debug('[DB][_getConnection]', err);
+                    }
+                }).on('end', () => {
                     // lCore.debug('[DB][_getConnection] connection end.');
+                    c.setLost();
+                }).on('close', () => {
                     c.setLost();
                 });
                 conn = c;
@@ -493,9 +502,12 @@ export class Connection {
 
     /**
      * --- 通过执行一条语句判断当前连接是否可用 ---
+     * @param last 是否刷新最后使用时间（默认刷新）
      */
-    public async isAvailable(): Promise<boolean> {
-        this.refreshLast();
+    public async isAvailable(last = true): Promise<boolean> {
+        if (last) {
+            this.refreshLast();
+        }
         try {
             await this._link.query('SELECT 1');
             return true;
@@ -562,7 +574,7 @@ export class Connection {
             }
             this._lastSql.push({
                 'sql': sql,
-                'values': values
+                'values': values,
             });
             const time = Date.now();
             res = await this._link.execute(sql, values);

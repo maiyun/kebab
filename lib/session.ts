@@ -19,13 +19,13 @@ CREATE TABLE `session` (
 */
 
 // --- 库和定义 ---
-import * as core from '~/lib/core.js';
-import * as time from '~/lib/time.js';
-import * as db from '~/lib/db.js';
-import * as kv from '~/lib/kv.js';
-import * as sql from '~/lib/sql.js';
-import * as text from '~/lib/text.js';
-import * as ctr from '~/sys/ctr.js';
+import * as core from '#lib/core.js';
+import * as time from '#lib/time.js';
+import * as db from '#lib/db.js';
+import * as kv from '#lib/kv.js';
+import * as sql from '#lib/sql.js';
+import * as text from '#lib/text.js';
+import * as ctr from '#sys/ctr.js';
 
 export interface IOptions {
     'name'?: string;

@@ -1,7 +1,7 @@
 import jszip from 'jszip';
 import * as mime from '@litert/mime';
-import * as lText from '~/lib/text.js';
-import * as types from '~/types/index.js';
+import * as lText from '#lib/text.js';
+import * as types from '#types/index.js';
 
 /**
  * --- 本库主要用于读取 zip，请尽量不要用来写入 zip，尤其是大文件 zip ---

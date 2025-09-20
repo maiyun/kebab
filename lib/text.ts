@@ -3,9 +3,9 @@
  * Date: 2019-5-15 16:49:39
  * Last: 2020-04-06 20:51:06, 2022-9-29 15:18:16, 2022-12-29 00:01:30, 2024-3-6 17:53:14, 2024-5-31 17:29:52, 2025-6-13 15:47:02
  */
-import * as kebab from '~/index.js';
+import * as kebab from '#index.js';
 import * as fs from './fs.js';
-import * as types from '~/types/index.js';
+import * as types from '#types/index.js';
 
 /**
  * --- 将文件大小格式化为带单位的字符串 ---
@@ -574,7 +574,7 @@ export function isFalsy(val: any): val is TFalsy {
  * --- 判断一个值是否是真实的（不为 null/undefined/空字符串/false/0） ---
  * @param val 要判断的值
  */
-export function isTruthy(val: any): val is Exclude<typeof val, TFalsy> {
+export function isTruthy<T>(val: T): val is Exclude<T, TFalsy> {
     return !isFalsy(val);
 }
 

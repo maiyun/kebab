@@ -1,4 +1,4 @@
-import sMod from '~/sys/mod.js';
+import sMod from '#sys/mod.js';
 /*
 CREATE TABLE `m_test_data_0` (
     `id` bigint NOT NULL AUTO_INCREMENT,

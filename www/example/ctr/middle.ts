@@ -1,5 +1,5 @@
-import * as ctr from '~/sys/ctr.js';
-import * as types from '~/types/index.js';
+import * as ctr from '#sys/ctr.js';
+import * as types from '#types/index.js';
 
 export default class extends ctr.Ctr {
 

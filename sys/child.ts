@@ -9,14 +9,14 @@ import * as net from 'net';
 import * as http from 'http';
 import * as crypto from 'crypto';
 // --- 库和定义 ---
-import * as fs from '~/lib/fs.js';
-import * as lCore from '~/lib/core.js';
-import * as lText from '~/lib/text.js';
-import * as sCtr from '~/sys/ctr.js';
-import * as kebab from '~/index.js';
+import * as fs from '#lib/fs.js';
+import * as lCore from '#lib/core.js';
+import * as lText from '#lib/text.js';
+import * as sCtr from '#sys/ctr.js';
+import * as kebab from '#index.js';
 // --- 初始化 ---
-import * as sRoute from '~/sys/route.js';
-import * as types from '~/types/index.js';
+import * as sRoute from '#sys/route.js';
+import * as types from '#types/index.js';
 
 /** --- 10 秒往主线程发送一次心跳的 Timer --- */
 const hbTimer = setInterval(function() {

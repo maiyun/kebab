@@ -1,4 +1,4 @@
-import * as ctr from '~/sys/ctr.js';
+import * as ctr from '#sys/ctr.js';
 
 export default class extends ctr.Ctr {
 
