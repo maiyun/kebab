@@ -1,7 +1,7 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2019-4-15 13:40
- * Last: 2020-4-14 13:52:00, 2022-09-07 01:43:31, 2023-12-29 17:24:03, 2024-2-7 00:28:50, 2024-6-6 15:15:54, 2025-6-13 19:23:53
+ * Last: 2020-4-14 13:52:00, 2022-09-07 01:43:31, 2023-12-29 17:24:03, 2024-2-7 00:28:50, 2024-6-6 15:15:54, 2025-6-13 19:23:53, 2025-9-22 15:48:53
  */
 import * as http from 'http';
 import * as http2 from 'http2';
@@ -18,6 +18,7 @@ import * as lText from '#lib/text.js';
 import * as lTime from '#lib/time.js';
 import * as lResponse from '#lib/net/response.js';
 import * as lWs from '#lib/ws.js';
+import * as lLang from '#lib/lang.js';
 import * as sCtr from './ctr.js';
 import * as kebab from '#index.js';
 import * as types from '#types/index.js';
@@ -146,7 +147,7 @@ export async function run(data: {
     if (lText.isFalsy(config.set.staticPathFull)) {
         config.set.staticPathFull = config.const.urlStcFull;
     }
-    // --- data.path 是安全的，不会是 ../../ 来访问到了外层，已经做过处理 ---
+    /** --- data.path 是安全的，不会是 ../../ 来访问到了外层，已经做过处理 --- */
     let path = data.path;
     // --- 如果为空则定义为 @ ---
     if (path === '') {
@@ -157,38 +158,14 @@ export async function run(data: {
     if (config.lang && data.res) {
         // --- 仅仅 res 模式支持 config.lang ---
         if (path[2] !== '/') {
-            // --- 不管是首页还是 @ 页，都会到此处 ---
-            let isDirect = false;
-            if (!path) {
-                if (config.lang.direct.includes('@')) {
-                    isDirect = true;
-                }
-            }
-            else {
-                for (const ditem of config.lang.direct) {
-                    if (!path.startsWith(ditem)) {
-                        continue;
-                    }
-                    // --- 放行 ---
-                    isDirect = true;
-                    break;
-                }
-            }
-            if (!isDirect) {
+            // --- 不管是首页还是 @ 页，都会到此处（已经有语言目录不会到这里） ---
+            if (config.lang.direct.every(item => !path.startsWith(item))) {
                 // --- 不放行 ---
-                const alang = data.req.headers['accept-language']?.toLowerCase() ?? config.lang.list[0];
+                /** --- 浏览器语种 --- */
+                const lang = lLang.getCodeByAccept(data.req.headers['accept-language']?.toLowerCase() ?? config.lang.list[0]);
+                /** --- 组合要跳转的路径 --- */
                 const apath = config.const.path + (config.const.qs ? '?' + config.const.qs : '');
-                for (const lang of config.lang.list) {
-                    let checkLang = lang;
-                    if (lang === 'sc') {
-                        checkLang = 'cn';
-                    }
-                    else if (lang === 'tc') {
-                        checkLang = 'zh';
-                    }
-                    if (!alang.includes(checkLang)) {
-                        continue;
-                    }
+                if (config.lang.list.includes(lang)) {
                     data.res.setHeader('location', config.const.urlBase + lang + '/' + apath);
                     data.res.writeHead(302);
                     data.res.end('');
