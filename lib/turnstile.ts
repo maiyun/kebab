@@ -18,7 +18,7 @@ import * as sCtr from '#sys/ctr.js';
 /** --- 厂家 --- */
 export enum EFACTORY {
     'CLOUDFLARE',
-    'TENCENT'
+    'TENCENT',
 }
 
 export async function verify(ctr: sCtr.Ctr, opt: {
