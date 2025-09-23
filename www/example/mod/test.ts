@@ -1,6 +1,6 @@
+import * as kebab from '#index.js';
 import * as lCore from '#lib/core.js';
 import sMod from '#sys/mod.js';
-import * as types from '#types/index.js';
 
 /*
 CREATE TABLE `m_test`  (
@@ -40,7 +40,7 @@ export default class extends sMod {
 
     public polygon!: Array<Array<{ 'x': number; 'y': number; }>>;
 
-    public json!: types.Json;
+    public json!: kebab.Json;
 
     public time_add!: number;
 

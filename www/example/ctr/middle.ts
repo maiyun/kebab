@@ -1,7 +1,7 @@
-import * as ctr from '#sys/ctr.js';
-import * as types from '#types/index.js';
+import * as kebab from '#index.js';
+import * as sCtr from '#sys/ctr.js';
 
-export default class extends ctr.Ctr {
+export default class extends sCtr.Ctr {
 
     public onLoad(): string | boolean {
         if (this._config.const.path !== 'test/middle') {
@@ -10,7 +10,7 @@ export default class extends ctr.Ctr {
         return '_action: ' + this._action + "<br><br>In fact, the middle method does not exist in the test controller, which uses Kebab's middle structure to preprocess requests.";
     }
 
-    public onUnload(rtn: string | boolean | types.DbValue[]): string | boolean | types.DbValue[] {
+    public onUnload(rtn: string | boolean | kebab.DbValue[]): string | boolean | kebab.DbValue[] {
         if (!Array.isArray(rtn)) {
             return rtn;
         }

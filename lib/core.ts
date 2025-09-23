@@ -7,6 +7,7 @@ import * as cp from 'child_process';
 import * as http from 'http';
 import * as http2 from 'http2';
 import * as stream from 'stream';
+import * as kebab from '#index.js';
 import * as lTime from '#lib/time.js';
 import * as lFs from '#lib/fs.js';
 import * as lText from '#lib/text.js';
@@ -14,11 +15,9 @@ import * as lNet from '#lib/net.js';
 import * as lCrypto from '#lib/crypto.js';
 import * as lResponse from '#lib/net/response.js';
 import * as sCtr from '#sys/ctr.js';
-import * as kebab from '#index.js';
-import * as types from '#types/index.js';
 
 /** --- 全局参数 --- */
-export const globalConfig: types.IConfig & {
+export const globalConfig: kebab.IConfig & {
     'httpPort': number;
     'httpsPort': number;
     'rpcPort': number;
@@ -26,7 +25,7 @@ export const globalConfig: types.IConfig & {
     'debug': boolean;
     'max': number;
     'hosts': string[];
-} = {} as types.Json;
+} = {} as kebab.Json;
 
 /** --- Cookie 设置的选项 --- */
 export interface ICookieOptions {
@@ -372,7 +371,7 @@ export function sleep(ms: number): Promise<void> {
  * @param o 要重排的对象
  */
 export function objectSort<T extends Record<string, any>>(o: T): T {
-    const ordered: types.Json = {};
+    const ordered: kebab.Json = {};
     const list = Object.keys(o).sort();
     for (const key of list) {
         if ((typeof o[key] === 'object') && (!Array.isArray(o[key]))) {
@@ -390,7 +389,7 @@ export function objectSort<T extends Record<string, any>>(o: T): T {
  * @param obj 要清除的对象
  * @patam deep 也将子项都清空，如果子项有独立引用的话也要清空的话则要设置为 true
  */
-export function emptyObject(obj: Record<string, types.Json>, deep: boolean = false): void {
+export function emptyObject(obj: Record<string, kebab.Json>, deep: boolean = false): void {
     const keys = Object.keys(obj);
     for (const key of keys) {
         if (deep) {
@@ -546,7 +545,7 @@ export const global: Record<string, any> = {};
  * @param data 变量值
  * @param hosts 局域网列表
  */
-export async function setGlobal(key: string, data: types.Json, hosts?: string[] | 'config'): Promise<string[]> {
+export async function setGlobal(key: string, data: kebab.Json, hosts?: string[] | 'config'): Promise<string[]> {
     if (!hosts) {
         // --- 本地模式 ---
         process.send!({
@@ -652,7 +651,7 @@ export interface ILogOptions {
     'urlFull'?: string;
     'hostname'?: string;
     'req'?: http2.Http2ServerRequest | http.IncomingMessage | null;
-    'get'?: Record<string, types.Json>;
+    'get'?: Record<string, kebab.Json>;
     'cookie'?: Record<string, string>;
     'jwt'?: Record<string, any>;
     'session'?: Record<string, any>;
@@ -669,7 +668,7 @@ export function log(opt: sCtr.Ctr | ILogOptions, msg: string, fend: string = '')
     (async () => {
         let req: http2.Http2ServerRequest | http.IncomingMessage | null;
         let headers: http.IncomingHttpHeaders;
-        let get: Record<string, types.Json>;
+        let get: Record<string, kebab.Json>;
         let cookie: Record<string, string>;
         let jwt: Record<string, any>;
         let session: Record<string, any>;

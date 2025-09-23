@@ -4,8 +4,8 @@
  * Last: 2020-4-12 11:12:03, 2022-09-10 12:43:23, 2022-12-25 15:12:57, 2023-9-26 14:20:41
  */
 import * as hc from '@litert/http-client';
-import * as nStream from 'stream';
-import * as types from '#types/index.js';
+import * as stream from 'stream';
+import * as lNet from '#lib/net.js';
 
 export class Response {
 
@@ -13,7 +13,7 @@ export class Response {
     private readonly _req: hc.IResponse | null = null;
 
     /** --- 返回的 headers --- */
-    public headers: types.THttpHeaders | null = null;
+    public headers: lNet.THttpHeaders | null = null;
 
     public error: Error | null = null;
 
@@ -45,14 +45,14 @@ export class Response {
     /**
      * --- 获取响应读取流对象 ---
      */
-    public getStream(): nStream.Readable {
+    public getStream(): stream.Readable {
         return this._req!.getStream();
     }
 
     /**
      * --- 获取原生响应读取流对象 ---
      */
-    public getRawStream(): nStream.Readable {
+    public getRawStream(): stream.Readable {
         return this._req!.getRawStream();
     }
 

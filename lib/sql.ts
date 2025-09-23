@@ -3,14 +3,13 @@
  * Date: 2019-5-27 20:18:50
  * Last: 2020-3-29 19:37:25, 2022-07-24 22:38:11, 2023-5-24 18:49:18, 2023-6-13 22:20:21, 2023-12-11 13:58:54, 2023-12-14 13:14:40, 2023-12-21 00:04:40, 2024-4-11 19:29:29, 2024-9-2 17:15:28, 2025-8-3 21:28:18
  */
-
+import * as kebab from '#index.js';
 import * as lText from '#lib/text.js';
 import * as lCore from '#lib/core.js';
 // --- 第三方 ---
 import * as mysql2 from 'mysql2/promise';
 // --- 库和定义 ---
 import * as ctr from '#sys/ctr.js';
-import * as types from '#types/index.js';
 
 /** --- filed 用 token --- */
 let columnToken = '';
@@ -24,11 +23,11 @@ export class Sql {
     private _sql: string[] = [];
 
     /** --- 所有 data 数据 --- */
-    private _data: types.DbValue[] = [];
+    private _data: kebab.DbValue[] = [];
 
     // --- 实例化 ---
     public constructor(pre?: string, opt: {
-        'data'?: types.DbValue[];
+        'data'?: kebab.DbValue[];
         'sql'?: string[];
     } = {}) {
         this._pre = pre ?? '';
@@ -70,8 +69,8 @@ export class Sql {
      * @param vs [] | [][] 数据
      */
     public values(
-        cs: string[] | Record<string, types.DbValue>,
-        vs: types.DbValue[] | types.DbValue[][] = []
+        cs: string[] | Record<string, kebab.DbValue>,
+        vs: kebab.DbValue[] | kebab.DbValue[][] = []
     ): this {
         let sql = ' (';
         if (Array.isArray(cs)) {
@@ -86,7 +85,7 @@ export class Sql {
             }
             // --- INSERT INTO xx (id, name) VALUES (?, ?) ---
             // --- INSERT INTO xx (id, name) VALUES (?, ?), (?, ?) ---
-            for (const v of vs as types.DbValue[][]) {
+            for (const v of vs as kebab.DbValue[][]) {
                 sql += '(';
                 for (const v1 of v) {
                     // --- v1 是项目值，如 {'x': 1, 'y': 2}, 'string', 0 ---
@@ -244,8 +243,8 @@ export class Sql {
      * @param where [{'xx': 'xx', 'xx': 'xx'}], {'xx': 'xx'}
      */
     public notExists(
-        table: string, insert: Record<string, types.DbValue>,
-        where: string | types.Json
+        table: string, insert: Record<string, kebab.DbValue>,
+        where: string | kebab.Json
     ): this {
         let sql = '(';
         const values = [];
@@ -274,7 +273,7 @@ export class Sql {
      * --- 当不能 insert 时，update（仅能配合 insert 方法用） ---
      * @param s 更新数据
      */
-    public duplicate(s: types.Json): this {
+    public duplicate(s: kebab.Json): this {
         if (Array.isArray(s) ? s.length : Object.keys(s).length) {
             const sql = ' ON DUPLICATE KEY UPDATE ' + this._updateSub(s);
             this._sql.push(sql);
@@ -327,14 +326,14 @@ export class Sql {
      * @param f 表名
      * @param s 设定 update 的值
      */
-    public update(f: string, s: types.Json): this {
+    public update(f: string, s: kebab.Json): this {
         this._data = [];
         const sql = `UPDATE ${this.field(f, this._pre)} SET ${this._updateSub(s)}`;
         this._sql = [sql];
         return this;
     }
 
-    private _updateSub(s: types.Json): string {
+    private _updateSub(s: kebab.Json): string {
         /*
         [
             ['total', '+', '1'],    // 1, '1' 可能也是 1 数字类型
@@ -495,7 +494,7 @@ export class Sql {
      * @param suf 表后缀
      * @param pre 表前缀，仅在 join 非默认表前缀时填写
      */
-    public join(f: string, s: types.Json = [], type: string = 'INNER', suf: string = '', pre: string = ''): this {
+    public join(f: string, s: kebab.Json = [], type: string = 'INNER', suf: string = '', pre: string = ''): this {
         let field = this.field(f, pre || this._pre, suf ? ('#' + suf) : '');
         if (pre) {
             // --- 处理不同 pre 的 as 前缀问题 ---
@@ -516,7 +515,7 @@ export class Sql {
      * @param suf 表后缀
      * @param pre 表前缀，仅在 join 非默认表前缀时填写
      */
-    public leftJoin(f: string, s: types.Json = [], suf: string = '', pre: string = ''): this {
+    public leftJoin(f: string, s: kebab.Json = [], suf: string = '', pre: string = ''): this {
         return this.join(f, s, 'LEFT', suf, pre);
     }
 
@@ -527,7 +526,7 @@ export class Sql {
      * @param suf 表后缀
      * @param pre 表前缀，仅在 join 非默认表前缀时填写
      */
-    public rightJoin(f: string, s: types.Json = [], suf: string = '', pre: string = ''): this {
+    public rightJoin(f: string, s: kebab.Json = [], suf: string = '', pre: string = ''): this {
         return this.join(f, s, 'RIGHT', suf, pre);
     }
 
@@ -538,7 +537,7 @@ export class Sql {
      * @param suf 表后缀
      * @param pre 表前缀，仅在 join 非默认表前缀时填写
      */
-    public innerJoin(f: string, s: types.Json = [], suf: string = '', pre: string = ''): this {
+    public innerJoin(f: string, s: kebab.Json = [], suf: string = '', pre: string = ''): this {
         return this.join(f, s, 'INNER', suf, pre);
     }
 
@@ -549,7 +548,7 @@ export class Sql {
      * @param suf 表后缀
      * @param pre 表前缀，仅在 join 非默认表前缀时填写
      */
-    public fullJoin(f: string, s: types.Json = [], suf: string = '', pre: string = ''): this {
+    public fullJoin(f: string, s: kebab.Json = [], suf: string = '', pre: string = ''): this {
         return this.join(f, s, 'FULL', suf, pre);
     }
 
@@ -560,14 +559,14 @@ export class Sql {
      * @param suf 表后缀
      * @param pre 表前缀，仅在 join 非默认表前缀时填写
      */
-    public crossJoin(f: string, s: types.Json = [], suf: string = '', pre: string = ''): this {
+    public crossJoin(f: string, s: kebab.Json = [], suf: string = '', pre: string = ''): this {
         return this.join(f, s, 'CROSS', suf, pre);
     }
 
     /**
      * --- having 后置筛选器，用法类似 where ---
      */
-    public having(s: string | types.Json = ''): this {
+    public having(s: string | kebab.Json = ''): this {
         if (typeof s === 'string') {
             // --- string ---
             if (s !== '') {
@@ -600,7 +599,7 @@ export class Sql {
      * --- 7. ['JSON_CONTAINS(`uid`, ?)', ['hello']] ---
      * @param s 筛选数据
      */
-    public where(s: string | types.Json): this {
+    public where(s: string | kebab.Json): this {
         this._whereDataPosition[0] = this._data.length;
         if (typeof s === 'string') {
             // --- string ---
@@ -633,7 +632,7 @@ export class Sql {
         return this;
     }
 
-    private _whereSub(s: types.Json, data?: any[]): string {
+    private _whereSub(s: kebab.Json, data?: any[]): string {
         data ??= this._data;
         s = aoMix(s);
         let sql = '';
@@ -807,7 +806,7 @@ export class Sql {
      * @param f 可为空，可设置新对象的 table 名变化
      */
     public copy(f?: string | string[], opt: {
-        'where'?: string | types.Json;
+        'where'?: string | kebab.Json;
     } = {}): Sql {
         const sql: string[] = lCore.clone(this._sql);
         const data: any[] = lCore.clone(this._data);
@@ -899,7 +898,7 @@ export class Sql {
     /**
      * --- 获取全部 data ---
      */
-    public getData(): types.DbValue[] {
+    public getData(): kebab.DbValue[] {
         return this._data;
     }
 
@@ -915,7 +914,7 @@ export class Sql {
      * @param sql
      * @param data
      */
-    public format(sql?: string, data?: types.DbValue[]): string {
+    public format(sql?: string, data?: kebab.DbValue[]): string {
         return mysql2.format(sql ?? this.getSql(), data ?? this.getData());
     }
 
@@ -1063,7 +1062,7 @@ export class Sql {
  * @param opt 参数
  */
 export function get(ctrPre?: ctr.Ctr | string, opt: {
-    'data'?: types.DbValue[];
+    'data'?: kebab.DbValue[];
     'sql'?: string[];
 } = {}): Sql {
     return new Sql(ctrPre instanceof ctr.Ctr ? ctrPre.getPrototype('_config').sql.pre : ctrPre, opt);
@@ -1074,7 +1073,7 @@ export function get(ctrPre?: ctr.Ctr | string, opt: {
  * @param sql SQL 字符串
  * @param data DATA 数据
  */
-export function format(sql: string, data: types.DbValue[]): string {
+export function format(sql: string, data: kebab.DbValue[]): string {
     return mysql2.format(sql, data);
 }
 
@@ -1082,11 +1081,11 @@ export function format(sql: string, data: types.DbValue[]): string {
  * --- 将数组兑换为组合的对象（Array/Object mix） ---
  * @param arr 要转换的数组
  */
-export function aoMix(arr: types.Json): Record<string, string | number | types.Json> {
+export function aoMix(arr: kebab.Json): Record<string, string | number | kebab.Json> {
     if (!Array.isArray(arr)) {
         return arr;
     }
-    const mix: Record<string, string | number | types.Json> = {};
+    const mix: Record<string, string | number | kebab.Json> = {};
     let i: number = 0;
     for (const v of arr) {
         if (Array.isArray(v)) {

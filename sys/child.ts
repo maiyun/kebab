@@ -8,7 +8,7 @@ import * as tls from 'tls';
 import * as net from 'net';
 import * as http from 'http';
 import * as crypto from 'crypto';
-// --- 库和定义 ---
+// --- 库 ---
 import * as fs from '#lib/fs.js';
 import * as lCore from '#lib/core.js';
 import * as lText from '#lib/text.js';
@@ -16,7 +16,6 @@ import * as sCtr from '#sys/ctr.js';
 import * as kebab from '#index.js';
 // --- 初始化 ---
 import * as sRoute from '#sys/route.js';
-import * as types from '#types/index.js';
 
 /** --- 10 秒往主线程发送一次心跳的 Timer --- */
 const hbTimer = setInterval(function() {
@@ -42,7 +41,7 @@ let certHostIndex: Record<string, number> = {};
 let certLastLoad: number = 0;
 
 /** --- 当前的虚拟主机配置列表 - 读取于 conf/vhost/*.json --- */
-let vhosts: types.IVhost[] = [];
+let vhosts: kebab.IVhost[] = [];
 
 /** --- http 服务器 --- */
 let httpServer: http.Server;
@@ -486,7 +485,7 @@ async function reload(): Promise<void> {
         if (!fstr) {
             continue;
         }
-        let list: types.IVhost | types.IVhost[] = lText.parseJson(fstr);
+        let list: kebab.IVhost | kebab.IVhost[] = lText.parseJson(fstr);
         if (!Array.isArray(list)) {
             list = [list];
         }
@@ -540,7 +539,7 @@ async function reloadCert(): Promise<void> {
 }
 
 // --- 接收主进程回传信号，主要用来 reload，restart ---
-process.on('message', function(msg: types.Json) {
+process.on('message', function(msg: kebab.Json) {
     (async function() {
         switch (msg.action) {
             case 'reload': {
@@ -604,8 +603,8 @@ process.on('message', function(msg: types.Json) {
  * --- 如果有精准匹配，以精准匹配为准，否则为 2 级泛匹配（vSub），最后全局泛匹配（vGlobal） ---
  * @param hostname 当前的 hostname，不带端口
  */
-function getVhostByHostname(hostname: string): types.IVhost | null {
-    let vGlobal!: types.IVhost, vSub!: types.IVhost;
+function getVhostByHostname(hostname: string): kebab.IVhost | null {
+    let vGlobal!: kebab.IVhost, vSub!: kebab.IVhost;
     for (const vhost of vhosts) {
         for (let domain of vhost.domains) {
             if (domain === '*') {

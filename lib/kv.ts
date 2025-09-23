@@ -11,11 +11,11 @@
 // --- 第三方 ---
 import * as redis from '@litert/redis';
 // --- 库和定义 ---
+import * as kebab from '#index.js';
 import * as lTime from '#lib/time.js';
 import * as lText from '#lib/text.js';
 import * as lCore from '#lib/core.js';
 import * as sCtr from '#sys/ctr.js';
-import * as types from '#types/index.js';
 
 /** --- 连接信息 --- */
 export interface IConnectionInfo {
@@ -86,9 +86,9 @@ setTimeout(function() {
 export class Pool {
 
     /** --- 当前 Pool 对象的 kv 连接信息 --- */
-    private readonly _etc: types.IConfigKv;
+    private readonly _etc: kebab.IConfigKv;
 
-    public constructor(ctr: sCtr.Ctr, etc?: types.IConfigKv) {
+    public constructor(ctr: sCtr.Ctr, etc?: kebab.IConfigKv) {
         if (etc) {
             this._etc = etc;
         }
@@ -710,9 +710,9 @@ export class Connection {
     private _lost: boolean = false;
 
     /** --- 当前的连接配置信息 --- */
-    private readonly _etc: types.IConfigKv;
+    private readonly _etc: kebab.IConfigKv;
 
-    public constructor(etc: types.IConfigKv, link: redis.ICommandClient) {
+    public constructor(etc: kebab.IConfigKv, link: redis.ICommandClient) {
         this._etc = etc;
         this._link = link;
         this.refreshLast();
@@ -721,7 +721,7 @@ export class Connection {
     /**
      * --- 获取连接 etc 信息 ---
      */
-    public getEtc(): types.IConfigKv {
+    public getEtc(): kebab.IConfigKv {
         return this._etc;
     }
 
@@ -794,7 +794,7 @@ export class Connection {
      * @param mod 设置模式: 空,nx（key不存在才建立）,xx（key存在才修改）
      * @param etc 配置项，主要用 etc.pre
      */
-    public async set(key: string, val: object | string | number, ttl: number, mod: '' | 'nx' | 'xx', etc: types.IConfigKv): Promise<boolean> {
+    public async set(key: string, val: object | string | number, ttl: number, mod: '' | 'nx' | 'xx', etc: kebab.IConfigKv): Promise<boolean> {
         this.refreshLast();
         if (typeof val !== 'string') {
             val = lText.stringifyJson(val);
@@ -828,7 +828,7 @@ export class Connection {
         key: string,
         val: object | string | number,
         ttl: number,
-        etc: types.IConfigKv
+        etc: kebab.IConfigKv
     ): Promise<boolean> {
         return this.set(key, val, ttl, 'nx', etc);
     }
@@ -844,7 +844,7 @@ export class Connection {
         key: string,
         val: object | string | number,
         ttl: number,
-        etc: types.IConfigKv
+        etc: kebab.IConfigKv
     ): Promise<boolean> {
         return this.set(key, val, ttl, 'xx', etc);
     }
@@ -855,7 +855,7 @@ export class Connection {
      * @param val
      * @param etc
      */
-    public async append(key: string, val: string, etc: types.IConfigKv): Promise<boolean> {
+    public async append(key: string, val: string, etc: kebab.IConfigKv): Promise<boolean> {
         this.refreshLast();
         try {
             return await this._link.append(etc.pre + key, val) > 0 ? true : false;
@@ -870,7 +870,7 @@ export class Connection {
      * @param key
      * @param val
      */
-    public async prepend(key: string, val: string, etc: types.IConfigKv): Promise<boolean> {
+    public async prepend(key: string, val: string, etc: kebab.IConfigKv): Promise<boolean> {
         this.refreshLast();
         try {
             const script: string = `local val = redis.call('GET', KEYS[1])
@@ -902,7 +902,7 @@ end`;
      * @param keys 单个或序列
      * @param etc
      */
-    public async exists(keys: string | string[], etc: types.IConfigKv): Promise<number> {
+    public async exists(keys: string | string[], etc: kebab.IConfigKv): Promise<number> {
         this.refreshLast();
         try {
             if (typeof keys === 'string') {
@@ -923,7 +923,7 @@ end`;
      * @param key
      * @param etc
      */
-    public async get(key: string, etc: types.IConfigKv): Promise<string | null> {
+    public async get(key: string, etc: kebab.IConfigKv): Promise<string | null> {
         this.refreshLast();
         try {
             return await this._link.get(etc.pre + key);
@@ -938,7 +938,7 @@ end`;
      * @param key
      * @param etc
      */
-    public async ttl(key: string, etc: types.IConfigKv): Promise<number | null> {
+    public async ttl(key: string, etc: kebab.IConfigKv): Promise<number | null> {
         this.refreshLast();
         try {
             return await this._link.ttl(etc.pre + key);
@@ -953,7 +953,7 @@ end`;
      * @param key
      * @param etc
      */
-    public async pttl(key: string, etc: types.IConfigKv): Promise<number | null> {
+    public async pttl(key: string, etc: kebab.IConfigKv): Promise<number | null> {
         this.refreshLast();
         try {
             return await this._link.pTTL(etc.pre + key);
@@ -968,7 +968,7 @@ end`;
      * @param keys key 序列
      * @param etc 顺序数组
      */
-    public async mGet(keys: string[], etc: types.IConfigKv): Promise<Record<string, string | null>> {
+    public async mGet(keys: string[], etc: kebab.IConfigKv): Promise<Record<string, string | null>> {
         this.refreshLast();
         for (let k = 0; k < keys.length; ++k) {
             keys[k] = etc.pre + keys[k];
@@ -1000,7 +1000,7 @@ end`;
      */
     public async mSet(
         rows: Record<string, string | Buffer>,
-        etc: types.IConfigKv
+        etc: kebab.IConfigKv
     ): Promise<boolean> {
         this.refreshLast();
         try {
@@ -1021,7 +1021,7 @@ end`;
      * @param key
      * @param etc
      */
-    public async getJson(key: string, etc: types.IConfigKv): Promise<any | null> {
+    public async getJson(key: string, etc: kebab.IConfigKv): Promise<any | null> {
         const v = await this.get(key, etc);
         if (v === null) {
             return null;
@@ -1035,7 +1035,7 @@ end`;
      * @param keys
      * @param etc
      */
-    public async del(keys: string | string[], etc: types.IConfigKv): Promise<boolean> {
+    public async del(keys: string | string[], etc: kebab.IConfigKv): Promise<boolean> {
         this.refreshLast();
         if (typeof keys === 'string') {
             keys = [keys];
@@ -1057,7 +1057,7 @@ end`;
      * @param num 整数或浮点正数
      * @param etc
      */
-    public async incr(key: string, num: number, etc: types.IConfigKv): Promise<number | false> {
+    public async incr(key: string, num: number, etc: kebab.IConfigKv): Promise<number | false> {
         this.refreshLast();
         try {
             if (Number.isInteger(num)) {
@@ -1083,7 +1083,7 @@ end`;
      * @param num 整数或浮点正数
      * @param etc
      */
-    public async decr(key: string, num: number, etc: types.IConfigKv): Promise<number | false> {
+    public async decr(key: string, num: number, etc: kebab.IConfigKv): Promise<number | false> {
         this.refreshLast();
         try {
             if (Number.isInteger(num)) {
@@ -1109,7 +1109,7 @@ end`;
      * @param ttl
      * @param etc
      */
-    public async expire(key: string, ttl: number, etc: types.IConfigKv): Promise<boolean> {
+    public async expire(key: string, ttl: number, etc: kebab.IConfigKv): Promise<boolean> {
         this.refreshLast();
         try {
             return await this._link.expire(etc.pre + key, ttl);
@@ -1123,7 +1123,7 @@ end`;
      * --- 获取服务器上的所有 key 列表 ---
      * @param pattern
      */
-    public async keys(pattern: string, etc: types.IConfigKv): Promise<string[] | false> {
+    public async keys(pattern: string, etc: kebab.IConfigKv): Promise<string[] | false> {
         this.refreshLast();
         try {
             const r = await this._link.keys(etc.pre + pattern);
@@ -1151,7 +1151,7 @@ end`;
         cursor: number,
         pattern: string,
         count: number,
-        etc: types.IConfigKv
+        etc: kebab.IConfigKv
     ): Promise<redis.IScanResult<string> | false> {
         this.refreshLast();
         try {
@@ -1204,7 +1204,7 @@ end`;
      * @param mod 空,nx(key不存在才建立)
      * @param etc
      */
-    public async hSet(key: string, field: string, val: object | string | number, mod: '' | 'nx', etc: types.IConfigKv): Promise<boolean> {
+    public async hSet(key: string, field: string, val: object | string | number, mod: '' | 'nx', etc: kebab.IConfigKv): Promise<boolean> {
         this.refreshLast();
         try {
             if (typeof val !== 'string') {
@@ -1231,7 +1231,7 @@ end`;
     public async hMSet(
         key: string,
         rows: Record<string, object | string | number>,
-        etc: types.IConfigKv
+        etc: kebab.IConfigKv
     ): Promise<boolean> {
         this.refreshLast();
         try {
@@ -1255,7 +1255,7 @@ end`;
      * @param field
      * @param etc
      */
-    public async hGet(key: string, field: string, etc: types.IConfigKv): Promise<string | null> {
+    public async hGet(key: string, field: string, etc: kebab.IConfigKv): Promise<string | null> {
         this.refreshLast();
         try {
             return await this._link.hGet(etc.pre + key, field);
@@ -1271,7 +1271,7 @@ end`;
      * @param field
      * @param etc
      */
-    public async hGetJson(key: string, field: string, etc: types.IConfigKv): Promise<any | null> {
+    public async hGetJson(key: string, field: string, etc: kebab.IConfigKv): Promise<any | null> {
         const v = await this.hGet(key, field, etc);
         if (v === null) {
             return null;
@@ -1286,7 +1286,7 @@ end`;
      * @param fields
      * @param etc
      */
-    public async hMGet(key: string, fields: string[], etc: types.IConfigKv): Promise<Record<string, string | null>> {
+    public async hMGet(key: string, fields: string[], etc: kebab.IConfigKv): Promise<Record<string, string | null>> {
         this.refreshLast();
         try {
             return await this._link.hMGet(etc.pre + key, fields);
@@ -1305,7 +1305,7 @@ end`;
      * @param key
      * @param etc
      */
-    public async hGetAll(key: string, etc: types.IConfigKv): Promise<Record<string, string | null> | null> {
+    public async hGetAll(key: string, etc: kebab.IConfigKv): Promise<Record<string, string | null> | null> {
         this.refreshLast();
         try {
             return await this._link.hGetAll(etc.pre + key);
@@ -1321,7 +1321,7 @@ end`;
      * @param fields 值序列
      * @param etc
      */
-    public async hDel(key: string, fields: string | string[], etc: types.IConfigKv): Promise<number> {
+    public async hDel(key: string, fields: string | string[], etc: kebab.IConfigKv): Promise<number> {
         this.refreshLast();
         try {
             return await this._link.hDel(etc.pre + key, fields);
@@ -1337,7 +1337,7 @@ end`;
      * @param field
      * @param etc
      */
-    public async hExists(key: string, field: string, etc: types.IConfigKv): Promise<boolean> {
+    public async hExists(key: string, field: string, etc: kebab.IConfigKv): Promise<boolean> {
         this.refreshLast();
         try {
             return await this._link.hExists(etc.pre + key, field);
@@ -1354,7 +1354,7 @@ end`;
      * @param increment 正数或负数，整数或浮点
      * @param etc
      */
-    public async hIncr(key: string, field: string, increment: number, etc: types.IConfigKv): Promise<number> {
+    public async hIncr(key: string, field: string, increment: number, etc: kebab.IConfigKv): Promise<number> {
         this.refreshLast();
         try {
             if (Number.isInteger(increment)) {
@@ -1374,7 +1374,7 @@ end`;
      * @param key
      * @param etc
      */
-    public async hKeys(key: string, etc: types.IConfigKv): Promise<string[]> {
+    public async hKeys(key: string, etc: kebab.IConfigKv): Promise<string[]> {
         this.refreshLast();
         try {
             return await this._link.hKeys(etc.pre + key);
@@ -1384,7 +1384,7 @@ end`;
         }
     }
 
-    public async lPush(key: string, values: Array<string | Buffer>, etc: types.IConfigKv): Promise<number> {
+    public async lPush(key: string, values: Array<string | Buffer>, etc: kebab.IConfigKv): Promise<number> {
         this.refreshLast();
         try {
             return await this._link.lPush(etc.pre + key, values);
@@ -1394,7 +1394,7 @@ end`;
         }
     }
 
-    public async rPush(key: string, values: Array<string | Buffer>, etc: types.IConfigKv): Promise<number> {
+    public async rPush(key: string, values: Array<string | Buffer>, etc: kebab.IConfigKv): Promise<number> {
         this.refreshLast();
         try {
             return await this._link.rPush(etc.pre + key, values);
@@ -1404,7 +1404,7 @@ end`;
         }
     }
 
-    public async bLMove(sourceKey: string, destKey: string, soo: 'LEFT' | 'RIGHT', deo: 'LEFT' | 'RIGHT', timeout: number, etc: types.IConfigKv): Promise<string | null> {
+    public async bLMove(sourceKey: string, destKey: string, soo: 'LEFT' | 'RIGHT', deo: 'LEFT' | 'RIGHT', timeout: number, etc: kebab.IConfigKv): Promise<string | null> {
         this.refreshLast();
         try {
             return await this._link.bLMove(etc.pre + sourceKey, etc.pre + destKey, soo, deo, timeout);
@@ -1414,7 +1414,7 @@ end`;
         }
     }
 
-    public async lPop(key: string, etc: types.IConfigKv): Promise<string | null> {
+    public async lPop(key: string, etc: kebab.IConfigKv): Promise<string | null> {
         this.refreshLast();
         try {
             return await this._link.lPop(etc.pre + key);
@@ -1424,7 +1424,7 @@ end`;
         }
     }
 
-    public async rPop(key: string, etc: types.IConfigKv): Promise<string | null> {
+    public async rPop(key: string, etc: kebab.IConfigKv): Promise<string | null> {
         this.refreshLast();
         try {
             return await this._link.rPop(etc.pre + key);
@@ -1434,7 +1434,7 @@ end`;
         }
     }
 
-    public async bRPop(key: string | string[], timeout: number, etc: types.IConfigKv): Promise<Record<string, string>> {
+    public async bRPop(key: string | string[], timeout: number, etc: kebab.IConfigKv): Promise<Record<string, string>> {
         this.refreshLast();
         try {
             if (typeof key === 'string') {
@@ -1447,7 +1447,7 @@ end`;
         }
     }
 
-    public async lRange(key: string, start: number, stop: number, etc: types.IConfigKv): Promise<string[]> {
+    public async lRange(key: string, start: number, stop: number, etc: kebab.IConfigKv): Promise<string[]> {
         this.refreshLast();
         try {
             return await this._link.lRange(etc.pre + key, start, stop);
@@ -1457,7 +1457,7 @@ end`;
         }
     }
 
-    public async lLen(key: string, etc: types.IConfigKv): Promise<number> {
+    public async lLen(key: string, etc: kebab.IConfigKv): Promise<number> {
         this.refreshLast();
         try {
             return await this._link.lLen(etc.pre + key);
@@ -1473,7 +1473,7 @@ end`;
  * --- 获取 Kv Pool 对象 ---
  * @param etc 配置信息可留空
  */
-export function get(ctr: sCtr.Ctr, etc?: types.IConfigKv): Pool {
+export function get(ctr: sCtr.Ctr, etc?: kebab.IConfigKv): Pool {
     etc ??= ctr.getPrototype('_config').kv;
     return new Pool(ctr, etc);
 }

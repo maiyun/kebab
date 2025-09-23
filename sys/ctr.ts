@@ -6,21 +6,21 @@
 import * as http from 'http';
 import * as http2 from 'http2';
 import * as ejs from 'ejs';
-import * as lCore from '../lib/core.js';
-import * as fs from '../lib/fs.js';
-import * as crypto from '../lib/crypto.js';
-import * as session from '../lib/session.js';
-import * as db from '../lib/db.js';
-import * as kv from '../lib/kv.js';
-import * as lWs from '../lib/ws.js';
-import * as text from '../lib/text.js';
-import * as sRoute from '../sys/route.js';
-import * as types from '../types/index.js';
+import * as kebab from '#index.js';
+import * as lCore from '#lib/core.js';
+import * as lFs from '#lib/fs.js';
+import * as lCrypto from '#lib/crypto.js';
+import * as lSession from '#lib/session.js';
+import * as lDb from '#lib/db.js';
+import * as lKv from '#lib/kv.js';
+import * as lWs from '#lib/ws.js';
+import * as lText from '#lib/text.js';
+import * as sRoute from '#sys/route.js';
 
 /** --- 已加载的 DATA 数据缓存（不是语言包）-- */
 let loadedData: Record<
     string, // 文件名
-    Record<string, types.Json>
+    Record<string, kebab.Json>
 > = {};
 
 /** --- 已加载的语言文件列表 --- */
@@ -56,16 +56,16 @@ export class Ctr {
     protected _get!: Record<string, string>;
 
     /** --- 原始 POST 数据 --- */
-    protected _rawPost: Record<string, types.Json> = {};
+    protected _rawPost: Record<string, kebab.Json> = {};
 
     /** --- POST 数据 --- */
-    protected _post: Record<string, types.Json> = {};
+    protected _post: Record<string, kebab.Json> = {};
 
     /** --- 原始 input 字符串 */
     protected _input: string = '';
 
     /** --- 上传的文件列表 --- */
-    protected _files: Record<string, types.IPostFile | types.IPostFile[]> = {};
+    protected _files: Record<string, kebab.IPostFile | kebab.IPostFile[]> = {};
 
     /** --- Cookie 数组 --- */
     protected _cookie: Record<string, string> = {};
@@ -77,7 +77,7 @@ export class Ctr {
     protected _session: Record<string, any> = {};
 
     /** --- Session --- 对象 */
-    protected _sess: session.Session | null = null;
+    protected _sess: lSession.Session | null = null;
 
     /** --- 页面浏览器客户端缓存 --- */
     protected _cacheTTL!: number;
@@ -94,7 +94,7 @@ export class Ctr {
     protected _locale: string = 'en';
 
     /** --- vhost 的 kebab.json 以及全局常量 --- */
-    protected readonly _config!: types.IConfig;
+    protected readonly _config!: kebab.IConfig;
 
     protected readonly _req!: http2.Http2ServerRequest | http.IncomingMessage;
 
@@ -109,7 +109,7 @@ export class Ctr {
     protected _localeData: Record<string, Record<string, string>> = {};
 
     public constructor(
-        config: types.IConfig,
+        config: kebab.IConfig,
         req: http2.Http2ServerRequest | http.IncomingMessage,
         res?: http2.Http2ServerResponse | http.ServerResponse
     ) {
@@ -181,7 +181,7 @@ export class Ctr {
                 }
             })().catch(e => {
                 lCore.display('[ERROR][CTR][ASYNCTASK]', e);
-                lCore.log(this, '[CTR][_asyncTask] ' + text.stringifyJson(e.stack).slice(1, -1), '-error');
+                lCore.log(this, '[CTR][_asyncTask] ' + lText.stringifyJson(e.stack).slice(1, -1), '-error');
                 --this._waitInfo.asyncTask.count;
                 if (!this._waitInfo.asyncTask.count) {
                     this._waitInfo.asyncTask.resolve();
@@ -194,33 +194,33 @@ export class Ctr {
     // --- Kebab 结束 ---
 
     /** --- 获取类内部的 prototype --- */
-    public getPrototype(name: '_config'): types.IConfig;
-    public getPrototype(name: '_sess'): session.Session | null;
+    public getPrototype(name: '_config'): kebab.IConfig;
+    public getPrototype(name: '_sess'): lSession.Session | null;
     public getPrototype(name: '_headers'): http.IncomingHttpHeaders;
     public getPrototype(name: '_req'): http2.Http2ServerRequest | http.IncomingMessage;
     public getPrototype(name: '_res'): http2.Http2ServerResponse | http.ServerResponse;
     public getPrototype(name: '_socket'): lWs.Socket;
-    public getPrototype(name: '_rawPost' | '_post' | '_get' | '_session'): Record<string, types.Json>;
+    public getPrototype(name: '_rawPost' | '_post' | '_get' | '_session'): Record<string, kebab.Json>;
     public getPrototype(name: '_input'): string;
-    public getPrototype(name: string): types.Json;
-    public getPrototype(name: string): types.Json {
-        return (this as types.Json)[name];
+    public getPrototype(name: string): kebab.Json;
+    public getPrototype(name: string): kebab.Json {
+        return (this as kebab.Json)[name];
     }
 
     /** --- 设置类内部的 prototype --- */
     public setPrototype(
         name: string,
         val: string | string[] |
-        http.IncomingHttpHeaders | Record<string, types.Json> | session.Session | lWs.Socket | null
+        http.IncomingHttpHeaders | Record<string, kebab.Json> | lSession.Session | lWs.Socket | null
     ): void {
-        (this as types.Json)[name] = val;
+        (this as kebab.Json)[name] = val;
     }
 
     /**
      * --- 实例化后会执行的方法，可重写此方法 ---
      */
-    public onLoad(): boolean | string | types.DbValue[] |
-    Promise<boolean | string | types.DbValue[]> {
+    public onLoad(): boolean | string | kebab.DbValue[] |
+    Promise<boolean | string | kebab.DbValue[]> {
         return true;
     }
 
@@ -228,8 +228,8 @@ export class Ctr {
      * --- 整个结束前会执行本方法，可重写此方法对输出结果再处理一次（Websocket 模式无效） ---
      * @param rtn 之前用户的输出结果
      */
-    public onUnload(rtn: boolean | string | types.DbValue[]): boolean | string | types.DbValue[] |
-    Promise<boolean | string | types.DbValue[]> {
+    public onUnload(rtn: boolean | string | kebab.DbValue[]): boolean | string | kebab.DbValue[] |
+    Promise<boolean | string | kebab.DbValue[]> {
         return rtn;
     }
 
@@ -246,7 +246,7 @@ export class Ctr {
     /**
      * --- WebSocket 下当收到数据时会自动被调用的事件，即只文本和二进制数据，返回内容会被发送给 socket，但返回 false 连接会被中断 ---
      */
-    public onData(data: Buffer | string, opcode: lWs.EOpcode): types.Json;
+    public onData(data: Buffer | string, opcode: lWs.EOpcode): kebab.Json;
     public onData(): string {
         return '';
     }
@@ -297,8 +297,8 @@ export class Ctr {
      * @param path
      * @param data
      */
-    protected async _loadView(path: string, data: types.Json = {}): Promise<string> {
-        const content = await fs.getContent(this._config.const.viewPath + path + '.ejs', 'utf8');
+    protected async _loadView(path: string, data: kebab.Json = {}): Promise<string> {
+        const content = await lFs.getContent(this._config.const.viewPath + path + '.ejs', 'utf8');
         if (!content) {
             return '';
         }
@@ -322,8 +322,8 @@ export class Ctr {
      * @param rtn 返回值
      */
     protected _checkInput(
-        input: Record<string, types.Json>,
-        rule: Record<string, types.Json[]>, rtn: types.Json[]
+        input: Record<string, kebab.Json>,
+        rule: Record<string, kebab.Json[]>, rtn: kebab.Json[]
     ): boolean {
         // --- 遍历规则 ---
         // --- input, {'xx': ['require', '> 6', [0, 'xx 必须大于 6']], 'yy': [], '_xsrf': []], rtn ---
@@ -576,7 +576,7 @@ export class Ctr {
      * @param rtn 返回值
      */
     protected _checkXInput(
-        input: Record<string, types.Json>, rule: Record<string, types.Json[]>, rtn: types.Json[]
+        input: Record<string, kebab.Json>, rule: Record<string, kebab.Json[]>, rtn: kebab.Json[]
     ): boolean {
         rule['_xsrf'] ??= ['require', this._cookie['XSRF-TOKEN'], [0, 'Bad request, no permission.']];
         return this._checkInput(input, rule, rtn);
@@ -608,7 +608,7 @@ export class Ctr {
      * @param pwd 密码
      */
     protected _getBasicAuth(user: string, pwd: string): string {
-        return 'Basic ' + crypto.base64Encode(user + ':' + pwd);
+        return 'Basic ' + lCrypto.base64Encode(user + ':' + pwd);
     }
 
     /**
@@ -660,7 +660,7 @@ export class Ctr {
             // --- 不解析，解析使用 JWT 类解析 ---
             return authArr[1];
         }
-        if (!(auth = crypto.base64Decode(authArr[1]))) {
+        if (!(auth = lCrypto.base64Decode(authArr[1]))) {
             return false;
         }
         authArr = auth.split(':');
@@ -677,11 +677,11 @@ export class Ctr {
         if (loadedData[realPath]) {
             return loadedData[realPath];
         }
-        const content = await fs.getContent(realPath, 'utf8');
+        const content = await lFs.getContent(realPath, 'utf8');
         if (!content) {
             return null;
         }
-        const json = text.parseJson(content);
+        const json = lText.parseJson(content);
         loadedData[realPath] = json;
         return json;
     }
@@ -692,7 +692,7 @@ export class Ctr {
      */
     protected _location(location: string): false {
         if (this._res) {
-            this._res.setHeader('location', text.urlResolve(this._config.const.urlBase, location));
+            this._res.setHeader('location', lText.urlResolve(this._config.const.urlBase, location));
             // this._res.writeHead(302); Kebab 中要在最后设置，否则会报错：ERR_HTTP_HEADERS_SENT
         }
         return false;
@@ -705,11 +705,11 @@ export class Ctr {
      * @param opt name, ttl, ssl, sqlPre
      */
     protected async _startSession(
-        link: db.Pool | kv.Pool,
+        link: lDb.Pool | lKv.Pool,
         auth: boolean = false,
-        opt: session.IOptions = {}
+        opt: lSession.IOptions = {}
     ): Promise<void> {
-        this._sess = new session.Session();
+        this._sess = new lSession.Session();
         await this._sess.init(this, link, auth, opt);
     }
 
@@ -753,7 +753,7 @@ export class Ctr {
         return true;
     }
 
-    private _loadLocaleDeep(lPath: string, locData: Record<string, types.Json>, pre: string = ''): void {
+    private _loadLocaleDeep(lPath: string, locData: Record<string, kebab.Json>, pre: string = ''): void {
         for (const k in locData) {
             const v = locData[k];
             if (typeof v === 'object') {
@@ -771,7 +771,7 @@ export class Ctr {
      */
     protected _getLocaleJsonString(): string {
         if (this._localeData[this._locale] !== undefined) {
-            return text.stringifyJson(this._localeData[this._locale]);
+            return lText.stringifyJson(this._localeData[this._locale]);
         }
         else {
             return '{}';
@@ -842,7 +842,7 @@ export class Ctr {
      * --- 发送结果对象文本 ---
      * @param data 要发送的结果对象，如 [0, 'Failed.']
      */
-    protected _writeResult(data: types.Json): boolean {
+    protected _writeResult(data: kebab.Json): boolean {
         return this._socket.writeResult(data);
     }
 

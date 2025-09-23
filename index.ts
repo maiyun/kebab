@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2019-3-30 12:46:41
@@ -35,3 +36,180 @@ export const WWW_CWD = ROOT_CWD + 'www/';
 export const IND_CWD = ROOT_CWD + 'ind/';
 export const FTMP_CWD = ROOT_CWD + 'ftmp/';
 export const MOD_CWD = ROOT_CWD + 'mod/';
+
+// --- 类型 ---
+
+/** --- 除非确定是不可知的 Json，否则不能使用 --- */
+export type Json = any;
+
+/** --- 数据库值的类型 --- */
+export type DbValue = string | number | null | Record<string, Json>;
+
+/** --- 动态目录配置文件 --- */
+export interface IConfig {
+    'set': {
+        'timezone': number;
+        'mustHttps': boolean;
+        'cacheTtl': number;
+
+        'staticVer': string;
+        'staticPath': string;
+        'staticPathFull': string;
+
+        [key: string]: Json;
+    };
+    'const': IConfigConst;
+    'db': IConfigDb;
+    'jwt': IConfigJwt;
+    'kv': IConfigKv;
+    'route': Record<string, string>;
+    'session': {
+        'name': string;
+        'ttl': number;
+        'ssl': boolean;
+    };
+    'sql': IConfigSql;
+    'dns': Record<string, IConfigDns>;
+    'lang': IConfigLang;
+    's3': Record<string, IConfigS3>;
+    'turnstile': IConfigTurnstile;
+
+    [key: string]: Record<string, Json>;
+}
+
+export interface IUrlParse {
+    'protocol': string | null;
+    'auth': string | null;
+    'user': string | null;
+    'pass': string | null;
+    'host': string | null;
+    'hostname': string | null;
+    'port': string | null;
+    'pathname': string;
+    'path': string | null;
+    'query': string | null;
+    'hash': string | null;
+}
+
+/** --- 语言 --- */
+export interface IConfigLang {
+    'list': string[];
+    'direct': string[];
+}
+
+/** --- 对象存储 --- */
+export interface IConfigS3 {
+    /** --- cf r2 要用 --- */
+    'account'?: string;
+    'sid': string;
+    'skey': string;
+    'region': string;
+    'bucket': string;
+}
+
+/** --- 人机码信息 --- */
+export interface IConfigTurnstile {
+    'CF': {
+        'sid': string;
+        'skey': string;
+    };
+    'TENCENT': {
+        'sid': string;
+        'skey': string;
+        'aid': string;
+        'akey': string;
+    };
+}
+
+/** --- 数据库 --- */
+export interface IConfigDb {
+    'host': string;
+    'port': number;
+    'charset': string;
+    'name': string;
+
+    'user': string;
+    'pwd': string;
+}
+
+/** --- Jwt 信息 --- */
+export interface IConfigJwt {
+    'name': string;
+    'ttl': number;
+    'ssl': boolean;
+    'secret': string;
+    'auth': boolean;
+}
+
+/** --- DNS --- */
+export interface IConfigDns {
+    'sid': string;
+    'skey': string;
+}
+
+/** --- kv --- */
+export interface IConfigKv {
+    'host': string;
+    'port': number;
+    'index': number;
+    'pre': string;
+
+    'user': string;
+    'pwd': string;
+}
+
+/** --- sql --- */
+export interface IConfigSql {
+    'pre': string;
+}
+
+/** --- 常量 --- */
+export interface IConfigConst {
+    'path': string;
+    'qs': string;
+    'startTime': bigint;
+    'startMemory': number;
+
+    // --- 环境判断 ---
+
+    'mobile': boolean;
+    'wechat': boolean;
+    'miniprogram': '' | 'wechat';
+    'https': boolean;
+    'host': string;
+    'hostname': string;
+    'hostport': number;
+    'uri': IUrlParse;
+
+    // --- 服务端用的路径 ---
+
+    'rootPath': string;
+    'modPath': string;
+    'ctrPath': string;
+    'viewPath': string;
+    'dataPath': string;
+    'wsPath': string;
+
+    // --- 前端用的路径 ---
+
+    'urlBase': string;
+    'urlStc': string;
+    'urlFull': string;
+    'urlStcFull': string;
+}
+
+/** --- 虚拟机配置对象 --- */
+export interface IVhost {
+    readonly 'name': string;
+    readonly 'domains': string[];
+    readonly 'root': string;
+    readonly 'remark': string;
+}
+
+/** --- 上传的文件信息对象 --- */
+export interface IPostFile {
+    readonly 'name': string;
+    readonly 'origin': string;
+    readonly 'size': number;
+    readonly 'path': string;
+}

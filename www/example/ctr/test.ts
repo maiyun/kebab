@@ -1,5 +1,6 @@
 import * as fs from 'fs';
-// --- 库和定义 ---
+// --- 库 ---
+import * as kebab from '#index.js';
 import * as lCore from '#lib/core.js';
 import * as lNet from '#lib/net.js';
 import * as lDb from '#lib/db.js';
@@ -21,8 +22,6 @@ import * as lBuffer from '#lib/buffer.js';
 import * as lLan from '#lib/lan.js';
 import * as lCron from '#lib/cron.js';
 import * as sCtr from '#sys/ctr.js';
-import * as kebab from '#index.js';
-import * as types from '#types/index.js';
 // --- mod ---
 import mTest from '../mod/test.js';
 import mTestData from '../mod/testdata.js';
@@ -52,7 +51,7 @@ export default class extends sCtr.Ctr {
         return true;
     }
 
-    public onUnload(rtn: string | boolean | types.DbValue[]): string | boolean | types.DbValue[] {
+    public onUnload(rtn: string | boolean | kebab.DbValue[]): string | boolean | kebab.DbValue[] {
         if (!Array.isArray(rtn)) {
             return rtn;
         }
@@ -300,8 +299,8 @@ export default class extends sCtr.Ctr {
 Result:<pre id="result">Nothing.</pre>${this._getEnd()}`;
     }
 
-    public ctrXsrf1(): types.Json[] {
-        const retur: types.Json[] = [];
+    public ctrXsrf1(): kebab.Json[] {
+        const retur: kebab.Json[] = [];
         if (!this._checkXInput(this._post, {}, retur)) {
             return retur;
         }
@@ -468,11 +467,11 @@ function postFd() {
         return echo.join('') + this._getEnd();
     }
 
-    public async ctrCheckinput1(): Promise<types.Json[]> {
+    public async ctrCheckinput1(): Promise<kebab.Json[]> {
         if (!await this._handleFormData()) {
             return [0];
         }
-        const retur: types.Json[] = [];
+        const retur: kebab.Json[] = [];
         if (this._post['type']) {
             this._post['type'] = lText.parseJson(this._post['type']);
         }
@@ -500,8 +499,8 @@ function postFd() {
         return [1, { 'post': this._post }];
     }
 
-    public async ctrLocale(): Promise<types.Json[] | string> {
-        const rtn: types.Json[] = [];
+    public async ctrLocale(): Promise<kebab.Json[] | string> {
+        const rtn: kebab.Json[] = [];
         if (!this._checkInput(this._get, {
             'lang': [['en', 'sc', 'tc', 'ja'], [0, 'Wrong language.']]
         }, rtn)) {
@@ -543,11 +542,11 @@ function postFd() {
 Result:<pre id="result">Nothing.</pre>` + this._getEnd();
     }
 
-    public ctrCross1(): types.Json[] {
+    public ctrCross1(): kebab.Json[] {
         return [1, { 'value': 'done' }];
     }
 
-    public ctrCross2(): types.Json[] {
+    public ctrCross2(): kebab.Json[] {
         if (!this._cross()) {
             return [0];
         }
@@ -586,8 +585,8 @@ Result:<pre id="result">Nothing.</pre>` + this._getEnd();
         return [1, echo];
     }
 
-    public async modTest(): Promise<types.Json[] | string | boolean> {
-        const retur: types.Json[] = [];
+    public async modTest(): Promise<kebab.Json[] | string | boolean> {
+        const retur: kebab.Json[] = [];
         if (!(this._checkInput(this._get, {
             'action': [['', 'remove'], [0, 'Error']]
         }, retur))) {
@@ -860,7 +859,7 @@ CREATE TABLE \`m_test_data_0\` (
         await test.create();
     }
 
-    public async modSplit2(): Promise<types.Json[]> {
+    public async modSplit2(): Promise<kebab.Json[]> {
         const db = lDb.get(this);
 
         const ids: number[] = [];
@@ -1379,7 +1378,7 @@ JSON.stringify(r);</pre>${JSON.stringify(r)}`);
         return echo.join('') + '<br><br>' + this._getEnd();
     }
 
-    public async db(): Promise<types.Json> {
+    public async db(): Promise<kebab.Json> {
         const echo = [(Math.round(this._getRunTime() * 10000000) / 10000).toString()];
 
         const db = lDb.get(this);
@@ -1474,7 +1473,7 @@ exec: ${JSON.stringify(exec)}<br><br>`);
         return echo.join('') + '<br>queries: ' + db.getQueries().toString() + '<br>' + this._getEnd();
     }
 
-    private _dbTable(stmt: lDb.IData, echo: types.Json[]): void {
+    private _dbTable(stmt: lDb.IData, echo: kebab.Json[]): void {
         echo.push('<table style="width: 100%;"><tr>');
         if (stmt.rows) {
             for (const item of stmt.fields) {
@@ -1497,7 +1496,7 @@ exec: ${JSON.stringify(exec)}<br><br>`);
         echo.push('</table>');
     }
 
-    public async kv(): Promise<types.Json> {
+    public async kv(): Promise<kebab.Json> {
         const kv = lKv.get(this);
         if (!await kv.ping()) {
             return [0, 'Failed.'];
@@ -1704,7 +1703,7 @@ error: ${JSON.stringify(res.error)}`);
         return echo.join('') + '<br><br>' + this._getEnd();
     }
 
-    public async netPipe(): Promise<types.Json> {
+    public async netPipe(): Promise<kebab.Json> {
         const echo = [];
 
         const res = await lNet.get('https://cdn.jsdelivr.net/npm/deskrt@2.0.10/package.json');
@@ -1721,7 +1720,7 @@ error: ${JSON.stringify(res.error)}
         return echo;
     }
 
-    public async netPost(): Promise<types.Json> {
+    public async netPost(): Promise<kebab.Json> {
         const echo = [];
 
         const res = await lNet.post(this._internalUrl + 'test/netPost1', { 'a': '1', 'b': '2', 'c': ['1', '2', '3'] });
@@ -1749,11 +1748,11 @@ error: ${JSON.stringify(res.error)}`);
         return echo.join('') + '<br><br>' + this._getEnd();
     }
 
-    public netPostString1(): types.Json[] {
+    public netPostString1(): kebab.Json[] {
         return [1, this._input];
     }
 
-    public async netOpen(): Promise<types.Json> {
+    public async netOpen(): Promise<kebab.Json> {
         const echo = [];
 
         const res = await lNet.open(this._internalUrl + 'test/netPost1').post().data({ 'a': '2', 'b': '0', 'c': ['0', '1', '3'] }).request();
@@ -2006,7 +2005,7 @@ error: ${JSON.stringify(res.error)}</pre>`);
         this._location('test/net-follow2');
     }
 
-    public netFollow2(): types.Json {
+    public netFollow2(): kebab.Json {
         return [1, { 'post': (this._post['a'] as string) + ',' + (this._post['b'] as string) }];
     }
 
@@ -2107,7 +2106,7 @@ error: <pre>${JSON.stringify(res.error, null, 4)}</pre>`);
         return 'Nothing(' + rtn + ')';
     }
 
-    public async scan(): Promise<types.Json> {
+    public async scan(): Promise<kebab.Json> {
         const link = await this._scanLink();
         if (!link) {
             return [0, 'Failed, link can not be connected.'];
@@ -2202,7 +2201,7 @@ function confirm() {
         '<a href="' + this._config.const.urlBase + 'test">Return</a>' + echo.join('') + '<br>' + this._getEnd();
     }
 
-    public async scan1(): Promise<types.Json> {
+    public async scan1(): Promise<kebab.Json> {
         const link = await this._scanLink();
         if (!link) {
             return [0, 'Failed, link can not be connected.'];
@@ -2229,7 +2228,7 @@ function confirm() {
         return [0, 'Scan result: ' + JSON.stringify(rtn)];
     }
 
-    public async scan2(): Promise<types.Json> {
+    public async scan2(): Promise<kebab.Json> {
         const link = await this._scanLink();
         if (!link) {
             return [0, 'Failed, link can not be connected.'];
@@ -2242,7 +2241,7 @@ function confirm() {
         return [1];
     }
 
-    public async scan3(): Promise<types.Json> {
+    public async scan3(): Promise<kebab.Json> {
         const link = await this._scanLink();
         if (!link) {
             return [0, 'Failed, link can not be connected.'];
@@ -2257,7 +2256,7 @@ function confirm() {
         return [1];
     }
 
-    private async _scanLink(): Promise<types.Json> {
+    private async _scanLink(): Promise<kebab.Json> {
         const s = this._get['s'] ?? 'db';
         let link: lDb.Pool | lKv.Pool;
         if (s === 'db') {
@@ -2274,8 +2273,8 @@ function confirm() {
         return link;
     }
 
-    public async session(): Promise<string | types.Json[]> {
-        const retur: types.Json[] = [];
+    public async session(): Promise<string | kebab.Json[]> {
+        const retur: kebab.Json[] = [];
         if (!(this._checkInput(this._get, {
             's': ['require', ['db', 'kv'], [0, 'Object not found.']],
             'auth': [['', '1'], [0, 'Bad request.']],
@@ -2343,8 +2342,8 @@ Result:<pre id="result">Nothing.</pre>`);
         }
     }
 
-    public async jwt(): Promise<string | types.Json[]> {
-        const retur: types.Json[] = [];
+    public async jwt(): Promise<string | kebab.Json[]> {
+        const retur: kebab.Json[] = [];
         if (!(this._checkInput(this._get, {
             'type': [['', 'kv', 'auth'], [0, 'Bad request.']]
         }, retur))) {
@@ -2407,7 +2406,7 @@ Result:<pre id="result">Nothing.</pre>`);
         return echo.join('') + this._getEnd();
     }
 
-    public async jwt1(): Promise<[number, types.Json]>  {
+    public async jwt1(): Promise<[number, kebab.Json]>  {
         await lJwt.get(this, {
             'auth': true
         });
@@ -3164,8 +3163,8 @@ setInterval(() => {
         return echo.join('') + '<br>' + this._getEnd();
     }
 
-    public async ssh(): Promise<string | types.Json[]> {
-        const retur: types.Json[] = [];
+    public async ssh(): Promise<string | kebab.Json[]> {
+        const retur: kebab.Json[] = [];
         if (!(this._checkInput(this._get, {
             'type': ['require', ['shell', 'sftp'], [0, 'Type not found.']]
         }, retur))) {

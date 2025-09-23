@@ -1,12 +1,11 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2020-4-9 20:02:39
- * Last: 2020-4-9 20:47:58, 2022-09-10 01:35:34
+ * Last: 2020-4-9 20:47:58, 2022-09-10 01:35:34, 2025-9-23 12:41:58
  */
 import * as stream from 'stream';
-import * as net from '#lib/net.js';
-import * as response from './response.js';
-import * as types from '#types/index.js';
+import * as lNet from '#lib/net.js';
+import * as lResponse from './response.js';
 
 export class Request {
 
@@ -17,7 +16,7 @@ export class Request {
     private readonly _url: string = '';
 
     /** --- 要传递的参数 --- */
-    private _opt: net.IRequestOptions = {};
+    private _opt: lNet.IRequestOptions = {};
 
     public constructor(url: string) {
         this._url = url;
@@ -120,7 +119,7 @@ export class Request {
      * --- 批量设置提交的 headers ---
      * @param headers
      */
-    public headers(headers: types.THttpHeaders): this {
+    public headers(headers: lNet.THttpHeaders): this {
         this._opt['headers'] = headers;
         return this;
     }
@@ -140,9 +139,9 @@ export class Request {
      * --- 发起请求 ---
      * @param cookie
      */
-    public request(cookie?: Record<string, types.ICookie>): Promise<response.Response> {
+    public request(cookie?: Record<string, lNet.ICookie>): Promise<lResponse.Response> {
         this._opt.cookie = cookie;
-        return net.request(this._url, this._data, this._opt);
+        return lNet.request(this._url, this._data, this._opt);
     }
 
 }

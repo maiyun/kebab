@@ -1,11 +1,10 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2019-5-15 16:49:39
- * Last: 2020-04-06 20:51:06, 2022-9-29 15:18:16, 2022-12-29 00:01:30, 2024-3-6 17:53:14, 2024-5-31 17:29:52, 2025-6-13 15:47:02
+ * Last: 2020-04-06 20:51:06, 2022-9-29 15:18:16, 2022-12-29 00:01:30, 2024-3-6 17:53:14, 2024-5-31 17:29:52, 2025-6-13 15:47:02, 2025-9-23 12:51:49
  */
 import * as kebab from '#index.js';
-import * as fs from './fs.js';
-import * as types from '#types/index.js';
+import * as lFs from './fs.js';
 
 /**
  * --- 将文件大小格式化为带单位的字符串 ---
@@ -25,9 +24,9 @@ export function sizeFormat(size: number, spliter: string = ' '): string {
  * --- 格式化一段 URL ---
  * @param url
  */
-export function parseUrl(url: string): types.IUrlParse {
+export function parseUrl(url: string): kebab.IUrlParse {
     // --- test: https://ab-3dc:aak9()$@github.com:80/nodejs/node/blob/master/lib/url.js?mail=abc@def.com#223 ---
-    const rtn: types.IUrlParse = {
+    const rtn: kebab.IUrlParse = {
         'protocol': null,
         'auth': null,
         'user': null,
@@ -279,7 +278,7 @@ export async function parseDomain(domain: string): Promise<IDomain> {
     }
     else {
         if (!tldList) {
-            tldList = JSON.parse(await fs.getContent(kebab.LIB_PATH + 'text/tld.json', 'utf8') ?? '[]');
+            tldList = JSON.parse(await lFs.getContent(kebab.LIB_PATH + 'text/tld.json', 'utf8') ?? '[]');
         }
         const last2 = (arr[arr.length - 2] + '.' + arr[arr.length - 1]).toLowerCase();
         if (tldList.includes(last2)) {
@@ -472,7 +471,7 @@ export function getFilename(path: string): string {
  * --- 将普通的返回 JSON 对象序列化为字符串，Mutton 不能使用 ---
  * @param o 返回 JSON 对象
  */
-export function stringifyResult(rtn: types.Json): string {
+export function stringifyResult(rtn: kebab.Json): string {
     if (Array.isArray(rtn)) {
         // --- [0, 'xxx'] 模式 ---
         if (rtn.length === 0) {
@@ -483,7 +482,7 @@ export function stringifyResult(rtn: types.Json): string {
         }
         if (typeof rtn[0] === 'number') {
             // --- 1. ---
-            const json: Record<string, types.Json> = { 'result': rtn[0] };
+            const json: Record<string, kebab.Json> = { 'result': rtn[0] };
             if (rtn[1] !== undefined) {
                 if (typeof rtn[1] === 'object') {
                     // --- [0, ...{'xx': 'xx'}] ---
@@ -542,7 +541,7 @@ export function parseJson(str: string): any {
  * @param obj 要转换的 json 对象
  * @param space 美化方式
  */
-export function stringifyJson(obj: types.Json, space?: string | number): string {
+export function stringifyJson(obj: kebab.Json, space?: string | number): string {
     return JSON.stringify(obj, (k, v) => {
         if (typeof v === 'bigint') {
             return '-mybigint-' + v.toString();

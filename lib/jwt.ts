@@ -5,13 +5,13 @@
  */
 
 // --- 库和定义 ---
+import * as kebab from '#index.js';
 import * as lCore from '#lib/core.js';
 import * as lTime from '#lib/time.js';
 import * as lText from '#lib/text.js';
 import * as lCrypto from '#lib/crypto.js';
-import * as kv from '#lib/kv.js';
-import * as ctr from '#sys/ctr.js';
-import * as types from '#types/index.js';
+import * as lKv from '#lib/kv.js';
+import * as sCtr from '#sys/ctr.js';
 
 export interface IOptions {
     'name'?: string;
@@ -24,7 +24,7 @@ export interface IOptions {
 export class Jwt {
 
     /** --- Kv --- */
-    private _link?: kv.Pool;
+    private _link?: lKv.Pool;
 
     /** --- 在前端或 Kv 中储存的名前缀 --- */
     private _name!: string;
@@ -42,7 +42,7 @@ export class Jwt {
     private _auth!: boolean;
 
     /** --- ctr 对象 --- */
-    private _ctr!: ctr.Ctr;
+    private _ctr!: sCtr.Ctr;
 
     /**
      * --- 初始化函数，相当于 construct ---
@@ -52,9 +52,9 @@ export class Jwt {
      * @param opt 选项
      */
     public async init(
-        ctr: ctr.Ctr,
+        ctr: sCtr.Ctr,
         opt: IOptions = {},
-        link?: kv.Pool
+        link?: lKv.Pool
     ): Promise<boolean> {
         const config = ctr.getPrototype('_config');
         this._ctr = ctr;
@@ -168,7 +168,7 @@ export class Jwt {
 /**
  * --- 获取 jwt 原始字符串，不保证有效 ---
  */
-export function getOrigin(ctr: ctr.Ctr, name: string = '', auth: boolean = false): string {
+export function getOrigin(ctr: sCtr.Ctr, name: string = '', auth: boolean = false): string {
     if (!name) {
         name = ctr.getPrototype('_config').jwt.name;
     }
@@ -194,7 +194,7 @@ export function getOrigin(ctr: ctr.Ctr, name: string = '', auth: boolean = false
  * --- decode ---
  * 不传入 link 的话，将不做 block 有效校验，只做本身的 exp 有效校验
  */
-export async function decode(ctr: ctr.Ctr, val: string, link?: kv.Pool, name: string = '', secret: string = ''): Promise<Record<string, types.DbValue> | false> {
+export async function decode(ctr: sCtr.Ctr, val: string, link?: lKv.Pool, name: string = '', secret: string = ''): Promise<Record<string, kebab.DbValue> | false> {
     if (!val) {
         return false;
     }
@@ -251,7 +251,7 @@ export async function decode(ctr: ctr.Ctr, val: string, link?: kv.Pool, name: st
 /**
  * --- 仅往 redis 写禁止相关 token 的数据，一般用于异步通知时在异处的服务器来调用的 ---
  */
-export async function block(ctr: ctr.Ctr, token: string, exp: number, link: kv.Pool, name: string = ''): Promise<boolean> {
+export async function block(ctr: sCtr.Ctr, token: string, exp: number, link: lKv.Pool, name: string = ''): Promise<boolean> {
     const time = lTime.stamp();
     if (!name) {
         name = ctr.getPrototype('_config').jwt.name;
@@ -269,7 +269,7 @@ export async function block(ctr: ctr.Ctr, token: string, exp: number, link: kv.P
  * @param opt name, ttl, ssl, secret, auth: false, true 则优先从头 Authorization 或 post _auth 值读取 token
  * @param link 实例
  */
-export async function get(ctr: ctr.Ctr, opt: IOptions = {}, link?: kv.Pool): Promise<Jwt> {
+export async function get(ctr: sCtr.Ctr, opt: IOptions = {}, link?: lKv.Pool): Promise<Jwt> {
     const jwt = new Jwt();
     await jwt.init(ctr, opt, link);
     return jwt;

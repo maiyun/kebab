@@ -1,14 +1,14 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2019-6-2 20:42
- * Last: 2020-4-9 22:33:11, 2022-09-13 13:32:01, 2022-12-30 19:13:07, 2024-2-6 23:53:45, 2024-12-23 01:33:16, 2025-1-28 21:05:51
+ * Last: 2020-4-9 22:33:11, 2022-09-13 13:32:01, 2022-12-30 19:13:07, 2024-2-6 23:53:45, 2024-12-23 01:33:16, 2025-1-28 21:05:51, 2025-9-23 12:27:48
  */
 import * as http from 'http';
 import * as net from 'net';
-import * as types from '#types/index.js';
 // --- 第三方 ---
 import * as liws from '@litert/websocket';
 // --- 库 ---
+import * as kebab from '#index.js';
 import * as lText from '#lib/text.js';
 import * as lNet from '#lib/net.js';
 import * as sCtr from '#sys/ctr.js';
@@ -36,9 +36,9 @@ export interface IConnectOptions {
     'timeout'?: number;
     'hosts'?: Record<string, string>;
     'local'?: string;
-    'headers'?: types.THttpHeaders;
+    'headers'?: lNet.THttpHeaders;
     /** --- cookie 托管对象 --- */
-    'cookie'?: Record<string, types.ICookie>;
+    'cookie'?: Record<string, lNet.ICookie>;
     /** --- 小帧模式，默认 false --- */
     'mode'?: EFrameReceiveMode;
     /** --- 加密模式，默认 true --- */
@@ -56,7 +56,7 @@ export interface IMproxyOptions {
     'timeout'?: number;
     'hosts'?: Record<string, string>;
     'local'?: string;
-    'headers'?: types.THttpHeaders;
+    'headers'?: lNet.THttpHeaders;
     /** --- 小帧模式，默认 false --- */
     'mode'?: EFrameReceiveMode;
     /** --- 加密模式，默认 true --- */
@@ -69,7 +69,7 @@ export interface IRproxyOptions {
     'timeout'?: number;
     'hosts'?: Record<string, string>;
     'local'?: string;
-    'headers'?: types.THttpHeaders;
+    'headers'?: lNet.THttpHeaders;
     /** --- 小帧模式，默认 false --- */
     'mode'?: EFrameReceiveMode;
     /** --- 加密模式，默认 true --- */
@@ -122,7 +122,7 @@ export class Socket {
         const local = opt.local;
         const mode = opt.mode ?? EFrameReceiveMode.SIMPLE;
         const masking = opt.masking ?? true;
-        const headers: Record<string, types.Json> = {};
+        const headers: Record<string, kebab.Json> = {};
         if (opt.headers) {
             for (const key in opt.headers) {
                 headers[key.toLowerCase()] = opt.headers[key];
@@ -304,7 +304,7 @@ export class Socket {
     }
 
     /** --- 发送结果对象字符串 --- */
-    public writeResult(data: types.Json): boolean {
+    public writeResult(data: kebab.Json): boolean {
         if (!this._ws.writable) {
             return false;
         }

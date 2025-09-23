@@ -9,12 +9,12 @@
 // --- 第三方 ---
 import * as mysql2 from 'mysql2/promise';
 // --- 库和定义 ---
+import * as kebab from '#index.js';
 import * as lTime from '#lib/time.js';
 import * as lSql from '#lib/sql.js';
 import * as lCore from '#lib/core.js';
 import * as lText from '#lib/text.js';
 import * as sCtr from '#sys/ctr.js';
-import * as types from '#types/index.js';
 
 /** --- query 返回的数据 --- */
 export interface IData {
@@ -119,9 +119,9 @@ export class Pool {
     private _queries: number = 0;
 
     /** --- 当前 Pool 对象的数据库连接信息 --- */
-    private readonly _etc: types.IConfigDb;
+    private readonly _etc: kebab.IConfigDb;
 
-    public constructor(etc: types.IConfigDb) {
+    public constructor(etc: kebab.IConfigDb) {
         this._etc = etc;
     }
 
@@ -130,7 +130,7 @@ export class Pool {
      * @param sql 执行的 SQL 字符串
      * @param values 要替换的 data 数据
      */
-    public async query(sql: string, values?: types.DbValue[]): Promise<IData> {
+    public async query(sql: string, values?: kebab.DbValue[]): Promise<IData> {
         ++this._queries;
         // --- 获取并自动 using  ---
         const conn = await this._getConnection();
@@ -153,7 +153,7 @@ export class Pool {
      * @param sql 执行的 SQL 字符串
      * @param values 要替换的 data 数据
      */
-    public async execute(sql: string, values?: types.DbValue[]): Promise<IPacket> {
+    public async execute(sql: string, values?: kebab.DbValue[]): Promise<IPacket> {
         ++this._queries;
         const conn = await this._getConnection();
         if (!conn) {
@@ -301,7 +301,7 @@ export class Transaction {
      * @param sql 执行的 SQL 字符串
      * @param values 要替换的 data 数据
      */
-    public async query(sql: string, values?: types.DbValue[]): Promise<IData> {
+    public async query(sql: string, values?: kebab.DbValue[]): Promise<IData> {
         if (!this._conn) {
             // --- 当前连接已不可用 ---
             lCore.display('[DB][Transaction][query] has been closed ' + (this._ctr?.getPrototype('_config').const.path ?? 'no ctr') + ': ' + sql);
@@ -324,7 +324,7 @@ export class Transaction {
      * @param sql 执行的 SQL 字符串
      * @param values 要替换的 data 数据
      */
-    public async execute(sql: string, values?: types.DbValue[]): Promise<IPacket> {
+    public async execute(sql: string, values?: kebab.DbValue[]): Promise<IPacket> {
         if (!this._conn) {
             // --- 当前连接已不可用 ---
             lCore.display('[DB][Transaction][execute] has been closed ' + (this._ctr?.getPrototype('_config').const.path ?? 'no ctr') + ': ' + sql);
@@ -396,7 +396,7 @@ export class Connection {
     /** --- 最后两次执行的 sql 完整串 --- */
     private readonly _lastSql: Array<{
         'sql': string;
-        'values'?: types.DbValue[];
+        'values'?: kebab.DbValue[];
     }> = [];
 
     /** --- 数据库连接对象 --- */
@@ -412,9 +412,9 @@ export class Connection {
     private _transaction: boolean = false;
 
     /** --- 当前的连接配置信息 --- */
-    private readonly _etc: types.IConfigDb;
+    private readonly _etc: kebab.IConfigDb;
 
-    public constructor(etc: types.IConfigDb, link: mysql2.Connection) {
+    public constructor(etc: kebab.IConfigDb, link: mysql2.Connection) {
         this._etc = etc;
         this._link = link;
         this.refreshLast();
@@ -423,7 +423,7 @@ export class Connection {
     /**
      * --- 获取连接 etc 信息 ---
      */
-    public getEtc(): types.IConfigDb {
+    public getEtc(): kebab.IConfigDb {
         return this._etc;
     }
 
@@ -439,7 +439,7 @@ export class Connection {
      */
     public getLastSql(): Array<{
         'sql': string;
-        'values'?: types.DbValue[];
+        'values'?: kebab.DbValue[];
     }> {
         return this._lastSql;
     }
@@ -522,7 +522,7 @@ export class Connection {
      * @param sql 执行的 SQL 字符串
      * @param values 要替换的 data 数据
      */
-    public async query(sql: string, values?: types.DbValue[]): Promise<IData> {
+    public async query(sql: string, values?: kebab.DbValue[]): Promise<IData> {
         let res: [any[], mysql2.FieldPacket[]];
         try {
             this.refreshLast();
@@ -565,7 +565,7 @@ export class Connection {
      * @param sql 执行的 SQL 字符串
      * @param values 要替换的 data 数据
      */
-    public async execute(sql: string, values?: types.DbValue[]): Promise<IPacket> {
+    public async execute(sql: string, values?: kebab.DbValue[]): Promise<IPacket> {
         let res: [mysql2.ResultSetHeader, mysql2.FieldPacket[]];
         try {
             this.refreshLast();
@@ -664,7 +664,7 @@ export class Connection {
  * --- 获取 Db Pool 对象 ---
  * @param etc 配置信息可留空
  */
-export function get(ctrEtc: sCtr.Ctr | types.IConfigDb): Pool {
+export function get(ctrEtc: sCtr.Ctr | kebab.IConfigDb): Pool {
     const etc = ctrEtc instanceof sCtr.Ctr ? ctrEtc.getPrototype('_config').db : ctrEtc;
     return new Pool(etc);
 }

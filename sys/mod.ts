@@ -1,7 +1,7 @@
 /**
  * Project: Mutton, User: JianSuoQiYue
  * Date: 2019-6-4 21:35
- * Last: 2020-4-14 13:33:51, 2022-07-23 16:01:34, 2022-09-06 22:59:26, 2023-5-24 19:11:37, 2023-6-13 21:47:58, 2023-7-10 18:54:03, 2023-8-23 17:03:16, 2023-12-11 15:21:22, 2023-12-20 23:12:03, 2024-3-8 16:05:29, 2024-3-20 19:58:15, 2024-8-11 21:14:54, 2024-10-5 14:00:22, 2024-12-14 19:58:34
+ * Last: 2020-4-14 13:33:51, 2022-07-23 16:01:34, 2022-09-06 22:59:26, 2023-5-24 19:11:37, 2023-6-13 21:47:58, 2023-7-10 18:54:03, 2023-8-23 17:03:16, 2023-12-11 15:21:22, 2023-12-20 23:12:03, 2024-3-8 16:05:29, 2024-3-20 19:58:15, 2024-8-11 21:14:54, 2024-10-5 14:00:22, 2024-12-14 19:58:34, 2025-9-23 11:01:36
  */
 import * as lSql from '#lib/sql.js';
 import * as lDb from '#lib/db.js';
@@ -9,7 +9,7 @@ import * as lTime from '#lib/time.js';
 import * as lCore from '#lib/core.js';
 import * as lText from '#lib/text.js';
 import * as sCtr from '#sys/ctr.js';
-import * as types from '#types/index.js';
+import * as kebab from '#index.js';
 
 /** --- 只获取变量 --- */
 type TOnlyProperties<T> = {
@@ -17,7 +17,7 @@ type TOnlyProperties<T> = {
 };
 
 /** --- 条数列表 --- */
-class Rows<T extends Mod> implements types.Rows<T> {
+class Rows<T extends Mod> implements CRows<T> {
 
     private readonly _items: T[] = [];
 
@@ -145,7 +145,7 @@ export default class Mod {
         'alias'?: string;
         'row'?: Record<string, any>;
         'select'?: string | string[];
-        'where'?: string | types.Json;
+        'where'?: string | kebab.Json;
         'contain'?: {
             'key': string;
             'list': string[];
@@ -170,7 +170,7 @@ export default class Mod {
             for (const k in opt.row) {
                 const v = opt.row[k];
                 this._data[k] = v;
-                (this as Record<string, types.Json>)[k] = v;
+                (this as Record<string, kebab.Json>)[k] = v;
             }
         }
         /** --- 是否有 select --- */
@@ -178,13 +178,13 @@ export default class Mod {
         if (select) {
             this._sql.select(
                 select,
-                ((this.constructor as Record<string, types.Json>)._$table as string) +
+                ((this.constructor as Record<string, kebab.Json>)._$table as string) +
                 (this._index !== null ? ('_' + this._index[0]) : '') +
                 (opt.alias ? ' ' + opt.alias : '')
             );
         }
         if (opt.where !== undefined) {
-            if ((this.constructor as Record<string, types.Json>)._soft && !opt.raw) {
+            if ((this.constructor as Record<string, kebab.Json>)._soft && !opt.raw) {
                 if (typeof opt.where === 'string') {
                     opt.where = opt.where ? ('(' + opt.where + ') AND ') : '`time_remove` = 0';
                 }
@@ -289,7 +289,7 @@ export default class Mod {
     public static async insertDuplicate(
         db: lDb.Pool | lDb.Transaction,
         data: Record<string, any>,
-        update: types.Json,
+        update: kebab.Json,
         opt: { 'pre'?: sCtr.Ctr | string; 'index'?: string; } = {}
     ): Promise<boolean | null> {
         const sq = lSql.get(opt.pre);
@@ -315,7 +315,7 @@ export default class Mod {
      */
     public static async removeByWhere(
         db: lDb.Pool | lDb.Transaction,
-        where: string | types.Json,
+        where: string | kebab.Json,
         opt: {
             'raw'?: boolean;
             'pre'?: sCtr.Ctr | string;
@@ -373,7 +373,7 @@ export default class Mod {
      */
     public static removeByWhereSql(
         db: lDb.Pool | lDb.Transaction,
-        where: string | types.Json,
+        where: string | kebab.Json,
         opt: {
             'raw'?: boolean;
             'pre'?: sCtr.Ctr | string;
@@ -424,8 +424,8 @@ export default class Mod {
      */
     public static async updateByWhere(
         db: lDb.Pool | lDb.Transaction,
-        data: types.Json,
-        where: string | types.Json,
+        data: kebab.Json,
+        where: string | kebab.Json,
         opt: {
             'raw'?: boolean;
             'pre'?: sCtr.Ctr | string;
@@ -483,8 +483,8 @@ export default class Mod {
      * @param opt 选项
      */
     public static updateByWhereSql(
-        data: types.Json,
-        where: string | types.Json,
+        data: kebab.Json,
+        where: string | kebab.Json,
         opt: {
             'raw'?: boolean;
             'pre'?: sCtr.Ctr | string;
@@ -555,7 +555,7 @@ export default class Mod {
      */
     public static where<T extends Mod>(
         db: lDb.Pool | lDb.Transaction,
-        s: string | types.Json = '',
+        s: string | kebab.Json = '',
         opt: {
             'ctr'?: sCtr.Ctr; 'raw'?: boolean; 'pre'?: string; 'index'?: string | string[];
             'contain'?: {
@@ -618,7 +618,7 @@ export default class Mod {
 
     public static async one(
         db: lDb.Pool | lDb.Transaction,
-        s: string | types.Json,
+        s: string | kebab.Json,
         opt: {
             'ctr'?: sCtr.Ctr;
             'raw'?: boolean;
@@ -631,7 +631,7 @@ export default class Mod {
     ): Promise<false | null | Record<string, any>>;
     public static async one<T extends Mod>(
         db: lDb.Pool | lDb.Transaction,
-        s: string | types.Json,
+        s: string | kebab.Json,
         opt: {
             'ctr'?: sCtr.Ctr;
             'raw'?: boolean;
@@ -650,7 +650,7 @@ export default class Mod {
      */
     public static async one<T extends Mod>(
         db: lDb.Pool | lDb.Transaction,
-        s: string | types.Json,
+        s: string | kebab.Json,
         opt: {
             'ctr'?: sCtr.Ctr;
             'raw'?: boolean;
@@ -709,7 +709,7 @@ export default class Mod {
      */
     public static async oneArray(
         db: lDb.Pool | lDb.Transaction,
-        s: string | types.Json,
+        s: string | kebab.Json,
         opt: {
             'ctr'?: sCtr.Ctr;
             'raw'?: boolean;
@@ -718,7 +718,7 @@ export default class Mod {
             'select'?: string | string[];
         } = {}
     ): Promise<false | null | Record<string, any>> {
-        (opt as types.Json).array = true;
+        (opt as kebab.Json).array = true;
         return this.one(db, s, opt);
     }
 
@@ -730,7 +730,7 @@ export default class Mod {
      */
     public static async primarys(
         db: lDb.Pool | lDb.Transaction,
-        where: string | types.Json = '',
+        where: string | kebab.Json = '',
         opt: { 'ctr'?: sCtr.Ctr; 'raw'?: boolean; 'pre'?: string; 'index'?: string; } = {}
     ): Promise<any[] | false> {
         const sq = lSql.get(opt.pre ?? opt.ctr);
@@ -797,7 +797,7 @@ export default class Mod {
                 // --- 强制更新，因为有的可能就是要强制更新既然设置了 ---
                 this._updates[k] = true;
                 this._data[k] = v;
-                (this as types.Json)[k] = v;
+                (this as kebab.Json)[k] = v;
             }
         }
         else {
@@ -810,7 +810,7 @@ export default class Mod {
             }
             this._updates[n] = true;
             this._data[n] = v;
-            (this as types.Json)[n] = v;
+            (this as kebab.Json)[n] = v;
         }
     }
 
@@ -827,8 +827,8 @@ export default class Mod {
      * @param notWhere 若要不存在才成功，则要传入限定条件
      * @param table 可对限定条件传入适当的表
      */
-    public async create(notWhere?: string | types.Json, table?: string): Promise<boolean> {
-        const cstr = this.constructor as Record<string, types.Json>;
+    public async create(notWhere?: string | kebab.Json, table?: string): Promise<boolean> {
+        const cstr = this.constructor as Record<string, kebab.Json>;
         const updates: Record<string, any> = {};
         for (const k in this._updates) {
             updates[k] = this._data[k];
@@ -844,7 +844,7 @@ export default class Mod {
                 }
                 updates[cstr._$key] = this._keyGenerator();
                 this._data[cstr._$key] = updates[cstr._$key];
-                (this as types.Json)[cstr._$key] = updates[cstr._$key];
+                (this as kebab.Json)[cstr._$key] = updates[cstr._$key];
                 this._sql.insert((cstr._$table as string) + (this._index ? ('_' + this._index[0]) : ''));
                 if (notWhere) {
                     this._sql.notExists(table, updates, notWhere);
@@ -893,7 +893,7 @@ export default class Mod {
         if (r?.packet?.affectedRows && r?.packet?.affectedRows > 0) {
             this._updates = {};
             this._data[cstr._$primary] = r.packet.insertId;
-            (this as types.Json)[cstr._$primary] = this._data[cstr._$primary];
+            (this as kebab.Json)[cstr._$primary] = this._data[cstr._$primary];
             return true;
         }
         else {
@@ -905,7 +905,7 @@ export default class Mod {
      * --- 唯一键冲突则替换，不冲突则创建数据 ---
      */
     public async replace(): Promise<boolean> {
-        const cstr = this.constructor as Record<string, types.Json>;
+        const cstr = this.constructor as Record<string, kebab.Json>;
         const updates: Record<string, any> = {};
         for (const k in this._updates) {
             updates[k] = this._data[k];
@@ -920,7 +920,7 @@ export default class Mod {
         if (r.packet.affectedRows > 0) {
             this._updates = {};
             this._data[cstr._$primary] = r.packet.insertId;
-            (this as types.Json)[cstr._$primary] = this._data[cstr._$primary];
+            (this as kebab.Json)[cstr._$primary] = this._data[cstr._$primary];
             return true;
         }
         else {
@@ -933,7 +933,7 @@ export default class Mod {
      * @param lock 是否加锁
      */
     public async refresh(lock = false): Promise<boolean | null> {
-        const cstr = this.constructor as Record<string, types.Json>;
+        const cstr = this.constructor as Record<string, kebab.Json>;
         this._sql.select('*', (cstr._$table as string) + (this._index ? ('_' + this._index[0]) : '')).where([{
             [cstr._$primary]: this._data[cstr._$primary]
         }]);
@@ -951,7 +951,7 @@ export default class Mod {
         for (const k in r.rows[0]) {
             const v = r.rows[0][k];
             this._data[k] = v;
-            (this as types.Json)[k] = v;
+            (this as kebab.Json)[k] = v;
         }
         return true;
     }
@@ -963,7 +963,7 @@ export default class Mod {
         if (Object.keys(this._updates).length === 0) {
             return true;
         }
-        const cstr = this.constructor as Record<string, types.Json>;
+        const cstr = this.constructor as Record<string, kebab.Json>;
         const updates: Record<string, any> = {};
         for (const k in this._updates) {
             updates[k] = this._data[k];
@@ -991,7 +991,7 @@ export default class Mod {
      */
     public async remove(raw: boolean = false): Promise<boolean> {
         const tim = lTime.stamp();
-        const cstr = this.constructor as Record<string, types.Json>;
+        const cstr = this.constructor as Record<string, kebab.Json>;
         if (cstr._$soft && !raw) {
             this._sql.update((cstr._$table as string) + (this._index ? ('_' + this._index[0]) : ''), [{
                 'time_remove': tim
@@ -1073,7 +1073,7 @@ export default class Mod {
      * @param f 要联合查询的表列表、单个表、sql 对象
      * @param type 类型
      */
-    public union(f: lSql.Sql | string | types.IModUnionItem | string[] | types.IModUnionItem[], type: string = ''): this {
+    public union(f: lSql.Sql | string | IModUnionItem | string[] | IModUnionItem[], type: string = ''): this {
         if (f instanceof lSql.Sql) {
             this._sql.union(f, type);
             return this;
@@ -1103,7 +1103,7 @@ export default class Mod {
      * --- 所有联合查询表数据 ---
      * @param f 要联合查询的表列表、单个表、sql 对象
      */
-    public unionAll(f: lSql.Sql | string | types.IModUnionItem | string[] | types.IModUnionItem[]): this {
+    public unionAll(f: lSql.Sql | string | IModUnionItem | string[] | IModUnionItem[]): this {
         if (f instanceof lSql.Sql) {
             this._sql.unionAll(f);
             return this;
@@ -1186,7 +1186,7 @@ export default class Mod {
                 if (key) {
                     for (const row of r.rows) {
                         const obj = new (this.constructor as new (
-                            o: Record<string, types.Json>
+                            o: Record<string, kebab.Json>
                         ) => this)({
                             'db': this._db,
                             'ctr': this._ctr,
@@ -1201,7 +1201,7 @@ export default class Mod {
                 }
                 for (const row of r.rows) {
                     const obj = new (this.constructor as new (
-                        o: Record<string, types.Json>
+                        o: Record<string, kebab.Json>
                     ) => this)({
                         'db': this._db,
                         'ctr': this._ctr,
@@ -1246,7 +1246,7 @@ export default class Mod {
             const list: Record<string, this> = {};
             for (const row of r.rows) {
                 const obj = new (this.constructor as new (
-                    o: Record<string, types.Json>
+                    o: Record<string, kebab.Json>
                 ) => this)({
                     'db': this._db,
                     'ctr': this._ctr,
@@ -1260,7 +1260,7 @@ export default class Mod {
             if (cr?.rows) {
                 for (const crow of cr.rows) {
                     const obj = new (this.constructor as new (
-                        o: Record<string, types.Json>
+                        o: Record<string, kebab.Json>
                     ) => this)({
                         'db': this._db,
                         'ctr': this._ctr,
@@ -1276,7 +1276,7 @@ export default class Mod {
         const list: this[] = [];
         for (const row of r.rows) {
             const obj = new (this.constructor as new (
-                o: Record<string, types.Json>
+                o: Record<string, kebab.Json>
             ) => this)({
                 'db': this._db,
                 'ctr': this._ctr,
@@ -1290,7 +1290,7 @@ export default class Mod {
         if (cr?.rows) {
             for (const crow of cr.rows) {
                 const obj = new (this.constructor as new (
-                    o: Record<string, types.Json>
+                    o: Record<string, kebab.Json>
                 ) => this)({
                     'db': this._db,
                     'ctr': this._ctr,
@@ -1506,7 +1506,7 @@ export default class Mod {
      * @param index 给本表增加 index 分表项
      * @param pre 前缀
      */
-    public join(f: string, s: types.Json = [], type: string = 'INNER', index: string = '', pre: string = ''): this {
+    public join(f: string, s: kebab.Json = [], type: string = 'INNER', index: string = '', pre: string = ''): this {
         this._sql.join(f, s, type, index ? '_' + index : '', pre);
         return this;
     }
@@ -1517,7 +1517,7 @@ export default class Mod {
      * @param s ON 信息
      * @param index 给本表增加 index 分表项
      */
-    public leftJoin(f: string, s: types.Json, index: string = '', pre: string = ''): this {
+    public leftJoin(f: string, s: kebab.Json, index: string = '', pre: string = ''): this {
         this._sql.leftJoin(f, s, index ? '_' + index : '', pre);
         return this;
     }
@@ -1528,7 +1528,7 @@ export default class Mod {
      * @param s ON 信息
      * @param index 给本表增加 index 分表项
      */
-    public rightJoin(f: string, s: types.Json, index: string = '', pre: string = ''): this {
+    public rightJoin(f: string, s: kebab.Json, index: string = '', pre: string = ''): this {
         this._sql.rightJoin(f, s, index ? '_' + index : '', pre);
         return this;
     }
@@ -1539,7 +1539,7 @@ export default class Mod {
      * @param s ON 信息
      * @param index 给本表增加 index 分表项
      */
-    public innerJoin(f: string, s: types.Json, index: string = '', pre: string = ''): this {
+    public innerJoin(f: string, s: kebab.Json, index: string = '', pre: string = ''): this {
         this._sql.innerJoin(f, s, index ? '_' + index : '', pre);
         return this;
     }
@@ -1550,7 +1550,7 @@ export default class Mod {
      * @param s ON 信息
      * @param index 给本表增加 index 分表项
      */
-    public fullJoin(f: string, s: types.Json, index: string = '', pre: string = ''): this {
+    public fullJoin(f: string, s: kebab.Json, index: string = '', pre: string = ''): this {
         this._sql.fullJoin(f, s, index ? '_' + index : '', pre);
         return this;
     }
@@ -1561,7 +1561,7 @@ export default class Mod {
      * @param s ON 信息
      * @param index 给本表增加 index 分表项
      */
-    public crossJoin(f: string, s: types.Json, index: string = '', pre: string = ''): this {
+    public crossJoin(f: string, s: kebab.Json, index: string = '', pre: string = ''): this {
         this._sql.crossJoin(f, s, index ? '_' + index : '', pre);
         return this;
     }
@@ -1570,7 +1570,7 @@ export default class Mod {
      * --- 筛选器 ---
      * @param s 筛选条件数组或字符串
      */
-    public having(s: types.Json): this {
+    public having(s: kebab.Json): this {
         this._sql.having(s);
         return this;
     }
@@ -1581,10 +1581,10 @@ export default class Mod {
      * @param raw 是否包含已被软删除的数据
      */
     public filter(
-        s: types.Json,
+        s: kebab.Json,
         raw: boolean = false
     ): this {
-        const cstr = this.constructor as Record<string, types.Json>;
+        const cstr = this.constructor as Record<string, kebab.Json>;
         if (cstr._soft && !raw) {
             if (typeof s === 'string') {
                 s = '(' + s + ') AND `time_remove` = 0';
@@ -1608,7 +1608,7 @@ export default class Mod {
      * @param raw 是否包含已被软删除的数据
      */
     public where(
-        s: types.Json,
+        s: kebab.Json,
         raw: boolean = false
     ): this {
         return this.filter(s, raw);
@@ -1758,4 +1758,27 @@ export default class Mod {
         return '';
     }
 
+}
+
+// --- 类型 ---
+
+/** --- mod ls 对象 --- */
+export declare class CRows<T> implements Iterable<T> {
+
+    /** --- 总行数 --- */
+    public get length(): number;
+
+    /** --- 通过索引获取一个对象 --- */
+    public item(index: number): T;
+
+    /** --- 转换为数组对象 --- */
+    public toArray(): Array<Record<string, kebab.DbValue>>;
+
+    public [Symbol.iterator](): Iterator<T>;
+
+}
+
+export interface IModUnionItem {
+    'field': string;
+    'where'?: any;
 }

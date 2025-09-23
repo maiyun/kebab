@@ -1,7 +1,7 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2019-4-15 13:40
- * Last: 2020-4-14 13:52:00, 2022-09-07 01:43:31, 2023-12-29 17:24:03, 2024-2-7 00:28:50, 2024-6-6 15:15:54, 2025-6-13 19:23:53, 2025-9-22 15:48:53
+ * Last: 2020-4-14 13:52:00, 2022-09-07 01:43:31, 2023-12-29 17:24:03, 2024-2-7 00:28:50, 2024-6-6 15:15:54, 2025-6-13 19:23:53, 2025-9-22 15:48:53, 2025-9-23 11:26:50
  */
 import * as http from 'http';
 import * as http2 from 'http2';
@@ -21,10 +21,9 @@ import * as lWs from '#lib/ws.js';
 import * as lLang from '#lib/lang.js';
 import * as sCtr from './ctr.js';
 import * as kebab from '#index.js';
-import * as types from '#types/index.js';
 
 /** --- 动态层 kebab.json 缓存（文件路径: 最终合并值） --- */
-let kebabConfigs: Record<string, types.IConfig> = {};
+let kebabConfigs: Record<string, kebab.IConfig> = {};
 
 /**
  * --- 清除已经加载的虚拟主机配置文件 ---
@@ -41,7 +40,7 @@ export async function run(data: {
     'req': http2.Http2ServerRequest | http.IncomingMessage;
     'res'?: http2.Http2ServerResponse | http.ServerResponse;
     'socket'?: net.Socket;
-    'uri': types.IUrlParse;
+    'uri': kebab.IUrlParse;
     /** --- 虚拟主机当前动态目录的绝对根目录，末尾带 / --- */
     'rootPath': string;
     /** --- base url，如 /abc/vhost/，前后都带 / --- */
@@ -102,7 +101,7 @@ export async function run(data: {
         }
     }
     // --- 加载 kebab config ---
-    const config: types.IConfig = {} as types.Json;
+    const config: kebab.IConfig = {} as kebab.Json;
     const configData = kebabConfigs[data.rootPath + 'kebab.json'];
     for (const name in configData) {
         config[name] = configData[name];
@@ -251,7 +250,7 @@ export async function run(data: {
     }
     headers['authorization'] ??= '';
     /** --- 开发者返回值 --- */
-    let rtn: types.Json;
+    let rtn: kebab.Json;
 
     if (data.socket && data.req instanceof http.IncomingMessage) {
         // --- socket 模式，判断真实控制器文件是否存在 ---
@@ -267,13 +266,13 @@ export async function run(data: {
         // --- 先处理 web socket 的情况 ---
         let wsSocket: lWs.Socket;
         try {
-            const options = await (cctr as types.Json).onUpgrade();
+            const options = await (cctr as kebab.Json).onUpgrade();
             // --- 默认无消息发送 3 分钟 ---
             options.timeout ??= 60_000 * 3;
             wsSocket = lWs.createServer(data.req, data.socket, options);
             cctr.setPrototype('_socket', wsSocket);
         }
-        catch (e: types.Json) {
+        catch (e: kebab.Json) {
             lCore.log(cctr, lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
             data.socket.destroy();
             return true;
@@ -287,9 +286,9 @@ export async function run(data: {
         lCore.log(cctr, '', '-visit');
 
         try {
-            rtn = await (cctr as types.Json).onLoad();
+            rtn = await (cctr as kebab.Json).onLoad();
         }
-        catch (e: types.Json) {
+        catch (e: kebab.Json) {
             lCore.log(cctr, lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
             data.socket.destroy();
             return true;
@@ -299,7 +298,7 @@ export async function run(data: {
                 wsSocket.on('message', async function(msg): Promise<void> {
                     switch (msg.opcode) {
                         case ws.EOpcode.CLOSE: {
-                            const r = await (cctr as types.Json)['onMessage'](msg.data, msg.opcode);
+                            const r = await (cctr as kebab.Json)['onMessage'](msg.data, msg.opcode);
                             if (r === false) {
                                 break;
                             }
@@ -307,7 +306,7 @@ export async function run(data: {
                             break;
                         }
                         case ws.EOpcode.PING: {
-                            const r = await (cctr as types.Json)['onMessage'](msg.data, msg.opcode);
+                            const r = await (cctr as kebab.Json)['onMessage'](msg.data, msg.opcode);
                             if (r === false) {
                                 break;
                             }
@@ -317,11 +316,11 @@ export async function run(data: {
                         case ws.EOpcode.BINARY:
                         case ws.EOpcode.TEXT: {
                             try {
-                                const r = await (cctr as types.Json)['onMessage'](msg.data, msg.opcode);
+                                const r = await (cctr as kebab.Json)['onMessage'](msg.data, msg.opcode);
                                 if (r === false) {
                                     break;
                                 }
-                                const wrtn = await (cctr as types.Json)['onData'](msg.data, msg.opcode);
+                                const wrtn = await (cctr as kebab.Json)['onData'](msg.data, msg.opcode);
                                 if (wrtn === false) {
                                     wsSocket.end();
                                     return;
@@ -357,7 +356,7 @@ export async function run(data: {
                     }
                 }).on('drain', async () => {
                     try {
-                        await (cctr as types.Json)['onDrain']();
+                        await (cctr as kebab.Json)['onDrain']();
                     }
                     catch (e: any) {
                         lCore.log(cctr, lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
@@ -366,7 +365,7 @@ export async function run(data: {
                     lCore.log(cctr, lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
                 }).on('close', async () => {
                     try {
-                        await (cctr as types.Json)['onClose']();
+                        await (cctr as kebab.Json)['onClose']();
                     }
                     catch (e: any) {
                         lCore.log(cctr, lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
@@ -416,9 +415,9 @@ export async function run(data: {
 
     // --- 执行中间控制器的 onLoad ---
     try {
-        rtn = await (middle.onLoad() as types.Json);
+        rtn = await (middle.onLoad() as kebab.Json);
     }
-    catch (e: types.Json) {
+    catch (e: kebab.Json) {
         lCore.log(middle, '(E03)' + lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
         data.res.setHeader('content-type', 'text/html; charset=utf-8');
         data.res.setHeader('content-length', 25);
@@ -502,7 +501,7 @@ export async function run(data: {
         pathRight = pathRight.replace(/-([a-zA-Z0-9])/g, function(t, t1: string): string {
             return t1.toUpperCase();
         });
-        if ((cctr as types.Json)[pathRight] === undefined) {
+        if ((cctr as kebab.Json)[pathRight] === undefined) {
             if (config.route['#404']) {
                 data.res.setHeader('location', lText.urlResolve(config.const.urlBase, config.route['#404']));
                 data.res.writeHead(302);
@@ -518,12 +517,12 @@ export async function run(data: {
         }
         // --- 执行 onLoad 方法 ---
         try {
-            rtn = await (cctr.onLoad() as types.Json);
+            rtn = await (cctr.onLoad() as kebab.Json);
             // --- 执行 action ---
             if (rtn === undefined || rtn === true) {
-                rtn = await (cctr as types.Json)[pathRight]();
-                rtn = await (cctr.onUnload(rtn) as types.Json);
-                rtn = await (middle.onUnload(rtn) as types.Json);
+                rtn = await (cctr as kebab.Json)[pathRight]();
+                rtn = await (cctr.onUnload(rtn) as kebab.Json);
+                rtn = await (middle.onUnload(rtn) as kebab.Json);
                 const sess = cctr.getPrototype('_sess');
                 if (sess) {
                     await sess.update();
@@ -533,7 +532,7 @@ export async function run(data: {
             cacheTTL = cctr.getPrototype('_cacheTTL');
             httpCode = cctr.getPrototype('_httpCode');
         }
-        catch (e: types.Json) {
+        catch (e: kebab.Json) {
             lCore.log(cctr, '(E04)' + lText.stringifyJson(e.stack).slice(1, -1), '-error');
             data.res.setHeader('content-type', 'text/html; charset=utf-8');
             data.res.setHeader('content-length', 25);
@@ -639,7 +638,7 @@ export async function run(data: {
             else {
                 if (typeof rtn[0] === 'number') {
                     // --- 1. ---
-                    const json: Record<string, types.Json> = { 'result': rtn[0] };
+                    const json: Record<string, kebab.Json> = { 'result': rtn[0] };
                     if (rtn[1] !== undefined) {
                         if (typeof rtn[1] === 'object') {
                             // --- [0, ...{'xx': 'xx'}] ---
@@ -777,7 +776,7 @@ function getWsCtrName(path: string): string {
  * @param cctr Ctr 对象 或 files
  */
 export async function unlinkUploadFiles(
-    cctr: sCtr.Ctr | Record<string, types.IPostFile | types.IPostFile[]>
+    cctr: sCtr.Ctr | Record<string, kebab.IPostFile | kebab.IPostFile[]>
 ): Promise<void> {
     const cfiles = cctr instanceof sCtr.Ctr ? cctr.getPrototype('_files') : cctr;
     for (const name in cfiles) {
@@ -817,7 +816,7 @@ export async function waitCtr(cctr: sCtr.Ctr): Promise<void> {
  * --- 将 POST 数据的值执行 trim ---
  * @param post
  */
-export function trimPost(post: Record<string, types.Json>): void {
+export function trimPost(post: Record<string, kebab.Json>): void {
     for (const key in post) {
         const val = post[key];
         if (typeof val === 'string') {
@@ -833,7 +832,7 @@ export function trimPost(post: Record<string, types.Json>): void {
  * --- 内部使用，获取 post 对象，如果是文件上传（formdata）的情况则不获取 ---
  * @param req 请求对象
  */
-function getPost(req: http2.Http2ServerRequest | http.IncomingMessage): Promise<[string, Record<string, types.Json>]> {
+function getPost(req: http2.Http2ServerRequest | http.IncomingMessage): Promise<[string, Record<string, kebab.Json>]> {
     return new Promise(function(resolve) {
         const ct = req.headers['content-type'] ?? '';
         if (ct.includes('form-data')) {
@@ -879,8 +878,8 @@ export function getFormData(
         onfileend?: () => void;
     } = {}
 ): Promise<{
-    'post': Record<string, types.Json>;
-    'files': Record<string, types.IPostFile | types.IPostFile[]>;
+    'post': Record<string, kebab.Json>;
+    'files': Record<string, kebab.IPostFile | kebab.IPostFile[]>;
 } | false> {
     return new Promise(function(resolve) {
         const ct = req.headers['content-type'] ?? '';
@@ -896,8 +895,8 @@ export function getFormData(
         }
         /** --- 最终返回 --- */
         const rtn: {
-            'post': Record<string, types.Json>;
-            'files': Record<string, types.IPostFile | types.IPostFile[]>;
+            'post': Record<string, kebab.Json>;
+            'files': Record<string, kebab.IPostFile | kebab.IPostFile[]>;
         } = {
             'post': {},
             'files': {}
@@ -1051,7 +1050,7 @@ export function getFormData(
                             if (nlio !== -1) {
                                 fname = fname.slice(nlio + 1);
                             }
-                            const val: types.IPostFile = {
+                            const val: kebab.IPostFile = {
                                 'name': fname,
                                 'origin': fileName,
                                 'size': ftmpSize,
@@ -1059,10 +1058,10 @@ export function getFormData(
                             };
                             if (rtn.files[name]) {
                                 if (Array.isArray(rtn.files[name])) {
-                                    (rtn.files[name] as types.IPostFile[]).push(val);
+                                    (rtn.files[name] as kebab.IPostFile[]).push(val);
                                 }
                                 else {
-                                    rtn.files[name] = [rtn.files[name] as types.IPostFile, val];
+                                    rtn.files[name] = [rtn.files[name] as kebab.IPostFile, val];
                                 }
                             }
                             else {

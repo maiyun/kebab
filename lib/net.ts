@@ -10,69 +10,15 @@ import * as http2 from 'http2';
 // --- 第三方 ---
 import * as hc from '@litert/http-client';
 // --- 库和定义 ---
-import * as fs from '#lib/fs.js';
-import * as text from '#lib/text.js';
-import * as time from '#lib/time.js';
 import * as kebab from '#index.js';
-import * as ctr from '#sys/ctr.js';
-import * as types from '#types/index.js';
+import * as lFs from '#lib/fs.js';
+import * as lText from '#lib/text.js';
+import * as lTime from '#lib/time.js';
+import * as sCtr from '#sys/ctr.js';
 // --- 自己 ---
 import * as fd from './net/formdata.js';
 import * as lRequest from './net/request.js';
 import * as lResponse from './net/response.js';
-
-/** --- 请求的传入参数选项 --- */
-export interface IRequestOptions {
-    'method'?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'OPTIONS';
-    'type'?: 'form' | 'json';
-    /** --- 秒数 --- */
-    'timeout'?: number;
-    'follow'?: number;
-    'hosts'?: Record<string, string>;
-    'save'?: string;
-    'local'?: string;
-    'headers'?: types.THttpHeaders;
-    /** --- 正向 mproxy 代理，url 如 https://xxx/abc --- */
-    'mproxy'?: {
-        'url': string;
-        'auth': string;
-        'data'?: any;
-    };
-    /** --- 默认为 default --- */
-    'reuse'?: string;
-    /** --- cookie 托管对象 --- */
-    'cookie'?: Record<string, types.ICookie>;
-}
-
-/** --- 正向代理请求的传入参数选项 --- */
-export interface IMproxyOptions {
-    /** --- 秒数 --- */
-    'timeout'?: number;
-    'follow'?: number;
-    'hosts'?: Record<string, string>;
-    'local'?: string;
-    'headers'?: types.THttpHeaders;
-    /** --- 默认为 default --- */
-    'reuse'?: string;
-}
-
-/** --- 反向代理请求的传入参数选项 --- */
-export interface IRproxyOptions {
-    /** --- 秒数 --- */
-    'timeout'?: number;
-    'follow'?: number;
-    'hosts'?: Record<string, string>;
-    'local'?: string;
-    'headers'?: types.THttpHeaders;
-    /** --- 正向 mproxy 代理，url 如 https://xxx/abc --- */
-    'mproxy'?: {
-        'url': string;
-        'auth': string;
-        'data'?: any;
-    };
-    /** --- 默认为 default --- */
-    'reuse'?: string;
-}
 
 /** --- ca 根证书内容 --- */
 let ca: string = '';
@@ -82,7 +28,7 @@ export async function getCa(): Promise<string> {
     if (ca) {
         return ca;
     }
-    ca = (await fs.getContent(kebab.LIB_PATH + 'net/cacert.pem', 'utf8')) ?? '';
+    ca = (await lFs.getContent(kebab.LIB_PATH + 'net/cacert.pem', 'utf8')) ?? '';
     return ca;
 }
 
@@ -116,7 +62,7 @@ export async function get(u: string, opt: IRequestOptions = {}): Promise<lRespon
  */
 export async function post(
     u: string,
-    data: Record<string, types.Json> | Buffer | string | stream.Readable,
+    data: Record<string, kebab.Json> | Buffer | string | stream.Readable,
     opt: IRequestOptions = {}
 ): Promise<lResponse.Response> {
     opt.method = 'POST';
@@ -131,7 +77,7 @@ export async function post(
  */
 export async function postJson(
     u: string,
-    data: types.Json[] | Record<string, types.Json>,
+    data: kebab.Json[] | Record<string, kebab.Json>,
     opt: IRequestOptions = {}
 ): Promise<lResponse.Response> {
     opt.method = 'POST';
@@ -145,12 +91,12 @@ export async function postJson(
  */
 export async function request(
     u: string,
-    data?: Record<string, types.Json> | Buffer | string | stream.Readable,
+    data?: Record<string, kebab.Json> | Buffer | string | stream.Readable,
     opt: IRequestOptions = {}
 ): Promise<lResponse.Response> {
-    const uri = text.parseUrl(u);
+    const uri = lText.parseUrl(u);
     /** --- 正向代理的地址 --- */
-    const puri = opt.mproxy ? text.parseUrl(opt.mproxy.url) : null;
+    const puri = opt.mproxy ? lText.parseUrl(opt.mproxy.url) : null;
     const method = opt.method ?? 'GET';
     const type = opt.type ?? 'form';
     const timeout = opt.timeout ?? 10;
@@ -159,7 +105,7 @@ export async function request(
     const save = opt.save;
     const local = opt.local;
     const reuse = opt.reuse ?? 'default';
-    const headers: Record<string, types.Json> = {};
+    const headers: Record<string, kebab.Json> = {};
     if (opt.headers) {
         for (const key in opt.headers) {
             headers[key.toLowerCase()] = opt.headers[key];
@@ -170,7 +116,7 @@ export async function request(
     if (method === 'GET') {
         if (data && !(data instanceof stream.Readable) && !Buffer.isBuffer(data)) {
             u += (u.includes('?') ? '&' : '?') +
-                (typeof data === 'string' ? data : text.queryStringify(data));
+                (typeof data === 'string' ? data : lText.queryStringify(data));
             data = undefined;
         }
     }
@@ -178,11 +124,11 @@ export async function request(
         // --- POST ---
         if (data && !(data instanceof stream.Readable) && !Buffer.isBuffer(data) && typeof data !== 'string') {
             if (type === 'form') {
-                data = text.queryStringify(data);
+                data = lText.queryStringify(data);
                 headers['content-type'] = 'application/x-www-form-urlencoded';
             }
             else {
-                data = text.stringifyJson(data);
+                data = lText.stringifyJson(data);
                 headers['content-type'] = 'application/json; charset=utf-8';
             }
         }
@@ -225,10 +171,10 @@ export async function request(
             reuses[reuse] = hc.createHttpClient();
         }
         req = await reuses[reuse].request({
-            'url': opt.mproxy ? opt.mproxy.url + (opt.mproxy.url.includes('?') ? '&' : '?') + text.queryStringify({
+            'url': opt.mproxy ? opt.mproxy.url + (opt.mproxy.url.includes('?') ? '&' : '?') + lText.queryStringify({
                 'url': u,
                 'auth': opt.mproxy.auth,
-                'data': opt.mproxy.data ? text.stringifyJson(opt.mproxy.data) : '{}'
+                'data': opt.mproxy.data ? lText.stringifyJson(opt.mproxy.data) : '{}'
             }) : u,
             'method': method,
             'data': data,
@@ -241,7 +187,7 @@ export async function request(
             },
         });
     }
-    catch (err: types.Json) {
+    catch (err: kebab.Json) {
         const res = new lResponse.Response(null);
         res.error = err;
         return res;
@@ -258,7 +204,7 @@ export async function request(
     if (save && (!req.headers['location'] || follow === 0)) {
         await new Promise<void>(function(resolve) {
             req.getStream().on('end', () => {
-                fs.stats(save).then((stat) => {
+                lFs.stats(save).then((stat) => {
                     total = stat?.size ?? 0;
                     resolve();
                 }).catch(() => {
@@ -266,7 +212,7 @@ export async function request(
                 });
             }).on('error', function() {
                 resolve();
-            }).pipe(fs.createWriteStream(save));
+            }).pipe(lFs.createWriteStream(save));
         });
     }
     // --- 创建 Response 对象 ---
@@ -274,7 +220,7 @@ export async function request(
     if (total) {
         res.setContent(total.toString());
     }
-    res.headers = req.headers as types.THttpHeaders;
+    res.headers = req.headers as THttpHeaders;
     switch (req.protocol) {
         case hc.EProtocol.HTTPS_2:
         case hc.EProtocol.HTTP_2: {
@@ -296,7 +242,7 @@ export async function request(
     }
     // --- 哦，要追踪 ---
     headers['referer'] = u;
-    return request(text.urlResolve(u, req.headers['location'] as string), data, {
+    return request(lText.urlResolve(u, req.headers['location'] as string), data, {
         'method': method,
         'type': type,
         'timeout': timeout,
@@ -318,13 +264,13 @@ export async function request(
  * @param domain 应用网址，如 .xxx.com
  * @param opt 选项 ttl, path, ssl, httponly
  */
-export function setCookie(cookie: Record<string, types.ICookie>, name: string, value: string, domain: string, opt: {
+export function setCookie(cookie: Record<string, ICookie>, name: string, value: string, domain: string, opt: {
     'ttl'?: number;
     'path'?: string;
     'ssl'?: boolean;
     'httponly'?: boolean;
 } = {}): void {
-    const tim = time.stamp();
+    const tim = lTime.stamp();
     const ttl = opt.ttl ?? 0;
     domain = domain.split(':')[0];
     const domainN = domain.startsWith('.') ? domain.slice(1) : domain;
@@ -352,11 +298,11 @@ export function setCookie(cookie: Record<string, types.ICookie>, name: string, v
  * @param uri 请求的 URI 对象
  */
 async function buildCookieObject(
-    cookie: Record<string, types.ICookie>,
+    cookie: Record<string, ICookie>,
     setCookies: string[],
-    uri: types.IUrlParse
+    uri: kebab.IUrlParse
 ): Promise<void> {
-    const tim = time.stamp();
+    const tim = lTime.stamp();
     uri.path ??= '/';
     for (const setCookie of setCookies) {
         const cookieTmp: Record<string, string> = {};
@@ -402,10 +348,10 @@ async function buildCookieObject(
         // --- ok.xxx.com   vs  .zz.ok.xxx.com: false ---
         if (uri.hostname !== domainN) {
             // --- 设置的域名和当前 host 不相等，如果是 IP、无 . 域名，则直接失败 ---
-            if (!text.isDomain(uri.hostname ?? '')) {
+            if (!lText.isDomain(uri.hostname ?? '')) {
                 continue;
             }
-            const parseDomain: text.IDomain = await text.parseDomain(domainN);
+            const parseDomain: lText.IDomain = await lText.parseDomain(domainN);
             if (parseDomain.tld === domainN.toLowerCase()) {
                 // --- 不能给 tld 设置 cookie ---
                 continue;
@@ -456,11 +402,11 @@ async function buildCookieObject(
  * @param cookie cookie 对象
  * @param uri 请求的 URI 对象
  */
-export function buildCookieQuery(cookie: Record<string, types.ICookie>, uri: types.IUrlParse): string {
-    const tim = time.stamp();
+export function buildCookieQuery(cookie: Record<string, ICookie>, uri: kebab.IUrlParse): string {
+    const tim = lTime.stamp();
     let cookieStr: string = '';
     for (const key in cookie) {
-        const item: types.ICookie = cookie[key];
+        const item: ICookie = cookie[key];
         if ((item.exp < tim) && (item.exp !== -1992199400)) {
             delete cookie[key];
             continue;
@@ -506,7 +452,7 @@ export function buildCookieQuery(cookie: Record<string, types.ICookie>, uri: typ
  * --- 模拟重启浏览器后的状态 ---
  * @param cookie cookie 对象
  */
-export function resetCookieSession(cookie: Record<string, types.ICookie>): void {
+export function resetCookieSession(cookie: Record<string, ICookie>): void {
     for (const key in cookie) {
         const item = cookie[key];
         if (item.exp === -1992199400000) {
@@ -531,7 +477,7 @@ const proxyContinueHeaders = ['host', 'connection', 'http-version', 'http-code',
  * @param res 直接设置头部而不返回，可置空
  */
 export function filterProxyHeaders(
-    headers: http.IncomingHttpHeaders | http2.IncomingHttpHeaders | types.THttpHeaders,
+    headers: http.IncomingHttpHeaders | http2.IncomingHttpHeaders | THttpHeaders,
     res?: http2.Http2ServerResponse | http.ServerResponse
 ): Record<string, string | string[]> {
     const heads: Record<string, string | string[]> = {};
@@ -563,7 +509,7 @@ export function filterProxyHeaders(
  * @param opt 参数
  */
 export async function mproxy(
-    ctr: ctr.Ctr,
+    ctr: sCtr.Ctr,
     auth: string,
     opt: IMproxyOptions = {}
 ): Promise<number> {
@@ -578,7 +524,7 @@ export async function mproxy(
     if (!get['url']) {
         return -1;
     }
-    (opt as types.Json).method = req.method ?? 'GET';
+    (opt as kebab.Json).method = req.method ?? 'GET';
     opt.headers ??= {};
     Object.assign(opt.headers, filterProxyHeaders(req.headers));
     // --- 发起请求 ---
@@ -602,12 +548,12 @@ export async function mproxy(
  * --- 获取 mproxy 的附加数据 ---
  * @param ctr 当前控制器
  */
-export function mproxyData(ctr: ctr.Ctr): any {
+export function mproxyData(ctr: sCtr.Ctr): any {
     const get = ctr.getPrototype('_get');
     if (!get['data']) {
         return {};
     }
-    const data = text.parseJson(get['data']);
+    const data = lText.parseJson(get['data']);
     if (!data) {
         return {};
     }
@@ -621,7 +567,7 @@ export function mproxyData(ctr: ctr.Ctr): any {
  * @param opt 参数
  */
 export async function rproxy(
-    ctr: ctr.Ctr,
+    ctr: sCtr.Ctr,
     route: Record<string, string>,
     opt: IRproxyOptions = {}
 ): Promise<boolean> {
@@ -639,7 +585,7 @@ export async function rproxy(
         // --- 值类似：https://cdn.jsdelivr.net/npm/deskrt@2.0.10/ ---
         /** --- 要拼接的地址 --- */
         const lpath = path.slice(key.length);
-        (opt as types.Json).method = req.method ?? 'GET';
+        (opt as kebab.Json).method = req.method ?? 'GET';
         opt.headers ??= {};
         Object.assign(opt.headers, filterProxyHeaders(req.headers));
         // --- 发起请求 ---
@@ -659,4 +605,80 @@ export async function rproxy(
         return true;
     }
     return false;
+}
+
+// --- 类型 ---
+
+/** --- 请求的传入参数选项 --- */
+export interface IRequestOptions {
+    'method'?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'OPTIONS';
+    'type'?: 'form' | 'json';
+    /** --- 秒数 --- */
+    'timeout'?: number;
+    'follow'?: number;
+    'hosts'?: Record<string, string>;
+    'save'?: string;
+    'local'?: string;
+    'headers'?: THttpHeaders;
+    /** --- 正向 mproxy 代理，url 如 https://xxx/abc --- */
+    'mproxy'?: {
+        'url': string;
+        'auth': string;
+        'data'?: any;
+    };
+    /** --- 默认为 default --- */
+    'reuse'?: string;
+    /** --- cookie 托管对象 --- */
+    'cookie'?: Record<string, ICookie>;
+}
+
+/** --- 正向代理请求的传入参数选项 --- */
+export interface IMproxyOptions {
+    /** --- 秒数 --- */
+    'timeout'?: number;
+    'follow'?: number;
+    'hosts'?: Record<string, string>;
+    'local'?: string;
+    'headers'?: THttpHeaders;
+    /** --- 默认为 default --- */
+    'reuse'?: string;
+}
+
+/** --- 反向代理请求的传入参数选项 --- */
+export interface IRproxyOptions {
+    /** --- 秒数 --- */
+    'timeout'?: number;
+    'follow'?: number;
+    'hosts'?: Record<string, string>;
+    'local'?: string;
+    'headers'?: THttpHeaders;
+    /** --- 正向 mproxy 代理，url 如 https://xxx/abc --- */
+    'mproxy'?: {
+        'url': string;
+        'auth': string;
+        'data'?: any;
+    };
+    /** --- 默认为 default --- */
+    'reuse'?: string;
+}
+
+/** --- http headers --- */
+/* eslint-disable @typescript-eslint/naming-convention */
+export type THttpHeaders = http.IncomingHttpHeaders & {
+    'http-version'?: '1.1' | '2.0';
+    'http-code'?: number;
+    'http-url'?: string;
+};
+/* eslint-enable */
+
+/** --- Net Cookie 对象 --- */
+export interface ICookie {
+    'name': string;
+    'value': string;
+    /** --- 有效期秒级时间戳 --- */
+    'exp': number;
+    'path': string;
+    'domain': string;
+    'secure': boolean;
+    'httponly': boolean;
 }
