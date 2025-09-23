@@ -8,6 +8,7 @@ export default class extends sCtr.Ctr {
     private _nick: string = '';
 
     public onUpgrade(): { 'headers'?: http.OutgoingHttpHeaders; 'timeout'?: number; } {
+        lCore.debug('WebSocket test onUpgrade.');
         return {
             'timeout': 60_000 * 2,
         };
