@@ -352,8 +352,6 @@ export function realIP(ctr: sCtr.Ctr, name: string = ''): string {
     return req.socket.remoteAddress ?? '';
 }
 
-// --- 以下 Mutton 没有 ---
-
 /**
  * --- 间隔一段时间 ---
  * @param ms 间隔毫秒
@@ -830,7 +828,7 @@ export async function ls(opt: {
 }
 
 /**
- * --- 完整的克隆一份数组/对象，Kebab: yes, Mutton: no ---
+ * --- 完整的克隆一份数组/对象 ---
  * @param obj 要克隆的对象
  */
 export function clone<T>(obj: T): T {

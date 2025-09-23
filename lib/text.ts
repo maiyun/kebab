@@ -369,8 +369,6 @@ export function isIdCardCN(idcard: string): boolean {
     }
 }
 
-// --- 以下 Mutton: false, Kebab: true ---
-
 /**
  * --- 将对象转换为 query string ---
  * @param query 要转换的对象
@@ -468,7 +466,7 @@ export function getFilename(path: string): string {
 }
 
 /**
- * --- 将普通的返回 JSON 对象序列化为字符串，Mutton 不能使用 ---
+ * --- 将普通的返回 JSON 对象序列化为字符串 ---
  * @param o 返回 JSON 对象
  */
 export function stringifyResult(rtn: kebab.Json): string {
@@ -508,7 +506,7 @@ export function stringifyResult(rtn: kebab.Json): string {
 }
 
 /**
- * --- 将字符串解析为对象，返回 false 代表解析失败，支持 BigInt，Kebab true, Mutton false ---
+ * --- 将字符串解析为对象，返回 false 代表解析失败，支持 BigInt ---
  * @param str 要解析的 json 字符串
  */
 export function parseJson(str: string): any {
@@ -537,7 +535,7 @@ export function parseJson(str: string): any {
 }
 
 /**
- * --- 将对象转换为 json 字符串，返回 false 代表解析失败，支持 BigInt，Kebab true, Mutton false ---
+ * --- 将对象转换为 json 字符串，返回 false 代表解析失败，支持 BigInt ---
  * @param obj 要转换的 json 对象
  * @param space 美化方式
  */
@@ -557,6 +555,27 @@ export function stringifyJson(obj: kebab.Json, space?: string | number): string 
 export function stringifyBuffer(buf: Buffer): string {
     const arr = buf.toString('hex').match(/.{1,2}/g);
     return `<Buffer ${arr ? arr.join(' ') : ''}>`;
+}
+
+/**
+ * --- 递归删除 json 中的字符串首尾空格，会返回一个新的对象 ---
+ */
+export function trimJson(json: kebab.Json): kebab.Json {
+    json = Object.assign({}, json);
+    trimJsonRecursion(json);
+    return json;
+}
+
+function trimJsonRecursion(json: kebab.Json): kebab.Json {
+    for (const key in json) {
+        const val = json[key];
+        if (typeof val === 'string') {
+            json[key] = val.trim();
+        }
+        else if (typeof val === 'object') {
+            trimJsonRecursion(val);
+        }
+    }
 }
 
 type TFalsy = false | '' | 0 | null | undefined | typeof NaN;

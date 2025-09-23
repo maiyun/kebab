@@ -371,8 +371,6 @@ export function sm4Decrypt(encrypt: string | Buffer, key: crypto.CipherKey, iv: 
     return cipherDecrypt(encrypt, key, iv, method, output);
 }
 
-// --- 以下是 Mutton: false, Kebab: true ---
-
 export function hashHmac(algorithm: string, data: Buffer | string, key?: crypto.CipherKey, format?: 'hex' | 'base64'): string;
 export function hashHmac(algorithm: string, data: Buffer | string, key: crypto.CipherKey | undefined, format: 'buffer'): Buffer;
 /**

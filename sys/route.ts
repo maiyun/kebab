@@ -400,18 +400,18 @@ export async function run(data: {
 
     middle.setPrototype('_get', get);
 
-    const rawPost = await getPost(data.req);
-    // --- 原始 POST ---
-    middle.setPrototype('_rawPost', rawPost[1]);
-    // --- 原始 input ---
-    middle.setPrototype('_input', rawPost[0]);
-    // --- 处理 POST 的值 JSON 上面就同时处理了 ---
-    // --- 格式化 post 数据 ---
-    // --- assign 是为了创建一份拷贝 ---
-    const post = Object.assign({}, rawPost[1]);
-    trimPost(post);
-    middle.setPrototype('_post', post);
-    // --- form data 格式交由用户自行获取，可以直接获取文件流，然后做他想做的事情 ---
+    /** --- 是否让框架自动获取 post，true 为自动（默认） --- */
+    const reqStartRtn = await middle.onReqStart();
+    if (reqStartRtn) {
+        const rawPost = await getPost(data.req);
+        // --- 原始 POST ---
+        middle.setPrototype('_rawPost', rawPost.raw);
+        // --- 原始 input ---
+        middle.setPrototype('_input', rawPost.input);
+        // --- 处理后的 post ---
+        middle.setPrototype('_post', rawPost.post);
+        // --- form data 格式交由用户自行获取，可以直接获取文件流，然后做他想做的事情 ---
+    }
 
     // --- 执行中间控制器的 onLoad ---
     try {
@@ -760,7 +760,7 @@ function getPathLeftRight(path: string): string[] {
 }
 
 /**
- * --- 根据 path 获取 ws 的控制器类名, Mutton: false, Kebab: true ---
+ * --- 根据 path 获取 ws 的控制器类名 ---
  * @param path 路径
  */
 function getWsCtrName(path: string): string {
@@ -772,7 +772,7 @@ function getWsCtrName(path: string): string {
 }
 
 /**
- * --- 删除本次请求所有已上传的临时文件, Mutton: false, Kebab: true ---
+ * --- 删除本次请求所有已上传的临时文件 ---
  * @param cctr Ctr 对象 或 files
  */
 export async function unlinkUploadFiles(
@@ -813,30 +813,24 @@ export async function waitCtr(cctr: sCtr.Ctr): Promise<void> {
 }
 
 /**
- * --- 将 POST 数据的值执行 trim ---
- * @param post
- */
-export function trimPost(post: Record<string, kebab.Json>): void {
-    for (const key in post) {
-        const val = post[key];
-        if (typeof val === 'string') {
-            post[key] = post[key].trim();
-        }
-        else if (typeof val === 'object') {
-            trimPost(post[key]);
-        }
-    }
-}
-
-/**
- * --- 内部使用，获取 post 对象，如果是文件上传（formdata）的情况则不获取 ---
+ * --- 获取 post 对象（通常已自动获取），如果是文件上传（formdata）的情况则不获取 ---
  * @param req 请求对象
  */
-function getPost(req: http2.Http2ServerRequest | http.IncomingMessage): Promise<[string, Record<string, kebab.Json>]> {
+export function getPost(
+    req: http2.Http2ServerRequest | http.IncomingMessage
+): Promise<{
+        'input': string;
+        'raw': Record<string, any>;
+        'post': Record<string, any>;
+    }> {
     return new Promise(function(resolve) {
         const ct = req.headers['content-type'] ?? '';
         if (ct.includes('form-data')) {
-            resolve(['', {}]);
+            resolve({
+                'input': '',
+                'raw': {},
+                'post': {},
+            });
             return;
         }
         // --- json 或普通 post ---
@@ -847,20 +841,38 @@ function getPost(req: http2.Http2ServerRequest | http.IncomingMessage): Promise<
         req.on('end', function() {
             const s = buffer.toString();
             if (!s) {
-                resolve(['', {}]);
+                resolve({
+                    'input': '',
+                    'raw': {},
+                    'post': {},
+                });
                 return;
             }
             // --- 判断 json 还是普通 ---
             if (ct.includes('json')) {
                 try {
-                    resolve([s, lText.parseJson(s)]);
+                    const raw = lText.parseJson(s);
+                    resolve({
+                        'input': s,
+                        'raw': raw,
+                        'post': lText.trimJson(raw),
+                    });
                 }
                 catch {
-                    resolve(['', {}]);
+                    resolve({
+                        'input': '',
+                        'raw': {},
+                        'post': {},
+                    });
                 }
                 return;
             }
-            resolve([s, lText.queryParse(s)]);
+            const raw = lText.queryParse(s);
+            resolve({
+                'input': s,
+                'raw': raw,
+                'post': lText.trimJson(raw),
+            });
         });
     });
 }

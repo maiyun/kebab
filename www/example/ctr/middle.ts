@@ -3,6 +3,16 @@ import * as sCtr from '#kebab/sys/ctr.js';
 
 export default class extends sCtr.Ctr {
 
+    public onReqStart(): boolean {
+        if (this._config.const.path === 'test/net-mproxy1') {
+            return false;
+        }
+        if (this._config.const.path.startsWith('test/net-rproxy/')) {
+            return false;
+        }
+        return true;
+    }
+
     public onLoad(): string | boolean {
         if (this._config.const.path !== 'test/middle') {
             return true;

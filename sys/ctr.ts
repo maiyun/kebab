@@ -88,8 +88,6 @@ export class Ctr {
     /** --- 自定义 http code --- */
     protected _httpCode: number = 0;
 
-    // --- Kebab: true，Mutton: false，全局常量等对象 ---
-
     /** --- 当前语言名 --- */
     protected _locale: string = 'en';
 
@@ -274,6 +272,11 @@ export class Ctr {
      */
     public onClose(): void | Promise<void> {
         return;
+    }
+
+    /** --- 请求发送开始时调用，返回 false 则框架不会自动获取任何 post 内容（仅会在 middle 内触发） --- */
+    public onReqStart(): boolean | Promise<boolean> {
+        return true;
     }
 
     /**
@@ -799,8 +802,6 @@ export class Ctr {
         }
         return true;
     }
-
-    // --- 以下：Mutton: false, Kebab: true ---
 
     /**
      * --- 获取语言包值 ---

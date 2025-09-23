@@ -462,7 +462,7 @@ export function resetCookieSession(cookie: Record<string, ICookie>): void {
 }
 
 /**
- * --- 创建 FormData 对象, Mutton: false, Kebab: true ---
+ * --- 创建 FormData 对象 ---
  */
 export function getFormData(): fd.FormData {
     return new fd.FormData();
@@ -502,7 +502,7 @@ export function filterProxyHeaders(
 }
 
 /**
- * --- 正向 mproxy 代理，读取 get 的 url 为实际请求地址 ---
+ * --- 正向 mproxy 代理，注意提前处理不要自动处理 post 数据，读取 get 的 url 为实际请求地址 ---
  * --- get: url, auth ---
  * @param ctr 当前控制器
  * @param auth 校验字符串，读取 get 的 auth 和本参数做比对
@@ -515,7 +515,6 @@ export async function mproxy(
 ): Promise<number> {
     const req = ctr.getPrototype('_req');
     const res = ctr.getPrototype('_res');
-    const input = ctr.getPrototype('_input');
     /** --- 客户端请求中的 get 的数据 --- */
     const get = ctr.getPrototype('_get');
     if (get['auth'] !== auth) {
@@ -528,7 +527,7 @@ export async function mproxy(
     opt.headers ??= {};
     Object.assign(opt.headers, filterProxyHeaders(req.headers));
     // --- 发起请求 ---
-    const rres = await request(get['url'], req.headers['content-type']?.includes('form-data') ? req : input, opt);
+    const rres = await request(get['url'], req, opt);
     if (rres.error) {
         return -2;
     }
@@ -561,7 +560,7 @@ export function mproxyData(ctr: sCtr.Ctr): any {
 }
 
 /**
- * --- 反向代理，将本服务器的某个路由反代到其他网址 ---
+ * --- 反向代理，注意提前处理不要自动处理 post 数据，将本服务器的某个路由反代到其他网址 ---
  * @param ctr 当前控制器
  * @param route 要反代的路由
  * @param opt 参数
@@ -574,7 +573,6 @@ export async function rproxy(
     const req = ctr.getPrototype('_req');
     const res = ctr.getPrototype('_res');
     const config = ctr.getPrototype('_config');
-    const input = ctr.getPrototype('_input');
     const path = config.const.path + (config.const.qs ? '?' + config.const.qs : '');
     for (const key in route) {
         if (!path.startsWith(key)) {
@@ -589,7 +587,7 @@ export async function rproxy(
         opt.headers ??= {};
         Object.assign(opt.headers, filterProxyHeaders(req.headers));
         // --- 发起请求 ---
-        const rres = await request(route[key] + lpath, req.headers['content-type']?.includes('form-data') ? req : input, opt);
+        const rres = await request(route[key] + lpath, req, opt);
         if (rres.error) {
             return false;
         }
