@@ -19,7 +19,7 @@ import * as types from '#types/index.js';
 // --- 自己 ---
 import * as fd from './net/formdata.js';
 import * as lRequest from './net/request.js';
-import * as response from './net/response.js';
+import * as lResponse from './net/response.js';
 
 /** --- 请求的传入参数选项 --- */
 export interface IRequestOptions {
@@ -88,7 +88,7 @@ export async function getCa(): Promise<string> {
 
 /** --- 复用的 hc 对象列表 --- */
 const reuses: Record<string, hc.IClient> = {
-    'default': hc.createHttpClient()
+    'default': hc.createHttpClient(),
 };
 
 /**
@@ -104,7 +104,7 @@ export function open(u: string): lRequest.Request {
  * @param u 请求的 URL
  * @param opt 参数
  */
-export async function get(u: string, opt: IRequestOptions = {}): Promise<response.Response> {
+export async function get(u: string, opt: IRequestOptions = {}): Promise<lResponse.Response> {
     return request(u, undefined, opt);
 }
 
@@ -118,7 +118,7 @@ export async function post(
     u: string,
     data: Record<string, types.Json> | Buffer | string | stream.Readable,
     opt: IRequestOptions = {}
-): Promise<response.Response> {
+): Promise<lResponse.Response> {
     opt.method = 'POST';
     return request(u, data, opt);
 }
@@ -133,7 +133,7 @@ export async function postJson(
     u: string,
     data: types.Json[] | Record<string, types.Json>,
     opt: IRequestOptions = {}
-): Promise<response.Response> {
+): Promise<lResponse.Response> {
     opt.method = 'POST';
     opt.type = 'json';
     return request(u, data, opt);
@@ -147,7 +147,7 @@ export async function request(
     u: string,
     data?: Record<string, types.Json> | Buffer | string | stream.Readable,
     opt: IRequestOptions = {}
-): Promise<response.Response> {
+): Promise<lResponse.Response> {
     const uri = text.parseUrl(u);
     /** --- 正向代理的地址 --- */
     const puri = opt.mproxy ? text.parseUrl(opt.mproxy.url) : null;
@@ -206,7 +206,7 @@ export async function request(
         // --- 重定义 IP ---
         const host = (puri ? puri.hostname : uri.hostname) ?? '';
         if (!host) {
-            const res = new response.Response(null);
+            const res = new lResponse.Response(null);
             res.error = {
                 'name': 'Possible mProxy error',
                 'message': 'host not found'
@@ -214,7 +214,7 @@ export async function request(
             return res;
         }
         if (hosts[host] !== undefined && !hosts[host]) {
-            const res = new response.Response(null);
+            const res = new lResponse.Response(null);
             res.error = {
                 'name': 'hosts error',
                 'message': 'hosts param error'
@@ -242,7 +242,7 @@ export async function request(
         });
     }
     catch (err: types.Json) {
-        const res = new response.Response(null);
+        const res = new lResponse.Response(null);
         res.error = err;
         return res;
     }
@@ -270,7 +270,7 @@ export async function request(
         });
     }
     // --- 创建 Response 对象 ---
-    const res = new response.Response(req);
+    const res = new lResponse.Response(req);
     if (total) {
         res.setContent(total.toString());
     }

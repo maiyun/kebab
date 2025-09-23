@@ -106,7 +106,7 @@ export interface IConfigTurnstile {
         'skey': string;
         'aid': string;
         'akey': string;
-    }
+    },
 }
 
 /** --- 动配数据库 --- */
