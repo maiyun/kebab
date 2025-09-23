@@ -10,4 +10,5 @@ eslint.config.cjs
 /doc/
 *.ts
 !*.d.ts
+tsconfig.json
 package-lock.json
