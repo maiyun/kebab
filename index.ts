@@ -14,7 +14,7 @@ export const VER = '3.1.7';
 
 // --- 服务端用的路径 ---
 
-const imu = import.meta.url.replace('file://', '').replace(/^\/(\w:)/, '$1').replace(/\\/g, '/');
+const imu = decodeURIComponent(import.meta.url).replace('file://', '').replace(/^\/(\w:)/, '$1');
 /** --- /xxx/xxx --- */
 const dirname = imu.slice(0, imu.lastIndexOf('/'));
 
