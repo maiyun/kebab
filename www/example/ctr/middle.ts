@@ -1,5 +1,5 @@
-import * as kebab from '#index.js';
-import * as sCtr from '#sys/ctr.js';
+import * as kebab from '#kebab/index.js';
+import * as sCtr from '#kebab/sys/ctr.js';
 
 export default class extends sCtr.Ctr {
 

@@ -1,6 +1,6 @@
 {
   "name": "@maiyunnet/kebab",
-  "version": "3.1.6",
+  "version": "3.1.7",
   "description": "Simple, easy-to-use, and fully-featured Node.js framework that is ready-to-use out of the box.",
   "type": "module",
   "keywords": [
@@ -16,7 +16,7 @@
     "kebab": "./bin/kebab.js"
   },
   "imports": {
-    "#*": "./*"
+    "#kebab/*": "./*"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.894.0",

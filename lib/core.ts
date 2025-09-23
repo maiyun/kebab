@@ -7,14 +7,14 @@ import * as cp from 'child_process';
 import * as http from 'http';
 import * as http2 from 'http2';
 import * as stream from 'stream';
-import * as kebab from '#index.js';
-import * as lTime from '#lib/time.js';
-import * as lFs from '#lib/fs.js';
-import * as lText from '#lib/text.js';
-import * as lNet from '#lib/net.js';
-import * as lCrypto from '#lib/crypto.js';
-import * as lResponse from '#lib/net/response.js';
-import * as sCtr from '#sys/ctr.js';
+import * as kebab from '#kebab/index.js';
+import * as lTime from '#kebab/lib/time.js';
+import * as lFs from '#kebab/lib/fs.js';
+import * as lText from '#kebab/lib/text.js';
+import * as lNet from '#kebab/lib/net.js';
+import * as lCrypto from '#kebab/lib/crypto.js';
+import * as lResponse from '#kebab/lib/net/response.js';
+import * as sCtr from '#kebab/sys/ctr.js';
 
 /** --- 全局参数 --- */
 export const globalConfig: kebab.IConfig & {

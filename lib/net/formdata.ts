@@ -5,8 +5,8 @@
  */
 import * as stream from 'stream';
 import * as mime from '@litert/mime';
-import * as core from '#lib/core.js';
-import * as fs from '#lib/fs.js';
+import * as core from '#kebab/lib/core.js';
+import * as fs from '#kebab/lib/fs.js';
 
 /** --- Item 对象 --- */
 export interface IItem {

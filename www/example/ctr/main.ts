@@ -1,4 +1,4 @@
-import * as sCtr from '#sys/ctr.js';
+import * as sCtr from '#kebab/sys/ctr.js';
 
 export default class extends sCtr.Ctr {
 

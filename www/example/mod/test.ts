@@ -1,6 +1,6 @@
-import * as kebab from '#index.js';
-import * as lCore from '#lib/core.js';
-import sMod from '#sys/mod.js';
+import * as kebab from '#kebab/index.js';
+import * as lCore from '#kebab/lib/core.js';
+import sMod from '#kebab/sys/mod.js';
 
 /*
 CREATE TABLE `m_test`  (

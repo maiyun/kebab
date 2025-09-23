@@ -8,10 +8,10 @@ import * as net from 'net';
 // --- 第三方 ---
 import * as liws from '@litert/websocket';
 // --- 库 ---
-import * as kebab from '#index.js';
-import * as lText from '#lib/text.js';
-import * as lNet from '#lib/net.js';
-import * as sCtr from '#sys/ctr.js';
+import * as kebab from '#kebab/index.js';
+import * as lText from '#kebab/lib/text.js';
+import * as lNet from '#kebab/lib/net.js';
+import * as sCtr from '#kebab/sys/ctr.js';
 
 /** --- 一般用 SIMPLE --- */
 export enum EFrameReceiveMode {

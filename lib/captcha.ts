@@ -5,8 +5,8 @@
  */
 import * as svgCaptcha from 'svg-captcha';
 import * as mime from '@litert/mime';
-import * as core from '#lib/core.js';
-import * as kebab from '#index.js';
+import * as core from '#kebab/lib/core.js';
+import * as kebab from '#kebab/index.js';
 
 svgCaptcha.loadFont(kebab.LIB_PATH + 'captcha/zcool-addict-italic.ttf');
 

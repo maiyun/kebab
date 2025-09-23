@@ -3,11 +3,11 @@
  * Date: 2025-9-20 19:46:30
  * Last: 2025-9-20 19:46:32
  */
-import * as kebab from '#index.js';
-import * as lFs from '#lib/fs.js';
-import * as lCore from '#lib/core.js';
-import * as lText from '#lib/text.js';
-import * as lTime from '#lib/time.js';
+import * as kebab from '#kebab/index.js';
+import * as lFs from '#kebab/lib/fs.js';
+import * as lCore from '#kebab/lib/core.js';
+import * as lText from '#kebab/lib/text.js';
+import * as lTime from '#kebab/lib/time.js';
 
 /** --- 定时任务列表 --- */
 const regulars: IRegularData[] = [];

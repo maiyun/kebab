@@ -6,16 +6,16 @@
 import * as http from 'http';
 import * as http2 from 'http2';
 import * as ejs from 'ejs';
-import * as kebab from '#index.js';
-import * as lCore from '#lib/core.js';
-import * as lFs from '#lib/fs.js';
-import * as lCrypto from '#lib/crypto.js';
-import * as lSession from '#lib/session.js';
-import * as lDb from '#lib/db.js';
-import * as lKv from '#lib/kv.js';
-import * as lWs from '#lib/ws.js';
-import * as lText from '#lib/text.js';
-import * as sRoute from '#sys/route.js';
+import * as kebab from '#kebab/index.js';
+import * as lCore from '#kebab/lib/core.js';
+import * as lFs from '#kebab/lib/fs.js';
+import * as lCrypto from '#kebab/lib/crypto.js';
+import * as lSession from '#kebab/lib/session.js';
+import * as lDb from '#kebab/lib/db.js';
+import * as lKv from '#kebab/lib/kv.js';
+import * as lWs from '#kebab/lib/ws.js';
+import * as lText from '#kebab/lib/text.js';
+import * as sRoute from '#kebab/sys/route.js';
 
 /** --- 已加载的 DATA 数据缓存（不是语言包）-- */
 let loadedData: Record<

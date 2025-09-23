@@ -5,12 +5,12 @@
  */
 
 // --- 库和定义 ---
-import * as net from '#lib/net.js';
-import * as core from '#lib/core.js';
-import * as text from '#lib/text.js';
-import * as crypto from '#lib/crypto.js';
-import * as response from '#lib/net/response.js';
-import * as ctr from '#sys/ctr.js';
+import * as net from '#kebab/lib/net.js';
+import * as core from '#kebab/lib/core.js';
+import * as text from '#kebab/lib/text.js';
+import * as crypto from '#kebab/lib/crypto.js';
+import * as response from '#kebab/lib/net/response.js';
+import * as ctr from '#kebab/sys/ctr.js';
 
 /**
  * 0.DNSPod：https://www.dnspod.cn/docs/index.html（腾讯云也请使用 DNSPod 的 API）

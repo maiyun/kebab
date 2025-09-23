@@ -4,12 +4,12 @@
  * Last: 2020-3-7 23:51:18, 2022-07-22 14:14:09, 2022-9-27 14:52:19, 2023-5-23 21:42:46, 2024-7-2 15:12:28
  */
 import * as http from 'http';
-import * as lFs from '#lib/fs.js';
-import * as lText from '#lib/text.js';
-import * as lTime from '#lib/time.js';
-import * as lCore from '#lib/core.js';
-import * as lCrypto from '#lib/crypto.js';
-import * as kebab from '#index.js';
+import * as lFs from '#kebab/lib/fs.js';
+import * as lText from '#kebab/lib/text.js';
+import * as lTime from '#kebab/lib/time.js';
+import * as lCore from '#kebab/lib/core.js';
+import * as lCrypto from '#kebab/lib/crypto.js';
+import * as kebab from '#kebab/index.js';
 
 /** --- 解析命令 --- */
 const cmds = process.argv.slice(2);

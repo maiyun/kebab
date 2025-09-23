@@ -10,11 +10,11 @@ import * as http2 from 'http2';
 // --- 第三方 ---
 import * as hc from '@litert/http-client';
 // --- 库和定义 ---
-import * as kebab from '#index.js';
-import * as lFs from '#lib/fs.js';
-import * as lText from '#lib/text.js';
-import * as lTime from '#lib/time.js';
-import * as sCtr from '#sys/ctr.js';
+import * as kebab from '#kebab/index.js';
+import * as lFs from '#kebab/lib/fs.js';
+import * as lText from '#kebab/lib/text.js';
+import * as lTime from '#kebab/lib/time.js';
+import * as sCtr from '#kebab/sys/ctr.js';
 // --- 自己 ---
 import * as fd from './net/formdata.js';
 import * as lRequest from './net/request.js';

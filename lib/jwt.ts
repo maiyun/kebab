@@ -5,13 +5,13 @@
  */
 
 // --- 库和定义 ---
-import * as kebab from '#index.js';
-import * as lCore from '#lib/core.js';
-import * as lTime from '#lib/time.js';
-import * as lText from '#lib/text.js';
-import * as lCrypto from '#lib/crypto.js';
-import * as lKv from '#lib/kv.js';
-import * as sCtr from '#sys/ctr.js';
+import * as kebab from '#kebab/index.js';
+import * as lCore from '#kebab/lib/core.js';
+import * as lTime from '#kebab/lib/time.js';
+import * as lText from '#kebab/lib/text.js';
+import * as lCrypto from '#kebab/lib/crypto.js';
+import * as lKv from '#kebab/lib/kv.js';
+import * as sCtr from '#kebab/sys/ctr.js';
 
 export interface IOptions {
     'name'?: string;

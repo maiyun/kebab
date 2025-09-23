@@ -11,16 +11,16 @@ import * as stream from 'stream';
 // --- 第三方 ---
 import * as ws from '@litert/websocket';
 // --- 库和定义 ---
-import * as lFs from '#lib/fs.js';
-import * as lZlib from '#lib/zlib.js';
-import * as lCore from '#lib/core.js';
-import * as lText from '#lib/text.js';
-import * as lTime from '#lib/time.js';
-import * as lResponse from '#lib/net/response.js';
-import * as lWs from '#lib/ws.js';
-import * as lLang from '#lib/lang.js';
+import * as lFs from '#kebab/lib/fs.js';
+import * as lZlib from '#kebab/lib/zlib.js';
+import * as lCore from '#kebab/lib/core.js';
+import * as lText from '#kebab/lib/text.js';
+import * as lTime from '#kebab/lib/time.js';
+import * as lResponse from '#kebab/lib/net/response.js';
+import * as lWs from '#kebab/lib/ws.js';
+import * as lLang from '#kebab/lib/lang.js';
 import * as sCtr from './ctr.js';
-import * as kebab from '#index.js';
+import * as kebab from '#kebab/index.js';
 
 /** --- 动态层 kebab.json 缓存（文件路径: 最终合并值） --- */
 let kebabConfigs: Record<string, kebab.IConfig> = {};

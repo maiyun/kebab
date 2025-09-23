@@ -4,7 +4,7 @@
  * Last: 2020-4-9 20:47:58, 2022-09-10 01:35:34, 2025-9-23 12:41:58
  */
 import * as stream from 'stream';
-import * as lNet from '#lib/net.js';
+import * as lNet from '#kebab/lib/net.js';
 import * as lResponse from './response.js';
 
 export class Request {

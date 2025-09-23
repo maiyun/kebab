@@ -5,7 +5,7 @@
  */
 import * as hc from '@litert/http-client';
 import * as stream from 'stream';
-import * as lNet from '#lib/net.js';
+import * as lNet from '#kebab/lib/net.js';
 
 export class Response {
 

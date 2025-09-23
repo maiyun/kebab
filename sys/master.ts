@@ -7,14 +7,14 @@ import * as os from 'os';
 import * as cluster from 'cluster';
 import * as http from 'http';
 // --- 库和定义 ---
-import * as kebab from '#index.js';
-import * as sRoute from '#sys/route.js';
-import * as lCore from '#lib/core.js';
-import * as lFs from '#lib/fs.js';
-import * as lText from '#lib/text.js';
-import * as lCrypto from '#lib/crypto.js';
-import * as lTime from '#lib/time.js';
-import * as lZip from '#lib/zip.js';
+import * as kebab from '#kebab/index.js';
+import * as sRoute from '#kebab/sys/route.js';
+import * as lCore from '#kebab/lib/core.js';
+import * as lFs from '#kebab/lib/fs.js';
+import * as lText from '#kebab/lib/text.js';
+import * as lCrypto from '#kebab/lib/crypto.js';
+import * as lTime from '#kebab/lib/time.js';
+import * as lZip from '#kebab/lib/zip.js';
 
 /** --- 当前运行中的子进程列表 --- */
 const workerList: Record<string, {

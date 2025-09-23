@@ -18,13 +18,13 @@ CREATE TABLE IF NOT EXISTS `scan` (
     KEY `time_exp` (`time_exp`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
 */
-import * as lCore from '#lib/core.js';
-import * as lDb from '#lib/db.js';
-import * as lKv from '#lib/kv.js';
-import * as lSql from '#lib/sql.js';
-import * as lTime from '#lib/time.js';
-import * as lText from '#lib/text.js';
-import * as sCtr from '#sys/ctr.js';
+import * as lCore from '#kebab/lib/core.js';
+import * as lDb from '#kebab/lib/db.js';
+import * as lKv from '#kebab/lib/kv.js';
+import * as lSql from '#kebab/lib/sql.js';
+import * as lTime from '#kebab/lib/time.js';
+import * as lText from '#kebab/lib/text.js';
+import * as sCtr from '#kebab/sys/ctr.js';
 
 /** --- Scan 设置的选项 --- */
 export interface IOptions {

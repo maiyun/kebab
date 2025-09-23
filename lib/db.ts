@@ -9,12 +9,12 @@
 // --- 第三方 ---
 import * as mysql2 from 'mysql2/promise';
 // --- 库和定义 ---
-import * as kebab from '#index.js';
-import * as lTime from '#lib/time.js';
-import * as lSql from '#lib/sql.js';
-import * as lCore from '#lib/core.js';
-import * as lText from '#lib/text.js';
-import * as sCtr from '#sys/ctr.js';
+import * as kebab from '#kebab/index.js';
+import * as lTime from '#kebab/lib/time.js';
+import * as lSql from '#kebab/lib/sql.js';
+import * as lCore from '#kebab/lib/core.js';
+import * as lText from '#kebab/lib/text.js';
+import * as sCtr from '#kebab/sys/ctr.js';
 
 /** --- query 返回的数据 --- */
 export interface IData {

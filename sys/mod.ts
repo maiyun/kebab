@@ -3,13 +3,13 @@
  * Date: 2019-6-4 21:35
  * Last: 2020-4-14 13:33:51, 2022-07-23 16:01:34, 2022-09-06 22:59:26, 2023-5-24 19:11:37, 2023-6-13 21:47:58, 2023-7-10 18:54:03, 2023-8-23 17:03:16, 2023-12-11 15:21:22, 2023-12-20 23:12:03, 2024-3-8 16:05:29, 2024-3-20 19:58:15, 2024-8-11 21:14:54, 2024-10-5 14:00:22, 2024-12-14 19:58:34, 2025-9-23 11:01:36
  */
-import * as lSql from '#lib/sql.js';
-import * as lDb from '#lib/db.js';
-import * as lTime from '#lib/time.js';
-import * as lCore from '#lib/core.js';
-import * as lText from '#lib/text.js';
-import * as sCtr from '#sys/ctr.js';
-import * as kebab from '#index.js';
+import * as lSql from '#kebab/lib/sql.js';
+import * as lDb from '#kebab/lib/db.js';
+import * as lTime from '#kebab/lib/time.js';
+import * as lCore from '#kebab/lib/core.js';
+import * as lText from '#kebab/lib/text.js';
+import * as sCtr from '#kebab/sys/ctr.js';
+import * as kebab from '#kebab/index.js';
 
 /** --- 只获取变量 --- */
 type TOnlyProperties<T> = {

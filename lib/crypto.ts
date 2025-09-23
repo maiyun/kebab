@@ -5,8 +5,8 @@
  */
 import * as crypto from 'crypto';
 // --- 库和定义 ---
-import * as lFs from '#lib/fs.js';
-import * as lCore from '#lib/core.js';
+import * as lFs from '#kebab/lib/fs.js';
+import * as lCore from '#kebab/lib/core.js';
 
 // --- 非对称加密 ---
 
