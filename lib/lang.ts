@@ -1,12 +1,12 @@
 /** --- 支持的语言缩写列表 --- */
 export const codes: string[] = [
-    'sc', 'tc', 'ja', 'ko', 'en', 'es', 'th', 'vi',
-    'de', 'fr', 'pt', 'ru', 'ar', 'id', 'it', 'tr',
+    'sc', 'tc', 'ja', 'ko', 'th', 'vi', 'ar', 'id',
+    'en', 'es', 'de', 'fr', 'pt', 'ru', 'it', 'tr',
 ];
 
 export const names: string[] = [
-    '简体中文', '繁體中文', '日本語', '한국어', 'English', 'Español', 'ไทย', 'Tiếng việt',
-    'Deutsch', 'Français', 'Português', 'Русский', 'العربية', 'Bahasa Indonesia', 'Italiano', 'Türkçe',
+    '简体中文', '繁體中文', '日本語', '한국어', 'ไทย', 'Tiếng việt', 'العربية', 'Bahasa Indonesia',
+    'English', 'Español', 'Deutsch', 'Français', 'Português', 'Русский', 'Italiano', 'Türkçe',
 ];
 
 /** --- 浏览器常用映射为本语言 --- */
@@ -15,16 +15,16 @@ export const map: Record<string, string> = {
     'zh': 'tc',
     'ja': 'ja',
     'ko': 'ko',
-    'en': 'en',
-    'es': 'es',
     'th': 'th',
     'vi': 'vi',
+    'ar': 'ar',
+    'id': 'id',
+    'en': 'en',
+    'es': 'es',
     'de': 'de',
     'fr': 'fr',
     'pt': 'pt',
     'ru': 'ru',
-    'ar': 'ar',
-    'id': 'id',
     'it': 'it',
     'tr': 'tr',
 };
