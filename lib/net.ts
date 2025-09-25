@@ -517,6 +517,9 @@ export async function mproxy(
     const res = ctr.getPrototype('_res');
     /** --- 客户端请求中的 get 的数据 --- */
     const get = ctr.getPrototype('_get');
+    if (req.readableEnded) {
+        return -3;
+    }
     if (get['auth'] !== auth) {
         return 0;
     }
@@ -574,6 +577,9 @@ export async function rproxy(
     const res = ctr.getPrototype('_res');
     const config = ctr.getPrototype('_config');
     const path = config.const.path + (config.const.qs ? '?' + config.const.qs : '');
+    if (req.readableEnded) {
+        return false;
+    }
     for (const key in route) {
         if (!path.startsWith(key)) {
             continue;

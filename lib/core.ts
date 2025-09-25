@@ -7,6 +7,7 @@ import * as cp from 'child_process';
 import * as http from 'http';
 import * as http2 from 'http2';
 import * as stream from 'stream';
+import * as os from 'os';
 import * as kebab from '#kebab/index.js';
 import * as lTime from '#kebab/lib/time.js';
 import * as lFs from '#kebab/lib/fs.js';
@@ -711,7 +712,7 @@ export function log(opt: sCtr.Ctr | ILogOptions, msg: string, fend: string = '')
         }
         path += h + '.csv';
         if (!await lFs.isFile(path)) {
-            if (!await lFs.putContent(path, 'TIME,UNIX,URL,COOKIE,SESSION,JWT,USER_AGENT,REALIP,CLIENTIP,MESSAGE\n', {
+            if (!await lFs.putContent(path, 'TIME,UNIX,URL,COOKIE,SESSION,JWT,USER_AGENT,REALIP,CLIENTIP,OS,PROCESS,MESSAGE\n', {
                 'encoding': 'utf8',
                 'mode': 0o777
             })) {
@@ -728,6 +729,8 @@ export function log(opt: sCtr.Ctr | ILogOptions, msg: string, fend: string = '')
             (headers['user-agent']?.replace(/"/g, '""') ?? 'No HTTP_USER_AGENT') + '","' +
             realIp.replace(/"/g, '""') + '","' +
             clientIp.replace(/"/g, '""') + '","' +
+            lText.sizeFormat(os.totalmem() - os.freemem(), '') + '","' +
+            lText.sizeFormat(process.memoryUsage().rss, '') + '","' +
             JSON.stringify(msg).slice(1, -1).replace(/"/g, '""') + '"\n', {
             'encoding': 'utf8',
             'mode': 0o777,
