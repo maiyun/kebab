@@ -294,86 +294,96 @@ export async function run(data: {
             return true;
         }
         if (rtn === undefined || rtn === true) {
-            await new Promise<void>(function(resolve) {
-                wsSocket.on('message', async function(msg): Promise<void> {
-                    switch (msg.opcode) {
-                        case ws.EOpcode.CLOSE: {
-                            const r = await (cctr as kebab.Json)['onMessage'](msg.data, msg.opcode);
-                            if (r === false) {
-                                break;
-                            }
-                            wsSocket.end();
-                            break;
-                        }
-                        case ws.EOpcode.PING: {
-                            const r = await (cctr as kebab.Json)['onMessage'](msg.data, msg.opcode);
-                            if (r === false) {
-                                break;
-                            }
-                            wsSocket.pong();
-                            break;
-                        }
-                        case ws.EOpcode.BINARY:
-                        case ws.EOpcode.TEXT: {
-                            try {
+            try {
+                rtn = await (cctr as kebab.Json).onReady();
+            }
+            catch (e: kebab.Json) {
+                lCore.log(cctr, lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
+                data.socket.destroy();
+                return true;
+            }
+            if (rtn === undefined || rtn === true) {
+                await new Promise<void>(function(resolve) {
+                    wsSocket.on('message', async function(msg): Promise<void> {
+                        switch (msg.opcode) {
+                            case ws.EOpcode.CLOSE: {
                                 const r = await (cctr as kebab.Json)['onMessage'](msg.data, msg.opcode);
                                 if (r === false) {
                                     break;
                                 }
-                                const wrtn = await (cctr as kebab.Json)['onData'](msg.data, msg.opcode);
-                                if (wrtn === false) {
-                                    wsSocket.end();
-                                    return;
+                                wsSocket.end();
+                                break;
+                            }
+                            case ws.EOpcode.PING: {
+                                const r = await (cctr as kebab.Json)['onMessage'](msg.data, msg.opcode);
+                                if (r === false) {
+                                    break;
                                 }
-                                if (!wrtn) {
-                                    return;
-                                }
-                                if (wrtn instanceof Buffer) {
-                                    wsSocket.writeBinary(wrtn);
-                                    return;
-                                }
-                                if (typeof wrtn === 'string') {
+                                wsSocket.pong();
+                                break;
+                            }
+                            case ws.EOpcode.BINARY:
+                            case ws.EOpcode.TEXT: {
+                                try {
+                                    const r = await (cctr as kebab.Json)['onMessage'](msg.data, msg.opcode);
+                                    if (r === false) {
+                                        break;
+                                    }
+                                    const wrtn = await (cctr as kebab.Json)['onData'](msg.data, msg.opcode);
+                                    if (wrtn === false) {
+                                        wsSocket.end();
+                                        return;
+                                    }
                                     if (!wrtn) {
                                         return;
                                     }
-                                    wsSocket.writeText(wrtn);
-                                    return;
+                                    if (wrtn instanceof Buffer) {
+                                        wsSocket.writeBinary(wrtn);
+                                        return;
+                                    }
+                                    if (typeof wrtn === 'string') {
+                                        if (!wrtn) {
+                                            return;
+                                        }
+                                        wsSocket.writeText(wrtn);
+                                        return;
+                                    }
+                                    if (typeof wrtn === 'object') {
+                                        // --- 返回的是数组，那么代表可能是 JSON，可能是对象序列 ---
+                                        wsSocket.writeResult(wrtn);
+                                        return;
+                                    }
                                 }
-                                if (typeof wrtn === 'object') {
-                                    // --- 返回的是数组，那么代表可能是 JSON，可能是对象序列 ---
-                                    wsSocket.writeResult(wrtn);
-                                    return;
+                                catch (e: any) {
+                                    lCore.log(cctr, lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
                                 }
+                                break;
                             }
-                            catch (e: any) {
-                                lCore.log(cctr, lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
+                            default: {
+                                // --- nothing ---
                             }
-                            break;
                         }
-                        default: {
-                            // --- nothing ---
+                    }).on('drain', async () => {
+                        try {
+                            await (cctr as kebab.Json)['onDrain']();
                         }
-                    }
-                }).on('drain', async () => {
-                    try {
-                        await (cctr as kebab.Json)['onDrain']();
-                    }
-                    catch (e: any) {
+                        catch (e: any) {
+                            lCore.log(cctr, lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
+                        }
+                    }).on('error', (e: any) => {
                         lCore.log(cctr, lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
-                    }
-                }).on('error', (e: any) => {
-                    lCore.log(cctr, lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
-                }).on('close', async () => {
-                    try {
-                        await (cctr as kebab.Json)['onClose']();
-                    }
-                    catch (e: any) {
-                        lCore.log(cctr, lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
-                    }
-                    resolve();
+                    }).on('close', async () => {
+                        try {
+                            await (cctr as kebab.Json)['onClose']();
+                        }
+                        catch (e: any) {
+                            lCore.log(cctr, lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
+                        }
+                        resolve();
+                    });
                 });
-            });
-            return true;
+                return true;
+            }
         }
         if (!wsSocket.ended) {
             wsSocket.end();
@@ -429,117 +439,147 @@ export async function run(data: {
     let httpCode: number = middle.getPrototype('_httpCode');
     if (rtn === undefined || rtn === true) {
         // --- 只有不返回或返回 true 时才加载控制文件 ---
-        // --- 判断真实控制器文件是否存在 ---
-        const filePath = config.const.ctrPath + pathLeft + '.js';
-        if (!await lFs.isFile(filePath)) {
-            // --- 指定的控制器不存在 ---
-            const text = '[Error] Controller not found, path: ' + path + '.';
-            if (config.route['#404']) {
-                data.res.setHeader('location', lText.urlResolve(config.const.urlBase, config.route['#404']));
-                data.res.writeHead(302);
-                data.res.end('');
-                return true;
-            }
-            data.res.setHeader('content-type', 'text/html; charset=utf-8');
-            data.res.setHeader('content-length', Buffer.byteLength(text));
-            data.res.writeHead(404);
-            data.res.end(text);
-            return true;
-        }
-        // --- 加载控制器文件 ---
-        const ctrCtr: typeof sCtr.Ctr = (await import((!filePath.startsWith('/') ? '/' : '') + filePath)).default;
-        cctr = new ctrCtr(config, data.req, data.res ?? data.socket!);
-        // --- 对信息进行初始化 ---
-        cctr.setPrototype('_timer', middle.getPrototype('_timer'));
-        cctr.setPrototype('_waitInfo', middle.getPrototype('_waitInfo'));
-        // --- 路由定义的参数序列 ---
-        cctr.setPrototype('_param', param);
-        cctr.setPrototype('_action', middle.getPrototype('_action'));
-        cctr.setPrototype('_headers', headers);
-
-        cctr.setPrototype('_get', get);
-        cctr.setPrototype('_rawPost', middle.getPrototype('_rawPost'));
-        cctr.setPrototype('_input', middle.getPrototype('_input'));
-        cctr.setPrototype('_files', middle.getPrototype('_files'));
-        cctr.setPrototype('_post', middle.getPrototype('_post'));
-
-        cctr.setPrototype('_cookie', cookies);
-        cctr.setPrototype('_jwt', middle.getPrototype('_jwt'));
-        if (!cctr.getPrototype('_sess') && middle.getPrototype('_sess')) {
-            cctr.setPrototype('_session', middle.getPrototype('_session'));
-            cctr.setPrototype('_sess', middle.getPrototype('_sess'));
-        }
-
-        cctr.setPrototype('_cacheTTL', middle.getPrototype('_cacheTTL'));
-        cctr.setPrototype('_xsrf', middle.getPrototype('_xsrf'));
-        cctr.setPrototype('_httpCode', middle.getPrototype('_httpCode'));
-
-        lCore.log(cctr, '', '-visit');
-
-        // --- 强制 HTTPS ---
-        if (config.set.mustHttps && !config.const.https) {
-            data.res.setHeader('location', data.req.url ?? '');
-            data.res.writeHead(302);
-            return true;
-        }
-        // --- 检测 action 是否存在，以及排除内部方法 ---
-        if (pathRight.startsWith('_') || pathRight === 'onUpgrade' || pathRight === 'onLoad' || pathRight === 'onData' || pathRight === 'onDrain' || pathRight === 'onClose' || pathRight === 'setPrototype' || pathRight === 'getPrototype' || pathRight === 'getAuthorization') {
-            // --- _ 开头的 action 是内部方法，不允许访问 ---
-            if (config.route['#404']) {
-                data.res.setHeader('location', lText.urlResolve(config.const.urlBase, config.route['#404']));
-                data.res.writeHead(302);
-                data.res.end('');
-                return true;
-            }
-            const text = '[Error] Action not found, path: ' + path + '.';
-            data.res.setHeader('content-type', 'text/html; charset=utf-8');
-            data.res.setHeader('content-length', Buffer.byteLength(text));
-            data.res.writeHead(404);
-            data.res.end(text);
-            return true;
-        }
-        pathRight = pathRight.replace(/-([a-zA-Z0-9])/g, function(t, t1: string): string {
-            return t1.toUpperCase();
-        });
-        if ((cctr as kebab.Json)[pathRight] === undefined) {
-            if (config.route['#404']) {
-                data.res.setHeader('location', lText.urlResolve(config.const.urlBase, config.route['#404']));
-                data.res.writeHead(302);
-                data.res.end('');
-                return true;
-            }
-            const text = '[Error] Action not found, path: ' + path + '.';
-            data.res.setHeader('content-type', 'text/html; charset=utf-8');
-            data.res.setHeader('content-length', Buffer.byteLength(text));
-            data.res.writeHead(404);
-            data.res.end(text);
-            return true;
-        }
-        // --- 执行 onLoad 方法 ---
         try {
-            rtn = await (cctr.onLoad() as kebab.Json);
-            // --- 执行 action ---
-            if (rtn === undefined || rtn === true) {
-                rtn = await (cctr as kebab.Json)[pathRight]();
-                rtn = await (cctr.onUnload(rtn) as kebab.Json);
-                rtn = await (middle.onUnload(rtn) as kebab.Json);
-                const sess = cctr.getPrototype('_sess');
-                if (sess) {
-                    await sess.update();
-                }
-            }
-            // --- 获取 ctr 设置的 cache 和 hcode ---
-            cacheTTL = cctr.getPrototype('_cacheTTL');
-            httpCode = cctr.getPrototype('_httpCode');
+            rtn = await (middle.onReady() as kebab.Json);
         }
         catch (e: kebab.Json) {
-            lCore.log(cctr, '(E04)' + lText.stringifyJson(e.stack).slice(1, -1), '-error');
+            lCore.log(middle, '(E05)' + lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
             data.res.setHeader('content-type', 'text/html; charset=utf-8');
             data.res.setHeader('content-length', 25);
             data.res.writeHead(500);
             data.res.end('<h1>500 Server Error</h1><hr>Kebab');
-            await waitCtr(cctr);
             return true;
+        }
+        cacheTTL = middle.getPrototype('_cacheTTL');
+        httpCode = middle.getPrototype('_httpCode');
+        if (rtn === undefined || rtn === true) {
+            // --- 判断真实控制器文件是否存在 ---
+            const filePath = config.const.ctrPath + pathLeft + '.js';
+            if (!await lFs.isFile(filePath)) {
+                // --- 指定的控制器不存在 ---
+                const text = '[Error] Controller not found, path: ' + path + '.';
+                if (config.route['#404']) {
+                    data.res.setHeader('location', lText.urlResolve(config.const.urlBase, config.route['#404']));
+                    data.res.writeHead(302);
+                    data.res.end('');
+                    return true;
+                }
+                data.res.setHeader('content-type', 'text/html; charset=utf-8');
+                data.res.setHeader('content-length', Buffer.byteLength(text));
+                data.res.writeHead(404);
+                data.res.end(text);
+                return true;
+            }
+            // --- 加载控制器文件 ---
+            const ctrCtr: typeof sCtr.Ctr = (await import((!filePath.startsWith('/') ? '/' : '') + filePath)).default;
+            cctr = new ctrCtr(config, data.req, data.res ?? data.socket!);
+            // --- 对信息进行初始化 ---
+            cctr.setPrototype('_timer', middle.getPrototype('_timer'));
+            cctr.setPrototype('_waitInfo', middle.getPrototype('_waitInfo'));
+            // --- 路由定义的参数序列 ---
+            cctr.setPrototype('_param', param);
+            cctr.setPrototype('_action', middle.getPrototype('_action'));
+            cctr.setPrototype('_headers', headers);
+
+            cctr.setPrototype('_get', get);
+            cctr.setPrototype('_rawPost', middle.getPrototype('_rawPost'));
+            cctr.setPrototype('_input', middle.getPrototype('_input'));
+            cctr.setPrototype('_files', middle.getPrototype('_files'));
+            cctr.setPrototype('_post', middle.getPrototype('_post'));
+
+            cctr.setPrototype('_cookie', cookies);
+            cctr.setPrototype('_jwt', middle.getPrototype('_jwt'));
+            if (!cctr.getPrototype('_sess') && middle.getPrototype('_sess')) {
+                cctr.setPrototype('_session', middle.getPrototype('_session'));
+                cctr.setPrototype('_sess', middle.getPrototype('_sess'));
+            }
+
+            cctr.setPrototype('_cacheTTL', middle.getPrototype('_cacheTTL'));
+            cctr.setPrototype('_xsrf', middle.getPrototype('_xsrf'));
+            cctr.setPrototype('_httpCode', middle.getPrototype('_httpCode'));
+
+            lCore.log(cctr, '', '-visit');
+
+            // --- 强制 HTTPS ---
+            if (config.set.mustHttps && !config.const.https) {
+                data.res.setHeader('location', data.req.url ?? '');
+                data.res.writeHead(302);
+                return true;
+            }
+            // --- 检测 action 是否存在，以及排除内部方法 ---
+            if (pathRight.startsWith('_') || pathRight === 'onUpgrade' || pathRight === 'onLoad' || pathRight === 'onData' || pathRight === 'onDrain' || pathRight === 'onClose' || pathRight === 'setPrototype' || pathRight === 'getPrototype' || pathRight === 'getAuthorization') {
+                // --- _ 开头的 action 是内部方法，不允许访问 ---
+                if (config.route['#404']) {
+                    data.res.setHeader('location', lText.urlResolve(config.const.urlBase, config.route['#404']));
+                    data.res.writeHead(302);
+                    data.res.end('');
+                    return true;
+                }
+                const text = '[Error] Action not found, path: ' + path + '.';
+                data.res.setHeader('content-type', 'text/html; charset=utf-8');
+                data.res.setHeader('content-length', Buffer.byteLength(text));
+                data.res.writeHead(404);
+                data.res.end(text);
+                return true;
+            }
+            pathRight = pathRight.replace(/-([a-zA-Z0-9])/g, function(t, t1: string): string {
+                return t1.toUpperCase();
+            });
+            if ((cctr as kebab.Json)[pathRight] === undefined) {
+                if (config.route['#404']) {
+                    data.res.setHeader('location', lText.urlResolve(config.const.urlBase, config.route['#404']));
+                    data.res.writeHead(302);
+                    data.res.end('');
+                    return true;
+                }
+                const text = '[Error] Action not found, path: ' + path + '.';
+                data.res.setHeader('content-type', 'text/html; charset=utf-8');
+                data.res.setHeader('content-length', Buffer.byteLength(text));
+                data.res.writeHead(404);
+                data.res.end(text);
+                return true;
+            }
+            // --- 执行 onLoad 方法 ---
+            try {
+                rtn = await (cctr.onLoad() as kebab.Json);
+                // --- 执行 action ---
+                if (rtn === undefined || rtn === true) {
+                    try {
+                        rtn = await (cctr.onReady() as kebab.Json);
+                        // --- 执行 action ---
+                        if (rtn === undefined || rtn === true) {
+                            rtn = await (cctr as kebab.Json)[pathRight]();
+                            rtn = await (cctr.onUnload(rtn) as kebab.Json);
+                            rtn = await (middle.onUnload(rtn) as kebab.Json);
+                            const sess = cctr.getPrototype('_sess');
+                            if (sess) {
+                                await sess.update();
+                            }
+                        }
+                    }
+                    catch (e: kebab.Json) {
+                        lCore.log(cctr, '(E05)' + lText.stringifyJson(e.stack).slice(1, -1), '-error');
+                        data.res.setHeader('content-type', 'text/html; charset=utf-8');
+                        data.res.setHeader('content-length', 25);
+                        data.res.writeHead(500);
+                        data.res.end('<h1>500 Server Error</h1><hr>Kebab');
+                        await waitCtr(cctr);
+                        return true;
+                    }
+                }
+                // --- 获取 ctr 设置的 cache 和 hcode ---
+                cacheTTL = cctr.getPrototype('_cacheTTL');
+                httpCode = cctr.getPrototype('_httpCode');
+            }
+            catch (e: kebab.Json) {
+                lCore.log(cctr, '(E04)' + lText.stringifyJson(e.stack).slice(1, -1), '-error');
+                data.res.setHeader('content-type', 'text/html; charset=utf-8');
+                data.res.setHeader('content-length', 25);
+                data.res.writeHead(500);
+                data.res.end('<h1>500 Server Error</h1><hr>Kebab');
+                await waitCtr(cctr);
+                return true;
+            }
         }
     }
     // --- 设置缓存 ---

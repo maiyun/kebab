@@ -223,6 +223,14 @@ export class Ctr {
     }
 
     /**
+     * --- onLoad 执行后会执行的方法，可重写此方法 ---
+     */
+    public onReady(): boolean | string | kebab.DbValue[] |
+    Promise<boolean | string | kebab.DbValue[]> {
+        return true;
+    }
+
+    /**
      * --- 整个结束前会执行本方法，可重写此方法对输出结果再处理一次（Websocket 模式无效） ---
      * @param rtn 之前用户的输出结果
      */

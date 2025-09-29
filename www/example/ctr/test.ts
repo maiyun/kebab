@@ -51,6 +51,11 @@ export default class extends sCtr.Ctr {
         return true;
     }
 
+    public onReady(): boolean {
+        lCore.display('onReady');
+        return true;
+    }
+
     public onUnload(rtn: string | boolean | kebab.DbValue[]): string | boolean | kebab.DbValue[] {
         if (!Array.isArray(rtn)) {
             return rtn;

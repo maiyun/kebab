@@ -165,7 +165,9 @@ export interface IConfigSql {
 
 /** --- 常量 --- */
 export interface IConfigConst {
+    /** --- 不以 / 开头，不含 qs --- */
     'path': string;
+    /** --- 不含 ? 开头 --- */
     'qs': string;
     'startTime': bigint;
     'startMemory': number;
