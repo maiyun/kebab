@@ -254,7 +254,7 @@ export async function run(data: {
 
     if (data.socket && data.req instanceof http.IncomingMessage) {
         // --- socket 模式，判断真实控制器文件是否存在 ---
-        const filePath = config.const.wsPath + (pathLeft || 'root') + '.js';
+        const filePath = config.const.wsPath + pathLeft + '.js';
         if (!await lFs.isFile(filePath)) {
             // --- 指定的控制器不存在 ---
             data.socket?.destroy();
