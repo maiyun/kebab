@@ -182,28 +182,18 @@ export class Socket {
 
     /** --- 创建成功后第一时间绑定事件 --- */
     private _bindEvent(): void {
-        this._ws.on('message', (msg): void => {
+        this._ws.on('message', msg => {
             (async (): Promise<void> => {
                 if (msg.opcode === EOpcode.CLOSE) {
                     return;
                 }
-                let data: Buffer | string = '';
-                if ('data' in msg) {
-                    data = Buffer.concat(msg.data);
-                    if (msg.opcode === EOpcode.TEXT) {
-                        data = data.toString();
-                    }
-                }
-                else {
-                    data = await (msg.opcode === EOpcode.TEXT ? msg.toString() : msg.toBuffer());
-                }
+                const buf: Buffer = 'data' in msg ? Buffer.concat(msg.data) : await msg.toBuffer();
                 this._on.message({
                     'opcode': msg.opcode,
-                    'data': data
+                    'buffer': buf,
+                    'data': msg.opcode === EOpcode.TEXT ? buf.toString() : buf,
                 }) as any;
-            })().catch(() => {
-                // --- nothing ---
-            });
+            })().catch(() => { });
         }).on('drain', () => {
             this._on.drain() as any;
         }).on('error', (e) => {
@@ -218,6 +208,7 @@ export class Socket {
     /** --- 还未开启监听时来的数据将存在这里 --- */
     private readonly _waitMsg: Array<{
         'opcode': EOpcode;
+        'buffer': Buffer;
         'data': Buffer | string;
     }> = [];
 
@@ -229,8 +220,10 @@ export class Socket {
 
     /** --- 未绑定自定义监听事件的默认执行函数 --- */
     private _on = {
+        /** --- 消息 --- */
         message: (msg: {
             'opcode': EOpcode;
+            'buffer': Buffer;
             'data': Buffer | string;
         }): void | Promise<void> => {
             this._waitMsg.push(msg);
@@ -252,6 +245,7 @@ export class Socket {
     /** --- 绑定监听 --- */
     public on(event: 'message', cb: (msg: {
         'opcode': EOpcode;
+        'buffer': Buffer;
         'data': Buffer | string;
     }) => void | Promise<void>): this;
     public on(event: 'error', cb: (error: any) => void | Promise<void>): this;
@@ -399,11 +393,7 @@ function bindPipe(s1: Socket, s2: Socket): Promise<void> {
             switch (msg.opcode) {
                 case EOpcode.TEXT:
                 case EOpcode.BINARY: {
-                    if (typeof msg.data === 'string') {
-                        s2.writeText(msg.data);
-                        break;
-                    }
-                    s2.writeBinary(msg.data);
+                    s2.writeBinary(msg.buffer);
                     break;
                 }
                 case EOpcode.CLOSE: {
@@ -432,11 +422,7 @@ function bindPipe(s1: Socket, s2: Socket): Promise<void> {
             switch (msg.opcode) {
                 case EOpcode.TEXT:
                 case EOpcode.BINARY: {
-                    if (typeof msg.data === 'string') {
-                        s1.writeText(msg.data);
-                        break;
-                    }
-                    s1.writeBinary(msg.data);
+                    s1.writeBinary(msg.buffer);
                     break;
                 }
                 case EOpcode.CLOSE: {
@@ -548,7 +534,7 @@ export async function rsocket(
                 switch (msg.opcode) {
                     case EOpcode.TEXT:
                     case EOpcode.BINARY: {
-                        socket.write(msg.data);
+                        socket.write(msg.buffer);
                         break;
                     }
                     case EOpcode.CLOSE: {
