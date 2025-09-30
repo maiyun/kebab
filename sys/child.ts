@@ -600,7 +600,7 @@ process.on('message', function(msg: kebab.Json) {
 
 /**
  * --- 获取匹配的 vhost 对象 ---
- * --- 如果有精准匹配，以精准匹配为准，否则为 2 级泛匹配（vSub），最后全局泛匹配（vGlobal） ---
+ * --- 如果有精准匹配，以精准匹配为准，否则为通配符匹配（vSub），最后全局泛匹配（vGlobal） ---
  * @param hostname 当前的 hostname，不带端口
  */
 function getVhostByHostname(hostname: string): kebab.IVhost | null {
@@ -612,9 +612,9 @@ function getVhostByHostname(hostname: string): kebab.IVhost | null {
                 vGlobal = vhost;
             }
             else if (domain.includes('*')) {
-                // --- 2 级泛匹配 ---
-                domain = domain.replace(/\*/, '^.+?').replace(/\./, '\\.');
-                if (new RegExp(domain + '$').test(hostname)) {
+                // --- 通配符匹配 ---
+                domain = domain.replace(/\*/, '.+?').replace(/\./, '\\.');
+                if (new RegExp(`^${domain}$`).test(hostname)) {
                     vSub = vhost;
                 }
             }
