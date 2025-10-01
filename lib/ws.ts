@@ -34,7 +34,8 @@ export enum EOpcode {
 export interface IConnectOptions {
     /** --- 秒数 --- */
     'timeout'?: number;
-    'hosts'?: Record<string, string>;
+    /** --- 自定义 host 映射，如 {'www.maiyun.net': '127.0.0.1'}，或全部映射到一个 host --- */
+    'hosts'?: Record<string, string> | string;
     'local'?: string;
     'headers'?: lNet.THttpHeaders;
     /** --- cookie 托管对象 --- */
@@ -54,7 +55,8 @@ export interface IConnectOptions {
 export interface IMproxyOptions {
     /** --- 秒数 --- */
     'timeout'?: number;
-    'hosts'?: Record<string, string>;
+    /** --- 自定义 host 映射，如 {'www.maiyun.net': '127.0.0.1'}，或全部映射到一个 host --- */
+    'hosts'?: Record<string, string> | string;
     'local'?: string;
     'headers'?: lNet.THttpHeaders;
     /** --- 过滤 header，返回 true 则留下 --- */
@@ -69,7 +71,8 @@ export interface IMproxyOptions {
 export interface IRproxyOptions {
     /** --- 秒数 --- */
     'timeout'?: number;
-    'hosts'?: Record<string, string>;
+    /** --- 自定义 host 映射，如 {'www.maiyun.net': '127.0.0.1'}，或全部映射到一个 host --- */
+    'hosts'?: Record<string, string> | string;
     'local'?: string;
     'headers'?: lNet.THttpHeaders;
     /** --- 过滤 header，返回 true 则留下 --- */
@@ -141,7 +144,7 @@ export class Socket {
         const ca: string | null = puri ?
             puri.protocol === 'wss:' ? await lNet.getCa() : null :
             uri.protocol === 'wss:' ? await lNet.getCa() : null;
-        if (!ca && hosts[uri.hostname]) {
+        if (!ca && (typeof hosts === 'string' ? hosts : hosts[uri.hostname])) {
             // --- 没有 ca，但是要设置 额外的 host ---
             headers['host'] = uri.hostname + (uri.port ? ':' + uri.port : '');
         }
@@ -155,7 +158,7 @@ export class Socket {
             }) : uri.path;
             const cli = ca ?
                 await liws.wssConnect({
-                    'hostname': hosts[host] ?? host,
+                    'hostname': (typeof hosts === 'string' ? hosts : hosts[host]) || host,
                     'port': port,
                     'path': path,
                     'servername': host,
@@ -166,7 +169,7 @@ export class Socket {
                     'ca': ca
                 }) :
                 await liws.wsConnect({
-                    'hostname': hosts[host] ?? host,
+                    'hostname': (typeof hosts === 'string' ? hosts : hosts[host]) || host,
                     'port': port,
                     'path': path,
                     'headers': headers,

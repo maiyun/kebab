@@ -159,7 +159,10 @@ export async function request(
             };
             return res;
         }
-        if (hosts[host] !== undefined && !hosts[host]) {
+        if (typeof hosts === 'string' ?
+            !hosts :
+            (hosts[host] !== undefined && !hosts[host])
+        ) {
             const res = new lResponse.Response(null);
             res.error = {
                 'name': 'hosts error',
@@ -183,7 +186,7 @@ export async function request(
             'localAddress': local,
             'ca': ca,
             'connectionOptions': {
-                'remoteHost': hosts[host],
+                'remoteHost': typeof hosts === 'string' ? hosts : hosts[host],
             },
         });
     }
@@ -634,7 +637,8 @@ export interface IRequestOptions {
     /** --- 秒数 --- */
     'timeout'?: number;
     'follow'?: number;
-    'hosts'?: Record<string, string>;
+    /** --- 自定义 host 映射，如 {'www.maiyun.net': '127.0.0.1'}，或全部映射到一个 host --- */
+    'hosts'?: Record<string, string> | string;
     'save'?: string;
     'local'?: string;
     'headers'?: THttpHeaders;
@@ -655,7 +659,8 @@ export interface IMproxyOptions {
     /** --- 秒数 --- */
     'timeout'?: number;
     'follow'?: number;
-    'hosts'?: Record<string, string>;
+    /** --- 自定义 host 映射，如 {'www.maiyun.net': '127.0.0.1'}，或全部映射到一个 host --- */
+    'hosts'?: Record<string, string> | string;
     'local'?: string;
     'headers'?: THttpHeaders;
     /** --- 过滤 header，返回 true 则留下 --- */
@@ -669,7 +674,8 @@ export interface IRproxyOptions {
     /** --- 秒数 --- */
     'timeout'?: number;
     'follow'?: number;
-    'hosts'?: Record<string, string>;
+    /** --- 自定义 host 映射，如 {'www.maiyun.net': '127.0.0.1'}，或全部映射到一个 host --- */
+    'hosts'?: Record<string, string> | string;
     'local'?: string;
     'headers'?: THttpHeaders;
     /** --- 过滤 header，返回 true 则留下 --- */
