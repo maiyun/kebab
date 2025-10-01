@@ -475,13 +475,15 @@ const proxyContinueHeaders = [
 ];
 
 /**
- * --- 剔除不代理的 header ---
+ * --- 剔除不代理的 header，返回新的 header ---
  * @param headers 剔除前的 header
  * @param res 直接设置头部而不返回，可置空
+ * @param filter 返回 true 则留下
  */
 export function filterProxyHeaders(
     headers: http.IncomingHttpHeaders | http2.IncomingHttpHeaders | THttpHeaders,
-    res?: http2.Http2ServerResponse | http.ServerResponse
+    res?: http2.Http2ServerResponse | http.ServerResponse,
+    filter?: (h: string) => boolean
 ): Record<string, string | string[]> {
     const heads: Record<string, string | string[]> = {};
     for (const h in headers) {
@@ -493,6 +495,9 @@ export function filterProxyHeaders(
         }
         const v = headers[h];
         if (v === undefined) {
+            continue;
+        }
+        if (filter && !filter(h)) {
             continue;
         }
         if (res) {
@@ -531,14 +536,14 @@ export async function mproxy(
     }
     (opt as kebab.Json).method = req.method ?? 'GET';
     opt.headers ??= {};
-    Object.assign(opt.headers, filterProxyHeaders(req.headers));
+    Object.assign(filterProxyHeaders(req.headers, undefined, opt.filter), opt.headers);
     // --- 发起请求 ---
     const rres = await request(get['url'], req, opt);
     if (rres.error) {
         return -2;
     }
     if (rres.headers) {
-        filterProxyHeaders(rres.headers, res);
+        filterProxyHeaders(rres.headers, res, opt.filter);
     }
     res.writeHead(rres.headers?.['http-code'] ?? 200);
     await new Promise<void>((resolve) => {
@@ -594,14 +599,14 @@ export async function rproxy(
         const lpath = path.slice(key.length);
         (opt as kebab.Json).method = req.method ?? 'GET';
         opt.headers ??= {};
-        Object.assign(opt.headers, filterProxyHeaders(req.headers));
+        Object.assign(filterProxyHeaders(req.headers, undefined, opt.filter), opt.headers);
         // --- 发起请求 ---
         const rres = await request(route[key] + lpath, req, opt);
         if (rres.error) {
             return false;
         }
         if (rres.headers) {
-            filterProxyHeaders(rres.headers, res);
+            filterProxyHeaders(rres.headers, res, opt.filter);
         }
         res.writeHead(rres.headers?.['http-code'] ?? 200);
         await new Promise<void>((resolve) => {
@@ -647,6 +652,8 @@ export interface IMproxyOptions {
     'hosts'?: Record<string, string>;
     'local'?: string;
     'headers'?: THttpHeaders;
+    /** --- 过滤 header，返回 true 则留下 --- */
+    filter?: (h: string) => boolean;
     /** --- 默认为 default --- */
     'reuse'?: string;
 }
@@ -659,6 +666,8 @@ export interface IRproxyOptions {
     'hosts'?: Record<string, string>;
     'local'?: string;
     'headers'?: THttpHeaders;
+    /** --- 过滤 header，返回 true 则留下 --- */
+    filter?: (h: string) => boolean;
     /** --- 正向 mproxy 代理，url 如 https://xxx/abc --- */
     'mproxy'?: {
         'url': string;

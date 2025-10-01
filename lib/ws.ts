@@ -57,6 +57,8 @@ export interface IMproxyOptions {
     'hosts'?: Record<string, string>;
     'local'?: string;
     'headers'?: lNet.THttpHeaders;
+    /** --- 过滤 header，返回 true 则留下 --- */
+    filter?: (h: string) => boolean;
     /** --- 小帧模式，默认 false --- */
     'mode'?: EFrameReceiveMode;
     /** --- 加密模式，默认 true --- */
@@ -70,6 +72,8 @@ export interface IRproxyOptions {
     'hosts'?: Record<string, string>;
     'local'?: string;
     'headers'?: lNet.THttpHeaders;
+    /** --- 过滤 header，返回 true 则留下 --- */
+    filter?: (h: string) => boolean;
     /** --- 小帧模式，默认 false --- */
     'mode'?: EFrameReceiveMode;
     /** --- 加密模式，默认 true --- */
@@ -481,7 +485,7 @@ export async function mproxy(
         return -1;
     }
     opt.headers ??= {};
-    Object.assign(opt.headers, lNet.filterProxyHeaders(req.headers));
+    Object.assign(lNet.filterProxyHeaders(req.headers, undefined, opt.filter), opt.headers);
     // --- 发起请求 ---
     /** --- 远程端的双向 socket --- */
     const rsocket = await connect(get['url'], opt);
@@ -507,7 +511,7 @@ export async function rproxy(
     /** --- 请求端产生的双向 socket --- */
     const socket = ctr.getPrototype('_socket');
     opt.headers ??= {};
-    Object.assign(opt.headers, lNet.filterProxyHeaders(req.headers));
+    Object.assign(lNet.filterProxyHeaders(req.headers, undefined, opt.filter), opt.headers);
     // --- 发起请求 ---
     /** --- 远程端的双向 socket --- */
     const rsocket = await connect(url, opt);
