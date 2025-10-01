@@ -485,7 +485,7 @@ export async function mproxy(
         return -1;
     }
     opt.headers ??= {};
-    Object.assign(lNet.filterProxyHeaders(req.headers, undefined, opt.filter), opt.headers);
+    Object.assign(lNet.filterHeaders(req.headers, undefined, opt.filter), opt.headers);
     // --- 发起请求 ---
     /** --- 远程端的双向 socket --- */
     const rsocket = await connect(get['url'], opt);
@@ -511,7 +511,7 @@ export async function rproxy(
     /** --- 请求端产生的双向 socket --- */
     const socket = ctr.getPrototype('_socket');
     opt.headers ??= {};
-    Object.assign(lNet.filterProxyHeaders(req.headers, undefined, opt.filter), opt.headers);
+    Object.assign(lNet.filterHeaders(req.headers, undefined, opt.filter), opt.headers);
     // --- 发起请求 ---
     /** --- 远程端的双向 socket --- */
     const rsocket = await connect(url, opt);

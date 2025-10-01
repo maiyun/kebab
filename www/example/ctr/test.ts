@@ -188,6 +188,7 @@ export default class extends sCtr.Ctr {
             `<br><a href="${this._config.const.urlBase}test/net-hosts">View "test/net-hosts"</a>`,
             `<br><a href="${this._config.const.urlBase}test/net-rproxy/dist/core.js">View "test/net-rproxy/dist/core.js"</a> <a href="${this._config.const.urlBase}test/net-rproxy/package.json">View "package.json"</a>`,
             `<br><a href="${this._config.const.urlBase}test/net-mproxy">View "test/net-mproxy"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/net-filterheaders">View "test/net-filterheaders"</a>`,
 
             '<br><br><b>Scan:</b>',
             `<br><br><a href="${this._config.const.urlBase}test/scan?s=db">View "test/scan?s=db"</a>`,
@@ -2109,6 +2110,41 @@ error: <pre>${JSON.stringify(res.error, null, 4)}</pre>`);
             return false;
         }
         return 'Nothing(' + rtn + ')';
+    }
+
+    public netFilterheaders(): string {
+        const echo = [];
+        const headers = {
+            'host': 'www.maiyun.net',
+            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/180.0.0.0 Safari/537.36',
+            'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+            'accept-encoding': 'gzip, deflate',
+            'accept-language': 'zh-CN,zh;q=0.9,en;q=0.8',
+            'cache-control': 'no-cache',
+            'cdn-loop': 'TencentEdgeOne; loops=2',
+            'eo-connecting-ip': 'xx:xx:xx:xx:xx',
+            'eo-log-uuid': '102780998859203995',
+            'pragma': 'no-cache',
+            'priority': 'u=0, i',
+            'sec-ch-ua': '"Chromium";v="140", "Not=A?Brand";v="24", "Google Chrome";v="180"',
+            'sec-ch-ua-mobile': '?0',
+            'sec-ch-ua-platform': '"Windows"',
+            'sec-fetch-dest': 'document',
+            'sec-fetch-mode': 'navigate',
+            'sec-fetch-site': 'none',
+            'sec-fetch-user': '?1',
+            'upgrade-insecure-requests': '1',
+            'x-forwarded-for': '127.1.2.3',
+            'x-forwarded-host': 'www.maiyun.net',
+            'x-forwarded-proto': 'http',
+            'authorization': ''
+        };
+        echo.push(`origin:<pre>${JSON.stringify(headers, null, 4)}</pre>`);
+        const filtered = lNet.filterHeaders(headers, undefined, h => {
+            return !['x-', 'eo-'].some(i => h.startsWith(i));
+        });
+        echo.push(`const filtered = lNet.filterHeaders(headers);<pre>${JSON.stringify(filtered, null, 4)}</pre>`);
+        return echo.join('') + this._getEnd();
     }
 
     public async scan(): Promise<kebab.Json> {

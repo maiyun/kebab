@@ -480,7 +480,7 @@ const proxyContinueHeaders = [
  * @param res 直接设置头部而不返回，可置空
  * @param filter 返回 true 则留下
  */
-export function filterProxyHeaders(
+export function filterHeaders(
     headers: http.IncomingHttpHeaders | http2.IncomingHttpHeaders | THttpHeaders,
     res?: http2.Http2ServerResponse | http.ServerResponse,
     filter?: (h: string) => boolean
@@ -536,14 +536,14 @@ export async function mproxy(
     }
     (opt as kebab.Json).method = req.method ?? 'GET';
     opt.headers ??= {};
-    Object.assign(filterProxyHeaders(req.headers, undefined, opt.filter), opt.headers);
+    Object.assign(filterHeaders(req.headers, undefined, opt.filter), opt.headers);
     // --- 发起请求 ---
     const rres = await request(get['url'], req, opt);
     if (rres.error) {
         return -2;
     }
     if (rres.headers) {
-        filterProxyHeaders(rres.headers, res, opt.filter);
+        filterHeaders(rres.headers, res, opt.filter);
     }
     res.writeHead(rres.headers?.['http-code'] ?? 200);
     await new Promise<void>((resolve) => {
@@ -599,14 +599,14 @@ export async function rproxy(
         const lpath = path.slice(key.length);
         (opt as kebab.Json).method = req.method ?? 'GET';
         opt.headers ??= {};
-        Object.assign(filterProxyHeaders(req.headers, undefined, opt.filter), opt.headers);
+        Object.assign(filterHeaders(req.headers, undefined, opt.filter), opt.headers);
         // --- 发起请求 ---
         const rres = await request(route[key] + lpath, req, opt);
         if (rres.error) {
             return false;
         }
         if (rres.headers) {
-            filterProxyHeaders(rres.headers, res, opt.filter);
+            filterHeaders(rres.headers, res, opt.filter);
         }
         res.writeHead(rres.headers?.['http-code'] ?? 200);
         await new Promise<void>((resolve) => {
