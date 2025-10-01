@@ -536,9 +536,12 @@ export async function mproxy(
     }
     (opt as kebab.Json).method = req.method ?? 'GET';
     opt.headers ??= {};
-    Object.assign(filterHeaders(req.headers, undefined, opt.filter), opt.headers);
+    const headers = Object.assign(filterHeaders(req.headers, undefined, opt.filter), opt.headers);
     // --- 发起请求 ---
-    const rres = await request(get['url'], req, opt);
+    const rres = await request(get['url'], req, {
+        ...opt,
+        headers
+    });
     if (rres.error) {
         return -2;
     }
@@ -599,9 +602,12 @@ export async function rproxy(
         const lpath = path.slice(key.length);
         (opt as kebab.Json).method = req.method ?? 'GET';
         opt.headers ??= {};
-        Object.assign(filterHeaders(req.headers, undefined, opt.filter), opt.headers);
+        const headers = Object.assign(filterHeaders(req.headers, undefined, opt.filter), opt.headers);
         // --- 发起请求 ---
-        const rres = await request(route[key] + lpath, req, opt);
+        const rres = await request(route[key] + lpath, req, {
+            ...opt,
+            headers
+        });
         if (rres.error) {
             return false;
         }
