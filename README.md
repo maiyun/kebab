@@ -26,6 +26,10 @@ Node 22+
 
 Run `npm i @maiyunnet/kebab` to install the latest version. After installation, run `npx kebab init` to initialize, then run `npx kebab` to start the project.
 
+You can also use pm2 to start the project by running:
+
+`pm2 start npx --name "kebab" -- kebab`
+
 ## Library
 
 Buffer, Captcha, Consistent, Core, Cron, Crypto, Db (MySQL), Dns (DNSPod, Alibaba Cloud), Fs, Jwt, Kv (Redis), Lan, Net, S3, Scan, Session, Sql, Ssh (Shell, Sftp), Text, Time, Ws, Zip, Zlib.

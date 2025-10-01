@@ -26,6 +26,8 @@ Node 22+
 
 執行 `npm i @maiyunnet/kebab` 安裝最新版，安裝完成後執行 `npx kebab init` 初始化，再執行 `npx kebab` 啟動專案。
 
+也可以使用 pm2 啟動專案，執行 `pm2 start npx --name "kebab" -- kebab` 即可。
+
 ## 庫
 
 Buffer, Captcha, Consistent, Core, Cron, Crypto, Db (MySQL), Dns (DNSPod, Alibaba Cloud), Fs, Jwt, Kv (Redis), Lan, Net, S3, Scan, Session, Sql, Ssh (Shell, Sftp), Text, Time, Ws, Zip, Zlib.

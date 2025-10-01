@@ -469,7 +469,10 @@ export function getFormData(): fd.FormData {
 }
 
 /** --- proxy 要剔除的基础头部 --- */
-const proxyContinueHeaders = ['host', 'connection', 'http-version', 'http-code', 'http-url'];
+const proxyContinueHeaders = [
+    'host', 'connection', 'http-version', 'http-code', 'http-url',
+    'transfer-encoding'
+];
 
 /**
  * --- 剔除不代理的 header ---

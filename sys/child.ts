@@ -613,7 +613,7 @@ function getVhostByHostname(hostname: string): kebab.IVhost | null {
             }
             else if (domain.includes('*')) {
                 // --- 通配符匹配 ---
-                domain = domain.replace(/\./g, '\\.').replace(/\*/, '.+?');
+                domain = domain.replace(/\./g, '\\.').replace(/\*/g, '.+?');
                 if (new RegExp(`^${domain}$`).test(hostname)) {
                     vSub = vhost;
                 }
