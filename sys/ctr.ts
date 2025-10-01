@@ -258,11 +258,11 @@ export class Ctr {
     }
 
     /**
-     * --- 包含所有 opcode 的消息，若要发送数据需自行调用 write 方法，返回 false 则不会执行默认方法 ---
+     * --- 包含所有 opcode 的消息，若要发送数据需自行调用 write 方法，data 恒定为原始 buffer，返回 false 则不会执行默认方法 ---
      * @param data 数据
      * @param opcode opcode
      */
-    public onMessage(data: Buffer | string, opcode: lWs.EOpcode): undefined | boolean | Promise<undefined | boolean>;
+    public onMessage(data: Buffer, opcode: lWs.EOpcode): undefined | boolean | Promise<undefined | boolean>;
     public onMessage(): undefined {
         return;
 

@@ -9,7 +9,7 @@ import * as net from 'net';
 import * as http from 'http';
 import * as crypto from 'crypto';
 // --- 库 ---
-import * as fs from '#kebab/lib/fs.js';
+import * as lFs from '#kebab/lib/fs.js';
 import * as lCore from '#kebab/lib/core.js';
 import * as lText from '#kebab/lib/text.js';
 import * as sCtr from '#kebab/sys/ctr.js';
@@ -233,7 +233,7 @@ async function requestHandler(
     }
     const uri = lText.parseUrl(`http${https ? 's' : ''}://${host}${req.url ?? ''}`);
     /** --- 当前的 vhost 配置文件 --- */
-    const vhost = getVhostByHostname(uri.hostname ?? '');
+    const vhost = await getVhostByHostname(uri.hostname ?? '');
     if (!vhost) {
         req.socket.destroy();
         return;
@@ -245,12 +245,6 @@ async function requestHandler(
         res.end(text);
         return;
         */
-    }
-    const vhostRoot = vhost.root.replace(/\${example}/g, kebab.ROOT_PATH + 'www/example/');
-    /** --- 网站绝对根目录，末尾带 / --- */
-    let rootPath = lText.isRealPath(vhostRoot) ? vhostRoot : kebab.WWW_CWD + vhostRoot;
-    if (!rootPath.endsWith('/')) {
-        rootPath += '/';
     }
     /** --- 请求的路径部分，前导带 / 末尾不一定，用户怎么请求就是什么 --- */
     let path = uri.pathname ?? '/';
@@ -267,7 +261,7 @@ async function requestHandler(
         if (item !== '') {
             // --- 判断 item 是文件还是文件夹 ---
             /** --- 'abc' / 'def.json' ---  */
-            let stat = await fs.stats(rootPath + now + item);
+            let stat = await lFs.stats(vhost.real + now + item);
             if (!stat) {
                 res.setHeader('content-type', 'text/html; charset=utf-8');
                 res.setHeader('content-length', 22);
@@ -278,7 +272,7 @@ async function requestHandler(
             if (stat.isDirectory()) {
                 now += item + '/';
                 // --- 判断是不是动态层 ---
-                stat = await fs.stats(rootPath + now + 'kebab.json');
+                stat = await lFs.stats(vhost.real + now + 'kebab.json');
                 if (stat) {
                     // --- 动态层，交给 Route 处理器 ---
                     try {
@@ -286,7 +280,7 @@ async function requestHandler(
                             'req': req,
                             'res': res,
                             'uri': uri,
-                            'rootPath': rootPath + now,
+                            'rootPath': vhost.real + now,
                             'urlBase': '/' + now,
                             'path': path.slice(('/' + pathList.slice(0, i).join('/')).length + 1),
                             'timer': timer
@@ -314,7 +308,7 @@ async function requestHandler(
             }
             else {
                 // --- 文件，直接输出并结束 ---
-                await fs.readToResponse(rootPath + now + item, req, res, stat);
+                await lFs.readToResponse(vhost.real + now + item, req, res, stat);
                 return;
             }
         }
@@ -324,7 +318,7 @@ async function requestHandler(
                 break;
             }
             // --- 本层是根，判断根是不是动态层 ---
-            const stat = await fs.stats(rootPath + now + 'kebab.json');
+            const stat = await lFs.stats(vhost.real + now + 'kebab.json');
             if (stat) {
                 // --- 动态层，交给 Route 处理器 ---
                 try {
@@ -332,7 +326,7 @@ async function requestHandler(
                         'req': req,
                         'res': res,
                         'uri': uri,
-                        'rootPath': rootPath + now,
+                        'rootPath': vhost.real + now,
                         'urlBase': '/' + now,
                         'path': path.slice(1),
                         'timer': timer
@@ -354,9 +348,9 @@ async function requestHandler(
     // --- 最后一层是目录，且不是动态层，判断有没有主页，有则输出，没有则 403 出错 ---
     const indexFiles: string[] = ['index.html', 'index.htm'];
     for (const indexFile of indexFiles) {
-        const stat = await fs.isFile(rootPath + now + indexFile);
+        const stat = await lFs.isFile(vhost.real + now + indexFile);
         if (stat) {
-            await fs.readToResponse(rootPath + now + indexFile, req, res, stat);
+            await lFs.readToResponse(vhost.real + now + indexFile, req, res, stat);
             return;
         }
     }
@@ -377,16 +371,10 @@ async function upgradeHandler(req: http.IncomingMessage, socket: net.Socket, htt
     // --- 当前 uri ---
     const uri = lText.parseUrl(`ws${https ? 's' : ''}://${req.headers['host'] ?? ''}${req.url ?? ''}`);
     /** --- 当前的 vhost 配置文件 --- */
-    const vhost = getVhostByHostname(uri.hostname ?? '');
+    const vhost = await getVhostByHostname(uri.hostname ?? '');
     if (!vhost) {
         socket.destroy();
         return;
-    }
-    const vhostRoot = vhost.root.replace(/\${example}/g, kebab.ROOT_PATH + 'www/example/');
-    /** --- 网站绝对根目录，末尾带 / --- */
-    let rootPath = lText.isRealPath(vhostRoot) ? vhostRoot : kebab.WWW_CWD + vhostRoot;
-    if (!rootPath.endsWith('/')) {
-        rootPath += '/';
     }
     /** --- 请求的路径部分，前导带 / 末尾不一定，用户怎么请求就是什么 --- */
     let path = uri.pathname ?? '/';
@@ -403,7 +391,7 @@ async function upgradeHandler(req: http.IncomingMessage, socket: net.Socket, htt
         if (item !== '') {
             // --- 判断 item 是文件还是文件夹 ---
             /** --- 'abc' / 'def.json' ---  */
-            let stat = await fs.stats(rootPath + now + item);
+            let stat = await lFs.stats(vhost.real + now + item);
             if (!stat) {
                 socket.destroy();
                 return;
@@ -411,14 +399,14 @@ async function upgradeHandler(req: http.IncomingMessage, socket: net.Socket, htt
             if (stat.isDirectory()) {
                 now += item + '/';
                 // --- 判断是不是动态层 ---
-                stat = await fs.stats(rootPath + now + 'kebab.json');
+                stat = await lFs.stats(vhost.real + now + 'kebab.json');
                 if (stat) {
                     // --- 动态层，交给 Route 处理器 ---
                     if (await sRoute.run({
                         'req': req,
                         'socket': socket,
                         'uri': uri,
-                        'rootPath': rootPath + now,
+                        'rootPath': vhost.real + now,
                         'urlBase': '/' + now,
                         'path': path.slice(('/' + pathList.slice(0, i).join('/')).length + 1)
                     })) {
@@ -438,14 +426,14 @@ async function upgradeHandler(req: http.IncomingMessage, socket: net.Socket, htt
                 break;
             }
             // --- 判断根是不是动态层 ---
-            const stat = await fs.stats(rootPath + now + 'kebab.json');
+            const stat = await lFs.stats(vhost.real + now + 'kebab.json');
             if (stat) {
                 // --- 动态层，交给 Route 处理器 ---
                 if (await sRoute.run({
                     'req': req,
                     'socket': socket,
                     'uri': uri,
-                    'rootPath': rootPath + now,
+                    'rootPath': vhost.real + now,
                     'urlBase': '/' + now,
                     'path': path.slice(1)
                 })) {
@@ -463,7 +451,7 @@ async function upgradeHandler(req: http.IncomingMessage, socket: net.Socket, htt
  */
 async function reload(): Promise<void> {
     // --- 清除全局 config，并重新加载全局信息 ---
-    const configContent = await fs.getContent(kebab.CONF_CWD + 'config.json', 'utf8');
+    const configContent = await lFs.getContent(kebab.CONF_CWD + 'config.json', 'utf8');
     if (!configContent) {
         throw `File '${kebab.CONF_CWD}config.json' not found.`;
     }
@@ -475,13 +463,13 @@ async function reload(): Promise<void> {
         lCore.globalConfig[key] = config[key];
     }
     // --- 重新加载 VHOST 信息（/conf/vhost/） ---
-    const files = await fs.readDir(kebab.VHOST_CWD);
+    const files = await lFs.readDir(kebab.VHOST_CWD);
     vhosts = [];
     for (const file of files) {
         if (!file.name.endsWith('.json')) {
             continue;
         }
-        const fstr = await fs.getContent(kebab.VHOST_CWD + file.name, 'utf8');
+        const fstr = await lFs.getContent(kebab.VHOST_CWD + file.name, 'utf8');
         if (!fstr) {
             continue;
         }
@@ -510,12 +498,12 @@ async function reloadCert(): Promise<void> {
         'cert': crypto.X509Certificate;
     }> = [];
     try {
-        const certConfig = await fs.getContent(kebab.CONF_CWD + 'cert.json', 'utf8');
+        const certConfig = await lFs.getContent(kebab.CONF_CWD + 'cert.json', 'utf8');
         if (certConfig) {
             const certs = lText.parseJson(certConfig);
             for (const item of certs) {
-                const key = await fs.getContent(lText.isRealPath(item.key) ? item.key : kebab.CERT_CWD + item.key, 'utf8');
-                const cert = await fs.getContent(lText.isRealPath(item.cert) ? item.cert : kebab.CERT_CWD + item.cert, 'utf8');
+                const key = await lFs.getContent(lText.isRealPath(item.key) ? item.key : kebab.CERT_CWD + item.key, 'utf8');
+                const cert = await lFs.getContent(lText.isRealPath(item.cert) ? item.cert : kebab.CERT_CWD + item.cert, 'utf8');
                 if (!cert || !key) {
                     continue;
                 }
@@ -599,36 +587,65 @@ process.on('message', function(msg: kebab.Json) {
 });
 
 /**
+ * --- 获取 vhost 的真实路径 ---
+ * --- 替换 ${example} 为实际路径 ---
+ * --- 如果不是真实路径，添加 WWW_CWD 前缀 ---
+ * --- 确保路径以 / 结尾 ---
+ */
+function getVhostReal(root: string): string {
+    let real = root.replace(/\${example}/g, kebab.ROOT_PATH + 'www/example/');
+    real = lText.isRealPath(real) ? real : kebab.WWW_CWD + real;
+    return real.endsWith('/') ? real : real + '/';
+}
+
+/**
  * --- 获取匹配的 vhost 对象 ---
  * --- 如果有精准匹配，以精准匹配为准，否则为通配符匹配（vSub），最后全局泛匹配（vGlobal） ---
  * @param hostname 当前的 hostname，不带端口
  */
-function getVhostByHostname(hostname: string): kebab.IVhost | null {
-    let vGlobal!: kebab.IVhost, vSub!: kebab.IVhost;
+async function getVhostByHostname(hostname: string): Promise<kebab.IVhost & {
+    /** --- 真实路径，以 / 结尾 --- */
+    'real': string;
+} | null> {
+    let vGlobal!: kebab.IVhost;
+    let vGlobalReal = '';
+    let vSub!: kebab.IVhost;
+    let vSubReal = '';
     for (const vhost of vhosts) {
         for (let domain of vhost.domains) {
             if (domain === '*') {
                 // --- 全局泛匹配 ---
-                vGlobal = vhost;
+                const real = getVhostReal(vhost.root);
+                if (await lFs.isDir(real)) {
+                    vGlobal = vhost;
+                    vGlobalReal = real;
+                }
             }
             else if (domain.includes('*')) {
                 // --- 通配符匹配 ---
                 domain = domain.replace(/\./g, '\\.').replace(/\*/g, '[\\w-]+?');
                 if (new RegExp(`^${domain}$`).test(hostname)) {
-                    vSub = vhost;
+                    const real = getVhostReal(vhost.root);
+                    if (await lFs.isDir(real)) {
+                        vSub = vhost;
+                        vSubReal = real;
+                    }
                 }
             }
             else if (domain === hostname) {
                 // --- 完全匹配 ---
-                return vhost;
+                const real = getVhostReal(vhost.root);
+                if (await lFs.isDir(real)) {
+                    return { ...vhost, real };
+                }
             }
         }
     }
     if (vSub) {
-        return vSub;
+        return { ...vSub, 'real': vSubReal };
     }
     if (vGlobal) {
-        return vGlobal;
+        return { ...vGlobal, 'real': vGlobalReal };
     }
     return null;
 }

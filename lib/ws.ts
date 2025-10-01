@@ -393,6 +393,10 @@ function bindPipe(s1: Socket, s2: Socket): Promise<void> {
             switch (msg.opcode) {
                 case EOpcode.TEXT:
                 case EOpcode.BINARY: {
+                    if (typeof msg.data === 'string') {
+                        s2.writeText(msg.data);
+                        break;
+                    }
                     s2.writeBinary(msg.buffer);
                     break;
                 }
@@ -422,6 +426,10 @@ function bindPipe(s1: Socket, s2: Socket): Promise<void> {
             switch (msg.opcode) {
                 case EOpcode.TEXT:
                 case EOpcode.BINARY: {
+                    if (typeof msg.data === 'string') {
+                        s1.writeText(msg.data);
+                        break;
+                    }
                     s1.writeBinary(msg.buffer);
                     break;
                 }
