@@ -1,16 +1,19 @@
 import * as kebab from '#kebab/index.js';
+import * as lNet from '#kebab/lib/net.js';
 import * as sCtr from '#kebab/sys/ctr.js';
 
 export default class extends sCtr.Ctr {
 
-    public onReqStart(): boolean {
+    public async onReqStart(): Promise<number> {
+        if (await lNet.rproxy(this, {
+            'test/net-rproxy/': 'https://cdn.jsdelivr.net/npm/deskrt@2.0.10/'
+        })) {
+            return -1;
+        }
         if (this._config.const.path === 'test/net-mproxy1') {
-            return false;
+            return 0;
         }
-        if (this._config.const.path.startsWith('test/net-rproxy/')) {
-            return false;
-        }
-        return true;
+        return 1;
     }
 
     public onLoad(): string | boolean {

@@ -52,7 +52,6 @@ export default class extends sCtr.Ctr {
     }
 
     public onReady(): boolean {
-        lCore.display('onReady');
         return true;
     }
 
@@ -2068,15 +2067,6 @@ content: <pre>${lText.htmlescape((await res.getContent())?.toString() ?? '')}</p
 error: <pre>${JSON.stringify(res.error, null, 4)}</pre>`);
 
         return echo.join('') + this._getEnd();
-    }
-
-    public async netRproxy(): Promise<string | boolean> {
-        if (await lNet.rproxy(this, {
-            'test/net-rproxy/': 'https://cdn.jsdelivr.net/npm/deskrt@2.0.10/'
-        })) {
-            return false;
-        }
-        return 'Nothing';
     }
 
     public async netMproxy(): Promise<string | boolean> {

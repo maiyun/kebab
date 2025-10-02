@@ -222,6 +222,8 @@ async function requestHandler(
     timer.timer = setTimeout(timer.callback, timer.timeout);
     // --- 设置服务器名版本 ---
     res.setHeader('Server', 'Kebab/' + kebab.VER);
+    res.setHeader('expires', 'Mon, 26 Jul 1994 05:00:00 GMT');
+    res.setHeader('cache-control', 'no-store');
     // --- 当前 uri ---
     let host = req.headers[':authority'];
     if (host === undefined || typeof host !== 'string') {

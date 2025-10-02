@@ -54,15 +54,6 @@ export async function run(data: {
         'callback': () => void;
     };
 }): Promise<boolean> {
-    // --- 检测 path 是否是静态文件 ---
-    if (/^(stc\/.*|favicon.\w+?\??.*|apple[\w-]+?\.png\??.*|[\w-]+?\.txt\??.*|[\w-]+?\.html\??.*)/.test(data.path)) {
-        return false;
-    }
-    // --- 根据 res 还是 socket 进行初始化设置 ---
-    if (data.res) {
-        data.res.setHeader('expires', 'Mon, 26 Jul 1994 05:00:00 GMT');
-        data.res.setHeader('cache-control', 'no-store');
-    }
     // --- 判断 kebab config 是否已经读取过 ---
     if (!kebabConfigs[data.rootPath + 'kebab.json']) {
         const configContent = await lFs.getContent(data.rootPath + 'kebab.json', 'utf8');
@@ -103,6 +94,7 @@ export async function run(data: {
     // --- 加载 kebab config ---
     const config: kebab.IConfig = {} as kebab.Json;
     const configData = kebabConfigs[data.rootPath + 'kebab.json'];
+    // --- 合并 configData 到 config ---
     for (const name in configData) {
         config[name] = configData[name];
     }
@@ -152,9 +144,11 @@ export async function run(data: {
     if (path === '') {
         path = '@';
     }
+    /** --- 不做语言跳转、不进入动态处理流程的路径 --- */
+    const stcPaths = /^(stc\/.*|favicon.\w+?\??.*|apple[\w-]+?\.png\??.*|[\w-]+?\.txt\??.*|[\w-]+?\.html\??.*)/;
     // --- 检测是否托管语言页面 ---
     const param: string[] = [];
-    if (config.lang && data.res) {
+    if (config.lang && data.res && !stcPaths.test(path)) {
         // --- 仅仅 res 模式支持 config.lang ---
         if (path[2] !== '/') {
             // --- 不管是首页还是 @ 页，都会到此处（已经有语言目录不会到这里） ---
@@ -410,9 +404,19 @@ export async function run(data: {
 
     middle.setPrototype('_get', get);
 
-    /** --- 是否让框架自动获取 post，true 为自动（默认） --- */
+    /** --- 是否让框架自动获取 post，1 为自动（默认） --- */
     const reqStartRtn = await middle.onReqStart();
-    if (reqStartRtn) {
+    if (reqStartRtn === -1) {
+        // --- 代理/反代了，什么也不管 ---
+        return true;
+    }
+    // --- 检测 path 是否是静态文件 ---
+    // --- 只能在这里做，因为 onReqStart 里面可能有反代，反代不能让 stc 等路径直连 ---
+    // --- 也得同时给反代走，所以 onReqStart 之后才能走到这一步判断 ---
+    if (stcPaths.test(data.path)) {
+        return false;
+    }
+    if (reqStartRtn === 1) {
         const rawPost = await getPost(data.req);
         // --- 原始 POST ---
         middle.setPrototype('_rawPost', rawPost.raw);

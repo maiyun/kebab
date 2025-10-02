@@ -282,9 +282,9 @@ export class Ctr {
         return;
     }
 
-    /** --- 请求发送开始时调用，返回 false 则框架不会自动获取任何 post 内容（仅会在 middle 内触发） --- */
-    public onReqStart(): boolean | Promise<boolean> {
-        return true;
+    /** --- 请求发送开始时调用，返回 -1-流程中断，一般用于代理/反代,0-框架不会自动处理 post,1-自动处理(默认)（仅会在 middle 内触发） --- */
+    public onReqStart(): number | Promise<number> {
+        return 1;
     }
 
     /**
