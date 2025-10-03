@@ -7,7 +7,7 @@
  */
 
 /** --- 当前系统版本号 --- */
-export const VER = '3.2.1';
+export const VER = '3.2.2';
 
 // --- 服务端用的路径 ---
 
@@ -166,6 +166,8 @@ export interface IConfigConst {
     'path': string;
     /** --- 不含 ? 开头 --- */
     'qs': string;
+    /** --- 含 ? 开头 --- */
+    'qss': string;
     'startTime': bigint;
     'startMemory': number;
 

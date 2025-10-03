@@ -101,6 +101,7 @@ export async function run(data: {
     config.const = {
         'path': data.path,
         'qs': data.uri.query ?? '',
+        'qss': data.uri.query ? '?' + data.uri.query : '',
         'startTime': process.hrtime.bigint(),
         'startMemory': process.memoryUsage().rss,
 
