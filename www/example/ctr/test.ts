@@ -229,6 +229,7 @@ export default class extends sCtr.Ctr {
             '<br><br><b>Ws:</b>',
             `<br><br><a href="${this._config.const.urlBase}test/ws-server">View "test/ws-server"</a>`,
             `<br><a href="${this._config.const.urlBase}test/ws-server?ac=rproxy">View ws rproxy</a>`,
+            `<br><a href="${this._config.const.urlBase}test/ws-server?ac=rproxy2">View ws rproxy2 (handler)</a>`,
             `<br><a href="${this._config.const.urlBase}test/ws-client">View "test/ws-client"</a>`,
             `<br><a href="${this._config.const.urlBase}test/ws-client?ac=mproxy">View ws mproxy</a>`,
 
@@ -3076,6 +3077,7 @@ ${lTime.format(null, 'd|D|j|l|N|w|Y|y|F|M|m|H|h|i|s|T')}`;
     public wsServer(): string {
         const echo = '<a href="' + this._config.const.urlBase + 'test/ws-server">Default</a> | ' +
         '<a href="' + this._config.const.urlBase + 'test/ws-server?ac=rproxy">rproxy</a> | ' +
+        '<a href="' + this._config.const.urlBase + 'test/ws-server?ac=rproxy2">rproxy2</a> | ' +
         '<a href="' + this._config.const.urlBase + 'test">Return</a><br><br>' +
 `Nick: <input id="nick"> <input id="btn" type="button" value="Enter" onclick="enter()"> <input id="stop" type="button" value="Stop" onclick="stop()" disabled>
 <div id="list" style="border: solid 1px #000; line-height: 1.5; height: 300px; overflow-y: scroll; margin-top: 10px; padding: 10px;"></div>
@@ -3108,7 +3110,7 @@ function enter() {
     nickEl.disabled = true;
     btnEl.disabled = true;
     listEl.insertAdjacentHTML('afterbegin', '<div>[' + dateStr() + '] Connecting...</div>');
-    ws = new WebSocket('ws${this._config.const.https ? 's' : ''}://${this._config.const.host}/${this._get['ac'] === 'rproxy' ? 'rproxy' : 'test'}');
+    ws = new WebSocket('ws${this._config.const.https ? 's' : ''}://${this._config.const.host}/${(this._get['ac'] === 'rproxy' || this._get['ac'] === 'rproxy2') ? this._get['ac'] : 'test'}');
     ws.onopen = function() {
         listEl.insertAdjacentHTML('afterbegin', '<div>[' + dateStr() + '] Event: onOpen.</div>');
         ws.send('Hello: ' + nick);

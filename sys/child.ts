@@ -59,6 +59,18 @@ async function run(): Promise<void> {
     // --- 加载 全局、vhosts、sni 证书 ---
     await reload();
 
+    // --- 启动随带的 ind，如果独立运行 ind 则用 --ind 命令启动 ---
+    for (const ind of lCore.globalConfig.ind) {
+        if (!await lFs.isFile(kebab.IND_CWD + ind + '/index.js')) {
+            lCore.display('CHILD IND ERROR', 'IND FILE "' + ind + '" NOT FOUND.');
+            continue;
+        }
+        // --- 载入独立文件入口 ---
+        import((!kebab.IND_CWD.startsWith('/') ? '/' : '') + kebab.IND_CWD + ind + '/index.js').catch((e) => {
+            lCore.display('CHILD IND ERROR', ind, e);
+        });
+    }
+
     // --- 创建服务器并启动（支持 http2/https/http/websocket） ---
     http2Server = http2.createSecureServer({
         // eslint-disable-next-line @typescript-eslint/naming-convention

@@ -26,6 +26,7 @@ export const globalConfig: kebab.IConfig & {
     'debug': boolean;
     'max': number;
     'hosts': string[];
+    'ind': string[];
 } = {} as kebab.Json;
 
 /** --- Cookie 设置的选项 --- */

@@ -247,12 +247,17 @@ export async function run(data: {
     let rtn: kebab.Json;
 
     if (data.socket && data.req instanceof http.IncomingMessage) {
-        // --- socket 模式，判断真实控制器文件是否存在 ---
-        const filePath = config.const.wsPath + pathLeft + '.js';
+        // --- socket 模式 ---
+        // --- 判断真实控制器文件是否存在 ---
+        let filePath = config.const.wsPath + pathLeft + '.js';
         if (!await lFs.isFile(filePath)) {
             // --- 指定的控制器不存在 ---
-            data.socket?.destroy();
-            return true;
+            filePath = config.const.wsPath + 'handler.js';
+            if (!await lFs.isFile(filePath)) {
+                // --- 默认 handler 也不存在 ---
+                data.socket?.destroy();
+                return true;
+            }
         }
         // --- 加载控制器文件 ---
         const ctrCtr: typeof sCtr.Ctr = (await import((!filePath.startsWith('/') ? '/' : '') + filePath)).default;

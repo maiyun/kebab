@@ -79,6 +79,7 @@ async function run(): Promise<void> {
         config.debug ??= true;
         config.max ??= 64;
         config.hosts ??= [];
+        config.ind ??= [];
         // --- config - set ---
         config.set ??= {};
         config.set.timezone ??= 8;
