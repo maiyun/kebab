@@ -200,7 +200,7 @@ async function run(): Promise<void> {
             return;
         }
         // --- 载入独立文件入口 ---
-        import('../ind/' + cmds[1] + '/index.js').catch((e) => {
+        import((!kebab.IND_CWD.startsWith('/') ? '/' : '') + kebab.IND_CWD + cmds[1] + '/index.js').catch((e) => {
             lCore.display('CMD ERROR', 'E', e);
         });
     }
