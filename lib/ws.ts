@@ -1,7 +1,7 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2019-6-2 20:42
- * Last: 2020-4-9 22:33:11, 2022-09-13 13:32:01, 2022-12-30 19:13:07, 2024-2-6 23:53:45, 2024-12-23 01:33:16, 2025-1-28 21:05:51, 2025-9-23 12:27:48
+ * Last: 2020-4-9 22:33:11, 2022-09-13 13:32:01, 2022-12-30 19:13:07, 2024-2-6 23:53:45, 2024-12-23 01:33:16, 2025-1-28 21:05:51, 2025-9-23 12:27:48, 2025-10-4 23:20:32
  */
 import * as http from 'http';
 import * as net from 'net';
@@ -88,7 +88,9 @@ export interface IRproxyOptions {
     };
 }
 
-const liwsServer = liws.createServer();
+const liwsServer = liws.createServer({
+    'frameReceiveMode': EFrameReceiveMode.SIMPLE,
+});
 
 export class Socket {
 
@@ -190,17 +192,17 @@ export class Socket {
     /** --- 创建成功后第一时间绑定事件 --- */
     private _bindEvent(): void {
         this._ws.on('message', msg => {
-            (async (): Promise<void> => {
-                if (msg.opcode === EOpcode.CLOSE) {
-                    return;
-                }
-                const buf: Buffer = 'data' in msg ? Buffer.concat(msg.data) : await msg.toBuffer();
-                this._on.message({
-                    'opcode': msg.opcode,
-                    'buffer': buf,
-                    'data': msg.opcode === EOpcode.TEXT ? buf.toString() : buf,
-                }) as any;
-            })().catch(() => { });
+            if (msg.opcode === EOpcode.CLOSE) {
+                return;
+            }
+            if (!('data' in msg)) {
+                return;
+            }
+            const buf: Buffer = Buffer.concat(msg.data);
+            this._on.message({
+                'opcode': msg.opcode,
+                'data': buf,
+            }) as any;
         }).on('drain', () => {
             this._on.drain() as any;
         }).on('error', (e) => {
@@ -215,8 +217,7 @@ export class Socket {
     /** --- 还未开启监听时来的数据将存在这里 --- */
     private readonly _waitMsg: Array<{
         'opcode': EOpcode;
-        'buffer': Buffer;
-        'data': Buffer | string;
+        'data': Buffer;
     }> = [];
 
     /** --- 还未开启 error 监听时产生的 error 错误对象 --- */
@@ -230,8 +231,7 @@ export class Socket {
         /** --- 消息 --- */
         message: (msg: {
             'opcode': EOpcode;
-            'buffer': Buffer;
-            'data': Buffer | string;
+            'data': Buffer;
         }): void | Promise<void> => {
             this._waitMsg.push(msg);
         },
@@ -252,8 +252,7 @@ export class Socket {
     /** --- 绑定监听 --- */
     public on(event: 'message', cb: (msg: {
         'opcode': EOpcode;
-        'buffer': Buffer;
-        'data': Buffer | string;
+        'data': Buffer;
     }) => void | Promise<void>): this;
     public on(event: 'error', cb: (error: any) => void | Promise<void>): this;
     public on(event: 'drain' | 'close' | 'end', cb: () => void | Promise<void>): this;
@@ -394,17 +393,16 @@ export function createServer(request: http.IncomingMessage, socket: net.Socket, 
  * @param s2 第二个 socket
  */
 function bindPipe(s1: Socket, s2: Socket): Promise<void> {
-    return new Promise<void>((resolve) => {
+    return new Promise<void>(resolve => {
         // --- 监听发送端的 ---
         s1.on('message', (msg) => {
             switch (msg.opcode) {
-                case EOpcode.TEXT:
+                case EOpcode.TEXT: {
+                    s2.writeText(msg.data.toString());
+                    break;
+                }
                 case EOpcode.BINARY: {
-                    if (typeof msg.data === 'string') {
-                        s2.writeText(msg.data);
-                        break;
-                    }
-                    s2.writeBinary(msg.buffer);
+                    s2.writeBinary(msg.data);
                     break;
                 }
                 case EOpcode.CLOSE: {
@@ -431,13 +429,12 @@ function bindPipe(s1: Socket, s2: Socket): Promise<void> {
         // --- 监听远程端的 ---
         s2.on('message', (msg) => {
             switch (msg.opcode) {
-                case EOpcode.TEXT:
+                case EOpcode.TEXT: {
+                    s1.writeText(msg.data.toString());
+                    break;
+                }
                 case EOpcode.BINARY: {
-                    if (typeof msg.data === 'string') {
-                        s1.writeText(msg.data);
-                        break;
-                    }
-                    s1.writeBinary(msg.buffer);
+                    s1.writeBinary(msg.data);
                     break;
                 }
                 case EOpcode.CLOSE: {
@@ -555,7 +552,7 @@ export async function rsocket(
                 switch (msg.opcode) {
                     case EOpcode.TEXT:
                     case EOpcode.BINARY: {
-                        socket.write(msg.buffer);
+                        socket.write(msg.data);
                         break;
                     }
                     case EOpcode.CLOSE: {

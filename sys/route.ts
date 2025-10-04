@@ -307,7 +307,7 @@ export async function run(data: {
                     wsSocket.on('message', async function(msg): Promise<void> {
                         switch (msg.opcode) {
                             case ws.EOpcode.CLOSE: {
-                                const r = await (cctr as kebab.Json)['onMessage'](msg.buffer, msg.opcode);
+                                const r = await (cctr as kebab.Json)['onMessage'](msg.data, msg.opcode);
                                 if (r === false) {
                                     break;
                                 }
@@ -315,7 +315,7 @@ export async function run(data: {
                                 break;
                             }
                             case ws.EOpcode.PING: {
-                                const r = await (cctr as kebab.Json)['onMessage'](msg.buffer, msg.opcode);
+                                const r = await (cctr as kebab.Json)['onMessage'](msg.data, msg.opcode);
                                 if (r === false) {
                                     break;
                                 }
@@ -325,11 +325,11 @@ export async function run(data: {
                             case ws.EOpcode.BINARY:
                             case ws.EOpcode.TEXT: {
                                 try {
-                                    const r = await (cctr as kebab.Json)['onMessage'](msg.buffer, msg.opcode);
+                                    const r = await (cctr as kebab.Json)['onMessage'](msg.data, msg.opcode);
                                     if (r === false) {
                                         break;
                                     }
-                                    const wrtn = await (cctr as kebab.Json)['onData'](msg.data, msg.opcode);
+                                    const wrtn = await (cctr as kebab.Json)['onData'](msg.opcode === ws.EOpcode.TEXT ? msg.data.toString() : msg.data, msg.opcode);
                                     if (wrtn === false) {
                                         wsSocket.end();
                                         return;
