@@ -201,10 +201,10 @@ export interface IConfigConst {
 
 /** --- 虚拟机配置对象 --- */
 export interface IVhost {
-    readonly 'name': string;
+    readonly 'name'?: string;
     readonly 'domains': string[];
     readonly 'root': string;
-    readonly 'remark': string;
+    readonly 'remark'?: string;
 }
 
 /** --- 上传的文件信息对象 --- */

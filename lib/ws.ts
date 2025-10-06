@@ -296,7 +296,7 @@ export class Socket {
     }
 
     /** --- 发送文本 --- */
-    public writeText(data: string): boolean {
+    public writeText(data: Buffer | string | Array<Buffer | string>): boolean {
         if (!this._ws.writable) {
             return false;
         }

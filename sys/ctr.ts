@@ -276,6 +276,13 @@ export class Ctr {
     }
 
     /**
+     * --- WebSocket 下连接被 end 后会自动被调用的事件，可重写此方法 ---
+     */
+    public onEnd(): void | Promise<void> {
+        return;
+    }
+
+    /**
      * --- WebSocket 下连接被终止后会自动被调用的事件，可重写此方法 ---
      */
     public onClose(): void | Promise<void> {
@@ -843,7 +850,7 @@ export class Ctr {
      * --- 发送 socket 文本 ---
      * @param data 要发送的信息
      */
-    protected _writeText(data: string): boolean {
+    protected _writeText(data: Buffer | string | Array<Buffer | string>): boolean {
         return this._socket.writeText(data);
     }
 

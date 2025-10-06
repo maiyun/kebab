@@ -372,6 +372,13 @@ export async function run(data: {
                         }
                     }).on('error', (e: any) => {
                         lCore.log(cctr, lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
+                    }).on('end', async () => {
+                        try {
+                            await (cctr as kebab.Json)['onEnd']();
+                        }
+                        catch (e: any) {
+                            lCore.log(cctr, lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
+                        }
                     }).on('close', async () => {
                         try {
                             await (cctr as kebab.Json)['onClose']();
@@ -517,7 +524,7 @@ export async function run(data: {
                 return true;
             }
             // --- 检测 action 是否存在，以及排除内部方法 ---
-            if (pathRight.startsWith('_') || pathRight === 'onUpgrade' || pathRight === 'onLoad' || pathRight === 'onData' || pathRight === 'onDrain' || pathRight === 'onClose' || pathRight === 'setPrototype' || pathRight === 'getPrototype' || pathRight === 'getAuthorization') {
+            if (pathRight.startsWith('_') || pathRight === 'onUpgrade' || pathRight === 'onLoad' || pathRight === 'onData' || pathRight === 'onDrain' || pathRight === 'onEnd' || pathRight === 'onClose' || pathRight === 'setPrototype' || pathRight === 'getPrototype' || pathRight === 'getAuthorization') {
                 // --- _ 开头的 action 是内部方法，不允许访问 ---
                 if (config.route['#404']) {
                     data.res.setHeader('location', lText.urlResolve(config.const.urlBase, config.route['#404']));
