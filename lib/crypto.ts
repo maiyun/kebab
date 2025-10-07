@@ -140,10 +140,14 @@ export function privateDecrypt(
 
 // --- Cipher (AES/SM4...) 加/解密 ---
 
-export const AES_256_ECB = 'aes-256-ecb';       // --- 如果未设置 iv，则默认这个，但强烈不建议 ---
+/** --- 勿使用，无 iv 默认，但勿使用 --- */
+export const AES_256_ECB = 'aes-256-ecb';
+/** --- 一般不用，兼容性场景下用 --- */
 export const AES_256_CBC = 'aes-256-cbc';
-export const AES_256_CFB = 'aes-256-cfb';       // --- 设置 iv，自动就切换成了这个 ---
-export const AES_256_GCM = 'aes-256-gcm';       // --- 强烈建议使用这个 ---
+/** --- 设置 iv 会自动切换为 CTR，流式下使用，非流直接使用 GCM --- */
+export const AES_256_CTR = 'aes-256-ctr';
+/** --- 非流直接使用 GCM --- */
+export const AES_256_GCM = 'aes-256-gcm';
 
 export const SM4_ECB = 'sm4-ecb';       // --- SM4 如果未设置 iv，则默认这个 ---
 export const SM4_CBC = 'sm4-cbc';
@@ -153,7 +157,7 @@ export const SM4_CFB = 'sm4-cfb';       // --- SM4 一般用这个，设置 iv�
  * --- cipher 加密，强烈不建议使用 AES_256_ECB ---
  * @param original 原始字符串
  * @param key 密钥 32 个英文字母和数字
- * @param iv 向量 16(CFB) 或 12(GCM) 个英文字母和数字
+ * @param iv 向量 16(CTR) 或 12(GCM) 个英文字母和数字
  * @param method 加密方法
  */
 export function cipherEncrypt(original: string | Buffer, key: crypto.CipherKey, iv: string = '', method: string = AES_256_ECB, output: 'base64' | 'buffer' = 'base64'): string | Buffer | false {
@@ -162,7 +166,7 @@ export function cipherEncrypt(original: string | Buffer, key: crypto.CipherKey, 
             key = hashHmac('md5', key, 'MaiyunSalt');
         }
         if (iv) {
-            if (method === AES_256_CFB) {
+            if (method === AES_256_CTR) {
                 if (iv.length !== 16) {
                     return false;
                 }
@@ -214,13 +218,13 @@ export function aesEncrypt(original: string | Buffer, key: crypto.CipherKey, iv?
  * --- AES 加密 ---
  * @param original 原始字符串
  * @param key 密钥尽量 32 个英文字母和数字，不是 32 个系统会自动处理
- * @param iv 向量 16 个英文字母和数字
+ * @param iv 向量 16(CTR) 或 12(GCM) 个英文字母和数字
  * @param method 加密方法
  * @param output 输出类型
  */
 export function aesEncrypt(original: string | Buffer, key: crypto.CipherKey, iv: string = '', method: string = AES_256_ECB, output: 'base64' | 'buffer' = 'base64'): string | Buffer | false {
     if (iv !== '') {
-        method = method === AES_256_ECB ? AES_256_CFB : method;
+        method = method === AES_256_ECB ? AES_256_CTR : method;
     }
     return cipherEncrypt(original, key, iv, method, output);
 }
@@ -262,7 +266,7 @@ export function sm4Encrypt(original: string | Buffer, key: crypto.CipherKey, iv:
  * --- cipher 解密 ---
  * @param encrypt 需解密的字符串
  * @param key 密钥 32 个英文字母和数字
- * @param iv 向量 16(CFB) 或 12(GCM) 个英文字母和数字
+ * @param iv 向量 16(CTR) 或 12(GCM) 个英文字母和数字
  * @param method 加密方法
  */
 export function cipherDecrypt(encrypt: string | Buffer, key: crypto.CipherKey, iv: string = '', method: string = AES_256_ECB, output: 'binary' | 'buffer' = 'binary'): string | Buffer | false {
@@ -271,7 +275,7 @@ export function cipherDecrypt(encrypt: string | Buffer, key: crypto.CipherKey, i
             key = hashHmac('md5', key, 'MaiyunSalt');
         }
         if (iv) {
-            if (method === AES_256_CFB) {
+            if (method === AES_256_CTR) {
                 if (iv.length !== 16) {
                     return false;
                 }
@@ -327,12 +331,12 @@ export function aesDecrypt(encrypt: string | Buffer, key: crypto.CipherKey, iv?:
  * --- AES 解密 ---
  * @param encrypt 需解密的字符串
  * @param key 密钥 32 个英文字母和数字
- * @param iv 向量 16 个英文字母和数字
+ * @param iv 向量 16(CTR) 或 12(GCM) 个英文字母和数字
  * @param method 加密方法
  */
 export function aesDecrypt(encrypt: string | Buffer, key: crypto.CipherKey, iv: string = '', method: string = AES_256_ECB, output: 'binary' | 'buffer' = 'binary'): string | Buffer | false {
     if (iv !== '') {
-        method = method === AES_256_ECB ? AES_256_CFB : method;
+        method = method === AES_256_ECB ? AES_256_CTR : method;
     }
     return cipherDecrypt(encrypt, key, iv, method, output);
 }
