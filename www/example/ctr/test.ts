@@ -3175,6 +3175,9 @@ setInterval(() => {
                 ws.on('message', (frame) => {
                     echo.push('<div>Server: ' + frame.data.toString() + '.</div>');
                 });
+                ws.on('end', () => {
+                    lCore.display('CLIENT onEnd');
+                });
                 ws.on('close', () => {
                     resolve();
                 });

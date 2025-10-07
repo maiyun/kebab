@@ -250,7 +250,8 @@ export class Ctr {
     }
 
     /**
-     * --- WebSocket 下当收到数据时会自动被调用的事件，即只文本和二进制数据，返回内容会被发送给 socket，但返回 false 连接会被中断 ---
+     * --- WebSocket 下当收到数据时会自动被调用的事件，即只文本和二进制数据，返回内容会被发送给 socket ---
+     * --- 但返回 false 连接会被中断，什么都不返回则什么都不做 ---
      */
     public onData(data: Buffer | string, opcode: lWs.EOpcode): kebab.Json;
     public onData(): string {
@@ -258,7 +259,9 @@ export class Ctr {
     }
 
     /**
-     * --- 包含所有 opcode 的消息，若要发送数据需自行调用 write 方法，data 恒定为原始 buffer，返回 false 则不会执行默认方法 ---
+     * --- 包含所有 opcode 的消息，若要发送数据需自行调用 write 方法，data 恒定为原始 buffer ---
+     * --- 返回 false 则不会执行默认方法，一般请什么都不要返回 ---
+     * --- 返回 false 链接也不会中断 ---
      * @param data 数据
      * @param opcode opcode
      */

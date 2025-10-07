@@ -8,14 +8,14 @@ export default class extends sCtr.Ctr {
     private _nick: string = '';
 
     public onUpgrade(): { 'headers'?: http.OutgoingHttpHeaders; 'timeout'?: number; } {
-        lCore.debug('WebSocket test onUpgrade.');
+        lCore.display('[/test] WebSocket test onUpgrade.');
         return {
             'timeout': 60_000 * 2,
         };
     }
 
     public onLoad(): boolean {
-        lCore.debug('WebSocket test onLoad.');
+        lCore.display('[/test] WebSocket test onLoad.');
         setTimeout(() => {
             if (!this._nick) {
                 return;
@@ -35,12 +35,12 @@ export default class extends sCtr.Ctr {
         }
         // --- 用户消息 ---
         const date = new Date();
-        lCore.debug('[' + date.getHours().toString().padStart(2, '0') + ':' + date.getMinutes().toString().padStart(2, '0') + ':' + date.getSeconds().toString().padStart(2, '0') + '] WebSocket test onData, data: ' + data);
+        lCore.display('[/test] [' + date.getHours().toString().padStart(2, '0') + ':' + date.getMinutes().toString().padStart(2, '0') + ':' + date.getSeconds().toString().padStart(2, '0') + '] WebSocket test onData, data: ' + data);
         return '<b>' + this._nick + ':</b> ' + data;
     }
 
     public onClose(): void {
-        lCore.debug('WebSocket test onClose, nick: ' + this._nick);
+        lCore.display('[/test] WebSocket test onClose, nick: ' + this._nick);
         this._nick = '';
     }
 

@@ -273,11 +273,14 @@ export class Socket {
                 break;
             }
             case 'end': {
+                if (!this._ws.ended) {
+                    break;
+                }
                 cb() as any;
                 break;
             }
             default: {
-                // --- close ---
+                // --- drain, close ---
                 if (!this._close) {
                     break;
                 }
