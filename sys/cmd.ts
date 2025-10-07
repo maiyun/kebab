@@ -199,6 +199,7 @@ async function run(): Promise<void> {
             lCore.display('CMD ERROR', 'IND FILE "' + cmds[1] + '" NOT FOUND.');
             return;
         }
+        process.title = cmds[1] + ' - kebab ind';
         // --- 载入独立文件入口 ---
         import((!kebab.IND_CWD.startsWith('/') ? '/' : '') + kebab.IND_CWD + cmds[1] + '/index.js').catch((e) => {
             lCore.display('CMD ERROR', 'E', e);

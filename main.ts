@@ -17,6 +17,7 @@ if (cluster.isPrimary) {
     }
     else {
         // --- 正常启动 ---
+        process.title = 'kebab';
         import('./sys/master.js');
     }
 }
