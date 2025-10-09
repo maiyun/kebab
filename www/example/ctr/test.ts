@@ -33,7 +33,7 @@ export default class extends sCtr.Ctr {
     public onLoad(): Array<string | number> | boolean {
         if (
             this._config.const.hostname !== '127.0.0.1' && this._config.const.hostname !== '172.17.0.1' &&
-            this._config.const.hostname !== 'localhost' && this._config.const.hostname !== 'local-test.brc-app.com' &&
+            this._config.const.hostname !== 'localhost' && !this._config.const.hostname.endsWith('.local.brc-app.com') &&
             !this._config.const.hostname.startsWith('192.168.')
         ) {
             return [0, 'Please use 127.0.0.1 or local to access the file (' + this._config.const.host + ').'];

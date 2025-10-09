@@ -680,10 +680,10 @@ export class Pool {
             conn = new Connection(this._etc, link);
             conn.refreshLast();
             conn.setUsing();
-            link.on('error', function(err): void {
+            link.on('error', function(err: Error): void {
                 conn.setLost();
                 // console.log(`--- redis [${conn._etc.host}:${conn._etc.port}] error ---`);
-                lCore.debug('[KV][ERROR]', err);
+                lCore.debug('[KV][ERROR]', err.message);
             }).on('end', () => {
                 conn.setLost();
             }).on('close', () => {

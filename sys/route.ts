@@ -266,7 +266,7 @@ export async function run(data: {
         // --- 先处理 web socket 的情况 ---
         let wsSocket: lWs.Socket;
         try {
-            const options = await (cctr as kebab.Json).onUpgrade();
+            const options = cctr.onUpgrade();
             // --- 默认无消息发送 3 分钟 ---
             options.timeout ??= 60_000 * 3;
             wsSocket = lWs.createServer(data.req, data.socket, options);

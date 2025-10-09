@@ -877,16 +877,16 @@ export class Ctr {
      * --- 发送 socket ping ---
      * @param data 要发送的信息
      */
-    protected _ping(): boolean {
-        return this._socket.ping();
+    protected _ping(data?: Buffer | string): boolean {
+        return this._socket.ping(data);
     }
 
     /**
      * --- 发送 socket pong ---
      * @param data 要发送的信息
      */
-    protected _pong(): boolean {
-        return this._socket.pong();
+    protected _pong(data?: Buffer | string): boolean {
+        return this._socket.pong(data);
     }
 
     /**

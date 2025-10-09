@@ -5,6 +5,7 @@
  */
 import net from 'net';
 import * as lNet from '#kebab/lib/net.js';
+import * as lTime from '#kebab/lib/time.js';
 import * as lWs from '#kebab/lib/ws.js';
 import * as lCore from '#kebab/lib/core.js';
 
@@ -42,7 +43,7 @@ export function rwebsocket(
     const server = net.createServer(socket => {
         (async () => {
             // --- 每次进一个新连接都反代到一个新 WebSocket ---
-            lCore.display('New client: ' + socket.remoteAddress + ':' + socket.remotePort);
+            lCore.display('[' + lTime.format(null, 'Y-m-d H:i:s') + '] New client: ' + socket.remoteAddress + ':' + socket.remotePort);
             /** --- 远程端的双向 websocket --- */
             const rws = await lWs.connect(url, opt);
             if (!rws) {
@@ -77,13 +78,13 @@ export function rwebsocket(
                 rws.writeBinary(data);
             }).on('end', () => {
                 rws.end();
-                lCore.display('Client disconnected: ' + socket.remoteAddress + ':' + socket.remotePort);
+                lCore.display('[' + lTime.format(null, 'Y-m-d H:i:s') + '] Client disconnected: ' + socket.remoteAddress + ':' + socket.remotePort);
             }).on('error', err => {
-                lCore.display('Client error: ' + socket.remoteAddress + ':' + socket.remotePort + ', ' + err.message);
+                lCore.display('[' + lTime.format(null, 'Y-m-d H:i:s') + '] Client error: ' + socket.remoteAddress + ':' + socket.remotePort + ', ' + err.message);
             });
         })().catch(() => {});
     }).listen(port, () => {
-        lCore.display('Listening:' + port);
+        lCore.display('[' + lTime.format(null, 'Y-m-d H:i:s') + '] Listening: ' + port);
     });
     return server;
 }

@@ -13,7 +13,6 @@ import * as kebab from '#kebab/index.js';
 import * as lTime from '#kebab/lib/time.js';
 import * as lSql from '#kebab/lib/sql.js';
 import * as lCore from '#kebab/lib/core.js';
-import * as lText from '#kebab/lib/text.js';
 import * as sCtr from '#kebab/sys/ctr.js';
 
 /** --- query 返回的数据 --- */
@@ -224,7 +223,7 @@ export class Pool {
                 link.on('error', function(err: mysql2.QueryError): void {
                     c.setLost();
                     if (err.code !== 'PROTOCOL_CONNECTION_LOST') {
-                        lCore.debug('[DB][_getConnection][error]', err);
+                        lCore.debug('[DB][_getConnection][error]', err.message);
                     }
                 }).on('end', () => {
                     // lCore.debug('[DB][_getConnection] connection end.');
@@ -236,7 +235,7 @@ export class Pool {
                 connections.push(conn);
             }
             catch (e: any) {
-                const msg = '[DB][_getConnection] ' + lText.stringifyJson(e.stack).slice(1, -1);
+                const msg = '[DB][_getConnection] ' + e.message;
                 lCore.debug(msg);
                 lCore.log({}, msg, '-error');
             }
