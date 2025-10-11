@@ -483,9 +483,10 @@ export async function readToResponse(path: string,
 ): Promise<void> {
     stat ??= await stats(path);
     if (!stat) {
-        res.setHeader('content-length', 22);
+        const content = '<h1>404 Not found</h1><hr>Kebab';
+        res.setHeader('content-length', Buffer.byteLength(content));
         res.writeHead(404);
-        res.end('<h1>404 Not found</h1><hr>Kebab');
+        res.end(content);
         return;
     }
     // --- 判断缓存以及 MIME 和编码 ---

@@ -226,9 +226,10 @@ async function requestHandler(
                 // --- 已经开始输出的，需要用户自行处理 ---
                 return;
             }
-            res.setHeader('content-length', 37);
+            const content = '<h1>504 Gateway Timeout</h1><hr>Kebab';
+            res.setHeader('content-length', Buffer.byteLength(content));
             res.writeHead(504);
-            res.end('<h1>504 Gateway Timeout</h1><hr>Kebab');
+            res.end(content);
         }
     };
     timer.timer = setTimeout(timer.callback, timer.timeout);
@@ -277,10 +278,11 @@ async function requestHandler(
             /** --- 'abc' / 'def.json' ---  */
             let stat = await lFs.stats(vhost.real + now + item);
             if (!stat) {
+                const content = '<h1>404 Not found</h1><hr>Kebab';
                 res.setHeader('content-type', 'text/html; charset=utf-8');
-                res.setHeader('content-length', 22);
+                res.setHeader('content-length', Buffer.byteLength(content));
                 res.writeHead(404);
-                res.end('<h1>404 Not found</h1><hr>Kebab');
+                res.end(content);
                 return;
             }
             if (stat.isDirectory()) {
@@ -312,10 +314,11 @@ async function requestHandler(
                             'cookie': {},
                             'headers': {}
                         }, '[CHILD][requestHandler][E0]' + lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
+                        const content = '<h1>500 Server Error</h1><hr>Kebabb';
                         res.setHeader('content-type', 'text/html; charset=utf-8');
-                        res.setHeader('content-length', 25);
+                        res.setHeader('content-length', Buffer.byteLength(content));
                         res.writeHead(500);
-                        res.end('<h1>500 Server Error</h1><hr>Kebab');
+                        res.end(content);
                         return;
                     }
                 }
@@ -350,10 +353,11 @@ async function requestHandler(
                 }
                 catch (e: any) {
                     lCore.log({}, '[CHILD][requestHandler][E1]' + lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
+                    const content = '<h1>500 Server Error</h1><hr>Kebabb';
                     res.setHeader('content-type', 'text/html; charset=utf-8');
-                    res.setHeader('content-length', 25);
+                    res.setHeader('content-length', Buffer.byteLength(content));
                     res.writeHead(500);
-                    res.end('<h1>500 Server Error</h1><hr>Kebab');
+                    res.end(content);
                     return;
                 }
             }
@@ -368,10 +372,11 @@ async function requestHandler(
             return;
         }
     }
+    const content = '<h1>403 Forbidden</h1><hr>Kebab';
     res.setHeader('content-type', 'text/html; charset=utf-8');
-    res.setHeader('content-length', 22);
+    res.setHeader('content-length', Buffer.byteLength(content));
     res.writeHead(403);
-    res.end('<h1>403 Forbidden</h1><hr>Kebab');
+    res.end(content);
 }
 
 /**
