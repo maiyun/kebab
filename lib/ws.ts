@@ -159,7 +159,7 @@ export class Socket {
                 'auth': opt.mproxy?.auth ?? ''
             }) : uri.path;
             const cli = ca ?
-                await liws.wssConnect({
+                liws.createSecureClient({
                     'hostname': (typeof hosts === 'string' ? hosts : hosts[host]) || host,
                     'port': port,
                     'path': path,
@@ -168,20 +168,21 @@ export class Socket {
                     'connectTimeout': timeout * 1000,
                     'frameReceiveMode': mode,
                     'localAddress': local,
-                    'ca': ca
+                    'ca': ca,
                 }) :
-                await liws.wsConnect({
+                liws.createClient({
                     'hostname': (typeof hosts === 'string' ? hosts : hosts[host]) || host,
                     'port': port,
                     'path': path,
                     'headers': headers,
                     'connectTimeout': timeout * 1000,
                     'frameReceiveMode': mode,
-                    'localAddress': local
+                    'localAddress': local,
                 });
             cli.setMasking(masking);
             this._ws = cli;
             this._bindEvent();
+            await cli.connect();
             return this;
         }
         catch {

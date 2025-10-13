@@ -175,14 +175,12 @@ export default class Mod {
         }
         /** --- 是否有 select --- */
         const select = opt.select ?? (opt.where ? '*' : '');
-        if (select) {
-            this._sql.select(
-                select,
-                ((this.constructor as Record<string, kebab.Json>)._$table as string) +
-                (this._index !== null ? ('_' + this._index[0]) : '') +
-                (opt.alias ? ' ' + opt.alias : '')
-            );
-        }
+        this._sql.select(
+            select,
+            ((this.constructor as Record<string, kebab.Json>)._$table as string) +
+            (this._index !== null ? ('_' + this._index[0]) : '') +
+            (opt.alias ? ' ' + opt.alias : '')
+        );
         if (opt.where !== undefined) {
             if ((this.constructor as Record<string, kebab.Json>)._soft && !opt.raw) {
                 if (typeof opt.where === 'string') {
@@ -557,7 +555,9 @@ export default class Mod {
         db: lDb.Pool | lDb.Transaction,
         s: string | kebab.Json = '',
         opt: {
-            'ctr'?: sCtr.Ctr; 'raw'?: boolean; 'pre'?: string; 'index'?: string | string[];
+            'ctr'?: sCtr.Ctr; 'raw'?: boolean;
+            'pre'?: string; 'index'?: string | string[];
+            'alias'?: string;
             'contain'?: {
                 'key': string;
                 'list': string[];
@@ -571,7 +571,8 @@ export default class Mod {
             'where': s,
             'raw': opt.raw,
             'index': opt.index,
-            'contain': opt.contain
+            'contain': opt.contain,
+            'alias': opt.alias,
         }) as T & Record<string, any>;
     }
 
