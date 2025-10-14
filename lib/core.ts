@@ -416,6 +416,9 @@ export async function passThroughAppend(
     for (const item of data) {
         if (item instanceof stream.Readable || item instanceof lResponse.Response) {
             const stm = item instanceof stream.Readable ? item : item.getStream();
+            if (!stm) {
+                continue;
+            }
             // --- 读取流、Net 库 Response 对象 ---
             stm.pipe(passThrough, {
                 'end': false

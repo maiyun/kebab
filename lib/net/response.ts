@@ -45,15 +45,15 @@ export class Response {
     /**
      * --- 获取响应读取流对象 ---
      */
-    public getStream(): stream.Readable {
-        return this._req!.getStream();
+    public getStream(): stream.Readable | null {
+        return this._req ? this._req.getStream() : null;
     }
 
     /**
      * --- 获取原生响应读取流对象 ---
      */
-    public getRawStream(): stream.Readable {
-        return this._req!.getRawStream();
+    public getRawStream(): stream.Readable | null {
+        return this._req ? this._req.getRawStream() : null;
     }
 
 }

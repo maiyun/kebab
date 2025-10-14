@@ -545,6 +545,10 @@ export async function mproxy(
         ...opt,
         headers
     });
+    const stream = rres.getRawStream();
+    if (!stream) {
+        return -3;
+    }
     if (rres.error) {
         return -2;
     }
@@ -553,7 +557,7 @@ export async function mproxy(
     }
     res.writeHead(rres.headers?.['http-code'] ?? 200);
     await new Promise<void>((resolve) => {
-        rres.getRawStream().pipe(res).on('finish', () => {
+        stream.pipe(res).on('finish', () => {
             resolve();
         });
     });
@@ -611,6 +615,10 @@ export async function rproxy(
             ...opt,
             headers
         });
+        const stream = rres.getRawStream();
+        if (!stream) {
+            return false;
+        }
         if (rres.error) {
             return false;
         }
@@ -619,7 +627,7 @@ export async function rproxy(
         }
         res.writeHead(rres.headers?.['http-code'] ?? 200);
         await new Promise<void>((resolve) => {
-            rres.getRawStream().pipe(res).on('finish', () => {
+            stream.pipe(res).on('finish', () => {
                 resolve();
             });
         });

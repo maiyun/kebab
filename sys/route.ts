@@ -620,12 +620,7 @@ export async function run(data: {
             // --- 已经自行输出过 writeHead，可能自行处理了内容，如 pipe，则不再 writeHead ---
         }
         else {
-            if (data.res.getHeader('location')) {
-                data.res.writeHead(302);
-            }
-            else {
-                data.res.writeHead(httpCode);
-            }
+            data.res.writeHead(data.res.getHeader('location') ? 302 : httpCode);
         }
         if (!data.res.writableEnded) {
             // --- 如果当前还没结束，则强制关闭连接，一切 pipe 请自行在方法中 await，否则会被中断 ---
@@ -664,6 +659,11 @@ export async function run(data: {
     else if (rtn instanceof stream.Readable || rtn instanceof lResponse.Response) {
         // --- 返回的是流，那就以管道的形式输出 ---
         const stm = rtn instanceof stream.Readable ? rtn : rtn.getStream();
+        if (!stm) {
+            data.res.end('');
+            await waitCtr(cctr ?? middle);
+            return true;
+        }
         /** --- 当前的压缩对象 --- */
         let compress: lZlib.ICompress | null = null;
         if (!data.res.headersSent) {
