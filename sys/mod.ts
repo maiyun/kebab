@@ -35,7 +35,7 @@ class Rows<T extends Mod> implements CRows<T> {
         return this._items[index];
     }
 
-    /** --- 转换为数组对象 --- */
+    /** --- 转换为数组对象，获取的是新创建的数组 --- */
     public toArray(): Array<Record<string, any>> {
         const arr: Array<Record<string, any>> = [];
         for (const item of this._items) {
@@ -765,7 +765,7 @@ export default class Mod {
     }
 
     /**
-     * --- 将 key val 组成的数据列表转换为原生对象模式 ---
+     * --- 将 key val 组成的数据列表转换为原生对象模式，获取的是新创建的数组 ---
      * @param obj 要转换的 kv 数据列表
      */
     public static toArrayByRecord<T extends Mod>(
@@ -1705,11 +1705,11 @@ export default class Mod {
     }
 
     /**
-     * --- 获取值对象 ---
+     * --- 获取值对象，获取的是新创建的数组 ---
      */
     public toArray<TC extends abstract new (...args: any) => any>():
         TOnlyProperties<InstanceType<TC>> & Record<string, any> {
-        return this._data as any;
+        return { ...this._data } as any;
     }
 
     /**
@@ -1772,7 +1772,7 @@ export declare class CRows<T> implements Iterable<T> {
     /** --- 通过索引获取一个对象 --- */
     public item(index: number): T;
 
-    /** --- 转换为数组对象 --- */
+    /** --- 转换为数组对象，获取的是新创建的数组 --- */
     public toArray(): Array<Record<string, kebab.DbValue>>;
 
     public [Symbol.iterator](): Iterator<T>;
