@@ -71,7 +71,7 @@ class Rows<T extends Mod> implements CRows<T> {
             next: (): IteratorResult<T> => {
                 if (index < this._items.length) {
                     return {
-                        value: this._items[index++],
+                        value: this._items[++index],
                         done: false
                     };
                 }
@@ -317,18 +317,15 @@ export default class Mod {
         opt: {
             'raw'?: boolean;
             'pre'?: sCtr.Ctr | string;
-            'index'?: string;
+            'index'?: string | string[];
             'by'?: [string | string[], 'DESC' | 'ASC'];
             'limit'?: [number, number?];
         } = {}
     ): Promise<number | false | null> {
         const tim = lTime.stamp();
-        const sq = lSql.get(opt.pre);
+        const indexs = opt.index ? (typeof opt.index === 'string' ? [opt.index] : [...new Set(opt.index)]) : [''];
         if (this._$soft && !opt.raw) {
             // --- 软删除 ---
-            sq.update(this._$table + (opt.index ? ('_' + opt.index) : ''), [{
-                'time_remove': tim
-            }]);
             if (typeof where === 'string') {
                 where = '(' + where + ') AND `time_remove` = 0';
             }
@@ -341,26 +338,36 @@ export default class Mod {
                 where['time_remove'] = 0;
             }
         }
-        else {
-            // --- 真删除 ---
-            sq.delete(this._$table + (opt.index ? ('_' + opt.index) : ''));
+        let ar = 0;
+        for (const index of indexs) {
+            const sq = lSql.get(opt.pre);
+            if (this._$soft && !opt.raw) {
+                // --- 软删除 ---
+                sq.update(this._$table + (index ? ('_' + index) : ''), [{
+                    'time_remove': tim,
+                }]);
+            }
+            else {
+                // --- 真删除 ---
+                sq.delete(this._$table + (index ? ('_' + index) : ''));
+            }
+            sq.where(where);
+            if (opt.by) {
+                sq.by(opt.by[0], opt.by[1]);
+            }
+            if (opt.limit) {
+                sq.limit(opt.limit[0], opt.limit[1]);
+            }
+            const r = await db.execute(sq.getSql(), sq.getData());
+            if (r.packet === null) {
+                lCore.log(opt.pre instanceof sCtr.Ctr ? opt.pre : {}, '[removeByWhere, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+                return false;
+            }
+            if (r.packet.affectedRows > 0) {
+                ar += r.packet.affectedRows;
+            }
         }
-        sq.where(where);
-        if (opt.by) {
-            sq.by(opt.by[0], opt.by[1]);
-        }
-        if (opt.limit) {
-            sq.limit(opt.limit[0], opt.limit[1]);
-        }
-        const r = await db.execute(sq.getSql(), sq.getData());
-        if (r.packet === null) {
-            lCore.log(opt.pre instanceof sCtr.Ctr ? opt.pre : {}, '[removeByWhere, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
-            return false;
-        }
-        if (r.packet.affectedRows > 0) {
-            return r.packet.affectedRows;
-        }
-        return null;
+        return ar ? ar : null;
     }
 
     /**
@@ -432,12 +439,7 @@ export default class Mod {
             'limit'?: [number, number?];
         } = {}
     ): Promise<number | false | null> {
-        if (typeof opt.index === 'string') {
-            opt.index = [opt.index];
-        }
-        else {
-            opt.index ??= [''];
-        }
+        const indexs = opt.index ? (typeof opt.index === 'string' ? [opt.index] : [...new Set(opt.index)]) : [''];
         if (this._$soft && !opt.raw) {
             if (typeof where === 'string') {
                 where = '(' + where + ') AND `time_remove` = 0';
@@ -452,7 +454,7 @@ export default class Mod {
             }
         }
         let ar = 0;
-        for (const index of opt.index) {
+        for (const index of indexs) {
             const sq = lSql.get(opt.pre);
             sq.update(this._$table + (index ? ('_' + index) : ''), data);
             sq.where(where);
@@ -603,7 +605,13 @@ export default class Mod {
     public static find<T extends Mod>(
         db: lDb.Pool | lDb.Transaction,
         val: string | number | null,
-        opt: { 'ctr'?: sCtr.Ctr; 'lock'?: boolean; 'raw'?: boolean; 'pre'?: string; 'index'?: string; } = {}
+        opt: {
+            'ctr'?: sCtr.Ctr;
+            'lock'?: boolean;
+            'raw'?: boolean;
+            'pre'?: string;
+            'index'?: string | string[];
+        } = {}
     ): Promise<false | null | (T & Record<string, any>)> {
         return (new this({
             'db': db,
@@ -613,7 +621,7 @@ export default class Mod {
                 [this._$primary]: val
             }],
             'raw': opt.raw,
-            'index': opt.index
+            'index': opt.index,
         }) as T & Record<string, any>).first(opt.lock);
     }
 
@@ -663,6 +671,7 @@ export default class Mod {
         } = {}
     ): Promise<false | null | (T & Record<string, any>) | Record<string, any>> {
         if (!opt.index) {
+            // --- 无 index ---
             const o = new this({
                 'select': opt.select,
                 'db': db,
@@ -676,8 +685,8 @@ export default class Mod {
             }
             return opt.array ? o.firstArray() : o.first();
         }
-        opt.index = typeof opt.index === 'string' ? [opt.index] : [...new Set(opt.index)];
-        for (const item of opt.index) {
+        const indexs = (typeof opt.index === 'string') ? [opt.index] : [...new Set(opt.index)];
+        for (const item of indexs) {
             const row = new this({
                 'select': opt.select,
                 'db': db,
@@ -685,7 +694,7 @@ export default class Mod {
                 'pre': opt.pre,
                 'where': s,
                 'raw': opt.raw,
-                'index': item
+                'index': item,
             }) as T;
             if (opt.by) {
                 row.by(opt.by[0], opt.by[1]);
@@ -869,6 +878,8 @@ export default class Mod {
                         // --- 确实重复了 ---
                         continue;
                     }
+                    // --- 1062 非 index 冲突，那需要用户自行处理（可能不允许重复的邮箱） ---
+                    return false;
                 }
                 // --- 未处理的错误 ---
                 lCore.log(this._ctr ?? {}, '[create0, mod] [' + table + '] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
