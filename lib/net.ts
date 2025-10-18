@@ -71,9 +71,9 @@ export async function post(
 
 /**
  * --- 发起 JSON 请求 ---
- * @param u
- * @param data
- * @param opt
+ * @param u 网址
+ * @param data 数据
+ * @param opt选项
  */
 export async function postJson(
     u: string,
@@ -83,6 +83,30 @@ export async function postJson(
     opt.method = 'POST';
     opt.type = 'json';
     return request(u, data, opt);
+}
+
+/**
+ * --- 发起 JSON 请求并解析 JSON 响应 ---
+ * @param url 网址
+ * @param data 数据
+ * @param init 选项
+ * @returns JSON 数据，失败时返回 null
+ */
+export async function postJsonResponseJson(
+    u: string, data: kebab.Json[] | Record<string, kebab.Json>, opt: IRequestOptions = {}
+): Promise<any | null> {
+    opt.method = 'POST';
+    opt.type = 'json';
+    const res = await request(u, data, opt);
+    const rtn = await res.getContent();
+    if (!rtn) {
+        return null;
+    }
+    const json = lText.parseJson(rtn.toString());
+    if (!json) {
+        return null;
+    }
+    return json;
 }
 
 /**
