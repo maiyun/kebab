@@ -314,7 +314,7 @@ async function requestHandler(
                             'cookie': {},
                             'headers': {}
                         }, '[CHILD][requestHandler][E0]' + lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
-                        const content = '<h1>500 Server Error</h1><hr>Kebabb';
+                        const content = '<h1>500 Server Error</h1><hr>Kebab';
                         res.setHeader('content-type', 'text/html; charset=utf-8');
                         res.setHeader('content-length', Buffer.byteLength(content));
                         res.writeHead(500);
@@ -353,7 +353,7 @@ async function requestHandler(
                 }
                 catch (e: any) {
                     lCore.log({}, '[CHILD][requestHandler][E1]' + lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
-                    const content = '<h1>500 Server Error</h1><hr>Kebabb';
+                    const content = '<h1>500 Server Error</h1><hr>Kebab';
                     res.setHeader('content-type', 'text/html; charset=utf-8');
                     res.setHeader('content-length', Buffer.byteLength(content));
                     res.writeHead(500);
