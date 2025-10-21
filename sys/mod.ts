@@ -17,9 +17,9 @@ type TOnlyProperties<T> = {
 };
 
 /** --- 条数列表 --- */
-class Rows<T extends Mod> implements CRows<T> {
+class Rows<T extends Mod> implements IRows<T> {
 
-    private readonly _items: T[] = [];
+    private readonly _items: T[];
 
     public constructor(initialItems: T[] = []) {
         this._items = initialItems;
@@ -37,52 +37,22 @@ class Rows<T extends Mod> implements CRows<T> {
 
     /** --- 转换为数组对象，获取的是新创建的数组 --- */
     public toArray(): Array<Record<string, any>> {
-        const arr: Array<Record<string, any>> = [];
-        for (const item of this._items) {
-            arr.push(item.toArray());
-        }
-        return arr;
+        return this._items.map(i => i.toArray());
     }
 
     /** --- 根据规则筛掉项，predicate 返回 true 代表保留 --- */
     public filter(predicate: (value: T, index: number) => boolean): Rows<T> {
-        const items: T[] = [];
-        for (let i = 0; i < this._items.length; ++i) {
-            if (!predicate(this._items[i], i)) {
-                continue;
-            }
-            items.push(this._items[i]);
-        }
-        return new Rows<T>(items);
+        return new Rows<T>(this._items.filter(predicate));
     }
 
     /** --- 重塑对象内容 --- */
-    public map<TU>(allbackfn: (value: T, index: number) => TU): TU[] {
-        const items: TU[] = [];
-        for (let i = 0; i < this._items.length; ++i) {
-            items.push(allbackfn(this._items[i], i));
-        }
-        return items;
+    public map<TU extends Mod>(fn: (v: T, i: number) => TU): Rows<TU> {
+        return new Rows(this._items.map(fn));
     }
 
-    public [Symbol.iterator](): Iterator<T> {
-        let index = 0;
-        return {
-            next: (): IteratorResult<T> => {
-                if (index < this._items.length) {
-                    return {
-                        value: this._items[++index],
-                        done: false
-                    };
-                }
-                else {
-                    return {
-                        value: undefined,
-                        done: true
-                    };
-                }
-            }
-        };
+    /** --- for of --- */
+    public [Symbol.iterator](): IterableIterator<T> {
+        return this._items[Symbol.iterator]();
     }
 }
 
@@ -1774,20 +1744,10 @@ export default class Mod {
 
 // --- 类型 ---
 
-/** --- mod ls 对象 --- */
-export declare class CRows<T> implements Iterable<T> {
-
-    /** --- 总行数 --- */
-    public get length(): number;
-
-    /** --- 通过索引获取一个对象 --- */
-    public item(index: number): T;
-
-    /** --- 转换为数组对象，获取的是新创建的数组 --- */
-    public toArray(): Array<Record<string, kebab.DbValue>>;
-
-    public [Symbol.iterator](): Iterator<T>;
-
+export interface IRows<T> extends Iterable<T> {
+    readonly length: number;
+    item(index: number): T;
+    toArray(): Array<Record<string, any>>;
 }
 
 export interface IModUnionItem {
