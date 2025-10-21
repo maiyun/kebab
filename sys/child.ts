@@ -227,8 +227,8 @@ async function requestHandler(
                 return;
             }
             const content = '<h1>504 Gateway Timeout</h1><hr>Kebab';
+            res.statusCode = 504;
             res.setHeader('content-length', Buffer.byteLength(content));
-            res.writeHead(504);
             res.end(content);
         }
     };
@@ -279,9 +279,9 @@ async function requestHandler(
             let stat = await lFs.stats(vhost.real + now + item);
             if (!stat) {
                 const content = '<h1>404 Not found</h1><hr>Kebab';
+                res.statusCode = 404;
                 res.setHeader('content-type', 'text/html; charset=utf-8');
                 res.setHeader('content-length', Buffer.byteLength(content));
-                res.writeHead(404);
                 res.end(content);
                 return;
             }
@@ -315,9 +315,9 @@ async function requestHandler(
                             'headers': {}
                         }, '[CHILD][requestHandler][E0]' + lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
                         const content = '<h1>500 Server Error</h1><hr>Kebab';
+                        res.statusCode = 500;
                         res.setHeader('content-type', 'text/html; charset=utf-8');
                         res.setHeader('content-length', Buffer.byteLength(content));
-                        res.writeHead(500);
                         res.end(content);
                         return;
                     }
@@ -354,9 +354,9 @@ async function requestHandler(
                 catch (e: any) {
                     lCore.log({}, '[CHILD][requestHandler][E1]' + lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
                     const content = '<h1>500 Server Error</h1><hr>Kebab';
+                    res.statusCode = 500;
                     res.setHeader('content-type', 'text/html; charset=utf-8');
                     res.setHeader('content-length', Buffer.byteLength(content));
-                    res.writeHead(500);
                     res.end(content);
                     return;
                 }
@@ -373,9 +373,9 @@ async function requestHandler(
         }
     }
     const content = '<h1>403 Forbidden</h1><hr>Kebab';
+    res.statusCode = 403;
     res.setHeader('content-type', 'text/html; charset=utf-8');
     res.setHeader('content-length', Buffer.byteLength(content));
-    res.writeHead(403);
     res.end(content);
 }
 

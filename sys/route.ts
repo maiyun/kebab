@@ -60,9 +60,9 @@ export async function run(data: {
         if (!configContent) {
             if (data.res) {
                 const content = '<h1>500 File kebab.json can not be read</h1><hr>Kebab';
+                data.res.statusCode = 500;
                 data.res.setHeader('content-type', 'text/html; charset=utf-8');
                 data.res.setHeader('content-length', Buffer.byteLength(content));
-                data.res.writeHead(500);
                 data.res.end(content);
             }
             else {
@@ -162,13 +162,13 @@ export async function run(data: {
                 /** --- 组合要跳转的路径 --- */
                 const apath = config.const.path + (config.const.qs ? '?' + config.const.qs : '');
                 if (config.lang.list.includes(lang)) {
+                    data.res.statusCode = 302;
                     data.res.setHeader('location', config.const.urlBase + lang + '/' + apath);
-                    data.res.writeHead(302);
                     data.res.end('');
                     return true;
                 }
+                data.res.statusCode = 302;
                 data.res.setHeader('location', config.const.urlBase + config.lang.list[0] + '/' + apath);
-                data.res.writeHead(302);
                 data.res.end('');
                 return true;
             }
@@ -212,15 +212,15 @@ export async function run(data: {
     if (pathLeft.startsWith('middle')) {
         if (data.res) {
             if (config.route['#404']) {
+                data.res.statusCode = 302;
                 data.res.setHeader('location', lText.urlResolve(config.const.urlBase, config.route['#404']));
-                data.res.writeHead(302);
                 data.res.end('');
                 return true;
             }
             const content = '[Error] Controller not found, path: ' + path + '.';
+            data.res.statusCode = 404;
             data.res.setHeader('content-type', 'text/html; charset=utf-8');
             data.res.setHeader('content-length', Buffer.byteLength(content));
-            data.res.writeHead(404);
             data.res.end(content);
         }
         else {
@@ -449,9 +449,9 @@ export async function run(data: {
     catch (e: kebab.Json) {
         lCore.log(middle, '(E03)' + lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
         const content = '<h1>500 Server Error</h1><hr>Kebab';
+        data.res.statusCode = 500;
         data.res.setHeader('content-type', 'text/html; charset=utf-8');
         data.res.setHeader('content-length', Buffer.byteLength(content));
-        data.res.writeHead(500);
         data.res.end(content);
         return true;
     }
@@ -465,9 +465,9 @@ export async function run(data: {
         catch (e: kebab.Json) {
             lCore.log(middle, '(E05)' + lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
             const content = '<h1>500 Server Error</h1><hr>Kebab';
+            data.res.statusCode = 500;
             data.res.setHeader('content-type', 'text/html; charset=utf-8');
             data.res.setHeader('content-length', Buffer.byteLength(content));
-            data.res.writeHead(500);
             data.res.end(content);
             return true;
         }
@@ -479,15 +479,15 @@ export async function run(data: {
             if (!await lFs.isFile(filePath)) {
                 // --- 指定的控制器不存在 ---
                 if (config.route['#404']) {
+                    data.res.statusCode = 302;
                     data.res.setHeader('location', lText.urlResolve(config.const.urlBase, config.route['#404']));
-                    data.res.writeHead(302);
                     data.res.end('');
                     return true;
                 }
                 const content = '[Error] Controller not found, path: ' + path + '.';
+                data.res.statusCode = 404;
                 data.res.setHeader('content-type', 'text/html; charset=utf-8');
                 data.res.setHeader('content-length', Buffer.byteLength(content));
-                data.res.writeHead(404);
                 data.res.end(content);
                 return true;
             }
@@ -523,23 +523,24 @@ export async function run(data: {
 
             // --- 强制 HTTPS ---
             if (config.set.mustHttps && !config.const.https) {
+                data.res.statusCode = 302;
                 data.res.setHeader('location', data.req.url ?? '');
-                data.res.writeHead(302);
+                data.res.end('');
                 return true;
             }
             // --- 检测 action 是否存在，以及排除内部方法 ---
             if (pathRight.startsWith('_') || pathRight === 'onUpgrade' || pathRight === 'onLoad' || pathRight === 'onData' || pathRight === 'onDrain' || pathRight === 'onEnd' || pathRight === 'onClose' || pathRight === 'setPrototype' || pathRight === 'getPrototype' || pathRight === 'getAuthorization') {
                 // --- _ 开头的 action 是内部方法，不允许访问 ---
                 if (config.route['#404']) {
+                    data.res.statusCode = 302;
                     data.res.setHeader('location', lText.urlResolve(config.const.urlBase, config.route['#404']));
-                    data.res.writeHead(302);
                     data.res.end('');
                     return true;
                 }
                 const content = '[Error] Action not found, path: ' + path + '.';
+                data.res.statusCode = 404;
                 data.res.setHeader('content-type', 'text/html; charset=utf-8');
                 data.res.setHeader('content-length', Buffer.byteLength(content));
-                data.res.writeHead(404);
                 data.res.end(content);
                 return true;
             }
@@ -548,15 +549,15 @@ export async function run(data: {
             });
             if ((cctr as kebab.Json)[pathRight] === undefined) {
                 if (config.route['#404']) {
+                    data.res.statusCode = 302;
                     data.res.setHeader('location', lText.urlResolve(config.const.urlBase, config.route['#404']));
-                    data.res.writeHead(302);
                     data.res.end('');
                     return true;
                 }
                 const content = '[Error] Action not found, path: ' + path + '.';
+                data.res.statusCode = 404;
                 data.res.setHeader('content-type', 'text/html; charset=utf-8');
                 data.res.setHeader('content-length', Buffer.byteLength(content));
-                data.res.writeHead(404);
                 data.res.end(content);
                 return true;
             }
@@ -581,9 +582,9 @@ export async function run(data: {
                     catch (e: kebab.Json) {
                         lCore.log(cctr, '(E05)' + lText.stringifyJson(e.stack).slice(1, -1), '-error');
                         const content = '<h1>500 Server Error</h1><hr>Kebab';
+                        data.res.statusCode = 500;
                         data.res.setHeader('content-type', 'text/html; charset=utf-8');
                         data.res.setHeader('content-length', Buffer.byteLength(content));
-                        data.res.writeHead(500);
                         data.res.end(content);
                         await waitCtr(cctr);
                         return true;
@@ -596,9 +597,9 @@ export async function run(data: {
             catch (e: kebab.Json) {
                 lCore.log(cctr, '(E04)' + lText.stringifyJson(e.stack).slice(1, -1), '-error');
                 const content = '<h1>500 Server Error</h1><hr>Kebab';
+                data.res.statusCode = 500;
                 data.res.setHeader('content-type', 'text/html; charset=utf-8');
                 data.res.setHeader('content-length', Buffer.byteLength(content));
-                data.res.writeHead(500);
                 data.res.end(content);
                 await waitCtr(cctr);
                 return true;
@@ -620,7 +621,7 @@ export async function run(data: {
             // --- 已经自行输出过 writeHead，可能自行处理了内容，如 pipe，则不再 writeHead ---
         }
         else {
-            data.res.writeHead(data.res.getHeader('location') ? 302 : httpCode);
+            data.res.statusCode = data.res.getHeader('location') ? 302 : httpCode;
         }
         if (!data.res.writableEnded) {
             // --- 如果当前还没结束，则强制关闭连接，一切 pipe 请自行在方法中 await，否则会被中断 ---
@@ -643,7 +644,7 @@ export async function run(data: {
                     data.res.setHeader('content-encoding', compress.type);
                 }
             }
-            data.res.writeHead(httpCode);
+            data.res.statusCode = httpCode;
         }
         if (!data.res.writableEnded) {
             if (compress) {
@@ -674,7 +675,7 @@ export async function run(data: {
             if (compress) {
                 data.res.setHeader('content-encoding', compress.type);
             }
-            data.res.writeHead(httpCode);
+            data.res.statusCode = httpCode;
         }
         if (!data.res.writableEnded) {
             if (compress) {
@@ -692,7 +693,7 @@ export async function run(data: {
             if (rtn.length === 0) {
                 // --- 异常 ---
                 if (!data.res.headersSent) {
-                    data.res.writeHead(500);
+                    data.res.statusCode = 500;
                 }
                 if (!data.res.writableEnded) {
                     data.res.end('<h1>500 Internal server error</h1><hr>Kebab');
@@ -728,7 +729,7 @@ export async function run(data: {
                                 data.res.setHeader('content-encoding', compress.type);
                             }
                         }
-                        data.res.writeHead(httpCode);
+                        data.res.statusCode = httpCode;
                     }
                     if (!data.res.writableEnded) {
                         if (compress) {
@@ -753,7 +754,7 @@ export async function run(data: {
                         if (compress) {
                             data.res.setHeader('content-encoding', compress.type);
                         }
-                        data.res.writeHead(httpCode);
+                        data.res.statusCode = httpCode;
                     }
                     if (!data.res.writableEnded) {
                         const passThrough = new stream.PassThrough();
@@ -782,7 +783,7 @@ export async function run(data: {
                         data.res.setHeader('content-encoding', compress.type);
                     }
                 }
-                data.res.writeHead(httpCode);
+                data.res.statusCode = httpCode;
             }
             if (!data.res.writableEnded) {
                 if (compress) {
@@ -799,7 +800,7 @@ export async function run(data: {
     else {
         // --- 异常 ---
         if (!data.res.headersSent) {
-            data.res.writeHead(500);
+            data.res.statusCode = 500;
         }
         if (!data.res.writableEnded) {
             data.res.end('<h1>500 Internal server error</h1><hr>Kebab');

@@ -579,7 +579,7 @@ export async function mproxy(
     if (rres.headers) {
         filterHeaders(rres.headers, res, opt.filter);
     }
-    res.writeHead(rres.headers?.['http-code'] ?? 200);
+    res.statusCode = rres.headers?.['http-code'] ?? 200;
     await new Promise<void>((resolve) => {
         stream.pipe(res).on('finish', () => {
             resolve();
@@ -649,7 +649,7 @@ export async function rproxy(
         if (rres.headers) {
             filterHeaders(rres.headers, res, opt.filter);
         }
-        res.writeHead(rres.headers?.['http-code'] ?? 200);
+        res.statusCode = rres.headers?.['http-code'] ?? 200;
         await new Promise<void>((resolve) => {
             stream.pipe(res).on('finish', () => {
                 resolve();

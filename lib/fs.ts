@@ -7,9 +7,9 @@ import * as fs from 'fs';
 import * as http from 'http';
 import * as http2 from 'http2';
 import * as mime from '@litert/mime';
-import * as text from './text.js';
-import * as core from './core.js';
-import * as zlib from './zlib.js';
+import * as lText from './text.js';
+import * as lCore from './core.js';
+import * as lZlib from './zlib.js';
 
 export function getContent(path: string, options?: {
     'start'?: number;
@@ -150,7 +150,7 @@ export async function unlink(path: string): Promise<boolean> {
             return true;
         }
         catch {
-            await core.sleep(250);
+            await lCore.sleep(250);
         }
     }
     try {
@@ -360,7 +360,7 @@ export async function copyFolder(from: string, to: string, ignore: RegExp[] = []
         }
         else if (item.isFile()) {
             // --- 先判断本文件是否被排除 ---
-            if (ignore.length > 0 && text.match(item.name, ignore)) {
+            if (ignore.length > 0 && lText.match(item.name, ignore)) {
                 continue;
             }
             if (!checkTo) {
@@ -481,11 +481,12 @@ export async function readToResponse(path: string,
     res: http2.Http2ServerResponse | http.ServerResponse,
     stat?: fs.Stats | null
 ): Promise<void> {
+    res.statusCode = 200;
     stat ??= await stats(path);
     if (!stat) {
         const content = '<h1>404 Not found</h1><hr>Kebab';
+        res.statusCode = 404;
         res.setHeader('content-length', Buffer.byteLength(content));
-        res.writeHead(404);
         res.end(content);
         return;
     }
@@ -503,7 +504,7 @@ export async function readToResponse(path: string,
         const noneMatch = req.headers['if-none-match'];
         const modifiedSince = req.headers['if-modified-since'];
         if ((hash === noneMatch) && (lastModified === modifiedSince)) {
-            res.writeHead(304);
+            res.statusCode = 304;
             res.end();
             return;
         }
@@ -518,17 +519,15 @@ export async function readToResponse(path: string,
     const encoding = req.headers['accept-encoding'] ?? '';
     if (mimeData.compressible && (stat.size >= 1024)) {
         // --- 压缩 ---
-        const compress = await zlib.compress(encoding, await getContent(path));
+        const compress = await lZlib.compress(encoding, await getContent(path));
         if (compress) {
             res.setHeader('content-encoding', compress.type);
             res.setHeader('content-length', Buffer.byteLength(compress.buffer));
-            res.writeHead(200);
             res.end(compress.buffer);
             return;
         }
     }
     // --- 不压缩 ---
     res.setHeader('content-length', stat.size);
-    res.writeHead(200);
     await pipe(path, res instanceof http2.Http2ServerResponse ? (res.stream ?? res) : res);
 }
