@@ -45,9 +45,13 @@ class Rows<T extends Mod> implements IRows<T> {
         return new Rows<T>(this._items.filter(predicate));
     }
 
-    /** --- 重塑对象内容 --- */
-    public map<TU extends Mod>(fn: (v: T, i: number) => TU): Rows<TU> {
-        return new Rows(this._items.map(fn));
+    /** --- 重塑对象内容为数组 --- */
+    public map<TU>(allbackfn: (value: T, index: number) => TU): TU[] {
+        const items: TU[] = [];
+        for (let i = 0; i < this._items.length; ++i) {
+            items.push(allbackfn(this._items[i], i));
+        }
+        return items;
     }
 
     /** --- for of --- */
