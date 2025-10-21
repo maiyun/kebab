@@ -104,7 +104,8 @@ async function run(): Promise<void> {
     }, function(req: http2.Http2ServerRequest, res: http2.Http2ServerResponse): void {
         const host = (req.headers[':authority'] ?? req.headers['host'] ?? '');
         if (!host) {
-            req.socket.destroy();
+            res.statusCode = 403;
+            res.end();
             return;
         }
         const key = host + req.url;
@@ -130,7 +131,7 @@ async function run(): Promise<void> {
     }).on('upgrade', function(req: http.IncomingMessage, socket: net.Socket): void {
         const host = (req.headers['host'] ?? '');
         if (!host) {
-            req.socket.destroy();
+            socket.destroy();
             return;
         }
         const key = host + (req.url ?? '');
@@ -155,7 +156,8 @@ async function run(): Promise<void> {
     httpServer = http.createServer(function(req: http.IncomingMessage, res: http.ServerResponse): void {
         const host = (req.headers['host'] ?? '');
         if (!host) {
-            req.socket.destroy();
+            res.statusCode = 403;
+            res.end();
             return;
         }
         const key = host + (req.url ?? '');
@@ -179,7 +181,7 @@ async function run(): Promise<void> {
     }).on('upgrade', function(req: http.IncomingMessage, socket: net.Socket): void {
         const host = (req.headers['host'] ?? '');
         if (!host) {
-            req.socket.destroy();
+            socket.destroy();
             return;
         }
         const key = host + (req.url ?? '');
@@ -242,7 +244,7 @@ async function requestHandler(
     if (host === undefined || typeof host !== 'string') {
         host = req.headers['host'];
         if (host === undefined) {
-            req.socket.destroy();
+            res.end();
             return;
         }
     }
@@ -250,7 +252,8 @@ async function requestHandler(
     /** --- 当前的 vhost 配置文件 --- */
     const vhost = await getVhostByHostname(uri.hostname ?? '');
     if (!vhost) {
-        req.socket.destroy();
+        res.statusCode = 403;
+        res.end();
         return;
         /*
         const text = '<h1>Kebab: No permissions</h1>host: ' + (req.headers[':authority'] as string | undefined ?? req.headers['host'] ?? '') + '<br>url: ' + (lText.htmlescape(req.url ?? ''));

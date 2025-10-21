@@ -249,7 +249,7 @@ export async function run(data: {
     /** --- 开发者返回值 --- */
     let rtn: kebab.Json;
 
-    if (data.socket && data.req instanceof http.IncomingMessage) {
+    if (data.socket && (data.req instanceof http.IncomingMessage)) {
         // --- socket 模式 ---
         // --- 判断真实控制器文件是否存在 ---
         let filePath = config.const.wsPath + pathLeft + '.js';
@@ -276,7 +276,7 @@ export async function run(data: {
         }
         catch (e: kebab.Json) {
             lCore.log(cctr, lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
-            data.socket.destroy();
+            data.socket?.destroy();
             return true;
         }
         cctr.setPrototype('_param', param);
@@ -292,7 +292,7 @@ export async function run(data: {
         }
         catch (e: kebab.Json) {
             lCore.log(cctr, lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
-            data.socket.destroy();
+            data.socket?.destroy();
             return true;
         }
         if (rtn === undefined || rtn === true) {
@@ -301,7 +301,7 @@ export async function run(data: {
             }
             catch (e: kebab.Json) {
                 lCore.log(cctr, lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
-                data.socket.destroy();
+                data.socket?.destroy();
                 return true;
             }
             if (rtn === undefined || rtn === true) {
