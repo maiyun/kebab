@@ -12,6 +12,12 @@ import * as sCtr from '#kebab/sys/ctr.js';
 import * as lCore from '#kebab/lib/core.js';
 import * as lText from '#kebab/lib/text.js';
 
+/** --- s3 的连接对象 --- */
+const links: Array<{
+    'token': string;
+    'link': s3.S3Client;
+}> = [];
+
 /**
  * s3 文档：https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/client/s3/
  */
@@ -75,6 +81,12 @@ export class S3 {
                 endpoint = undefined;
             }
         }
+        const token = `${opt.service}-${account}-${secretId}-${region}`;
+        const link = links.find((item) => item.token === token);
+        if (link) {
+            this._link = link.link;
+            return;
+        }
         this._link = new s3.S3Client({
             'region': region,
             'credentials': {
@@ -82,6 +94,10 @@ export class S3 {
                 'secretAccessKey': secretKey,
             },
             'endpoint': endpoint,
+        });
+        links.push({
+            'token': token,
+            'link': this._link,
         });
     }
 
