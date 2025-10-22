@@ -481,19 +481,18 @@ export async function readToResponse(path: string,
     res: http2.Http2ServerResponse | http.ServerResponse,
     stat?: fs.Stats | null
 ): Promise<void> {
-    res.statusCode = 200;
     stat ??= await stats(path);
     if (!stat) {
         const content = '<h1>404 Not found</h1><hr>Kebab';
-        res.statusCode = 404;
         res.setHeader('content-length', Buffer.byteLength(content));
+        lCore.writeHead(res, 404);
         res.end(content);
         return;
     }
     // --- 判断缓存以及 MIME 和编码 ---
     let charset = '';
     const mimeData = mime.getData(path);
-    if (['htm', 'html', 'css', 'js', 'xml', 'jpg', 'jpeg', 'svg', 'gif', 'png'].includes(mimeData.extension)) {
+    if (['htm', 'html', 'css', 'js', 'xml', 'jpg', 'jpeg', 'svg', 'gif', 'png', 'json'].includes(mimeData.extension)) {
         charset = '; charset=utf-8';
         // --- 这些文件可能需要缓存 ---
         const hash = `W/"${stat.size.toString(16)}-${stat.mtime.getTime().toString(16)}"`;
@@ -504,7 +503,7 @@ export async function readToResponse(path: string,
         const noneMatch = req.headers['if-none-match'];
         const modifiedSince = req.headers['if-modified-since'];
         if ((hash === noneMatch) && (lastModified === modifiedSince)) {
-            res.statusCode = 304;
+            lCore.writeHead(res, 304);
             res.end();
             return;
         }
@@ -529,5 +528,6 @@ export async function readToResponse(path: string,
     }
     // --- 不压缩 ---
     res.setHeader('content-length', stat.size);
+    lCore.writeHead(res, 200);
     await pipe(path, res instanceof http2.Http2ServerResponse ? (res.stream ?? res) : res);
 }

@@ -135,7 +135,7 @@ setInterval(run, 15_000);
 export interface IRegular {
     /** --- 任务名称 --- */
     'name': string;
-    /** --- 任务对象 --- */
+    /** --- 任务日期对象（系统时区） --- */
     'date': {
         /** --- -1, 1 - 12 --- */
         'month': number;
@@ -153,7 +153,7 @@ export interface IRegular {
 }
 
 export interface IRegularData extends IRegular {
-    /** --- 上次执行时间字符串 --- */
+    /** --- 上次执行时间字符串，格式：YmdHi（系统时区） --- */
     'last': string;
     /** --- 总执行次数 --- */
     'count': number;

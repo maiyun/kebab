@@ -14,6 +14,7 @@ import * as kebab from '#kebab/index.js';
 import * as lFs from '#kebab/lib/fs.js';
 import * as lText from '#kebab/lib/text.js';
 import * as lTime from '#kebab/lib/time.js';
+import * as lCore from './core.js';
 import * as sCtr from '#kebab/sys/ctr.js';
 // --- 自己 ---
 import * as fd from './net/formdata.js';
@@ -579,7 +580,7 @@ export async function mproxy(
     if (rres.headers) {
         filterHeaders(rres.headers, res, opt.filter);
     }
-    res.statusCode = rres.headers?.['http-code'] ?? 200;
+    lCore.writeHead(res, rres.headers?.['http-code'] ?? 200);
     await new Promise<void>((resolve) => {
         stream.pipe(res).on('finish', () => {
             resolve();
@@ -649,7 +650,7 @@ export async function rproxy(
         if (rres.headers) {
             filterHeaders(rres.headers, res, opt.filter);
         }
-        res.statusCode = rres.headers?.['http-code'] ?? 200;
+        lCore.writeHead(res, rres.headers?.['http-code'] ?? 200);
         await new Promise<void>((resolve) => {
             stream.pipe(res).on('finish', () => {
                 resolve();

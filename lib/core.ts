@@ -912,3 +912,20 @@ export function display(message?: any, ...optionalParams: any[]): void {
     // eslint-disable-next-line no-console
     console.log(message, ...optionalParams);
 }
+
+/**
+ * --- 让 res 发送头部（前提是头部没有被发送才能调用本方法 ---
+ * @param res 响应对象
+ * @param statusCode 状态码
+ * @param headers 头部
+ */
+export function writeHead(
+    res: http2.Http2ServerResponse | http.ServerResponse, statusCode: number, headers?: http.OutgoingHttpHeaders
+): void {
+    if (res instanceof http2.Http2ServerResponse) {
+        res.writeHead(statusCode, headers);
+    }
+    else {
+        res.writeHead(statusCode, headers);
+    }
+}

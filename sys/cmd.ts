@@ -129,16 +129,16 @@ async function run(): Promise<void> {
         // --- config - s3 ---
         config.s3 ??= {};
         config.s3['CF'] ??= {};
-        config.s3['CF'].account = '';
-        config.s3['CF'].sid = '';
-        config.s3['CF'].skey = '';
-        config.s3['CF'].region = 'auto';
-        config.s3['CF'].bucket = '';
+        config.s3['CF'].account ??= '';
+        config.s3['CF'].sid ??= '';
+        config.s3['CF'].skey ??= '';
+        config.s3['CF'].region ??= 'auto';
+        config.s3['CF'].bucket ??= '';
         config.s3['TENCENT'] ??= {};
-        config.s3['TENCENT'].sid = '';
-        config.s3['TENCENT'].skey = '';
-        config.s3['TENCENT'].region = '';
-        config.s3['TENCENT'].bucket = '';
+        config.s3['TENCENT'].sid ??= '';
+        config.s3['TENCENT'].skey ??= '';
+        config.s3['TENCENT'].region ??= '';
+        config.s3['TENCENT'].bucket ??= '';
         // --- config - turnstile ---
         config.turnstile ??= {};
         config.turnstile['CF'] ??= {};

@@ -130,7 +130,8 @@ export default class extends sCtr.Ctr {
             `<br><a href="${this._config.const.urlBase}test/ctr-cross">View "test/ctr-cross"</a>`,
             `<br><a href="${this._config.const.urlBase}test/ctr-readable">View "test/ctr-readable"</a>`,
             `<br><a href="${this._config.const.urlBase}test/ctr-asynctask">View "test/ctr-asynctask"</a>`,
-            `<br><a href="${this._config.const.urlBase}test/ctr-timeout">View "test/ctr-timeout"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/ctr-timeout-long">View "test/ctr-timeout-long"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/ctr-timeout-short">View "test/ctr-timeout-short"</a>`,
 
             '<br><br><b>Middle:</b>',
             `<br><br><a href="${this._config.const.urlBase}test/middle">View "test/middle"</a>`,
@@ -577,7 +578,7 @@ Result:<pre id="result">Nothing.</pre>` + this._getEnd();
         return [1];
     }
 
-    public async ctrTimeout(): Promise<any[]> {
+    public async ctrTimeoutLong(): Promise<any[]> {
         this.timeout = 70_000;
         const echo = ['1'];
         await lCore.sleep(15_000);
@@ -588,7 +589,21 @@ Result:<pre id="result">Nothing.</pre>` + this._getEnd();
         echo.push('4');
         await lCore.sleep(15_000);
         echo.push('5');
-        return [1, echo];
+        return [1, { 'list': echo }];
+    }
+
+    public async ctrTimeoutShort(): Promise<any[]> {
+        this.timeout = 5_000;
+        const echo = ['1'];
+        await lCore.sleep(15_000);
+        echo.push('2');
+        await lCore.sleep(15_000);
+        echo.push('3');
+        await lCore.sleep(15_000);
+        echo.push('4');
+        await lCore.sleep(15_000);
+        echo.push('5');
+        return [1, { 'list': echo }];
     }
 
     public async modTest(): Promise<kebab.Json[] | string | boolean> {

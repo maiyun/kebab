@@ -339,7 +339,7 @@ export class Ctr {
     /**
      * --- 检测提交的数据类型 ---
      * @param input 要校验的输入项
-     * @param rule 规则
+     * @param rule 规则, int, double, num(可字符串), array, bool, string, ascii
      * @param rtn 返回值
      */
     protected _checkInput(
@@ -432,7 +432,8 @@ export class Ctr {
                         }
                         case 'int':
                         case 'integer': {
-                            if (input[key] && (typeof input[key] !== 'number') && !Number.isSafeInteger(input[key])) {
+                            // --- 必须是数字型且是整数 ---
+                            if (input[key] && !Number.isSafeInteger(input[key])) {
                                 rtn[0] = val[lastK][0];
                                 rtn[1] = val[lastK][1];
                                 if (val[lastK][2]) {
@@ -444,6 +445,7 @@ export class Ctr {
                         }
                         case 'float':
                         case 'double': {
+                            // --- 必须是数字型 ---
                             if (input[key] && (typeof input[key] !== 'number')) {
                                 rtn[0] = val[lastK][0];
                                 rtn[1] = val[lastK][1];
@@ -456,6 +458,7 @@ export class Ctr {
                         }
                         case 'num':
                         case 'number': {
+                            // --- 可字符串数字 ---
                             if (input[key] && (typeof input[key] !== 'number') && !/^[0-9]+\.?[0-9]*$/.test(input[key])) {
                                 rtn[0] = val[lastK][0];
                                 rtn[1] = val[lastK][1];
@@ -493,6 +496,18 @@ export class Ctr {
                         case 'string': {
                             if (input[key] !== null && (typeof input[key] !== 'string')) {
                                 // --- 如果不是 string 直接失败 ---
+                                rtn[0] = val[lastK][0];
+                                rtn[1] = val[lastK][1];
+                                if (val[lastK][2]) {
+                                    rtn[2] = val[lastK][2];
+                                }
+                                return false;
+                            }
+                            break;
+                        }
+                        case 'ascii': {
+                            // --- 必须是 ASCII 字符 ---
+                            if (input[key] !== null && !lText.isAscii(input[key])) {
                                 rtn[0] = val[lastK][0];
                                 rtn[1] = val[lastK][1];
                                 if (val[lastK][2]) {
@@ -593,7 +608,7 @@ export class Ctr {
     /**
      * --- 检测提交的数据类型（会检测 XSRF） ---
      * @param input 要校验的输入项
-     * @param rule 规则
+     * @param rule 规则, int, double, num(可字符串), array, bool, string, ascii
      * @param rtn 返回值
      */
     protected _checkXInput(

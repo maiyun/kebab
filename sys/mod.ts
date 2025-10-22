@@ -115,6 +115,7 @@ export default class Mod {
     public constructor(opt: {
         'db': lDb.Pool | lDb.Transaction;
         'ctr'?: sCtr.Ctr;
+        /** --- 框架会自动去重 --- */
         'index'?: string | string[];
         'alias'?: string;
         'row'?: Record<string, any>;

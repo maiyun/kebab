@@ -223,6 +223,7 @@ export function isDomain(domain: string): boolean {
     return REGEXP_DOMAIN.test(domain);
 }
 
+/** --- 可打印的 ascii 字符集 --- */
 export const REGEXP_ASCII = /^[\x20-\x7E]*$/;
 
 /**
