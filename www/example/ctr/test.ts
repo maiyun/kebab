@@ -86,6 +86,7 @@ export default class extends sCtr.Ctr {
             '<br>QS: ' + this._config.const.qs,
             '<br>HTTPS: ' + (this._config.const.https ? 'true' : 'false'),
             '<br>MOBILE: ' + (this._config.const.mobile ? 'true' : 'false'),
+            '<br>MINIPROGRAM: ' + (this._config.const.miniprogram) + ' (' + typeof this._config.const.miniprogram + ')',
             '<br>Real IP: ' + lCore.ip(this),
             '<br>Client IP: ' + lCore.realIP(this),
 
@@ -132,6 +133,7 @@ export default class extends sCtr.Ctr {
             `<br><a href="${this._config.const.urlBase}test/ctr-asynctask">View "test/ctr-asynctask"</a>`,
             `<br><a href="${this._config.const.urlBase}test/ctr-timeout-long">View "test/ctr-timeout-long"</a>`,
             `<br><a href="${this._config.const.urlBase}test/ctr-timeout-short">View "test/ctr-timeout-short"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/ctr-500">View "test/ctr-500"</a>`,
 
             '<br><br><b>Middle:</b>',
             `<br><br><a href="${this._config.const.urlBase}test/middle">View "test/middle"</a>`,
@@ -604,6 +606,12 @@ Result:<pre id="result">Nothing.</pre>` + this._getEnd();
         await lCore.sleep(15_000);
         echo.push('5');
         return [1, { 'list': echo }];
+    }
+
+    public async ctr500(): Promise<void> {
+        await lCore.sleep(100);
+        lCore.writeHead(this._res, 200);
+        lCore.debug('DEBUG', (this._res as any).abc.def);
     }
 
     public async modTest(): Promise<kebab.Json[] | string | boolean> {

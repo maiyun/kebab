@@ -125,6 +125,7 @@ export async function request(
     const method = opt.method ?? 'GET';
     const type = opt.type ?? 'form';
     const timeout = opt.timeout ?? 10;
+    /** --- 追踪 location 次数，0 为不追踪，默认为 0 --- */
     const follow = opt.follow ?? 0;
     const hosts = opt.hosts ?? {};
     const save = opt.save;
@@ -669,6 +670,7 @@ export interface IRequestOptions {
     'type'?: 'form' | 'json';
     /** --- 秒数 --- */
     'timeout'?: number;
+    /** --- 追踪 location 次数，0 为不追踪，默认为 0 --- */
     'follow'?: number;
     /** --- 自定义 host 映射，如 {'www.maiyun.net': '127.0.0.1'}，或全部映射到一个 host --- */
     'hosts'?: Record<string, string> | string;

@@ -222,6 +222,7 @@ async function requestHandler(
         'timeout': 30_000,
         'callback': () => {
             if (!req.socket.writable) {
+                // --- 用户连接已中断 ---
                 return;
             }
             if (res.headersSent) {
@@ -318,9 +319,11 @@ async function requestHandler(
                             'headers': {}
                         }, '[CHILD][requestHandler][E0]' + lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
                         const content = '<h1>500 Server Error</h1><hr>Kebab';
-                        res.setHeader('content-type', 'text/html; charset=utf-8');
-                        res.setHeader('content-length', Buffer.byteLength(content));
-                        lCore.writeHead(res, 500);
+                        if (!res.headersSent) {
+                            res.setHeader('content-type', 'text/html; charset=utf-8');
+                            res.setHeader('content-length', Buffer.byteLength(content));
+                            lCore.writeHead(res, 500);
+                        }
                         res.end(content);
                         return;
                     }
@@ -357,9 +360,11 @@ async function requestHandler(
                 catch (e: any) {
                     lCore.log({}, '[CHILD][requestHandler][E1]' + lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
                     const content = '<h1>500 Server Error</h1><hr>Kebab';
-                    res.setHeader('content-type', 'text/html; charset=utf-8');
-                    res.setHeader('content-length', Buffer.byteLength(content));
-                    lCore.writeHead(res, 500);
+                    if (!res.headersSent) {
+                        res.setHeader('content-type', 'text/html; charset=utf-8');
+                        res.setHeader('content-length', Buffer.byteLength(content));
+                        lCore.writeHead(res, 500);
+                    }
                     res.end(content);
                     return;
                 }
