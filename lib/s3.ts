@@ -58,11 +58,11 @@ export class S3 {
     public constructor(ctr: sCtr.Ctr, opt: IOptions) {
         this._ctr = ctr;
         const config = ctr.getPrototype('_config');
-        const account = config.s3?.[ESERVICE[opt.service]]?.account ?? '';
-        const secretId = config.s3?.[ESERVICE[opt.service]]?.sid ?? '';
-        const secretKey = config.s3?.[ESERVICE[opt.service]]?.skey ?? '';
-        const region = config.s3?.[ESERVICE[opt.service]]?.region ?? '';
-        this._bucket = config.s3?.[ESERVICE[opt.service]]?.bucket ?? '';
+        const account = opt.account ?? config.s3?.[ESERVICE[opt.service]]?.account ?? '';
+        const secretId = opt.secretId ?? config.s3?.[ESERVICE[opt.service]]?.sid ?? '';
+        const secretKey = opt.secretKey ?? config.s3?.[ESERVICE[opt.service]]?.skey ?? '';
+        const region = opt.region ?? config.s3?.[ESERVICE[opt.service]]?.region ?? '';
+        this._bucket = opt.bucket ?? config.s3?.[ESERVICE[opt.service]]?.bucket ?? '';
         let endpoint: string | undefined;
         switch (opt.service) {
             case ESERVICE.TENCENT: {
