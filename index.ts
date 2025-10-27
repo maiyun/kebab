@@ -70,6 +70,8 @@ export interface IConfig {
     'lang': IConfigLang;
     's3': Record<string, IConfigS3>;
     'turnstile': IConfigTurnstile;
+    'ai': Record<string, IConfigAi>;
+    'vector': Record<string, IConfigVector>;
 
     [key: string]: Record<string, Json>;
 }
@@ -102,6 +104,20 @@ export interface IConfigS3 {
     'skey': string;
     'region': string;
     'bucket': string;
+}
+
+/** --- AI --- */
+export interface IConfigAi {
+    'skey': string;
+}
+
+/** --- 向量数据库 --- */
+export interface IConfigVector {
+    'host': string;
+    'port': number;
+    'name': string;
+    'user': string;
+    'pwd': string;
 }
 
 /** --- 人机码信息 --- */

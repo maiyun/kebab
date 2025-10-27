@@ -19,7 +19,7 @@ const links: Array<{
 }> = [];
 
 /**
- * s3 文档：https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/client/s3/
+ * --- s3 文档：https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/client/s3/ ---
  */
 
 /** --- 服务商定义 --- */

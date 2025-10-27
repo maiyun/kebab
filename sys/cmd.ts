@@ -149,6 +149,19 @@ async function run(): Promise<void> {
         config.turnstile['TENCENT'].skey ??= '';
         config.turnstile['TENCENT'].aid ??= '';
         config.turnstile['TENCENT'].akey ??= '';
+        // --- config - ai ---
+        config.ai ??= {};
+        config.ai['ALICN'] ??= {};
+        config.ai['ALICN'].skey ??= '';
+        config.ai['ALIAS'] ??= {};
+        config.ai['ALIAS'].skey ??= '';
+        // --- config - vector ---
+        config.vector ??= {};
+        config.vector.host ??= '127.0.0.1';
+        config.vector.port ??= 19530;
+        config.vector.name ??= 'default';
+        config.vector.user ??= 'root';
+        config.vector.pwd ??= 'Milvue';
         // --- 保存 config.json ---
         if (!await lFs.putContent(kebab.CONF_CWD + 'config.json', lText.stringifyJson(config, 4))) {
             lCore.display('KEBAB', 'CREATE', 'FILE', kebab.CONF_CWD + 'config.json', '[FAILED]');

@@ -29,6 +29,7 @@
     "ejs": "^3.1.10",
     "jszip": "^3.10.1",
     "mysql2": "^3.15.3",
+    "openai": "^6.7.0",
     "ssh2": "^1.17.0",
     "svg-captcha": "^1.4.0",
     "tencentcloud-sdk-nodejs": "^4.1.135"

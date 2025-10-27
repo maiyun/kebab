@@ -21,6 +21,7 @@ import * as lZip from '#kebab/lib/zip.js';
 import * as lBuffer from '#kebab/lib/buffer.js';
 import * as lLan from '#kebab/lib/lan.js';
 import * as lCron from '#kebab/lib/cron.js';
+import * as lAi from '#kebab/lib/ai.js';
 import * as sCtr from '#kebab/sys/ctr.js';
 // --- mod ---
 import mTest from '../mod/test.js';
@@ -147,9 +148,8 @@ export default class extends sCtr.Ctr {
 
             '<br><br><b>Library test:</b>',
 
-            '<br><br><b>Captcha:</b>',
-            `<br><br><a href="${this._config.const.urlBase}test/captcha-fastbuild">View "test/captcha-fastbuild"</a>`,
-            `<br><a href="${this._config.const.urlBase}test/captcha-base64">View "test/captcha-base64"</a>`,
+            `<br><br><b>Ai:</b>`,
+            `<br><br><a href="${this._config.const.urlBase}test/ai">View "test/ai"</a>`,
 
             '<br><br><b>Core:</b>',
             `<br><br><a href="${this._config.const.urlBase}test/core-random">View "test/core-random"</a>`,
@@ -202,10 +202,9 @@ export default class extends sCtr.Ctr {
             `<br><a href="${this._config.const.urlBase}test/session?s=db&auth=1">View "test/session?s=db&auth=1" Header Authorization</a>`,
             `<br><a href="${this._config.const.urlBase}test/session?s=kv&auth=1">View "test/session?s=kv&auth=1" Header Authorization</a>`,
 
-            '<br><br><b>Jwt:</b>',
-            `<br><br><a href="${this._config.const.urlBase}test/jwt">View "test/jwt"</a>`,
-            `<br><a href="${this._config.const.urlBase}test/jwt?type=kv">View "test/jwt?type=kv"</a>`,
-            `<br><a href="${this._config.const.urlBase}test/jwt?type=auth">View "test/jwt?type=auth" Header Authorization</a>`,
+            '<br><br><b>Captcha:</b>',
+            `<br><br><a href="${this._config.const.urlBase}test/captcha-fastbuild">View "test/captcha-fastbuild"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/captcha-base64">View "test/captcha-base64"</a>`,
 
             '<br><br><b>Sql:</b>',
             `<br><br><a href="${this._config.const.urlBase}test/sql?type=insert">View "test/sql?type=insert"</a>`,
@@ -216,6 +215,11 @@ export default class extends sCtr.Ctr {
             `<br><a href="${this._config.const.urlBase}test/sql?type=having">View "test/sql?type=having"</a>`,
             `<br><a href="${this._config.const.urlBase}test/sql?type=by">View "test/sql?type=by"</a>`,
             `<br><a href="${this._config.const.urlBase}test/sql?type=field">View "test/sql?type=field"</a>`,
+
+            '<br><br><b>Jwt:</b>',
+            `<br><br><a href="${this._config.const.urlBase}test/jwt">View "test/jwt"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/jwt?type=kv">View "test/jwt?type=kv"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/jwt?type=auth">View "test/jwt?type=auth" Header Authorization</a>`,
 
             '<br><br><b>Consistent:</b>',
             `<br><br><a href="${this._config.const.urlBase}test/consistent-hash">View "test/consistent-hash"</a>`,
@@ -3432,6 +3436,30 @@ rtn.push(reader.readBCDString());</pre>${JSON.stringify(rtn)}`);
 });</pre>${JSON.stringify(rtn)}
 <pre>${JSON.stringify(lCron.getRegulars(), null, 4)}</pre>`);
         return echo.join('') + '<br>' + this._getEnd();
+    }
+
+    public async ai(): Promise<string> {
+        const ai = lAi.get(this, {
+            'service': lAi.ESERVICE.ALICN,
+        });
+        const echo = [`<pre>const ai = lAi.get(this, {
+    'service': lAi.ESERVICE.ALICN,
+});</pre>`];
+        const completion = await ai.link.chat.completions.create({
+            'model': 'qwen-plus',
+            'messages': [
+                { 'role': 'system', 'content': 'You are Kebab, a friendly and knowledgeable assistant based on an open-source Node framework. You do not mention any model names or AI identity. You can chat casually, answer questions, and provide guidance naturally. Respond in a human-like, approachable manner, as if you are a helpful companion rather than a traditional AI assistant.' },
+                { 'role': 'user', 'content': '你是谁？' }
+            ],
+        });
+        echo.push(`<pre>await ai.link.chat.completions.create({
+    'model': 'qwen-plus',
+    'messages': [
+        { 'role': 'system', 'content': 'You are Kebab, a friendly and knowledgeable assistant based on an open-source Node framework. You do not mention any model names or AI identity. You can chat casually, answer questions, and provide guidance naturally. Respond in a human-like, approachable manner, as if you are a helpful companion rather than a traditional AI assistant.' },
+        { 'role': 'user', 'content': '你是谁？' }
+    ],
+});</pre>` + JSON.stringify(completion.choices[0].message.content));
+        return echo.join('') + '<br><br>' + this._getEnd();
     }
 
     /**
