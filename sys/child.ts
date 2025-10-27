@@ -581,7 +581,7 @@ process.on('message', function(msg: kebab.Json) {
                         str.push(key + ':' + linkCount[key].toString());
                     }
                     lCore.display(`[CHILD] Worker ${process.pid} busy: ${str.join(',')}.`);
-                    lCore.log({}, `[CHILD] Worker ${process.pid} busy: ${str.join(',')}.`, '-error');
+                    lCore.log({}, `[CHILD] Worker ${process.pid} busy: ${str.join(',')}.`, '-warning');
                     await lCore.sleep(30_000);
                     waiting += 30_000;
                     if (waiting > 3600_000) {

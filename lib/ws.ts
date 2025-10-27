@@ -17,7 +17,7 @@ import * as sCtr from '#kebab/sys/ctr.js';
 export enum EFrameReceiveMode {
     STANDARD,
     LITE,
-    SIMPLE
+    SIMPLE,
 }
 
 /** --- OPCODE --- */
@@ -27,7 +27,7 @@ export enum EOpcode {
     BINARY = 0x2,
     CLOSE = 0x8,
     PING = 0x9,
-    PONG = 0xA
+    PONG = 0xA,
 }
 
 /** --- 请求的传入参数选项 --- */
@@ -212,6 +212,8 @@ export class Socket {
             this._on.end() as any;
         }).on('close', () => {
             this._on.close() as any;
+        }).on('timeout', () => {
+            this._on.timeout() as any;
         });
     }
 
@@ -246,6 +248,9 @@ export class Socket {
             this._close = true;
         },
         end: (): void | Promise<void> => {
+            // --- nothing ---
+        },
+        timeout: (): void | Promise<void> => {
             // --- nothing ---
         }
     };

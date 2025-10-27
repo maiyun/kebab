@@ -88,13 +88,16 @@ export class Pool {
     /** --- 当前 Pool 对象的 kv 连接信息 --- */
     private readonly _etc: kebab.IConfigKv;
 
-    public constructor(ctr: sCtr.Ctr, etc?: kebab.IConfigKv) {
-        if (etc) {
-            this._etc = etc;
-        }
-        else {
-            this._etc = ctr.getPrototype('_config').kv;
-        }
+    public constructor(ctr: sCtr.Ctr, etc?: IOptions) {
+        const configKv = ctr.getPrototype('_config').kv;
+        this._etc = {
+            'host': etc?.host ?? configKv.host,
+            'port': etc?.port ?? configKv.port,
+            'index': etc?.index ?? configKv.index,
+            'pre': etc?.pre ?? configKv.pre,
+            'user': etc?.user ?? configKv.user,
+            'pwd': etc?.pwd ?? configKv.pwd,
+        };
     }
 
     /**
@@ -1473,7 +1476,7 @@ end`;
  * --- 获取 Kv Pool 对象 ---
  * @param etc 配置信息可留空
  */
-export function get(ctr: sCtr.Ctr, etc?: kebab.IConfigKv): Pool {
+export function get(ctr: sCtr.Ctr, etc?: IOptions): Pool {
     etc ??= ctr.getPrototype('_config').kv;
     return new Pool(ctr, etc);
 }
@@ -1498,4 +1501,17 @@ export function getConnectionList(): IConnectionInfo[] {
         });
     }
     return list;
+}
+
+// --- 类型 ---
+
+/** --- 选项 --- */
+export interface IOptions {
+    'host'?: string;
+    'port'?: number;
+    'index'?: number;
+    'pre'?: string;
+
+    'user'?: string;
+    'pwd'?: string;
 }
