@@ -71,7 +71,7 @@ export interface IConfig {
     's3': Record<string, IConfigS3>;
     'turnstile': IConfigTurnstile;
     'ai': Record<string, IConfigAi>;
-    'vector': Record<string, IConfigVector>;
+    'vector': IConfigVector;
 
     [key: string]: Record<string, Json>;
 }

@@ -36,12 +36,9 @@ const links: Array<{
 export class Ai {
 
     /** --- openai 原生对象，建议只读 --- */
-    public readonly link;
-
-    private readonly _ctr: sCtr.Ctr;
+    public readonly link: openai.OpenAI;
 
     public constructor(ctr: sCtr.Ctr, opt: IOptions) {
-        this._ctr = ctr;
         const config = ctr.getPrototype('_config');
         const secretKey = opt.secretKey ?? config.ai?.[ESERVICE[opt.service]]?.skey ?? '';
         let endpoint: string | undefined;

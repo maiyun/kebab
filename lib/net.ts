@@ -181,7 +181,7 @@ export async function request(
             const res = new lResponse.Response(null);
             res.error = {
                 'name': 'Possible mProxy error',
-                'message': 'host not found'
+                'message': 'host not found',
             };
             return res;
         }
@@ -192,7 +192,7 @@ export async function request(
             const res = new lResponse.Response(null);
             res.error = {
                 'name': 'hosts error',
-                'message': 'hosts param error'
+                'message': 'hosts param error',
             };
             return res;
         }
@@ -203,7 +203,7 @@ export async function request(
             'url': opt.mproxy ? opt.mproxy.url + (opt.mproxy.url.includes('?') ? '&' : '?') + lText.queryStringify({
                 'url': u,
                 'auth': opt.mproxy.auth,
-                'data': opt.mproxy.data ? lText.stringifyJson(opt.mproxy.data) : '{}'
+                'data': opt.mproxy.data ? lText.stringifyJson(opt.mproxy.data) : '{}',
             }) : u,
             'method': method,
             'data': data,
