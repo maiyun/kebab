@@ -155,6 +155,9 @@ async function run(): Promise<void> {
         config.ai['ALICN'].skey ??= '';
         config.ai['ALIAS'] ??= {};
         config.ai['ALIAS'].skey ??= '';
+        config.ai['AZURE'] ??= {};
+        config.ai['AZURE'].endpoint ??= '';
+        config.ai['AZURE'].skey ??= '';
         // --- config - vector ---
         config.vector ??= {};
         config.vector.host ??= '127.0.0.1';

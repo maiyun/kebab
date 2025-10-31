@@ -17,14 +17,20 @@ export enum ESERVICE {
     'ALICN',
     /** --- 阿里国际区 --- */
     'ALIAS',
+    /** --- 微软 Azure --- */
+    'AZURE',
 }
 
 /** --- 选项 --- */
 export interface IOptions {
     /** --- 服务商 ---- */
     'service': ESERVICE;
-    /** --- 密钥值 --- */
+    /** --- 接入点 --- */
+    'endpoint'?: string;
+    /** --- 密钥 --- */
     'secretKey'?: string;
+    /** --- 自定义 fetch 函数 --- */
+    'fetch'?: (input: string | URL | Request, init?: RequestInit) => Promise<Response>;
 }
 
 /** --- openai 的连接对象 --- */
@@ -44,11 +50,15 @@ export class Ai {
         let endpoint: string | undefined;
         switch (opt.service) {
             case ESERVICE.ALICN: {
-                endpoint = `https://dashscope.aliyuncs.com/compatible-mode/v1`;
+                endpoint = opt.endpoint ?? `https://dashscope.aliyuncs.com/compatible-mode/v1`;
                 break;
             }
             case ESERVICE.ALIAS: {
-                endpoint = `https://dashscope-intl.aliyuncs.com/compatible-mode/v1`;
+                endpoint = opt.endpoint ?? `https://dashscope-intl.aliyuncs.com/compatible-mode/v1`;
+                break;
+            }
+            case ESERVICE.AZURE: {
+                endpoint = opt.endpoint ?? config.ai?.[ESERVICE[opt.service]]?.endpoint ?? '';
                 break;
             }
             default: {
@@ -64,6 +74,7 @@ export class Ai {
         this.link = new openai.OpenAI({
             'apiKey': secretKey,
             'baseURL': endpoint,
+            'fetch': opt.fetch,
         });
         links.push({
             'token': token,

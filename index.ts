@@ -108,6 +108,8 @@ export interface IConfigS3 {
 
 /** --- AI --- */
 export interface IConfigAi {
+    /** --- 目前只有微软 Azure 有 --- */
+    'endpoint'?: string;
     'skey': string;
 }
 
