@@ -1473,7 +1473,7 @@ export default class Mod {
      * --- 根据当前条件，筛选出当前条目该有的数据条数 ---
      */
     public async count(): Promise<number> {
-        const sql: string = this._sql.getSql().replace(/SELECT .+? FROM/, 'SELECT COUNT(*) AS `count` FROM');
+        const sql: string = this._sql.getSql().replace(/SELECT .+? FROM/, 'SELECT COUNT(0) AS `count` FROM');
         const r = await this._db.query(sql, this._sql.getData());
         if (r.rows === null) {
             lCore.log(this._ctr ?? {}, '[count, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
@@ -1484,6 +1484,14 @@ export default class Mod {
             count += item.count;
         }
         return count;
+    }
+
+    /**
+     * --- 获取当前条件下的 count 的 SQL 语句 ---
+     */
+    public countSql(): string {
+        const sql: string = this._sql.getSql().replace(/SELECT .+? FROM/, 'SELECT COUNT(0) AS `count` FROM');
+        return this._sql.format(sql, this._sql.getData());
     }
 
     /**

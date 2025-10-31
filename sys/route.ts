@@ -1,7 +1,7 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2019-4-15 13:40
- * Last: 2020-4-14 13:52:00, 2022-09-07 01:43:31, 2023-12-29 17:24:03, 2024-2-7 00:28:50, 2024-6-6 15:15:54, 2025-6-13 19:23:53, 2025-9-22 15:48:53, 2025-9-23 11:26:50
+ * Last: 2020-4-14 13:52:00, 2022-09-07 01:43:31, 2023-12-29 17:24:03, 2024-2-7 00:28:50, 2024-6-6 15:15:54, 2025-6-13 19:23:53, 2025-9-22 15:48:53, 2025-9-23 11:26:50, 2025-10-30 17:44:41
  */
 import * as http from 'http';
 import * as http2 from 'http2';
@@ -15,7 +15,6 @@ import * as lFs from '#kebab/lib/fs.js';
 import * as lZlib from '#kebab/lib/zlib.js';
 import * as lCore from '#kebab/lib/core.js';
 import * as lText from '#kebab/lib/text.js';
-import * as lTime from '#kebab/lib/time.js';
 import * as lResponse from '#kebab/lib/net/response.js';
 import * as lWs from '#kebab/lib/ws.js';
 import * as lLang from '#kebab/lib/lang.js';
@@ -608,7 +607,7 @@ export async function run(data: {
     }
     // --- 设置缓存 ---
     if (!data.res.headersSent && (cacheTTL > 0)) {
-        data.res.setHeader('expires', lTime.format(0, 'D, d M Y H:i:s', Date.now() + cacheTTL * 1000) + ' GMT');
+        data.res.setHeader('expires', new Date(Date.now() + cacheTTL * 1_000).toUTCString());
         data.res.setHeader('cache-control', 'max-age=' + cacheTTL.toString());
     }
     // --- 设置自定义 hcode ---

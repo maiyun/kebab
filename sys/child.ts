@@ -105,7 +105,7 @@ async function run(): Promise<void> {
         const host = (req.headers[':authority'] ?? req.headers['host'] ?? '');
         if (!host) {
             lCore.writeHead(res, 403);
-            res.end();
+            res.end('403 Forbidden');
             return;
         }
         const key = host + req.url;
@@ -156,6 +156,7 @@ async function run(): Promise<void> {
     httpServer = http.createServer(function(req: http.IncomingMessage, res: http.ServerResponse): void {
         const host = (req.headers['host'] ?? '');
         if (!host) {
+            res.setHeader('x-kebab-error', '0');
             lCore.writeHead(res, 403);
             res.end();
             return;
@@ -253,6 +254,7 @@ async function requestHandler(
     /** --- 当前的 vhost 配置文件 --- */
     const vhost = await getVhostByHostname(uri.hostname ?? '');
     if (!vhost) {
+        res.setHeader('x-kebab-error', '1');
         lCore.writeHead(res, 403);
         res.end();
         return;
@@ -580,7 +582,7 @@ process.on('message', function(msg: kebab.Json) {
                     for (const key in linkCount) {
                         str.push(key + ':' + linkCount[key].toString());
                     }
-                    lCore.display(`[CHILD] Worker ${process.pid} busy: ${str.join(',')}.`);
+                    lCore.debug(`[CHILD] Worker ${process.pid} busy: ${str.join(',')}.`);
                     lCore.log({}, `[CHILD] Worker ${process.pid} busy: ${str.join(',')}.`, '-warning');
                     await lCore.sleep(30_000);
                     waiting += 30_000;

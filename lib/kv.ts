@@ -925,6 +925,7 @@ end`;
      * --- 获取字符串 ---
      * @param key
      * @param etc
+     * @returns 字符串或 null（即使存入时是 number，这个方法也只会返回字符串）
      */
     public async get(key: string, etc: kebab.IConfigKv): Promise<string | null> {
         this.refreshLast();
