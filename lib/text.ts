@@ -5,6 +5,7 @@
  */
 import * as kebab from '#kebab/index.js';
 import * as lFs from './fs.js';
+import * as lCore from './core.js';
 
 /**
  * --- 将文件大小格式化为带单位的字符串 ---
@@ -562,19 +563,32 @@ export function stringifyBuffer(buf: Buffer): string {
  * --- 递归删除 json 中的字符串首尾空格，会返回一个新的对象 ---
  */
 export function trimJson(json: kebab.Json): kebab.Json {
-    json = Object.assign({}, json);
+    json = lCore.clone(json);
     trimJsonRecursion(json);
     return json;
 }
 
 function trimJsonRecursion(json: kebab.Json): kebab.Json {
-    for (const key in json) {
-        const val = json[key];
-        if (typeof val === 'string') {
-            json[key] = val.trim();
+    if (Array.isArray(json)) {
+        for (let i = 0; i < json.length; ++i) {
+            const val = json[i];
+            if (typeof val === 'string') {
+                json[i] = val.trim();
+            }
+            else if (typeof val === 'object') {
+                trimJsonRecursion(val);
+            }
         }
-        else if (typeof val === 'object') {
-            trimJsonRecursion(val);
+    }
+    else {
+        for (const key in json) {
+            const val = json[key];
+            if (typeof val === 'string') {
+                json[key] = val.trim();
+            }
+            else if (typeof val === 'object') {
+                trimJsonRecursion(val);
+            }
         }
     }
 }
