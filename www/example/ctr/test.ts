@@ -195,6 +195,7 @@ export default class extends sCtr.Ctr {
             `<br><a href="${this._config.const.urlBase}test/net-rproxy/dist/core.js">View "test/net-rproxy/dist/core.js"</a> <a href="${this._config.const.urlBase}test/net-rproxy/package.json">View "package.json"</a>`,
             `<br><a href="${this._config.const.urlBase}test/net-mproxy">View "test/net-mproxy"</a>`,
             `<br><a href="${this._config.const.urlBase}test/net-filterheaders">View "test/net-filterheaders"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/net-fetch">View "test/net-fetch"</a>`,
 
             '<br><br><b>Scan:</b>',
             `<br><br><a href="${this._config.const.urlBase}test/scan?s=db">View "test/scan?s=db"</a>`,
@@ -2190,6 +2191,73 @@ error: <pre>${JSON.stringify(res.error, null, 4)}</pre>`);
         });
         echo.push(`const filtered = lNet.filterHeaders(headers);<pre>${JSON.stringify(filtered, null, 4)}</pre>`);
         return echo.join('') + this._getEnd();
+    }
+
+    public async netFetch(): Promise<string | boolean> {
+        const echo = [];
+        try {
+            const res = await lNet.fetch(this._internalUrl + 'test/net-fetch1', {
+                'method': 'POST',
+                'headers': {
+                    'content-type': 'application/json',
+                },
+                'body': JSON.stringify({ 'test': '123' }),
+            });
+            echo.push(`<pre>lNet.fetch('${this._internalUrl}test/net-fetch1', {
+    'method': 'POST',
+    'headers': {
+        'content-type': 'application/json',
+    },
+    'body': JSON.stringify({ 'test': '123' }),
+});</pre>
+            headers: <pre>${JSON.stringify(Object.fromEntries(res.headers.entries()), null, 4)}</pre>
+            content: <pre>${await res.text()}</pre>`);
+        }
+        catch (e) {
+            echo.push(`error: <pre>${JSON.stringify(e)}</pre>`);
+        }
+
+        echo.push(`mproxy:`);
+
+        try {
+            const res = await lNet.fetch(this._internalUrl + 'test/net-fetch1', {
+                'method': 'POST',
+                'headers': {
+                    'content-type': 'application/json',
+                },
+                'body': JSON.stringify({ 'test': '456' }),
+                'mproxy': {
+                    'url': this._internalUrl + 'test/net-mproxy1',
+                    'auth': '123456',
+                    'data': { 'test': '789' },
+                },
+            });
+            echo.push(`<pre>lNet.fetch('${this._internalUrl}test/net-fetch1', {
+    'method': 'POST',
+    'headers': {
+        'content-type': 'application/json',
+    },
+    'body': JSON.stringify({ 'test': '123' }),
+    'mproxy': {
+        'url': this._internalUrl + 'test/net-mproxy1',
+        'auth': '123456',
+        'data': { 'test': '789' },
+    },
+});</pre>
+            headers: <pre>${JSON.stringify(Object.fromEntries(res.headers.entries()), null, 4)}</pre>
+            content: <pre>${await res.text()}</pre>`);
+        }
+        catch (e) {
+            echo.push(`error: <pre>${JSON.stringify(e)}</pre>`);
+        }
+
+        return echo.join('') + '<br>' + this._getEnd();
+    }
+
+    public netFetch1(): any[] {
+        return [1, {
+            'post': this._post,
+        }];
     }
 
     public async scan(): Promise<kebab.Json> {

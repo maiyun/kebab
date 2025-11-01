@@ -111,6 +111,40 @@ export async function postJsonResponseJson(
 }
 
 /**
+ * --- 发起一个原生 fetch 请求，增加了一些框架选项，注意：会抛出错误 ---
+ * @param input 请求的 URL 或 Request 对象
+ * @param init 增加 mproxy
+ */
+export function fetch(
+    input: string | URL | Request,
+    init: RequestInit & {
+        /** --- 正向 mproxy 代理，url 如 https://xxx/abc --- */
+        'mproxy'?: {
+            'url': string;
+            'auth': string;
+            'data'?: any;
+        };
+    } = {},
+): Promise<Response> {
+    const u = (input instanceof Request) ?
+        input.url :
+        input instanceof URL ? input.toString() : input;
+    const uri = lText.parseUrl(u);
+    /** --- 正向代理的地址 --- */
+    const puri = init.mproxy ? lText.parseUrl(init.mproxy.url) : null;
+    /** --- 定义请求 host --- */
+    const hostname = (puri ? puri.hostname : uri.hostname) ?? '';
+    if (!hostname) {
+        throw new Error('Kebab TypeError: Hostname is empty');
+    }
+    return global.fetch(init.mproxy ? init.mproxy.url + (init.mproxy.url.includes('?') ? '&' : '?') + lText.queryStringify({
+        'url': u,
+        'auth': init.mproxy.auth,
+        'data': init.mproxy.data ? lText.stringifyJson(init.mproxy.data) : '{}',
+    }) : u, init);
+}
+
+/**
  * --- 发起一个请求 ---
  * @param opt 配置项
  */
@@ -175,19 +209,19 @@ export async function request(
     // --- 发起请求 ---
     let req: hc.IResponse;
     try {
-        // --- 重定义 IP ---
-        const host = (puri ? puri.hostname : uri.hostname) ?? '';
-        if (!host) {
+        /** --- 定义请求 host --- */
+        const hostname = (puri ? puri.hostname : uri.hostname) ?? '';
+        if (!hostname) {
             const res = new lResponse.Response(null);
             res.error = {
                 'name': 'Possible mProxy error',
-                'message': 'host not found',
+                'message': 'hostname not found',
             };
             return res;
         }
         if (typeof hosts === 'string' ?
             !hosts :
-            (hosts[host] !== undefined && !hosts[host])
+            (hosts[hostname] !== undefined && !hosts[hostname])
         ) {
             const res = new lResponse.Response(null);
             res.error = {
@@ -212,7 +246,7 @@ export async function request(
             'localAddress': local,
             'ca': ca,
             'connectionOptions': {
-                'remoteHost': typeof hosts === 'string' ? hosts : hosts[host],
+                'remoteHost': typeof hosts === 'string' ? hosts : hosts[hostname],
             },
         });
     }
