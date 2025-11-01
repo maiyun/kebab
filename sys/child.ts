@@ -128,7 +128,7 @@ async function run(): Promise<void> {
         });
     }).on('tlsClientError', (err, socket) => {
         socket.destroy();
-    }).on('upgrade', function(req: http.IncomingMessage, socket: net.Socket): void {
+    }).on('upgrade', function(req: http.IncomingMessage, socket: net.Socket, head: Buffer): void {
         const host = (req.headers['host'] ?? '');
         if (!host) {
             socket.destroy();
@@ -140,7 +140,7 @@ async function run(): Promise<void> {
                 linkCount[key] = 0;
             }
             ++linkCount[key];
-            await upgradeHandler(req, socket, true);
+            await upgradeHandler(req, socket, true, head);
             --linkCount[key];
             if (!linkCount[key]) {
                 delete linkCount[key];
@@ -179,7 +179,7 @@ async function run(): Promise<void> {
                 delete linkCount[key];
             }
         });
-    }).on('upgrade', function(req: http.IncomingMessage, socket: net.Socket): void {
+    }).on('upgrade', function(req: http.IncomingMessage, socket: net.Socket, head: Buffer): void {
         const host = (req.headers['host'] ?? '');
         if (!host) {
             socket.destroy();
@@ -191,7 +191,7 @@ async function run(): Promise<void> {
                 linkCount[key] = 0;
             }
             ++linkCount[key];
-            await upgradeHandler(req, socket, false);
+            await upgradeHandler(req, socket, false, head);
             --linkCount[key];
             if (!linkCount[key]) {
                 delete linkCount[key];
@@ -394,8 +394,11 @@ async function requestHandler(
  * @param req 请求对象
  * @param socket socket 对象
  * @param https 是否是 https
+ * @param head head 数据
  */
-async function upgradeHandler(req: http.IncomingMessage, socket: net.Socket, https: boolean): Promise<void> {
+async function upgradeHandler(
+    req: http.IncomingMessage, socket: net.Socket, https: boolean, head: Buffer
+): Promise<void> {
     socket.removeAllListeners('error');
     // --- 当前 uri ---
     const uri = lText.parseUrl(`ws${https ? 's' : ''}://${req.headers['host'] ?? ''}${req.url ?? ''}`);
@@ -434,10 +437,11 @@ async function upgradeHandler(req: http.IncomingMessage, socket: net.Socket, htt
                     if (await sRoute.run({
                         'req': req,
                         'socket': socket,
+                        'head': head,
                         'uri': uri,
                         'rootPath': vhost.real + now,
                         'urlBase': '/' + now,
-                        'path': path.slice(('/' + pathList.slice(0, i).join('/')).length + 1)
+                        'path': path.slice(('/' + pathList.slice(0, i).join('/')).length + 1),
                     })) {
                         return;
                     }
@@ -461,6 +465,7 @@ async function upgradeHandler(req: http.IncomingMessage, socket: net.Socket, htt
                 if (await sRoute.run({
                     'req': req,
                     'socket': socket,
+                    'head': head,
                     'uri': uri,
                     'rootPath': vhost.real + now,
                     'urlBase': '/' + now,

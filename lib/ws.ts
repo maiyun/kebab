@@ -97,7 +97,7 @@ export class Socket {
     /** --- 当前的 ws 对象 --- */
     private _ws!: liws.IWebSocket | liws.IClient;
 
-    public constructor(request?: http.IncomingMessage, socket?: net.Socket, options: {
+    public constructor(request?: http.IncomingMessage, socket?: net.Socket, head?: Buffer, options: {
         'headers'?: http.OutgoingHttpHeaders;
         'timeout'?: number;
     } = {}) {
@@ -110,6 +110,7 @@ export class Socket {
             'socket': socket,
             'headers': options.headers,
             'timeout': options.timeout,
+            'clientEarlyDataPayload': head,
         });
         this._bindEvent();
     }
@@ -389,11 +390,11 @@ export function connect(u: string, opt: IConnectOptions = {}): Promise<Socket | 
  * @param request Http 请求端
  * @param socket 响应双向 socket
  */
-export function createServer(request: http.IncomingMessage, socket: net.Socket, options: {
+export function createServer(request: http.IncomingMessage, socket: net.Socket, head?: Buffer, options: {
     'headers'?: http.OutgoingHttpHeaders;
     'timeout'?: number;
 } = {}): Socket {
-    return new Socket(request, socket, options);
+    return new Socket(request, socket, head, options);
 }
 
 /**

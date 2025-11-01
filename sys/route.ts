@@ -38,7 +38,10 @@ export function clearKebabConfigs(): void {
 export async function run(data: {
     'req': http2.Http2ServerRequest | http.IncomingMessage;
     'res'?: http2.Http2ServerResponse | http.ServerResponse;
+    /** --- WebSocket 连接的 socket 对象 --- */
     'socket'?: net.Socket;
+    /** --- WebSocket 的 head 数据 --- */
+    'head'?: Buffer;
     'uri': kebab.IUrlParse;
     /** --- 虚拟主机当前动态目录的绝对根目录，末尾带 / --- */
     'rootPath': string;
@@ -270,7 +273,7 @@ export async function run(data: {
             const options = cctr.onUpgrade();
             // --- 默认无消息发送 3 分钟 ---
             options.timeout ??= 60_000 * 3;
-            wsSocket = lWs.createServer(data.req, data.socket, options);
+            wsSocket = lWs.createServer(data.req, data.socket, data.head, options);
             cctr.setPrototype('_socket', wsSocket);
         }
         catch (e: kebab.Json) {
