@@ -3570,7 +3570,6 @@ const content = document.getElementById('content');
 send.addEventListener('click', async () => {
     if (send.innerHTML === 'Stop') {
         controller.abort();
-        send.innerHTML = 'Send';
         return;
     }
     if (!text.value) {
@@ -3593,19 +3592,24 @@ send.addEventListener('click', async () => {
     const decoder = new TextDecoder('utf8');
     let buf = '';
     while (true) {
-        const { value, done } = await reader.read();
-        if (done) {
+        try {
+            const { value, done } = await reader.read();
+            if (done) {
+                break;
+            }
+            buf += decoder.decode(value, { 'stream': true, });
+            if (!buf.includes('\\n\\n')) {
+                // --- 还没接收完 ---
+                continue;
+            }
+            const events = buf.split('\\n\\n');
+            buf = events.pop(); // --- 最后一个可能不完整 ---
+            for (const ev of events) {
+                content.textContent += JSON.parse(ev.slice(5).trim());
+            }
+        }
+        catch {
             break;
-        }
-        buf += decoder.decode(value, { 'stream': true, });
-        if (!buf.includes('\\n\\n')) {
-            // --- 还没接收完 ---
-            continue;
-        }
-        const events = buf.split('\\n\\n');
-        buf = events.pop(); // --- 最后一个可能不完整 ---
-        for (const ev of events) {
-            content.textContent += JSON.parse(ev.slice(5).trim());
         }
     }
     send.innerHTML = 'Send';
