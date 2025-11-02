@@ -3655,9 +3655,10 @@ send.addEventListener('click', async () => {
                     continue;
                 }
                 if (!this._isAvail) {
-                    // --- 测试上面 abort 后还会执行到这里吗 ---
-                    // --- 测试结果：确实不会 ---
-                    lCore.debug('Client has been closed');
+                    // --- 测试上面 abort 后不 break 的话还会执行到这里吗 ---
+                    // --- 测试结果：可能会，大概率只有一次，就证明连接确实断开了只不过有延迟 ---
+                    // --- 但上面 break 的话就肯定不会执行到这里了 ---
+                    lCore.debug('Client has been closed', content);
                     continue;
                 }
                 lCore.write(this._res, 'data: ' + JSON.stringify(content) + '\n\n');
@@ -3671,6 +3672,7 @@ send.addEventListener('click', async () => {
             lCore.debug(`Output Tokens: ${chunk.usage.completion_tokens}`);
             lCore.debug(`Total Tokens: ${chunk.usage.total_tokens}`);
         }
+        lCore.debug('AI DONE');
     }
 
     /**
