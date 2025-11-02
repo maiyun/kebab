@@ -3619,6 +3619,9 @@ send.addEventListener('click', async () => {
     }
 
     public async aiStream1(): Promise<any> {
+        if (!this._cross()) {
+            return '';
+        }
         const ai = lAi.get(this, {
             'service': lAi.ESERVICE.ALICN,
         });
