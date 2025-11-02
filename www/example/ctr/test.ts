@@ -3622,6 +3622,11 @@ send.addEventListener('click', async () => {
         if (!this._cross()) {
             return '';
         }
+
+        if (!this._post['content']) {
+            return '';
+        }
+
         const ai = lAi.get(this, {
             'service': lAi.ESERVICE.ALICN,
         });
