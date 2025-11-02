@@ -151,6 +151,7 @@ export default class extends sCtr.Ctr {
 
             `<br><br><b>Ai:</b>`,
             `<br><br><a href="${this._config.const.urlBase}test/ai">View "test/ai"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/ai-stream">View "test/ai-stream"</a>`,
 
             '<br><br><b>Core:</b>',
             `<br><br><a href="${this._config.const.urlBase}test/core-random">View "test/core-random"</a>`,
@@ -3544,17 +3545,120 @@ rtn.push(reader.readBCDString());</pre>${JSON.stringify(rtn)}`);
             'model': 'qwen-plus',
             'messages': [
                 { 'role': 'system', 'content': 'You are Kebab, a friendly and knowledgeable assistant based on an open-source Node framework. You do not mention any model names or AI identity. You can chat casually, answer questions, and provide guidance naturally. Respond in a human-like, approachable manner, as if you are a helpful companion rather than a traditional AI assistant.' },
-                { 'role': 'user', 'content': '你是谁？' }
+                { 'role': 'user', 'content': '你是谁？' },
             ],
         });
         echo.push(`<pre>await ai.link.chat.completions.create({
     'model': 'qwen-plus',
     'messages': [
         { 'role': 'system', 'content': 'You are Kebab, a friendly and knowledgeable assistant based on an open-source Node framework. You do not mention any model names or AI identity. You can chat casually, answer questions, and provide guidance naturally. Respond in a human-like, approachable manner, as if you are a helpful companion rather than a traditional AI assistant.' },
-        { 'role': 'user', 'content': '你是谁？' }
+        { 'role': 'user', 'content': '你是谁？' },
     ],
 });</pre>` + JSON.stringify(completion.choices[0].message.content));
         return echo.join('') + '<br><br>' + this._getEnd();
+    }
+
+    public aiStream(): string {
+        const echo = `<input id="text" type="text"><button id="send">Send</button>
+<hr>
+<div id="content"></div>
+<script>
+let controller;
+const text = document.getElementById('text');
+const send = document.getElementById('send');
+const content = document.getElementById('content');
+send.addEventListener('click', async () => {
+    if (send.innerHTML === 'Stop') {
+        controller.abort();
+        send.innerHTML = 'Send';
+        return;
+    }
+    if (!text.value) {
+        alert('Please input content');
+        return;
+    }
+    send.innerHTML = 'Stop';
+    send.disabled = true;
+    controller = new AbortController();
+    const res = await fetch('http${this._config.const.https ? 's' : ''}://${this._config.const.host}/test/ai-stream1', {
+        'method': 'POST',
+        'headers': { 'content-type': 'application/json' },
+        'body': JSON.stringify({ 'content': text.value, }),
+        'signal': controller.signal,
+    });
+    send.disabled = false;
+    text.value = '';
+    content.textContent = '';
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder('utf8');
+    let buf = '';
+    while (true) {
+        const { value, done } = await reader.read();
+        if (done) {
+            break;
+        }
+        buf += decoder.decode(value, { 'stream': true, });
+        if (!buf.includes('\\n\\n')) {
+            // --- 还没接收完 ---
+            continue;
+        }
+        const events = buf.split('\\n\\n');
+        buf = events.pop(); // --- 最后一个可能不完整 ---
+        for (const ev of events) {
+            content.textContent += JSON.parse(ev.slice(5).trim());
+        }
+    }
+    send.innerHTML = 'Send';
+});
+</script>`;
+        return echo + '<br>' + this._getEnd();
+    }
+
+    public async aiStream1(): Promise<any> {
+        const ai = lAi.get(this, {
+            'service': lAi.ESERVICE.ALICN,
+        });
+        const stream = await ai.link.chat.completions.create({
+            'model': 'qwen-plus',
+            'stream': true,
+            'messages': [
+                { 'role': 'system', 'content': 'You are Kebab, a friendly and knowledgeable assistant based on an open-source Node framework. You do not mention any model names or AI identity. You can chat casually, answer questions, and provide guidance naturally. Respond in a human-like, approachable manner, as if you are a helpful companion rather than a traditional AI assistant.' },
+                { 'role': 'user', 'content': this._post['content'] },
+            ],
+            'stream_options': {
+                'include_usage': true,
+            },
+        });
+        lCore.writeEventStreamHead(this._res);
+
+        for await (const chunk of stream) {
+            if (!this._isAvail) {
+                lCore.debug('Client disconnect');
+                stream.controller.abort();
+                break;
+            }
+            if (chunk.choices.length) {
+                const content = chunk.choices[0].delta.content;
+                if (!content) {
+                    continue;
+                }
+                if (!this._isAvail) {
+                    // --- 测试上面 abort 后还会执行到这里吗 ---
+                    // --- 测试结果：确实不会 ---
+                    lCore.debug('Client has been closed');
+                    continue;
+                }
+                lCore.write(this._res, 'data: ' + JSON.stringify(content) + '\n\n');
+                continue;
+            }
+            if (!chunk.usage) {
+                continue;
+            }
+            lCore.debug('--- All over ---');
+            lCore.debug(`Input Tokens: ${chunk.usage.prompt_tokens}`);
+            lCore.debug(`Output Tokens: ${chunk.usage.completion_tokens}`);
+            lCore.debug(`Total Tokens: ${chunk.usage.total_tokens}`);
+        }
     }
 
     /**

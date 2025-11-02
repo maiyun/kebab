@@ -549,7 +549,7 @@ export async function run(data: {
             pathRight = pathRight.replace(/-([a-zA-Z0-9])/g, function(t, t1: string): string {
                 return t1.toUpperCase();
             });
-            if ((cctr as kebab.Json)[pathRight] === undefined) {
+            if (((cctr as kebab.Json)[pathRight] === undefined) || (typeof (cctr as kebab.Json)[pathRight] !== 'function')) {
                 if (config.route['#404']) {
                     data.res.setHeader('location', lText.urlResolve(config.const.urlBase, config.route['#404']));
                     lCore.writeHead(data.res, 302);

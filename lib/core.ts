@@ -929,3 +929,26 @@ export function writeHead(
         res.writeHead(statusCode, headers);
     }
 }
+
+export function writeEventStreamHead(res: http2.Http2ServerResponse | http.ServerResponse): void {
+    writeHead(res, 200, {
+        'content-type': 'text/event-stream; charset=utf-8',
+        'cache-control': 'no-store',
+    });
+}
+
+/**
+ * --- 向 res 发送数据 ---
+ * @param res 响应对象
+ * @param data 数据
+ */
+export function write(
+    res: http2.Http2ServerResponse | http.ServerResponse, data: string | Buffer
+): void {
+    if (res instanceof http2.Http2ServerResponse) {
+        res.write(data);
+    }
+    else {
+        res.write(data);
+    }
+}

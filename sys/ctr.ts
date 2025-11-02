@@ -120,7 +120,7 @@ export class Ctr {
     }
 
     /** --- 当前用户连接是否还在连接中 --- */
-    public get isAvail(): boolean {
+    protected get _isAvail(): boolean {
         return this._req.socket.writable;
     }
 

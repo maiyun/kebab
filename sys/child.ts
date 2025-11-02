@@ -179,6 +179,8 @@ async function run(): Promise<void> {
                 delete linkCount[key];
             }
         });
+    }).on('clientError', (err, socket) => {
+        socket.destroy();
     }).on('upgrade', function(req: http.IncomingMessage, socket: net.Socket, head: Buffer): void {
         const host = (req.headers['host'] ?? '');
         if (!host) {
