@@ -197,7 +197,7 @@ export class Pool {
      * --- 获取字符串 ---
      * @param key
      */
-    public async get(key: string): Promise<string | null> {
+    public async get(key: string): Promise<string | false | null> {
         const conn = await this._getConnection();
         if (!conn) {
             return null;
@@ -272,11 +272,12 @@ export class Pool {
     /**
      * --- 获取 json 对象 ---
      * @param key
+     * @returns false 表示系统错误, null 表示不存在, 其他值为 json 对象
      */
-    public async getJson(key: string): Promise<any | null> {
+    public async getJson(key: string): Promise<any | false | null> {
         const conn = await this._getConnection();
         if (!conn) {
-            return null;
+            return false;
         }
         const r = await conn.getJson(key, this._etc);
         conn.used();
@@ -925,15 +926,15 @@ end`;
      * --- 获取字符串 ---
      * @param key
      * @param etc
-     * @returns 字符串或 null（即使存入时是 number，这个方法也只会返回字符串）
+     * @returns 字符串 / false / null（即使存入时是 number，这个方法也只会返回字符串）
      */
-    public async get(key: string, etc: kebab.IConfigKv): Promise<string | null> {
+    public async get(key: string, etc: kebab.IConfigKv): Promise<string | false | null> {
         this.refreshLast();
         try {
             return await this._link.get(etc.pre + key);
         }
         catch {
-            return null;
+            return false;
         }
     }
 
@@ -1025,13 +1026,13 @@ end`;
      * @param key
      * @param etc
      */
-    public async getJson(key: string, etc: kebab.IConfigKv): Promise<any | null> {
+    public async getJson(key: string, etc: kebab.IConfigKv): Promise<any | false | null> {
         const v = await this.get(key, etc);
-        if (v === null) {
-            return null;
+        if (v === null || v === false) {
+            return v;
         }
         const r = lText.parseJson(v);
-        return r === false ? null : r;
+        return r;
     }
 
     /**

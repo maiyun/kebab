@@ -2454,8 +2454,8 @@ function confirm() {
         }
 
         if (this._get['auth'] === '') {
-            await this._startSession(link, false, { 'ttl': 60 });
-            echo.push(`await this._startSession(link, false, {'ttl': 60});
+            const r = await this._startSession(link, false, { 'ttl': 60 });
+            echo.push(`await this._startSession(link, false, {'ttl': 60});  // ${r}
 JSON.stringify(this._session);</pre>` + lText.htmlescape(JSON.stringify(this._session)));
 
             this._session['value'] = lText.logicalOr(this._get['value'], 'ok');
@@ -2469,7 +2469,7 @@ JSON.stringify(this._session);</pre>` + lText.htmlescape(JSON.stringify(this._se
         }
         else {
             // --- AUTH 模式 ---
-            await this._startSession(link, true, { 'ttl': 60 });
+            const r = await this._startSession(link, true, { 'ttl': 60 });
             if (Object.keys(this._post).length > 0) {
                 if (this._session['count'] === undefined) {
                     this._session['count'] = 1;
@@ -2480,7 +2480,7 @@ JSON.stringify(this._session);</pre>` + lText.htmlescape(JSON.stringify(this._se
                 return [1, { 'txt': 'this._session: ' + JSON.stringify(this._session) + '\nToken: ' + this._sess!.getToken(), 'token': this._sess?.getToken(), '_auth': this._getBasicAuth('token', this._sess!.getToken()) }];
             }
             else {
-                echo.push(`await this._startSession(link, true, {'ttl': 60});
+                echo.push(`await this._startSession(link, true, {'ttl': 60});  // ${r}
 JSON.stringify(this._session));</pre>` + lText.htmlescape(JSON.stringify(this._session)));
 
                 this._session['value'] = lTime.format(this, 'H:i:s');

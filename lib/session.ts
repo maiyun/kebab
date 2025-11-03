@@ -60,6 +60,7 @@ export class Session {
      * @param link Kv 或 Db 实例
      * @param auth 设为 true 则优先从头 Authorization 或 post _auth 值读取 token
      * @param opt 选项
+     * @returns false 表示系统错误
      */
     public async init(
         ctr: ctr.Ctr,
@@ -100,9 +101,12 @@ export class Session {
             // --- 如果启用了内存加速则在内存找 ---
             if (this._link instanceof kv.Pool) {
                 // --- Kv ---
-                let data;
-                if ((data = await this._link.getJson(this._name + '_' + this._token)) === null) {
+                const data = await this._link.getJson(this._name + '_' + this._token);
+                if (data === null) {
                     needInsert = true;
+                }
+                else if (data === false) {
+                    return false;
                 }
                 else {
                     session = data;
@@ -117,6 +121,9 @@ export class Session {
                 const data = await this._link.query(this._sql.getSql(), this._sql.getData());
                 if (data.rows?.[0]) {
                     session = text.parseJson(data.rows[0].data);
+                }
+                else if (data.result === -500) {
+                    return false;
                 }
                 else {
                     needInsert = true;

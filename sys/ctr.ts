@@ -740,13 +740,13 @@ export class Ctr {
      * @param auth 设为 true 则从头 Authorization 或 post _auth 值读取 token
      * @param opt name, ttl, ssl, sqlPre
      */
-    protected async _startSession(
+    protected _startSession(
         link: lDb.Pool | lKv.Pool,
         auth: boolean = false,
         opt: lSession.IOptions = {}
-    ): Promise<void> {
+    ): Promise<boolean> {
         this._sess = new lSession.Session();
-        await this._sess.init(this, link, auth, opt);
+        return this._sess.init(this, link, auth, opt);
     }
 
     // --- 本地化 ---

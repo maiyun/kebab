@@ -24,6 +24,8 @@ export interface IData {
         'errno': number;
         [key: string]: any;
     } | null;
+    /** --- 1-正常,-500-服务器错误 --- */
+    'result': number;
 }
 
 /** --- exec 返回对象 --- */
@@ -128,6 +130,7 @@ export class Pool {
      * --- 执行一条 SQL，无视顺序和相同连接，随用随取 ---
      * @param sql 执行的 SQL 字符串
      * @param values 要替换的 data 数据
+     * @returns error.errno = -500 表示系统错误
      */
     public async query(sql: string, values?: kebab.DbValue[]): Promise<IData> {
         ++this._queries;
@@ -138,9 +141,10 @@ export class Pool {
                 'rows': null,
                 'fields': [],
                 'error': {
-                    'message': 'null',
-                    'errno': 0
-                }
+                    'message': 'false',
+                    'errno': 0,
+                },
+                'result': -500,
             };
         }
         // --- 执行一次后自动解除 using ---
@@ -309,9 +313,10 @@ export class Transaction {
                 'rows': null,
                 'fields': [],
                 'error': {
-                    'message': 'null',
+                    'message': 'false',
                     'errno': 0
-                }
+                },
+                'result': -500,
             };
         }
         ++this._queries;
@@ -545,7 +550,8 @@ export class Connection {
             return {
                 'rows': null,
                 'fields': [],
-                'error': e
+                'error': e,
+                'result': -500,
             };
         }
         if (!this._transaction) {
@@ -555,7 +561,8 @@ export class Connection {
         return {
             'rows': res[0],
             'fields': res[1],
-            'error': null
+            'error': null,
+            'result': 1,
         };
     }
 
