@@ -19,6 +19,10 @@ export enum ESERVICE {
     'ALIAS',
     /** --- 微软 Azure --- */
     'AZURE',
+    /** --- 微软 Azure 2 --- */
+    'AZURE2',
+    /** --- 微软 Azure 3 --- */
+    'AZURE3',
 }
 
 /** --- 选项 --- */
@@ -58,6 +62,14 @@ export class Ai {
                 break;
             }
             case ESERVICE.AZURE: {
+                endpoint = opt.endpoint ?? config.ai?.[ESERVICE[opt.service]]?.endpoint ?? '';
+                break;
+            }
+            case ESERVICE.AZURE2: {
+                endpoint = opt.endpoint ?? config.ai?.[ESERVICE[opt.service]]?.endpoint ?? '';
+                break;
+            }
+            case ESERVICE.AZURE3: {
                 endpoint = opt.endpoint ?? config.ai?.[ESERVICE[opt.service]]?.endpoint ?? '';
                 break;
             }

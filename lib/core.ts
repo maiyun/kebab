@@ -8,6 +8,7 @@ import * as http from 'http';
 import * as http2 from 'http2';
 import * as stream from 'stream';
 import * as os from 'os';
+import * as net from 'net';
 import * as kebab from '#kebab/index.js';
 import * as lTime from '#kebab/lib/time.js';
 import * as lFs from '#kebab/lib/fs.js';
@@ -943,9 +944,12 @@ export function writeEventStreamHead(res: http2.Http2ServerResponse | http.Serve
  * @param data 数据
  */
 export function write(
-    res: http2.Http2ServerResponse | http.ServerResponse, data: string | Buffer
+    res: http2.Http2ServerResponse | http.ServerResponse | net.Socket, data: string | Buffer
 ): void {
     if (res instanceof http2.Http2ServerResponse) {
+        res.write(data);
+    }
+    else if (res instanceof net.Socket) {
         res.write(data);
     }
     else {

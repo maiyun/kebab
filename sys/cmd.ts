@@ -158,6 +158,12 @@ async function run(): Promise<void> {
         config.ai['AZURE'] ??= {};
         config.ai['AZURE'].endpoint ??= '';
         config.ai['AZURE'].skey ??= '';
+        config.ai['AZURE2'] ??= {};
+        config.ai['AZURE2'].endpoint ??= '';
+        config.ai['AZURE2'].skey ??= '';
+        config.ai['AZURE3'] ??= {};
+        config.ai['AZURE3'].endpoint ??= '';
+        config.ai['AZURE3'].skey ??= '';
         // --- config - vector ---
         config.vector ??= {};
         config.vector.host ??= '127.0.0.1';
