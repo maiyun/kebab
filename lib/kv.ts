@@ -662,7 +662,7 @@ export class Pool {
             // --- 没有找到合适的连接，创建一个 ---
             const link = redis.createCommandClient({
                 'host': this._etc.host,
-                'port': this._etc.port
+                'port': this._etc.port,
             });
             // --- 开始连接 ---
             try {
@@ -687,7 +687,7 @@ export class Pool {
             link.on('error', function(err: Error): void {
                 conn.setLost();
                 // console.log(`--- redis [${conn._etc.host}:${conn._etc.port}] error ---`);
-                lCore.debug('[KV][ERROR]', err.message);
+                lCore.debug('[KV][_getConnection][error]', err);
             }).on('end', () => {
                 conn.setLost();
             }).on('close', () => {
