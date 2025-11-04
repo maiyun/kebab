@@ -100,23 +100,21 @@ export class Ai {
     }
 
     /** --- 创建非流式对话 --- */
-    public chat(
+    public async chat(
         body: openai.default.Chat.Completions.ChatCompletionCreateParamsNonStreaming
-    ): openai.APIPromise<openai.default.Chat.ChatCompletion> | false;
+    ): Promise<openai.APIPromise<openai.default.Chat.ChatCompletion> | false>;
     /** --- 创建流式对话 --- */
-    public chat(
+    public async chat(
         body: openai.default.Chat.Completions.ChatCompletionCreateParamsStreaming
-    ): openai.APIPromise<streaming.Stream<openai.default.Chat.ChatCompletionChunk>> | false;
+    ): Promise<openai.APIPromise<streaming.Stream<openai.default.Chat.ChatCompletionChunk>> | false>;
     /** --- 创建对话 --- */
-    public chat(
+    public async chat(
         body: openai.default.Chat.Completions.ChatCompletionCreateParams
-    ): openai.APIPromise<openai.default.Chat.ChatCompletion> |
+    ): Promise<openai.APIPromise<openai.default.Chat.ChatCompletion> |
         openai.APIPromise<streaming.Stream<openai.default.Chat.ChatCompletionChunk>> |
-        false {
+        false> {
         try {
-            return this.link.chat.completions.create(body) as
-                openai.APIPromise<openai.default.Chat.ChatCompletion> |
-                openai.APIPromise<streaming.Stream<openai.default.Chat.ChatCompletionChunk>>;
+            return await this.link.chat.completions.create(body);
         }
         catch (e: any) {
             lCore.debug('[AI][CHAT]', e);
