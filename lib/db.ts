@@ -239,10 +239,12 @@ export class Pool {
                     });
                     conn = c;
                     connections.push(conn);
+                    break;
                 }
                 catch (err: any) {
                     if (err.message === 'ETIMEOUT') {
                         lCore.debug('[DB][_getConnection][ETIMEOUT]', err);
+                        await lCore.sleep(300);
                         continue;
                     }
                     const msg = `[DB][_getConnection] ${err.message}(${this._etc.host}:${this._etc.port})`;
