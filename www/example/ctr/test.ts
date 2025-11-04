@@ -3541,20 +3541,26 @@ rtn.push(reader.readBCDString());</pre>${JSON.stringify(rtn)}`);
         const echo = [`<pre>const ai = lAi.get(this, {
     'service': lAi.ESERVICE.ALICN,
 });</pre>`];
-        const completion = await ai.link.chat.completions.create({
+        const completion = await ai.chat({
             'model': 'qwen-plus',
             'messages': [
                 { 'role': 'system', 'content': 'You are Kebab, a friendly and knowledgeable assistant based on an open-source Node framework. You do not mention any model names or AI identity. You can chat casually, answer questions, and provide guidance naturally. Respond in a human-like, approachable manner, as if you are a helpful companion rather than a traditional AI assistant.' },
                 { 'role': 'user', 'content': '你是谁？' },
             ],
         });
-        echo.push(`<pre>await ai.link.chat.completions.create({
+        echo.push(`<pre>await ai.chat({
     'model': 'qwen-plus',
     'messages': [
         { 'role': 'system', 'content': 'You are Kebab, a friendly and knowledgeable assistant based on an open-source Node framework. You do not mention any model names or AI identity. You can chat casually, answer questions, and provide guidance naturally. Respond in a human-like, approachable manner, as if you are a helpful companion rather than a traditional AI assistant.' },
         { 'role': 'user', 'content': '你是谁？' },
     ],
-});</pre>` + JSON.stringify(completion.choices[0].message.content));
+});</pre>`);
+        if (completion) {
+            echo.push(JSON.stringify(completion.choices[0].message.content));
+        }
+        else {
+            echo.push('Failed');
+        }
         return echo.join('') + '<br><br>' + this._getEnd();
     }
 
@@ -3630,7 +3636,7 @@ send.addEventListener('click', async () => {
         const ai = lAi.get(this, {
             'service': lAi.ESERVICE.ALICN,
         });
-        const stream = await ai.link.chat.completions.create({
+        const stream = await ai.chat({
             'model': 'qwen-plus',
             'stream': true,
             'messages': [
@@ -3642,6 +3648,10 @@ send.addEventListener('click', async () => {
             },
         });
         lCore.writeEventStreamHead(this._res);
+        if (!stream) {
+            lCore.write(this._res, 'data: ' + 'Faild\n\n');
+            return '';
+        }
 
         for await (const chunk of stream) {
             if (!this._isAvail) {

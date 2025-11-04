@@ -4,6 +4,8 @@
  * Last: 2025-10-27 21:31:08
  */
 import * as openai from 'openai';
+import * as streaming from 'openai/streaming';
+import * as lCore from '#kebab/lib/core.js';
 import * as sCtr from '#kebab/sys/ctr.js';
 
 /**
@@ -48,7 +50,10 @@ export class Ai {
     /** --- openai 原生对象，建议只读 --- */
     public readonly link: openai.OpenAI;
 
+    private readonly _ctr: sCtr.Ctr;
+
     public constructor(ctr: sCtr.Ctr, opt: IOptions) {
+        this._ctr = ctr;
         const config = ctr.getPrototype('_config');
         const secretKey = opt.secretKey ?? config.ai?.[ESERVICE[opt.service]]?.skey ?? '';
         let endpoint: string | undefined;
@@ -92,6 +97,32 @@ export class Ai {
             'token': token,
             'link': this.link,
         });
+    }
+
+    /** --- 创建非流式对话 --- */
+    public chat(
+        body: openai.default.Chat.Completions.ChatCompletionCreateParamsNonStreaming
+    ): openai.APIPromise<openai.default.Chat.ChatCompletion> | false;
+    /** --- 创建流式对话 --- */
+    public chat(
+        body: openai.default.Chat.Completions.ChatCompletionCreateParamsStreaming
+    ): openai.APIPromise<streaming.Stream<openai.default.Chat.ChatCompletionChunk>> | false;
+    /** --- 创建对话 --- */
+    public chat(
+        body: openai.default.Chat.Completions.ChatCompletionCreateParams
+    ): openai.APIPromise<openai.default.Chat.ChatCompletion> |
+        openai.APIPromise<streaming.Stream<openai.default.Chat.ChatCompletionChunk>> |
+        false {
+        try {
+            return this.link.chat.completions.create(body) as
+                openai.APIPromise<openai.default.Chat.ChatCompletion> |
+                openai.APIPromise<streaming.Stream<openai.default.Chat.ChatCompletionChunk>>;
+        }
+        catch (e: any) {
+            lCore.debug('[AI][CHAT]', e);
+            lCore.log(this._ctr, `[AI][CHAT] ${e.message}`, '-error');
+            return false;
+        }
     }
 
 }

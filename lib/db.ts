@@ -212,36 +212,44 @@ export class Pool {
         }
         if (!conn) {
             // --- 没有找到合适的连接，创建一个 ---
-            try {
-                const link = await mysql2.createConnection({
-                    'host': this._etc.host,
-                    'port': this._etc.port,
-                    'charset': this._etc.charset,
-                    'database': this._etc.name,
-                    'user': this._etc.user,
-                    'password': this._etc.pwd,
-                    'connectTimeout': 3_000,
-                });
-                const c = new Connection(this._etc, link);
-                c.using();
-                link.on('error', function(err: mysql2.QueryError): void {
-                    c.setLost();
-                    if (err.code !== 'PROTOCOL_CONNECTION_LOST') {
-                        lCore.debug('[DB][_getConnection][error]', err.message);
+            for (let i = 0; i < 3; ++i) {
+                try {
+                    const link = await mysql2.createConnection({
+                        'host': this._etc.host,
+                        'port': this._etc.port,
+                        'charset': this._etc.charset,
+                        'database': this._etc.name,
+                        'user': this._etc.user,
+                        'password': this._etc.pwd,
+                        'connectTimeout': 3_000,
+                    });
+                    const c = new Connection(this._etc, link);
+                    c.using();
+                    link.on('error', function(err: mysql2.QueryError): void {
+                        c.setLost();
+                        if (err.code !== 'PROTOCOL_CONNECTION_LOST') {
+                            lCore.debug('[DB][_getConnection][error]', err.message);
+                            lCore.log({}, '[DB][_getConnection][error] ' + err.message, '-error');
+                        }
+                    }).on('end', () => {
+                        // lCore.debug('[DB][_getConnection] connection end.');
+                        c.setLost();
+                    }).on('close', () => {
+                        c.setLost();
+                    });
+                    conn = c;
+                    connections.push(conn);
+                }
+                catch (err: any) {
+                    if (err.message === 'ETIMEOUT') {
+                        lCore.debug('[DB][_getConnection][ETIMEOUT]', err);
+                        continue;
                     }
-                }).on('end', () => {
-                    // lCore.debug('[DB][_getConnection] connection end.');
-                    c.setLost();
-                }).on('close', () => {
-                    c.setLost();
-                });
-                conn = c;
-                connections.push(conn);
-            }
-            catch (e: any) {
-                const msg = '[DB][_getConnection] ' + e.message;
-                lCore.debug(msg);
-                lCore.log({}, msg, '-error');
+                    const msg = `[DB][_getConnection] ${err.message}(${this._etc.host}:${this._etc.port})`;
+                    lCore.debug(msg);
+                    lCore.log({}, msg, '-error');
+                    break;
+                }
             }
         }
         return conn;
