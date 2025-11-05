@@ -751,7 +751,7 @@ export function log(opt: sCtr.Ctr | ILogOptions, msg: string, fend: string = '')
  * @param opt 参数
  */
 export async function getLog(opt: {
-    /** --- 如 127.0.0.1 --- */
+    /** --- 要查询的头，如 127.0.0.1、system、www.maiyun.net 等 --- */
     'hostname': string;
     /** --- 如 2024/08/01/22 --- */
     'path': string;
@@ -786,11 +786,13 @@ export async function getLog(opt: {
     });
     const content = await res.getContent();
     if (!content) {
+        // --- 连接失败，系统错误 ---
         return false;
     }
     const str = content.toString();
     const j = lText.parseJson(str);
     if (!j) {
+        // --- 解析失败，系统错误 ---
         return false;
     }
     return j.data;

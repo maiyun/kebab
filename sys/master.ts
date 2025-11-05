@@ -243,7 +243,7 @@ function createRpcListener(): void {
                     if (!await lFs.isFile(path)) {
                         res.end(lText.stringifyJson({
                             'result': 1,
-                            'data': false,
+                            'data': null,
                         }));
                         return;
                     }
@@ -251,7 +251,7 @@ function createRpcListener(): void {
                     let limit = msg.limit ?? 100;
                     /** --- 剩余 offset --- */
                     let offset = msg.offset ?? 0;
-                    const rtn = await new Promise<string[][] | null | false>((resolve) => {
+                    const rtn = await new Promise<string[][] | null | false>(resolve => {
                         const list: string[][] = [];
                         /** --- 当前行号 --- */
                         let line = 0;
