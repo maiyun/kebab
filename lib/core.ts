@@ -787,12 +787,14 @@ export async function getLog(opt: {
     const content = await res.getContent();
     if (!content) {
         // --- 连接失败，系统错误 ---
+        debug('[CORE][getLog] rpc server error');
         return false;
     }
     const str = content.toString();
     const j = lText.parseJson(str);
     if (!j) {
         // --- 解析失败，系统错误 ---
+        debug('[CORE][getLog] rpc server content error');
         return false;
     }
     return j.data;
