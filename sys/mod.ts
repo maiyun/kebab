@@ -1,7 +1,7 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2019-6-4 21:35
- * Last: 2020-4-14 13:33:51, 2022-07-23 16:01:34, 2022-09-06 22:59:26, 2023-5-24 19:11:37, 2023-6-13 21:47:58, 2023-7-10 18:54:03, 2023-8-23 17:03:16, 2023-12-11 15:21:22, 2023-12-20 23:12:03, 2024-3-8 16:05:29, 2024-3-20 19:58:15, 2024-8-11 21:14:54, 2024-10-5 14:00:22, 2024-12-14 19:58:34, 2025-9-23 11:01:36
+ * Last: 2020-4-14 13:33:51, 2022-07-23 16:01:34, 2022-09-06 22:59:26, 2023-5-24 19:11:37, 2023-6-13 21:47:58, 2023-7-10 18:54:03, 2023-8-23 17:03:16, 2023-12-11 15:21:22, 2023-12-20 23:12:03, 2024-3-8 16:05:29, 2024-3-20 19:58:15, 2024-8-11 21:14:54, 2024-10-5 14:00:22, 2024-12-14 19:58:34, 2025-9-23 11:01:36, 2025-11-5 16:34:31
  */
 import * as lSql from '#kebab/lib/sql.js';
 import * as lDb from '#kebab/lib/db.js';
@@ -571,13 +571,13 @@ export default class Mod {
     }
 
     /**
-     * --- 根据主键获取对象 ---
+     * --- 根据主键（或 key 字段）获取对象 ---
      * @param db 数据库对象
      * @param val 主键值
      * @param lock 是否加锁
      * @param opt 选项
      */
-    public static find<T extends Mod>(
+    public static async find<T extends Mod>(
         db: lDb.Pool | lDb.Transaction,
         val: string | number | null,
         opt: {
@@ -586,14 +586,20 @@ export default class Mod {
             'raw'?: boolean;
             'pre'?: string;
             'index'?: string | string[];
+            /** --- 通过 key 字段获取，默认为 false，即从主键获取 --- */
+            'key'?: boolean;
         } = {}
     ): Promise<false | null | (T & Record<string, any>)> {
+        if (opt.key && !this._$key) {
+            lCore.debug('[MOD][find] key not found');
+            return false;
+        }
         return (new this({
             'db': db,
             'ctr': opt.ctr,
             'pre': opt.pre,
             'where': [{
-                [this._$primary]: val
+                [opt.key ? this._$key : this._$primary]: val,
             }],
             'raw': opt.raw,
             'index': opt.index,
