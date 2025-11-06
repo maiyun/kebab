@@ -1,6 +1,6 @@
 {
   "name": "@maiyunnet/kebab",
-  "version": "4.0.0",
+  "version": "4.0.1",
   "description": "Simple, easy-to-use, and fully-featured Node.js framework that is ready-to-use out of the box.",
   "type": "module",
   "keywords": [

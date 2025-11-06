@@ -72,12 +72,15 @@ export class Kv {
             const configKv = ctr.getPrototype('_config').kv;
             const user = etc?.user ?? configKv.user;
             const pwd = etc?.pwd ?? configKv.pwd;
-            await this._link.auth(pwd, user || undefined);
+            if (pwd) {
+                await this._link.auth(pwd, user || undefined);
+            }
             await this._link.select(this._index);
             return true;
         }
-        catch {
+        catch (e: any) {
             // --- 初始化失败，移除 ---
+            lCore.debug('[KV][init][error]', e);
             const item = connections.findIndex(item => item.link === this._link);
             if (item !== -1) {
                 connections.splice(item, 1);
