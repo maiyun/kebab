@@ -20,7 +20,7 @@ export function getRegulars(): IRegularData[] {
 /**
  * --- 创建定时执行的计划任务 ---
  * @param task 计划任务对象
- * @param immediate 如果传入的时间小于当前时间且没有执行过则立即执行一次（格式：YmdHi）
+ * @param immediate 如果传入的时间小于当前时间且没有执行过则立即执行一次（格式：YmdHi，系统时区）
  */
 export async function regular(task: IRegular, immediate: string = ''): Promise<boolean> {
     if (!/^[a-z0-9-_]{1,32}$/.test(task.name)) {
