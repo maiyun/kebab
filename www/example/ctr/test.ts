@@ -1551,17 +1551,11 @@ exec: ${JSON.stringify(exec)}<br><br>`);
     }
 
     public async kv(): Promise<kebab.Json> {
-        const kv = await lKv.get(this);
-        if (!kv) {
-            return [0, 'Failed.'];
-        }
+        const kv = lKv.get(this);
         const value = this._get['value'] ?? '';
         const ac = this._get['ac'] ?? '';
 
-        const echo = [`<pre>const kv = await lKv.get(this);
-if (!kv) {
-    return [0, 'Failed.'];
-}
+        const echo = [`<pre>const kv = lKv.get(this);
 JSON.stringify(await kv.ping());</pre>${JSON.stringify(await kv.ping())}`];
 
         if (ac == 'delete') {
@@ -2419,7 +2413,10 @@ function confirm() {
             link = db;
         }
         else {
-            const kv = await lKv.get(this);
+            const kv = lKv.get(this);
+            if (!await kv.ping()) {
+                return false;
+            }
             if (!kv) {
                 return false;
             }
@@ -2446,11 +2443,11 @@ function confirm() {
             echo.push('link = lDb.get(this);\n');
         }
         else {
-            link = await lKv.get(this);
-            if (!link) {
+            link = lKv.get(this);
+            if (!await link.ping()) {
                 return [0, 'Failed, Redis can not be connected.'];
             }
-            echo.push('link = await lKv.get(this);\n');
+            echo.push('link = lKv.get(this);\n');
         }
 
         if (this._get['auth'] === '') {
@@ -2508,11 +2505,8 @@ Result:<pre id="result">Nothing.</pre>`);
         const echo: string[] = ['<pre>'];
         let link: lKv.Kv | false | undefined = undefined;
         if (this._get['type'] === 'kv') {
-            link = await lKv.get(this);
-            if (!link) {
-                return [0, 'Failed, Redis can not be connected.'];
-            }
-            echo.push('link = await lKv.get(this);\n');
+            link = lKv.get(this);
+            echo.push('link = lKv.get(this);\n');
         }
 
         const origin = lJwt.getOrigin(this);

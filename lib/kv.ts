@@ -7,6 +7,7 @@
 // --- 第三方 ---
 import * as redis from '@litert/redis';
 // --- 库和定义 ---
+import * as kebab from '#kebab/index.js';
 import * as lText from '#kebab/lib/text.js';
 import * as lCore from '#kebab/lib/core.js';
 import * as sCtr from '#kebab/sys/ctr.js';
@@ -16,77 +17,11 @@ const connections: IConnectionInfo[] = [];
 
 export class Kv {
 
-    /** --- pre --- */
-    private readonly _pre: string;
+    /** --- 当前的 kv 连接信息 --- */
+    private readonly _etc: kebab.IConfigKv;
 
-    /** --- 当前连接的 db index --- */
-    private readonly _index: number;
-
-    /** --- kv 连接对象 --- */
-    private readonly _link: redis.ICommandClient;
-
-    /** --- 获取之时是新 redis 链接还是老链接 --- */
-    private readonly _new: boolean;
-
-    public constructor(ctr: sCtr.Ctr, etc?: IOptions) {
-        const configKv = ctr.getPrototype('_config').kv;
-        const host = etc?.host ?? configKv.host;
-        const port = etc?.port ?? configKv.port;
-        this._index = etc?.index ?? configKv.index;
-        this._pre = etc?.pre ?? configKv.pre;
-        const item = connections.find(item =>
-            (item.host === host) && (item.port === port) && (item.index === this._index)
-        );
-        if (item) {
-            this._new = false;
-            this._link = item.link;
-            return;
-        }
-        this._new = true;
-        this._link = redis.createCommandClient({
-            'host': host,
-            'port': port,
-        });
-        this._link.on('error', err => {
-            lCore.debug('[KV][constructor][error]', err);
-        }).on('end', () => {
-            // --- 连接断开，不过没关系，执行命令时会自动重连 ---
-        }).on('close', () => {
-            // --- 连接断开，不过没关系，执行命令时会自动重连 ---
-        });
-        connections.push({
-            'host': host,
-            'port': port,
-            'index': this._index,
-            'link': this._link,
-        });
-    }
-
-    /** --- 初始化连接 --- */
-    public async init(ctr: sCtr.Ctr, etc?: IOptions): Promise<boolean> {
-        try {
-            if (!this._new) {
-                // --- 不是新连接，不需要初始化 ---
-                return true;
-            }
-            const configKv = ctr.getPrototype('_config').kv;
-            const user = etc?.user ?? configKv.user;
-            const pwd = etc?.pwd ?? configKv.pwd;
-            if (pwd) {
-                await this._link.auth(pwd, user || undefined);
-            }
-            await this._link.select(this._index);
-            return true;
-        }
-        catch (e: any) {
-            // --- 初始化失败，移除 ---
-            lCore.debug('[KV][init][error]', e);
-            const item = connections.findIndex(item => item.link === this._link);
-            if (item !== -1) {
-                connections.splice(item, 1);
-            }
-            return false;
-        }
+    public constructor(etc: kebab.IConfigKv) {
+        this._etc = etc;
     }
 
     /**
@@ -97,19 +32,23 @@ export class Kv {
      * @param mod 设置模式: 空,nx（key不存在才建立）,xx（key存在才修改）
      */
     public async set(key: string, val: object | string | number, ttl: number = 0, mod: '' | 'nx' | 'xx' = ''): Promise<boolean> {
+        const conn = await this._getConnection();
+        if (!conn) {
+            return false;
+        }
         if (typeof val !== 'string') {
             val = lText.stringifyJson(val);
         }
         try {
             switch (mod) {
                 case '': {
-                    return await this._link.set(this._pre + key, val, ttl === 0 ? undefined : ttl);
+                    return await conn.set(this._etc.pre + key, val, ttl === 0 ? undefined : ttl);
                 }
                 case 'nx': {
-                    return await this._link.setNX(this._pre + key, val, ttl === 0 ? undefined : ttl);
+                    return await conn.setNX(this._etc.pre + key, val, ttl === 0 ? undefined : ttl);
                 }
                 case 'xx': {
-                    return await this._link.replace(this._pre + key, val, ttl === 0 ? undefined : ttl);
+                    return await conn.replace(this._etc.pre + key, val, ttl === 0 ? undefined : ttl);
                 }
             }
         }
@@ -153,8 +92,12 @@ export class Kv {
      * @param val
      */
     public async append(key: string, val: string): Promise<boolean> {
+        const conn = await this._getConnection();
+        if (!conn) {
+            return false;
+        }
         try {
-            return await this._link.append(this._pre + key, val) > 0 ? true : false;
+            return await conn.append(this._etc.pre + key, val) > 0 ? true : false;
         }
         catch {
             return false;
@@ -167,6 +110,10 @@ export class Kv {
      * @param val
      */
     public async prepend(key: string, val: string): Promise<boolean> {
+        const conn = await this._getConnection();
+        if (!conn) {
+            return false;
+        }
         try {
             const script: string = `local val = redis.call('GET', KEYS[1])
 if (val == false) then
@@ -178,11 +125,11 @@ if (r) then
 else
     return 0
 end`;
-            let r = await this._link.evalSHA('ea360f3f6508a243824ecda6be15db56df217873', [this._pre + key], [val]);
+            let r = await conn.evalSHA('ea360f3f6508a243824ecda6be15db56df217873', [this._etc.pre + key], [val]);
             r = parseInt(r);
             if (r <= 0) {
-                await this._link.scriptLoad(script);
-                r = await this._link.evalSHA('ea360f3f6508a243824ecda6be15db56df217873', [this._pre + key], [val]);
+                await conn.scriptLoad(script);
+                r = await conn.evalSHA('ea360f3f6508a243824ecda6be15db56df217873', [this._etc.pre + key], [val]);
                 r = parseInt(r);
             }
             return r > 0 ? true : false;
@@ -197,14 +144,18 @@ end`;
      * @param keys 单个或序列
      */
     public async exists(keys: string | string[]): Promise<number> {
+        const conn = await this._getConnection();
+        if (!conn) {
+            return 0;
+        }
         try {
             if (typeof keys === 'string') {
                 keys = [keys];
             }
             for (let k = 0; k < keys.length; ++k) {
-                keys[k] = this._pre + keys[k];
+                keys[k] = this._etc.pre + keys[k];
             }
-            return await this._link.mExists(keys);
+            return await conn.mExists(keys);
         }
         catch {
             return 0;
@@ -217,8 +168,12 @@ end`;
      * @returns 字符串 / false / null（即使存入时是 number，这个方法也只会返回字符串）
      */
     public async get(key: string): Promise<string | false | null> {
+        const conn = await this._getConnection();
+        if (!conn) {
+            return null;
+        }
         try {
-            return await this._link.get(this._pre + key);
+            return await conn.get(this._etc.pre + key);
         }
         catch {
             return false;
@@ -230,8 +185,12 @@ end`;
      * @param key
      */
     public async ttl(key: string): Promise<number | null> {
+        const conn = await this._getConnection();
+        if (!conn) {
+            return null;
+        }
         try {
-            return await this._link.ttl(this._pre + key);
+            return await conn.ttl(this._etc.pre + key);
         }
         catch {
             return null;
@@ -243,8 +202,12 @@ end`;
      * @param key
      */
     public async pttl(key: string): Promise<number | null> {
+        const conn = await this._getConnection();
+        if (!conn) {
+            return null;
+        }
         try {
-            return await this._link.pTTL(this._pre + key);
+            return await conn.pTTL(this._etc.pre + key);
         }
         catch {
             return null;
@@ -255,14 +218,18 @@ end`;
      * --- 批量获取值 ---
      * @param keys key 序列
      */
-    public async mGet(keys: string[]): Promise<Record<string, string | null>> {
+    public async mGet(keys: string[]): Promise<Record<string, string | null> | false> {
+        const conn = await this._getConnection();
+        if (!conn) {
+            return false;
+        }
         for (let k = 0; k < keys.length; ++k) {
-            keys[k] = this._pre + keys[k];
+            keys[k] = this._etc.pre + keys[k];
         }
         const rtn: Record<string, string | null> = {};
         try {
-            const pl: number = this._pre.length;
-            const r = await this._link.mGet(keys);
+            const pl: number = this._etc.pre.length;
+            const r = await conn.mGet(keys);
             if (pl === 0) {
                 return r;
             }
@@ -271,28 +238,28 @@ end`;
             }
         }
         catch {
-            for (const key of keys) {
-                rtn[key] = null;
-            }
+            return false;
         }
         return rtn;
     }
 
     /**
      * --- 批量设置哈希值 ---
-     * @param key key 名
      * @param rows key / val 数组
-     * @param etc
      */
     public async mSet(
         rows: Record<string, string | Buffer>
     ): Promise<boolean> {
+        const conn = await this._getConnection();
+        if (!conn) {
+            return false;
+        }
         try {
             const rtn: Record<string, string | Buffer> = {};
             for (const key in rows) {
-                rtn[this._pre + key] = rows[key];
+                rtn[this._etc.pre + key] = rows[key];
             }
-            await this._link.mSet(rtn);
+            await conn.mSet(rtn);
             return true;
         }
         catch {
@@ -318,14 +285,18 @@ end`;
      * @param keys
      */
     public async del(keys: string | string[]): Promise<boolean> {
+        const conn = await this._getConnection();
+        if (!conn) {
+            return false;
+        }
         if (typeof keys === 'string') {
             keys = [keys];
         }
         for (let k = 0; k < keys.length; ++k) {
-            keys[k] = this._pre + keys[k];
+            keys[k] = this._etc.pre + keys[k];
         }
         try {
-            return await this._link.del(keys) > 0 ? true : false;
+            return await conn.del(keys) > 0 ? true : false;
         }
         catch {
             return false;
@@ -338,17 +309,21 @@ end`;
      * @param num 整数或浮点正数
      */
     public async incr(key: string, num: number = 1): Promise<number | false> {
+        const conn = await this._getConnection();
+        if (!conn) {
+            return false;
+        }
         try {
             if (Number.isInteger(num)) {
                 if (num === 1) {
-                    return await this._link.incr(this._pre + key);
+                    return await conn.incr(this._etc.pre + key);
                 }
                 else {
-                    return await this._link.incr(this._pre + key, num);
+                    return await conn.incr(this._etc.pre + key, num);
                 }
             }
             else {
-                return await this._link.incrByFloat(this._pre + key, num);
+                return await conn.incrByFloat(this._etc.pre + key, num);
             }
         }
         catch {
@@ -362,17 +337,21 @@ end`;
      * @param num 整数或浮点正数
      */
     public async decr(key: string, num: number = 1): Promise<number | false> {
+        const conn = await this._getConnection();
+        if (!conn) {
+            return false;
+        }
         try {
             if (Number.isInteger(num)) {
                 if (num === 1) {
-                    return await this._link.decr(this._pre + key);
+                    return await conn.decr(this._etc.pre + key);
                 }
                 else {
-                    return await this._link.decr(this._pre + key, num);
+                    return await conn.decr(this._etc.pre + key, num);
                 }
             }
             else {
-                return await this._link.incrByFloat(this._pre + key, -num);
+                return await conn.incrByFloat(this._etc.pre + key, -num);
             }
         }
         catch {
@@ -386,8 +365,12 @@ end`;
      * @param ttl
      */
     public async expire(key: string, ttl: number): Promise<boolean> {
+        const conn = await this._getConnection();
+        if (!conn) {
+            return false;
+        }
         try {
-            return await this._link.expire(this._pre + key, ttl);
+            return await conn.expire(this._etc.pre + key, ttl);
         }
         catch {
             return false;
@@ -399,9 +382,13 @@ end`;
      * @param pattern
      */
     public async keys(pattern: string): Promise<string[] | false> {
+        const conn = await this._getConnection();
+        if (!conn) {
+            return false;
+        }
         try {
-            const r = await this._link.keys(this._pre + pattern);
-            const pl = this._pre.length;
+            const r = await conn.keys(this._etc.pre + pattern);
+            const pl = this._etc.pre.length;
             if (pl > 0) {
                 for (let k = 0; k < r.length; ++k) {
                     r[k] = r[k].slice(pl);
@@ -425,10 +412,14 @@ end`;
         pattern: string = '*',
         count: number = 10
     ): Promise<redis.IScanResult<string> | false> {
+        const conn = await this._getConnection();
+        if (!conn) {
+            return false;
+        }
         try {
-            const r = await this._link.scan(cursor, this._pre + pattern, count);
+            const r = await conn.scan(cursor, this._etc.pre + pattern, count);
             for (let i = 0; i < r.items.length; ++i) {
-                r.items[i] = r.items[i].slice(this._pre.length);
+                r.items[i] = r.items[i].slice(this._etc.pre.length);
             }
             return r;
         }
@@ -441,8 +432,12 @@ end`;
      * --- 清除当前所选数据库的所有内容 ---
      */
     public async flushDb(): Promise<boolean> {
+        const conn = await this._getConnection();
+        if (!conn) {
+            return false;
+        }
         try {
-            await this._link.flushDb();
+            await conn.flushDb();
             return true;
         }
         catch {
@@ -455,8 +450,12 @@ end`;
      * @param last 是否刷新最后使用时间（默认刷新）
      */
     public async ping(): Promise<false | string> {
+        const conn = await this._getConnection();
+        if (!conn) {
+            return false;
+        }
         try {
-            return (await this._link.ping()) === 'PONG' ? 'PONG' : false;
+            return (await conn.ping()) === 'PONG' ? 'PONG' : false;
         }
         catch {
             return false;
@@ -471,15 +470,19 @@ end`;
      * @param mod 空,nx(key不存在才建立)
      */
     public async hSet(key: string, field: string, val: object | string | number, mod: '' | 'nx' = ''): Promise<boolean> {
+        const conn = await this._getConnection();
+        if (!conn) {
+            return false;
+        }
         try {
             if (typeof val !== 'string') {
                 val = lText.stringifyJson(val);
             }
             if (mod === 'nx') {
-                return await this._link.hSetNX(this._pre + key, field, val);
+                return await conn.hSetNX(this._etc.pre + key, field, val);
             }
             else {
-                return await this._link.hSet(this._pre + key, field, val);
+                return await conn.hSet(this._etc.pre + key, field, val);
             }
         }
         catch {
@@ -496,6 +499,10 @@ end`;
         key: string,
         rows: Record<string, object | string | number>
     ): Promise<boolean> {
+        const conn = await this._getConnection();
+        if (!conn) {
+            return false;
+        }
         try {
             for (const i in rows) {
                 const val = rows[i];
@@ -503,7 +510,7 @@ end`;
                     rows[i] = lText.stringifyJson(val);
                 }
             }
-            await this._link.hMSet(this._pre + key, rows as Record<string, string | number>);
+            await conn.hMSet(this._etc.pre + key, rows as Record<string, string | number>);
             return true;
         }
         catch {
@@ -516,12 +523,16 @@ end`;
      * @param key
      * @param field
      */
-    public async hGet(key: string, field: string): Promise<string | null> {
+    public async hGet(key: string, field: string): Promise<string | false | null> {
+        const conn = await this._getConnection();
+        if (!conn) {
+            return false;
+        }
         try {
-            return await this._link.hGet(this._pre + key, field);
+            return await conn.hGet(this._etc.pre + key, field);
         }
         catch {
-            return null;
+            return false;
         }
     }
 
@@ -530,8 +541,11 @@ end`;
      * @param key
      * @param field
      */
-    public async hGetJson(key: string, field: string): Promise<any | null> {
+    public async hGetJson(key: string, field: string): Promise<any | false | null> {
         const v = await this.hGet(key, field);
+        if (v === false) {
+            return false;
+        }
         if (v === null) {
             return null;
         }
@@ -544,16 +558,16 @@ end`;
      * @param key
      * @param fields
      */
-    public async hMGet(key: string, fields: string[]): Promise<Record<string, string | null>> {
+    public async hMGet(key: string, fields: string[]): Promise<Record<string, string | null> | false> {
+        const conn = await this._getConnection();
+        if (!conn) {
+            return false;
+        }
         try {
-            return await this._link.hMGet(this._pre + key, fields);
+            return await conn.hMGet(this._etc.pre + key, fields);
         }
         catch {
-            const rtn: Record<string, string | null> = {};
-            for (const field of fields) {
-                rtn[field] = null;
-            }
-            return rtn;
+            return false;
         }
     }
 
@@ -561,12 +575,16 @@ end`;
      * --- 批量获取哈希键值对 ---
      * @param key
      */
-    public async hGetAll(key: string): Promise<Record<string, string | null> | null> {
+    public async hGetAll(key: string): Promise<Record<string, string | null> | false> {
+        const conn = await this._getConnection();
+        if (!conn) {
+            return false;
+        }
         try {
-            return await this._link.hGetAll(this._pre + key);
+            return await conn.hGetAll(this._etc.pre + key);
         }
         catch {
-            return null;
+            return false;
         }
     }
 
@@ -575,12 +593,16 @@ end`;
      * @param key
      * @param fields 值序列
      */
-    public async hDel(key: string, fields: string | string[]): Promise<number> {
+    public async hDel(key: string, fields: string | string[]): Promise<number | false> {
+        const conn = await this._getConnection();
+        if (!conn) {
+            return false;
+        }
         try {
-            return await this._link.hDel(this._pre + key, fields);
+            return await conn.hDel(this._etc.pre + key, fields);
         }
         catch {
-            return 0;
+            return false;
         }
     }
 
@@ -590,8 +612,12 @@ end`;
      * @param field
      */
     public async hExists(key: string, field: string): Promise<boolean> {
+        const conn = await this._getConnection();
+        if (!conn) {
+            return false;
+        }
         try {
-            return await this._link.hExists(this._pre + key, field);
+            return await conn.hExists(this._etc.pre + key, field);
         }
         catch {
             return false;
@@ -604,17 +630,21 @@ end`;
      * @param field 字段
      * @param increment 正数或负数，整数或浮点
      */
-    public async hIncr(key: string, field: string, increment: number): Promise<number> {
+    public async hIncr(key: string, field: string, increment: number): Promise<number | false> {
+        const conn = await this._getConnection();
+        if (!conn) {
+            return false;
+        }
         try {
             if (Number.isInteger(increment)) {
-                return await this._link.hIncr(this._pre + key, field, increment);
+                return await conn.hIncr(this._etc.pre + key, field, increment);
             }
             else {
-                return await this._link.hIncrByFloat(this._pre + key, field, increment);
+                return await conn.hIncrByFloat(this._etc.pre + key, field, increment);
             }
         }
         catch {
-            return 0;
+            return false;
         }
     }
 
@@ -622,87 +652,164 @@ end`;
      * --- 获取哈希所有字段 ---
      * @param key
      */
-    public async hKeys(key: string): Promise<string[]> {
+    public async hKeys(key: string): Promise<string[] | false> {
+        const conn = await this._getConnection();
+        if (!conn) {
+            return false;
+        }
         try {
-            return await this._link.hKeys(this._pre + key);
+            return await conn.hKeys(this._etc.pre + key);
         }
         catch {
-            return [];
+            return false;
         }
     }
 
-    public async lPush(key: string, values: Array<string | Buffer>): Promise<number> {
+    public async lPush(key: string, values: Array<string | Buffer>): Promise<number | false> {
+        const conn = await this._getConnection();
+        if (!conn) {
+            return false;
+        }
         try {
-            return await this._link.lPush(this._pre + key, values);
+            return await conn.lPush(this._etc.pre + key, values);
         }
         catch {
-            return 0;
+            return false;
         }
     }
 
-    public async rPush(key: string, values: Array<string | Buffer>): Promise<number> {
+    public async rPush(key: string, values: Array<string | Buffer>): Promise<number | false> {
+        const conn = await this._getConnection();
+        if (!conn) {
+            return false;
+        }
         try {
-            return await this._link.rPush(this._pre + key, values);
+            return await conn.rPush(this._etc.pre + key, values);
         }
         catch {
-            return 0;
+            return false;
         }
     }
 
-    public async bLMove(sourceKey: string, destKey: string, soo: 'LEFT' | 'RIGHT', deo: 'LEFT' | 'RIGHT', timeout: number): Promise<string | null> {
+    public async bLMove(sourceKey: string, destKey: string, soo: 'LEFT' | 'RIGHT', deo: 'LEFT' | 'RIGHT', timeout: number): Promise<string | null | false> {
+        const conn = await this._getConnection();
+        if (!conn) {
+            return false;
+        }
         try {
-            return await this._link.bLMove(this._pre + sourceKey, this._pre + destKey, soo, deo, timeout);
+            return await conn.bLMove(this._etc.pre + sourceKey, this._etc.pre + destKey, soo, deo, timeout);
         }
         catch {
-            return null;
+            return false;
         }
     }
 
-    public async lPop(key: string): Promise<string | null> {
+    public async lPop(key: string): Promise<string | null | false> {
+        const conn = await this._getConnection();
+        if (!conn) {
+            return false;
+        }
         try {
-            return await this._link.lPop(this._pre + key);
+            return await conn.lPop(this._etc.pre + key);
         }
         catch {
-            return null;
+            return false;
         }
     }
 
-    public async rPop(key: string): Promise<string | null> {
+    public async rPop(key: string): Promise<string | null | false> {
+        const conn = await this._getConnection();
+        if (!conn) {
+            return false;
+        }
         try {
-            return await this._link.rPop(this._pre + key);
+            return await conn.rPop(this._etc.pre + key);
         }
         catch {
-            return null;
+            return false;
         }
     }
 
-    public async bRPop(key: string | string[], timeout: number): Promise<Record<string, string>> {
+    public async bRPop(key: string | string[], timeout: number): Promise<Record<string, string> | false> {
+        const conn = await this._getConnection();
+        if (!conn) {
+            return false;
+        }
         try {
             if (typeof key === 'string') {
                 key = [key];
             }
-            return await this._link.bRPop(key.map(item => this._pre + item), timeout);
+            return await conn.bRPop(key.map(item => this._etc.pre + item), timeout);
         }
         catch {
-            return {};
+            return false;
         }
     }
 
-    public async lRange(key: string, start: number, stop: number): Promise<string[]> {
+    public async lRange(key: string, start: number, stop: number): Promise<string[] | false> {
+        const conn = await this._getConnection();
+        if (!conn) {
+            return false;
+        }
         try {
-            return await this._link.lRange(this._pre + key, start, stop);
+            return await conn.lRange(this._etc.pre + key, start, stop);
         }
         catch {
-            return [];
+            return false;
         }
     }
 
-    public async lLen(key: string): Promise<number> {
+    public async lLen(key: string): Promise<number | false> {
+        const conn = await this._getConnection();
+        if (!conn) {
+            return false;
+        }
         try {
-            return await this._link.lLen(this._pre + key);
+            return await conn.lLen(this._etc.pre + key);
         }
         catch {
-            return 0;
+            return false;
+        }
+    }
+
+    /**
+     * --- 从连接池中获取一个符合要求的连接 ---
+     */
+    private async _getConnection(): Promise<redis.ICommandClient | null> {
+        const item = connections.find(item =>
+            (item.host === this._etc.host) && (item.port === this._etc.port) && (item.index === this._etc.index)
+        );
+        if (item) {
+            return item.conn;
+        }
+        // --- 没有找到合适的连接，创建一个 ---
+        try {
+            const conn = redis.createCommandClient({
+                'host': this._etc.host,
+                'port': this._etc.port,
+            });
+            // --- 认证 ---
+            if (this._etc.pwd) {
+                await conn.auth(this._etc.pwd, this._etc.user || undefined);
+            }
+            await conn.select(this._etc.index);
+            conn.on('error', function(err: Error): void {
+                lCore.debug('[KV][_getConnection][error]', err);
+            }).on('end', () => {
+                // --- 断线，不重要，会自动重连 ---
+            }).on('close', () => {
+                // --- 断线，不重要，会自动重连 ---
+            });
+            connections.push({
+                'host': this._etc.host,
+                'port': this._etc.port,
+                'index': this._etc.index,
+                'conn': conn,
+            });
+            return conn;
+        }
+        catch {
+            return null;
         }
     }
 
@@ -712,11 +819,9 @@ end`;
  * --- 获取 Kv 对象 ---
  * @param etc 配置信息可留空
  */
-export async function get(ctr: sCtr.Ctr, etc?: IOptions): Promise<Kv | false> {
-    etc ??= ctr.getPrototype('_config').kv;
-    const kv = new Kv(ctr, etc);
-    const r = await kv.init(ctr, etc);
-    return r ? kv : false;
+export function get(ctrEtc: sCtr.Ctr | kebab.IConfigKv): Kv {
+    const etc = ctrEtc instanceof sCtr.Ctr ? ctrEtc.getPrototype('_config').kv : ctrEtc;
+    return new Kv(etc);
 
 }
 
@@ -727,16 +832,5 @@ export interface IConnectionInfo {
     'host': string;
     'port': number;
     'index': number;
-    'link': redis.ICommandClient;
-}
-
-/** --- 选项 --- */
-export interface IOptions {
-    'host'?: string;
-    'port'?: number;
-    'index'?: number;
-    'pre'?: string;
-
-    'user'?: string;
-    'pwd'?: string;
+    'conn': redis.ICommandClient;
 }
