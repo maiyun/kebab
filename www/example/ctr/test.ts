@@ -3503,17 +3503,11 @@ rtn.push(reader.readBCDString());</pre>${JSON.stringify(rtn)}`);
         const echo: string[] = [];
         let rtn = await lCron.regular({
             'name': 'test',
-            'date': {
-                'month': -1,
-                'day': -1,
-                'hour': -1,
-                'minute': -1,
-                'week': -1,
+            'rule': '40 * * * *',
+            'callback': (date, immediate) => {
+                lCore.debug(`[${date}] test task run, immediate: ${immediate}`);
             },
-            'callback': (date) => {
-                lCore.debug(`[${date}] test task run`);
-            },
-        });
+        }, '202511062305');
         echo.push(`<pre>await lCron.regular({
     'name': 'test',
     'date': {

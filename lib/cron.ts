@@ -4,6 +4,7 @@
  * Last: 2025-9-20 19:46:32
  */
 import * as kebab from '#kebab/index.js';
+import * as nodeCron from 'node-cron';
 import * as lFs from '#kebab/lib/fs.js';
 import * as lCore from '#kebab/lib/core.js';
 import * as lText from '#kebab/lib/text.js';
@@ -20,7 +21,7 @@ export function getRegulars(): IRegularData[] {
 /**
  * --- 创建定时执行的计划任务 ---
  * @param task 计划任务对象
- * @param immediate 如果传入的时间小于当前时间且没有执行过则立即执行一次（格式：YmdHi，系统时区）
+ * @param immediate 如果传入的时间小于当前时间且[没有执行过]则立即执行一次（格式：YmdHi，系统时区）
  */
 export async function regular(task: IRegular, immediate: string = ''): Promise<boolean> {
     if (!/^[a-z0-9-_]{1,32}$/.test(task.name)) {
@@ -50,12 +51,26 @@ export async function regular(task: IRegular, immediate: string = ''): Promise<b
         obj.count = json.count;
     }
     await lFs.putContent(kebab.LOG_CWD + `cron/${obj.name}.json`, JSON.stringify(obj));
+    // --- 好，先注册 ---
+    nodeCron.schedule(task.rule, () => {
+        /** --- 当前日期字符串 --- */
+        const date = lTime.format(null, 'YmdHi');
+        obj.callback(date, false) as any;
+        // --- 设置执行后的数据 ---
+        obj.last = date;
+        ++obj.count;
+        ++obj.rcount;
+        lFs.putContent(kebab.LOG_CWD + `cron/${obj.name}.json`, JSON.stringify(obj)).catch(() => {});
+    });
     // --- 检查是否需要立即执行 ---
     /** --- 当前日期字符串 --- */
     const date = lTime.format(null, 'YmdHi');
-    if (immediate && (immediate < date)) {
+    if (
+        (immediate && (immediate <= date) && (obj.last < immediate))
+    ) {
+        // --- 理应执行的时间早于当前，或要执行的时间就是现在 ---
         try {
-            obj.callback(date) as any;
+            obj.callback(date, true) as any;
         }
         catch (e: any) {
             const msg = `[CRON][${obj.name}] ${lText.stringifyJson(e.message ?? '').slice(1, -1).replace(/"/g, '""')}`;
@@ -72,84 +87,16 @@ export async function regular(task: IRegular, immediate: string = ''): Promise<b
     return true;
 }
 
-/**
- * --- 执行定时任务 ---
- */
-export function run(): void {
-    /** --- 当前日期字符串 --- */
-    const date = lTime.format(null, 'YmdHi');
-    /** --- 当前时间 --- */
-    const now = new Date();
-    /** --- 当前月份 --- */
-    const month = now.getMonth() + 1;
-    /** --- 当前日期 --- */
-    const day = now.getDate();
-    /** --- 当前小时 --- */
-    const hour = now.getHours();
-    /** --- 当前分钟 --- */
-    const minute = now.getMinutes();
-    /** --- 当前星期几 --- */
-    const week = now.getDay();
-    // --- 检查定时任务是否需要执行 ---
-    for (const task of regulars) {
-        if ((task.date.minute !== -1) && (task.date.minute !== minute)) {
-            continue;
-        }
-        if ((task.date.hour !== -1) && (task.date.hour !== hour)) {
-            continue;
-        }
-        if ((task.date.week !== -1) && (task.date.week !== week)) {
-            continue;
-        }
-        if ((task.date.day !== -1) && (task.date.day !== day)) {
-            continue;
-        }
-        if ((task.date.month !== -1) && (task.date.month !== month)) {
-            continue;
-        }
-        if (task.last === date) {
-            continue;
-        }
-        // --- 执行回调 ---
-        try {
-            task.callback(date) as any;
-        }
-        catch (e: any) {
-            const msg = `[CRON][${task.name}] ${lText.stringifyJson(e.message ?? '').slice(1, -1).replace(/"/g, '""')}`;
-            lCore.debug(msg);
-            lCore.log({}, msg, '-error');
-        }
-        // --- 设置执行后的数据 ---
-        task.last = date;
-        ++task.count;
-        ++task.rcount;
-        lFs.putContent(kebab.LOG_CWD + `cron/${task.name}.json`, JSON.stringify(task)).catch(() => {});
-    }
-}
-// --- 每15秒检查一次 ---
-setInterval(run, 15_000);
-
 // --- 类型 ---
 
 /** --- 定时任务 --- */
 export interface IRegular {
     /** --- 任务名称，只能小写字母、数字、短横线、下划线，长度 1-32 --- */
     'name': string;
-    /** --- 任务日期对象（系统时区） --- */
-    'date': {
-        /** --- -1, 1 - 12 --- */
-        'month': number;
-        /** --- -1, 1 - 31 --- */
-        'day': number;
-        /** --- -1, 0 - 23 --- */
-        'hour': number;
-        /** --- -1, 0 - 59 --- */
-        'minute': number;
-        /** --- -1, 0 - 6 --- */
-        'week': number;
-    };
+    /** --- 规则，分、时、日、月、星期，与 linux 的 cron 相同（不支持秒） --- */
+    'rule': string;
     /** --- 任务函数 --- */
-    callback: (date: string) => void | Promise<void>;
+    callback: (date: string, immediate: boolean) => void | Promise<void>;
 }
 
 export interface IRegularData extends IRegular {

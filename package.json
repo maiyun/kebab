@@ -1,6 +1,6 @@
 {
   "name": "@maiyunnet/kebab",
-  "version": "4.0.2",
+  "version": "4.1.0",
   "description": "Simple, easy-to-use, and fully-featured Node.js framework that is ready-to-use out of the box.",
   "type": "module",
   "keywords": [
@@ -30,6 +30,7 @@
     "ejs": "^3.1.10",
     "jszip": "^3.10.1",
     "mysql2": "^3.15.3",
+    "node-cron": "^4.2.1",
     "openai": "^6.8.1",
     "ssh2": "^1.17.0",
     "svg-captcha": "^1.4.0",
