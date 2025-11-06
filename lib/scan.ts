@@ -1,7 +1,7 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2022-09-24 15:23:25
- * Last: 2022-09-24 15:23:25, 2022-9-26 12:37:01, 2022-12-29 00:11:16
+ * Last: 2022-09-24 15:23:25, 2022-9-26 12:37:01, 2022-12-29 00:11:16, 2025-11-6 16:32:05
  */
 
 /*
@@ -41,7 +41,7 @@ export interface IStaticOptions {
 
 export class Scan {
 
-    private readonly _link: lDb.Pool | lKv.Pool;
+    private readonly _link: lDb.Pool | lKv.Kv;
 
     private readonly _sql: lSql.Sql | null = null;
 
@@ -53,7 +53,7 @@ export class Scan {
     /** --- 有效期，默认 5 分钟 --- */
     private _ttl = 60 * 5;
 
-    public constructor(link: lDb.Pool | lKv.Pool, token?: string, opt: IOptions = {}) {
+    public constructor(link: lDb.Pool | lKv.Kv, token?: string, opt: IOptions = {}) {
         if (opt.ttl !== undefined) {
             this._ttl = opt.ttl;
         }
@@ -222,7 +222,7 @@ export class Scan {
      * --- 根据情况清空 Db 状态下的 scan 表垃圾数据 ---
      */
     private async _gc(): Promise<void> {
-        if (this._link instanceof lKv.Pool) {
+        if (this._link instanceof lKv.Kv) {
             return;
         }
         if (lCore.rand(0, 10) !== 5) {
@@ -242,7 +242,7 @@ export class Scan {
  * @param token Token
  * @param opt
  */
-export async function get(link: lDb.Pool | lKv.Pool, token?: string, opt: IOptions = {}): Promise<Scan> {
+export async function get(link: lDb.Pool | lKv.Kv, token?: string, opt: IOptions = {}): Promise<Scan> {
     const scan = new Scan(link, token, opt);
     if (!token) {
         await scan.createToken();
@@ -257,7 +257,7 @@ export async function get(link: lDb.Pool | lKv.Pool, token?: string, opt: IOptio
  * @param opt
  */
 export async function scanned(
-    link: lDb.Pool | lKv.Pool,
+    link: lDb.Pool | lKv.Kv,
     token: string,
     opt: IStaticOptions = {}
 ): Promise<boolean> {
@@ -311,7 +311,7 @@ export async function scanned(
  * @param opt
  */
 export async function setData(
-    link: lDb.Pool | lKv.Pool,
+    link: lDb.Pool | lKv.Kv,
     token: string,
     data: Record<string, any> | string | number,
     opt: IStaticOptions = {}

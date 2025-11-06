@@ -741,7 +741,7 @@ export class Ctr {
      * @param opt name, ttl, ssl, sqlPre
      */
     protected _startSession(
-        link: lDb.Pool | lKv.Pool,
+        link: lDb.Pool | lKv.Kv,
         auth: boolean = false,
         opt: lSession.IOptions = {}
     ): Promise<boolean> {

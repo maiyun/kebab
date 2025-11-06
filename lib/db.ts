@@ -242,8 +242,8 @@ export class Pool {
                     break;
                 }
                 catch (err: any) {
-                    if (err.message === 'ETIMEOUT') {
-                        lCore.debug('[DB][_getConnection][ETIMEOUT]', err);
+                    if (err.message === 'ETIMEOUT' || err.message === 'EHOSTUNREACH') {
+                        lCore.debug('[DB][_getConnection][TIMEOUT|HOSTUNREACH]', err);
                         await lCore.sleep(300);
                         continue;
                     }

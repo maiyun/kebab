@@ -905,7 +905,7 @@ export function debug(message?: any, ...optionalParams: any[]): void {
         return;
     }
     // eslint-disable-next-line no-console
-    console.debug(message, ...optionalParams);
+    console.debug(`KE-DEBUG ${lTime.format(null, 'Y-m-d H:i:s')}`, message, ...optionalParams);
 }
 
 /**

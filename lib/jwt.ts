@@ -1,7 +1,7 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2023-1-31 20:34:47
- * Last: 2023-1-31 20:34:47, 2023-12-8 13:55:09
+ * Last: 2023-1-31 20:34:47, 2023-12-8 13:55:09, 2025-11-6 16:22:06
  */
 
 // --- 库和定义 ---
@@ -24,7 +24,7 @@ export interface IOptions {
 export class Jwt {
 
     /** --- Kv --- */
-    private _link?: lKv.Pool;
+    private _link?: lKv.Kv;
 
     /** --- 在前端或 Kv 中储存的名前缀 --- */
     private _name!: string;
@@ -54,7 +54,7 @@ export class Jwt {
     public async init(
         ctr: sCtr.Ctr,
         opt: IOptions = {},
-        link?: lKv.Pool
+        link?: lKv.Kv
     ): Promise<boolean> {
         const config = ctr.getPrototype('_config');
         this._ctr = ctr;
@@ -194,7 +194,7 @@ export function getOrigin(ctr: sCtr.Ctr, name: string = '', auth: boolean = fals
  * --- decode ---
  * 不传入 link 的话，将不做 block 有效校验，只做本身的 exp 有效校验
  */
-export async function decode(ctr: sCtr.Ctr, val: string, link?: lKv.Pool, name: string = '', secret: string = ''): Promise<Record<string, kebab.DbValue> | false> {
+export async function decode(ctr: sCtr.Ctr, val: string, link?: lKv.Kv, name: string = '', secret: string = ''): Promise<Record<string, kebab.DbValue> | false> {
     if (!val) {
         return false;
     }
@@ -251,7 +251,7 @@ export async function decode(ctr: sCtr.Ctr, val: string, link?: lKv.Pool, name: 
 /**
  * --- 仅往 redis 写禁止相关 token 的数据，一般用于异步通知时在异处的服务器来调用的 ---
  */
-export async function block(ctr: sCtr.Ctr, token: string, exp: number, link: lKv.Pool, name: string = ''): Promise<boolean> {
+export async function block(ctr: sCtr.Ctr, token: string, exp: number, link: lKv.Kv, name: string = ''): Promise<boolean> {
     const time = lTime.stamp();
     if (!name) {
         name = ctr.getPrototype('_config').jwt.name;
@@ -269,7 +269,7 @@ export async function block(ctr: sCtr.Ctr, token: string, exp: number, link: lKv
  * @param opt name, ttl, ssl, secret, auth: false, true 则优先从头 Authorization 或 post _auth 值读取 token
  * @param link 实例
  */
-export async function get(ctr: sCtr.Ctr, opt: IOptions = {}, link?: lKv.Pool): Promise<Jwt> {
+export async function get(ctr: sCtr.Ctr, opt: IOptions = {}, link?: lKv.Kv): Promise<Jwt> {
     const jwt = new Jwt();
     await jwt.init(ctr, opt, link);
     return jwt;

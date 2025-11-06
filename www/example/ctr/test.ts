@@ -1551,15 +1551,15 @@ exec: ${JSON.stringify(exec)}<br><br>`);
     }
 
     public async kv(): Promise<kebab.Json> {
-        const kv = lKv.get(this);
-        if (!await kv.ping()) {
+        const kv = await lKv.get(this);
+        if (!kv) {
             return [0, 'Failed.'];
         }
         const value = this._get['value'] ?? '';
         const ac = this._get['ac'] ?? '';
 
-        const echo = [`<pre>const kv = lKv.get(this);
-if (!await kv.ping()) {
+        const echo = [`<pre>const kv = await lKv.get(this);
+if (!kv) {
     return [0, 'Failed.'];
 }
 JSON.stringify(await kv.ping());</pre>${JSON.stringify(await kv.ping())}`];
@@ -2413,14 +2413,14 @@ function confirm() {
 
     private async _scanLink(): Promise<kebab.Json> {
         const s = this._get['s'] ?? 'db';
-        let link: lDb.Pool | lKv.Pool;
+        let link: lDb.Pool | lKv.Kv;
         if (s === 'db') {
             const db = lDb.get(this);
             link = db;
         }
         else {
-            const kv = lKv.get(this);
-            if (!await kv.ping()) {
+            const kv = await lKv.get(this);
+            if (!kv) {
                 return false;
             }
             link = kv;
@@ -2440,17 +2440,17 @@ function confirm() {
 
         const echo = ['<pre>'];
 
-        let link: lDb.Pool | lKv.Pool;
+        let link: lDb.Pool | lKv.Kv | false;
         if (this._get['s'] === 'db') {
             link = lDb.get(this);
             echo.push('link = lDb.get(this);\n');
         }
         else {
-            link = lKv.get(this);
-            if (!await link.ping()) {
+            link = await lKv.get(this);
+            if (!link) {
                 return [0, 'Failed, Redis can not be connected.'];
             }
-            echo.push('link = lKv.get(this);\n');
+            echo.push('link = await lKv.get(this);\n');
         }
 
         if (this._get['auth'] === '') {
@@ -2506,10 +2506,13 @@ Result:<pre id="result">Nothing.</pre>`);
         }
 
         const echo: string[] = ['<pre>'];
-        let link: lKv.Pool | undefined = undefined;
+        let link: lKv.Kv | false | undefined = undefined;
         if (this._get['type'] === 'kv') {
-            link = lKv.get(this);
-            echo.push('link = lKv.get(this);\n');
+            link = await lKv.get(this);
+            if (!link) {
+                return [0, 'Failed, Redis can not be connected.'];
+            }
+            echo.push('link = await lKv.get(this);\n');
         }
 
         const origin = lJwt.getOrigin(this);

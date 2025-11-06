@@ -1,7 +1,7 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2019-6-5 22:01:40
- * Last: 2020-3-30 00:11:15, 2022-12-29 00:10:28, 2023-5-24 18:59:27
+ * Last: 2020-3-30 00:11:15, 2022-12-29 00:10:28, 2023-5-24 18:59:27, 2025-11-6 16:32:11
  */
 
 /*
@@ -37,7 +37,7 @@ export interface IOptions {
 export class Session {
 
     /** --- 数据库操作对象 --- */
-    private _link!: db.Pool | kv.Pool;
+    private _link!: db.Pool | kv.Kv;
 
     /** --- Sql 对象 ---  */
     private _sql!: sql.Sql;
@@ -64,7 +64,7 @@ export class Session {
      */
     public async init(
         ctr: ctr.Ctr,
-        link: db.Pool | kv.Pool,
+        link: db.Pool | kv.Kv,
         auth: boolean = false,
         opt: IOptions = {}
     ): Promise<boolean> {
@@ -99,7 +99,7 @@ export class Session {
         // --- 有 token 则查看 token 的信息是否存在
         if (this._token !== '') {
             // --- 如果启用了内存加速则在内存找 ---
-            if (this._link instanceof kv.Pool) {
+            if (this._link instanceof kv.Kv) {
                 // --- Kv ---
                 const data = await this._link.getJson(this._name + '_' + this._token);
                 if (data === null) {
@@ -140,7 +140,7 @@ export class Session {
         // --- 数据库的 Session 已经过期加新 Session ---
         // --- 如果不存在不允许加新则返回错误 ---
         if (needInsert) {
-            if (this._link instanceof kv.Pool) {
+            if (this._link instanceof kv.Kv) {
                 let count = 0;
                 do {
                     if (count === 5) {
@@ -203,7 +203,7 @@ export class Session {
      * --- 页面整体结束时，要写入到 Kv 或 数据库 ---
      */
     public async update(): Promise<void> {
-        if (this._link instanceof kv.Pool) {
+        if (this._link instanceof kv.Kv) {
             await this._link.set(this._name + '_' + this._token, this._ctr.getPrototype('_session'), this._ttl);
         }
         else {
