@@ -283,6 +283,7 @@ export class Sql {
      */
     public select(c: string | Array<string | any[]>, f: string | string[]): this {
         this._data = [];
+        this._placeholder = 1;
         let sql = 'SELECT ';
         if (typeof c === 'string') {
             sql += this.field(c);
@@ -323,6 +324,7 @@ export class Sql {
      */
     public update(f: string, s: kebab.Json): this {
         this._data = [];
+        this._placeholder = 1;
         const sql = `UPDATE ${this.field(f, this._pre)} SET ${this._updateSub(s)}`;
         this._sql = [sql];
         return this;
@@ -473,6 +475,7 @@ export class Sql {
      */
     public delete(f: string): this {
         this._data = [];
+        this._placeholder = 1;
         this._sql = ['DELETE FROM ' + this.field(f, this._pre)];
         return this;
     }

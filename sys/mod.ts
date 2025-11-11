@@ -791,7 +791,7 @@ export default class Mod {
         }
         const r = await this._db.query(this._sql.getSql(), this._sql.getData());
         if (r.rows === null) {
-            lCore.log(this._ctr ?? {}, '[refresh, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+            lCore.log(this._ctr ?? {}, '[MOD][refresh] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
             return false;
         }
         if (r.rows.length === 0) {
@@ -822,7 +822,7 @@ export default class Mod {
         }]);
         const r = await this._db.execute(this._sql.getSql(), this._sql.getData());
         if (r.packet === null) {
-            lCore.log(this._ctr ?? {}, '[save, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+            lCore.log(this._ctr ?? {}, '[MOD][save] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
             return false;
         }
         if (r.packet.affected) {

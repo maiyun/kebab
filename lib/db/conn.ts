@@ -276,7 +276,7 @@ export class Connection {
             }
         }
         catch (e: any) {
-            let errno = e.errno ?? Number(e.code);
+            let errno = e.errno ?? Number(e.code.replace(/[a-z][A-Z]/g, ''));
             if (errno === 23505) {
                 errno = 1062;
             }
