@@ -70,7 +70,7 @@ export async function verify(ctr: sCtr.Ctr, opt: {
                 'Ticket': opt.token.slice(0, io),
                 'UserIp': opt.ip,
                 'Randstr': opt.token.slice(io + 1),
-                'CaptchaAppId': parseInt(config.turnstile['TENCENT'].aid),  // --- 防止后期又不是 number 了还要改config，这样只需要更新代码无损升级 ---
+                'CaptchaAppId': parseInt(config.turnstile['TENCENT'].aid),  // --- 防止后期又不是 number 了还要改 config，这样只需要更新代码无损升级 ---
                 'AppSecretKey': config.turnstile['TENCENT'].akey,
             });
             return res.CaptchaCode === 1;

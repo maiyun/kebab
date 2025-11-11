@@ -1,7 +1,7 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2019-5-27 20:18:50
- * Last: 2020-3-29 19:37:25, 2022-07-24 22:38:11, 2023-5-24 18:49:18, 2023-6-13 22:20:21, 2023-12-11 13:58:54, 2023-12-14 13:14:40, 2023-12-21 00:04:40, 2024-4-11 19:29:29, 2024-9-2 17:15:28, 2025-8-3 21:28:18
+ * Last: 2020-3-29 19:37:25, 2022-07-24 22:38:11, 2023-5-24 18:49:18, 2023-6-13 22:20:21, 2023-12-11 13:58:54, 2023-12-14 13:14:40, 2023-12-21 00:04:40, 2024-4-11 19:29:29, 2024-9-2 17:15:28, 2025-8-3 21:28:18, 2025-11-9 16:20:23
  */
 import * as kebab from '#kebab/index.js';
 import * as lText from '#kebab/lib/text.js';
@@ -11,7 +11,13 @@ import * as mysql2 from 'mysql2/promise';
 // --- 库和定义 ---
 import * as ctr from '#kebab/sys/ctr.js';
 
-/** --- filed 用 token --- */
+/** --- 服务商定义 --- */
+export enum ESERVICE {
+    'MYSQL',
+    'PGSQL',
+}
+
+/** --- field 用 token --- */
 let columnToken = '';
 
 export class Sql {
@@ -19,18 +25,29 @@ export class Sql {
     /** --- 前置 --- */
     private readonly _pre: string = '';
 
+    /** --- 服务商 --- */
+    private readonly _service: ESERVICE;
+
     /** --- 预拼装 Sql 数组 --- */
     private _sql: string[] = [];
 
     /** --- 所有 data 数据 --- */
     private _data: kebab.DbValue[] = [];
 
+    /** --- 表别名列表 --- */
+    private readonly _alias: string[] = [];
+
+    /** --- PostgreSQL 占位符计数器 --- */
+    private _placeholder: number = 1;
+
     // --- 实例化 ---
     public constructor(pre?: string, opt: {
         'data'?: kebab.DbValue[];
         'sql'?: string[];
+        'service'?: ESERVICE;
     } = {}) {
         this._pre = pre ?? '';
+        this._service = opt.service ?? ESERVICE.MYSQL;
         if (opt.data) {
             this._data = opt.data;
         }
@@ -47,18 +64,9 @@ export class Sql {
      */
     public insert(table: string): this {
         this._data = [];
+        this._placeholder = 1;
+        this._alias.length = 0;
         const sql = 'INSERT INTO ' + this.field(table, this._pre);
-        this._sql = [sql];
-        return this;
-    }
-
-    /**
-     * --- 替换已经存在的唯一索引数据，不存在则插入 ---
-     * @param table 表名
-     */
-    public replace(table: string): this {
-        this._data = [];
-        const sql = 'REPLACE INTO ' + this.field(table, this._pre);
         this._sql = [sql];
         return this;
     }
@@ -98,50 +106,66 @@ export class Sql {
                         sql += 'NULL, ';
                     }
                     else if (typeof v1 === 'string' || typeof v1 === 'number') {
-                        sql += '?, ';
+                        sql += this.placeholder() + ', ';
                         this._data.push(v1);
                     }
                     else if (Array.isArray(v1)) {
                         if (
-                            v1[0]?.[0]?.x === undefined && typeof v1[0] === 'string' &&
+                            v1[0]?.x === undefined && typeof v1[0] === 'string' &&
                             v1[0].includes('(') && v1[0].includes(')')
                         ) {
                             // --- v1: ['POINT(?)', ['20']] ---
-                            sql += this.field(v1[0]) + ', ';
+                            sql += this.field(v1[0].replace(/\?/g, () => this.placeholder())) + ', ';
                             if (v1[1]) {
                                 this._data.push(...v1[1]);
                             }
                         }
-                        else if (v1[0]?.[0]?.y !== undefined) {
-                            // --- v1: [[{'x': 1, 'y': 2}, { ... }], [{ ... }, { ... }]] ---
-                            sql += 'ST_POLYGONFROMTEXT(?), ';
-                            this._data.push(`POLYGON(${v1.map((item) => {
-                                return `(${item.map((it: Record<string, string | number>) => {
-                                    return `${it.x} ${it.y}`;
-                                }).join(', ')})`;
-                            }).join(', ')})`);
+                        else if (v1[0]?.y !== undefined) {
+                            // --- v1: [{'x': 1, 'y': 2}, { ... }, { ... }, ... ]---
+                            if (this._service === ESERVICE.MYSQL) {
+                                // --- MYSQL ---
+                                sql += `ST_POLYGONFROMTEXT(${this.placeholder()}), `;
+                                this._data.push(`POLYGON((${v1.map(item => {
+                                    return `${item.x} ${item.y}`;
+                                }).join(', ')}))`);
+                            }
+                            else {
+                                // --- PGSQL ---
+                                sql += `${this.placeholder()}, `;
+                                this._data.push(`(${v1.map(item => {
+                                    return `(${item.x}, ${item.y})`;
+                                }).join(', ')})`);
+                            }
                         }
                         else {
                             // --- v1: json ---
-                            sql += '?, ';
+                            sql += this.placeholder() + ', ';
                             this._data.push(lText.stringifyJson(v1));
                         }
                     }
                     else if (v1.x !== undefined) {
                         if (v1.y !== undefined) {
                             // --- v1: {'x': 1, 'y': 2} ---
-                            sql += 'ST_POINTFROMTEXT(?), ';
-                            this._data.push(`POINT(${v1.x} ${v1.y})`);
+                            if (this._service === ESERVICE.MYSQL) {
+                                // --- MYSQL ---
+                                sql += `ST_POINTFROMTEXT(${this.placeholder()}), `;
+                                this._data.push(`POINT(${v1.x} ${v1.y})`);
+                            }
+                            else {
+                                // --- PGSQL ---
+                                sql += `${this.placeholder()}, `;
+                                this._data.push(`(${v1.x}, ${v1.y})`);
+                            }
                         }
                         else {
                             // --- v1: json ---
-                            sql += '?, ';
+                            sql += this.placeholder() + ', ';
                             this._data.push(lText.stringifyJson(v1));
                         }
                     }
                     else if (v1 instanceof Buffer) {
                         // --- Buffer ---
-                        sql += '?, ';
+                        sql += this.placeholder() + ', ';
                         this._data.push(v);
                     }
                     else if (this._isField(v1)) {
@@ -150,7 +174,7 @@ export class Sql {
                     }
                     else {
                         // --- json ---
-                        sql += '?, ';
+                        sql += this.placeholder() + ', ';
                         this._data.push(lText.stringifyJson(v1));
                     }
                 }
@@ -174,50 +198,66 @@ export class Sql {
                     values += 'NULL, ';
                 }
                 else if (typeof v === 'string' || typeof v === 'number') {
-                    values += '?, ';
+                    values += this.placeholder() + ', ';
                     this._data.push(v);
                 }
                 else if (Array.isArray(v)) {
                     if (
-                        v[0]?.[0]?.x === undefined && typeof v[0] === 'string' &&
+                        v[0]?.x === undefined && typeof v[0] === 'string' &&
                         v[0].includes('(') && v[0].includes(')')
                     ) {
                         // --- v: ['POINT(?)', ['20']] ---
-                        values += this.field(v[0]) + ', ';
+                        values += this.field(v[0].replace(/\?/g, () => this.placeholder())) + ', ';
                         if (v[1] !== undefined) {
                             this._data.push(...v[1]);
                         }
                     }
-                    else if (v[0]?.[0]?.y !== undefined) {
-                        // --- v: [[{'x': 1, 'y': 2}, { ... }], [{ ... }, { ... }]] ---
-                        values += 'ST_POLYGONFROMTEXT(?), ';
-                        this._data.push(`POLYGON(${v.map((item) => {
-                            return `(${item.map((it: Record<string, string | number>) => {
-                                return `${it.x} ${it.y}`;
-                            }).join(', ')})`;
-                        }).join(', ')})`);
+                    else if (v[0]?.y !== undefined) {
+                        // --- v: [{'x': 1, 'y': 2}, { ... }, { ... }, ... ]---
+                        if (this._service === ESERVICE.MYSQL) {
+                            // --- MYSQL ---
+                            values += `ST_POLYGONFROMTEXT(${this.placeholder()}), `;
+                            this._data.push(`POLYGON((${v.map(item => {
+                                return `${item.x} ${item.y}`;
+                            }).join(', ')}))`);
+                        }
+                        else {
+                            // --- PGSQL ---
+                            values += `${this.placeholder()}, `;
+                            this._data.push(`(${v.map(item => {
+                                return `(${item.x}, ${item.y})`;
+                            }).join(', ')})`);
+                        }
                     }
                     else {
                         // --- v: json ---
-                        values += '?, ';
+                        values += this.placeholder() + ', ';
                         this._data.push(lText.stringifyJson(v));
                     }
                 }
                 else if (v.x !== undefined) {
                     if (v.y !== undefined) {
                         // --- v: {'x': 1, 'y': 2} ---
-                        values += 'ST_POINTFROMTEXT(?), ';
-                        this._data.push(`POINT(${v.x} ${v.y})`);
+                        if (this._service === ESERVICE.MYSQL) {
+                            // --- MYSQL ---
+                            values += `ST_POINTFROMTEXT(${this.placeholder()}), `;
+                            this._data.push(`POINT(${v.x} ${v.y})`);
+                        }
+                        else {
+                            // --- PGSQL ---
+                            values += `${this.placeholder()}, `;
+                            this._data.push(`(${v.x}, ${v.y})`);
+                        }
                     }
                     else {
                         // --- v: json ---
-                        values += '?, ';
+                        values += this.placeholder() + ', ';
                         this._data.push(lText.stringifyJson(v));
                     }
                 }
                 else if (v instanceof Buffer) {
                     // --- Buffer ---
-                    values += '?, ';
+                    values += this.placeholder() + ', ';
                     this._data.push(v);
                 }
                 else if (this._isField(v)) {
@@ -226,7 +266,7 @@ export class Sql {
                 }
                 else {
                     // --- json ---
-                    values += '?, ';
+                    values += this.placeholder() + ', ';
                     this._data.push(lText.stringifyJson(v));
                 }
             }
@@ -237,56 +277,11 @@ export class Sql {
     }
 
     /**
-     * --- 不存在则插入，衔接在 insert 之后 ---
-     * @param table 表名
-     * @param insert {'xx': 'xx', 'xx': 'xx'}
-     * @param where [{'xx': 'xx', 'xx': 'xx'}], {'xx': 'xx'}
-     */
-    public notExists(
-        table: string, insert: Record<string, kebab.DbValue>,
-        where: string | kebab.Json
-    ): this {
-        let sql = '(';
-        const values = [];
-        for (const field in insert) {
-            const val = insert[field];
-            sql += this.field(field) + ', ';
-            values.push(val);
-        }
-        sql = sql.slice(0, -2) + ') SELECT ';
-        for (const value of values) {
-            if (Array.isArray(value)) {
-                sql += value[0] + ', ';
-                this._data.push(...value[1]);
-            }
-            else {
-                sql += '?, ';
-                this._data.push(value);
-            }
-        }
-        sql = sql.slice(0, -2) + ' FROM DUAL WHERE NOT EXISTS (SELECT `id` FROM ' + this.field(table, this._pre) + ' WHERE ' + this._whereSub(where) + ')';
-        this._sql.push(sql);
-        return this;
-    }
-
-    /**
-     * --- 当不能 insert 时，update（仅能配合 insert 方法用） ---
-     * @param s 更新数据
-     */
-    public duplicate(s: kebab.Json): this {
-        if (Array.isArray(s) ? s.length : Object.keys(s).length) {
-            const sql = ' ON DUPLICATE KEY UPDATE ' + this._updateSub(s);
-            this._sql.push(sql);
-        }
-        return this;
-    }
-
-    /**
      * --- '*', 'xx' ---
      * @param c 字段字符串或字段数组
      * @param f 表，允许多张表
      */
-    public select(c: string | Array<string | Array<string | string[]>>, f: string | string[]): this {
+    public select(c: string | Array<string | any[]>, f: string | string[]): this {
         this._data = [];
         let sql = 'SELECT ';
         if (typeof c === 'string') {
@@ -297,7 +292,7 @@ export class Sql {
             for (const i of c) {
                 if (Array.isArray(i)) {
                     // --- i: ['xx', ['x']] ---
-                    sql += this.field(i[0]) + ', ';
+                    sql += this.field(i[0].replace(/\?/g, () => this.placeholder())) + ', ';
                     this._data.push(...i[1]);
                 }
                 else {
@@ -367,10 +362,10 @@ export class Sql {
                 }
                 else {
                     if (v[1] === '=') {
-                        sql += this.field(v[0]) + ' = ?, ';
+                        sql += this.field(v[0]) + ' = ' + this.placeholder() + ', ';
                     }
                     else {
-                        sql += this.field(v[0]) + ' = ' + this.field(v[0]) + ' ' + v[1] + ' ?, ';
+                        sql += this.field(v[0]) + ' = ' + this.field(v[0]) + ' ' + v[1] + ' ' + this.placeholder() + ', ';
                     }
                     this._data.push(nv);
                 }
@@ -388,12 +383,12 @@ export class Sql {
                 }
                 else if (typeof v === 'string' || typeof v === 'number') {
                     // --- 2 ---
-                    sql += '?, ';
+                    sql += this.placeholder() + ', ';
                     this._data.push(v);
                 }
                 else if (Array.isArray(v)) {
                     if (
-                        v[0]?.[0]?.x === undefined && typeof v[0] === 'string' &&
+                        v[0]?.x === undefined && typeof v[0] === 'string' &&
                         v[0].includes('(') && v[0].includes(')')
                     ) {
                         // --- 4, 5: ['(CASE `id` WHEN 1 THEN ? WHEN 2 THEN ? END)', ['val1', 'val2']] ---
@@ -402,26 +397,42 @@ export class Sql {
                             this._data.push(...v[1]);
                         }
                     }
-                    else if (v[0]?.[0]?.y !== undefined) {
+                    else if (v[0]?.y !== undefined) {
                         // --- 7 ---
-                        sql += 'ST_POLYGONFROMTEXT(?), ';
-                        this._data.push(`POLYGON(${v.map((item) => {
-                            return `(${item.map((it: Record<string, string | number>) => {
-                                return `${it.x} ${it.y}`;
-                            }).join(', ')})`;
-                        }).join(', ')})`);
+                        if (this._service === ESERVICE.MYSQL) {
+                            // --- MYSQL ---
+                            sql += `ST_POLYGONFROMTEXT(${this.placeholder()}), `;
+                            this._data.push(`POLYGON((${v.map(item => {
+                                return `${item.x} ${item.y}`;
+                            }).join(', ')}))`);
+                        }
+                        else {
+                            // --- PGSQL ---
+                            sql += `${this.placeholder()}, `;
+                            this._data.push(`(${v.map(item => {
+                                return `(${item.x}, ${item.y})`;
+                            }).join(', ')})`);
+                        }
                     }
                     else {
                         // --- v: json ---
-                        sql += '?, ';
+                        sql += this.placeholder() + ', ';
                         this._data.push(lText.stringifyJson(v));
                     }
                 }
                 else if (v.x !== undefined) {
                     if (v.y !== undefined) {
                         // --- 6: v: {'x': 1, 'y': 2} ---
-                        sql += 'ST_POINTFROMTEXT(?), ';
-                        this._data.push(`POINT(${v.x} ${v.y})`);
+                        if (this._service === ESERVICE.MYSQL) {
+                            // --- MYSQL ---
+                            sql += `ST_POINTFROMTEXT(${this.placeholder()}), `;
+                            this._data.push(`POINT(${v.x} ${v.y})`);
+                        }
+                        else {
+                            // --- PGSQL ---
+                            sql += `${this.placeholder()}, `;
+                            this._data.push(`(${v.x}, ${v.y})`);
+                        }
                     }
                     else {
                         // --- v: json ---
@@ -431,14 +442,14 @@ export class Sql {
                         }
                         else {
                             // --- 8 ---
-                            sql += '?, ';
+                            sql += this.placeholder() + ', ';
                             this._data.push(lText.stringifyJson(v));
                         }
                     }
                 }
                 else if (v instanceof Buffer) {
                     // --- Buffer ---
-                    sql += '?, ';
+                    sql += this.placeholder() + ', ';
                     this._data.push(v);
                 }
                 else if (this._isField(v)) {
@@ -447,7 +458,7 @@ export class Sql {
                 }
                 else {
                     // --- json ---
-                    sql += '?, ';
+                    sql += this.placeholder() + ', ';
                     this._data.push(lText.stringifyJson(v));
                 }
             }
@@ -665,7 +676,7 @@ export class Sql {
                     // --- 3 ---
                     sql += this.field(v[0]) + ' ' + v[1].toUpperCase() + ' (';
                     for (const v1 of v[2]) {
-                        sql += '?, ';
+                        sql += this.placeholder() + ', ';
                         data.push(v1);
                     }
                     sql = sql.slice(0, -2) + ') AND ';
@@ -679,7 +690,7 @@ export class Sql {
                         sql += this.field(v[0]) + ' ' + v[1] + ' ' + this.field(nv.value) + ' AND ';
                     }
                     else {
-                        sql += this.field(v[0]) + ' ' + v[1] + ' ? AND ';
+                        sql += this.field(v[0]) + ' ' + v[1] + ' ' + this.placeholder() + ' AND ';
                         data.push(nv);
                     }
                 }
@@ -709,7 +720,7 @@ export class Sql {
                     }
                     else if (typeof v === 'string' || typeof v === 'number') {
                         // --- 1 ---
-                        sql += this.field(k) + ' = ? AND ';
+                        sql += this.field(k) + ' = ' + this.placeholder() + ' AND ';
                         data.push(v);
                     }
                     else if (this._isField(v)) {
@@ -721,7 +732,7 @@ export class Sql {
                         if (v.length > 0) {
                             sql += this.field(k) + ' IN (';
                             for (const v1 of v) {
-                                sql += '?, ';
+                                sql += this.placeholder() + ', ';
                                 data.push(v1);
                             }
                             sql = sql.slice(0, -2) + ') AND ';
@@ -784,12 +795,19 @@ export class Sql {
     }
 
     /**
-     * --- LIMIT ---
-     * @param a 起始
-     * @param b 长度
+     * --- LIMIT（limit、offset, limit） ---
+     * @param a 起始（offset）
+     * @param b 长度（limit）
      */
     public limit(a: number, b: number = 0): this {
-        this._sql.push(' LIMIT ' + a.toString() + (b > 0 ? ', ' + b.toString() : ''));
+        if (b) {
+            // --- offset, limit ---
+            this._sql.push(` LIMIT ${b} OFFSET ${a}`);
+        }
+        else {
+            // --- limit ---
+            this._sql.push(` LIMIT ${a}`);
+        }
         return this;
     }
 
@@ -882,7 +900,7 @@ export class Sql {
         }
         return get(this.getPre(), {
             'data': data,
-            'sql': sql
+            'sql': sql,
         });
     }
 
@@ -892,7 +910,16 @@ export class Sql {
      * --- 获取 sql 语句 ---
      */
     public getSql(): string  {
-        return this._sql.join('');
+        let sql = this._sql.join('');
+        if (this._pre) {
+            return this._alias.reduce((result, item) => {
+                if (this._service === ESERVICE.MYSQL) {
+                    return result.replace(new RegExp('`' + this._pre + item + '`', 'g'), '`' + item + '`');
+                }
+                return result.replace(new RegExp(`"${this._pre}"."${item}"`, 'g'), '"' + item + '"');
+            }, sql);
+        }
+        return sql;
     }
 
     /**
@@ -915,7 +942,7 @@ export class Sql {
      * @param data
      */
     public format(sql?: string, data?: kebab.DbValue[]): string {
-        return mysql2.format(sql ?? this.getSql(), data ?? this.getData());
+        return format(sql ?? this.getSql(), data ?? this.getData(), this._service);
     }
 
     // --- 特殊方法 ---
@@ -929,15 +956,21 @@ export class Sql {
         return this;
     }
 
+    /** --- 获取占位符 --- */
+    public placeholder(): string {
+        return this._service === ESERVICE.MYSQL ? '?' : `$${this._placeholder++}`;
+    }
+
     /**
      * --- 对字段进行包裹 ---
      * @param str
      * @param pre 表前缀，仅请在 field 表名时倒入前缀
-     * @param suf 表后缀，仅请在 field 表名时倒入后缀，前面加 # 代表要强制 AS
+     * @param suf 表后缀，仅请在 field 表名时倒入后缀，前面加 # 代表要强制 AS，可能是分表查询时用
      */
     public field(str: string | number | Array<string | string[]>, pre: string = '', suf: string = ''): string {
         let left: string = '';
         let right: string = '';
+        const q = this._service === ESERVICE.MYSQL ? '`' : '"';
         if (Array.isArray(str)) {
             this._data.push(...str[1]);
             return this.field(str[0]);
@@ -970,7 +1003,7 @@ export class Sql {
             }
             if (spacePos !== -1) {
                 const spaceRight = str.slice(spacePos + 1);
-                if (/^[a-zA-Z_`][\w`]*$/.test(spaceRight)) {
+                if (/^[a-zA-Z_`"][\w`"]*$/.test(spaceRight)) {
                     // --- OK ---
                     left = str.slice(0, spacePos);
                     right = spaceRight;
@@ -992,46 +1025,89 @@ export class Sql {
         }
         if (right) {
             // --- 处理右侧 ---
-            if (right.startsWith('`')) {
-                right = '`' + pre + right.slice(1);
+            if (this._service === ESERVICE.MYSQL) {
+                if (right.startsWith('`')) {
+                    if (!left.includes('.')) {
+                        // --- 存储表别名 ---
+                        this._alias.push(right.slice(1, -1));
+                    }
+                    right = '`' + pre + right.slice(1);
+                }
+                else {
+                    if (!left.includes('.')) {
+                        // --- 存储表别名 ---
+                        this._alias.push(right);
+                    }
+                    right = '`' + pre + right + '`';
+                }
+                right = ' AS ' + right;
             }
             else {
-                right = '`' + pre + right + '`';
+                if (right.startsWith('"')) {
+                    if (!left.includes('.')) {
+                        // --- 存储表别名 ---
+                        this._alias.push(right.slice(1, -1));
+                    }
+                    if (pre) {
+                        right = `"${pre}".${right}`;
+                    }
+                }
+                else {
+                    if (!left.includes('.')) {
+                        // --- 存储表别名 ---
+                        this._alias.push(right);
+                    }
+                    right = (pre ? `"${pre}".` : '') + `"${right}"`;
+                }
+                right = ' AS ' + right;
             }
-            right = ' AS ' + right;
         }
         else {
             // --- 没有右侧 ---
             if (sufAs) {
                 // --- 强制 AS ---
+                if (!left.includes('.')) {
+                    // --- 存储表别名 ---
+                    this._alias.push(left.startsWith('`') || left.startsWith('"') ? left.slice(1, -1) : left);
+                }
                 right = ' AS ' + this.field(left, pre);
             }
         }
         // --- 处理 left ---
-        if (/^[\w`_.*]+$/.test(left)) {
+        if (/^[\w`"_.*]+$/.test(left)) {
             const l = left.split('.');
             if (l[0] === '*') {
                 return '*' + right;
             }
-            if (l[0].startsWith('`')) {
-                l[0] = l[0].replace(/`/g, '');
+            if (l[0].startsWith('`') || l[0].startsWith(`"`)) {
+                l[0] = l[0].replace(/[`"]/g, '');
             }
             if (l[1] === undefined) {
                 // --- xxx ---
                 if (/^[A-Z0-9_]+$/.test(l[0])) {
-                    // --- 纯大写是内置函数，不能加 ` ---
+                    // --- 纯大写是内置函数，不能加 `" ---
                     return l[0] + right;
                 }
-                return '`' + pre + l[0] + suf + '`' + right;
+                return this._service === ESERVICE.MYSQL ?
+                    '`' + pre + l[0] + suf + '`' + right :
+                    (pre ? `"${pre}".` : '') + '"' + l[0] + suf + '"' + right;
             }
             // --- x.xxx ---
             // --- 只有在此模式才知道 . 前面的一定是表名，因此自动加 sql 级的 _pre ---
-            const w = l[1] === '*' ? '*' : (l[1].startsWith('`') ? l[1] : ('`' + l[1] + '`'));
-            return '`' + this._pre + l[0] + suf + '`.' + w + right;
+            const w = l[1] === '*'
+                ? '*' :
+                (q + (
+                    (l[1].startsWith('`') || l[1].startsWith('"')) ?
+                        l[1].slice(1, -1) :
+                        l[1]
+                ) + q);
+            return this._service === ESERVICE.MYSQL ?
+                '`' + this._pre + l[0] + suf + '`.' + w + right :
+                (this._pre ? `"${this._pre}".` : '') + '"' + l[0] + suf + '".' + w + right;
         }
         else {
-            // return left.replace(/([(, ])([a-zA-Z`_][\w`_.]*)(?=[), ])/g, (
-            return left.replace(/(^|[(, ])([a-zA-Z`_][\w`_.]*)(?=[), ]|$)/g, (
+            // return left.replace(/([(, ])([a-zA-Z`"_][\w`"_.]*)(?=[), ])/g, (
+            return left.replace(/(^|[(, ])([a-zA-Z`"_][\w`"_.]*)(?=[), ]|$)/g, (
                 t: string, t1: string, t2: string
             ): string => {
                 return t1 + this.field(t2, pre, suf);
@@ -1064,17 +1140,40 @@ export class Sql {
 export function get(ctrPre?: ctr.Ctr | string, opt: {
     'data'?: kebab.DbValue[];
     'sql'?: string[];
+    'service'?: ESERVICE;
 } = {}): Sql {
     return new Sql(ctrPre instanceof ctr.Ctr ? ctrPre.getPrototype('_config').sql.pre : ctrPre, opt);
 }
 
 /**
- * --- 返回代入后的完整 SQL 字符串 ---
+ * --- 返回代入后的完整 SQL 字符串，这并不安全不能直接执行，只是用来调试打印 sql 语句 ---
  * @param sql SQL 字符串
  * @param data DATA 数据
+ * @param service 服务商，默认 MySQL
  */
-export function format(sql: string, data: kebab.DbValue[]): string {
-    return mysql2.format(sql, data);
+export function format(sql: string, data: kebab.DbValue[], service: ESERVICE = ESERVICE.MYSQL): string {
+    if (service === ESERVICE.MYSQL) {
+        return mysql2.format(sql, data);
+    }
+    // --- PGSQL ---
+    // --- PostgreSQL 手动替换占位符 ---
+    let index = 0;
+    return sql.replace(/\$\d+/g, () => {
+        const val = data[index++];
+        if (val === null) {
+            return 'NULL';
+        }
+        if (typeof val === 'string') {
+            return `'${lText.stringifyJson(val).slice(1, -1).replace(/'/g, "''").replace(/\\"/g, '"')}'`;
+        }
+        if (typeof val === 'number') {
+            return val.toString();
+        }
+        if (val instanceof Buffer) {
+            return `'\\x${val.toString('hex')}'`;
+        }
+        return `'${JSON.stringify(val).replace(/'/g, "''")}'`;
+    });
 }
 
 /**

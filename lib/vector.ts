@@ -4,6 +4,8 @@
  * Last: 2025-10-28 15:18:44
  */
 import * as milvus from '@zilliz/milvus2-sdk-node';
+import * as kebab from '#kebab/index.js';
+import * as lCore from '#kebab/lib/core.js';
 import * as sCtr from '#kebab/sys/ctr.js';
 
 /** --- milvus 的连接对象 --- */
@@ -28,33 +30,11 @@ export interface IOptions {
 
 export class Vector {
 
-    /** --- milvus 原生对象，建议只读 --- */
-    public readonly link: milvus.MilvusClient;
+    /** --- 当前的 vector 连接信息 --- */
+    private readonly _etc: kebab.IConfigVector;
 
-    public constructor(ctr: sCtr.Ctr, opt?: IOptions) {
-        const config = ctr.getPrototype('_config');
-        const host = opt?.host ?? config.vector?.host ?? '127.0.0.1';
-        const port = opt?.port ?? config.vector?.port ?? 19530;
-        const name = opt?.name ?? config.vector?.name ?? 'default';
-        const user = opt?.user ?? config.vector?.user ?? 'root';
-        const pwd = opt?.pwd ?? config.vector?.pwd ?? 'Milvue';
-        const token = `${host}-${port}-${name}-${user}`;
-        const link = links.find((item) => item.token === token);
-        if (link) {
-            this.link = link.link;
-            return;
-        }
-        this.link = new milvus.MilvusClient({
-            'address': `${host}:${port}`,
-            'ssl': false,
-            'database': name,
-            'username': user,
-            'password': pwd,
-        });
-        links.push({
-            'token': token,
-            'link': this.link,
-        });
+    public constructor(etc: kebab.IConfigVector) {
+        this._etc = etc;
     }
 
     /** --- 搜索 --- */
@@ -73,8 +53,12 @@ export class Vector {
         /** --- 输出的字段，如 ['book_id', 'word_count']，默认全部 --- */
         'fields'?: string[];
     }) {
+        const link = await this._getConnection();
+        if (!link) {
+            return false;
+        }
         try {
-            return await this.link.search({
+            const res = await link.search({
                 'collection_name': data.collection,
                 'data': data.data,
                 'filter': data.filter,
@@ -82,9 +66,41 @@ export class Vector {
                 'metric_type': data.metric ?? 'L2',
                 'output_fields': data.fields,
             });
+            return res;
         }
         catch {
             return false;
+        }
+    }
+
+    /**
+     * --- 从连接池中获取一个符合要求的连接 ---
+     */
+    private async _getConnection(): Promise<milvus.MilvusClient | null> {
+        const token = `${this._etc.host}-${this._etc.port}-${this._etc.name}-${this._etc.user}`;
+        const item = links.find(item => item.token === token);
+        if (item) {
+            return item.link;
+        }
+        // --- 没有找到合适的连接，创建一个 ---
+        try {
+            const link = new milvus.MilvusClient({
+                'address': `${this._etc.host}:${this._etc.port}`,
+                'ssl': false,
+                'database': this._etc.name,
+                'username': this._etc.user,
+                'password': this._etc.pwd,
+            });
+            await link.connectPromise;
+            links.push({
+                'token': token,
+                link,
+            });
+            return link;
+        }
+        catch (e: any) {
+            lCore.debug('[VECTOR][_getConnection]', e.code, e.message);
+            return null;
         }
     }
 
@@ -94,6 +110,10 @@ export class Vector {
  * --- 创建一个 Vector 对象 ---
  * @param opt 选项
  */
-export function get(ctr: sCtr.Ctr, opt?: IOptions): Vector {
-    return new Vector(ctr, opt);
+export function get(ctrEtc: sCtr.Ctr | kebab.IConfigVector): Vector {
+    if (ctrEtc instanceof sCtr.Ctr) {
+        const config = ctrEtc.getPrototype('_config');
+        return new Vector(config.vector);
+    }
+    return new Vector(ctrEtc);
 }

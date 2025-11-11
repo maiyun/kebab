@@ -5,7 +5,6 @@
  */
 import * as lSql from '#kebab/lib/sql.js';
 import * as lDb from '#kebab/lib/db.js';
-import * as lTime from '#kebab/lib/time.js';
 import * as lCore from '#kebab/lib/core.js';
 import * as lText from '#kebab/lib/text.js';
 import * as sCtr from '#kebab/sys/ctr.js';
@@ -77,9 +76,6 @@ export default class Mod {
     /** --- 若使用 _$key 并且有多个 unique 索引，这里指定 _$key 的索引名 --- */
     protected static _$index: string = '';
 
-    /** ---- 可开启软删软更新软新增 --- */
-    protected static _$soft: boolean = false;
-
     /** --- 要 update 的内容 --- */
     protected _updates: Record<string, boolean> = {};
 
@@ -133,7 +129,9 @@ export default class Mod {
         /** --- 导入数据库连接 --- */
         this._db = opt.db;
         /** --- 新建 sql 对象 --- */
-        this._sql = lSql.get(opt.pre ?? opt.ctr);
+        this._sql = lSql.get(opt.pre ?? opt.ctr, {
+            'service': this._db.getService() ?? lDb.ESERVICE.PGSQL,
+        });
         if (opt.index) {
             this._index = typeof opt.index === 'string' ? [opt.index] : [...new Set(opt.index)];
         }
@@ -157,19 +155,6 @@ export default class Mod {
             (opt.alias ? ' ' + opt.alias : '')
         );
         if (opt.where !== undefined) {
-            if ((this.constructor as Record<string, kebab.Json>)._soft && !opt.raw) {
-                if (typeof opt.where === 'string') {
-                    opt.where = opt.where ? ('(' + opt.where + ') AND ') : '`time_remove` = 0';
-                }
-                else if (Array.isArray(opt.where)) {
-                    opt.where.push({
-                        'time_remove': 0
-                    });
-                }
-                else {
-                    opt.where['time_remove'] = 0;
-                }
-            }
             this._sql.where(opt.where);
         }
     }
@@ -198,7 +183,9 @@ export default class Mod {
         vs?: any[] | any[][],
         opt: { 'pre'?: sCtr.Ctr | string; 'index'?: string; } = {}
     ): Promise<boolean | null | false> {
-        const sq = lSql.get(opt.pre);
+        const sq = lSql.get(opt.pre, {
+            'service': db.getService() ?? lDb.ESERVICE.PGSQL,
+        });
         if (!vs) {
             // --- 单行 ---
             sq.insert(this._$table + (opt.index ? ('_' + opt.index) : ''));
@@ -208,7 +195,7 @@ export default class Mod {
                 lCore.log(opt.pre instanceof sCtr.Ctr ? opt.pre : {}, '[insert, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1), '-error');
                 return false;
             }
-            return r.packet.affectedRows > 0 ? true : null;
+            return r.packet.affected ? true : null;
         }
         // --- 可能是多行 ---
         if (vs.some(item => !Array.isArray(item))) {
@@ -228,7 +215,7 @@ export default class Mod {
                 lCore.log(opt.pre instanceof sCtr.Ctr ? opt.pre : {}, '[insert, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1), '-error');
                 return false;
             }
-            if (r.packet.affectedRows > 0) {
+            if (r.packet.affected) {
                 continue;
             }
             return null;
@@ -238,46 +225,22 @@ export default class Mod {
 
     /**
      * --- 获取添加一个序列的模拟 SQL ---
+     * @param db 数据库对象
      * @param cs 字段列表
      * @param vs 数据列表
      * @param opt 选项
      */
     public static insertSql(
+        db: lDb.Pool | lDb.Transaction,
         cs: string[] | Record<string, any>,
         vs?: any[] | any[][],
         opt: { 'pre'?: sCtr.Ctr | string; 'index'?: string; } = {}
     ): string {
-        const sq = lSql.get(opt.pre);
+        const sq = lSql.get(opt.pre, {
+            'service': db.getService() ?? lDb.ESERVICE.PGSQL,
+        });
         sq.insert(this._$table + (opt.index ? ('_' + opt.index) : '')).values(cs, vs);
         return sq.format();
-    }
-
-    /**
-     * --- 插入数据如果唯一键冲突则更新 ---
-     * @param db 数据库对象
-     * @param data 要插入的数据
-     * @param update 要更新的数据
-     * @param opt 选项
-     */
-    public static async insertDuplicate(
-        db: lDb.Pool | lDb.Transaction,
-        data: Record<string, any>,
-        update: kebab.Json,
-        opt: { 'pre'?: sCtr.Ctr | string; 'index'?: string; } = {}
-    ): Promise<boolean | null> {
-        const sq = lSql.get(opt.pre);
-        sq.insert(this._$table + (opt.index ? ('_' + opt.index) : '')).values(data).duplicate(update);
-        const r = await db.execute(sq.getSql(), sq.getData());
-        if (r.packet === null) {
-            lCore.log(opt.pre instanceof sCtr.Ctr ? opt.pre : {}, '[insertDuplicate, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
-            return false;
-        }
-        if (r.packet.affectedRows > 0) {
-            return true;
-        }
-        else {
-            return null;
-        }
     }
 
     /**
@@ -297,36 +260,13 @@ export default class Mod {
             'limit'?: [number, number?];
         } = {}
     ): Promise<number | false | null> {
-        const tim = lTime.stamp();
         const indexs = opt.index ? (typeof opt.index === 'string' ? [opt.index] : [...new Set(opt.index)]) : [''];
-        if (this._$soft && !opt.raw) {
-            // --- 软删除 ---
-            if (typeof where === 'string') {
-                where = '(' + where + ') AND `time_remove` = 0';
-            }
-            else if (Array.isArray(where)) {
-                where.push({
-                    'time_remove': 0
-                });
-            }
-            else {
-                where['time_remove'] = 0;
-            }
-        }
         let ar = 0;
         for (const index of indexs) {
-            const sq = lSql.get(opt.pre);
-            if (this._$soft && !opt.raw) {
-                // --- 软删除 ---
-                sq.update(this._$table + (index ? ('_' + index) : ''), [{
-                    'time_remove': tim,
-                }]);
-            }
-            else {
-                // --- 真删除 ---
-                sq.delete(this._$table + (index ? ('_' + index) : ''));
-            }
-            sq.where(where);
+            const sq = lSql.get(opt.pre, {
+                'service': db.getService() ?? lDb.ESERVICE.PGSQL,
+            });
+            sq.delete(this._$table + (index ? ('_' + index) : '')).where(where);
             if (opt.by) {
                 sq.by(opt.by[0], opt.by[1]);
             }
@@ -335,11 +275,11 @@ export default class Mod {
             }
             const r = await db.execute(sq.getSql(), sq.getData());
             if (r.packet === null) {
-                lCore.log(opt.pre instanceof sCtr.Ctr ? opt.pre : {}, '[removeByWhere, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+                lCore.log(opt.pre instanceof sCtr.Ctr ? opt.pre : {}, '[MOD][removeByWhere] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
                 return false;
             }
-            if (r.packet.affectedRows > 0) {
-                ar += r.packet.affectedRows;
+            if (r.packet.affected) {
+                ar += r.packet.affected;
             }
         }
         return ar ? ar : null;
@@ -362,30 +302,10 @@ export default class Mod {
             'limit'?: [number, number?];
         } = {}
     ): lSql.Sql {
-        const tim = lTime.stamp();
-        const sq = lSql.get(opt.pre);
-        if (this._$soft && !opt.raw) {
-            // --- 软删除 ---
-            sq.update(this._$table + (opt.index ? ('_' + opt.index) : ''), [{
-                'time_remove': tim
-            }]);
-            if (typeof where === 'string') {
-                where = '(' + where + ') AND `time_remove` = 0';
-            }
-            else if (Array.isArray(where)) {
-                where.push({
-                    'time_remove': 0
-                });
-            }
-            else {
-                where['time_remove'] = 0;
-            }
-        }
-        else {
-            // --- 真删除 ---
-            sq.delete(this._$table + (opt.index ? ('_' + opt.index) : ''));
-        }
-        sq.where(where);
+        const sq = lSql.get(opt.pre, {
+            'service': db.getService() ?? lDb.ESERVICE.PGSQL,
+        });
+        sq.delete(this._$table + (opt.index ? ('_' + opt.index) : '')).where(where);
         if (opt.by) {
             sq.by(opt.by[0], opt.by[1]);
         }
@@ -415,24 +335,12 @@ export default class Mod {
         } = {}
     ): Promise<number | false | null> {
         const indexs = opt.index ? (typeof opt.index === 'string' ? [opt.index] : [...new Set(opt.index)]) : [''];
-        if (this._$soft && !opt.raw) {
-            if (typeof where === 'string') {
-                where = '(' + where + ') AND `time_remove` = 0';
-            }
-            else if (Array.isArray(where)) {
-                where.push({
-                    'time_remove': 0
-                });
-            }
-            else {
-                where['time_remove'] = 0;
-            }
-        }
         let ar = 0;
         for (const index of indexs) {
-            const sq = lSql.get(opt.pre);
-            sq.update(this._$table + (index ? ('_' + index) : ''), data);
-            sq.where(where);
+            const sq = lSql.get(opt.pre, {
+                'service': db.getService() ?? lDb.ESERVICE.PGSQL,
+            });
+            sq.update(this._$table + (index ? ('_' + index) : ''), data).where(where);
             if (opt.by) {
                 sq.by(opt.by[0], opt.by[1]);
             }
@@ -441,11 +349,11 @@ export default class Mod {
             }
             const r = await db.execute(sq.getSql(), sq.getData());
             if (r.packet === null) {
-                lCore.log(opt.pre instanceof sCtr.Ctr ? opt.pre : {}, '[updateByWhere, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+                lCore.log(opt.pre instanceof sCtr.Ctr ? opt.pre : {}, '[MOD][updateByWhere] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
                 return false;
             }
-            if (r.packet.affectedRows > 0) {
-                ar += r.packet.affectedRows;
+            if (r.packet.affected) {
+                ar += r.packet.affected;
             }
         }
         return ar ? ar : null;
@@ -453,11 +361,13 @@ export default class Mod {
 
     /**
      * --- 根据条件更新数据（仅获取 SQL 对象） ---
+     * @param db 数据库对象
      * @param data 要更新的数据
      * @param where 筛选条件
      * @param opt 选项
      */
     public static updateByWhereSql(
+        db: lDb.Pool | lDb.Transaction,
         data: kebab.Json,
         where: string | kebab.Json,
         opt: {
@@ -468,22 +378,10 @@ export default class Mod {
             'limit'?: [number, number?];
         } = {}
     ): lSql.Sql {
-        const sq = lSql.get(opt.pre);
-        sq.update(this._$table + (opt.index ? ('_' + opt.index) : ''), data);
-        if (this._$soft && !opt.raw) {
-            if (typeof where === 'string') {
-                where = '(' + where + ') AND `time_remove` = 0';
-            }
-            else if (Array.isArray(where)) {
-                where.push({
-                    'time_remove': 0
-                });
-            }
-            else {
-                where['time_remove'] = 0;
-            }
-        }
-        sq.where(where);
+        const sq = lSql.get(opt.pre, {
+            'service': db.getService() ?? lDb.ESERVICE.PGSQL,
+        });
+        sq.update(this._$table + (opt.index ? ('_' + opt.index) : ''), data).where(where);
         if (opt.by) {
             sq.by(opt.by[0], opt.by[1]);
         }
@@ -724,23 +622,9 @@ export default class Mod {
         where: string | kebab.Json = '',
         opt: { 'ctr'?: sCtr.Ctr; 'raw'?: boolean; 'pre'?: string; 'index'?: string; } = {}
     ): Promise<any[] | false> {
-        const sq = lSql.get(opt.pre ?? opt.ctr);
-        if (this._$soft && !opt.raw) {
-            // --- 不包含已删除 ---
-            if (typeof where === 'string') {
-                if (where !== '') {
-                    where = '(' + where + ') AND `time_remove` = 0';
-                }
-            }
-            else if (Array.isArray(where)) {
-                where.push({
-                    'time_remove': 0
-                });
-            }
-            else {
-                where['time_remove'] = 0;
-            }
-        }
+        const sq = lSql.get(opt.pre ?? opt.ctr, {
+            'service': db.getService() ?? lDb.ESERVICE.PGSQL,
+        });
         sq.select(this._$primary, this._$table + (opt.index ? ('_' + opt.index) : '')).where(where);
         const r = await db.query(sq.getSql(), sq.getData());
         if (r.rows === null) {
@@ -815,16 +699,13 @@ export default class Mod {
 
     /**
      * --- 创建数据 ---
-     * @param notWhere 若要不存在才成功，则要传入限定条件
-     * @param table 可对限定条件传入适当的表
      */
-    public async create(notWhere?: string | kebab.Json, table?: string): Promise<boolean> {
+    public async create(): Promise<boolean> {
         const cstr = this.constructor as Record<string, kebab.Json>;
         const updates: Record<string, any> = {};
         for (const k in this._updates) {
             updates[k] = this._data[k];
         }
-        table ??= (cstr._$table as string) + (this._index ? ('_' + this._index[0]) : '');
 
         let r: lDb.IPacket | null = null;
         if ((cstr._$key !== '') && (updates[cstr._$key] === undefined)) {
@@ -837,12 +718,7 @@ export default class Mod {
                 this._data[cstr._$key] = updates[cstr._$key];
                 (this as kebab.Json)[cstr._$key] = updates[cstr._$key];
                 this._sql.insert((cstr._$table as string) + (this._index ? ('_' + this._index[0]) : ''));
-                if (notWhere) {
-                    this._sql.notExists(table, updates, notWhere);
-                }
-                else {
-                    this._sql.values(updates);
-                }
+                this._sql.values(updates);
                 r = await this._db.execute(this._sql.getSql(), this._sql.getData());
                 ++count;
                 if (!r.error) {
@@ -854,65 +730,45 @@ export default class Mod {
                         // --- 没设置 index，那就当做是本次生成的 key 重复了 ---
                         continue;
                     }
-                    const match = /for key '([\w.]+)'/.exec(r.error.message);
-                    if (match?.[1].includes(cstr._$index)) {
-                        // --- 确实重复了 ---
-                        continue;
+                    if (this._db.getService() === lDb.ESERVICE.MYSQL) {
+                        // --- MYSQL ---
+                        const match = /for key '([\w.]+)'/.exec(r.error.message);
+                        if (match?.[1].includes(cstr._$index)) {
+                            continue;
+                        }
+                    }
+                    else {
+                        // --- PGSQL ---
+                        const match = /constraint "([\w.]+)"/.exec(r.error.message);
+                        if (match?.[1].includes(cstr._$index)) {
+                            continue;
+                        }
                     }
                     // --- 1062 非 index 冲突，那需要用户自行处理（可能不允许重复的邮箱） ---
                     return false;
                 }
                 // --- 未处理的错误 ---
-                lCore.log(this._ctr ?? {}, '[create0, mod] [' + table + '] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+                const service = this._db.getService();
+                lCore.debug('[MOD][create0][' + cstr._$table + ']', service !== null ? lDb.ESERVICE[service] : 'NONE', r);
+                lCore.log(this._ctr ?? {}, '[MOD][create0][' + cstr._$table + '] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
                 return false;
             }
         }
         else {
             this._sql.insert((cstr._$table as string) + (this._index ? ('_' + this._index[0]) : ''));
-            if (notWhere) {
-                this._sql.notExists(table, updates, notWhere);
-            }
-            else {
-                this._sql.values(updates);
-            }
+            this._sql.values(updates);
             r = await this._db.execute(this._sql.getSql(), this._sql.getData());
             if (r.error) {
                 if (r.error.errno !== 1062) {
-                    lCore.log(this._ctr ?? {}, '[create1, mod] [' + table + '] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+                    lCore.debug('[MOD][create1][' + cstr._$table + ']', r);
+                    lCore.log(this._ctr ?? {}, '[MOD][create1][' + cstr._$table + '] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
                 }
                 return false;
             }
         }
-        if (r?.packet?.affectedRows && r?.packet?.affectedRows > 0) {
+        if (r.packet?.affected) {
             this._updates = {};
-            this._data[cstr._$primary] = r.packet.insertId;
-            (this as kebab.Json)[cstr._$primary] = this._data[cstr._$primary];
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
-
-    /**
-     * --- 唯一键冲突则替换，不冲突则创建数据 ---
-     */
-    public async replace(): Promise<boolean> {
-        const cstr = this.constructor as Record<string, kebab.Json>;
-        const updates: Record<string, any> = {};
-        for (const k in this._updates) {
-            updates[k] = this._data[k];
-        }
-
-        this._sql.replace((cstr._$table as string) + (this._index ? ('_' + this._index[0]) : '')).values(updates);
-        const r = await this._db.execute(this._sql.getSql(), this._sql.getData());
-        if (r.packet === null) {
-            lCore.log(this._ctr ?? {}, '[replace, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
-            return false;
-        }
-        if (r.packet.affectedRows > 0) {
-            this._updates = {};
-            this._data[cstr._$primary] = r.packet.insertId;
+            this._data[cstr._$primary] = r.packet.insert;
             (this as kebab.Json)[cstr._$primary] = this._data[cstr._$primary];
             return true;
         }
@@ -969,7 +825,7 @@ export default class Mod {
             lCore.log(this._ctr ?? {}, '[save, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
             return false;
         }
-        if (r.packet.affectedRows > 0) {
+        if (r.packet.affected) {
             this._updates = {};
             return true;
         }
@@ -980,30 +836,18 @@ export default class Mod {
 
     /**
      * --- 移除本条目 ---
-     * @param raw 是否真实移除
      */
-    public async remove(raw: boolean = false): Promise<boolean> {
-        const tim = lTime.stamp();
+    public async remove(): Promise<boolean> {
         const cstr = this.constructor as Record<string, kebab.Json>;
-        if (cstr._$soft && !raw) {
-            this._sql.update((cstr._$table as string) + (this._index ? ('_' + this._index[0]) : ''), [{
-                'time_remove': tim
-            }]).where([{
-                [cstr._$primary]: this._data[cstr._$primary],
-                'time_remove': 0
-            }]);
-        }
-        else {
-            this._sql.delete((cstr._$table as string) + (this._index ? ('_' + this._index[0]) : '')).where([{
-                [cstr._$primary]: this._data[cstr._$primary]
-            }]);
-        }
+        this._sql.delete((cstr._$table as string) + (this._index ? ('_' + this._index[0]) : '')).where([{
+            [cstr._$primary]: this._data[cstr._$primary]
+        }]);
         const r = await this._db.execute(this._sql.getSql(), this._sql.getData());
         if (r.packet === null) {
             lCore.log(this._ctr ?? {}, '[remove, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
             return false;
         }
-        if (r.packet.affectedRows > 0) {
+        if (r.packet.affected) {
             return true;
         }
         else {
@@ -1144,7 +988,7 @@ export default class Mod {
             for (let i = 0; i < this._index.length; ++i) {
                 // --- 先计算 total ---
                 if (i > 0) {
-                    sql = sql.replace(/(FROM [a-zA-Z0-9`_.]+?_)[0-9_]+/, '$1' + this._index[i]);
+                    sql = sql.replace(/(FROM [a-zA-Z0-9`"_.]+?_)[0-9_]+/, '$1' + this._index[i]);
                 }
                 const tsql = this._formatTotal(sql);
                 const tr = await this._db.query(tsql, this._sql.getData());
@@ -1170,10 +1014,10 @@ export default class Mod {
                         continue;
                     }
                 }
-                const lsql = sql.replace(/ LIMIT [0-9 ,]/g, ` LIMIT ${cz}, ${remain}`);
+                const lsql = sql.replace(/ LIMIT [0-9 ,]+(OFFSET [0-9]+)?/g, ` LIMIT ${remain} OFFSET ${cz}`);
                 const r = await this._db.query(lsql, this._sql.getData());
                 if (r.rows === null) {
-                    lCore.log(this._ctr ?? {}, '[all, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+                    lCore.log(this._ctr ?? {}, '[MOD][all] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
                     return false;
                 }
                 if (key) {
@@ -1185,7 +1029,7 @@ export default class Mod {
                             'ctr': this._ctr,
                             'pre': this._sql.getPre(),
                             'row': row,
-                            'index': this._index
+                            'index': this._index,
                         });
                         (list as Record<string, this>)[row[key]] = obj;
                         --remain;
@@ -1200,7 +1044,7 @@ export default class Mod {
                         'ctr': this._ctr,
                         'pre': this._sql.getPre(),
                         'row': row,
-                        'index': this._index
+                        'index': this._index,
                     });
                     (list as this[]).push(obj);
                     --remain;
@@ -1214,7 +1058,7 @@ export default class Mod {
         const contain = this._contain ? lCore.clone(this._contain.list) : null;
         const r = await this._db.query(this._sql.getSql(), this._sql.getData());
         if (r.rows === null) {
-            lCore.log(this._ctr ?? {}, '[all, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+            lCore.log(this._ctr ?? {}, '[MOD][all] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
             return false;
         }
         // --- 检查没被查到的必包含项 ---
@@ -1245,7 +1089,7 @@ export default class Mod {
                     'ctr': this._ctr,
                     'pre': this._sql.getPre(),
                     'row': row,
-                    'index': this._index
+                    'index': this._index,
                 });
                 list[row[key]] = obj;
             }
@@ -1259,7 +1103,7 @@ export default class Mod {
                         'ctr': this._ctr,
                         'pre': this._sql.getPre(),
                         'row': crow,
-                        'index': this._index
+                        'index': this._index,
                     });
                     list[crow[key]] = obj;
                 }
@@ -1323,7 +1167,7 @@ export default class Mod {
             for (let i = 0; i < this._index.length; ++i) {
                 // --- 先计算 total ---
                 if (i > 0) {
-                    sql = sql.replace(/(FROM [a-zA-Z0-9`_.]+?_)[0-9_]+/, '$1' + this._index[i]);
+                    sql = sql.replace(/(FROM [a-zA-Z0-9`"_.]+?_)[0-9_]+/, '$1' + this._index[i]);
                 }
                 const tsql = this._formatTotal(sql);
                 const tr = await this._db.query(tsql, this._sql.getData());
@@ -1351,10 +1195,10 @@ export default class Mod {
                     // --- 在本表开始找之后，后面表无需再跳过 ---
                     offset = -1;
                 }
-                const lsql = sql.replace(/ LIMIT [0-9 ,]+/g, ` LIMIT ${cz}, ${remain}`);
+                const lsql = sql.replace(/ LIMIT [0-9 ,]+(OFFSET [0-9]+)?/g, ` LIMIT ${remain} OFFSET ${cz}`);
                 const r = await this._db.query(lsql, this._sql.getData());
                 if (r.rows === null) {
-                    lCore.log(this._ctr ?? {}, '[allArray, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+                    lCore.log(this._ctr ?? {}, '[MOD][allArray] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
                     return false;
                 }
                 if (key) {
@@ -1376,7 +1220,7 @@ export default class Mod {
         const contain = this._contain ? lCore.clone(this._contain.list) : null;
         const r = await this._db.query(this._sql.getSql(), this._sql.getData());
         if (r.rows === null) {
-            lCore.log(this._ctr ?? {}, '[allArray, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+            lCore.log(this._ctr ?? {}, '[MOD][allArray] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
             return false;
         }
         // --- 检查没被查到的必包含项 ---
@@ -1422,33 +1266,41 @@ export default class Mod {
     public async explain(all?: false): Promise<false | string>;
     public async explain(all: true): Promise<false | Record<string, any>>;
     /**
-     * --- 获取数查询（SELECT）扫描情况，获取字符串或kv数组 ---
+     * --- 获取数查询（SELECT）扫描情况，获取字符串或对象 ---
      * @param all 是否获取完全的情况，默认不获取，只返回扫描情况
      */
     public async explain(all = false): Promise<false | string | Record<string, any>> {
         const r = await this._db.query('EXPLAIN ' + this._sql.getSql(), this._sql.getData());
         if (r.rows === null) {
-            lCore.log(this._ctr ?? {}, '[explain, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+            lCore.log(this._ctr ?? {}, '[MOD][explain] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
             return false;
         }
         if (!r.rows[0]) {
             return false;
         }
         if (!all) {
-            return r.rows[0].type;
+            return this._db.getService() === lDb.ESERVICE.MYSQL ?
+                r.rows[0].type :
+                r.rows[0]['QUERY PLAN'];
         }
-        return r.rows[0];
+        return this._db.getService() === lDb.ESERVICE.MYSQL ?
+            r.rows[0] :
+            {
+                'scan': r.rows[0]['QUERY PLAN'],
+                'filter': r.rows[1]['QUERY PLAN'],
+            };
     }
 
     private _formatTotal(sql: string, f: string = '*'): string {
+        const q = this._db.getService() === lDb.ESERVICE.MYSQL ? '`' : '"';
         sql = sql
-            .replace(/ LIMIT [0-9 ,]+/g, '')
-            .replace(/ ORDER BY [\w`,. ]+(DESC|ASC)?/g, '');
+            .replace(/ LIMIT [0-9 ,]+(OFFSET [0-9]+)?/g, '')
+            .replace(/ ORDER BY [\w`",. ]+(DESC|ASC)?/g, '');
         if (sql.includes(' GROUP BY ')) {
             return 'SELECT COUNT(0) AS `count` FROM(' + sql + ') AS `f`';
         }
         return sql
-            .replace(/SELECT .+? FROM/g, 'SELECT COUNT(' + this._sql.field(f) + ') AS `count` FROM');
+            .replace(/SELECT .+? FROM/g, `SELECT COUNT(${this._sql.field(f)}) AS ${q}count${q} FROM`);
     }
 
     /**
@@ -1465,7 +1317,7 @@ export default class Mod {
         const sql: string = this._formatTotal(this._sql.getSql(), f);
         const r = await this._db.query(sql, this._sql.getData());
         if (r.rows === null) {
-            lCore.log(this._ctr ?? {}, '[total, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+            lCore.log(this._ctr ?? {}, '[MOD][total] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
             return 0;
         }
         let count = 0;
@@ -1479,10 +1331,13 @@ export default class Mod {
      * --- 根据当前条件，筛选出当前条目该有的数据条数 ---
      */
     public async count(): Promise<number> {
-        const sql: string = this._sql.getSql().replace(/SELECT .+? FROM/, 'SELECT COUNT(0) AS `count` FROM');
+        const sql: string = this._sql.getSql().replace(/SELECT .+? FROM/, this._db.getService() === lDb.ESERVICE.MYSQL ?
+            'SELECT COUNT(0) AS `count` FROM' :
+            'SELECT COUNT(0) AS "count" FROM'
+        );
         const r = await this._db.query(sql, this._sql.getData());
         if (r.rows === null) {
-            lCore.log(this._ctr ?? {}, '[count, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+            lCore.log(this._ctr ?? {}, '[MOD][count] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
             return 0;
         }
         let count = 0;
@@ -1496,7 +1351,9 @@ export default class Mod {
      * --- 获取当前条件下的 count 的 SQL 语句 ---
      */
     public countSql(): string {
-        const sql: string = this._sql.getSql().replace(/SELECT .+? FROM/, 'SELECT COUNT(0) AS `count` FROM');
+        const sql: string = this._sql.getSql().replace(/SELECT .+? FROM/, this._db.getService() === lDb.ESERVICE.MYSQL ?
+            'SELECT COUNT(0) AS `count` FROM' : 'SELECT COUNT(0) AS "count" FROM'
+        );
         return this._sql.format(sql, this._sql.getData());
     }
 
@@ -1583,22 +1440,7 @@ export default class Mod {
      */
     public filter(
         s: kebab.Json,
-        raw: boolean = false
     ): this {
-        const cstr = this.constructor as Record<string, kebab.Json>;
-        if (cstr._soft && !raw) {
-            if (typeof s === 'string') {
-                s = '(' + s + ') AND `time_remove` = 0';
-            }
-            else if (Array.isArray(s)) {
-                s.push({
-                    'time_remove': 0
-                });
-            }
-            else {
-                s['time_remove'] = 0;
-            }
-        }
         this._sql.where(s);
         return this;
     }
@@ -1610,9 +1452,8 @@ export default class Mod {
      */
     public where(
         s: kebab.Json,
-        raw: boolean = false
     ): this {
-        return this.filter(s, raw);
+        return this.filter(s);
     }
 
     /**

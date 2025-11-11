@@ -156,7 +156,7 @@ export function isMs(time: number): boolean {
  * --- 将时间对象转换为时间字符串 ---
  * @param zone 时区小时或 ctr 对象，如 8，设置 null 则以系统时区为准
  * @param f 转换格式
- * @param date 时间对象或秒/毫秒级数字，如果是秒请乘以 1000
+ * @param date 时间对象秒/毫秒级数字均可
  */
 export function format(zone: number | sCtr.Ctr | null, f: string, date?: Date | number): string {
     const over: string[] = [];

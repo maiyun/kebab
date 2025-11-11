@@ -56,7 +56,12 @@ export interface IConfig {
         [key: string]: Json;
     };
     'const': IConfigConst;
-    'db': IConfigDb;
+    'db': Record<string, {
+        'default': IConfigDb;
+        'read': IConfigDb;
+    }> & {
+        'default': 'MYSQL' | 'PGSQL';
+    };
     'jwt': IConfigJwt;
     'kv': IConfigKv;
     'route': Record<string, string>;

@@ -71,7 +71,6 @@ export default class extends sCtr.Ctr {
     }
 
     public notfound(): string {
-        // --- Set on route.php ---
         this._httpCode = 404;
         return 'Custom 404 page.';
     }
@@ -143,7 +142,7 @@ export default class extends sCtr.Ctr {
             '<br><br><b>Model test:</b>',
 
             '<br><br><b style="color: red;">In a production environment, please delete "mod/test.ts", "mod/testdata.ts" files.</b>',
-            `<br><a href="${this._config.const.urlBase}test/mod-test">Click to see an example of a Test model</a>`,
+            `<br><a href="${this._config.const.urlBase}test/mod-test">Click to see an example of a Test model</a> <a href="${this._config.const.urlBase}test/mod-test?s=pgsql">pgsql</a>`,
             `<br><a href="${this._config.const.urlBase}test/mod-split">View "test/mod-split"</a>`,
             `<br><a href="${this._config.const.urlBase}test/mod-insert">View "test/mod-insert"</a>`,
 
@@ -171,7 +170,7 @@ export default class extends sCtr.Ctr {
             `<br><br><a href="${this._config.const.urlBase}test/crypto">View "test/crypto"</a>`,
 
             '<br><br><b>Db:</b>',
-            `<br><br><a href="${this._config.const.urlBase}test/db">View "test/db"</a>`,
+            `<br><br><a href="${this._config.const.urlBase}test/db">View "test/db"</a> <a href="${this._config.const.urlBase}test/db?s=pgsql">pgsql</a>`,
 
             `<br><br><b>Vector:</b>`,
             `<br><br><a href="${this._config.const.urlBase}test/vector">View "test/vector"</a>`,
@@ -213,14 +212,14 @@ export default class extends sCtr.Ctr {
             `<br><a href="${this._config.const.urlBase}test/captcha-base64">View "test/captcha-base64"</a>`,
 
             '<br><br><b>Sql:</b>',
-            `<br><br><a href="${this._config.const.urlBase}test/sql?type=insert">View "test/sql?type=insert"</a>`,
-            `<br><a href="${this._config.const.urlBase}test/sql?type=select">View "test/sql?type=select"</a>`,
-            `<br><a href="${this._config.const.urlBase}test/sql?type=update">View "test/sql?type=update"</a>`,
-            `<br><a href="${this._config.const.urlBase}test/sql?type=delete">View "test/sql?type=delete"</a>`,
-            `<br><a href="${this._config.const.urlBase}test/sql?type=where">View "test/sql?type=where"</a>`,
-            `<br><a href="${this._config.const.urlBase}test/sql?type=having">View "test/sql?type=having"</a>`,
-            `<br><a href="${this._config.const.urlBase}test/sql?type=by">View "test/sql?type=by"</a>`,
-            `<br><a href="${this._config.const.urlBase}test/sql?type=field">View "test/sql?type=field"</a>`,
+            `<br><br><a href="${this._config.const.urlBase}test/sql?type=insert">View "test/sql?type=insert"</a> <a href="${this._config.const.urlBase}test/sql?type=insert&s=pgsql">pgsql</a>`,
+            `<br><a href="${this._config.const.urlBase}test/sql?type=select">View "test/sql?type=select"</a> <a href="${this._config.const.urlBase}test/sql?type=select&s=pgsql">pgsql</a>`,
+            `<br><a href="${this._config.const.urlBase}test/sql?type=update">View "test/sql?type=update"</a> <a href="${this._config.const.urlBase}test/sql?type=update&s=pgsql">pgsql</a>`,
+            `<br><a href="${this._config.const.urlBase}test/sql?type=delete">View "test/sql?type=delete"</a> <a href="${this._config.const.urlBase}test/sql?type=delete&s=pgsql">pgsql</a>`,
+            `<br><a href="${this._config.const.urlBase}test/sql?type=where">View "test/sql?type=where"</a> <a href="${this._config.const.urlBase}test/sql?type=where&s=pgsql">pgsql</a>`,
+            `<br><a href="${this._config.const.urlBase}test/sql?type=having">View "test/sql?type=having"</a> <a href="${this._config.const.urlBase}test/sql?type=having&s=pgsql">pgsql</a>`,
+            `<br><a href="${this._config.const.urlBase}test/sql?type=by">View "test/sql?type=by"</a> <a href="${this._config.const.urlBase}test/sql?type=by&s=pgsql">pgsql</a>`,
+            `<br><a href="${this._config.const.urlBase}test/sql?type=field">View "test/sql?type=field"</a> <a href="${this._config.const.urlBase}test/sql?type=field&s=pgsql">pgsql</a>`,
 
             '<br><br><b>Jwt:</b>',
             `<br><br><a href="${this._config.const.urlBase}test/jwt">View "test/jwt"</a>`,
@@ -634,39 +633,45 @@ Result:<pre id="result">Nothing.</pre>` + this._getEnd();
 
         const echo = ['<b style="color: red;">In a production environment, please delete the "mod/test.ts" file.</b>'];
 
-        const db = lDb.get(this);
-        let stmt = await db.query('SELECT * FROM `m_test` WHERE `token` LIMIT 1;');
+        const db = this._get['s'] === 'pgsql' ? lDb.get(this, {
+            'service': lDb.ESERVICE.PGSQL,
+        }) : lDb.get(this);
+        let stmt = await db.query(this._get['s'] === 'pgsql' ?
+            'SELECT * FROM "m"."test" LIMIT 1;' :
+            'SELECT * FROM `m_test` LIMIT 1;'
+        );
 
         if (!stmt.rows) {
-            return [0, 'Failed("m_test" not found).'];
+            return [0, this._get['s'] === 'pgsql' ?
+                'Failed("m"."test" not found).' :
+                'Failed("m_test" not found).'];
         }
 
         if (this._get['action'] === 'remove') {
             await mTest.removeByWhere(db, [
-                ['token', 'LIKE', 'test_%']
+                ['token', 'LIKE', 'test_%'],
             ], {
-                'pre': this
+                'pre': this._get['s'] === 'pgsql' ? 'm' : this,
             });
-            return this._location('test/mod-test');
+            return this._location('test/mod-test' + (this._get['s'] === 'pgsql' ? '?s=pgsql' : ''));
         }
         else {
             const time = lTime.stamp();
             const test = mTest.getCreate<mTest>(db, {
-                'ctr': this
+                'ctr': this,
+                'pre': this._get['s'] === 'pgsql' ? 'm' : undefined,
             });
             test.set({
                 'name': 'nam' + lCore.rand(0, 3).toString(),
                 'point': { 'x': lCore.rand(0, 99), 'y': lCore.rand(0, 99) },
                 'polygon': [
-                    [
-                        { 'x': 1, 'y': 1 },
-                        { 'x': 2, 'y': 2 },
-                        { 'x': 3, 'y': 3 },
-                        { 'x': 1, 'y': 1 }
-                    ]
+                    { 'x': 1, 'y': 1 },
+                    { 'x': 2, 'y': 2 },
+                    { 'x': 3, 'y': 3 },
+                    { 'x': 1, 'y': 1 },
                 ],
                 'json': { 'x': { 'y': 'abc' } },
-                'time_add': time
+                'time_add': time,
             });
             const result = await test.create();
 
@@ -678,15 +683,13 @@ test.set({
     'name': 'nam' + lCore.rand(0, 4).toString(),
     'point': { 'x': lCore.rand(0, 99), 'y': lCore.rand(0, 99) },
     'polygon': [
-        [
-            { 'x': 1, 'y': 1 },
-            { 'x': 2, 'y': 2 },
-            { 'x': 3, 'y': 3 },
-            { 'x': 1, 'y': 1 }
-        ]
+        { 'x': 1, 'y': 1 },
+        { 'x': 2, 'y': 2 },
+        { 'x': 3, 'y': 3 },
+        { 'x': 1, 'y': 1 },
     ],
     'json': { 'x': { 'y': 'abc' } },
-    'time_add': time
+    'time_add': time,
 });
 const result = await test.create();
 JSON.stringify(result));</pre>` + JSON.stringify(result));
@@ -695,26 +698,30 @@ JSON.stringify(result));</pre>` + JSON.stringify(result));
 
             echo.push('<br><br>Test table:');
 
-            stmt = await db.query('SELECT * FROM `m_test` WHERE `token` LIKE \'test_%\' ORDER BY `id` ASC;');
+            stmt = await db.query(this._get['s'] === 'pgsql' ?
+                'SELECT * FROM "m"."test" WHERE "token" LIKE \'test_%\' ORDER BY "id" ASC;' :
+                'SELECT * FROM `m_test` WHERE `token` LIKE \'test_%\' ORDER BY `id` ASC;'
+            );
             this._dbTable(stmt, echo);
 
             // --- explain ---
 
             const ls = mTest.where<mTest>(db, [
-                ['time_add', '>', time - 60 * 5]
+                ['time_add', '>', time - 60 * 5],
             ], {
-                'ctr': this
+                'ctr': this,
+                'pre': this._get['s'] === 'pgsql' ? 'm' : undefined,
             });
             const r = await ls.explain();
             echo.push(`<pre>const ls = mTest.where<mTest>(db, [
-    ['time_add', '>', time - 60 * 5]
+    ['time_add', '>', time - 60 * 5],
 ], {
-    'ctr': this
+    'ctr': this,
 });
 const r = await ls.explain();</pre>` + lText.htmlescape(JSON.stringify(r)));
 
             const r2 = await ls.explain(true);
-            echo.push('<pre>ls->explain(true);</pre>');
+            echo.push('<pre>ls.explain(true);</pre>');
             if (r2) {
                 echo.push('<table style="width: 100%;">');
                 for (const k in r2) {
@@ -730,7 +737,8 @@ const r = await ls.explain();</pre>` + lText.htmlescape(JSON.stringify(r)));
             let ft = await mTest.one<mTest>(db, [
                 ['time_add', '>', '0']
             ], {
-                'ctr': this
+                'ctr': this,
+                'pre': this._get['s'] === 'pgsql' ? 'm' : undefined,
             });
             echo.push(`<pre>await mTest.one<mTest>(db, [
     ['time_add', '>', '0']
@@ -763,7 +771,8 @@ const r = await ls.explain();</pre>` + lText.htmlescape(JSON.stringify(r)));
 await ft.save();</pre>`);
 
                 ft = await mTest.find<mTest>(db, ft.id, {
-                    'ctr': this
+                    'ctr': this,
+                    'pre': this._get['s'] === 'pgsql' ? 'm' : undefined,
                 });
                 if (!ft) {
                     return '';
@@ -788,12 +797,10 @@ await ft.save();</pre>`);
                         'y': 40
                     },
                     'polygon': [
-                        [
-                            { 'x': 5, 'y': 1 },
-                            { 'x': 6, 'y': 2 },
-                            { 'x': 7, 'y': 3 },
-                            { 'x': 5, 'y': 1 }
-                        ]
+                        { 'x': 5, 'y': 1 },
+                        { 'x': 6, 'y': 2 },
+                        { 'x': 7, 'y': 3 },
+                        { 'x': 5, 'y': 1 }
                     ],
                     'json': { 'x': { 'y': 'def' } }
                 });
@@ -805,12 +812,10 @@ await ft.save();</pre>`);
         'y': 40
     },
     'polygon': [
-        [
-            { 'x': 5, 'y': 1 },
-            { 'x': 6, 'y': 2 },
-            { 'x': 7, 'y': 3 },
-            { 'x': 5, 'y': 1 }
-        ]
+        { 'x': 5, 'y': 1 },
+        { 'x': 6, 'y': 2 },
+        { 'x': 7, 'y': 3 },
+        { 'x': 5, 'y': 1 }
     ],
     'json': { 'x': { 'y': 'def' } }
 });
@@ -832,14 +837,14 @@ await ft.refresh();</pre>`);
                 echo.push('<div>false</div>');
             }
 
-            echo.push('<br><a href="' + this._config.const.urlBase + 'test/mod-test?action=remove">Remove all test data</a> | <a href="' + this._config.const.urlBase + 'test">Return</a>');
+            echo.push('<br><a href="' + this._config.const.urlBase + 'test/mod-test?action=remove' + (this._get['s'] === 'pgsql' ? '&s=pgsql' : '') + '">Remove all test data</a> | <a href="' + this._config.const.urlBase + 'test">Return</a>');
 
             return echo.join('') + '<br><br>' + this._getEnd();
         }
     }
 
     public async modSplit(): Promise<string> {
-        const echo = ['<b style="color: red;">In a production environment, please delete "mod/test.php" and "mod/testdata.php" files.</b>'];
+        const echo = ['<b style="color: red;">In a production environment, please delete "mod/test.ts" and "mod/testdata.ts" files.</b>'];
 
         const db = lDb.get(this);
 
@@ -903,7 +908,8 @@ CREATE TABLE \`m_test_data_0\` (
 
         const ids: number[] = [];
         const ls = await mTest.select<mTest>(db, ['id'], {
-            'ctr': this
+            'ctr': this,
+            'index': ['1', '2']
         }).by('time_add').limit(0, 50).all();
         if (ls) {
             for (const item of ls) {
@@ -936,7 +942,7 @@ CREATE TABLE \`m_test_data_0\` (
     }
 
     public async modInsert(): Promise<string> {
-        const echo = ['<b style="color: red;">In a production environment, please delete "mod/test.php" and "mod/testdata.php" files.</b>'];
+        const echo = ['<b style="color: red;">In a production environment, please delete "mod/test.ts" and "mod/testdata.ts" files.</b>'];
         const db = lDb.get(this);
         const datas: any[][] = [];
         for (let i = 0; i < 20; ++i) {
@@ -1420,16 +1426,20 @@ JSON.stringify(r);</pre>${JSON.stringify(r)}`);
     public async db(): Promise<kebab.Json> {
         const echo = [(Math.round(this._getRunTime() * 10000000) / 10000).toString()];
 
-        const db = lDb.get(this);
+        const db = lDb.get(this, {
+            'service': this._get['s'] === 'pgsql' ? lDb.ESERVICE.PGSQL : lDb.ESERVICE.MYSQL,
+        });
 
         // --- 先获取 test 表的情况 ---
-        let stmt = await db.query('SELECT * FROM `m_test` ORDER BY `id` DESC LIMIT 10;');
+        let sql = this._get['s'] === 'pgsql' ? 'SELECT * FROM "m"."test" ORDER BY "id" DESC LIMIT 10;' : 'SELECT * FROM `m_test` ORDER BY `id` DESC LIMIT 10;';
+        let sql2 = '';
+        let stmt = await db.query(sql);
         if (!stmt.rows) {
             return [0, stmt.error ? (stmt.error.message + '(' + stmt.error.errno.toString() + ')') : 'Failed("m_test" not found).'];
         }
 
         echo.push(`<pre>const db = lDb.get(this);
-const stmt = await db.query('SELECT * FROM \`m_test\` ORDER BY \`id\` DESC LIMIT 10;');</pre>`);
+const stmt = await db.query('${sql}');</pre>`);
 
         this._dbTable(stmt, echo);
 
@@ -1437,76 +1447,90 @@ const stmt = await db.query('SELECT * FROM \`m_test\` ORDER BY \`id\` DESC LIMIT
 
         // --- 插入 test-token 的条目 ---
         const time = lTime.stamp().toString();
-        let exec = await db.execute('INSERT INTO `m_test` (`token`, `point`, `time_add`) VALUES (\'test-token\', ST_POINTFROMTEXT(\'POINT(10 10)\'), \'' + time + '\');');
+        let name = lCore.random(4);
+        sql = this._get['s'] === 'pgsql' ?
+            `INSERT INTO "m"."test" ("name", "token", "point", "time_add") VALUES ('${name}', 'test-token', '(1, 2)'::point, '${time}');` :
+            'INSERT INTO `m_test` (`name`, `token`, `point`, `time_add`) VALUES (\'' + name + '\', \'test-token\', ST_POINTFROMTEXT(\'POINT(10 10)\'), \'' + time + '\');';
+        let exec = await db.execute(sql);
         let ms = (Math.round(this._getRunTime() * 10000000) / 10000).toString();
-        let insertId: number = 0;
+        let insert: number = 0;
         if (exec.error?.errno === 1062) {
-            insertId = (await db.query('SELECT * FROM `m_test` WHERE `token` = \'test-token\';')).rows?.[0].id ?? 0;
+            sql2 = this._get['s'] === 'pgsql' ?
+                `SELECT * FROM "m"."test" WHERE "token" = 'test-token';` :
+                'SELECT * FROM `m_test` WHERE `token` = \'test-token\';';
+            insert = (await db.query(sql2)).rows?.[0].id ?? 0;
             ms += ', ' + (Math.round(this._getRunTime() * 10000000) / 10000).toString();
         }
         else {
-            insertId = exec.packet?.insertId ?? 0;
+            insert = exec.packet?.insert ?? 0;
         }
 
         echo.push(`<pre>const time = lTime.stamp().toString();
-const exec = await db.execute('INSERT INTO \`m_test\` (\`token\`, \`data\`, \`time_update\`, \`time_add\`) VALUES (\\'test-token\\', ST_POINTFROMTEXT(\\'POINT(10 10)\\'), \\'' + time + '\\');');
-let insertId: number = 0;
+const exec = await db.execute('${sql}');
+let insert: number = 0;
 if (exec.error?.errno === 1062) {
-    insertId = (await db.query('SELECT * FROM \`m_test\` WHERE \`token\` = \\'test-token\\';')).rows?.[0].id ?? 0;
+    insert = (await db.query('${sql2}')).rows?.[0].id ?? 0;
 }
 else {
-    insertId = exec.packet?.insertId ?? 0;
+    insert = exec.packet?.insertId ?? 0;
 }</pre>
 exec: ${JSON.stringify(exec)}<br>
-insertId: ${JSON.stringify(insertId)}<br>
+insert: ${JSON.stringify(insert)}<br>
 errno: ${JSON.stringify(exec.error?.errno)}<br>
 error: ${JSON.stringify(exec.error)}<br>
 ms: ${ms}<br><br>`);
 
         // --- 获取最近的一条 ---
-        stmt = await db.query('SELECT * FROM `m_test` ORDER BY `id` DESC LIMIT 1;');
+        sql = this._get['s'] === 'pgsql' ?
+            `SELECT * FROM "m"."test" ORDER BY "id" DESC LIMIT 1;` :
+            'SELECT * FROM `m_test` ORDER BY `id` DESC LIMIT 1;';
+        stmt = await db.query(sql);
         this._dbTable(stmt, echo);
 
         // --- 再次插入 test-token 的条目 ---
-        exec = await db.execute('INSERT INTO `m_test` (`token`, `point`, `time_add`) VALUES (\'test-token\', ST_POINTFROMTEXT(\'POINT(10 10)\'), \'' + time + '\');');
-        insertId = exec.packet?.insertId ?? 0;
-        echo.push(`<pre>exec = await db.execute('INSERT INTO \`m_test\` (\`token\`, \`point\`, \`time_add\`) VALUES (\\'test-token\\', ST_POINTFROMTEXT(\\'POINT(10 10)\\'), \\'' + time + '\\');');
-insertId = exec.packet?.insertId ?? 0;</pre>
+        name = lCore.random(4);
+        sql = this._get['s'] === 'pgsql' ?
+            `INSERT INTO "m"."test" ("name", "token", "point", "time_add") VALUES ('${name}', 'test-token', '(10, 10)'::point, '${time}');` :
+            'INSERT INTO `m_test` (`name`, `token`, `point`, `time_add`) VALUES (\'' + name + '\', \'test-token\', ST_POINTFROMTEXT(\'POINT(10 10)\'), \'' + time + '\');';
+        exec = await db.execute(sql);
+        insert = exec.packet?.insert ?? 0;
+        echo.push(`<pre>exec = await db.execute('${sql}');
+insert = exec.packet?.insert ?? 0;</pre>
 exec: ${JSON.stringify(exec)}<br>
-insertId: ${JSON.stringify(insertId)}<br>
+insert: ${JSON.stringify(insert)}<br>
 errno: ${JSON.stringify(exec.error?.errno)}<br>
 error: ${JSON.stringify(exec.error)}<br>
 ms: ${(Math.round(this._getRunTime() * 10000000) / 10000).toString()}<br>`);
 
-        // --- 依据唯一键替换值 ---
-        exec = await db.execute('REPLACE INTO `m_test` (`token`, `point`, `time_add`) VALUES (\'test-token\', ST_POINTFROMTEXT(\'POINT(20 20)\'), \'' + time + '\');');
-        insertId = exec.packet?.insertId ?? 0;
-        echo.push(`<pre>exec = await db.execute('REPLACE INTO \`m_session\` (\`token\`, \`point\`, \`time_add\`) VALUES (\\'test-token\\', ST_POINTFROMTEXT(\\'POINT(20 20)\\'), \\'' + time + '\\');');
-insertId = exec.packet?.insertId ?? 0;</pre>
-exec: ${JSON.stringify(exec)}<br>
-insertId: ${JSON.stringify(insertId)}<br>
-errno: ${JSON.stringify(exec.error?.errno)}<br>
-error: ${JSON.stringify(exec.error)}<br>
-ms: ${(Math.round(this._getRunTime() * 10000000) / 10000).toString()}<br><br>`);
-
         // --- 显示近 10 条 ---
-        stmt = await db.query('SELECT * FROM `m_test` ORDER BY `id` DESC LIMIT 10;');
+        sql = this._get['s'] === 'pgsql' ?
+            'SELECT * FROM "m"."test" ORDER BY "id" DESC LIMIT 10;' :
+            'SELECT * FROM `m_test` ORDER BY `id` DESC LIMIT 10;';
+        stmt = await db.query(sql);
         this._dbTable(stmt, echo);
 
         // --- explain 开始 ---
-        const explain = 'EXPLAIN';
-        stmt = await db.query(explain + ' SELECT * FROM `m_test` LIMIT 10;');
-        echo.push(`<pre>stmt = await db.query('${explain} SELECT * FROM \`m_test\` LIMIT 10;');</pre>`);
+        sql = this._get['s'] === 'pgsql' ?
+            'EXPLAIN SELECT * FROM "m"."test" LIMIT 10;' :
+            'EXPLAIN SELECT * FROM `m_test` LIMIT 10;';
+        stmt = await db.query(sql);
+        echo.push(`<pre>stmt = await db.query('${sql}');</pre>`);
         this._dbTable(stmt, echo);
 
         echo.push('<br>ms: ' + (Math.round(this._getRunTime() * 10000000) / 10000).toString());
 
         // --- 删除测试添加的 token ---
-        exec = await db.execute('DELETE FROM `m_test` WHERE `token` = \'test-token\';');
-        echo.push(`<pre>exec = await db.execute('DELETE FROM \`m_test\` WHERE \`token\` = \\'test-token\\';');</pre>
+        sql = this._get['s'] === 'pgsql' ?
+            `DELETE FROM "m"."test" WHERE "token" = 'test-token';` :
+            'DELETE FROM `m_test` WHERE `token` = \'test-token\';';
+        exec = await db.execute(sql);
+        echo.push(`<pre>exec = await db.execute('${sql}');</pre>
 exec: ${JSON.stringify(exec)}<br><br>`);
 
-        stmt = await db.query('SELECT * FROM `m_test` ORDER BY `id` DESC LIMIT 10;');
+        sql = this._get['s'] === 'pgsql' ?
+            'SELECT * FROM "m"."test" ORDER BY "id" DESC LIMIT 10;' :
+            'SELECT * FROM `m_test` ORDER BY `id` DESC LIMIT 10;';
+        stmt = await db.query(sql);
         this._dbTable(stmt, echo);
 
         return echo.join('') + '<br>queries: ' + db.getQueries().toString() + '<br>' + this._getEnd();
@@ -2567,7 +2591,9 @@ Result:<pre id="result">Nothing.</pre>`);
 
     public sql(): string {
         const echo: string[] = [];
-        let sql = lSql.get('test_');
+        let sql = this._get['s'] === 'pgsql' ? lSql.get('test', {
+            'service': lSql.ESERVICE.PGSQL,
+        }) : lSql.get('test_');
         switch (this._get['type']) {
             case 'insert': {
                 let s = sql.insert('user').values(['name', 'age'], [
@@ -2593,27 +2619,6 @@ Result:<pre id="result">Nothing.</pre>`);
                 s = sql.insert('user').values({ 'name': 'Bob', 'age': '24' }).getSql();
                 sd = sql.getData();
                 echo.push(`<pre>sql.insert('user').values({ 'name': 'Bob', 'age': '24' });</pre>
-<b>getSql() :</b> ${s}<br>
-<b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
-<b>format() :</b> ${sql.format(s, sd)}<hr>`);
-
-                s = sql.replace('user').values({ 'token': '20200202', 'name': 'Bob' }).getSql();
-                sd = sql.getData();
-                echo.push(`<pre>sql.replace('user').values({ 'token': '20200202', 'name': 'Bob' });</pre>
-<b>getSql() :</b> ${s}<br>
-<b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
-<b>format() :</b> ${sql.format(s, sd)}<hr>`);
-
-                s = sql.insert('order').notExists('order', { 'name': 'Amy', 'age': '16', 'time_add': lTime.stamp(), 'point': ['POINT(?)', ['20']] }, { 'name': 'Amy' }).getSql();
-                sd = sql.getData();
-                echo.push(`<pre>sql.insert('order').notExists('order', { 'name': 'Amy', 'age': '16', 'time_add': lTime.stamp(), 'point': ['POINT(?)', ['20']] }, { 'name': 'Amy' });</pre>
-<b>getSql() :</b> ${s}<br>
-<b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
-<b>format() :</b> ${sql.format(s, sd)}<hr>`);
-
-                s = sql.insert('verify').values({ 'token': 'abc', 'time_update': '10' }).duplicate({ 'time_update': ['CONCAT(`time_update`, ?)', ['01']] }).getSql();
-                sd = sql.getData();
-                echo.push(`<pre>sql.insert('verify').values({ 'token': 'abc', 'time_update': '10' }).duplicate({ 'time_update': ['CONCAT(\`time_update\`, ?)', ['01']] });</pre>
 <b>getSql() :</b> ${s}<br>
 <b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
 <b>format() :</b> ${sql.format(s, sd)}<hr>`);
@@ -2713,9 +2718,9 @@ Result:<pre id="result">Nothing.</pre>`);
 <b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
 <b>format() :</b> ${sql.format(s, sd)}<hr>`);
 
-                s = sql.select(['o.*', 'u.nick as unick'], ['order o']).leftJoin('`user` AS u', { 'o.user_id': lSql.column('u.id'), 'state': '1' }).getSql();
+                s = sql.select(['o.*', 'u.nick as unick'], ['order o']).leftJoin('`user` AS u', { 'o.user_id': lSql.column('u.id'), 'u.state': '1' }).getSql();
                 sd = sql.getData();
-                echo.push(`<pre>sql.select(['o.*', 'u.nick as unick'], ['order o']).leftJoin('\`user\` AS u', { 'o.user_id': lSql.column('u.id'), 'state': '1' });</pre>
+                echo.push(`<pre>sql.select(['o.*', 'u.nick as unick'], ['order o']).leftJoin('\`user\` AS u', { 'o.user_id': lSql.column('u.id'), 'u.state': '1' });</pre>
 <b>getSql() :</b> ${s}<br>
 <b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
 <b>format() :</b> ${sql.format(s, sd)}<hr>`);
