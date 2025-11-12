@@ -247,11 +247,12 @@ async function requestHandler(
     let host = req.headers[':authority'];
     if (host === undefined || typeof host !== 'string') {
         host = req.headers['host'];
-        if (host === undefined) {
-            res.end();
-            return;
-        }
     }
+    if (host === undefined) {
+        res.end();
+        return;
+    }
+    host = host.split(':')[0] + ':' + (req.socket.localPort ?? (https ? '443' : '80'));
     const uri = lText.parseUrl(`http${https ? 's' : ''}://${host}${req.url ?? ''}`);
     /** --- 当前的 vhost 配置文件 --- */
     const vhost = await getVhostByHostname(uri.hostname ?? '');

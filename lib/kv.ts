@@ -793,7 +793,7 @@ end`;
                 await conn.auth(this._etc.pwd, this._etc.user || undefined);
             }
             await conn.select(this._etc.index);
-            conn.on('error', function(err: Error): void {
+            conn.on('error', function(err: redis.RedisError): void {
                 lCore.debug('[KV][_getConnection][error]', err);
             }).on('end', () => {
                 // --- 断线，不重要，会自动重连 ---

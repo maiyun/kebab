@@ -208,7 +208,7 @@ export class Connection {
         catch (e: any) {
             rtn.error = {
                 'message': e.message,
-                'errno': e.errno ?? Number(e.code),
+                'errno': e.errno ?? Number(e.code.replace(/[a-zA-Z]/g, '')),
             };
             rtn.result = -500;
         }
@@ -276,7 +276,7 @@ export class Connection {
             }
         }
         catch (e: any) {
-            let errno = e.errno ?? Number(e.code.replace(/[a-z][A-Z]/g, ''));
+            let errno = e.errno ?? Number(e.code.replace(/[a-zA-Z]/g, ''));
             if (errno === 23505) {
                 errno = 1062;
             }

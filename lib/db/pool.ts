@@ -259,7 +259,7 @@ export class Pool {
                             c.using();
                             link.on('error', function(err: mysql2.QueryError): void {
                                 c.setLost();
-                                if (err.code !== 'PROTOCOL_CONNECTION_LOST') {
+                                if (err.code !== 'PROTOCOL_CONNECTION_LOST' && err.code !== 'ECONNRESET') {
                                     lCore.debug('[DB][_getConnection][MYSQL][error]', err);
                                     lCore.log({}, '[DB][_getConnection][MYSQL][error] ' + err.message, '-error');
                                 }
