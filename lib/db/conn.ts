@@ -23,6 +23,12 @@ pg.types.setTypeParser(pg.types.builtins.POLYGON, val => {
     // --- 返回 [{x: 1, y: 1}, {x :2, y: 2}, ... ] ---
     return points;
 });
+pg.types.setTypeParser(pg.types.builtins.INT8, val => {
+    if (val === null) {
+        return null;
+    }
+    return parseInt(val);
+});
 
 /** --- 数据库连接对象 --- */
 export class Connection {
