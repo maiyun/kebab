@@ -140,7 +140,7 @@ export class Sql {
                         else {
                             // --- v1: json ---
                             sql += this.placeholder() + ', ';
-                            this._data.push(lText.stringifyJson(v1));
+                            this._data.push(this._service === ESERVICE.MYSQL ? lText.stringifyJson(v1) : v1);
                         }
                     }
                     else if (v1.x !== undefined) {
@@ -160,7 +160,7 @@ export class Sql {
                         else {
                             // --- v1: json ---
                             sql += this.placeholder() + ', ';
-                            this._data.push(lText.stringifyJson(v1));
+                            this._data.push(this._service === ESERVICE.MYSQL ? lText.stringifyJson(v1) : v1);
                         }
                     }
                     else if (v1 instanceof Buffer) {
@@ -175,7 +175,7 @@ export class Sql {
                     else {
                         // --- json ---
                         sql += this.placeholder() + ', ';
-                        this._data.push(lText.stringifyJson(v1));
+                        this._data.push(this._service === ESERVICE.MYSQL ? lText.stringifyJson(v1) : v1);
                     }
                 }
                 sql = sql.slice(0, -2) + '), ';
@@ -232,7 +232,7 @@ export class Sql {
                     else {
                         // --- v: json ---
                         values += this.placeholder() + ', ';
-                        this._data.push(lText.stringifyJson(v));
+                        this._data.push(this._service === ESERVICE.MYSQL ? lText.stringifyJson(v) : v);
                     }
                 }
                 else if (v.x !== undefined) {
@@ -252,7 +252,7 @@ export class Sql {
                     else {
                         // --- v: json ---
                         values += this.placeholder() + ', ';
-                        this._data.push(lText.stringifyJson(v));
+                        this._data.push(this._service === ESERVICE.MYSQL ? lText.stringifyJson(v) : v);
                     }
                 }
                 else if (v instanceof Buffer) {
@@ -267,7 +267,7 @@ export class Sql {
                 else {
                     // --- json ---
                     values += this.placeholder() + ', ';
-                    this._data.push(lText.stringifyJson(v));
+                    this._data.push(this._service === ESERVICE.MYSQL ? lText.stringifyJson(v) : v);
                 }
             }
             sql = sql.slice(0, -2) + ') VALUES (' + values.slice(0, -2) + ')';
@@ -419,7 +419,7 @@ export class Sql {
                     else {
                         // --- v: json ---
                         sql += this.placeholder() + ', ';
-                        this._data.push(lText.stringifyJson(v));
+                        this._data.push(this._service === ESERVICE.MYSQL ? lText.stringifyJson(v) : v);
                     }
                 }
                 else if (v.x !== undefined) {
@@ -445,7 +445,7 @@ export class Sql {
                         else {
                             // --- 8 ---
                             sql += this.placeholder() + ', ';
-                            this._data.push(lText.stringifyJson(v));
+                            this._data.push(this._service === ESERVICE.MYSQL ? lText.stringifyJson(v) : v);
                         }
                     }
                 }
@@ -461,7 +461,7 @@ export class Sql {
                 else {
                     // --- json ---
                     sql += this.placeholder() + ', ';
-                    this._data.push(lText.stringifyJson(v));
+                    this._data.push(this._service === ESERVICE.MYSQL ? lText.stringifyJson(v) : v);
                 }
             }
         }
@@ -1175,7 +1175,7 @@ export function format(sql: string, data: kebab.DbValue[], service: ESERVICE = E
         if (val instanceof Buffer) {
             return `'\\x${val.toString('hex')}'`;
         }
-        return `'${JSON.stringify(val).replace(/'/g, "''")}'`;
+        return `'${lText.stringifyJson(val).replace(/'/g, "''")}'`;
     });
 }
 
