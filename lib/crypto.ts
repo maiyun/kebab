@@ -58,12 +58,6 @@ export function generateKeyPair(type: string, options: {
     });
 }
 
-export function sign(
-    data: crypto.BinaryLike, privateKey: crypto.KeyLike | crypto.SignKeyObjectInput | crypto.SignPrivateKeyInput | crypto.SignJsonWebKeyInput, format: 'hex' | 'base64' | 'binary', algorithm?: string
-): string;
-export function sign(
-    data: crypto.BinaryLike, privateKey: crypto.KeyLike | crypto.SignKeyObjectInput | crypto.SignPrivateKeyInput | crypto.SignJsonWebKeyInput, format?: 'buffer', algorithm?: string
-): Buffer;
 /**
  * --- 非对称加签 ---
  * @param data 数据
@@ -71,6 +65,12 @@ export function sign(
  * @param format 输出格式
  * @param algorithm 哈希方式
  */
+export function sign(
+    data: crypto.BinaryLike, privateKey: crypto.KeyLike | crypto.SignKeyObjectInput | crypto.SignPrivateKeyInput | crypto.SignJsonWebKeyInput, format: 'hex' | 'base64' | 'binary', algorithm?: string
+): string;
+export function sign(
+    data: crypto.BinaryLike, privateKey: crypto.KeyLike | crypto.SignKeyObjectInput | crypto.SignPrivateKeyInput | crypto.SignJsonWebKeyInput, format?: 'buffer', algorithm?: string
+): Buffer;
 export function sign(
     data: crypto.BinaryLike, privateKey: crypto.KeyLike | crypto.SignKeyObjectInput | crypto.SignPrivateKeyInput | crypto.SignJsonWebKeyInput,  format: 'hex' | 'base64' | 'buffer' | 'binary' = 'buffer', algorithm: string = 'sha256'
 ): string | Buffer {
@@ -212,8 +212,6 @@ export function cipherEncrypt(original: string | Buffer, key: crypto.CipherKey, 
     }
 }
 
-export function aesEncrypt(original: string | Buffer, key: crypto.CipherKey, iv: string, method: string, output: 'buffer'): Buffer | false;
-export function aesEncrypt(original: string | Buffer, key: crypto.CipherKey, iv?: string, method?: string, output?: 'base64'): string | false;
 /**
  * --- AES 加密 ---
  * @param original 原始字符串
@@ -222,6 +220,8 @@ export function aesEncrypt(original: string | Buffer, key: crypto.CipherKey, iv?
  * @param method 加密方法
  * @param output 输出类型
  */
+export function aesEncrypt(original: string | Buffer, key: crypto.CipherKey, iv: string, method: string, output: 'buffer'): Buffer | false;
+export function aesEncrypt(original: string | Buffer, key: crypto.CipherKey, iv?: string, method?: string, output?: 'base64'): string | false;
 export function aesEncrypt(original: string | Buffer, key: crypto.CipherKey, iv: string = '', method: string = AES_256_ECB, output: 'base64' | 'buffer' = 'base64'): string | Buffer | false {
     if (iv !== '') {
         method = method === AES_256_ECB ? AES_256_CTR : method;
@@ -229,14 +229,14 @@ export function aesEncrypt(original: string | Buffer, key: crypto.CipherKey, iv:
     return cipherEncrypt(original, key, iv, method, output);
 }
 
-export function gcmEncrypt(original: string | Buffer, key: crypto.CipherKey, output: 'buffer'): Buffer | false;
-export function gcmEncrypt(original: string | Buffer, key: crypto.CipherKey, output?: 'base64'): string | false;
 /**
  * --- AES GCM 托管加密 ---
  * @param original 原始字符串
  * @param key 密钥尽量 32 个英文字母和数字，不是 32 个系统会自动处理
  * @param output 输出类型
  */
+export function gcmEncrypt(original: string | Buffer, key: crypto.CipherKey, output: 'buffer'): Buffer | false;
+export function gcmEncrypt(original: string | Buffer, key: crypto.CipherKey, output?: 'base64'): string | false;
 export function gcmEncrypt(original: string | Buffer, key: crypto.CipherKey, output: 'base64' | 'buffer' = 'base64'): string | Buffer | false {
     const iv = lCore.random(12, lCore.RANDOM_LUNS);
     const rtn = cipherEncrypt(original, key, iv, AES_256_GCM, output);
@@ -246,8 +246,6 @@ export function gcmEncrypt(original: string | Buffer, key: crypto.CipherKey, out
     return typeof rtn === 'string' ? iv + rtn : Buffer.concat([Buffer.from(iv), rtn]);
 }
 
-export function sm4Encrypt(original: string | Buffer, key: crypto.CipherKey, iv: string, method: string, output: 'buffer'): Buffer | false;
-export function sm4Encrypt(original: string | Buffer, key: crypto.CipherKey, iv?: string, method?: string, output?: 'base64'): string | false;
 /**
  * --- SM4 加密 ---
  * @param original 原始字符串
@@ -255,6 +253,8 @@ export function sm4Encrypt(original: string | Buffer, key: crypto.CipherKey, iv?
  * @param iv 向量 16 个英文字母和数字
  * @param method 加密方法
  */
+export function sm4Encrypt(original: string | Buffer, key: crypto.CipherKey, iv: string, method: string, output: 'buffer'): Buffer | false;
+export function sm4Encrypt(original: string | Buffer, key: crypto.CipherKey, iv?: string, method?: string, output?: 'base64'): string | false;
 export function sm4Encrypt(original: string | Buffer, key: crypto.CipherKey, iv: string = '', method: string = SM4_ECB, output: 'base64' | 'buffer' = 'base64'): string | Buffer | false {
     if (iv !== '') {
         method = method === SM4_ECB ? SM4_CFB : method;
@@ -325,8 +325,6 @@ export function cipherDecrypt(encrypt: string | Buffer, key: crypto.CipherKey, i
     }
 }
 
-export function aesDecrypt(encrypt: string | Buffer, key: crypto.CipherKey, iv: string, method: string, output: 'buffer'): Buffer | false;
-export function aesDecrypt(encrypt: string | Buffer, key: crypto.CipherKey, iv?: string, method?: string, output?: 'binary'): string | false;
 /**
  * --- AES 解密 ---
  * @param encrypt 需解密的字符串
@@ -334,6 +332,8 @@ export function aesDecrypt(encrypt: string | Buffer, key: crypto.CipherKey, iv?:
  * @param iv 向量 16(CTR) 或 12(GCM) 个英文字母和数字
  * @param method 加密方法
  */
+export function aesDecrypt(encrypt: string | Buffer, key: crypto.CipherKey, iv: string, method: string, output: 'buffer'): Buffer | false;
+export function aesDecrypt(encrypt: string | Buffer, key: crypto.CipherKey, iv?: string, method?: string, output?: 'binary'): string | false;
 export function aesDecrypt(encrypt: string | Buffer, key: crypto.CipherKey, iv: string = '', method: string = AES_256_ECB, output: 'binary' | 'buffer' = 'binary'): string | Buffer | false {
     if (iv !== '') {
         method = method === AES_256_ECB ? AES_256_CTR : method;
@@ -341,8 +341,6 @@ export function aesDecrypt(encrypt: string | Buffer, key: crypto.CipherKey, iv: 
     return cipherDecrypt(encrypt, key, iv, method, output);
 }
 
-export function gcmDecrypt(encrypt: string | Buffer, key: crypto.CipherKey, output: 'buffer'): Buffer | false;
-export function gcmDecrypt(encrypt: string | Buffer, key: crypto.CipherKey, output?: 'binary'): string | false;
 /**
  * --- AES 解密 ---
  * @param encrypt 需解密的字符串
@@ -350,6 +348,8 @@ export function gcmDecrypt(encrypt: string | Buffer, key: crypto.CipherKey, outp
  * @param iv 向量 16 个英文字母和数字
  * @param method 加密方法
  */
+export function gcmDecrypt(encrypt: string | Buffer, key: crypto.CipherKey, output: 'buffer'): Buffer | false;
+export function gcmDecrypt(encrypt: string | Buffer, key: crypto.CipherKey, output?: 'binary'): string | false;
 export function gcmDecrypt(encrypt: string | Buffer, key: crypto.CipherKey, output: 'binary' | 'buffer' = 'binary'): string | Buffer | false {
     return cipherDecrypt(
         typeof encrypt === 'string' ? encrypt.slice(12) : encrypt.subarray(12),
@@ -359,8 +359,6 @@ export function gcmDecrypt(encrypt: string | Buffer, key: crypto.CipherKey, outp
     );
 }
 
-export function sm4Decrypt(encrypt: string | Buffer, key: crypto.CipherKey, iv: string, method: string, output: 'buffer'): Buffer | false;
-export function sm4Decrypt(encrypt: string | Buffer, key: crypto.CipherKey, iv?: string, method?: string, output?: 'binary'): string | false;
 /**
  * --- SM4 解密 ---
  * @param encrypt 需解密的字符串
@@ -368,6 +366,8 @@ export function sm4Decrypt(encrypt: string | Buffer, key: crypto.CipherKey, iv?:
  * @param iv 向量 16 个英文字母和数字
  * @param method 加密方法
  */
+export function sm4Decrypt(encrypt: string | Buffer, key: crypto.CipherKey, iv: string, method: string, output: 'buffer'): Buffer | false;
+export function sm4Decrypt(encrypt: string | Buffer, key: crypto.CipherKey, iv?: string, method?: string, output?: 'binary'): string | false;
 export function sm4Decrypt(encrypt: string | Buffer, key: crypto.CipherKey, iv: string = '', method: string = SM4_ECB, output: 'binary' | 'buffer' = 'binary'): string | Buffer | false {
     if (iv !== '') {
         method = method === SM4_ECB ? SM4_CFB : method;
@@ -375,14 +375,14 @@ export function sm4Decrypt(encrypt: string | Buffer, key: crypto.CipherKey, iv: 
     return cipherDecrypt(encrypt, key, iv, method, output);
 }
 
-export function hashHmac(algorithm: string, data: Buffer | string, key?: crypto.CipherKey, format?: 'hex' | 'base64'): string;
-export function hashHmac(algorithm: string, data: Buffer | string, key: crypto.CipherKey | undefined, format: 'buffer'): Buffer;
 /**
  * --- hash 或 hmac 加密 ---
  * @param algorithm 哈希方式
  * @param data 源数据
  * @param key 设置则采用 hmac 加密
  */
+export function hashHmac(algorithm: string, data: Buffer | string, key?: crypto.CipherKey, format?: 'hex' | 'base64'): string;
+export function hashHmac(algorithm: string, data: Buffer | string, key: crypto.CipherKey | undefined, format: 'buffer'): Buffer;
 export function hashHmac(algorithm: string, data: Buffer | string, key?: crypto.CipherKey, format: 'hex' | 'base64' | 'buffer' = 'hex'): string | Buffer {
     const cry = key ? crypto.createHmac(algorithm, key) : crypto.createHash(algorithm);
     cry.update(data);

@@ -657,7 +657,7 @@ export default class Mod {
     public set<T extends this, TK extends keyof T>(n: Record<TK, T[TK] | undefined>): void;
     public set<T extends this, TK extends keyof T>(n: TK, v: T[TK]): void;
     /**
-     * --- 设置一个/多个属性 ---
+     * --- 设置一个/多个属性，值为 underfind 则不会被更新 ---
      * @param n 字符串或键/值
      * @param v 可能是数字
      */
@@ -1362,7 +1362,7 @@ export default class Mod {
      * @param s ON 信息
      * @param type 类型
      * @param index 给本表增加 index 分表项
-     * @param pre 前缀
+     * @param pre 前缀，仅与主表的 pre 不同时传入
      */
     public join(f: string, s: kebab.Json = [], type: string = 'INNER', index: string = '', pre: string = ''): this {
         this._sql.join(f, s, type, index ? '_' + index : '', pre);
@@ -1374,6 +1374,7 @@ export default class Mod {
      * @param f 表名
      * @param s ON 信息
      * @param index 给本表增加 index 分表项
+     * @param pre 前缀，仅与主表的 pre 不同时传入
      */
     public leftJoin(f: string, s: kebab.Json, index: string = '', pre: string = ''): this {
         this._sql.leftJoin(f, s, index ? '_' + index : '', pre);
@@ -1385,6 +1386,7 @@ export default class Mod {
      * @param f 表名
      * @param s ON 信息
      * @param index 给本表增加 index 分表项
+     * @param pre 前缀，仅与主表的 pre 不同时传入
      */
     public rightJoin(f: string, s: kebab.Json, index: string = '', pre: string = ''): this {
         this._sql.rightJoin(f, s, index ? '_' + index : '', pre);
@@ -1396,6 +1398,7 @@ export default class Mod {
      * @param f 表名
      * @param s ON 信息
      * @param index 给本表增加 index 分表项
+     * @param pre 前缀，仅与主表的 pre 不同时传入
      */
     public innerJoin(f: string, s: kebab.Json, index: string = '', pre: string = ''): this {
         this._sql.innerJoin(f, s, index ? '_' + index : '', pre);
@@ -1407,6 +1410,7 @@ export default class Mod {
      * @param f 表名
      * @param s ON 信息
      * @param index 给本表增加 index 分表项
+     * @param pre 前缀，仅与主表的 pre 不同时传入
      */
     public fullJoin(f: string, s: kebab.Json, index: string = '', pre: string = ''): this {
         this._sql.fullJoin(f, s, index ? '_' + index : '', pre);
@@ -1418,6 +1422,7 @@ export default class Mod {
      * @param f 表名
      * @param s ON 信息
      * @param index 给本表增加 index 分表项
+     * @param pre 前缀，仅与主表的 pre 不同时传入
      */
     public crossJoin(f: string, s: kebab.Json, index: string = '', pre: string = ''): this {
         this._sql.crossJoin(f, s, index ? '_' + index : '', pre);

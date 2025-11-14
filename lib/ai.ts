@@ -123,6 +123,20 @@ export class Ai {
         }
     }
 
+    /** --- 创建向量 --- */
+    public async embedding(
+        body: openai.default.EmbeddingCreateParams
+    ): Promise<openai.APIPromise<openai.default.CreateEmbeddingResponse> | false> {
+        try {
+            return await this.link.embeddings.create(body);
+        }
+        catch (e: any) {
+            lCore.debug('[AI][EMBEDDING]', e);
+            lCore.log(this._ctr, `[AI][EMBEDDING] ${e.message}`, '-error');
+            return false;
+        }
+    }
+
 }
 
 /**

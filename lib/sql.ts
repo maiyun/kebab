@@ -512,7 +512,12 @@ export class Sql {
         let field = this.field(f, pre || this._pre, suf ? ('#' + suf) : '');
         if (pre) {
             // --- 处理不同 pre 的 as 前缀问题 ---
-            field = field.replace(new RegExp(`AS \`${pre}(.+?)\``), `AS \`${this._pre}$1\``);
+            if (this._service === ESERVICE.MYSQL) {
+                field = field.replace(new RegExp(`AS \`${pre}(.+?)\``), `AS \`${this._pre}$1\``);
+            }
+            else {
+                field = field.replace(new RegExp(`AS "${pre}"."(.+?)"`), `AS "${this._pre}"."$1"`);
+            }
         }
         let sql = ' ' + type + ' JOIN ' + field;
         if (Array.isArray(s) ? s.length : Object.keys(s).length) {
