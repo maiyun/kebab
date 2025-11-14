@@ -651,7 +651,8 @@ Result:<pre id="result">Nothing.</pre>` + this._getEnd();
             await mTest.removeByWhere(db, [
                 ['token', 'LIKE', 'test_%'],
             ], {
-                'pre': this._get['s'] === 'pgsql' ? 'm' : this,
+                'ctr': this,
+                'pre': this._get['s'] === 'pgsql' ? 'm' : undefined,
             });
             return this._location('test/mod-test' + (this._get['s'] === 'pgsql' ? '?s=pgsql' : ''));
         }
@@ -953,7 +954,7 @@ CREATE TABLE \`m_test_data_0\` (
             ]);
         }
         const res = await mTestData.insert(db, ['test_id', 'content', 'time_add'], datas, {
-            'pre': this,
+            'ctr': this,
             'index': '0',
         });
         echo.push('<br><br>Result: ' + JSON.stringify(res));

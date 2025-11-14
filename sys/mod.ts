@@ -76,6 +76,9 @@ export default class Mod {
     /** --- 若使用 _$key 并且有多个 unique 索引，这里指定 _$key 的索引名 --- */
     protected static _$index: string = '';
 
+    /** --- 前缀，顺序：选项前缀 -> 本前缀 -> 配置文件前缀 --- */
+    protected static _$pre: string | null = null;
+
     /** --- 要 update 的内容 --- */
     protected _updates: Record<string, boolean> = {};
 
@@ -129,7 +132,7 @@ export default class Mod {
         /** --- 导入数据库连接 --- */
         this._db = opt.db;
         /** --- 新建 sql 对象 --- */
-        this._sql = lSql.get(opt.pre ?? opt.ctr, {
+        this._sql = lSql.get(opt.pre ?? (this.constructor as any)._$pre ?? opt.ctr, {
             'service': this._db.getService() ?? lDb.ESERVICE.PGSQL,
         });
         if (opt.index) {
@@ -181,9 +184,13 @@ export default class Mod {
         db: lDb.Pool | lDb.Transaction,
         cs: string[] | Record<string, any>,
         vs?: any[] | any[][],
-        opt: { 'pre'?: sCtr.Ctr | string; 'index'?: string; } = {}
+        opt: {
+            'pre'?: string;
+            'ctr'?: sCtr.Ctr;
+            'index'?: string;
+        } = {}
     ): Promise<boolean | null | false> {
-        const sq = lSql.get(opt.pre, {
+        const sq = lSql.get(opt.pre ?? (this.constructor as any)._$pre ?? opt.ctr, {
             'service': db.getService() ?? lDb.ESERVICE.PGSQL,
         });
         if (!vs) {
@@ -192,7 +199,7 @@ export default class Mod {
             sq.values(cs);
             const r = await db.execute(sq.getSql(), sq.getData());
             if (r.packet === null) {
-                lCore.log(opt.pre instanceof sCtr.Ctr ? opt.pre : {}, '[insert, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1), '-error');
+                lCore.log(opt.ctr ?? {}, '[MOD][insert] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1), '-error');
                 return false;
             }
             return r.packet.affected ? true : null;
@@ -212,7 +219,7 @@ export default class Mod {
             sq.values(cs, vs.slice(i * line, (i + 1) * line));
             const r = await db.execute(sq.getSql(), sq.getData());
             if (r.packet === null) {
-                lCore.log(opt.pre instanceof sCtr.Ctr ? opt.pre : {}, '[insert, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1), '-error');
+                lCore.log(opt.ctr ?? {}, '[MOD][insert] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1), '-error');
                 return false;
             }
             if (r.packet.affected) {
@@ -234,9 +241,13 @@ export default class Mod {
         db: lDb.Pool | lDb.Transaction,
         cs: string[] | Record<string, any>,
         vs?: any[] | any[][],
-        opt: { 'pre'?: sCtr.Ctr | string; 'index'?: string; } = {}
+        opt: {
+            'pre'?: string;
+            'ctr'?: sCtr.Ctr;
+            'index'?: string;
+        } = {}
     ): string {
-        const sq = lSql.get(opt.pre, {
+        const sq = lSql.get(opt.pre ?? (this.constructor as any)._$pre ?? opt.ctr, {
             'service': db.getService() ?? lDb.ESERVICE.PGSQL,
         });
         sq.insert(this._$table + (opt.index ? ('_' + opt.index) : '')).values(cs, vs);
@@ -254,7 +265,8 @@ export default class Mod {
         where: string | kebab.Json,
         opt: {
             'raw'?: boolean;
-            'pre'?: sCtr.Ctr | string;
+            'pre'?: string;
+            'ctr'?: sCtr.Ctr;
             'index'?: string | string[];
             'by'?: [string | string[], 'DESC' | 'ASC'];
             'limit'?: [number, number?];
@@ -263,7 +275,7 @@ export default class Mod {
         const indexs = opt.index ? (typeof opt.index === 'string' ? [opt.index] : [...new Set(opt.index)]) : [''];
         let ar = 0;
         for (const index of indexs) {
-            const sq = lSql.get(opt.pre, {
+            const sq = lSql.get(opt.pre ?? (this.constructor as any)._$pre ?? opt.ctr, {
                 'service': db.getService() ?? lDb.ESERVICE.PGSQL,
             });
             sq.delete(this._$table + (index ? ('_' + index) : '')).where(where);
@@ -275,7 +287,7 @@ export default class Mod {
             }
             const r = await db.execute(sq.getSql(), sq.getData());
             if (r.packet === null) {
-                lCore.log(opt.pre instanceof sCtr.Ctr ? opt.pre : {}, '[MOD][removeByWhere] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+                lCore.log(opt.ctr ?? {}, '[MOD][removeByWhere] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
                 return false;
             }
             if (r.packet.affected) {
@@ -296,13 +308,14 @@ export default class Mod {
         where: string | kebab.Json,
         opt: {
             'raw'?: boolean;
-            'pre'?: sCtr.Ctr | string;
+            'pre'?: string;
+            'ctr'?: sCtr.Ctr;
             'index'?: string;
             'by'?: [string | string[], 'DESC' | 'ASC'];
             'limit'?: [number, number?];
         } = {}
     ): lSql.Sql {
-        const sq = lSql.get(opt.pre, {
+        const sq = lSql.get(opt.pre ?? (this.constructor as any)._$pre ?? opt.ctr, {
             'service': db.getService() ?? lDb.ESERVICE.PGSQL,
         });
         sq.delete(this._$table + (opt.index ? ('_' + opt.index) : '')).where(where);
@@ -328,7 +341,8 @@ export default class Mod {
         where: string | kebab.Json,
         opt: {
             'raw'?: boolean;
-            'pre'?: sCtr.Ctr | string;
+            'pre'?: string;
+            'ctr'?: sCtr.Ctr;
             'index'?: string | string[];
             'by'?: [string | string[], 'DESC' | 'ASC'];
             'limit'?: [number, number?];
@@ -337,7 +351,7 @@ export default class Mod {
         const indexs = opt.index ? (typeof opt.index === 'string' ? [opt.index] : [...new Set(opt.index)]) : [''];
         let ar = 0;
         for (const index of indexs) {
-            const sq = lSql.get(opt.pre, {
+            const sq = lSql.get(opt.pre ?? (this.constructor as any)._$pre ?? opt.ctr, {
                 'service': db.getService() ?? lDb.ESERVICE.PGSQL,
             });
             sq.update(this._$table + (index ? ('_' + index) : ''), data).where(where);
@@ -349,7 +363,7 @@ export default class Mod {
             }
             const r = await db.execute(sq.getSql(), sq.getData());
             if (r.packet === null) {
-                lCore.log(opt.pre instanceof sCtr.Ctr ? opt.pre : {}, '[MOD][updateByWhere] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+                lCore.log(opt.ctr ?? {}, '[MOD][updateByWhere] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
                 return false;
             }
             if (r.packet.affected) {
@@ -372,13 +386,14 @@ export default class Mod {
         where: string | kebab.Json,
         opt: {
             'raw'?: boolean;
-            'pre'?: sCtr.Ctr | string;
+            'pre'?: string;
+            'ctr'?: sCtr.Ctr;
             'index'?: string;
             'by'?: [string | string[], 'DESC' | 'ASC'];
             'limit'?: [number, number?];
         } = {}
     ): lSql.Sql {
-        const sq = lSql.get(opt.pre, {
+        const sq = lSql.get(opt.pre ?? (this.constructor as any)._$pre ?? opt.ctr, {
             'service': db.getService() ?? lDb.ESERVICE.PGSQL,
         });
         sq.update(this._$table + (opt.index ? ('_' + opt.index) : ''), data).where(where);
@@ -401,7 +416,8 @@ export default class Mod {
         db: lDb.Pool | lDb.Transaction,
         c: string | string[],
         opt: {
-            'ctr'?: sCtr.Ctr; 'pre'?: string;
+            'ctr'?: sCtr.Ctr;
+            'pre'?: string;
             'index'?: string | string[]; 'alias'?: string;
             'contain'?: {
                 'key': string;
@@ -622,7 +638,7 @@ export default class Mod {
         where: string | kebab.Json = '',
         opt: { 'ctr'?: sCtr.Ctr; 'raw'?: boolean; 'pre'?: string; 'index'?: string; } = {}
     ): Promise<any[] | false> {
-        const sq = lSql.get(opt.pre ?? opt.ctr, {
+        const sq = lSql.get(opt.pre ?? (this.constructor as any)._$pre ?? opt.ctr, {
             'service': db.getService() ?? lDb.ESERVICE.PGSQL,
         });
         sq.select(this._$primary, this._$table + (opt.index ? ('_' + opt.index) : '')).where(where);
