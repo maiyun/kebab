@@ -44,9 +44,9 @@ export class Vector {
         'collection': string;
         /** --- 查询的向量 --- */
         'data': number[];
-        /** --- 过滤器，如 word_count > 0 --- */
+        /** --- 过滤器，如 word_count > 0 and book_id in [1, 2, 3] --- */
         'filter'?: string;
-        /** --- 返回的结果数量，默认为 20 --- */
+        /** --- 返回的结果数量，默认为 2 --- */
         'limit'?: number;
         /** --- 计算两个向量相似度的度量，默认 L2 --- */
         'metric'?: 'L2' | 'IP' | 'COSINE';
@@ -62,9 +62,55 @@ export class Vector {
                 'collection_name': data.collection,
                 'data': data.data,
                 'filter': data.filter,
-                'limit': data.limit ?? 20,
+                'limit': data.limit ?? 2,
                 'metric_type': data.metric ?? 'L2',
                 'output_fields': data.fields,
+            });
+            return res;
+        }
+        catch {
+            return false;
+        }
+    }
+
+    /** --- 插入数据 --- */
+    public async insert(data: {
+        /** --- 表名 --- */
+        'collection': string;
+        /** --- 要插入的数据 --- */
+        'data': milvus.RowData[];
+    }): Promise<milvus.MutationResult | false> {
+        const link = await this._getConnection();
+        if (!link) {
+            return false;
+        }
+        try {
+            const res = await link.insert({
+                'collection_name': data.collection,
+                'data': data.data,
+            });
+            return res;
+        }
+        catch {
+            return false;
+        }
+    }
+
+    /** --- 删除数据 --- */
+    public async delete(data: {
+        /** --- 表名 --- */
+        'collection': string;
+        /** --- 过滤器，如 word_count > 0 and book_id in [1, 2, 3] --- */
+        'filter': string;
+    }): Promise<milvus.MutationResult | false> {
+        const link = await this._getConnection();
+        if (!link) {
+            return false;
+        }
+        try {
+            const res = await link.delete({
+                'collection_name': data.collection,
+                'filter': data.filter,
             });
             return res;
         }
