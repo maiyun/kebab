@@ -46,7 +46,7 @@ export class Vector {
         'data': number[];
         /** --- 过滤器，如 word_count > 0 and book_id in [1, 2, 3] --- */
         'filter'?: string;
-        /** --- 返回的结果数量，默认为 2 --- */
+        /** --- 返回的结果数量，默认为 3 --- */
         'limit'?: number;
         /** --- 计算两个向量相似度的度量，默认 L2 --- */
         'metric'?: 'L2' | 'IP' | 'COSINE';
@@ -62,7 +62,7 @@ export class Vector {
                 'collection_name': data.collection,
                 'data': data.data,
                 'filter': data.filter,
-                'limit': data.limit ?? 2,
+                'limit': data.limit ?? 3,
                 'metric_type': data.metric ?? 'L2',
                 'output_fields': data.fields,
             });
