@@ -68,7 +68,9 @@ export class Vector {
             });
             return res;
         }
-        catch {
+        catch (e: any) {
+            lCore.log({}, '[VECTOR][seach][error] ' + e.message, '-error');
+            lCore.debug('[VECTOR][seach]', e.code, e.message);
             return false;
         }
     }
@@ -91,7 +93,9 @@ export class Vector {
             });
             return res;
         }
-        catch {
+        catch (e: any) {
+            lCore.log({}, '[VECTOR][insert][error] ' + e.message, '-error');
+            lCore.debug('[VECTOR][insert]', e.code, e.message);
             return false;
         }
     }
@@ -114,7 +118,9 @@ export class Vector {
             });
             return res;
         }
-        catch {
+        catch (e: any) {
+            lCore.log({}, '[VECTOR][delete][error] ' + e.message, '-error');
+            lCore.debug('[VECTOR][delete]', e.code, e.message);
             return false;
         }
     }

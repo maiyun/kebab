@@ -80,7 +80,7 @@ async function checkConnection(): Promise<void> {
                     return lSql.format(item.sql, item.values);
                 });
                 const msg = `[DB][checkConnection] There is a transactional connection[${i}] that is not closed, last sql: ${newarr.join(', ')}.`;
-                lCore.display(msg);
+                lCore.debug(msg);
                 lCore.log({}, msg, '-error');
                 await connection.rollback();
             }
