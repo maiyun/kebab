@@ -5,6 +5,7 @@
  */
 import * as openai from 'openai';
 import * as streaming from 'openai/streaming';
+import * as kebab from '#kebab/index.js';
 import * as lCore from '#kebab/lib/core.js';
 import * as sCtr from '#kebab/sys/ctr.js';
 
@@ -50,12 +51,19 @@ export class Ai {
     /** --- openai 原生对象，建议只读 --- */
     public readonly link: openai.OpenAI;
 
-    private readonly _ctr: sCtr.Ctr;
+    private readonly _ctr?: sCtr.Ctr;
 
-    public constructor(ctr: sCtr.Ctr, opt: IOptions) {
-        this._ctr = ctr;
-        const config = ctr.getPrototype('_config');
-        const secretKey = opt.secretKey ?? config.ai?.[ESERVICE[opt.service]]?.skey ?? '';
+    public constructor(ctrEtc: sCtr.Ctr | kebab.IConfigAi, opt: IOptions) {
+        let configAi: kebab.IConfigAi | null = null;
+        if (ctrEtc instanceof sCtr.Ctr) {
+            this._ctr = ctrEtc;
+            const config = ctrEtc.getPrototype('_config');
+            configAi = config.ai[ESERVICE[opt.service]];
+        }
+        else {
+            configAi = ctrEtc;
+        }
+        const secretKey = opt.secretKey ?? configAi.skey ?? '';
         let endpoint: string | undefined;
         switch (opt.service) {
             case ESERVICE.ALICN: {
@@ -67,15 +75,15 @@ export class Ai {
                 break;
             }
             case ESERVICE.AZURE: {
-                endpoint = opt.endpoint ?? config.ai?.[ESERVICE[opt.service]]?.endpoint ?? '';
+                endpoint = opt.endpoint ?? configAi.endpoint ?? '';
                 break;
             }
             case ESERVICE.AZURE2: {
-                endpoint = opt.endpoint ?? config.ai?.[ESERVICE[opt.service]]?.endpoint ?? '';
+                endpoint = opt.endpoint ?? configAi.endpoint ?? '';
                 break;
             }
             case ESERVICE.AZURE3: {
-                endpoint = opt.endpoint ?? config.ai?.[ESERVICE[opt.service]]?.endpoint ?? '';
+                endpoint = opt.endpoint ?? configAi.endpoint ?? '';
                 break;
             }
             default: {
@@ -118,7 +126,7 @@ export class Ai {
         }
         catch (e: any) {
             lCore.debug('[AI][CHAT]', e);
-            lCore.log(this._ctr, `[AI][CHAT] ${e.message}`, '-error');
+            lCore.log(this._ctr ?? {}, `[AI][CHAT] ${e.message}`, '-error');
             return false;
         }
     }
@@ -132,7 +140,7 @@ export class Ai {
         }
         catch (e: any) {
             lCore.debug('[AI][EMBEDDING]', e);
-            lCore.log(this._ctr, `[AI][EMBEDDING] ${e.message}`, '-error');
+            lCore.log(this._ctr ?? {}, `[AI][EMBEDDING] ${e.message}`, '-error');
             return false;
         }
     }
@@ -143,6 +151,6 @@ export class Ai {
  * --- 创建一个 AI 对象 ---
  * @param opt 选项
  */
-export function get(ctr: sCtr.Ctr, opt: IOptions): Ai {
-    return new Ai(ctr, opt);
+export function get(ctrEtc: sCtr.Ctr | kebab.IConfigAi, opt: IOptions): Ai {
+    return new Ai(ctrEtc, opt);
 }
