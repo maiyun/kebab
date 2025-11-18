@@ -10,23 +10,37 @@ export class Reader {
         this._buffer = buffer;
     }
 
-    /** --- 读取一个无符号8位整数, BYTE --- */
+    /** --- 读取一个无符号 8 位整数, BYTE --- */
     public readUInt8(): number {
         const value = this._buffer.readUInt8(this._offset);
         this._offset += 1;
         return value;
     }
 
-    /** --- 读取一个无符号16位整数（大端模式），WORD --- */
+    /** --- 读取一个无符号 16 位整数（大端模式），WORD --- */
     public readUInt16BE(): number {
         const value = this._buffer.readUInt16BE(this._offset);
         this._offset += 2;
         return value;
     }
 
-    /** --- 读取一个无符号32位整数（大端模式）, DWORD --- */
+    /** --- 读取一个无符号 16 位整数（小端模式） --- */
+    public readUInt16LE(): number {
+        const value = this._buffer.readUInt16LE(this._offset);
+        this._offset += 2;
+        return value;
+    }
+
+    /** --- 读取一个无符号 32 位整数（大端模式）, DWORD --- */
     public readUInt32BE(): number {
         const value = this._buffer.readUInt32BE(this._offset);
+        this._offset += 4;
+        return value;
+    }
+
+    /** --- 读取一个无符号 32 位整数（小端模式） --- */
+    public readUInt32LE(): number {
+        const value = this._buffer.readUInt32LE(this._offset);
         this._offset += 4;
         return value;
     }
@@ -105,9 +119,9 @@ export class Writer {
     /** --- [每字节 2 数字] 写入一个 BCD 编码的字符串（仅支持数字） --- */
     public writeBCDString(value: string): void {
         for (let i = 0; i < value.length; i += 2) {
-            const high = parseInt(value[i], 10); // --- 取十位 ---
+            const high = parseInt(value[i], 10);    // --- 取十位 ---
             const low = parseInt(value[i + 1], 10); // --- 取个位 ---
-            const byte = (high << 4) | low; // --- 拼接为一个字节 ---
+            const byte = (high << 4) | low;         // --- 拼接为一个字节 ---
             this.writeUInt8(byte);
         }
     }
@@ -139,7 +153,7 @@ export function getReader(buffer: Buffer): Reader {
 
 /**
  * --- Buffer Writer 对象 ---
- * @param buffer 要读取的 buffer
+ * @param size 缓冲区大小
  */
 export function getWriter(size: number): Writer {
     return new Writer(size);

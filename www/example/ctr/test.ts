@@ -1231,7 +1231,7 @@ for (let i = 0; i < 30000; ++i) {
         const echo: string[] = [];
         echo.push('<table style="width: 100%;">');
         if (list) {
-            echo.push('<tr><th>TIME</th><th>UNIX</th><th>URL</th><th>COOKIE</th><th>SESSION</th><th>JWT</th><th>USER_AGENT</th><th>REALIP</th><th>CLIENTIP</th><th>MESSAGE</th></tr>');
+            echo.push('<tr><th>TIME</th><th>UNIX</th><th>URL</th><th>COOKIE</th><th>SESSION</th><th>JWT</th><th>USER_AGENT</th><th>REALIP</th><th>CLIENTIP</th><th>OS</th><th>PROCESS</th><th>MESSAGE</th></tr>');
             for (const row of list) {
                 echo.push('<tr>');
                 for (const item of row) {
@@ -3507,7 +3507,7 @@ rtn.push(reader.readBCDString());</pre>${JSON.stringify(rtn)}`);
         // --- 注意，这个只是演示，你实际需要在 ind 目录中创建计划任务 ---
         // --- 并用 --ind 单线程模式运行 ---
         const echo: string[] = [];
-        let rtn = await lCron.regular({
+        const rtn = await lCron.regular({
             'name': 'test',
             'rule': '40 * * * *',
             'callback': (date, immediate) => {

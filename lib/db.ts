@@ -10,7 +10,7 @@
 import * as kebab from '#kebab/index.js';
 import * as sCtr from '#kebab/sys/ctr.js';
 import { Connection } from './db/conn.js';
-import { Pool } from './db/pool.js';
+import { Pool, IConnectionInfo, getConnectionList } from './db/pool.js';
 import { Transaction } from './db/tran.js';
 
 /** --- 服务商定义 --- */
@@ -61,7 +61,9 @@ export interface IPacket {
 
 /**
  * --- 获取 Db Pool 对象 ---
- * @param etc 配置信息可留空
+ * @param ctrEtc 控制器对象或数据库配置信息
+ * @param opt 选项
+ * @returns Db Pool 对象
  */
 export function get(ctrEtc: sCtr.Ctr | kebab.IConfigDb, opt: {
     /** --- 服务商，默认 PGSQL --- */
@@ -80,4 +82,4 @@ export function get(ctrEtc: sCtr.Ctr | kebab.IConfigDb, opt: {
     });
 }
 
-export { Connection, Pool, Transaction };
+export { Connection, Pool, IConnectionInfo, getConnectionList, Transaction };

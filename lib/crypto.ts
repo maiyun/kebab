@@ -72,7 +72,7 @@ export function sign(
     data: crypto.BinaryLike, privateKey: crypto.KeyLike | crypto.SignKeyObjectInput | crypto.SignPrivateKeyInput | crypto.SignJsonWebKeyInput, format?: 'buffer', algorithm?: string
 ): Buffer;
 export function sign(
-    data: crypto.BinaryLike, privateKey: crypto.KeyLike | crypto.SignKeyObjectInput | crypto.SignPrivateKeyInput | crypto.SignJsonWebKeyInput,  format: 'hex' | 'base64' | 'buffer' | 'binary' = 'buffer', algorithm: string = 'sha256'
+    data: crypto.BinaryLike, privateKey: crypto.KeyLike | crypto.SignKeyObjectInput | crypto.SignPrivateKeyInput | crypto.SignJsonWebKeyInput, format: 'hex' | 'base64' | 'buffer' | 'binary' = 'buffer', algorithm: string = 'sha256'
 ): string | Buffer {
     const sign = crypto.createSign(algorithm);
     sign.update(data);
@@ -149,9 +149,11 @@ export const AES_256_CTR = 'aes-256-ctr';
 /** --- 非流直接使用 GCM --- */
 export const AES_256_GCM = 'aes-256-gcm';
 
-export const SM4_ECB = 'sm4-ecb';       // --- SM4 如果未设置 iv，则默认这个 ---
+/** --- SM4 如果未设置 iv，则默认这个 --- */
+export const SM4_ECB = 'sm4-ecb';
 export const SM4_CBC = 'sm4-cbc';
-export const SM4_CFB = 'sm4-cfb';       // --- SM4 一般用这个，设置 iv，自动就切换成了这个 ---
+/** --- SM4 一般用这个，设置 iv，自动就切换成了这个 --- */
+export const SM4_CFB = 'sm4-cfb';
 
 /**
  * --- cipher 加密，强烈不建议使用 AES_256_ECB ---
@@ -159,6 +161,7 @@ export const SM4_CFB = 'sm4-cfb';       // --- SM4 一般用这个，设置 iv�
  * @param key 密钥 32 个英文字母和数字
  * @param iv 向量 16(CTR) 或 12(GCM) 个英文字母和数字
  * @param method 加密方法
+ * @param output 输出类型
  */
 export function cipherEncrypt(original: string | Buffer, key: crypto.CipherKey, iv: string = '', method: string = AES_256_ECB, output: 'base64' | 'buffer' = 'base64'): string | Buffer | false {
     try {
@@ -268,6 +271,7 @@ export function sm4Encrypt(original: string | Buffer, key: crypto.CipherKey, iv:
  * @param key 密钥 32 个英文字母和数字
  * @param iv 向量 16(CTR) 或 12(GCM) 个英文字母和数字
  * @param method 加密方法
+ * @param output 输出类型
  */
 export function cipherDecrypt(encrypt: string | Buffer, key: crypto.CipherKey, iv: string = '', method: string = AES_256_ECB, output: 'binary' | 'buffer' = 'binary'): string | Buffer | false {
     try {
@@ -394,14 +398,14 @@ export function hashHmac(algorithm: string, data: Buffer | string, key?: crypto.
     }
 }
 
-export function hashHmacFile(algorithm: string, path: string, key?: crypto.CipherKey, encoding?: 'hex' | 'base64' | 'base64url'): Promise<string | false>;
-export function hashHmacFile(algorithm: string, path: string, key: crypto.CipherKey, encoding: 'buffer'): Promise<Buffer | false>;
 /**
  * --- hash 或 hmac 加密文件 ---
  * @param algorithm 加密方式，如 md5、sha256、sm3 等
  * @param path 文件路径
  * @param key 设置则采用 hmac 加密
  */
+export function hashHmacFile(algorithm: string, path: string, key?: crypto.CipherKey, encoding?: 'hex' | 'base64' | 'base64url'): Promise<string | false>;
+export function hashHmacFile(algorithm: string, path: string, key: crypto.CipherKey, encoding: 'buffer'): Promise<Buffer | false>;
 export function hashHmacFile(algorithm: string, path: string, key?: crypto.CipherKey, encoding: 'hex' | 'base64' | 'base64url' | 'buffer' = 'hex'): Promise<string | Buffer | false> {
     return new Promise(function(resolve) {
         const cry = key ? crypto.createHmac(algorithm, key) : crypto.createHash(algorithm);

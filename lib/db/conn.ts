@@ -313,7 +313,7 @@ export class Connection {
         }
     }
 
-    // --- 事务，只能在独占连接中使用，pool 创建事务返回独占连接，commit 或 rollback 释放连接回池 ---
+    // --- 事务，只能在独占连接中使用，pool 创建事务返回独占连接，commit 或 rollback 释放连接回连接池 ---
     public async beginTransaction(): Promise<boolean> {
         if (this._using) {
             try {

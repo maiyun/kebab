@@ -87,15 +87,24 @@ export function rand(min: number, max: number, prec: number = 0): number {
 }
 
 // --- 随机 ---
+/** --- 数字字符集 --- */
 export const RANDOM_N = '0123456789';
+/** --- 大写字母字符集 --- */
 export const RANDOM_U = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+/** --- 小写字母字符集 --- */
 export const RANDOM_L = 'abcdefghijklmnopqrstuvwxyz';
 
+/** --- 大写字母 + 数字字符集 --- */
 export const RANDOM_UN = RANDOM_U + RANDOM_N;
+/** --- 小写字母 + 数字字符集 --- */
 export const RANDOM_LN = RANDOM_L + RANDOM_N;
+/** --- 小写字母 + 大写字母字符集 --- */
 export const RANDOM_LU = RANDOM_L + RANDOM_U;
+/** --- 小写字母 + 大写字母 + 数字字符集 --- */
 export const RANDOM_LUN = RANDOM_L + RANDOM_U + RANDOM_N;
+/** --- 验证码字符集 --- */
 export const RANDOM_V = 'ACEFGHJKLMNPRSTWXY34567';
+/** --- 小写字母 + 大写字母 + 数字字符集 + 特殊字符字符集 --- */
 export const RANDOM_LUNS = RANDOM_LUN + '()`~!@#$%^&*-+=_|{}[]:;"<>,.?/]"';
 
 /**
@@ -123,7 +132,7 @@ export function random(length: number = 8, source: string = RANDOM_LN, block: st
     return temp;
 }
 
-export const CONVERT62_CHAR = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+const CONVERT62_CHAR = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
 /**
  * --- 将 10 进制转换为 62 进制 ---
@@ -274,13 +283,18 @@ export function checkType(val: any, type: any, tree: string = 'root'): string {
 /**
  * --- 获取 MUID ---
  * @param ctr Ctr 对象
- * @param opt len: 8 - 32, 默认 8; bin: 是否含有大小写, 默认 true; key: 多样性混合, 默认空; insert: 插入指定字符, 最好不超过 2 字符，默认空，num: 是否含有数字，默认 true
+ * @param opt 参数
  */
 export function muid(ctr: sCtr.Ctr, opt: {
+    /** --- 8 - 32, 默认 8 --- */
     'len'?: number;
+    /** --- 是否含有大小写, 默认 true --- */
     'bin'?: boolean;
+    /** --- 多样性混合, 默认空 --- */
     'key'?: string;
+    /** --- 插入指定字符, 最好不超过 2 字符，默认空 --- */
     'insert'?: string;
+    /** --- 是否含有数字, 默认 true --- */
     'num'?: boolean;
 } = {}): string {
     const len = opt.len ?? 8;
@@ -335,7 +349,9 @@ export function ip(
     }
 }
 
+/** --- 使用 X-Forwarded-For 的 CDN 厂商 --- */
 export const REAL_IP_X = 'x-forwarded-for';
+/** --- 使用的是 Cloudflare --- */
 export const REAL_IP_CF = 'cf-connecting-ip';
 
 /**
@@ -390,7 +406,7 @@ export function objectSort<T extends Record<string, any>>(o: T): T {
  * @param obj 要清除的对象
  * @patam deep 也将子项都清空，如果子项有独立引用的话也要清空的话则要设置为 true
  */
-export function emptyObject(obj: Record<string, kebab.Json>, deep: boolean = false): void {
+export function emptyObject(obj: Record<string, any>, deep: boolean = false): void {
     const keys = Object.keys(obj);
     for (const key of keys) {
         if (deep) {
@@ -544,12 +560,12 @@ export async function sendRestart(hosts?: string[] | 'config'): Promise<string[]
 export const global: Record<string, any> = {};
 
 /**
- * --- 设置跨线程/跨内网服务器的全局变量 ---
+ * --- 设置跨线程/指定的局域网主机的全局变量 ---
  * @param key 变量名
  * @param data 变量值
  * @param hosts 局域网列表
  */
-export async function setGlobal(key: string, data: kebab.Json, hosts?: string[] | 'config'): Promise<string[]> {
+export async function setGlobal(key: string, data: any, hosts?: string[] | 'config'): Promise<string[]> {
     if (!hosts) {
         // --- 本地模式 ---
         process.send!({
@@ -597,7 +613,7 @@ export async function removeGlobal(key: string, hosts?: string[]): Promise<strin
 /**
  * --- 上传并覆盖代码文件，config.json、kebab.json、.js.map、.ts, .gitignore 不会被覆盖和新建 ---
  * @param sourcePath zip 文件
- * @param path 要覆盖到的路径，无所谓是否 / 开头 / 结尾，是对方 kebab 的根据路开始算起
+ * @param path 要更新的目标路径，无所谓是否 / 开头 / 结尾，是对方 kebab 的根据路径开始算起
  * @param hosts 局域网多机部署，不设置默认本机部署
  * @param config 是否自动更新 config 的 set.staticVer 为最新，默认更新
  * @param strict 严格模式，只有存在的文件才会被覆盖，不存在则中途直接报错，默认为 true
@@ -655,7 +671,7 @@ export interface ILogOptions {
     'urlFull'?: string;
     'hostname'?: string;
     'req'?: http2.Http2ServerRequest | http.IncomingMessage | null;
-    'get'?: Record<string, kebab.Json>;
+    'get'?: Record<string, any>;
     'cookie'?: Record<string, string>;
     'jwt'?: Record<string, any>;
     'session'?: Record<string, any>;
@@ -664,9 +680,9 @@ export interface ILogOptions {
 
 /**
  * --- 写入文件日志 ---
+ * @param opt 选项
  * @param msg 自定义内容
  * @param fend 文件名追加
- * @param opt 选项
  */
 export function log(opt: sCtr.Ctr | ILogOptions, msg: string, fend: string = ''): void {
     (async () => {
@@ -915,7 +931,7 @@ export function debug(message?: any, ...optionalParams: any[]): void {
  */
 export function display(message?: any, ...optionalParams: any[]): void {
     // eslint-disable-next-line no-console
-    console.log(message, ...optionalParams);
+    console.log(`KE-DISPLAY ${lTime.format(null, 'Y-m-d H:i:s')}`, message, ...optionalParams);
 }
 
 /**
