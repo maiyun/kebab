@@ -160,7 +160,7 @@ export class Vector {
 
 /**
  * --- 创建一个 Vector 对象 ---
- * @param opt 选项
+ * @param ctrEtc 控制器或配置信息
  */
 export function get(ctrEtc: sCtr.Ctr | kebab.IConfigVector): Vector {
     if (ctrEtc instanceof sCtr.Ctr) {

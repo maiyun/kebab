@@ -217,7 +217,7 @@ export const REGEXP_DOMAIN = /^.+?\.((?![0-9]).)+$/i;
 
 /**
  * --- 判断是否是域名 ---
- * @param string $domain
+ * @param domain 域名
  * @return bool
  */
 export function isDomain(domain: string): boolean {
@@ -469,7 +469,7 @@ export function getFilename(path: string): string {
 
 /**
  * --- 将普通的返回 JSON 对象序列化为字符串 ---
- * @param o 返回 JSON 对象
+ * @param rtn 返回 JSON 对象
  */
 export function stringifyResult(rtn: kebab.Json): string {
     if (Array.isArray(rtn)) {
@@ -593,7 +593,8 @@ function trimJsonRecursion(json: kebab.Json): kebab.Json {
     }
 }
 
-type TFalsy = false | '' | 0 | null | undefined | typeof NaN;
+/** --- 虚假值类型 --- */
+export type TFalsy = false | '' | 0 | null | undefined | typeof NaN;
 
 /**
  * --- 判断一个值是否是虚假的（为 null/undefined/空字符串/false/0） ---

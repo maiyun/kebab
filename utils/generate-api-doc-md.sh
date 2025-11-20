@@ -6,7 +6,7 @@ cd $SCRIPT_ROOT/..
 API_DOC_OUTPUT_DIR=doc/sc/api
 
 rm -rf $API_DOC_OUTPUT_DIR
-rm doc/sc/kebab-rag.md
+rm -f doc/sc/kebab-rag.md
 
 # check if any files in src is not stashed in git
 if [[ -n $(git status --porcelain "./index.ts" "./main.ts" "./lib" "./sys") ]]; then
@@ -25,7 +25,8 @@ npx typedoc \
   --hostedBaseUrl "https://maiyunnet.github.io/kebab/" \
   --plugin typedoc-plugin-markdown \
   --router module \
-  --sourceLinkTemplate "https://github.com/maiyunnet/kebab/blob/master/{path}#L{line}"
+  --sourceLinkTemplate "https://github.com/maiyunnet/kebab/blob/master/{path}#L{line}" \
+  --exclude "**/*.d.ts" "./sys/child.ts" "./sys/cmd.ts" "./sys/master.ts"
 
 # --- 去除前导尾随 ---
 

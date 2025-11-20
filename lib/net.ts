@@ -74,7 +74,7 @@ export async function post(
  * --- 发起 JSON 请求 ---
  * @param u 网址
  * @param data 数据
- * @param opt选项
+ * @param opt 选项
  */
 export async function postJson(
     u: string,
@@ -88,9 +88,9 @@ export async function postJson(
 
 /**
  * --- 发起 JSON 请求并解析 JSON 响应 ---
- * @param url 网址
+ * @param u 网址
  * @param data 数据
- * @param init 选项
+ * @param opt 选项
  * @returns JSON 数据，失败时返回 null
  */
 export async function postJsonResponseJson(

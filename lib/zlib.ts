@@ -102,8 +102,7 @@ export function createCompress(types: string, options: zlib.ZlibOptions = {}): I
 
 /**
  * --- 根据字符串创建解压类型 ---
- * @param types 用 , 间隔的字符串，如 gzip,deflate
- * @param options 选项
+ * @param types 用 , 间隔的字符串，如 gzip, deflate
  */
 export function createDecompress(types: string): ICompress | null {
     const type = getTypeByTypes(types);

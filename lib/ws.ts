@@ -543,7 +543,6 @@ export async function rproxy(
  * @param ctr 当前控制器
  * @param host 反代真实请求地址
  * @param port 反代真实请求端口
- * @param opt 参数
  */
 export async function rsocket(
     ctr: sCtr.Ctr,

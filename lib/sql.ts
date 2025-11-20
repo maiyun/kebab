@@ -482,7 +482,7 @@ export class Sql {
 
     /**
      * --- 联查另一个 sql 对象 ---
-     * @param sql sql 对象
+     * @param lsql sql 对象
      * @param type 类型
      */
     public union(lsql: Sql, type: string = ''): this {
@@ -494,7 +494,7 @@ export class Sql {
 
     /**
      * --- 所有联查另一个 sql 对象 ---
-     * @param sql sql 对象
+     * @param lsql sql 对象
      */
     public unionAll(lsql: Sql): this {
         return this.union(lsql, 'ALL');

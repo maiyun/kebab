@@ -73,10 +73,9 @@ export class Kv {
 
     /**
      * --- 替换一个存在的值 ---
-     * @param key
-     * @param val
+     * @param key 键
+     * @param val 值
      * @param ttl 秒，0 为不限制
-     * @param etc
      */
     public async replace(
         key: string,
@@ -88,8 +87,8 @@ export class Kv {
 
     /**
      * --- 向已存在的值后追加数据 ---
-     * @param key
-     * @param val
+     * @param key 键
+     * @param val 值
      */
     public async append(key: string, val: string): Promise<boolean> {
         const conn = await this._getConnection();
@@ -447,7 +446,6 @@ end`;
 
     /**
      * --- 发送 ping ---
-     * @param last 是否刷新最后使用时间（默认刷新）
      */
     public async ping(): Promise<false | string> {
         const conn = await this._getConnection();
@@ -817,7 +815,7 @@ end`;
 
 /**
  * --- 获取 Kv 对象 ---
- * @param etc 配置信息可留空
+ * @param ctrEtc 控制器或配置信息
  */
 export function get(ctrEtc: sCtr.Ctr | kebab.IConfigKv): Kv {
     const etc = ctrEtc instanceof sCtr.Ctr ? ctrEtc.getPrototype('_config').kv : ctrEtc;

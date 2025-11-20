@@ -10,7 +10,7 @@ import * as ssh2 from 'ssh2';
 import * as shell from './ssh/shell.js';
 import * as sftp from './ssh/sftp.js';
 
-interface IExtOptions {
+export interface IExtOptions {
     'mproxy'?: {
         'host': string;
         'port': number;

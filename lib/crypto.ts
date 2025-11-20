@@ -349,8 +349,7 @@ export function aesDecrypt(encrypt: string | Buffer, key: crypto.CipherKey, iv: 
  * --- AES 解密 ---
  * @param encrypt 需解密的字符串
  * @param key 密钥 32 个英文字母和数字
- * @param iv 向量 16 个英文字母和数字
- * @param method 加密方法
+ * @param output 输出类型
  */
 export function gcmDecrypt(encrypt: string | Buffer, key: crypto.CipherKey, output: 'buffer'): Buffer | false;
 export function gcmDecrypt(encrypt: string | Buffer, key: crypto.CipherKey, output?: 'binary'): string | false;

@@ -11,12 +11,12 @@ import * as sCtr from '#kebab/sys/ctr.js';
 import * as kebab from '#kebab/index.js';
 
 /** --- 只获取变量 --- */
-type TOnlyProperties<T> = {
+export type TOnlyProperties<T> = {
     [K in keyof T as T[K] extends (...args: any[]) => any ? never : K]: T[K]
 };
 
 /** --- 条数列表 --- */
-class Rows<T extends Mod> implements IRows<T> {
+export class Rows<T extends Mod> implements IRows<T> {
 
     private readonly _items: T[];
 
@@ -108,7 +108,6 @@ export default class Mod {
 
     /**
      * --- 构造函数 ---
-     * @param ctr Ctr 对象
      * @param opt 选项
      */
     public constructor(opt: {
@@ -488,7 +487,6 @@ export default class Mod {
      * --- 根据主键（或 key 字段）获取对象 ---
      * @param db 数据库对象
      * @param val 主键值
-     * @param lock 是否加锁
      * @param opt 选项
      */
     public static async find<T extends Mod>(
@@ -1457,7 +1455,6 @@ export default class Mod {
     /**
      * --- 筛选器 ---
      * @param s 筛选条件数组或字符串
-     * @param raw 是否包含已被软删除的数据
      */
     public filter(
         s: kebab.Json,
@@ -1469,7 +1466,6 @@ export default class Mod {
     /**
      * --- 是 filter 的别名 ---
      * @param s 筛选条件数组或字符串
-     * @param raw 是否包含已被软删除的数据
      */
     public where(
         s: kebab.Json,
