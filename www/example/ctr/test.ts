@@ -214,6 +214,7 @@ export default class extends sCtr.Ctr {
             `<br><br><a href="${this._config.const.urlBase}test/sql?type=insert">View "test/sql?type=insert"</a> <a href="${this._config.const.urlBase}test/sql?type=insert&s=pgsql">pgsql</a>`,
             `<br><a href="${this._config.const.urlBase}test/sql?type=select">View "test/sql?type=select"</a> <a href="${this._config.const.urlBase}test/sql?type=select&s=pgsql">pgsql</a>`,
             `<br><a href="${this._config.const.urlBase}test/sql?type=update">View "test/sql?type=update"</a> <a href="${this._config.const.urlBase}test/sql?type=update&s=pgsql">pgsql</a>`,
+            `<br><a href="${this._config.const.urlBase}test/sql?type=upsert">View "test/sql?type=upsert"</a> <a href="${this._config.const.urlBase}test/sql?type=upsert&s=pgsql">pgsql</a>`,
             `<br><a href="${this._config.const.urlBase}test/sql?type=delete">View "test/sql?type=delete"</a> <a href="${this._config.const.urlBase}test/sql?type=delete&s=pgsql">pgsql</a>`,
             `<br><a href="${this._config.const.urlBase}test/sql?type=where">View "test/sql?type=where"</a> <a href="${this._config.const.urlBase}test/sql?type=where&s=pgsql">pgsql</a>`,
             `<br><a href="${this._config.const.urlBase}test/sql?type=having">View "test/sql?type=having"</a> <a href="${this._config.const.urlBase}test/sql?type=having&s=pgsql">pgsql</a>`,
@@ -2725,6 +2726,40 @@ Result:<pre id="result">Nothing.</pre>`);
 <b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
 <b>format() :</b> ${sql.format(s, sd)}`);
 
+                break;
+            }
+            case 'upsert': {
+                // --- 对象形式 ---
+                let s = sql.insert('user').values({ 'id': 1, 'name': 'Bob', 'age': 25 }).upsert({ 'name': 'Updated Bob', 'age': 26 }).getSql();
+                let sd = sql.getData();
+                echo.push(`<pre>sql.insert('user').values({ 'id': 1, 'name': 'Bob', 'age': 25 }).upsert({ 'name': 'Updated Bob', 'age': 26 });</pre>
+<b>getSql() :</b> ${s}<br>
+<b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
+<b>format() :</b> ${sql.format(s, sd)}<hr>`);
+
+                // --- 数组形式 ---
+                s = sql.insert('user').values(['id', 'name', 'age'], [1, 'Alice', 30]).upsert({ 'name': 'Updated Alice', 'age': 31 }).getSql();
+                sd = sql.getData();
+                echo.push(`<pre>sql.insert('user').values(['id', 'name', 'age'], [1, 'Alice', 30]).upsert({ 'name': 'Updated Alice', 'age': 31 });</pre>
+<b>getSql() :</b> ${s}<br>
+<b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
+<b>format() :</b> ${sql.format(s, sd)}<hr>`);
+
+                // --- 列引用 ---
+                s = sql.insert('user').values({ 'id': 1, 'name': 'Charlie', 'age': 35 }).upsert([ { 'name': 'abc' }, ['age', '+', lSql.column('age')] ]).getSql();
+                sd = sql.getData();
+                echo.push(`<pre>sql.insert('user').values({ 'id': 1, 'name': 'Charlie', 'age': 35 }).upsert([ { 'name': 'abc' }, ['age', '+', lSql.column('age')] ]);</pre>
+<b>getSql() :</b> ${s}<br>
+<b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
+<b>format() :</b> ${sql.format(s, sd)}<hr>`);
+
+                // --- 多字段 ---
+                s = sql.insert('user').values({ 'id': 1, 'name': 'Dave', 'age': 40, 'city': 'Beijing' }).upsert({ 'name': 'Updated Dave', 'age': 41, 'city': 'Shanghai' }).getSql();
+                sd = sql.getData();
+                echo.push(`<pre>sql.insert('user').values({ 'id': 1, 'name': 'Dave', 'age': 40, 'city': 'Beijing' }).upsert({ 'name': 'Updated Dave', 'age': 41, 'city': 'Shanghai' });</pre>
+<b>getSql() :</b> ${s}<br>
+<b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
+<b>format() :</b> ${sql.format(s, sd)}`);
                 break;
             }
             case 'delete': {

@@ -277,6 +277,38 @@ export class Sql {
     }
 
     /**
+     * --- 如果存在则更新不存在则插入（UPSERT）---
+     * @param data 更新的数据
+     * @param conflict 冲突字段，PostgreSQL 专用，默认为主键
+     */
+    public upsert(data: kebab.Json, conflict?: string | string[]): this {
+        if (this._service === ESERVICE.MYSQL) {
+            // --- MySQL: 使用 ON DUPLICATE KEY UPDATE ---
+            this._sql.push(' ON DUPLICATE KEY UPDATE ' + this._updateSub(data));
+        }
+        else {
+            // --- PostgreSQL: 使用 ON CONFLICT ---
+            let clause = ' ON CONFLICT ';
+            if (conflict) {
+                // --- 指定冲突字段 ---
+                if (typeof conflict === 'string') {
+                    clause += '(' + this.field(conflict) + ') ';
+                }
+                else {
+                    clause += '(';
+                    for (const f of conflict) {
+                        clause += this.field(f) + ', ';
+                    }
+                    clause = clause.slice(0, -2) + ') ';
+                }
+            }
+            // --- DO UPDATE SET ---
+            this._sql.push(clause + 'DO UPDATE SET ' + this._updateSub(data));
+        }
+        return this;
+    }
+
+    /**
      * --- '*', 'xx' ---
      * @param c 字段字符串或字段数组
      * @param f 表，允许多张表
