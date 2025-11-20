@@ -12,6 +12,9 @@
   "author": "hanguoshuai",
   "license": "Apache-2.0",
   "types": "./index.d.ts",
+  "scripts": {
+    "build-md-doc": "bash ./utils/generate-api-doc-md.sh"
+  },
   "bin": {
     "kebab": "./bin/kebab.js"
   },
@@ -42,6 +45,8 @@
     "@types/ejs": "^3.1.5",
     "@types/node": "^24.10.0",
     "@types/pg": "^8.15.6",
+    "typedoc": "^0.28.14",
+    "typedoc-plugin-markdown": "^4.9.0",
     "typescript": "^5.9.3"
   }
 }

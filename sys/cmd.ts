@@ -118,13 +118,6 @@ async function run(): Promise<void> {
         config.db['PGSQL'].read.name ??= 'maiyun';
         config.db['PGSQL'].read.user ??= 'root';
         config.db['PGSQL'].read.pwd ??= 'DashAdmin';
-        // --- config - jwt ---
-        config.jwt ??= {};
-        config.jwt.name ??= 'KE_JWT';
-        config.jwt.ttl ??= 172800;
-        config.jwt.ssl ??= false;
-        config.jwt.secret ??= 'MUSTCHANGE';
-        config.jwt.auth ??= false;
         // --- config - dns ---
         config.dns ??= {};
         config.dns['DNSPOD'] ??= {};

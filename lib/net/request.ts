@@ -92,7 +92,7 @@ export class Request {
      * --- 设置域名 -> ip的对应键值，就像电脑里的 hosts 一样 ---
      * @param hosts
      */
-    public hosts(hosts: Record<string, string>): this {
+    public hosts(hosts: Record<string, string> | string): this {
         this._opt['hosts'] = hosts;
         return this;
     }

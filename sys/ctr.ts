@@ -70,9 +70,6 @@ export class Ctr {
     /** --- Cookie 数组 --- */
     protected _cookie: Record<string, string> = {};
 
-    /** --- Jwt 数组 --- */
-    protected _jwt: Record<string, any> = {};
-
     /** --- Session 数组 --- */
     protected _session: Record<string, any> = {};
 

@@ -673,7 +673,7 @@ export default class Mod {
     public set<T extends this, TK extends keyof T>(n: Record<TK, T[TK] | undefined>): void;
     public set<T extends this, TK extends keyof T>(n: TK, v: T[TK]): void;
     /**
-     * --- 设置一个/多个属性，值为 underfind 则不会被更新 ---
+     * --- 设置一个/多个属性，值为 undefined 则不会被更新 ---
      * @param n 字符串或键/值
      * @param v 可能是数字
      */

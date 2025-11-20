@@ -673,7 +673,6 @@ export interface ILogOptions {
     'req'?: http2.Http2ServerRequest | http.IncomingMessage | null;
     'get'?: Record<string, any>;
     'cookie'?: Record<string, string>;
-    'jwt'?: Record<string, any>;
     'session'?: Record<string, any>;
     'headers'?: http.IncomingHttpHeaders;
 }
@@ -690,7 +689,6 @@ export function log(opt: sCtr.Ctr | ILogOptions, msg: string, fend: string = '')
         let headers: http.IncomingHttpHeaders;
         let get: Record<string, kebab.Json>;
         let cookie: Record<string, string>;
-        let jwt: Record<string, any>;
         let session: Record<string, any>;
         let wpath: string;
         let urlFull: string;
@@ -700,7 +698,6 @@ export function log(opt: sCtr.Ctr | ILogOptions, msg: string, fend: string = '')
             headers = opt.getPrototype('_headers');
             get = opt.getPrototype('_get');
             cookie = opt.getPrototype('_cookie');
-            jwt = opt.getPrototype('_jwt');
             session = opt.getPrototype('_session');
             const config = opt.getPrototype('_config');
             wpath = config.const.path;
@@ -712,7 +709,6 @@ export function log(opt: sCtr.Ctr | ILogOptions, msg: string, fend: string = '')
             headers = opt.headers ?? {};
             get = opt.get ?? {};
             cookie = opt.cookie ?? {};
-            jwt = opt.jwt ?? {};
             session = opt.session ?? {};
             wpath = opt.path ?? '';
             urlFull = opt.urlFull ?? '';
@@ -733,7 +729,7 @@ export function log(opt: sCtr.Ctr | ILogOptions, msg: string, fend: string = '')
         }
         path += h + '.csv';
         if (!await lFs.isFile(path)) {
-            if (!await lFs.putContent(path, 'TIME,UNIX,URL,COOKIE,SESSION,JWT,USER_AGENT,REALIP,CLIENTIP,OS,PROCESS,MESSAGE\n', {
+            if (!await lFs.putContent(path, 'TIME,UNIX,URL,COOKIE,SESSION,USER_AGENT,REALIP,CLIENTIP,OS,PROCESS,MESSAGE\n', {
                 'encoding': 'utf8',
                 'mode': 0o777
             })) {
@@ -745,7 +741,6 @@ export function log(opt: sCtr.Ctr | ILogOptions, msg: string, fend: string = '')
             lTime.stamp().toString() + '","' +
             urlFull + wpath + (Object.keys(get).length ? '?' + lText.queryStringify(get).replace(/"/g, '""') : '') + '","' +
             lText.queryStringify(cookie).replace(/"/g, '""') + '","' +
-            lText.stringifyJson(jwt).replace(/"/g, '""') + '","' +
             lText.stringifyJson(session).replace(/"/g, '""') + '","' +
             (headers['user-agent']?.replace(/"/g, '""') ?? 'No HTTP_USER_AGENT') + '","' +
             realIp.replace(/"/g, '""') + '","' +

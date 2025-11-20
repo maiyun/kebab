@@ -240,7 +240,7 @@ export async function rmdir(path: string): Promise<boolean> {
 
 /**
  * --- Danger 危险：危险函数，尽量不要使用 ---
- * --- This f**king is a danger function, please don't use it ---
+ * --- This is a danger function, please don't use it ---
  * --- 删除一个非空目录 ---
  */
 export async function rmdirDeep(path: string): Promise<boolean> {
@@ -286,7 +286,7 @@ export async function chmod(path: string, mod: string | number): Promise<boolean
 }
 
 /**
- * --- 重命名/移动 文件文件夹 ---
+ * --- 重命名/移动文件文件夹 ---
  * @param oldPath 老名
  * @param newPath 新名
  */

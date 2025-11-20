@@ -78,7 +78,7 @@ export async function post(
  */
 export async function postJson(
     u: string,
-    data: kebab.Json[] | Record<string, kebab.Json>,
+    data: any[] | Record<string, kebab.Json>,
     opt: IRequestOptions = {}
 ): Promise<lResponse.Response> {
     opt.method = 'POST';
@@ -94,7 +94,7 @@ export async function postJson(
  * @returns JSON 数据，失败时返回 null
  */
 export async function postJsonResponseJson(
-    u: string, data: kebab.Json[] | Record<string, kebab.Json>, opt: IRequestOptions = {}
+    u: string, data: any[] | Record<string, kebab.Json>, opt: IRequestOptions = {}
 ): Promise<any | null> {
     opt.method = 'POST';
     opt.type = 'json';
@@ -150,7 +150,7 @@ export function fetch(
  */
 export async function request(
     u: string,
-    data?: Record<string, kebab.Json> | Buffer | string | stream.Readable,
+    data?: Record<string, any> | Buffer | string | stream.Readable,
     opt: IRequestOptions = {}
 ): Promise<lResponse.Response> {
     const uri = lText.parseUrl(u);

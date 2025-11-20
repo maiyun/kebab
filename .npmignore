@@ -12,3 +12,5 @@ eslint.config.cjs
 !*.d.ts
 tsconfig.json
 package-lock.json
+
+utils/

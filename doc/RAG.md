@@ -10,6 +10,7 @@
 
 项目初始化后，会生成一些基础文件和目录，介绍如下：
 
+```
 conf/ - 配置
 ├─ cert/ - 证书
 ├─ vhost/ - 虚拟主机配置
@@ -21,6 +22,18 @@ lib/ - 用户编写的库
 log/ - 日志
 mod/ - 用户定义的模型
 www/ - 网站根目录
+└─ 站点名或网址 - 例如 example.com、example，可多层
+   ├─ ctr/ - 控制器目录
+   ├─ data/ - 数据目录，存放语言文件等
+   │  └─ locale/ - 语言文件目录
+   ├─ stc/ - 静态资源目录
+   ├─ view/ - 视图目录，存放 ejs 文件
+   └─ ws/ - WebSocket 目录
+```
+
+## ctr 目录
+
+至少需要有 middle.ts 用于处理中间请求，main.ts 文件处理默认请求。
 
 # 库
 
@@ -35,7 +48,7 @@ Ai 库提供了 OpenAI 兼容的模型调用方法。
 #### ctrEtc
 
 必选：是
-类型：sCtr.Ctr | IConfigAi
+类型：Ctr | IConfigAi
 描述：控制器对象或 AI 配置对象
 
 #### opt
@@ -58,39 +71,34 @@ const ai = lAi.get(this, {
 
 ### IOptions
 
-获取 AI 对象的选项
+获取 AI 对象的选项。
 
-#### service
+#### 结构
 
-必选：是
-类型：ESERVICE
-描述：服务类型
-
-#### endpoint
-
-必选：否
-类型：string
-描述：接入点
-
-#### secretKey
-
-必选：否
-类型：string
-描述：密钥
-
-#### fetch
-
-必选：否
-类型：(input: string | URL | Request, init?: RequestInit) => Promise<Response>;
-描述：自定义 fetch 函数
+```typescript
+interface IOptions {
+    /** --- 服务类型 --- */
+    'service': ESERVICE;
+    /** --- 接入点 --- */
+    'endpoint'?: string;
+    /** --- 密钥 --- */
+    'secretKey'?: string;
+    /** --- 自定义 fetch 函数 --- */
+    'fetch'?: (input: string | URL | Request, init?: RequestInit) => Promise<Response>;
+}
+```
 
 ### ESERVICE
 
-ALICN - 阿里中国大陆区
-ALIAS - 阿里国际区
-AZURE - 微软 Azure
-AZURE2 - 微软 Azure 2
-AZURE3 - 微软 Azure 3
+服务商枚举。
+
+#### 枚举值
+
+- `ALICN`: 阿里中国大陆区
+- `ALIAS`: 阿里国际区
+- `AZURE`: 微软 Azure
+- `AZURE2`: 微软 Azure 2
+- `AZURE3`: 微软 Azure 3
 
 ### Ai
 
@@ -541,12 +549,14 @@ Core 库提供了框架的核心功能。
 
 ### globalConfig
 
-类型：kebab.IConfig
+类型：IConfig
 描述：全局配置对象。
 
 ### ICookieOptions
 
 Cookie 选项。
+
+#### 结构
 
 ```typescript
 interface ICookieOptions {
@@ -566,7 +576,7 @@ interface ICookieOptions {
 #### ctr
 
 必选：是
-类型：sCtr.Ctr
+类型：Ctr
 描述：控制器实例
 
 #### name
@@ -799,7 +809,7 @@ const res = lCore.checkType(o4, type1);
 #### ctr
 
 必选：是
-类型：sCtr.Ctr
+类型：Ctr
 描述：控制器实例
 
 #### opt
@@ -833,7 +843,7 @@ string
 #### ctr
 
 必选：是
-类型：sCtr.Ctr | http.IncomingHttpHeaders
+类型：Ctr | http.IncomingHttpHeaders
 描述：控制器实例或请求头对象
 
 #### req
@@ -863,7 +873,7 @@ string
 #### ctr
 
 必选：是
-类型：sCtr.Ctr
+类型：Ctr
 描述：控制器实例
 
 #### name
@@ -973,8 +983,8 @@ Promise<string | false>
 #### hosts
 
 必选：否
-类型：string[] | 'config' | underfind
-默认：underfind
+类型：string[] | 'config' | undefined
+默认：undefined
 描述：主机列表或从配置文件中读取的主机列表，默认为只给本地发送
 
 #### 返回值
@@ -992,8 +1002,8 @@ Promise<string[]>
 #### hosts
 
 必选：否
-类型：string[] | 'config' | underfind
-默认：underfind
+类型：string[] | 'config' | undefined
+默认：undefined
 描述：主机列表或从配置文件中读取的主机列表，默认为只给本地发送
 
 #### 返回值
@@ -1023,8 +1033,8 @@ Promise<string[]>
 #### hosts
 
 必选：否
-类型：string[] | 'config' | underfind
-默认：underfind
+类型：string[] | 'config' | undefined
+默认：undefined
 描述：主机列表或从配置文件中读取的主机列表，默认为只给本地主机的所有线程设置
 
 #### 返回值
@@ -1048,8 +1058,8 @@ Promise<string[]>
 #### hosts
 
 必选：否
-类型：string[] | 'config' | underfind
-默认：underfind
+类型：string[] | 'config' | undefined
+默认：undefined
 描述：主机列表或从配置文件中读取的主机列表，默认为只给本地主机的所有线程移除
 
 #### 返回值
@@ -1079,8 +1089,8 @@ Promise<string[]>
 #### hosts
 
 必选：否
-类型：string[] | 'config' | underfind
-默认：underfind
+类型：string[] | 'config' | undefined
+默认：undefined
 描述：主机列表或从配置文件中读取的主机列表，默认为只给本地主机的所有线程更新
 
 #### config
@@ -1117,6 +1127,8 @@ const list = await lCore.updateCode(zip, to);
 
 日志选项。
 
+#### 结构
+
 ```typescript
 interface ILogOptions {
     'path'?: string;
@@ -1125,7 +1137,6 @@ interface ILogOptions {
     'req'?: http2.Http2ServerRequest | http.IncomingMessage | null;
     'get'?: Record<string, any>;
     'cookie'?: Record<string, string>;
-    'jwt'?: Record<string, any>;
     'session'?: Record<string, any>;
     'headers'?: http.IncomingHttpHeaders;
 }
@@ -1138,7 +1149,7 @@ interface ILogOptions {
 #### opt
 
 必选：是
-类型：sCtr.Ctr | ILogOptions
+类型：Ctr | ILogOptions
 描述：控制器实例或日志选项
 
 #### msg
@@ -1307,6 +1318,8 @@ let rtn = await lCron.regular({
 
 任务规则。
 
+#### 结构
+
 ```typescript
 interface IRegular {
     /** --- 任务名称，只能小写字母、数字、短横线、下划线，长度 1-32 --- */
@@ -1321,6 +1334,8 @@ interface IRegular {
 ### IRegularData
 
 计划任务数据。
+
+#### 结构
 
 ```typescript
 interface IRegularData extends IRegular {
@@ -2179,7 +2194,7 @@ execute 返回的数据包结构。
 #### ctrEtc
 
 必选：是
-类型：sCtr.Ctr | IConfigDb
+类型：Ctr | IConfigDb
 描述：控制器对象或数据库配置信息
 
 #### opt
@@ -2338,7 +2353,7 @@ Promise<boolean>
 ##### values
 
 必选：否
-类型：kebab.DbValue[]
+类型：DbValue[]
 描述：要替换的数据
 
 ##### 返回值
@@ -2360,7 +2375,7 @@ Promise<IData>
 ##### values
 
 必选：否
-类型：kebab.DbValue[]
+类型：DbValue[]
 描述：要替换的数据
 
 ##### 返回值
@@ -2412,6 +2427,8 @@ Promise<boolean>
 ### IConnectionInfo
 
 连接信息。
+
+#### 结构
 
 ```typescript
 {
@@ -2477,7 +2494,7 @@ ESERVICE
 ##### values
 
 必选：否
-类型：kebab.DbValue[]
+类型：DbValue[]
 描述：要替换的数据
 
 ##### 返回值
@@ -2504,7 +2521,7 @@ const res = await pool.query('SELECT * FROM users WHERE id = ?', [1]);
 ##### values
 
 必选：否
-类型：kebab.DbValue[]
+类型：DbValue[]
 描述：要替换的数据
 
 ##### 返回值
@@ -2527,7 +2544,7 @@ console.log('影响行数', res.packet?.affected);
 ##### ctr
 
 必选：是
-类型：sCtr.Ctr | null
+类型：Ctr | null
 描述：控制器对象，独立执行时可传 null
 
 ##### 返回值
@@ -2580,7 +2597,7 @@ ESERVICE | null
 ##### values
 
 必选：否
-类型：kebab.DbValue[]
+类型：DbValue[]
 描述：要替换的数据
 
 ##### 返回值
@@ -2631,3 +2648,3075 @@ Promise<boolean>
 Promise<boolean>
 ```
 
+## Dns
+
+DNS 操作相关的库。
+
+### ESERVICE
+
+DNS 服务商枚举。
+
+#### 枚举值
+
+- `DNSPOD`: DNSPod (腾讯云)
+- `ALIBABA`: 阿里云
+
+### IOptions
+
+DNS操作选项。
+
+#### 结构
+
+```typescript
+{
+    /** --- 服务商 ---- */
+    'service': ESERVICE;
+    /** --- 密钥键 --- */
+    'secretId'?: string;
+    /** --- 密钥值 --- */
+    'secretKey'?: string;
+}
+```
+
+### IDomainList
+
+获取域名列表的返回对象。
+
+#### 结构
+
+```typescript
+{
+    /** --- 总数 --- */
+    'total': number;
+    /** --- 域名列表 --- */
+    'list': Array<{
+        /** --- 域名 ID --- */
+        'id': string;
+        /** --- 域名 --- */
+        'name': string;
+        /** --- 记录数量 --- */
+        'count': number;
+        /** --- PunyCode 编码 --- */
+        'punyCode': string;
+    }>;
+}
+```
+
+### IAddDomainRecord
+
+添加记录的返回对象。
+
+#### 结构
+
+```typescript
+{
+    /** --- 是否成功 --- */
+    'success': boolean;
+    /** --- 记录 ID --- */
+    'id': string;
+}
+```
+
+### RECORDTYPE
+
+记录值类型。
+
+#### 枚举值
+
+- `A`: A 记录
+- `NS`: NS 记录
+- `MX`: MX 记录
+- `TXT`: TXT 记录
+- `CNAME`: CNAME 记录
+- `SRV`: SRV 记录
+- `AAAA`: AAAA 记录
+
+### ERECORDLINE
+
+记录值线路。
+
+#### 枚举值
+
+- `DEFAULT`: 默认
+- `TELECOM`: 电信
+- `UNICOM`: 联通
+- `MOBILE`: 移动
+- `EDU`: 教育网
+- `OVERSEA`: 境外
+
+### Dns
+
+DNS操作类。
+
+#### getDomainList(opt?)
+
+获取域名列表。
+
+##### opt
+
+必选：是
+类型：
+```typescript
+{
+    'offset'?: number;
+    'length'?: number;
+}
+```
+描述：参数
+
+##### 返回值
+
+```typescript
+Promise<IDomainList | null>
+```
+
+#### addDomainRecord(opt?)
+
+添加记录。
+
+##### opt
+
+必选：是
+类型：
+```typescript
+{
+    'domain': string;
+    'sub': string;
+    'type': string;
+    'value': string;
+    'line'?: ERECORDLINE;
+    'ttl'?: number;
+    'mx'?: number;
+}
+```
+描述：参数
+
+##### 返回值
+
+```typescript
+Promise<IAddDomainRecord | null>
+```
+
+#### updateDomainRecord(opt?)
+
+修改记录。
+
+##### opt
+
+必选：是
+类型：
+```typescript
+{
+    'domain': string;
+    'record': string;
+    'sub': string;
+    'type': string;
+    'value': string;
+    'line'?: ERECORDLINE;
+    'ttl'?: number;
+    'mx'?: number;
+}
+```
+描述：参数
+
+##### 返回值
+
+```typescript
+Promise<IAddDomainRecord | null>
+```
+
+#### deleteDomainRecord(opt)
+
+删除记录。
+
+##### opt
+
+必选：是
+类型：
+```typescript
+{
+    'domain': string;
+    'id': string;
+}
+```
+描述：参数
+
+##### 返回值
+
+```typescript
+Promise<{ 'success': boolean; } | null>
+```
+
+### get(ctr, opt)
+
+创建一个 Dns 对象。
+
+#### ctr
+
+必选：是
+类型：Ctr
+描述：控制器对象
+
+#### opt
+
+必选：是
+类型：IOptions
+描述：选项
+
+#### 返回值
+
+Dns
+
+## Fs
+
+文件系统操作相关的库。
+
+### getContent(path, options?)
+
+读取完整文件或一段。
+
+#### path
+
+必选：是
+类型：string
+描述：文件路径
+
+#### options
+
+必选：否
+类型：
+```typescript
+BufferEncoding | {
+    'encoding'?: BufferEncoding;
+    'start'?: number;
+    'end'?: number;
+}
+```
+默认：undefined
+描述：编码或选项
+
+#### 返回值
+
+```typescript
+Promise<Buffer | string | null>
+```
+
+#### 示例
+
+```typescript
+const content = await lFs.getContent('./test.txt');
+const content2 = await lFs.getContent('./test.txt', 'binary');
+const content3 = await lFs.getContent('./test.txt', {
+    'encoding': 'utf8',
+    'start': 0,
+    'end': 100
+});
+```
+
+### putContent(path, data, options?)
+
+写入文件内容。
+
+#### path
+
+必选：是
+类型：string
+描述：文件路径
+
+#### data
+
+必选：是
+类型：string | Buffer
+描述：要写入的内容
+
+#### options
+
+必选：否
+类型：
+```typescript
+{
+    'encoding'?: BufferEncoding;
+    'mode'?: number;
+    'flag'?: string;
+}
+```
+默认：{}
+描述：选项
+
+#### 返回值
+
+```typescript
+Promise<boolean>
+```
+
+#### 示例
+
+```typescript
+const res = await lFs.putContent('./test.txt', 'hello world');
+const res2 = await lFs.putContent('./test.txt', 'hello world', {
+    'encoding': 'utf8',
+    'mode': 0o644
+});
+```
+
+### readLink(path, encoding?)
+
+读取链接的 target。
+
+#### path
+
+必选：是
+类型：string
+描述：要读取的路径
+
+#### encoding
+
+必选：否
+类型：BufferEncoding
+默认：undefined
+描述：编码
+
+#### 返回值
+
+```typescript
+Promise<string | null>
+```
+
+### symlink(filePath, linkPath, type?)
+
+把源文件创建一个 link。
+
+#### filePath
+
+必选：是
+类型：string
+描述：源文件
+
+#### linkPath
+
+必选：是
+类型：string
+描述：连接路径
+
+#### type
+
+必选：否
+类型：'dir' | 'file' | 'junction'
+默认：'file'
+描述：仅 Windows，类型
+
+#### 返回值
+
+```typescript
+Promise<boolean>
+```
+
+### unlink(path)
+
+删除一个文件。
+
+#### path
+
+必选：是
+类型：string
+描述：要删除的文件路径
+
+#### 返回值
+
+```typescript
+Promise<boolean>
+```
+
+#### 示例
+
+```typescript
+const res = await lFs.unlink('./test.txt');
+```
+
+### stats(path)
+
+获取对象是否存在，存在则返回 stats 对象，否则返回 null。
+
+#### path
+
+必选：是
+类型：string
+描述：对象路径
+
+#### 返回值
+
+```typescript
+Promise<fs.Stats | null>
+```
+
+#### 示例
+
+```typescript
+const stat = await lFs.stats('./test.txt');
+```
+
+### isDir(path)
+
+判断是否是目录或目录是否存在，是的话返回 stats。
+
+#### path
+
+必选：是
+类型：string
+描述：判断路径
+
+#### 返回值
+
+```typescript
+Promise<fs.Stats | false>
+```
+
+#### 示例
+
+```typescript
+const stat = await lFs.isDir('./test');
+```
+
+### isFile(path)
+
+判断是否是文件或文件是否存在，是的话返回 stats。
+
+#### path
+
+必选：是
+类型：string
+描述：判断路径
+
+#### 返回值
+
+```typescript
+Promise<fs.Stats | false>
+```
+
+#### 示例
+
+```typescript
+const stat = await lFs.isFile('./test.txt');
+```
+
+### mkdir(path, mode?)
+
+深度创建目录，如果最末目录存在，则自动创建成功。
+
+#### path
+
+必选：是
+类型：string
+描述：要创建的路径，如 /a/b/c/
+
+#### mode
+
+必选：否
+类型：number
+默认：0o755
+描述：权限
+
+#### 返回值
+
+```typescript
+Promise<boolean>
+```
+
+#### 示例
+
+```typescript
+const res = await lFs.mkdir('./test');
+```
+
+### rmdir(path)
+
+删除空目录。
+
+#### path
+
+必选：是
+类型：string
+描述：要删除的目录
+
+#### 返回值
+
+```typescript
+Promise<boolean>
+```
+
+#### 示例
+
+```typescript
+const res = await lFs.rmdir('./test');
+```
+
+### rmdirDeep(path)
+
+Danger 危险：危险函数，尽量不要使用
+This is a danger function, please don't use it
+删除一个非空目录。
+
+#### path
+
+必选：是
+类型：string
+描述：要删除的目录
+
+#### 返回值
+
+```typescript
+Promise<boolean>
+```
+
+#### 示例
+
+```typescript
+const res = await lFs.rmdirDeep('./test');
+```
+
+### chmod(path, mod)
+
+修改权限。
+
+#### path
+
+必选：是
+类型：string
+描述：要修改的路径
+
+#### mod
+
+必选：是
+类型：string | number
+描述：权限
+
+#### 返回值
+
+```typescript
+Promise<boolean>
+```
+
+#### 示例
+
+```typescript
+const res = await lFs.chmod('./test.txt', 0o644);
+```
+
+### rename(oldPath, newPath)
+
+重命名/移动文件文件夹。
+
+#### oldPath
+
+必选：是
+类型：string
+描述：老名
+
+#### newPath
+
+必选：是
+类型：string
+描述：新名
+
+#### 返回值
+
+```typescript
+Promise<boolean>
+```
+
+#### 示例
+
+```typescript
+const res = await lFs.rename('./old.txt', './new.txt');
+```
+
+### readDir(path, encoding?)
+
+获取文件夹下文件列表。
+
+#### path
+
+必选：是
+类型：string
+描述：文件夹路径
+
+#### encoding
+
+必选：否
+类型：BufferEncoding
+描述：编码
+
+#### 返回值
+
+```typescript
+Promise<fs.Dirent[]>
+```
+
+#### 示例
+
+```typescript
+const list = await lFs.readDir('./test');
+```
+
+### copyFolder(from, to, ignore?)
+
+复制文件夹里的内容到另一个地方，失败不会回滚。
+
+#### from
+
+必选：是
+类型：string
+描述：源，末尾加 /
+
+#### to
+
+必选：是
+类型：string
+描述：目标，末尾加 /
+
+#### ignore
+
+必选：否
+类型：RegExp[]
+默认：[]
+描述：忽略的文件
+
+#### 返回值
+
+```typescript
+Promise<number>
+```
+
+#### 示例
+
+```typescript
+const count = await lFs.copyFolder('./src/', './dest/', [/\.git/]);
+```
+
+### copyFile(src, dest)
+
+复制文件。
+
+#### src
+
+必选：是
+类型：string
+描述：源文件
+
+#### dest
+
+必选：是
+类型：string
+描述：目标文件
+
+#### 返回值
+
+```typescript
+Promise<boolean>
+```
+
+#### 示例
+
+```typescript
+const res = await lFs.copyFile('./src.txt', './dest.txt');
+```
+
+### createReadStream(path, options?)
+
+创建读取文件的流。
+
+#### path
+
+必选：是
+类型：string
+描述：文件地址
+
+#### options
+
+必选：否
+类型：
+```typescript
+BufferEncoding | {
+    'flags'?: string;
+    'encoding'?: BufferEncoding;
+    'autoClose'?: boolean;
+    'start'?: number;
+    'end'?: number;
+}
+```
+默认：{}
+描述：编码或配置
+
+#### 返回值
+
+```typescript
+fs.ReadStream
+```
+
+#### 示例
+
+```typescript
+const stream = lFs.createReadStream('./test.txt');
+```
+
+### pipe(path, destination, options?)
+
+读取文件写入到流，并等待写入完成。
+
+#### path
+
+必选：是
+类型：string
+描述：文件地址
+
+#### destination
+
+必选：是
+类型：NodeJS.WritableStream
+描述：要写入的流
+
+#### options
+
+必选：否
+类型：
+```typescript
+{
+    'end'?: boolean;
+}
+```
+默认：undefined
+描述：写入后是否终止写入流，默认终止
+
+#### 返回值
+
+```typescript
+Promise<boolean>
+```
+
+#### 示例
+
+```typescript
+const res = await lFs.pipe('./test.txt', process.stdout);
+```
+
+### createWriteStream(path, options?)
+
+创建写入文件的流。
+
+#### path
+
+必选：是
+类型：string
+描述：文件地址
+
+#### options
+
+必选：否
+类型：
+```typescript
+BufferEncoding | {
+    'flags'?: string;
+    'encoding'?: BufferEncoding;
+    'mode'?: number;
+    'autoClose'?: boolean;
+    'start'?: number;
+}
+```
+默认：{}
+描述：编码或配置
+
+#### 返回值
+
+```typescript
+fs.WriteStream
+```
+
+#### 示例
+
+```typescript
+const stream = lFs.createWriteStream('./test.txt');
+```
+
+### readToResponse(path, req, res, stat?)
+
+读取文件并输出到 http 的 response。
+
+#### path
+
+必选：是
+类型：string
+描述：文件绝对路径
+
+#### req
+
+必选：是
+类型：http2.Http2ServerRequest | http.IncomingMessage
+描述：http 请求对象
+
+#### res
+
+必选：是
+类型：http2.Http2ServerResponse | http.ServerResponse
+描述：http 响应对象
+
+#### stat
+
+必选：否
+类型：fs.Stats | null
+描述：文件的 stat（如果有）
+
+#### 返回值
+
+```typescript
+Promise<void>
+```
+
+#### 示例
+
+```typescript
+await lFs.readToResponse('./test.txt', req, res);
+```
+
+## Kv
+
+key-value 数据库（Redis）操作相关的库。
+
+### get(ctrEtc)
+
+获取 Kv 对象。
+
+#### ctrEtc
+
+必选：是
+类型：Ctr | IConfigKv
+描述：控制器对象或配置信息
+
+#### 返回值
+
+Kv
+
+#### 示例
+
+```typescript
+const lKv = await get(this);
+```
+
+### Kv
+
+Kv 类
+
+#### set(key, val, ttl?, mod?)
+
+设定一个值。
+
+##### key
+
+必选：是
+类型：string
+描述：键名
+
+##### val
+
+必选：是
+类型：object | string | number
+描述：值
+
+##### ttl
+
+必选：否
+类型：number
+默认：0
+描述：秒，0 为不限制
+
+##### mod
+
+必选：否
+类型：'' | 'nx' | 'xx'
+默认：''
+描述：设置模式: 空,nx（key不存在才建立）,xx（key存在才修改）
+
+##### 返回值
+
+```typescript
+Promise<boolean>
+```
+
+##### 示例
+
+```typescript
+const res = await lKv.set('test', 'value');
+const res2 = await lKv.set('test', { 'name': 'test' }, 3600, 'nx');
+```
+
+#### add(key, val, ttl?)
+
+添加一个值，存在则不变。
+
+##### key
+
+必选：是
+类型：string
+描述：键名
+
+##### val
+
+必选：是
+类型：object | string | number
+描述：值
+
+##### ttl
+
+必选：否
+类型：number
+默认：0
+描述：秒，0 为不限制
+
+##### 返回值
+
+```typescript
+Promise<boolean>
+```
+
+##### 示例
+
+```typescript
+const res = await lKv.add('test', 'value');
+```
+
+#### replace(key, val, ttl?)
+
+替换一个存在的值。
+
+##### key
+
+必选：是
+类型：string
+描述：键名
+
+##### val
+
+必选：是
+类型：object | string | number
+描述：值
+
+##### ttl
+
+必选：否
+类型：number
+默认：0
+描述：秒，0 为不限制
+
+##### 返回值
+
+```typescript
+Promise<boolean>
+```
+
+##### 示例
+
+```typescript
+const res = await lKv.replace('test', 'new value');
+```
+
+#### append(key, val)
+
+向已存在的值后追加数据。
+
+##### key
+
+必选：是
+类型：string
+描述：键名
+
+##### val
+
+必选：是
+类型：string
+描述：要追加的内容
+
+##### 返回值
+
+```typescript
+Promise<boolean>
+```
+
+##### 示例
+
+```typescript
+const res = await lKv.append('test', 'appended');
+```
+
+#### prepend(key, val)
+
+向已存在的值之前追加数据。
+
+##### key
+
+必选：是
+类型：string
+描述：键名
+
+##### val
+
+必选：是
+类型：string
+描述：要追加的内容
+
+##### 返回值
+
+```typescript
+Promise<boolean>
+```
+
+##### 示例
+
+```typescript
+const res = await lKv.prepend('test', 'prepended');
+```
+
+#### exists(keys)
+
+检测 key 是否存在。
+
+##### keys
+
+必选：是
+类型：string | string[]
+描述：单个或序列
+
+##### 返回值
+
+```typescript
+Promise<number>
+```
+
+##### 示例
+
+```typescript
+const count = await lKv.exists('test');
+const count2 = await lKv.exists(['test1', 'test2']);
+```
+
+#### get(key)
+
+获取字符串。
+
+##### key
+
+必选：是
+类型：string
+描述：键名
+
+##### 返回值
+
+```typescript
+Promise<string | false | null>
+```
+
+##### 示例
+
+```typescript
+const value = await lKv.get('test');
+```
+
+#### ttl(key)
+
+获取相应的剩余有效期秒数。
+
+##### key
+
+必选：是
+类型：string
+描述：键名
+
+##### 返回值
+
+```typescript
+Promise<number | null>
+```
+
+##### 示例
+
+```typescript
+const ttl = await lKv.ttl('test');
+```
+
+#### pttl(key)
+
+获取相应的剩余有效期毫秒数。
+
+##### key
+
+必选：是
+类型：string
+描述：键名
+
+##### 返回值
+
+```typescript
+Promise<number | null>
+```
+
+##### 示例
+
+```typescript
+const pttl = await lKv.pttl('test');
+```
+
+#### mGet(keys)
+
+批量获取值。
+
+##### keys
+
+必选：是
+类型：string[]
+描述：key 序列
+
+##### 返回值
+
+```typescript
+Promise<Record<string, string | null> | false>
+```
+
+##### 示例
+
+```typescript
+const values = await lKv.mGet(['test1', 'test2']);
+```
+
+#### mSet(rows)
+
+批量设置哈希值。
+
+##### rows
+
+必选：是
+类型：Record<string, string | Buffer>
+描述：key / val 数组
+
+##### 返回值
+
+```typescript
+Promise<boolean>
+```
+
+##### 示例
+
+```typescript
+const res = await lKv.mSet({
+    'test1': 'value1',
+    'test2': 'value2'
+});
+```
+
+#### getJson(key)
+
+获取 json 对象。
+
+##### key
+
+必选：是
+类型：string
+描述：键名
+
+##### 返回值
+
+```typescript
+Promise<any | false | null>
+```
+
+##### 示例
+
+```typescript
+const data = await lKv.getJson('test');
+```
+
+#### del(keys)
+
+删除已存在的值。
+
+##### keys
+
+必选：是
+类型：string | string[]
+描述：键名或键名数组
+
+##### 返回值
+
+```typescript
+Promise<boolean>
+```
+
+##### 示例
+
+```typescript
+const res = await lKv.del('test');
+const res2 = await lKv.del(['test1', 'test2']);
+```
+
+#### incr(key, num?)
+
+自增。
+
+##### key
+
+必选：是
+类型：string
+描述：键名
+
+##### num
+
+必选：否
+类型：number
+默认：1
+描述：整数或浮点正数
+
+##### 返回值
+
+```typescript
+Promise<number | false>
+```
+
+##### 示例
+
+```typescript
+const newValue = await lKv.incr('counter');
+const newValue2 = await lKv.incr('counter', 5);
+```
+
+#### decr(key, num?)
+
+自减。
+
+##### key
+
+必选：是
+类型：string
+描述：键名
+
+##### num
+
+必选：否
+类型：number
+默认：1
+描述：整数或浮点正数
+
+##### 返回值
+
+```typescript
+Promise<number | false>
+```
+
+##### 示例
+
+```typescript
+const newValue = await lKv.decr('counter');
+const newValue2 = await lKv.decr('counter', 5);
+```
+
+#### expire(key, ttl)
+
+仅修改过期时间不修改值。
+
+##### key
+
+必选：是
+类型：string
+描述：键名
+
+##### ttl
+
+必选：是
+类型：number
+描述：过期时间（秒）
+
+##### 返回值
+
+```typescript
+Promise<boolean>
+```
+
+##### 示例
+
+```typescript
+const res = await lKv.expire('test', 3600);
+```
+
+#### keys(pattern)
+
+获取服务器上的所有 key 列表。
+
+##### pattern
+
+必选：是
+类型：string
+描述：模式
+
+##### 返回值
+
+```typescript
+Promise<string[] | false>
+```
+
+##### 示例
+
+```typescript
+const keys = await lKv.keys('test:*');
+```
+
+#### scan(cursor?, pattern?, count?)
+
+根据条件获取服务器上的 keys。
+
+##### cursor
+
+必选：否
+类型：number
+默认：0
+描述：游标
+
+##### pattern
+
+必选：否
+类型：string
+默认：'*'
+描述：例如 *
+
+##### count
+
+必选：否
+类型：number
+默认：10
+描述：获取的条数
+
+##### 返回值
+
+```typescript
+Promise<redis.IScanResult<string> | false>
+```
+
+##### 示例
+
+```typescript
+const result = await lKv.scan(0, 'test:*', 100);
+```
+
+#### flushDb()
+
+清除当前所选数据库的所有内容。
+
+##### 返回值
+
+```typescript
+Promise<boolean>
+```
+
+##### 示例
+
+```typescript
+const res = await lKv.flushDb();
+```
+
+#### ping()
+
+发送 ping。
+
+##### 返回值
+
+```typescript
+Promise<false | string>
+```
+
+##### 示例
+
+```typescript
+const pong = await lKv.ping();
+```
+
+#### hSet(key, field, val, mod?)
+
+设置哈希表值。
+
+##### key
+
+必选：是
+类型：string
+描述：key 名
+
+##### field
+
+必选：是
+类型：string
+描述：字段名
+
+##### val
+
+必选：是
+类型：object | string | number
+描述：值
+
+##### mod
+
+必选：否
+类型：'' | 'nx'
+默认：''
+描述：空,nx(key不存在才建立)
+
+##### 返回值
+
+```typescript
+Promise<boolean>
+```
+
+##### 示例
+
+```typescript
+const res = await lKv.hSet('user', 'name', 'test');
+const res2 = await lKv.hSet('user', 'name', 'test', 'nx');
+```
+
+#### hMSet(key, rows)
+
+批量设置哈希值。
+
+##### key
+
+必选：是
+类型：string
+描述：key 名
+
+##### rows
+
+必选：是
+类型：Record<string, object | string | number>
+描述：key / val 数组
+
+##### 返回值
+
+```typescript
+Promise<boolean>
+```
+
+##### 示例
+
+```typescript
+const res = await lKv.hMSet('user', {
+    'name': 'test',
+    'age': 20,
+});
+```
+
+#### hGet(key, field)
+
+获取哈希值。
+
+##### key
+
+必选：是
+类型：string
+描述：键名
+
+##### field
+
+必选：是
+类型：string
+描述：字段名
+
+##### 返回值
+
+```typescript
+Promise<string | false | null>
+```
+
+##### 示例
+
+```typescript
+const value = await lKv.hGet('user', 'name');
+```
+
+#### hGetJson(key, field)
+
+获取哈希 json 对象。
+
+##### key
+
+必选：是
+类型：string
+描述：键名
+
+##### field
+
+必选：是
+类型：string
+描述：字段名
+
+##### 返回值
+
+```typescript
+Promise<any | false | null>
+```
+
+##### 示例
+
+```typescript
+const data = await lKv.hGetJson('user', 'info');
+```
+
+#### hMGet(key, fields)
+
+批量获取哈希值。
+
+##### key
+
+必选：是
+类型：string
+描述：键名
+
+##### fields
+
+必选：是
+类型：string[]
+描述：字段数组
+
+##### 返回值
+
+```typescript
+Promise<Record<string, string | null> | false>
+```
+
+##### 示例
+
+```typescript
+const values = await lKv.hMGet('user', ['name', 'age']);
+```
+
+#### hGetAll(key)
+
+批量获取哈希键值对。
+
+##### key
+
+必选：是
+类型：string
+描述：键名
+
+##### 返回值
+
+```typescript
+Promise<Record<string, string | null> | false>
+```
+
+##### 示例
+
+```typescript
+const all = await lKv.hGetAll('user');
+```
+
+#### hDel(key, fields)
+
+删除哈希键。
+
+##### key
+
+必选：是
+类型：string
+描述：键名
+
+##### fields
+
+必选：是
+类型：string | string[]
+描述：值序列
+
+##### 返回值
+
+```typescript
+Promise<number | false>
+```
+
+##### 示例
+
+```typescript
+const count = await lKv.hDel('user', 'name');
+const count2 = await lKv.hDel('user', ['name', 'age']);
+```
+
+#### hExists(key, field)
+
+判断哈希字段是否存在。
+
+##### key
+
+必选：是
+类型：string
+描述：键名
+
+##### field
+
+必选：是
+类型：string
+描述：字段名
+
+##### 返回值
+
+```typescript
+Promise<boolean>
+```
+
+##### 示例
+
+```typescript
+const exists = await lKv.hExists('user', 'name');
+```
+
+#### hIncr(key, field, increment)
+
+设置哈希自增自减。
+
+##### key
+
+必选：是
+类型：string
+描述：key
+
+##### field
+
+必选：是
+类型：string
+描述：字段
+
+##### increment
+
+必选：是
+类型：number
+描述：正数或负数，整数或浮点
+
+##### 返回值
+
+```typescript
+Promise<number | false>
+```
+
+##### 示例
+
+```typescript
+const newValue = await lKv.hIncr('user', 'age', 1);
+const newValue2 = await lKv.hIncr('user', 'score', -5);
+```
+
+#### hKeys(key)
+
+获取哈希所有字段。
+
+##### key
+
+必选：是
+类型：string
+描述：键名
+
+##### 返回值
+
+```typescript
+Promise<string[] | false>
+```
+
+##### 示例
+
+```typescript
+const fields = await lKv.hKeys('user');
+```
+
+#### lPush(key, values)
+
+将一个或多个值推入列表左侧。
+
+##### key
+
+必选：是
+类型：string
+描述：键名
+
+##### values
+
+必选：是
+类型：Array<string | Buffer>
+描述：值数组
+
+##### 返回值
+
+```typescript
+Promise<number | false>
+```
+
+##### 示例
+
+```typescript
+const count = await lKv.lPush('list', ['value1', 'value2']);
+```
+
+#### rPush(key, values)
+
+将一个或多个值推入列表右侧。
+
+##### key
+
+必选：是
+类型：string
+描述：键名
+
+##### values
+
+必选：是
+类型：Array<string | Buffer>
+描述：值数组
+
+##### 返回值
+
+```typescript
+Promise<number | false>
+```
+
+##### 示例
+
+```typescript
+const count = await lKv.rPush('list', ['value1', 'value2']);
+```
+
+#### bLMove(sourceKey, destKey, soo, deo, timeout)
+
+阻塞式地从源列表移动元素到目标列表。
+
+##### sourceKey
+
+必选：是
+类型：string
+描述：源键名
+
+##### destKey
+
+必选：是
+类型：string
+描述：目标键名
+
+##### soo
+
+必选：是
+类型：'LEFT' | 'RIGHT'
+描述：源列表的操作方向
+
+##### deo
+
+必选：是
+类型：'LEFT' | 'RIGHT'
+描述：目标列表的操作方向
+
+##### timeout
+
+必选：是
+类型：number
+描述：超时时间（秒）
+
+##### 返回值
+
+```typescript
+Promise<string | null | false>
+```
+
+##### 示例
+
+```typescript
+const value = await lKv.bLMove('source', 'dest', 'RIGHT', 'LEFT', 10);
+```
+
+#### lPop(key)
+
+从列表左侧弹出一个元素。
+
+##### key
+
+必选：是
+类型：string
+描述：键名
+
+##### 返回值
+
+```typescript
+Promise<string | null | false>
+```
+
+##### 示例
+
+```typescript
+const value = await lKv.lPop('list');
+```
+
+#### rPop(key)
+
+从列表右侧弹出一个元素。
+
+##### key
+
+必选：是
+类型：string
+描述：键名
+
+##### 返回值
+
+```typescript
+Promise<string | null | false>
+```
+
+##### 示例
+
+```typescript
+const value = await lKv.rPop('list');
+```
+
+#### bRPop(key, timeout)
+
+阻塞式地从列表右侧弹出一个元素。
+
+##### key
+
+必选：是
+类型：string | string[]
+描述：键名或键名数组
+
+##### timeout
+
+必选：是
+类型：number
+描述：超时时间（秒）
+
+##### 返回值
+
+```typescript
+Promise<Record<string, string> | false>
+```
+
+##### 示例
+
+```typescript
+const result = await lKv.bRPop('list', 10);
+```
+
+#### lRange(key, start, stop)
+
+获取列表指定范围的元素。
+
+##### key
+
+必选：是
+类型：string
+描述：键名
+
+##### start
+
+必选：是
+类型：number
+描述：开始索引
+
+##### stop
+
+必选：是
+类型：number
+描述：结束索引
+
+##### 返回值
+
+```typescript
+Promise<string[] | false>
+```
+
+##### 示例
+
+```typescript
+const elements = await lKv.lRange('list', 0, 9);
+```
+
+#### lLen(key)
+
+获取列表长度。
+
+##### key
+
+必选：是
+类型：string
+描述：键名
+
+##### 返回值
+
+```typescript
+Promise<number | false>
+```
+
+##### 示例
+
+```typescript
+const length = await lKv.lLen('list');
+```
+
+## Lan
+
+局域网相关的库。
+
+### card()
+
+获取当前网卡的 IP、MAC 信息。
+
+#### 返回值
+
+```typescript
+Promise<Array<{
+    /** 网卡名称 */
+    'name': string;
+    /** MAC 地址 */
+    'mac': string;
+    /** IPv4 地址 */
+    'iPv4': string;
+    /** IPv6 地址 */
+    'iPv6': string;
+}>>
+```
+
+#### 示例
+
+```typescript
+const r = await lLan.card();
+console.log(r);
+// --- 输出示例: [{"name":"eth0","mac":"00:11:22:33:44:55","iPv4":"192.168.1.100","iPv6":"fe80::1234:5678:9abc:def0"}] ---
+```
+
+### scan()
+
+扫描发生关联的局域网 IP。
+
+#### 返回值
+
+```typescript
+Promise<Array<{
+    /** MAC 地址 */
+    'mac': string;
+    /** IPv4 地址 */
+    'iPv4': string;
+}>>
+```
+
+#### 示例
+
+```typescript
+const r2 = await lLan.scan();
+console.log(r2);
+// --- 输出示例: [{"mac":"00:11:22:33:44:55","iPv4":"192.168.1.1"}, {"mac":"aa:bb:cc:dd:ee:ff","iPv4":"192.168.1.2"}] ---
+```
+
+## Lang
+
+语言相关功能，包含支持的语言代码、名称、映射等。
+
+#### codes
+
+类型：string[]
+描述：支持的语言缩写列表（如 sc）。
+
+#### names
+
+类型：string[]
+描述：支持的语言名称列表（如 简体中文）。
+
+#### map
+
+类型：
+```typescript
+Record<string, string>
+```
+描述：浏览器常用映射为本语言。
+
+#### getCodeByAccept(accept?)
+
+根据常用语言字符串获取语言 code。
+
+##### accept
+
+必选：否
+类型：string
+默认：undefined
+描述：常用语言字符串，如 zh-cn，或包含 zh-cn 的字符串
+
+#### 返回值
+
+string
+
+## Net
+
+网络请求相关功能，包含 HTTP 请求、Cookie 管理、代理等。
+
+### getCa()
+
+获取 CA 证书。
+
+#### 返回值
+
+string
+
+#### 示例
+
+```typescript
+const ca = await lNet.getCa();
+```
+
+### open(u)
+
+创建一个请求对象。
+
+#### u
+
+必选：是
+类型：string
+描述：请求的 URL
+
+#### 返回值
+
+Request
+
+#### 示例
+
+```typescript
+const req = lNet.open('https://example.com');
+```
+
+### get(u, opt?)
+
+发起一个 get 请求。
+
+#### u
+
+必选：是
+类型：string
+描述：请求的 URL
+
+#### opt
+
+必选：否
+类型：IRequestOptions
+描述：请求选项
+
+#### 返回值
+
+Response
+
+#### 示例
+
+```typescript
+const res = await lNet.get('https://cdn.jsdelivr.net/npm/deskrt@2.0.10/package.json');
+```
+
+### post(u, data, opt?)
+
+发起一个 post 请求。
+
+#### u
+
+必选：是
+类型：string
+描述：请求的 URL
+
+#### data
+
+必选：是
+类型：
+```typescript
+Record<string, any> | Buffer | string | stream.Readable
+```
+描述：提交的数据
+
+#### opt
+
+必选：否
+类型：IRequestOptions
+描述：请求选项
+
+#### 返回值
+
+Response
+
+#### 示例
+
+```typescript
+const res = await lNet.post('https://example.com/api', { 'a': '1', 'b': '2' });
+```
+
+### postJson(u, data?, opt?)
+
+发起 JSON 请求。
+
+#### u
+
+必选：是
+类型：string
+描述：网址
+
+#### data
+
+必选：否
+类型：
+```typescript
+any[] | Record<string, kebab.Json>
+```
+描述：数据
+
+#### opt
+
+必选：否
+类型：IRequestOptions
+描述：选项
+
+#### 返回值
+
+Response
+
+### postJsonResponseJson(u, data, opt?)
+
+发起 JSON 请求并解析 JSON 响应。
+
+#### u
+
+必选：是
+类型：string
+描述：网址
+
+#### data
+
+必选：否
+类型：
+```typescript
+any[] | Record<string, kebab.Json>
+```
+描述：数据
+
+#### opt
+
+必选：否
+类型：IRequestOptions
+描述：选项
+
+#### 返回值
+
+```typescript
+Promise<any | null>
+```
+
+#### 示例
+
+```typescript
+const data = await lNet.postJsonResponseJson('https://example.com/api', { 'query': 'test' });
+```
+
+### fetch(input, init?)
+
+发起一个原生 fetch 请求，增加了一些框架选项。
+
+#### input
+
+必选：是
+类型：string | URL | Request
+描述：请求的 URL 或 Request 对象
+
+#### init
+
+必选：否
+类型：
+```typescript
+RequestInit & {
+    'mproxy'?: {
+        'url': string;
+        'auth': string;
+        'data'?: any;
+        }
+    }
+```
+描述：请求初始化选项，增加了 mproxy 支持
+
+#### 返回值
+
+```typescript
+Promise<Response>
+```
+
+#### 示例
+
+```typescript
+const res = await lNet.fetch('https://example.com', { 
+    'method': 'GET',
+    'headers': {
+        'content-type': 'application/json'
+    }
+});
+```
+
+### request(u, data?, opt?)
+
+发起一个请求。
+
+#### u
+
+必选：是
+类型：string
+描述：请求的 URL
+
+#### data
+
+必选：否
+类型：
+```typescript
+Record<string, any> | Buffer | string | stream.Readable
+```
+默认：undefined
+描述：要发送的数据
+
+#### opt
+
+必选：否
+类型：IRequestOptions
+默认：{}
+描述：请求选项
+
+#### 返回值
+
+Response
+
+#### 示例
+
+```typescript
+const res = await lNet.request('https://example.com', { 'a': '1' }, { 
+    'method': 'GET',
+    'timeout': 30,
+});
+```
+
+### setCookie(cookie, name, value, domain, opt?)
+
+对 cookie 对象进行操作。
+
+#### cookie
+
+必选：是
+类型：Record<string, ICookie>
+描述：要操作的 cookie 对象
+
+#### name
+
+必选：是
+类型：string
+描述：cookie 名称
+
+#### value
+
+必选：是
+类型：string
+描述：cookie 值
+
+#### domain
+
+必选：是
+类型：string
+描述：应用网址，如 .xxx.com
+
+#### opt
+
+必选：否
+类型：
+```typescript
+{
+    'ttl'?: number;
+    'path'?: string;
+    'ssl'?: boolean;
+    'httponly'?: boolean;
+}
+```
+描述：cookie 选项
+
+#### 示例
+
+```typescript
+lNet.setCookie(cookies, 'session', 'abc123', '.example.com', {
+    'ttl': 3600,
+    'path': '/',
+    'ssl': true,
+    'httponly': true,
+});
+```
+
+### buildCookieObject(cookie, setCookies, uri)
+
+根据 Set-Cookie 头部转换到 cookie 对象
+
+#### cookie
+
+必选：是
+类型：Record<string, ICookie>
+描述：cookie 对象
+
+#### setCookies
+
+必选：是
+类型：string[]
+描述：Set-Cookie 头部数组
+
+#### uri
+
+必选：是
+类型：IUrlParse
+描述：请求的 URI 对象
+
+#### 返回值
+
+Promise<void>
+
+### buildCookieQuery(cookie, uri)
+
+对象转换为 Cookie 拼接字符串（会自动筛掉不能发送的 cookie）。
+
+#### cookie
+
+必选：是
+类型：Record<string, ICookie>
+描述：cookie 对象
+
+#### uri
+
+必选：是
+类型：kebab.IUrlParse
+描述：请求的 URI 对象
+
+#### 返回值
+
+string
+
+#### 示例
+
+```typescript
+const cookieStr = lNet.buildCookieQuery(cookies, uri);
+```
+
+#### resetCookieSession(cookie)
+
+模拟重启浏览器后的状态。
+
+#### cookie
+
+必选：是
+类型：Record<string, ICookie>
+描述：cookie 对象
+
+#### 示例
+
+```typescript
+lNet.resetCookieSession(cookies);
+```
+
+#### getFormData()
+
+创建 FormData 对象。
+
+#### 返回值
+
+FormData
+
+#### 示例
+
+```typescript
+const form = lNet.getFormData();
+form.putString('name', 'test');
+await form.putFile('file', '/path/to/file.txt');
+```
+#### 返回值
+
+FormData
+
+### filterHeaders(headers, res?, filter?)
+
+剔除不代理的 header，返回新的 header。
+
+#### headers
+
+必选：是
+类型：http.IncomingHttpHeaders | http2.IncomingHttpHeaders | THttpHeaders
+描述：剔除前的 header
+
+#### res
+
+必选：否
+类型：http2.Http2ServerResponse | http.ServerResponse
+描述：直接设置头部而不返回，可置空
+
+#### filter
+
+必选：否
+类型：(h: string) => boolean
+描述：返回 true 则留下
+
+#### 返回值
+
+Record<string, string | string[]>
+
+#### 示例
+
+```typescript
+const filteredHeaders = lNet.filterHeaders(headers, undefined, h => !h.startsWith('x-'));
+```
+
+### mproxy(ctr, auth, opt?)
+
+正向 mproxy 代理，注意提前处理不要自动处理 post 数据，读取 get 的 url 为实际请求地址。
+
+#### ctr
+
+必选：是
+类型：Ctr
+描述：当前控制器
+
+#### auth
+
+必选：是
+类型：string
+描述：校验字符串，读取 get 的 auth 和本参数做比对
+
+#### opt
+
+必选：否
+类型：IMproxyOptions
+默认：{}
+描述：参数选项
+
+#### 返回值
+
+Promise<number>
+
+#### mproxyData(ctr)
+
+获取 mproxy 的附加数据。
+
+##### ctr
+
+必选：是
+类型：Ctr
+描述：当前控制器
+
+#### 返回值
+
+any
+
+#### 示例
+
+```typescript
+const data = lNet.mproxyData(this);
+```
+
+### rproxy(ctr, route, opt?)
+
+反向代理，注意提前处理不要自动处理 post 数据，将本服务器的某个路由反代到其他网址。
+
+#### ctr
+
+必选：是
+类型：Ctr
+描述：当前控制器
+
+#### route
+
+必选：是
+类型：Record<string, string>
+描述：要反代的路由映射
+
+#### opt
+
+必选：否
+类型：IRproxyOptions
+描述：参数选项
+
+#### 返回值
+
+Promise<boolean>
+
+#### 示例
+
+```typescript
+const res = await lNet.rproxy(this, {
+  'api/': 'https://www.example.com/api/'
+});
+```
+
+### Request
+
+请求对象类，用于链式调用构建请求。
+
+#### data(data)
+
+设置 get 或 post 的数据。
+
+##### data
+
+必选：是
+类型：Record<string, any> | Buffer | string | stream.Readable
+描述：数据
+
+##### 返回值
+
+this
+
+##### 示例
+
+```typescript
+req.data({ 'a': '1' });
+```
+
+#### method(method)
+
+设置 get 或 post 请求。
+
+##### method
+
+必选：是
+类型：'GET' | 'POST'
+描述：请求方法
+
+##### 返回值
+
+this
+
+##### 示例
+
+```typescript
+req.method('GET');
+```
+
+#### get()
+
+method get 方法别名。
+
+##### 返回值
+
+this
+
+##### 示例
+
+```typescript
+req.get();
+```
+
+#### post()
+
+method post 方法别名。
+
+##### 返回值
+
+this
+
+##### 示例
+
+```typescript
+req.post();
+```
+
+##### 返回值
+
+this
+
+#### type(type)
+
+设置提交模式，json 还是普通 form。
+
+##### type
+
+必选：是
+类型：'form' | 'json'
+描述：提交类型
+
+##### 返回值
+
+this
+
+##### 示例
+
+```typescript
+req.type('json');
+```
+
+#### json()
+
+type json 方法别名。
+
+##### 返回值
+
+this
+
+##### 示例
+
+```typescript
+req.json();
+```
+
+#### timeout(timeout)
+
+设置请求有效期。
+
+##### timeout
+
+必选：是
+类型：number
+描述：秒数
+
+##### 返回值
+
+this
+
+##### 示例
+
+```typescript
+req.timeout(30);
+```
+
+#### follow(follow?)
+
+设置是否跟随请求方的 location。
+
+##### follow
+
+必选：否
+类型：number
+描述：跟随次数，默认 5
+
+##### 返回值
+
+this
+
+##### 示例
+
+```typescript
+req.follow(5);
+```
+
+#### hosts(hosts)
+
+设置域名 -> ip的对应键值，就像电脑里的 hosts 一样。
+
+##### hosts
+
+必选：是
+类型：Record<string, string> | string
+描述：hosts 映射
+
+##### 返回值
+
+this
+
+##### 示例
+
+```typescript
+req.hosts({ 'www.example.com': '127.0.0.1' });
+```
+
+#### save(path)
+
+设置后将直接保存到本地文件，不会返回。
+
+##### path
+
+必选：是
+类型：string
+描述：本地实体路径
+
+##### 返回值
+
+this
+
+##### 示例
+
+```typescript
+req.save('/path/to/save/file.txt');
+```
+
+#### local(addr)
+
+设置使用的本地网卡 IP。
+
+##### addr
+
+必选：是
+类型：string
+描述：本地地址
+
+##### 返回值
+
+this
+
+##### 示例
+
+```typescript
+req.local('192.168.1.100');
+```
+
+#### headers(headers)
+
+批量设置提交的 headers。
+
+##### headers
+
+必选：是
+类型：THttpHeaders
+描述：请求头
+
+##### 返回值
+
+this
+
+##### 示例
+
+```typescript
+req.headers({ 'content-type': 'application/json' });
+```
+
+#### setHeader(name, val)
+
+设置单条 header。
+
+##### name
+
+必选：是
+类型：string
+描述：header 名称
+
+##### val
+
+必选：是
+类型：string
+描述：header 值
+
+##### 返回值
+
+this
+
+##### 示例
+
+```typescript
+req.setHeader('content-type', 'application/json');
+```
+
+#### request(cookie?)
+
+发起请求。
+
+##### cookie
+
+必选：否
+类型：Record<string, ICookie>
+默认：undefined
+描述：cookie 托管对象
+
+##### 返回值
+
+Promise<Response>
+
+##### 示例
+
+```typescript
+const res = await req.request(cookies);
+```
+
+### Response
+
+响应对象类，用于处理请求返回结果。
+
+#### getContent()
+
+读取所有内容到内存。
+
+##### 返回值
+
+Promise<Buffer | null>
+
+##### 示例
+
+```typescript
+const content = await res.getContent();
+```
+
+#### setContent(v)
+
+用户自定义的 content 内容。
+
+##### v
+
+必选：是
+类型：string | Buffer
+描述：内容值
+
+##### 返回值
+
+this
+
+##### 示例
+
+```typescript
+res.setContent('Hello World');
+```
+
+#### getStream()
+
+获取响应读取流对象。
+
+##### 返回值
+
+stream.Readable | null
+
+##### 示例
+
+```typescript
+const stream = res.getStream();
+```
+
+#### getRawStream()
+
+获取原生响应读取流对象。
+
+##### 返回值
+
+stream.Readable | null
+
+##### 示例
+
+```typescript
+const rawStream = res.getRawStream();
+```
+
+### FormData 类
+
+表单数据类，用于构建 multipart/form-data 请求。
+
+#### putString(key, val)
+
+添加字符串。
+
+##### key
+
+必选：是
+类型：string
+描述：键
+
+##### val
+
+必选：是
+类型：string
+描述：值
+
+##### 返回值
+
+this
+
+##### 示例
+
+```typescript
+form.putString('name', 'test');
+```
+
+#### putFile(key, path, fname?)
+
+添加文件。
+
+##### key
+
+必选：是
+类型：string
+描述：键
+
+##### path
+
+必选：是
+类型：string
+描述：文件路径
+
+##### fname
+
+必选：否
+类型：string
+默认：undefined
+描述：可选，文件名
+
+##### 返回值
+
+Promise<boolean>
+
+##### 示例
+
+```typescript
+await form.putFile('file', '/path/to/file.txt');
+```
+
+#### getBoundary()
+
+获取 boundary。
+
+##### 返回值
+
+string
+
+#### getLength()
+
+获取总字节长度。
+
+##### 返回值
+
+number
+
+#### getSent()
+
+获取已发送的字节长度。
+
+##### 返回值
+
+number
+
+### IRequestOptions
+
+请求的传入参数选项。
+
+```typescript
+interface IRequestOptions {
+  /** 请求方法 */
+  'method'?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'OPTIONS';
+  /** 提交类型 */
+  'type'?: 'form' | 'json';
+  /** 超时时间（秒数） */
+  'timeout'?: number;
+  /** 追踪 location 次数，0 为不追踪，默认为 0 */
+  'follow'?: number;
+  /** 自定义 host 映射，如 {'www.maiyun.net': '127.0.0.1'}，或全部映射到一个 host */
+  'hosts'?: Record<string, string> | string;
+  /** 保存到本地文件路径 */
+  'save'?: string;
+  /** 本地地址 */
+  'local'?: string;
+  /** 请求头 */
+  'headers'?: THttpHeaders;
+  /** 正向 mproxy 代理，url 如 https://xxx/abc */
+  'mproxy'?: {
+    'url': string;
+    'auth': string;
+    'data'?: any;
+  };
+  /** 复用标识，默认为 default */
+  'reuse'?: string;
+  /** cookie 托管对象 */
+  'cookie'?: Record<string, ICookie>;
+}
+```
+
+### IMproxyOptions
+
+正向代理请求的传入参数选项。
+
+```typescript
+interface IMproxyOptions {
+  /** 超时时间（秒数） */
+  'timeout'?: number;
+  /** 追踪 location 次数 */
+  'follow'?: number;
+  /** 自定义 host 映射，如 {'www.maiyun.net': '127.0.0.1'}，或全部映射到一个 host */
+  'hosts'?: Record<string, string> | string;
+  /** 本地地址 */
+  'local'?: string;
+  /** 请求头 */
+  'headers'?: THttpHeaders;
+  /** 过滤 header，返回 true 则留下 */
+  filter?: (h: string) => boolean;
+  /** 复用标识，默认为 default */
+  'reuse'?: string;
+}
+```
+
+### IRproxyOptions
+
+反向代理请求的传入参数选项。
+
+```typescript
+interface IRproxyOptions {
+  /** 超时时间（秒数） */
+  'timeout'?: number;
+  /** 追踪 location 次数 */
+  'follow'?: number;
+  /** 自定义 host 映射，如 {'www.maiyun.net': '127.0.0.1'}，或全部映射到一个 host */
+  'hosts'?: Record<string, string> | string;
+  /** 本地地址 */
+  'local'?: string;
+  /** 请求头 */
+  'headers'?: THttpHeaders;
+  /** 过滤 header，返回 true 则留下 */
+  filter?: (h: string) => boolean;
+  /** 正向 mproxy 代理，url 如 https://xxx/abc */
+  'mproxy'?: {
+    'url': string;
+    'auth': string;
+    'data'?: any;
+  };
+  /** 复用标识，默认为 default */
+  'reuse'?: string;
+}
+```
+
+### THttpHeaders
+
+HTTP 头部类型。
+
+```typescript
+type THttpHeaders = http.IncomingHttpHeaders & {
+  /** HTTP 版本 */
+  'http-version'?: '1.1' | '2.0';
+  /** HTTP 状态码 */
+  'http-code'?: number;
+  /** HTTP 请求 URL */
+  'http-url'?: string;
+};
+```
+
+### ICookie
+
+Net Cookie 对象。
+
+```typescript
+interface ICookie {
+  /** Cookie 名称 */
+  'name': string;
+  /** Cookie 值 */
+  'value': string;
+  /** 有效期秒级时间戳 */
+  'exp': number;
+  /** Cookie 路径 */
+  'path': string;
+  /** Cookie 域名 */
+  'domain': string;
+  /** 是否安全 */
+  'secure': boolean;
+  /** 是否仅 HTTP */
+  'httponly': boolean;
+}
+```
+
+### IItem
+
+FormData 中的项目接口。
+
+```typescript
+interface IItem {
+  /** key 键 */
+  'key': string;
+  /** 是否为文件 */
+  'isFile': boolean;
+  /** 是否为字符串 */
+  'isString': boolean;
+  /** 值或者文件名 */
+  'value': string;
+  /** 文件路径 */
+  'path': string;
+}

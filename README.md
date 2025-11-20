@@ -32,7 +32,7 @@ You can also use pm2 to start the project by running:
 
 ## Library
 
-Buffer, Captcha, Consistent, Core, Cron, Crypto, Db (MySQL), Dns (DNSPod, Alibaba Cloud), Fs, Jwt, Kv (Redis), Lan, Net, S3, Scan, Session, Sql, Ssh (Shell, Sftp), Text, Time, Ws, Zip, Zlib.
+Ai, Buffer, Captcha, Consistent, Core, Cron, Crypto, Db (MySQL, PostgreSQL), Dns (DNSPod, Alibaba Cloud), Fs, Kv (Redis), Lan, Lang, Net, S3, Scan, Session, Socket, Sql, Ssh (Shell, Sftp), Text, Time, Turnstile (Cloudflare, Tencent Cloud), Vector (Milvus), Ws, Zip, Zlib.
 
 ## Partial Features
 

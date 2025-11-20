@@ -62,7 +62,6 @@ export interface IConfig {
     }> & {
         'default': 'MYSQL' | 'PGSQL';
     };
-    'jwt': IConfigJwt;
     'kv': IConfigKv;
     'route': Record<string, string>;
     'session': {

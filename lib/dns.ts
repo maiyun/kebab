@@ -1,16 +1,16 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2019-6-19
- * Last: 2022-09-12 20:58:07, 2024-2-21 17:55:54, 2025-6-13 19:08:56
+ * Last: 2022-09-12 20:58:07, 2024-2-21 17:55:54, 2025-6-13 19:08:56, 2025-11-19 00:17:56
  */
 
 // --- 库和定义 ---
-import * as net from '#kebab/lib/net.js';
-import * as core from '#kebab/lib/core.js';
-import * as text from '#kebab/lib/text.js';
-import * as crypto from '#kebab/lib/crypto.js';
-import * as response from '#kebab/lib/net/response.js';
-import * as ctr from '#kebab/sys/ctr.js';
+import * as lNet from '#kebab/lib/net.js';
+import * as lCore from '#kebab/lib/core.js';
+import * as lText from '#kebab/lib/text.js';
+import * as lCrypto from '#kebab/lib/crypto.js';
+import * as lResponse from '#kebab/lib/net/response.js';
+import * as sCtr from '#kebab/sys/ctr.js';
 
 /**
  * 0.DNSPod：https://www.dnspod.cn/docs/index.html（腾讯云也请使用 DNSPod 的 API）
@@ -57,20 +57,20 @@ export interface IAddDomainRecord {
 /**
  * --- 记录值类型 ---
  */
-export const RECORD_TYPE = {
-    'A': 'A',
-    'NS': 'NS',
-    'MX': 'MX',
-    'TXT': 'TXT',
-    'CNAME': 'CNAME',
-    'SRV': 'SRV',
-    'AAAA': 'AAAA'
-};
+export enum ERECORDTYPE {
+    'A',
+    'NS',
+    'MX',
+    'TXT',
+    'CNAME',
+    'SRV',
+    'AAAA'
+}
 
 /**
  * --- 记录值线路 ---
  */
-export enum ERecordLine {
+export enum ERECORDLINE {
     'DEFAULT',
     'TELECOM',
     'UNICOM',
@@ -103,7 +103,7 @@ export class Dns {
     /** --- 当前选项 --- */
     private readonly _opt: IOptions;
 
-    public constructor(ctr: ctr.Ctr, opt: IOptions) {
+    public constructor(ctr: sCtr.Ctr, opt: IOptions) {
         const config = ctr.getPrototype('_config');
         opt.secretId ??= config.dns?.[ESERVICE[opt.service]].sid;
         opt.secretKey ??= config.dns?.[ESERVICE[opt.service]].skey;
@@ -114,7 +114,7 @@ export class Dns {
      * --- 最终发送 ---
      * @param obj 要发送的信息
      */
-    private async _send(obj: Record<string, string | number | undefined>): Promise<response.Response> {
+    private async _send(obj: Record<string, string | number | undefined>): Promise<lResponse.Response> {
         for (const key in obj) {
             if (obj[key] === null || obj[key] === undefined) {
                 delete obj[key];
@@ -129,25 +129,26 @@ export class Dns {
                 }, obj);
                 const path = data['_path'] as string;
                 delete data['_path'];
-                return await net.post('https://dnsapi.cn/' + path, data); // 境外 api 会自动调度到香港服务器
+                // --- 境外服务器请求的话 api 会自动解析到香港服务器 ---
+                return lNet.post('https://dnsapi.cn/' + path, data);
             }
             // --- 阿里云 ---
             case ESERVICE.ALIBABA: {
-                const getData = core.objectSort(Object.assign({
+                const getData = lCore.objectSort(Object.assign({
                     'Format': 'JSON',
                     'Version': '2015-01-09',
                     'AccessKeyId': this._opt.secretId,
                     'SignatureMethod': 'HMAC-SHA1',
                     'Timestamp': (new Date()).toISOString(),
                     'SignatureVersion': '1.0',
-                    'SignatureNonce': core.rand(1000000000, 9999999999)
+                    'SignatureNonce': lCore.rand(1000000000, 9999999999)
                 }, obj));
-                const urlRight = text.queryStringify(getData);
-                const signature = crypto.hashHmac('sha1', `GET&${encodeURIComponent('/')}&${encodeURIComponent(urlRight)}`, (this._opt.secretKey ?? '') + '&', 'base64');
-                return await net.get(`https://alidns.aliyuncs.com/?${urlRight}&Signature=${encodeURIComponent(signature)}`); // 境外 api 会自动调度到新加坡服务器
+                const urlRight = lText.queryStringify(getData);
+                const signature = lCrypto.hashHmac('sha1', `GET&${encodeURIComponent('/')}&${encodeURIComponent(urlRight)}`, (this._opt.secretKey ?? '') + '&', 'base64');
+                return lNet.get(`https://alidns.aliyuncs.com/?${urlRight}&Signature=${encodeURIComponent(signature)}`); // 境外 api 会自动调度到新加坡服务器
             }
         }
-        return new response.Response(null);
+        return new lResponse.Response(null);
     }
 
     /**
@@ -170,7 +171,7 @@ export class Dns {
                 if (!res) {
                     return res;
                 }
-                const json = text.parseJson(res.toString());
+                const json = lText.parseJson(res.toString());
                 const r: IDomainList = {
                     'total': json.info.domain_total,
                     'list': []
@@ -197,7 +198,7 @@ export class Dns {
                 if (!res) {
                     return res;
                 }
-                const json = text.parseJson(res.toString());
+                const json = lText.parseJson(res.toString());
                 const r: IDomainList = {
                     'total': json.TotalCount,
                     'list': []
@@ -225,11 +226,11 @@ export class Dns {
         'sub': string;
         'type': string;
         'value': string;
-        'line'?: number;
+        'line'?: ERECORDLINE;
         'ttl'?: number;
         'mx'?: number;
     }): Promise<IAddDomainRecord | null> {
-        const line = opt.line ?? ERecordLine.DEFAULT;
+        const line = opt.line ?? ERECORDLINE.DEFAULT;
         const ttl = opt.ttl ?? 600;
         switch (this._opt.service) {
             // --- DNSPod ---
@@ -248,7 +249,7 @@ export class Dns {
                 if (!res) {
                     return res;
                 }
-                const json = text.parseJson(res.toString());
+                const json = lText.parseJson(res.toString());
                 const r: IAddDomainRecord = {
                     'success': json.record?.id ? true : false,
                     'id': json.record?.id ?? ''
@@ -271,7 +272,7 @@ export class Dns {
                 if (!res) {
                     return res;
                 }
-                const json = text.parseJson(res.toString());
+                const json = lText.parseJson(res.toString());
                 const r: IAddDomainRecord = {
                     'success': json.RecordId !== undefined ? true : false,
                     'id': json.RecordId ?? ''
@@ -292,11 +293,11 @@ export class Dns {
         'sub': string;
         'type': string;
         'value': string;
-        'line'?: number;
+        'line'?: ERECORDLINE;
         'ttl'?: number;
         'mx'?: number;
     }): Promise<IAddDomainRecord | null> {
-        const line = opt.line ?? ERecordLine.DEFAULT;
+        const line = opt.line ?? ERECORDLINE.DEFAULT;
         const ttl = opt.ttl ?? 600;
         switch (this._opt.service) {
             // --- DNSPod ---
@@ -317,7 +318,7 @@ export class Dns {
                 if (!res) {
                     return res;
                 }
-                const json = text.parseJson(res.toString());
+                const json = lText.parseJson(res.toString());
                 const r: IAddDomainRecord = {
                     'success': json.record?.id ? true : false,
                     'id': json.record?.id ?? ''
@@ -340,7 +341,7 @@ export class Dns {
                 if (!res) {
                     return res;
                 }
-                const json = text.parseJson(res.toString());
+                const json = lText.parseJson(res.toString());
                 const r: IAddDomainRecord = {
                     'success': json.RecordId !== undefined ? true : false,
                     'id': json.RecordId ?? ''
@@ -371,7 +372,7 @@ export class Dns {
                 if (!res) {
                     return res;
                 }
-                const json = text.parseJson(res.toString());
+                const json = lText.parseJson(res.toString());
                 return {
                     'success': json.status.code === '1' ? true : false
                 };
@@ -386,7 +387,7 @@ export class Dns {
                 if (!res) {
                     return res;
                 }
-                const json = text.parseJson(res.toString());
+                const json = lText.parseJson(res.toString());
                 return {
                     'success': json.Code === undefined ? true : false
                 };
@@ -397,9 +398,9 @@ export class Dns {
 }
 
 /**
- * --- 创建一个第三方 Dns 对象 ---
+ * --- 创建一个 Dns 对象 ---
  * @param opt 选项
  */
-export function get(ctr: ctr.Ctr, opt: IOptions): Dns {
+export function get(ctr: sCtr.Ctr, opt: IOptions): Dns {
     return new Dns(ctr, opt);
 }

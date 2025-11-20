@@ -511,7 +511,6 @@ export async function run(data: {
             cctr.setPrototype('_post', middle.getPrototype('_post'));
 
             cctr.setPrototype('_cookie', cookies);
-            cctr.setPrototype('_jwt', middle.getPrototype('_jwt'));
             if (!cctr.getPrototype('_sess') && middle.getPrototype('_sess')) {
                 cctr.setPrototype('_session', middle.getPrototype('_session'));
                 cctr.setPrototype('_sess', middle.getPrototype('_sess'));

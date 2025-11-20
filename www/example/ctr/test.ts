@@ -15,7 +15,6 @@ import * as lScan from '#kebab/lib/scan.js';
 import * as lSql from '#kebab/lib/sql.js';
 import * as lConsistent from '#kebab/lib/consistent.js';
 import * as lSsh from '#kebab/lib/ssh.js';
-import * as lJwt from '#kebab/lib/jwt.js';
 import * as lWs from '#kebab/lib/ws.js';
 import * as lS3 from '#kebab/lib/s3.js';
 import * as lZip from '#kebab/lib/zip.js';
@@ -220,11 +219,6 @@ export default class extends sCtr.Ctr {
             `<br><a href="${this._config.const.urlBase}test/sql?type=having">View "test/sql?type=having"</a> <a href="${this._config.const.urlBase}test/sql?type=having&s=pgsql">pgsql</a>`,
             `<br><a href="${this._config.const.urlBase}test/sql?type=by">View "test/sql?type=by"</a> <a href="${this._config.const.urlBase}test/sql?type=by&s=pgsql">pgsql</a>`,
             `<br><a href="${this._config.const.urlBase}test/sql?type=field">View "test/sql?type=field"</a> <a href="${this._config.const.urlBase}test/sql?type=field&s=pgsql">pgsql</a>`,
-
-            '<br><br><b>Jwt:</b>',
-            `<br><br><a href="${this._config.const.urlBase}test/jwt">View "test/jwt"</a>`,
-            `<br><a href="${this._config.const.urlBase}test/jwt?type=kv">View "test/jwt?type=kv"</a>`,
-            `<br><a href="${this._config.const.urlBase}test/jwt?type=auth">View "test/jwt?type=auth" Header Authorization</a>`,
 
             '<br><br><b>Consistent:</b>',
             `<br><br><a href="${this._config.const.urlBase}test/consistent-hash">View "test/consistent-hash"</a>`,
@@ -1231,7 +1225,7 @@ for (let i = 0; i < 30000; ++i) {
         const echo: string[] = [];
         echo.push('<table style="width: 100%;">');
         if (list) {
-            echo.push('<tr><th>TIME</th><th>UNIX</th><th>URL</th><th>COOKIE</th><th>SESSION</th><th>JWT</th><th>USER_AGENT</th><th>REALIP</th><th>CLIENTIP</th><th>OS</th><th>PROCESS</th><th>MESSAGE</th></tr>');
+            echo.push('<tr><th>TIME</th><th>UNIX</th><th>URL</th><th>COOKIE</th><th>SESSION</th><th>USER_AGENT</th><th>REALIP</th><th>CLIENTIP</th><th>OS</th><th>PROCESS</th><th>MESSAGE</th></tr>');
             for (const row of list) {
                 echo.push('<tr>');
                 for (const item of row) {
@@ -2517,77 +2511,6 @@ Result:<pre id="result">Nothing.</pre>`);
                 return '<a href="' + this._config.const.urlBase + 'test">Return</a>' + echo.join('') + this._getEnd();
             }
         }
-    }
-
-    public async jwt(): Promise<string | kebab.Json[]> {
-        const retur: kebab.Json[] = [];
-        if (!(this._checkInput(this._get, {
-            'type': [['', 'kv', 'auth'], [0, 'Bad request.']]
-        }, retur))) {
-            return retur;
-        }
-
-        const echo: string[] = ['<pre>'];
-        let link: lKv.Kv | false | undefined = undefined;
-        if (this._get['type'] === 'kv') {
-            link = lKv.get(this);
-            echo.push('link = lKv.get(this);\n');
-        }
-
-        const origin = lJwt.getOrigin(this);
-        echo.push(`const origin = lJwt.getOrigin(this);
-JSON.stringify(origin);</pre>`);
-        echo.push(JSON.stringify(origin));
-
-        // --- 创建 jwt 对象 ---
-        const jwt = await lJwt.get(this, {}, link);
-        echo.push(`<pre>const jwt = lJwt.get(this, {}, ${link ? 'link' : 'undefined'});
-JSON.stringify(this._jwt);</pre>`);
-        echo.push(JSON.stringify(this._jwt));
-
-        this._jwt['test'] = 'a';
-        const value = jwt.renew();
-        echo.push(`<pre>this._jwt['test'] = 'a';
-const value = jwt.renew();
-JSON.stringify(this._jwt);</pre>`);
-        echo.push(JSON.stringify(this._jwt));
-
-        echo.push(`<pre>JSON.stringify(value);</pre>`);
-        echo.push(JSON.stringify(value));
-
-        const token = this._jwt['token'];
-        const rtn = await jwt.destory();
-        echo.push(`<pre>const token = this._jwt['token'];
-const rtn = await jwt.destory();
-JSON.stringify(rtn);</pre>`);
-        echo.push(JSON.stringify(rtn));
-
-        echo.push('<pre>JSON.stringify(this._jwt);</pre>');
-        echo.push(JSON.stringify(this._jwt));
-
-        const rtn2 = await lJwt.decode(this, origin, link);
-        echo.push(`<pre>const rtn2 = await lJwt.decode(this, origin, ${link ? 'link' : 'undefined'});
-JSON.stringify(rtn2);</pre>`);
-        echo.push(JSON.stringify(rtn2));
-
-        if (this._get['type'] === 'auth') {
-            echo.push(`<br><br><input type="button" value="Post with header" onclick="document.getElementById('result').innerText='Waiting...';fetch('${this._config.const.urlBase}test/jwt1',{method:'POST',credentials:'omit',headers:{'Authorization':document.getElementById('_auth').innerText,'content-type':'application/x-www-form-urlencoded'},body:'key=val'}).then(function(r){return r.json();}).then(function(j){document.getElementById('result').innerText=j.txt;});"><input type='button' value="Post without header" style="margin-left: 10px;" onclick="document.getElementById('result').innerText='Waiting...';fetch('${this._config.const.urlBase}test/jwt1',{method:'POST',credentials:'omit',headers:{'content-type':'application/x-www-form-urlencoded'},body:'key=val'}).then(function(r){return r.json();}).then(function(j){document.getElementById('result').innerText=j.txt;});"><br><br>
-Token: <span id="token">${token}</span><br>
-Post Authorization header: <span id="_auth">Bearer ${origin}</span><br><br>
-Result:<pre id="result">Nothing.</pre>`);
-        }
-        else {
-            echo.push('<br><br>');
-        }
-
-        return echo.join('') + this._getEnd();
-    }
-
-    public async jwt1(): Promise<[number, kebab.Json]>  {
-        await lJwt.get(this, {
-            'auth': true
-        });
-        return [1, { 'txt': JSON.stringify(this._jwt) }];
     }
 
     public sql(): string {
