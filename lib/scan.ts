@@ -252,9 +252,9 @@ export async function get(link: lDb.Pool | lKv.Kv, token?: string, opt: IOptions
 
 /**
  * --- 对 token 执行访问操作，通常用户扫码后展示的网页所调用，代表已扫码 ---
- * @param link
- * @patam token 必填
- * @param opt
+ * @param link Db 或 Kv
+ * @param token 必填
+ * @param opt 参数
  */
 export async function scanned(
     link: lDb.Pool | lKv.Kv,

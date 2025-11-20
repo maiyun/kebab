@@ -42,7 +42,7 @@ export type Json = any;
 /** --- 数据库值的类型 --- */
 export type DbValue = string | number | null | Record<string, Json>;
 
-/** --- 动态目录配置文件 --- */
+/** --- 目录配置文件 --- */
 export interface IConfig {
     'set': {
         'timezone': number;
