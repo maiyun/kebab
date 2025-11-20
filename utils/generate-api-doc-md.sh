@@ -17,16 +17,15 @@ fi
 mkdir -p $(dirname $API_DOC_OUTPUT_DIR)
 
 npx typedoc \
-  --entryPoints "./index.ts" "./main.ts" "./lib/**/*.ts" "./sys/**/*.ts" \
-  --entryPointStrategy expand \
+  --entryPoints "index.ts" "main.ts" "lib/**/*.ts" "sys/{ctr,mod,route}.ts" \
+  --exclude "**/*.d.ts" \
   --out $API_DOC_OUTPUT_DIR \
   --readme none \
   --name "Documents for @maiyunnet/kebab" \
   --hostedBaseUrl "https://maiyunnet.github.io/kebab/" \
   --plugin typedoc-plugin-markdown \
-  --router module \
   --sourceLinkTemplate "https://github.com/maiyunnet/kebab/blob/master/{path}#L{line}" \
-  --exclude "**/*.d.ts" "./sys/child.ts" "./sys/cmd.ts" "./sys/master.ts"
+  --entryFileName "index"
 
 # --- 去除前导尾随 ---
 
