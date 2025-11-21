@@ -279,7 +279,7 @@ export class Sql {
     /**
      * --- 如果存在则更新不存在则插入（UPSERT）---
      * @param data 更新的数据
-     * @param conflict 冲突字段，PostgreSQL 专用，默认为主键
+     * @param conflict 冲突字段，PostgreSQL 专用
      */
     public upsert(data: kebab.Json, conflict?: string | string[]): this {
         if (this._service === ESERVICE.MYSQL) {

@@ -8,7 +8,7 @@
 
 > **format**(`sql`, `data`, `service`): `string`
 
-Defined in: [lib/sql.ts:1162](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L1162)
+Defined in: [lib/sql.ts:1194](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L1194)
 
 返回代入后的完整 SQL 字符串，这并不安全不能直接执行，只是用来调试打印 sql 语句
 

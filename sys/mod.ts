@@ -792,6 +792,45 @@ export default class Mod {
     }
 
     /**
+     * --- 插入数据，如果存在则更新（UPSERT） ---
+     * @param conflict 冲突字段，PostgreSQL 专用
+     */
+    public async upsert(conflict?: string | string[]): Promise<boolean> {
+        const cstr = this.constructor as Record<string, kebab.Json>;
+        const updates: Record<string, any> = {};
+        for (const k in this._updates) {
+            updates[k] = this._data[k];
+        }
+
+        if ((cstr._$key !== '') && (updates[cstr._$key] === undefined)) {
+            updates[cstr._$key] = this._keyGenerator();
+            this._data[cstr._$key] = updates[cstr._$key];
+            (this as kebab.Json)[cstr._$key] = updates[cstr._$key];
+        }
+
+        this._sql.insert((cstr._$table as string) + (this._index ? ('_' + this._index[0]) : ''));
+        this._sql.values(updates);
+        this._sql.upsert(updates, conflict);
+
+        const r = await this._db.execute(this._sql.getSql(), this._sql.getData());
+        if (r.packet === null) {
+            lCore.log(this._ctr ?? {}, '[MOD][upsert][' + cstr._$table + '] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+            return false;
+        }
+        if (r.packet.affected) {
+            this._updates = {};
+            if (r.packet.insert) {
+                this._data[cstr._$primary] = r.packet.insert;
+                (this as kebab.Json)[cstr._$primary] = this._data[cstr._$primary];
+            }
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    /**
      * --- 刷新当前模型获取最新数据 ---
      * @param lock 是否加锁
      */

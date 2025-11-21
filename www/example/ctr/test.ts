@@ -144,6 +144,7 @@ export default class extends sCtr.Ctr {
             `<br><a href="${this._config.const.urlBase}test/mod-test">Click to see an example of a Test model</a> <a href="${this._config.const.urlBase}test/mod-test?s=pgsql">pgsql</a>`,
             `<br><a href="${this._config.const.urlBase}test/mod-split">View "test/mod-split"</a>`,
             `<br><a href="${this._config.const.urlBase}test/mod-insert">View "test/mod-insert"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/mod-upsert">View "test/mod-upsert"</a>`,
 
             '<br><br><b>Library test:</b>',
 
@@ -954,6 +955,78 @@ CREATE TABLE \`m_test_data_0\` (
         });
         echo.push('<br><br>Result: ' + JSON.stringify(res));
         return echo.join('') + '<br><br>' + this._getEnd();
+    }
+
+    public async modUpsert(): Promise<string> {
+        const echo = ['<b style="color: red;">In a production environment, please delete "mod/test.ts" and "mod/testdata.ts" files.</b>'];
+        const db = this._get['s'] === 'pgsql' ? lDb.get(this, {
+            'service': lDb.ESERVICE.PGSQL,
+        }) : lDb.get(this);
+
+        // --- 定义测试用的唯一 token 和冲突字段（PGSQL 需要明确指定冲突字段） ---
+        const token = 'upsert-token';
+        const conflict = this._get['s'] === 'pgsql' ? 'token' : undefined;
+
+        // --- 1. 第一次 Upsert (相当于 Insert) ---
+        const test1 = mTest.getCreate<mTest>(db, {
+            'ctr': this,
+            'pre': this._get['s'] === 'pgsql' ? 'm' : undefined,
+        });
+        test1.set({
+            'name': lCore.random(4),
+            'token': token,
+            'point': { 'x': 10, 'y': 10 },
+            'time_add': lTime.stamp(),
+        });
+
+        const res1 = await test1.upsert(conflict);
+
+        echo.push(`<br><br><b>1. Insert new record:</b><pre>
+const test1 = mTest.getCreate(db);
+test1.set({
+    'name': '${test1.name}',
+    'token': '${token}',
+    ...
+});
+const res1 = await test1.upsert(${conflict ? `'${conflict}'` : ''});</pre>Result: ${res1}<br><br>`);
+
+        let stmt = await db.query(this._get['s'] === 'pgsql' ?
+            `SELECT * FROM "m"."test" WHERE "token" = '${token}';` :
+            `SELECT * FROM \`m_test\` WHERE \`token\` = '${token}';`
+        );
+        this._dbTable(stmt, echo);
+
+        // --- 2. 第二次 Upsert (相当于 Update) ---
+        const test2 = mTest.getCreate<mTest>(db, {
+            'ctr': this,
+            'pre': this._get['s'] === 'pgsql' ? 'm' : undefined,
+        });
+        // --- 使用相同的 token，但修改 name 和 point ---
+        test2.set({
+            'name': lCore.random(4),
+            'token': token,
+            'point': { 'x': 20, 'y': 20 },
+            'time_add': lTime.stamp(),
+        });
+
+        const res2 = await test2.upsert(conflict);
+
+        echo.push(`<br><b>2. Upsert existing record (Update):</b><pre>
+const test2 = mTest.getCreate(db);
+test2.set({
+    'name': '${test2.name}',
+    'token': '${token}',
+    ...
+});
+const res2 = await test2.upsert(${conflict ? `'${conflict}'` : ''});</pre>Result: ${res2}<br><br>`);
+
+        stmt = await db.query(this._get['s'] === 'pgsql' ?
+            `SELECT * FROM "m"."test" WHERE "token" = '${token}';` :
+            `SELECT * FROM \`m_test\` WHERE \`token\` = '${token}';`
+        );
+        this._dbTable(stmt, echo);
+
+        return echo.join('') + '<br>' + this._getEnd();
     }
 
     public captchaFastbuild(): string {
