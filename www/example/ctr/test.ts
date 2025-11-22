@@ -145,6 +145,7 @@ export default class extends sCtr.Ctr {
             `<br><a href="${this._config.const.urlBase}test/mod-split">View "test/mod-split"</a>`,
             `<br><a href="${this._config.const.urlBase}test/mod-insert">View "test/mod-insert"</a>`,
             `<br><a href="${this._config.const.urlBase}test/mod-upsert">View "test/mod-upsert"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/mod-update-list">View "test/mod-update-list"</a>`,
 
             '<br><br><b>Library test:</b>',
 
@@ -329,7 +330,7 @@ Result:<pre id="result">Nothing.</pre>${this._getEnd()}`;
     'num2': ['> 0', '<= 100', [0, 'The num2 param must > 0.']],
     'reg': ['/^[A-CX-Z5-7]+$/', [0, 'The reg param is incorrect.']],
     'arr': [['a', 'x', 'hehe'], [0, 'The arr param is incorrect.']],
-    'type': [{ 'type': { 'a': 1, 'b': '' } }, [0, 'The reg param is incorrect']],
+    'type': [{ 'type': { 'a': 1, 'b': '' } }, [0, 'The type param is incorrect']],
     'json': [{ 'type': { 'a': '1', 'b': [ { 'c': 1 } ] } }, [0, 'The type param is incorrect']],
     'json2': [{ 'type': { 'a': '1', 'b': 0, 'c?': { 'd': '1' } } }, [0, 'The json2 param is incorrect']],
 }</pre>`];
@@ -1025,6 +1026,79 @@ const res2 = await test2.upsert(${conflict ? `'${conflict}'` : ''});</pre>Result
             `SELECT * FROM \`m_test\` WHERE \`token\` = '${token}';`
         );
         this._dbTable(stmt, echo);
+
+        return echo.join('') + '<br>' + this._getEnd();
+    }
+
+    public async modUpdateList(): Promise<string> {
+        const echo = ['<b style="color: red;">In a production environment, please delete "mod/test.ts" and "mod/testdata.ts" files.</b>'];
+        const db = this._get['s'] === 'pgsql' ? lDb.get(this, {
+            'service': lDb.ESERVICE.PGSQL,
+        }) : lDb.get(this);
+
+        // --- 准备数据 ---
+        const time = lTime.stamp();
+        const data: any[] = [];
+        for (let i = 0; i < 5; ++i) {
+            data.push({
+                'name': 'ul_' + i,
+                'token': 'ul_token_' + i,
+                'point': { 'x': i, 'y': i },
+                'time_add': time,
+            });
+        }
+
+        // --- 插入数据 ---
+        await mTest.insert(db, ['name', 'token', 'point', 'time_add'], data.map(item => [item.name, item.token, item.point, item.time_add]), {
+            'ctr': this,
+            'pre': this._get['s'] === 'pgsql' ? 'm' : undefined,
+        });
+
+        echo.push('<br><br>Inserted 5 rows.<br><br>');
+
+        // --- 查询插入的数据 ---
+        let stmt = await db.query(this._get['s'] === 'pgsql' ?
+            `SELECT * FROM "m"."test" WHERE "token" LIKE 'ul_token_%' ORDER BY "id" ASC;` :
+            `SELECT * FROM \`m_test\` WHERE \`token\` LIKE 'ul_token_%' ORDER BY \`id\` ASC;`
+        );
+        this._dbTable(stmt, echo);
+
+        // --- 构造批量更新数据 ---
+        // --- 更新 name 和 point ---
+        const updateData: Array<Record<string, any>> = [];
+        if (stmt.rows) {
+            for (let i = 0; i < stmt.rows.length; ++i) {
+                const row = stmt.rows[i];
+                updateData.push({
+                    'id': row.id,
+                    'name': 'up_' + i,
+                    'point': { 'x': i + 10, 'y': i + 10 }
+                });
+            }
+        }
+
+        // --- 执行批量更新 ---
+        const res = await mTest.updateList(db, updateData, 'id', {
+            'ctr': this,
+            'pre': this._get['s'] === 'pgsql' ? 'm' : undefined,
+        });
+
+        echo.push(`<br><b>updateList result:</b> ${lText.stringifyJson(res)}<br><br>`);
+
+        // --- 查询更新后的数据 ---
+        stmt = await db.query(this._get['s'] === 'pgsql' ?
+            `SELECT * FROM "m"."test" WHERE "token" LIKE 'ul_token_%' ORDER BY "id" ASC;` :
+            `SELECT * FROM \`m_test\` WHERE \`token\` LIKE 'ul_token_%' ORDER BY \`id\` ASC;`
+        );
+        this._dbTable(stmt, echo);
+
+        // --- 清理数据 ---
+        await mTest.removeByWhere(db, [
+            ['token', 'LIKE', 'ul_token_%']
+        ], {
+            'ctr': this,
+            'pre': this._get['s'] === 'pgsql' ? 'm' : undefined,
+        });
 
         return echo.join('') + '<br>' + this._getEnd();
     }
@@ -2115,7 +2189,7 @@ lCore.setCookie(this, 'test10', 'httponly', {
 });</pre>
 headers: <pre>${JSON.stringify(res.headers, null, 4)}</pre>
 content: <pre>${(await res.getContent())?.toString() ?? 'null'}</pre>
-error: ${JSON.stringify(res.error)}</pre>`);
+error: ${JSON.stringify(res.error)}`);
 
         return echo.join('') + this._getEnd();
     }
@@ -2633,18 +2707,10 @@ Result:<pre id="result">Nothing.</pre>`);
                 s = sql.insert('geo').values(['name', 'point', 'point2', 'polygon', 'json'], [
                     [
                         'POINT A', ['ST_POINTFROMTEXT(?)', ['POINT(122.147775 30.625015)']], { 'x': 1, 'y': 1 }, [
-                            [
-                                { 'x': 1, 'y': 1 },
-                                { 'x': 2, 'y': 2 },
-                                { 'x': 3, 'y': 3 },
-                                { 'x': 1, 'y': 1 }
-                            ],
-                            [
-                                { 'x': 6, 'y': 1 },
-                                { 'x': 7, 'y': 2 },
-                                { 'x': 8, 'y': 3 },
-                                { 'x': 6, 'y': 1 }
-                            ]
+                            { 'x': 1, 'y': 1 },
+                            { 'x': 2, 'y': 2 },
+                            { 'x': 3, 'y': 3 },
+                            { 'x': 1, 'y': 1 }
                         ],
                         { 'x': { 'y': 'ghi' } }
                     ],
@@ -2656,18 +2722,10 @@ Result:<pre id="result">Nothing.</pre>`);
                 echo.push(`<pre>sql.insert('geo').values(['name', 'point', 'point2', 'polygon', 'json'], [
     [
         'POINT A', ['ST_POINTFROMTEXT(?)', ['POINT(122.147775 30.625015)']], { 'x': 1, 'y': 1 }, [
-            [
-                { 'x': 1, 'y': 1 },
-                { 'x': 2, 'y': 2 },
-                { 'x': 3, 'y': 3 },
-                { 'x': 1, 'y': 1 }
-            ],
-            [
-                { 'x': 6, 'y': 1 },
-                { 'x': 7, 'y': 2 },
-                { 'x': 8, 'y': 3 },
-                { 'x': 6, 'y': 1 }
-            ]
+            { 'x': 1, 'y': 1 },
+            { 'x': 2, 'y': 2 },
+            { 'x': 3, 'y': 3 },
+            { 'x': 1, 'y': 1 }
         ],
         { 'x': { 'y': 'ghi' } }
     ],
@@ -3004,7 +3062,7 @@ Result:<pre id="result">Nothing.</pre>`);
                 echo.push(`<pre>sql.field('SUM(num) all');</pre>` + sql.field('SUM(num) all'));
                 echo.push(`<pre>sql.field('SUM(x.num) all');</pre>` + sql.field('SUM(x.num) all'));
                 echo.push(`<pre>sql.field('SUM(x.\`num\`) all');</pre>` + sql.field('SUM(x.`num`) all'));
-                echo.push(`<pre>sql.field('FROM_UNIXTIME(time, \\'%Y-%m-%d\\') time');</pre>` + sql.field('FROM_UNIXTIME(time, \'%Y-%m-%d\') time'));
+                echo.push(`<pre>sql.field('FROM_UNIXTIME(time, \\'%Y-%m-%d\\') time');</pre>` + sql.field(`FROM_UNIXTIME(time, '%Y-%m-%d') time`));
                 echo.push(`<pre>sql.field('(6371 * ACOS(COS(RADIANS(31.239845)) * COS(RADIANS(lat)) * COS(RADIANS(\`lng\`) - RADIANS(121.499662)) + SIN(RADIANS(31.239845)) * SIN(RADIANS(\`lat\`))))');</pre>` + sql.field('(6371 * ACOS(COS(RADIANS(31.239845)) * COS(RADIANS(lat)) * COS(RADIANS(`lng`) - RADIANS(121.499662)) + SIN(RADIANS(31.239845)) * SIN(RADIANS(`lat`))))'));
                 echo.push(`<pre>sql.field('MATCH(name_sc, name_tc) AGAINST("ok") tmp'));</pre>` + sql.field('MATCH(name_sc, name_tc) AGAINST("ok") tmp'));
                 echo.push(`<pre>sql.field('a\\'bc');</pre>` + sql.field('a\'bc'));

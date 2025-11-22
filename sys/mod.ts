@@ -406,6 +406,101 @@ export default class Mod {
     }
 
     /**
+     * --- 批量更新数据 ---
+     * @param db 数据库对象
+     * @param data 数据列表
+     * @param key 用于定位的主键或唯一键字段名
+     * @param opt 选项
+     */
+    public static async updateList(
+        db: lDb.Pool | lDb.Transaction,
+        data: Array<Record<string, any>>,
+        key: string,
+        opt: {
+            'ctr'?: sCtr.Ctr;
+            'pre'?: string;
+            'index'?: string;
+        } = {}
+    ): Promise<boolean | null> {
+        if (!data.length) {
+            return true;
+        }
+
+        // --- 获取所有涉及的字段（除了 key） ---
+        const columns = new Set<string>();
+        for (const item of data) {
+            for (const k in item) {
+                if (k !== key) {
+                    columns.add(k);
+                }
+            }
+        }
+        if (columns.size === 0) {
+            return true;
+        }
+        const cols = Array.from(columns);
+
+        // --- 计算分批大小 ---
+        // --- 每个字段需要 2 个占位符 (WHEN ? THEN ?)，加上 WHERE IN (?) 的 1 个 ---
+        // --- Total params per row = cols.length * 2 + 1 ---
+        const paramCountPerRow = cols.length * 2 + 1;
+        const batchSize = Math.floor(60000 / paramCountPerRow);
+
+        const batches = [];
+        for (let i = 0; i < data.length; i += batchSize) {
+            batches.push(data.slice(i, i + batchSize));
+        }
+
+        for (const batch of batches) {
+            const sq = lSql.get(opt.pre ?? (this as any)._$pre ?? opt.ctr, {
+                'service': db.getService() ?? lDb.ESERVICE.PGSQL,
+            });
+
+            const updates: Record<string, any> = {};
+            const keys: any[] = [];
+
+            for (const col of cols) {
+                let caseSql = `(CASE ${sq.field(key)}`;
+                const params: any[] = [];
+                let hasUpdate = false;
+
+                for (const item of batch) {
+                    if (item[col] !== undefined) {
+                        caseSql += ` WHEN ? THEN ?`;
+                        params.push(item[key], item[col]);
+                        hasUpdate = true;
+                    }
+                }
+
+                if (hasUpdate) {
+                    caseSql += ` ELSE ${sq.field(col)} END)`;
+                    updates[col] = [caseSql, params];
+                }
+            }
+
+            // --- 收集 keys ---
+            for (const item of batch) {
+                keys.push(item[key]);
+            }
+
+            if (Object.keys(updates).length === 0) {
+                continue;
+            }
+
+            sq.update(((this as any)._$table as string) + (opt.index ? ('_' + opt.index) : ''), updates)
+                .where({ [key]: keys });
+
+            const r = await db.execute(sq.getSql(), sq.getData());
+            if (r.packet === null) {
+                lCore.log(opt.ctr ?? {}, '[MOD][updateList] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
      * --- select 自定字段 ---
      * @param db 数据库对象
      * @param c 字段字符串或字段数组

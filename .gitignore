@@ -14,4 +14,3 @@ package-lock.json
 *.js.map
 *.d.ts
 !/types/*.d.ts
-/doc/dev/
