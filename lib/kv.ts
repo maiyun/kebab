@@ -15,6 +15,18 @@ import * as sCtr from '#kebab/sys/ctr.js';
 /** --- 连接列表（同一个 host、port、index 只有一个连接） --- */
 const connections: IConnectionInfo[] = [];
 
+/**
+ * --- 键值存储操作类 ---
+ *
+ * @example
+ * ```ts
+ * import * as lKv from '@maiyunnet/kebab/lib/kv.js';
+ * const kv = lKv.get(this);
+ * await kv.ping();
+ * const v = await kv.get('test');
+ * const res = await kv.replace('test', 111);
+ * ```
+ */
 export class Kv {
 
     /** --- 当前的 kv 连接信息 --- */
@@ -22,6 +34,18 @@ export class Kv {
 
     public constructor(etc: kebab.IConfigKv) {
         this._etc = etc;
+    }
+
+    /**
+     * --- 获取一个 pipeline 操作对象 ---
+     * @returns 失败则返回 false
+     */
+    public async pipeline(): Promise<redis.IPipelineClient | false> {
+        const conn = await this._getConnection();
+        if (!conn) {
+            return false;
+        }
+        return conn.pipeline();
     }
 
     /**
