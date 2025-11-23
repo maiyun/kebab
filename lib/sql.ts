@@ -129,11 +129,13 @@ export class Sql {
     /**
      * --- 如果存在则更新不存在则插入（UPSERT）---
      * @param data 更新的数据
-     * @param conflict 冲突字段，PostgreSQL 专用
+     * @param conflict 冲突字段，PostgreSQL 用于指定 ON CONFLICT 字段；MySQL 时忽略，因为会对所有唯一键冲突执行更新
      */
     public upsert(data: kebab.Json, conflict?: string | string[]): this {
         if (this._service === ESERVICE.MYSQL) {
             // --- MySQL: 使用 ON DUPLICATE KEY UPDATE ---
+            // --- 注意：MySQL 会对任何唯一键冲突都执行更新，无法像 PostgreSQL 那样指定具体冲突字段 ---
+            // --- 如果需要精确控制冲突字段，建议在应用层先查询再决定插入或更新 ---
             this._sql.push(' ON DUPLICATE KEY UPDATE ' + this._updateSub(data));
         }
         else {

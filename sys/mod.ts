@@ -808,8 +808,9 @@ export default class Mod {
 
     /**
      * --- 创建数据 ---
+     * @return true-成功,false-报错,null-唯一键非 _$key 键冲突
      */
-    public async create(): Promise<boolean> {
+    public async create(): Promise<boolean | null> {
         const cstr = this.constructor as Record<string, kebab.Json>;
         const updates: Record<string, any> = {};
         for (const k in this._updates) {
@@ -843,6 +844,7 @@ export default class Mod {
                         // --- MYSQL ---
                         const match = /for key '([\w.]+)'/.exec(r.error.message);
                         if (match?.[1].includes(cstr._$index)) {
+                            // --- key 索引重复，继续生成 key ---
                             continue;
                         }
                     }
@@ -850,11 +852,12 @@ export default class Mod {
                         // --- PGSQL ---
                         const match = /constraint "([\w.]+)"/.exec(r.error.message);
                         if (match?.[1].includes(cstr._$index)) {
+                            // --- key 索引重复，继续生成 key ---
                             continue;
                         }
                     }
                     // --- 1062 非 index 冲突，那需要用户自行处理（可能不允许重复的邮箱） ---
-                    return false;
+                    return null;
                 }
                 // --- 未处理的错误 ---
                 const service = this._db.getService();
@@ -871,8 +874,9 @@ export default class Mod {
                 if (r.error.errno !== 1062) {
                     lCore.debug('[MOD][create1][' + cstr._$table + ']', r);
                     lCore.log(this._ctr ?? {}, '[MOD][create1][' + cstr._$table + '] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+                    return false;
                 }
-                return false;
+                return null;
             }
         }
         if (r.packet?.affected) {
@@ -888,41 +892,32 @@ export default class Mod {
 
     /**
      * --- 插入数据，如果存在则更新（UPSERT） ---
-     * @param conflict 冲突字段，PostgreSQL 专用
+     * @param conflict 冲突字段，不能为 _$key 或 _$primary，应该是你要判断的唯一索引字段
      */
-    public async upsert(conflict?: string | string[]): Promise<boolean> {
-        const cstr = this.constructor as Record<string, kebab.Json>;
-        const updates: Record<string, any> = {};
-        for (const k in this._updates) {
-            updates[k] = this._data[k];
-        }
-
-        if ((cstr._$key !== '') && (updates[cstr._$key] === undefined)) {
-            updates[cstr._$key] = this._keyGenerator();
-            this._data[cstr._$key] = updates[cstr._$key];
-            (this as kebab.Json)[cstr._$key] = updates[cstr._$key];
-        }
-
-        this._sql.insert((cstr._$table as string) + (this._index ? ('_' + this._index[0]) : ''));
-        this._sql.values(updates);
-        this._sql.upsert(updates, conflict);
-
-        const r = await this._db.execute(this._sql.getSql(), this._sql.getData());
-        if (r.packet === null) {
-            lCore.log(this._ctr ?? {}, '[MOD][upsert][' + cstr._$table + '] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
-            return false;
-        }
-        if (r.packet.affected) {
-            this._updates = {};
-            if (r.packet.insert) {
-                this._data[cstr._$primary] = r.packet.insert;
-                (this as kebab.Json)[cstr._$primary] = this._data[cstr._$primary];
-            }
+    public async upsert(conflict: string | string[]): Promise<boolean> {
+        // --- 这里没用 mysql 的 INSERT ... ON DUPLICATE KEY UPDATE 或 pgsql 的 ON CONFLICT DO UPDATE ---
+        // --- 因为还要处理 _$key 的自动生成 ---
+        const res = await this.create();
+        if (res) {
+            // --- 创建成功 ---
             return true;
         }
-        else {
+        if (res === false) {
+            // --- 系统错误 ---
             return false;
         }
+        // --- res === null，唯一键冲突，执行更新 ---
+        /** --- 冲突字段列表 --- */
+        const conflicts = typeof conflict === 'string' ? [conflict] : conflict;
+        const where: Record<string, any> = {};
+        for (const field of conflicts) {
+            if (!this._updates[field]) {
+                return false;
+            }
+            where[field] = this._data[field];
+            delete this._updates[field];
+        }
+        return this.save(where);
     }
 
     /**
@@ -955,8 +950,9 @@ export default class Mod {
 
     /**
      * --- 更新 set 的数据到数据库，有未保存数据时才保存 ---
+     * @param where 自定义筛选条件，默认根据主键筛选
      */
-    public async save(): Promise<boolean> {
+    public async save(where?: any): Promise<boolean> {
         if (Object.keys(this._updates).length === 0) {
             return true;
         }
@@ -965,9 +961,9 @@ export default class Mod {
         for (const k in this._updates) {
             updates[k] = this._data[k];
         }
-        this._sql.update((cstr._$table as string) + (this._index ? ('_' + this._index[0]) : ''), [updates]).where([{
+        this._sql.update((cstr._$table as string) + (this._index ? ('_' + this._index[0]) : ''), [updates]).where(where ?? {
             [cstr._$primary]: this._data[cstr._$primary]
-        }]);
+        });
         const r = await this._db.execute(this._sql.getSql(), this._sql.getData());
         if (r.packet === null) {
             lCore.log(this._ctr ?? {}, '[MOD][save] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');

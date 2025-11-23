@@ -964,68 +964,67 @@ CREATE TABLE \`m_test_data_0\` (
             'service': lDb.ESERVICE.PGSQL,
         }) : lDb.get(this);
 
-        // --- 定义测试用的唯一 token 和冲突字段（PGSQL 需要明确指定冲突字段） ---
-        const token = 'upsert-token';
-        const conflict = this._get['s'] === 'pgsql' ? 'token' : undefined;
-
-        // --- 1. 第一次 Upsert (相当于 Insert) ---
+        // --- 1. 第一次 Upsert (插入新记录) ---
+        echo.push('<b>Test 1: Insert new record (default conflict field)</b><br>');
         const test1 = mTest.getCreate<mTest>(db, {
             'ctr': this,
             'pre': this._get['s'] === 'pgsql' ? 'm' : undefined,
         });
         test1.set({
             'name': lCore.random(4),
-            'token': token,
             'point': { 'x': 10, 'y': 10 },
             'time_add': lTime.stamp(),
         });
+        const res1 = await test1.upsert('name');
 
-        const res1 = await test1.upsert(conflict);
-
-        echo.push(`<br><br><b>1. Insert new record:</b><pre>
-const test1 = mTest.getCreate(db);
+        echo.push(`<pre>const test1 = mTest.getCreate(db);
 test1.set({
     'name': '${test1.name}',
-    'token': '${token}',
-    ...
+    'point': { 'x': 10, 'y': 10 },
+    'time_add': ${test1.time_add},
 });
-const res1 = await test1.upsert(${conflict ? `'${conflict}'` : ''});</pre>Result: ${res1}<br><br>`);
+const res1 = await test1.upsert('name');
+</pre>Result: ${res1}<br><br>`);
 
         let stmt = await db.query(this._get['s'] === 'pgsql' ?
-            `SELECT * FROM "m"."test" WHERE "token" = '${token}';` :
-            `SELECT * FROM \`m_test\` WHERE \`token\` = '${token}';`
+            `SELECT * FROM "m"."test" WHERE "token" LIKE \'test_%\' ORDER BY "id" ASC;` :
+            'SELECT * FROM `m_test` WHERE `token` LIKE \'test_%\' ORDER BY `id` ASC;'
         );
         this._dbTable(stmt, echo);
 
-        // --- 2. 第二次 Upsert (相当于 Update) ---
+        // --- 2. 第二次 Upsert (更新已有记录) ---
+        echo.push('<br><b>Test 2: Update existing record (same name)</b><br>');
         const test2 = mTest.getCreate<mTest>(db, {
             'ctr': this,
             'pre': this._get['s'] === 'pgsql' ? 'm' : undefined,
         });
-        // --- 使用相同的 token，但修改 name 和 point ---
         test2.set({
-            'name': lCore.random(4),
-            'token': token,
+            'name': test1.name, // --- 相同的 name ---
             'point': { 'x': 20, 'y': 20 },
             'time_add': lTime.stamp(),
         });
+        const res2 = await test2.upsert('name');
 
-        const res2 = await test2.upsert(conflict);
-
-        echo.push(`<br><b>2. Upsert existing record (Update):</b><pre>
-const test2 = mTest.getCreate(db);
+        echo.push(`<pre>const test2 = mTest.getCreate(db);
 test2.set({
-    'name': '${test2.name}',
-    'token': '${token}',
-    ...
+    'name': '${test1.name}',
+    'point': { 'x': 20, 'y': 20 },
+    'time_add': ${test2.time_add},
 });
-const res2 = await test2.upsert(${conflict ? `'${conflict}'` : ''});</pre>Result: ${res2}<br><br>`);
+const res2 = await test2.upsert('name');</pre>Result: ${res2}<br><br>`);
 
         stmt = await db.query(this._get['s'] === 'pgsql' ?
-            `SELECT * FROM "m"."test" WHERE "token" = '${token}';` :
-            `SELECT * FROM \`m_test\` WHERE \`token\` = '${token}';`
-        );
+            `SELECT * FROM "m"."test" WHERE "token" LIKE \'test_%\' ORDER BY "id" ASC;` :
+            'SELECT * FROM `m_test` WHERE `token` LIKE \'test_%\' ORDER BY `id` ASC;');
         this._dbTable(stmt, echo);
+
+        // --- 清理测试数据 ---
+        await mTest.removeByWhere(db, [
+            ['token', 'LIKE', 'test_%']
+        ], {
+            'ctr': this,
+            'pre': this._get['s'] === 'pgsql' ? 'm' : undefined,
+        });
 
         return echo.join('') + '<br>' + this._getEnd();
     }
