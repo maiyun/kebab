@@ -5,14 +5,14 @@ cd $SCRIPT_ROOT/..
 
 API_DOC_OUTPUT_DIR=doc/sc/api
 
-rm -rf $API_DOC_OUTPUT_DIR
-rm -f doc/sc/kebab-rag.md
-
 # check if any files in src is not stashed in git
 if [[ -n $(git status --porcelain "./index.ts" "./main.ts" "./lib" "./sys") ]]; then
     echo "Error: You have unstaged changes. Please commit or stash them before generating API docs."
     exit 1
 fi
+
+rm -rf $API_DOC_OUTPUT_DIR
+rm -f doc/sc/kebab-rag.md
 
 mkdir -p $(dirname $API_DOC_OUTPUT_DIR)
 
