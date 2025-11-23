@@ -20,7 +20,11 @@ export const ROOT_PATH = dirname + '/';
 export const LIB_PATH = ROOT_PATH + 'lib/';
 export const SYS_PATH = ROOT_PATH + 'sys/';
 
-const cwd = process.cwd().replace(/\\/g, '/');
+let cwd = process.cwd().replace(/\\/g, '/');
+if (cwd.endsWith('source')) {
+    // --- 开发环境下，cwd 在 source 的上级目录 ---
+    cwd = cwd.slice(0, -7);
+}
 
 /** --- 执行根目录，以 / 结尾 --- */
 export const ROOT_CWD = cwd + '/';

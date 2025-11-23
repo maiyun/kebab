@@ -97,6 +97,9 @@ export default class extends sCtr.Ctr {
             '<br>STATIC_PATH_FULL: ' + this._config.set.staticPathFull,
             '<br>_internalUrl: ' + this._internalUrl,
 
+            '<br><br>ROOT_PATH: ' + this._config.const.rootPath,
+            '<br>ROOT_CWD: ' + kebab.ROOT_CWD,
+
             '<br><br>headers: ' + lText.htmlescape(JSON.stringify(this._headers)),
 
             '<br><br><b style="color: red;">Tips: The file can be deleted.</b>',
