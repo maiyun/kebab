@@ -12,6 +12,31 @@ import * as lText from '#kebab/lib/text.js';
 import * as lCore from '#kebab/lib/core.js';
 import * as sCtr from '#kebab/sys/ctr.js';
 
+export interface IZRangeOptions {
+    /**
+     * Range query type.
+     *
+     * - SCORE: Query by score range
+     * - LEX: Query by lexicographical range
+     */
+    'by'?: 'SCORE' | 'LEX';
+
+    /**
+     * Whether to return results in reverse order.
+     */
+    'rev'?: boolean;
+
+    /**
+     * Pagination offset. Must be used together with count.
+     */
+    'offset'?: number;
+
+    /**
+     * Pagination count. Must be used together with offset.
+     */
+    'count'?: number;
+}
+
 /** --- 连接列表（同一个 host、port、index 只有一个连接） --- */
 const connections: IConnectionInfo[] = [];
 
@@ -788,6 +813,57 @@ end`;
         }
         try {
             return await conn.lLen(this._etc.pre + key);
+        }
+        catch {
+            return false;
+        }
+    }
+
+    public async zAdd(key: string, score: number, member: string | Buffer): Promise<boolean> {
+        const conn = await this._getConnection();
+        if (!conn) {
+            return false;
+        }
+        try {
+            return await conn.zAdd(this._etc.pre + key, score, member);
+        }
+        catch {
+            return false;
+        }
+    }
+
+    public async zRangeWithScores(
+        key: string,
+        start: number, stop: number,
+        options?: IZRangeOptions
+    ): Promise<Array<{
+        member: string;
+        score: number;
+    }> | false> {
+        const conn = await this._getConnection();
+        if (!conn) {
+            return false;
+        }
+        try {
+            return await conn.zRangeWithScores(this._etc.pre + key, start, stop, {
+                'by': options?.by,
+                'reverse': options?.rev,
+                'offset': options?.offset,
+                'count': options?.count,
+            });
+        }
+        catch {
+            return false;
+        }
+    }
+
+    public async zRem(key: string, members: Array<string | Buffer>): Promise<number | false> {
+        const conn = await this._getConnection();
+        if (!conn) {
+            return false;
+        }
+        try {
+            return await conn.zRem(this._etc.pre + key, members);
         }
         catch {
             return false;
