@@ -13,6 +13,7 @@
 ## Interfaces
 
 - [IConnectionInfo](interfaces/IConnectionInfo.md)
+- [IZRangeOptions](interfaces/IZRangeOptions.md)
 
 ## Functions
 
