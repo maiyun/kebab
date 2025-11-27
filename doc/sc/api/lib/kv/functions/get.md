@@ -8,7 +8,7 @@
 
 > **get**(`ctrEtc`): [`Kv`](../classes/Kv.md)
 
-Defined in: [lib/kv.ts:920](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L920)
+Defined in: [lib/kv.ts:955](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L955)
 
 获取 Kv 对象
 

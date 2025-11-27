@@ -978,27 +978,135 @@ Defined in: [lib/kv.ts:235](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 ### zAdd()
 
+添加有序集合元素
+
+#### Call Signature
+
 > **zAdd**(`key`, `score`, `member`): `Promise`\<`boolean`\>
 
-Defined in: [lib/kv.ts:822](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L822)
+Defined in: [lib/kv.ts:828](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L828)
 
-#### Parameters
+添加有序集合元素（单个元素）
 
-##### key
+##### Parameters
+
+###### key
 
 `string`
 
-##### score
+key 名
+
+###### score
 
 `number`
 
-##### member
+分数
+
+###### member
+
+成员
 
 `string` | `Buffer`\<`ArrayBufferLike`\>
 
-#### Returns
+##### Returns
 
 `Promise`\<`boolean`\>
+
+#### Call Signature
+
+> **zAdd**(`key`, `elements`, `options`): `Promise`\<`number` \| `false`\>
+
+Defined in: [lib/kv.ts:835](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L835)
+
+添加有序集合元素（多个元素，含 INCR 选项）
+
+##### Parameters
+
+###### key
+
+`string`
+
+key 名
+
+###### elements
+
+`object`[]
+
+元素数组
+
+###### options
+
+`IZAddOptionsIncr`
+
+选项，需要 INCR
+
+##### Returns
+
+`Promise`\<`number` \| `false`\>
+
+#### Call Signature
+
+> **zAdd**(`key`, `elements`, `options`): `Promise`\<`number` \| `false` \| `null`\>
+
+Defined in: [lib/kv.ts:842](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L842)
+
+添加有序集合元素（多个元素，含 INCR 选项，可空）
+
+##### Parameters
+
+###### key
+
+`string`
+
+key 名
+
+###### elements
+
+`object`[]
+
+元素数组
+
+###### options
+
+`IZAddOptionsIncrNullable`
+
+选项，需要 INCR Nullable
+
+##### Returns
+
+`Promise`\<`number` \| `false` \| `null`\>
+
+#### Call Signature
+
+> **zAdd**(`key`, `elements`, `options?`): `Promise`\<`number` \| `false`\>
+
+Defined in: [lib/kv.ts:849](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L849)
+
+添加有序集合元素（多个元素）
+
+##### Parameters
+
+###### key
+
+`string`
+
+key 名
+
+###### elements
+
+`object`[]
+
+元素数组
+
+###### options?
+
+`IZAddOptions`
+
+选项
+
+##### Returns
+
+`Promise`\<`number` \| `false`\>
 
 ***
 
@@ -1006,7 +1114,7 @@ Defined in: [lib/kv.ts:822](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **zRangeWithScores**(`key`, `start`, `stop`, `options?`): `Promise`\<`false` \| `object`[]\>
 
-Defined in: [lib/kv.ts:835](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L835)
+Defined in: [lib/kv.ts:870](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L870)
 
 #### Parameters
 
@@ -1036,7 +1144,7 @@ Defined in: [lib/kv.ts:835](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **zRem**(`key`, `members`): `Promise`\<`number` \| `false`\>
 
-Defined in: [lib/kv.ts:860](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L860)
+Defined in: [lib/kv.ts:895](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L895)
 
 #### Parameters
 
