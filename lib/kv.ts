@@ -819,13 +819,48 @@ end`;
         }
     }
 
-    public async zAdd(key: string, score: number, member: string | Buffer): Promise<boolean> {
+    /**
+     * --- 添加有序集合元素（单个元素） ---
+     * @param key key 名
+     * @param score 分数
+     * @param member 成员
+     */
+    public async zAdd(key: string, score: number, member: string | Buffer): Promise<boolean>;
+    /**
+     * --- 添加有序集合元素（多个元素，含 INCR 选项） ---
+     * @param key key 名
+     * @param elements 元素数组
+     * @param options 选项，需要 INCR
+     */
+    public async zAdd(key: string, elements: Array<{ 'score': number; 'member': string | Buffer; }>, options: redis.IZAddOptionsIncr): Promise<number | false>;
+    /**
+     * --- 添加有序集合元素（多个元素，含 INCR 选项，可空） ---
+     * @param key key 名
+     * @param elements 元素数组
+     * @param options 选项，需要 INCR Nullable
+     */
+    public async zAdd(key: string, elements: Array<{ 'score': number; 'member': string | Buffer; }>, options: redis.IZAddOptionsIncrNullable): Promise<number | null | false>;
+    /**
+     * --- 添加有序集合元素（多个元素） ---
+     * @param key key 名
+     * @param elements 元素数组
+     * @param options 选项
+     */
+    public async zAdd(key: string, elements: Array<{ 'score': number; 'member': string | Buffer; }>, options?: redis.IZAddOptions): Promise<number | false>;
+    /**
+     * --- 添加有序集合元素 ---
+     */
+    public async zAdd(
+        key: string,
+        scoreOrItems: number | Array<{ 'score': number; 'member': string | Buffer; }>,
+        memberOrOptions?: string | Buffer | redis.IZAddOptions | redis.IZAddOptionsIncr | redis.IZAddOptionsIncrNullable
+    ): Promise<boolean | number | null | false> {
         const conn = await this._getConnection();
         if (!conn) {
             return false;
         }
         try {
-            return await conn.zAdd(this._etc.pre + key, score, member);
+            return await conn.zAdd(this._etc.pre + key, scoreOrItems as any, memberOrOptions as any);
         }
         catch {
             return false;
