@@ -8,7 +8,7 @@
 
 > **get**(`ctrPre?`, `opt?`): [`Sql`](../classes/Sql.md)
 
-Defined in: [lib/sql.ts:1071](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L1071)
+Defined in: [lib/sql.ts:1031](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L1031)
 
 创建 sql 对象
 

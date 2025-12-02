@@ -1385,7 +1385,7 @@ index/variables/VER.md
 
 # Variable: VER
 
-> `const` **VER**: `"6.2.1"` = `'6.2.1'`
+> `const` **VER**: `"6.2.2"` = `'6.2.2'`
 
 Defined in: [index.ts:10](https://github.com/maiyunnet/kebab/blob/master/index.ts#L10)
 
@@ -13361,7 +13361,7 @@ lib/sql/functions/aoMix.md
 
 > **aoMix**(`arr`): `Record`\<`string`, `string` \| `number` \| [`Json`](../../../index/type-aliases/Json.md)\>
 
-Defined in: [lib/sql.ts:1114](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L1114)
+Defined in: [lib/sql.ts:1074](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L1074)
 
 将数组兑换为组合的对象（Array/Object mix）
 
@@ -13390,7 +13390,7 @@ lib/sql/functions/column.md
 
 > **column**(`field`): `object`
 
-Defined in: [lib/sql.ts:1135](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L1135)
+Defined in: [lib/sql.ts:1095](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L1095)
 
 创建字段对象
 
@@ -13429,7 +13429,7 @@ lib/sql/functions/format.md
 
 > **format**(`sql`, `data`, `service`): `string`
 
-Defined in: [lib/sql.ts:1085](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L1085)
+Defined in: [lib/sql.ts:1045](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L1045)
 
 返回代入后的完整 SQL 字符串，这并不安全不能直接执行，只是用来调试打印 sql 语句
 
@@ -13470,7 +13470,7 @@ lib/sql/functions/get.md
 
 > **get**(`ctrPre?`, `opt?`): [`Sql`](../classes/Sql.md)
 
-Defined in: [lib/sql.ts:1071](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L1071)
+Defined in: [lib/sql.ts:1031](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L1031)
 
 创建 sql 对象
 
