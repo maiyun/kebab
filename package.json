@@ -1,6 +1,6 @@
 {
   "name": "@maiyunnet/kebab",
-  "version": "6.2.0",
+  "version": "6.2.1",
   "description": "Simple, easy-to-use, and fully-featured Node.js framework that is ready-to-use out of the box.",
   "type": "module",
   "keywords": [
@@ -13,7 +13,7 @@
   "license": "Apache-2.0",
   "types": "./index.d.ts",
   "scripts": {
-    "build-md-doc": "bash ./utils/generate-api-doc-md.sh"
+    "build-doc": "bash ./utils/build-doc.sh"
   },
   "bin": {
     "kebab": "./bin/kebab.js"
@@ -38,14 +38,14 @@
     "pg": "^8.16.3",
     "ssh2": "^1.17.0",
     "svg-captcha": "^1.4.0",
-    "tencentcloud-sdk-nodejs": "^4.1.149"
+    "tencentcloud-sdk-nodejs": "^4.1.152"
   },
   "devDependencies": {
     "@litert/eslint-plugin-rules": "^0.3.1",
     "@types/ejs": "^3.1.5",
     "@types/node": "^24.10.1",
     "@types/pg": "^8.15.6",
-    "typedoc": "^0.28.14",
+    "typedoc": "^0.28.15",
     "typedoc-plugin-markdown": "^4.9.0",
     "typescript": "^5.9.3"
   }
