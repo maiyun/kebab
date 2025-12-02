@@ -123,7 +123,6 @@ export default class Mod {
             'key': string;
             'list': string[];
         };
-        'raw'?: boolean;
         'pre'?: string;
     }) {
         /** --- 导入 ctr 对象 --- */
@@ -263,7 +262,6 @@ export default class Mod {
         db: lDb.Pool | lDb.Transaction,
         where: string | kebab.Json,
         opt: {
-            'raw'?: boolean;
             'pre'?: string;
             'ctr'?: sCtr.Ctr;
             'index'?: string | string[];
@@ -306,7 +304,6 @@ export default class Mod {
         db: lDb.Pool | lDb.Transaction,
         where: string | kebab.Json,
         opt: {
-            'raw'?: boolean;
             'pre'?: string;
             'ctr'?: sCtr.Ctr;
             'index'?: string;
@@ -339,7 +336,6 @@ export default class Mod {
         data: kebab.Json,
         where: string | kebab.Json,
         opt: {
-            'raw'?: boolean;
             'pre'?: string;
             'ctr'?: sCtr.Ctr;
             'index'?: string | string[];
@@ -384,7 +380,6 @@ export default class Mod {
         data: kebab.Json,
         where: string | kebab.Json,
         opt: {
-            'raw'?: boolean;
             'pre'?: string;
             'ctr'?: sCtr.Ctr;
             'index'?: string;
@@ -540,7 +535,7 @@ export default class Mod {
         db: lDb.Pool | lDb.Transaction,
         s: string | kebab.Json = '',
         opt: {
-            'ctr'?: sCtr.Ctr; 'raw'?: boolean;
+            'ctr'?: sCtr.Ctr;
             'pre'?: string; 'index'?: string | string[];
             'alias'?: string;
             'contain'?: {
@@ -554,7 +549,6 @@ export default class Mod {
             'ctr': opt.ctr,
             'pre': opt.pre,
             'where': s,
-            'raw': opt.raw,
             'index': opt.index,
             'contain': opt.contain,
             'alias': opt.alias,
@@ -590,7 +584,6 @@ export default class Mod {
         opt: {
             'ctr'?: sCtr.Ctr;
             'lock'?: boolean;
-            'raw'?: boolean;
             'pre'?: string;
             'index'?: string | string[];
             /** --- 通过 key 字段获取，默认为 false，即从主键获取 --- */
@@ -608,7 +601,6 @@ export default class Mod {
             'where': [{
                 [opt.key ? this._$key : this._$primary]: val,
             }],
-            'raw': opt.raw,
             'index': opt.index,
         }) as T & Record<string, any>).first(opt.lock);
     }
@@ -618,7 +610,6 @@ export default class Mod {
         s: string | kebab.Json,
         opt: {
             'ctr'?: sCtr.Ctr;
-            'raw'?: boolean;
             'pre'?: string;
             'index'?: string | string[];
             'select'?: string | string[];
@@ -631,7 +622,6 @@ export default class Mod {
         s: string | kebab.Json,
         opt: {
             'ctr'?: sCtr.Ctr;
-            'raw'?: boolean;
             'pre'?: string;
             'index'?: string | string[];
             'select'?: string | string[];
@@ -650,7 +640,6 @@ export default class Mod {
         s: string | kebab.Json,
         opt: {
             'ctr'?: sCtr.Ctr;
-            'raw'?: boolean;
             'pre'?: string;
             'index'?: string | string[];
             'select'?: string | string[];
@@ -666,7 +655,6 @@ export default class Mod {
                 'ctr': opt.ctr,
                 'pre': opt.pre,
                 'where': s,
-                'raw': opt.raw
             }) as T;
             if (opt.by) {
                 o.by(opt.by[0], opt.by[1]);
@@ -681,7 +669,6 @@ export default class Mod {
                 'ctr': opt.ctr,
                 'pre': opt.pre,
                 'where': s,
-                'raw': opt.raw,
                 'index': item,
             }) as T;
             if (opt.by) {
@@ -710,7 +697,6 @@ export default class Mod {
         s: string | kebab.Json,
         opt: {
             'ctr'?: sCtr.Ctr;
-            'raw'?: boolean;
             'pre'?: string;
             'index'?: string | string[];
             'select'?: string | string[];
@@ -729,7 +715,7 @@ export default class Mod {
     public static async primarys(
         db: lDb.Pool | lDb.Transaction,
         where: string | kebab.Json = '',
-        opt: { 'ctr'?: sCtr.Ctr; 'raw'?: boolean; 'pre'?: string; 'index'?: string; } = {}
+        opt: { 'ctr'?: sCtr.Ctr; 'pre'?: string; 'index'?: string; } = {}
     ): Promise<any[] | false> {
         const sq = lSql.get(opt.pre ?? (this.constructor as any)._$pre ?? opt.ctr, {
             'service': db.getService() ?? lDb.ESERVICE.PGSQL,
