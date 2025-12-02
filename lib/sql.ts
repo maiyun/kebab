@@ -772,8 +772,6 @@ export class Sql {
      * @param suf 表后缀，仅请在 field 表名时倒入后缀，前面加 # 代表要强制 AS，可能是分表查询时用
      */
     public field(str: string | number | Array<string | string[]>, pre: string = '', suf: string = ''): string {
-        let left: string = '';
-        let right: string = '';
         const q = this._service === ESERVICE.MYSQL ? '`' : '"';
         if (Array.isArray(str)) {
             this._data.push(...str[1]);
@@ -782,21 +780,21 @@ export class Sql {
         if (typeof str === 'number') {
             str = str.toString();
         }
-        str = str.trim();                   // --- 去除前导尾随 ---
-        str = str.replace(/ {2,}/g, ' ');   // --- 去除多余的空格 ---
-        str = str.replace(/ +([),])/g, ' $1');
-        str = str.replace(/([(,]) +/g, '$1 ');
-        str = str.replace(/(\W)(JOIN|WHERE|UNION)(\W)/ig, '$1$3');
+        str = str.trim()                    // --- 去除前导尾随 ---
+            .replace(/ {2,}/g, ' ')         // --- 去除多余的空格 ---
+            .replace(/ +([),])/g, ' $1')
+            .replace(/([(,]) +/g, '$1 ')
+            .replace(/(\W)(JOIN|WHERE|UNION)(\W)/ig, '$1$3');
         // --- 先判断 suf 强制性 AS ---
-        let sufAs = false;
-        if (suf.startsWith('#')) {
+        const sufAs = suf.startsWith('#');
+        if (sufAs) {
             // --- 强制 AS ---
             suf = suf.slice(1);
-            sufAs = true;
         }
         // --- 先判断有没有别名（也就是 as） ---
-        const loStr = str.toLowerCase();
-        const asPos = loStr.indexOf(' as ');
+        const asPos = str.toLowerCase().indexOf(' as ');
+        let left = '';
+        let right = '';
         if (asPos === -1) {
             // --- 没有 as ---
             let spacePos = str.lastIndexOf(' ');
@@ -805,21 +803,12 @@ export class Sql {
                 // --- 连接符 ---
                 spacePos = -1;
             }
-            if (spacePos !== -1) {
-                const spaceRight = str.slice(spacePos + 1);
-                if (/^[a-zA-Z_`"][\w`"]*$/.test(spaceRight)) {
-                    // --- OK ---
-                    left = str.slice(0, spacePos);
-                    right = spaceRight;
-                }
-                else {
-                    left = str;
-                    right = '';
-                }
+            if (spacePos !== -1 && /^[a-zA-Z_`"][\w`"]*$/.test(str.slice(spacePos + 1))) {
+                left = str.slice(0, spacePos);
+                right = str.slice(spacePos + 1);
             }
             else {
                 left = str;
-                right = '';
             }
         }
         else {
@@ -829,94 +818,65 @@ export class Sql {
         }
         if (right) {
             // --- 处理右侧 ---
+            const hasQuote = right.startsWith(q);
+            if (!left.includes('.')) {
+                // --- 存储表别名 ---
+                this._alias.push(hasQuote ? right.slice(1, -1) : right);
+            }
             if (this._service === ESERVICE.MYSQL) {
-                if (right.startsWith('`')) {
-                    if (!left.includes('.')) {
-                        // --- 存储表别名 ---
-                        this._alias.push(right.slice(1, -1));
-                    }
-                    right = '`' + pre + right.slice(1);
-                }
-                else {
-                    if (!left.includes('.')) {
-                        // --- 存储表别名 ---
-                        this._alias.push(right);
-                    }
-                    right = '`' + pre + right + '`';
-                }
-                right = ' AS ' + right;
+                right = ' AS `' + pre + (hasQuote ? right.slice(1) : right + '`');
             }
             else {
-                if (right.startsWith('"')) {
-                    if (!left.includes('.')) {
-                        // --- 存储表别名 ---
-                        this._alias.push(right.slice(1, -1));
-                    }
-                    if (pre) {
-                        right = `"${pre}".${right}`;
-                    }
-                }
-                else {
-                    if (!left.includes('.')) {
-                        // --- 存储表别名 ---
-                        this._alias.push(right);
-                    }
-                    right = (pre ? `"${pre}".` : '') + `"${right}"`;
-                }
-                right = ' AS ' + right;
+                right = ' AS ' + (pre ? `"${pre}".` : '') + (hasQuote ? right : `"${right}"`);
             }
         }
-        else {
+        else if (sufAs) {
             // --- 没有右侧 ---
-            if (sufAs) {
-                // --- 强制 AS ---
-                if (!left.includes('.')) {
-                    // --- 存储表别名 ---
-                    this._alias.push(left.startsWith('`') || left.startsWith('"') ? left.slice(1, -1) : left);
-                }
-                right = ' AS ' + this.field(left, pre);
+            // --- 强制 AS ---
+            if (!left.includes('.')) {
+                // --- 存储表别名 ---
+                this._alias.push(left.startsWith(q) ? left.slice(1, -1) : left);
             }
+            right = ' AS ' + this.field(left, pre);
         }
         // --- 处理 left ---
         if (/^[\w`"_.*]+$/.test(left)) {
+            // --- 简单字段或表名 ---
+            /** --- 分左右 --- */
             const l = left.split('.');
             if (l[0] === '*') {
                 return '*' + right;
             }
-            if (l[0].startsWith('`') || l[0].startsWith(`"`)) {
-                l[0] = l[0].replace(/[`"]/g, '');
-            }
+            l[0] = l[0].replace(this._service === ESERVICE.MYSQL ? /`/g : /"/g, '');
             if (l[1] === undefined) {
-                // --- xxx ---
+                // --- xxx，代表无 . 右侧 ---
+                if (
+                    (this._service === ESERVICE.MYSQL && l[0].startsWith('"')) ||
+                    (this._service === ESERVICE.PGSQL && l[0].startsWith(`'`))
+                ) {
+                    // --- 字符串，无需包裹 ---
+                    return l[0] + right;
+                }
                 if (/^[A-Z0-9_]+$/.test(l[0])) {
                     // --- 纯大写是内置函数，不能加 `" ---
                     return l[0] + right;
                 }
                 return this._service === ESERVICE.MYSQL ?
-                    '`' + pre + l[0] + suf + '`' + right :
-                    (pre ? `"${pre}".` : '') + '"' + l[0] + suf + '"' + right;
+                    `\`${pre}${l[0]}${suf}\`${right}` :
+                    (pre ? `"${pre}".` : '') + `"${l[0]}${suf}"${right}`;
             }
             // --- x.xxx ---
             // --- 只有在此模式才知道 . 前面的一定是表名，因此自动加 sql 级的 _pre ---
-            const w = l[1] === '*'
-                ? '*' :
-                (q + (
-                    (l[1].startsWith('`') || l[1].startsWith('"')) ?
-                        l[1].slice(1, -1) :
-                        l[1]
-                ) + q);
+            const w = l[1] === '*' ? '*' : q + (l[1].startsWith(q) ? l[1].slice(1, -1) : l[1]) + q;
             return this._service === ESERVICE.MYSQL ?
-                '`' + this._pre + l[0] + suf + '`.' + w + right :
-                (this._pre ? `"${this._pre}".` : '') + '"' + l[0] + suf + '".' + w + right;
+                `\`${this._pre}${l[0]}${suf}\`.${w}${right}` :
+                (this._pre ? `"${this._pre}".` : '') + `"${l[0]}${suf}".${w}${right}`;
         }
-        else {
-            // return left.replace(/([(, ])([a-zA-Z`"_][\w`"_.]*)(?=[), ])/g, (
-            return left.replace(/(^|[(, ])([a-zA-Z`"_][\w`"_.]*)(?=[), ]|$)/g, (
-                t: string, t1: string, t2: string
-            ): string => {
-                return t1 + this.field(t2, pre, suf);
-            }) + right;
-        }
+        // --- 复杂字段或表达式 ---
+        return left.replace(
+            /(^|[(, ])([a-zA-Z`"_][\w`"_.]*)(?=[), ]|$)/g,
+            (t: string, t1: string, t2: string): string => t1 + this.field(t2, pre, suf)
+        ) + right;
     }
 
     /**

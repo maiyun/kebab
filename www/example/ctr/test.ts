@@ -2783,9 +2783,12 @@ Result:<pre id="result">Nothing.</pre>`);
 <b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
 <b>format() :</b> ${sql.format(s, sd)}<hr>`);
 
-                s = sql.select(['SUM(user.age) age', 'UTC_TIMESTAMP', 'FROM_UNIXTIME(user.time, \'%Y-%m\') as time'], 'order').leftJoin('user', { 'order.user_id': lSql.column('user.id') }).getSql();
+                const data = this._get['s'] === 'pgsql' ?
+                    [`IFNULL(user.nick, '') nick`, `IFNULL(user.nick, 'a2') nick2`] :
+                    [`IFNULL(user.nick, "") nick`, `IFNULL(user.nick, "a2") nick2`];
+                s = sql.select(['SUM(user.age) age', 'UTC_TIMESTAMP', 'FROM_UNIXTIME(user.time, \'%Y-%m\') as time', ...data], 'order').leftJoin('user', { 'order.user_id': lSql.column('user.id') }).getSql();
                 sd = sql.getData();
-                echo.push(`<pre>sql.select(['SUM(user.age) age', 'UTC_TIMESTAMP', 'FROM_UNIXTIME(user.time, \\'%Y-%m\\') as time'], 'order').leftJoin('user', { 'order.user_id': lSql.column('user.id') });</pre>
+                echo.push(`<pre>sql.select(['SUM(user.age) age', 'UTC_TIMESTAMP', 'FROM_UNIXTIME(user.time, \\'%Y-%m\\') as time', \`${data[0]}\`, \`${data[1]}\`], 'order').leftJoin('user', { 'order.user_id': lSql.column('user.id') });</pre>
 <b>getSql() :</b> ${s}<br>
 <b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
 <b>format() :</b> ${sql.format(s, sd)}<hr>`);
