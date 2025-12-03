@@ -133,7 +133,7 @@ export default class Mod {
         this._sql = lSql.get({
             'service': this._db.getService() ?? lDb.ESERVICE.PGSQL,
             'ctr': opt.ctr,
-            'pre': opt.pre,
+            'pre': opt.pre ?? (this.constructor as any)._$pre,
         });
         if (opt.index) {
             this._index = typeof opt.index === 'string' ? [opt.index] : [...new Set(opt.index)];
@@ -193,7 +193,7 @@ export default class Mod {
         const sq = lSql.get({
             'service': db.getService() ?? lDb.ESERVICE.PGSQL,
             'ctr': opt.ctr,
-            'pre': opt.pre,
+            'pre': opt.pre ?? (this.constructor as any)._$pre,
         });
         if (!vs) {
             // --- 单行 ---
@@ -252,7 +252,7 @@ export default class Mod {
         const sq = lSql.get({
             'service': db.getService() ?? lDb.ESERVICE.PGSQL,
             'ctr': opt.ctr,
-            'pre': opt.pre,
+            'pre': opt.pre ?? (this.constructor as any)._$pre,
         });
         sq.insert(this._$table + (opt.index ? ('_' + opt.index) : '')).values(cs, vs);
         return sq.format();
@@ -281,7 +281,7 @@ export default class Mod {
             const sq = lSql.get({
                 'service': db.getService() ?? lDb.ESERVICE.PGSQL,
                 'ctr': opt.ctr,
-                'pre': opt.pre,
+                'pre': opt.pre ?? (this.constructor as any)._$pre,
             });
             sq.delete(this._$table + (index ? ('_' + index) : '')).where(where);
             if (opt.by) {
@@ -322,7 +322,7 @@ export default class Mod {
         const sq = lSql.get({
             'service': db.getService() ?? lDb.ESERVICE.PGSQL,
             'ctr': opt.ctr,
-            'pre': opt.pre,
+            'pre': opt.pre ?? (this.constructor as any)._$pre,
         });
         sq.delete(this._$table + (opt.index ? ('_' + opt.index) : '')).where(where);
         if (opt.by) {
@@ -359,7 +359,7 @@ export default class Mod {
             const sq = lSql.get({
                 'service': db.getService() ?? lDb.ESERVICE.PGSQL,
                 'ctr': opt.ctr,
-                'pre': opt.pre,
+                'pre': opt.pre ?? (this.constructor as any)._$pre,
             });
             sq.update(this._$table + (index ? ('_' + index) : ''), data).where(where);
             if (opt.by) {
@@ -402,7 +402,7 @@ export default class Mod {
         const sq = lSql.get({
             'service': db.getService() ?? lDb.ESERVICE.PGSQL,
             'ctr': opt.ctr,
-            'pre': opt.pre,
+            'pre': opt.pre ?? (this.constructor as any)._$pre,
         });
         sq.update(this._$table + (opt.index ? ('_' + opt.index) : ''), data).where(where);
         if (opt.by) {
@@ -464,7 +464,7 @@ export default class Mod {
             const sq = lSql.get({
                 'service': db.getService() ?? lDb.ESERVICE.PGSQL,
                 'ctr': opt.ctr,
-                'pre': opt.pre,
+                'pre': opt.pre ?? (this.constructor as any)._$pre,
             });
 
             const updates: Record<string, any> = {};
@@ -736,7 +736,7 @@ export default class Mod {
         const sq = lSql.get({
             'service': db.getService() ?? lDb.ESERVICE.PGSQL,
             'ctr': opt.ctr,
-            'pre': opt.pre,
+            'pre': opt.pre ?? (this.constructor as any)._$pre,
         });
         sq.select(this._$primary, this._$table + (opt.index ? ('_' + opt.index) : '')).where(where);
         const r = await db.query(sq.getSql(), sq.getData());
