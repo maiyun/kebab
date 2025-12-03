@@ -141,7 +141,7 @@ async function run(): Promise<void> {
         config.session.ssl ??= false;
         // --- config - sql ---
         config.sql ??= {};
-        config.sql.pre ??= 'm_';
+        config.sql.pre ??= 'm';
         // --- config - s3 ---
         config.s3 ??= {};
         config.s3['CF'] ??= {};

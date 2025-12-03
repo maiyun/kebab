@@ -22,6 +22,9 @@ let columnToken = '';
 
 export class Sql {
 
+    /** --- ctr 对象 --- */
+    private readonly _ctr?: ctr.Ctr;
+
     /** --- 前置 --- */
     private readonly _pre: string = '';
 
@@ -41,12 +44,15 @@ export class Sql {
     private _placeholderCounter: number = 1;
 
     // --- 实例化 ---
-    public constructor(pre?: string, opt: {
+    public constructor(opt: {
+        'service': ESERVICE;
+        'ctr'?: ctr.Ctr;
+        'pre'?: string;
         'data'?: kebab.DbValue[];
         'sql'?: string[];
-        'service'?: ESERVICE;
-    } = {}) {
-        this._pre = pre ?? '';
+    }) {
+        this._ctr = opt.ctr;
+        this._pre = opt.pre ?? '';
         this._service = opt.service ?? ESERVICE.MYSQL;
         if (opt.data) {
             this._data = opt.data;
@@ -707,7 +713,10 @@ export class Sql {
             }
             sql[0] = sql[0].replace(/FROM [`\w, ]+/, 'FROM ' + table);
         }
-        return get(this.getPre(), {
+        return get({
+            'service': this._service,
+            'ctr': this._ctr,
+            'pre': this._pre,
             'data': data,
             'sql': sql,
         });
@@ -1025,15 +1034,27 @@ export class Sql {
 
 /**
  * --- 创建 sql 对象 ---
- * @param ctrPre ctr 对象或 pre 表前缀
  * @param opt 参数
  */
-export function get(ctrPre?: ctr.Ctr | string, opt: {
+export function get(opt: {
+    'service': ESERVICE;
+    'ctr'?: ctr.Ctr;
+    'pre'?: string;
     'data'?: kebab.DbValue[];
     'sql'?: string[];
-    'service'?: ESERVICE;
-} = {}): Sql {
-    return new Sql(ctrPre instanceof ctr.Ctr ? ctrPre.getPrototype('_config').sql.pre : ctrPre, opt);
+}): Sql {
+    let pre = opt.pre ?? opt.ctr?.getPrototype('_config').sql.pre;
+    if (pre) {
+        if (opt.service === ESERVICE.MYSQL) {
+            if (!pre.endsWith('_')) {
+                pre += '_';
+            }
+        }
+    }
+    return new Sql({
+        ...opt,
+        'pre': pre,
+    });
 }
 
 /**

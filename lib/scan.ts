@@ -1,7 +1,7 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2022-09-24 15:23:25
- * Last: 2022-09-24 15:23:25, 2022-9-26 12:37:01, 2022-12-29 00:11:16, 2025-11-6 16:32:05
+ * Last: 2022-09-24 15:23:25, 2022-9-26 12:37:01, 2022-12-29 00:11:16, 2025-11-6 16:32:05, 2025-12-3 11:05:38
  */
 
 /*
@@ -29,13 +29,15 @@ import * as sCtr from '#kebab/sys/ctr.js';
 /** --- Scan 设置的选项 --- */
 export interface IOptions {
     'ttl'?: number;
-    'sqlPre'?: sCtr.Ctr | string;
+    'ctr'?: sCtr.Ctr;
+    'pre'?: string;
     'name'?: string;
 }
 
 /** --- scanned 函数的选项 --- */
 export interface IStaticOptions {
-    'sqlPre'?: sCtr.Ctr | string;
+    'ctr'?: sCtr.Ctr;
+    'pre'?: string;
     'name'?: string;
 }
 
@@ -62,7 +64,11 @@ export class Scan {
         }
         this._link = link;
         if (link instanceof lDb.Pool) {
-            this._sql = lSql.get(opt.sqlPre);
+            this._sql = lSql.get({
+                'service': link.getService(),
+                'ctr': opt.ctr,
+                'pre': opt.pre,
+            });
         }
         if (token) {
             this._token = token;
@@ -265,15 +271,19 @@ export async function scanned(
     const name = opt.name ?? 'scan';
     if (link instanceof lDb.Pool) {
         // --- Db ---
-        const sql = lSql.get(opt.sqlPre);
+        const sql = lSql.get({
+            'service': link.getService(),
+            'ctr': opt.ctr,
+            'pre': opt.pre,
+        });
         sql.update(name, {
-            'time_update': time
+            'time_update': time,
         }).where([
             {
                 'token': token,
                 'time_update': '0'
             },
-            ['time_exp', '>', time]
+            ['time_exp', '>', time],
         ]);
         const r = await link.execute(sql.getSql(), sql.getData());
         if (r.error) {
@@ -325,7 +335,11 @@ export async function setData(
     const name = opt.name ?? 'scan';
     if (link instanceof lDb.Pool) {
         // --- Db ---
-        const sql = lSql.get(opt.sqlPre);
+        const sql = lSql.get({
+            'service': link.getService(),
+            'ctr': opt.ctr,
+            'pre': opt.pre,
+        });
         sql.update(name, {
             'data': lText.stringifyJson(data)
         }).where([
@@ -333,7 +347,7 @@ export async function setData(
                 'token': token,
             },
             ['time_update', '>', '0'],
-            ['time_exp', '>', time]
+            ['time_exp', '>', time],
         ]);
         const r = await link.execute(sql.getSql(), sql.getData());
         if (r.error) {

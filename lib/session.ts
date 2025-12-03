@@ -70,7 +70,6 @@ export class Session {
     ): Promise<boolean> {
         const config = ctr.getPrototype('_config');
         const ssl = opt.ssl ?? config.session.ssl ?? false;
-        const pre = opt.sqlPre ?? null;
         this._name = opt.name ?? config.session.name;
         this._ttl = opt.ttl ?? config.session.ttl ?? 172800;
         const tim: number = time.stamp();
@@ -89,7 +88,11 @@ export class Session {
 
         this._link = link;
         if (link instanceof db.Pool) {
-            this._sql = sql.get(pre ?? ctr);
+            this._sql = sql.get({
+                'service': link.getService(),
+                'ctr': ctr,
+                'pre': opt.sqlPre,
+            });
             await this._gc();    // --- 执行 gc ---
         }
 

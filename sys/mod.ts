@@ -130,8 +130,10 @@ export default class Mod {
         /** --- 导入数据库连接 --- */
         this._db = opt.db;
         /** --- 新建 sql 对象 --- */
-        this._sql = lSql.get(opt.pre ?? (this.constructor as any)._$pre ?? opt.ctr, {
+        this._sql = lSql.get({
             'service': this._db.getService() ?? lDb.ESERVICE.PGSQL,
+            'ctr': opt.ctr,
+            'pre': opt.pre,
         });
         if (opt.index) {
             this._index = typeof opt.index === 'string' ? [opt.index] : [...new Set(opt.index)];
@@ -188,8 +190,10 @@ export default class Mod {
             'index'?: string;
         } = {}
     ): Promise<boolean | null | false> {
-        const sq = lSql.get(opt.pre ?? (this.constructor as any)._$pre ?? opt.ctr, {
+        const sq = lSql.get({
             'service': db.getService() ?? lDb.ESERVICE.PGSQL,
+            'ctr': opt.ctr,
+            'pre': opt.pre,
         });
         if (!vs) {
             // --- 单行 ---
@@ -245,8 +249,10 @@ export default class Mod {
             'index'?: string;
         } = {}
     ): string {
-        const sq = lSql.get(opt.pre ?? (this.constructor as any)._$pre ?? opt.ctr, {
+        const sq = lSql.get({
             'service': db.getService() ?? lDb.ESERVICE.PGSQL,
+            'ctr': opt.ctr,
+            'pre': opt.pre,
         });
         sq.insert(this._$table + (opt.index ? ('_' + opt.index) : '')).values(cs, vs);
         return sq.format();
@@ -272,8 +278,10 @@ export default class Mod {
         const indexs = opt.index ? (typeof opt.index === 'string' ? [opt.index] : [...new Set(opt.index)]) : [''];
         let ar = 0;
         for (const index of indexs) {
-            const sq = lSql.get(opt.pre ?? (this.constructor as any)._$pre ?? opt.ctr, {
+            const sq = lSql.get({
                 'service': db.getService() ?? lDb.ESERVICE.PGSQL,
+                'ctr': opt.ctr,
+                'pre': opt.pre,
             });
             sq.delete(this._$table + (index ? ('_' + index) : '')).where(where);
             if (opt.by) {
@@ -311,8 +319,10 @@ export default class Mod {
             'limit'?: [number, number?];
         } = {}
     ): lSql.Sql {
-        const sq = lSql.get(opt.pre ?? (this.constructor as any)._$pre ?? opt.ctr, {
+        const sq = lSql.get({
             'service': db.getService() ?? lDb.ESERVICE.PGSQL,
+            'ctr': opt.ctr,
+            'pre': opt.pre,
         });
         sq.delete(this._$table + (opt.index ? ('_' + opt.index) : '')).where(where);
         if (opt.by) {
@@ -346,8 +356,10 @@ export default class Mod {
         const indexs = opt.index ? (typeof opt.index === 'string' ? [opt.index] : [...new Set(opt.index)]) : [''];
         let ar = 0;
         for (const index of indexs) {
-            const sq = lSql.get(opt.pre ?? (this.constructor as any)._$pre ?? opt.ctr, {
+            const sq = lSql.get({
                 'service': db.getService() ?? lDb.ESERVICE.PGSQL,
+                'ctr': opt.ctr,
+                'pre': opt.pre,
             });
             sq.update(this._$table + (index ? ('_' + index) : ''), data).where(where);
             if (opt.by) {
@@ -387,8 +399,10 @@ export default class Mod {
             'limit'?: [number, number?];
         } = {}
     ): lSql.Sql {
-        const sq = lSql.get(opt.pre ?? (this.constructor as any)._$pre ?? opt.ctr, {
+        const sq = lSql.get({
             'service': db.getService() ?? lDb.ESERVICE.PGSQL,
+            'ctr': opt.ctr,
+            'pre': opt.pre,
         });
         sq.update(this._$table + (opt.index ? ('_' + opt.index) : ''), data).where(where);
         if (opt.by) {
@@ -447,8 +461,10 @@ export default class Mod {
         }
 
         for (const batch of batches) {
-            const sq = lSql.get(opt.pre ?? (this as any)._$pre ?? opt.ctr, {
+            const sq = lSql.get({
                 'service': db.getService() ?? lDb.ESERVICE.PGSQL,
+                'ctr': opt.ctr,
+                'pre': opt.pre,
             });
 
             const updates: Record<string, any> = {};
@@ -717,8 +733,10 @@ export default class Mod {
         where: string | kebab.Json = '',
         opt: { 'ctr'?: sCtr.Ctr; 'pre'?: string; 'index'?: string; } = {}
     ): Promise<any[] | false> {
-        const sq = lSql.get(opt.pre ?? (this.constructor as any)._$pre ?? opt.ctr, {
+        const sq = lSql.get({
             'service': db.getService() ?? lDb.ESERVICE.PGSQL,
+            'ctr': opt.ctr,
+            'pre': opt.pre,
         });
         sq.select(this._$primary, this._$table + (opt.index ? ('_' + opt.index) : '')).where(where);
         const r = await db.query(sq.getSql(), sq.getData());

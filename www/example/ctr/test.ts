@@ -2432,9 +2432,9 @@ error: <pre>${JSON.stringify(res.error, null, 4)}</pre>`);
         const s = this._get['s'] ?? 'db';
 
         const echo = [];
-        const scan = await lScan.get(link, undefined, { 'ttl': 30, 'sqlPre': this });
+        const scan = await lScan.get(link, undefined, { 'ttl': 30, 'ctr': this });
         const token = scan.getToken();
-        echo.push(`<pre>const scan = await lScan.get(this, link, undefined, { 'ttl': 30, 'sqlPre': this });
+        echo.push(`<pre>const scan = await lScan.get(this, link, undefined, { 'ttl': 30, 'ctr': this });
 const token = scan.getToken();</pre>
 token: ${token ?? 'null'}<br><br>
 Scan status: <b id="status" style="color: red;">Waiting...</b><br>
@@ -2526,7 +2526,7 @@ function confirm() {
         }
 
         const scan = await lScan.get(link, this._post['token'], {
-            'sqlPre': this
+            'ctr': this
         });
         const rtn = await scan.poll();
         switch (rtn) {
@@ -2552,7 +2552,7 @@ function confirm() {
             return [0, 'Failed, link can not be connected.'];
         }
         if (!await lScan.scanned(link, this._post['token'], {
-            'sqlPre': this
+            'ctr': this
         })) {
             return [0, 'Token has expired.'];
         }
@@ -2567,7 +2567,7 @@ function confirm() {
         if (!await lScan.setData(link, this._post['token'], {
             'uid': '5'
         }, {
-            'sqlPre': this
+            'ctr': this
         })) {
             return [0, 'Token has expired.'];
         }
@@ -2665,9 +2665,11 @@ Result:<pre id="result">Nothing.</pre>`);
 
     public sql(): string {
         const echo: string[] = [];
-        let sql = this._get['s'] === 'pgsql' ? lSql.get('test', {
-            'service': lSql.ESERVICE.PGSQL,
-        }) : lSql.get('test_');
+        let sql = lSql.get({
+            'service': this._get['s'] === 'pgsql' ? lSql.ESERVICE.PGSQL : lSql.ESERVICE.MYSQL,
+            'ctr': this,
+            'pre': 'test'
+        });
         switch (this._get['type']) {
             case 'insert': {
                 let s = sql.insert('user').values(['name', 'age'], [
