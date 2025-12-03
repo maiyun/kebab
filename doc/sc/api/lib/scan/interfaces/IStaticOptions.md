@@ -6,22 +6,30 @@
 
 # Interface: IStaticOptions
 
-Defined in: [lib/scan.ts:37](https://github.com/maiyunnet/kebab/blob/master/lib/scan.ts#L37)
+Defined in: [lib/scan.ts:38](https://github.com/maiyunnet/kebab/blob/master/lib/scan.ts#L38)
 
 scanned 函数的选项
 
 ## Properties
 
-### name?
+### ctr?
 
-> `optional` **name**: `string`
+> `optional` **ctr**: [`Ctr`](../../../sys/ctr/classes/Ctr.md)
 
 Defined in: [lib/scan.ts:39](https://github.com/maiyunnet/kebab/blob/master/lib/scan.ts#L39)
 
 ***
 
-### sqlPre?
+### name?
 
-> `optional` **sqlPre**: `string` \| [`Ctr`](../../../sys/ctr/classes/Ctr.md)
+> `optional` **name**: `string`
 
-Defined in: [lib/scan.ts:38](https://github.com/maiyunnet/kebab/blob/master/lib/scan.ts#L38)
+Defined in: [lib/scan.ts:41](https://github.com/maiyunnet/kebab/blob/master/lib/scan.ts#L41)
+
+***
+
+### pre?
+
+> `optional` **pre**: `string`
+
+Defined in: [lib/scan.ts:40](https://github.com/maiyunnet/kebab/blob/master/lib/scan.ts#L40)

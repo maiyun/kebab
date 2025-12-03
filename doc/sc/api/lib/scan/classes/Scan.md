@@ -6,7 +6,7 @@
 
 # Class: Scan
 
-Defined in: [lib/scan.ts:42](https://github.com/maiyunnet/kebab/blob/master/lib/scan.ts#L42)
+Defined in: [lib/scan.ts:44](https://github.com/maiyunnet/kebab/blob/master/lib/scan.ts#L44)
 
 ## Constructors
 
@@ -14,7 +14,7 @@ Defined in: [lib/scan.ts:42](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **new Scan**(`link`, `token?`, `opt?`): `Scan`
 
-Defined in: [lib/scan.ts:56](https://github.com/maiyunnet/kebab/blob/master/lib/scan.ts#L56)
+Defined in: [lib/scan.ts:58](https://github.com/maiyunnet/kebab/blob/master/lib/scan.ts#L58)
 
 #### Parameters
 
@@ -40,7 +40,7 @@ Defined in: [lib/scan.ts:56](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **createToken**(): `Promise`\<`boolean`\>
 
-Defined in: [lib/scan.ts:150](https://github.com/maiyunnet/kebab/blob/master/lib/scan.ts#L150)
+Defined in: [lib/scan.ts:156](https://github.com/maiyunnet/kebab/blob/master/lib/scan.ts#L156)
 
 创建 token，直接应用到本类
 
@@ -54,7 +54,7 @@ Defined in: [lib/scan.ts:150](https://github.com/maiyunnet/kebab/blob/master/lib
 
 > **getTimeLeft**(): `number` \| `null`
 
-Defined in: [lib/scan.ts:217](https://github.com/maiyunnet/kebab/blob/master/lib/scan.ts#L217)
+Defined in: [lib/scan.ts:223](https://github.com/maiyunnet/kebab/blob/master/lib/scan.ts#L223)
 
 获取当前 token 可扫剩余有效期
 
@@ -68,7 +68,7 @@ Defined in: [lib/scan.ts:217](https://github.com/maiyunnet/kebab/blob/master/lib
 
 > **getToken**(): `string` \| `null`
 
-Defined in: [lib/scan.ts:195](https://github.com/maiyunnet/kebab/blob/master/lib/scan.ts#L195)
+Defined in: [lib/scan.ts:201](https://github.com/maiyunnet/kebab/blob/master/lib/scan.ts#L201)
 
 获取当前 token
 
@@ -82,7 +82,7 @@ Defined in: [lib/scan.ts:195](https://github.com/maiyunnet/kebab/blob/master/lib
 
 > **getTTL**(): `number`
 
-Defined in: [lib/scan.ts:210](https://github.com/maiyunnet/kebab/blob/master/lib/scan.ts#L210)
+Defined in: [lib/scan.ts:216](https://github.com/maiyunnet/kebab/blob/master/lib/scan.ts#L216)
 
 获取设置的有效期
 
@@ -96,7 +96,7 @@ Defined in: [lib/scan.ts:210](https://github.com/maiyunnet/kebab/blob/master/lib
 
 > **poll**(): `Promise`\<`any`\>
 
-Defined in: [lib/scan.ts:79](https://github.com/maiyunnet/kebab/blob/master/lib/scan.ts#L79)
+Defined in: [lib/scan.ts:85](https://github.com/maiyunnet/kebab/blob/master/lib/scan.ts#L85)
 
 生成二维码处的轮询，检查是否被扫码、被录入数据
 
@@ -112,7 +112,7 @@ Defined in: [lib/scan.ts:79](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **setTTL**(`ttl`): `void`
 
-Defined in: [lib/scan.ts:203](https://github.com/maiyunnet/kebab/blob/master/lib/scan.ts#L203)
+Defined in: [lib/scan.ts:209](https://github.com/maiyunnet/kebab/blob/master/lib/scan.ts#L209)
 
 设置有效期，设置后的新 token 被创建有效
 

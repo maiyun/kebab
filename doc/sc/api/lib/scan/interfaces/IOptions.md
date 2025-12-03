@@ -12,19 +12,27 @@ Scan 设置的选项
 
 ## Properties
 
+### ctr?
+
+> `optional` **ctr**: [`Ctr`](../../../sys/ctr/classes/Ctr.md)
+
+Defined in: [lib/scan.ts:32](https://github.com/maiyunnet/kebab/blob/master/lib/scan.ts#L32)
+
+***
+
 ### name?
 
 > `optional` **name**: `string`
 
-Defined in: [lib/scan.ts:33](https://github.com/maiyunnet/kebab/blob/master/lib/scan.ts#L33)
+Defined in: [lib/scan.ts:34](https://github.com/maiyunnet/kebab/blob/master/lib/scan.ts#L34)
 
 ***
 
-### sqlPre?
+### pre?
 
-> `optional` **sqlPre**: `string` \| [`Ctr`](../../../sys/ctr/classes/Ctr.md)
+> `optional` **pre**: `string`
 
-Defined in: [lib/scan.ts:32](https://github.com/maiyunnet/kebab/blob/master/lib/scan.ts#L32)
+Defined in: [lib/scan.ts:33](https://github.com/maiyunnet/kebab/blob/master/lib/scan.ts#L33)
 
 ***
 

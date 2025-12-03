@@ -8,7 +8,7 @@
 
 > **setData**(`link`, `token`, `data`, `opt`): `Promise`\<`boolean`\>
 
-Defined in: [lib/scan.ts:313](https://github.com/maiyunnet/kebab/blob/master/lib/scan.ts#L313)
+Defined in: [lib/scan.ts:323](https://github.com/maiyunnet/kebab/blob/master/lib/scan.ts#L323)
 
 将数据写入 token，通常在客户的逻辑下去写，服务器会 poll 到
 

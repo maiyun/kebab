@@ -8,7 +8,7 @@
 
 > **scanned**(`link`, `token`, `opt`): `Promise`\<`boolean`\>
 
-Defined in: [lib/scan.ts:259](https://github.com/maiyunnet/kebab/blob/master/lib/scan.ts#L259)
+Defined in: [lib/scan.ts:265](https://github.com/maiyunnet/kebab/blob/master/lib/scan.ts#L265)
 
 对 token 执行访问操作，通常用户扫码后展示的网页所调用，代表已扫码
 
