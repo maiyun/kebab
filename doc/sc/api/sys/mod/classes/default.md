@@ -178,9 +178,9 @@ Defined in: [sys/mod.ts:74](https://github.com/maiyunnet/kebab/blob/master/sys/m
 
 ***
 
-### \_$pre
+### \_$pre?
 
-> `protected` `static` **\_$pre**: `string` \| `null` = `null`
+> `protected` `static` `optional` **\_$pre**: `string`
 
 Defined in: [sys/mod.ts:80](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L80)
 

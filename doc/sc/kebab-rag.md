@@ -1385,7 +1385,7 @@ index/variables/VER.md
 
 # Variable: VER
 
-> `const` **VER**: `"7.0.1"` = `'7.0.1'`
+> `const` **VER**: `"7.0.2"` = `'7.0.2'`
 
 Defined in: [index.ts:10](https://github.com/maiyunnet/kebab/blob/master/index.ts#L10)
 
@@ -20333,9 +20333,9 @@ Defined in: [sys/mod.ts:74](https://github.com/maiyunnet/kebab/blob/master/sys/m
 
 ***
 
-### \_$pre
+### \_$pre?
 
-> `protected` `static` **\_$pre**: `string` \| `null` = `null`
+> `protected` `static` `optional` **\_$pre**: `string`
 
 Defined in: [sys/mod.ts:80](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L80)
 
