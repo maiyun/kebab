@@ -45,8 +45,8 @@
     "@types/ejs": "^3.1.5",
     "@types/node": "^24.10.1",
     "@types/pg": "^8.15.6",
+    "@typescript/native-preview": "^7.0.0-dev.20251203.1",
     "typedoc": "^0.28.15",
-    "typedoc-plugin-markdown": "^4.9.0",
-    "typescript": "^5.9.3"
+    "typedoc-plugin-markdown": "^4.9.0"
   }
 }

@@ -52,19 +52,19 @@ export default class extends sMod {
 
     /* eslint-disable @typescript-eslint/naming-convention */
 
-    public id!: number;
+    declare public id: number;
 
-    public name!: string;
+    declare public name: string;
 
-    public token!: string;
+    declare public token: string;
 
-    public point!: { 'x': number; 'y': number; };
+    declare public point: { 'x': number; 'y': number; };
 
-    public polygon!: Array<Array<{ 'x': number; 'y': number; }>>;
+    declare public polygon: Array<Array<{ 'x': number; 'y': number; }>>;
 
-    public json!: kebab.Json;
+    declare public json: kebab.Json;
 
-    public time_add!: number;
+    declare public time_add: number;
 
     /* eslint-enable */
 
