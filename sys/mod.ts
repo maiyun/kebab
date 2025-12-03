@@ -77,7 +77,7 @@ export default class Mod {
     protected static _$index: string = '';
 
     /** --- 前缀，顺序：选项前缀 -> 本前缀 -> 配置文件前缀 --- */
-    protected static _$pre: string | null = null;
+    protected static _$pre?: string;
 
     /** --- 要 update 的内容 --- */
     protected _updates: Record<string, boolean> = {};
@@ -146,14 +146,14 @@ export default class Mod {
             for (const k in opt.row) {
                 const v = opt.row[k];
                 this._data[k] = v;
-                (this as Record<string, kebab.Json>)[k] = v;
+                (this as any)[k] = v;
             }
         }
         /** --- 是否有 select --- */
         const select = opt.select ?? (opt.where ? '*' : '');
         this._sql.select(
             select,
-            ((this.constructor as Record<string, kebab.Json>)._$table as string) +
+            ((this.constructor as any)._$table as string) +
             (this._index !== null ? ('_' + this._index[0]) : '') +
             (opt.alias ? ' ' + opt.alias : '')
         );
@@ -193,7 +193,7 @@ export default class Mod {
         const sq = lSql.get({
             'service': db.getService() ?? lDb.ESERVICE.PGSQL,
             'ctr': opt.ctr,
-            'pre': opt.pre ?? (this.constructor as any)._$pre,
+            'pre': opt.pre ?? this._$pre,
         });
         if (!vs) {
             // --- 单行 ---
@@ -252,7 +252,7 @@ export default class Mod {
         const sq = lSql.get({
             'service': db.getService() ?? lDb.ESERVICE.PGSQL,
             'ctr': opt.ctr,
-            'pre': opt.pre ?? (this.constructor as any)._$pre,
+            'pre': opt.pre ?? this._$pre,
         });
         sq.insert(this._$table + (opt.index ? ('_' + opt.index) : '')).values(cs, vs);
         return sq.format();
@@ -281,7 +281,7 @@ export default class Mod {
             const sq = lSql.get({
                 'service': db.getService() ?? lDb.ESERVICE.PGSQL,
                 'ctr': opt.ctr,
-                'pre': opt.pre ?? (this.constructor as any)._$pre,
+                'pre': opt.pre ?? this._$pre,
             });
             sq.delete(this._$table + (index ? ('_' + index) : '')).where(where);
             if (opt.by) {
@@ -322,7 +322,7 @@ export default class Mod {
         const sq = lSql.get({
             'service': db.getService() ?? lDb.ESERVICE.PGSQL,
             'ctr': opt.ctr,
-            'pre': opt.pre ?? (this.constructor as any)._$pre,
+            'pre': opt.pre ?? this._$pre,
         });
         sq.delete(this._$table + (opt.index ? ('_' + opt.index) : '')).where(where);
         if (opt.by) {
@@ -359,7 +359,7 @@ export default class Mod {
             const sq = lSql.get({
                 'service': db.getService() ?? lDb.ESERVICE.PGSQL,
                 'ctr': opt.ctr,
-                'pre': opt.pre ?? (this.constructor as any)._$pre,
+                'pre': opt.pre ?? this._$pre,
             });
             sq.update(this._$table + (index ? ('_' + index) : ''), data).where(where);
             if (opt.by) {
@@ -402,7 +402,7 @@ export default class Mod {
         const sq = lSql.get({
             'service': db.getService() ?? lDb.ESERVICE.PGSQL,
             'ctr': opt.ctr,
-            'pre': opt.pre ?? (this.constructor as any)._$pre,
+            'pre': opt.pre ?? this._$pre,
         });
         sq.update(this._$table + (opt.index ? ('_' + opt.index) : ''), data).where(where);
         if (opt.by) {
@@ -464,7 +464,7 @@ export default class Mod {
             const sq = lSql.get({
                 'service': db.getService() ?? lDb.ESERVICE.PGSQL,
                 'ctr': opt.ctr,
-                'pre': opt.pre ?? (this.constructor as any)._$pre,
+                'pre': opt.pre ?? this._$pre,
             });
 
             const updates: Record<string, any> = {};
@@ -736,7 +736,7 @@ export default class Mod {
         const sq = lSql.get({
             'service': db.getService() ?? lDb.ESERVICE.PGSQL,
             'ctr': opt.ctr,
-            'pre': opt.pre ?? (this.constructor as any)._$pre,
+            'pre': opt.pre ?? this._$pre,
         });
         sq.select(this._$primary, this._$table + (opt.index ? ('_' + opt.index) : '')).where(where);
         const r = await db.query(sq.getSql(), sq.getData());
@@ -815,7 +815,7 @@ export default class Mod {
      * @return true-成功,false-报错,null-唯一键非 _$key 键冲突
      */
     public async create(): Promise<boolean | null> {
-        const cstr = this.constructor as Record<string, kebab.Json>;
+        const cstr = this.constructor as any;
         const updates: Record<string, any> = {};
         for (const k in this._updates) {
             updates[k] = this._data[k];
@@ -929,7 +929,7 @@ export default class Mod {
      * @param lock 是否加锁
      */
     public async refresh(lock = false): Promise<boolean | null> {
-        const cstr = this.constructor as Record<string, kebab.Json>;
+        const cstr = this.constructor as any;
         this._sql.select('*', (cstr._$table as string) + (this._index ? ('_' + this._index[0]) : '')).where([{
             [cstr._$primary]: this._data[cstr._$primary]
         }]);
@@ -960,7 +960,7 @@ export default class Mod {
         if (Object.keys(this._updates).length === 0) {
             return true;
         }
-        const cstr = this.constructor as Record<string, kebab.Json>;
+        const cstr = this.constructor as any;
         const updates: Record<string, any> = {};
         for (const k in this._updates) {
             updates[k] = this._data[k];
@@ -986,7 +986,7 @@ export default class Mod {
      * --- 移除本条目 ---
      */
     public async remove(): Promise<boolean> {
-        const cstr = this.constructor as Record<string, kebab.Json>;
+        const cstr = this.constructor as any;
         this._sql.delete((cstr._$table as string) + (this._index ? ('_' + this._index[0]) : '')).where([{
             [cstr._$primary]: this._data[cstr._$primary]
         }]);
