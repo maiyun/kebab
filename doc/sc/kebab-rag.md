@@ -3433,6 +3433,8 @@ PM2 进程名称
 
 [`TPm2Action`](../type-aliases/TPm2Action.md) = `'restart'`
 
+PM2 操作类型
+
 ### hosts?
 
 局域网列表
