@@ -363,12 +363,7 @@ export function isIdCardCN(idcard: string): boolean {
     // --- 取模 ---
     const mod = total % BigInt(11);
     // --- 比较校验码 ---
-    if (verifyCode === verifyCodeList[Number(mod)]) {
-        return true;
-    }
-    else {
-        return false;
-    }
+    return verifyCode === verifyCodeList[Number(mod)];
 }
 
 /**
@@ -387,7 +382,7 @@ export function queryStringify(query: Record<string, any>, encode: boolean = tru
     }
     return Object.entries(query).map(([k, v]) => {
         if (Array.isArray(v)) {
-            return v.map((i) => `${k}=${i}}`).join('&');
+            return v.map((i) => `${k}=${i}`).join('&');
         }
         return `${k}=${v}`;
     }).join('&');

@@ -53,6 +53,28 @@ let http2Server: http2.Http2SecureServer;
 const linkCount: Record<string, number> = {};
 
 /**
+ * --- 包装请求处理函数，统一管理 linkCount 计数和错误处理 ---
+ * @param key 连接标识
+ * @param handler 实际处理函数
+ * @param errorPrefix 错误日志前缀
+ */
+function wrapWithLinkCount(
+    key: string,
+    handler: () => Promise<void>,
+    errorPrefix: string
+): void {
+    linkCount[key] = (linkCount[key] ?? 0) + 1;
+    handler().catch((e: any) => {
+        lCore.log({}, `${errorPrefix} ${lText.stringifyJson((e.stack as string)).slice(1, -1)}`, '-error');
+    }).finally(() => {
+        --linkCount[key];
+        if (!linkCount[key]) {
+            delete linkCount[key];
+        }
+    });
+}
+
+/**
  * --- 最终调用执行的函数块，创建 http 服务器等 ---
  */
 async function run(): Promise<void> {
@@ -108,24 +130,11 @@ async function run(): Promise<void> {
             res.end('403 Forbidden');
             return;
         }
-        const key = host + req.url;
-        (async function() {
-            if (!linkCount[key]) {
-                linkCount[key] = 0;
-            }
-            ++linkCount[key];
-            await requestHandler(req, res, true);
-            --linkCount[key];
-            if (!linkCount[key]) {
-                delete linkCount[key];
-            }
-        })().catch(function(e) {
-            lCore.log({}, '[CHILD][http2][request] ' + lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
-            --linkCount[key];
-            if (!linkCount[key]) {
-                delete linkCount[key];
-            }
-        });
+        wrapWithLinkCount(
+            host + req.url,
+            () => requestHandler(req, res, true),
+            '[CHILD][http2][request]'
+        );
     }).on('tlsClientError', (err, socket) => {
         socket.destroy();
     }).on('upgrade', function(req: http.IncomingMessage, socket: net.Socket, head: Buffer): void {
@@ -134,24 +143,11 @@ async function run(): Promise<void> {
             socket.destroy();
             return;
         }
-        const key = host + (req.url ?? '');
-        (async function() {
-            if (!linkCount[key]) {
-                linkCount[key] = 0;
-            }
-            ++linkCount[key];
-            await upgradeHandler(req, socket, true, head);
-            --linkCount[key];
-            if (!linkCount[key]) {
-                delete linkCount[key];
-            }
-        })().catch(function(e) {
-            lCore.log({}, '[CHILD][http2][upgrade] ' + lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
-            --linkCount[key];
-            if (!linkCount[key]) {
-                delete linkCount[key];
-            }
-        });
+        wrapWithLinkCount(
+            host + (req.url ?? ''),
+            () => upgradeHandler(req, socket, true, head),
+            '[CHILD][http2][upgrade]'
+        );
     }).listen(lCore.globalConfig.httpsPort);
     httpServer = http.createServer(function(req: http.IncomingMessage, res: http.ServerResponse): void {
         const host = (req.headers['host'] ?? '');
@@ -161,24 +157,11 @@ async function run(): Promise<void> {
             res.end();
             return;
         }
-        const key = host + (req.url ?? '');
-        (async function() {
-            if (!linkCount[key]) {
-                linkCount[key] = 0;
-            }
-            ++linkCount[key];
-            await requestHandler(req, res, false);
-            --linkCount[key];
-            if (!linkCount[key]) {
-                delete linkCount[key];
-            }
-        })().catch(function(e) {
-            lCore.log({}, '[CHILD][http][request] ' + lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
-            --linkCount[key];
-            if (!linkCount[key]) {
-                delete linkCount[key];
-            }
-        });
+        wrapWithLinkCount(
+            host + (req.url ?? ''),
+            () => requestHandler(req, res, false),
+            '[CHILD][http][request]'
+        );
     }).on('clientError', (err, socket) => {
         socket.destroy();
     }).on('upgrade', function(req: http.IncomingMessage, socket: net.Socket, head: Buffer): void {
@@ -187,24 +170,11 @@ async function run(): Promise<void> {
             socket.destroy();
             return;
         }
-        const key = host + (req.url ?? '');
-        (async function() {
-            if (!linkCount[key]) {
-                linkCount[key] = 0;
-            }
-            ++linkCount[key];
-            await upgradeHandler(req, socket, false, head);
-            --linkCount[key];
-            if (!linkCount[key]) {
-                delete linkCount[key];
-            }
-        })().catch(function(e) {
-            lCore.log({}, '[CHILD][http][upgrade] ' + lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
-            --linkCount[key];
-            if (!linkCount[key]) {
-                delete linkCount[key];
-            }
-        });
+        wrapWithLinkCount(
+            host + (req.url ?? ''),
+            () => upgradeHandler(req, socket, false, head),
+            '[CHILD][http][upgrade]'
+        );
     }).listen(lCore.globalConfig.httpPort);
 }
 

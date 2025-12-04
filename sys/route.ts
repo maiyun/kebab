@@ -32,6 +32,44 @@ export function clearKebabConfigs(): void {
 }
 
 /**
+ * --- 输出 500 错误响应 ---
+ * @param res 响应对象
+ */
+function respond500(res: http2.Http2ServerResponse | http.ServerResponse): void {
+    const content = '<h1>500 Server Error</h1><hr>Kebab';
+    if (!res.headersSent) {
+        res.setHeader('content-type', 'text/html; charset=utf-8');
+        res.setHeader('content-length', Buffer.byteLength(content));
+        lCore.writeHead(res, 500);
+    }
+    res.end(content);
+}
+
+/**
+ * --- 输出 404 错误响应 ---
+ * @param res 响应对象
+ * @param config 配置对象（用于检查 #404 路由）
+ * @param path 请求路径
+ */
+function respond404(
+    res: http2.Http2ServerResponse | http.ServerResponse,
+    config: kebab.IConfig | null,
+    path: string
+): void {
+    if (config?.route?.['#404']) {
+        res.setHeader('location', lText.urlResolve(config.const.urlBase, config.route['#404']));
+        lCore.writeHead(res, 302);
+        res.end('');
+        return;
+    }
+    const content = '[Error] Controller not found, path: ' + path + '.';
+    res.setHeader('content-type', 'text/html; charset=utf-8');
+    res.setHeader('content-length', Buffer.byteLength(content));
+    lCore.writeHead(res, 404);
+    res.end(content);
+}
+
+/**
  * --- 若为动态路径则执行此函数，此函数不进行判断 kebab.json 是否存在 ---
  * @param data 传导的数据
  */
@@ -213,17 +251,7 @@ export async function run(data: {
     // --- 若文件名为保留的 middle 将不允许进行 ---
     if (pathLeft.startsWith('middle')) {
         if (data.res) {
-            if (config.route['#404']) {
-                data.res.setHeader('location', lText.urlResolve(config.const.urlBase, config.route['#404']));
-                lCore.writeHead(data.res, 302);
-                data.res.end('');
-                return true;
-            }
-            const content = '[Error] Controller not found, path: ' + path + '.';
-            data.res.setHeader('content-type', 'text/html; charset=utf-8');
-            data.res.setHeader('content-length', Buffer.byteLength(content));
-            lCore.writeHead(data.res, 404);
-            data.res.end(content);
+            respond404(data.res, config, path);
         }
         else {
             data.socket?.destroy();
@@ -450,11 +478,7 @@ export async function run(data: {
     }
     catch (e: kebab.Json) {
         lCore.log(middle, '(E03)' + lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
-        const content = '<h1>500 Server Error</h1><hr>Kebab';
-        data.res.setHeader('content-type', 'text/html; charset=utf-8');
-        data.res.setHeader('content-length', Buffer.byteLength(content));
-        lCore.writeHead(data.res, 500);
-        data.res.end(content);
+        respond500(data.res);
         return true;
     }
     let cacheTTL: number = middle.getPrototype('_cacheTTL');
@@ -466,11 +490,7 @@ export async function run(data: {
         }
         catch (e: kebab.Json) {
             lCore.log(middle, '(E05)' + lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
-            const content = '<h1>500 Server Error</h1><hr>Kebab';
-            data.res.setHeader('content-type', 'text/html; charset=utf-8');
-            data.res.setHeader('content-length', Buffer.byteLength(content));
-            lCore.writeHead(data.res, 500);
-            data.res.end(content);
+            respond500(data.res);
             return true;
         }
         cacheTTL = middle.getPrototype('_cacheTTL');
@@ -480,17 +500,7 @@ export async function run(data: {
             const filePath = config.const.ctrPath + pathLeft + '.js';
             if (!await lFs.isFile(filePath)) {
                 // --- 指定的控制器不存在 ---
-                if (config.route['#404']) {
-                    data.res.setHeader('location', lText.urlResolve(config.const.urlBase, config.route['#404']));
-                    lCore.writeHead(data.res, 302);
-                    data.res.end('');
-                    return true;
-                }
-                const content = '[Error] Controller not found, path: ' + path + '.';
-                data.res.setHeader('content-type', 'text/html; charset=utf-8');
-                data.res.setHeader('content-length', Buffer.byteLength(content));
-                lCore.writeHead(data.res, 404);
-                data.res.end(content);
+                respond404(data.res, config, path);
                 return true;
             }
             // --- 加载控制器文件 ---
@@ -532,34 +542,14 @@ export async function run(data: {
             // --- 检测 action 是否存在，以及排除内部方法 ---
             if (pathRight.startsWith('_') || pathRight === 'onUpgrade' || pathRight === 'onLoad' || pathRight === 'onData' || pathRight === 'onDrain' || pathRight === 'onEnd' || pathRight === 'onClose' || pathRight === 'setPrototype' || pathRight === 'getPrototype' || pathRight === 'getAuthorization') {
                 // --- _ 开头的 action 是内部方法，不允许访问 ---
-                if (config.route['#404']) {
-                    data.res.setHeader('location', lText.urlResolve(config.const.urlBase, config.route['#404']));
-                    lCore.writeHead(data.res, 302);
-                    data.res.end('');
-                    return true;
-                }
-                const content = '[Error] Action not found, path: ' + path + '.';
-                data.res.setHeader('content-type', 'text/html; charset=utf-8');
-                data.res.setHeader('content-length', Buffer.byteLength(content));
-                lCore.writeHead(data.res, 404);
-                data.res.end(content);
+                respond404(data.res, config, path);
                 return true;
             }
             pathRight = pathRight.replace(/-([a-zA-Z0-9])/g, function(t, t1: string): string {
                 return t1.toUpperCase();
             });
             if (((cctr as kebab.Json)[pathRight] === undefined) || (typeof (cctr as kebab.Json)[pathRight] !== 'function')) {
-                if (config.route['#404']) {
-                    data.res.setHeader('location', lText.urlResolve(config.const.urlBase, config.route['#404']));
-                    lCore.writeHead(data.res, 302);
-                    data.res.end('');
-                    return true;
-                }
-                const content = '[Error] Action not found, path: ' + path + '.';
-                data.res.setHeader('content-type', 'text/html; charset=utf-8');
-                data.res.setHeader('content-length', Buffer.byteLength(content));
-                lCore.writeHead(data.res, 404);
-                data.res.end(content);
+                respond404(data.res, config, path);
                 return true;
             }
             // --- 执行 onLoad 方法 ---
@@ -582,11 +572,7 @@ export async function run(data: {
                     }
                     catch (e: kebab.Json) {
                         lCore.log(cctr, '(E05)' + lText.stringifyJson(e.stack).slice(1, -1), '-error');
-                        const content = '<h1>500 Server Error</h1><hr>Kebab';
-                        data.res.setHeader('content-type', 'text/html; charset=utf-8');
-                        data.res.setHeader('content-length', Buffer.byteLength(content));
-                        lCore.writeHead(data.res, 500);
-                        data.res.end(content);
+                        respond500(data.res);
                         await waitCtr(cctr);
                         return true;
                     }
@@ -597,11 +583,7 @@ export async function run(data: {
             }
             catch (e: kebab.Json) {
                 lCore.log(cctr, '(E04)' + lText.stringifyJson(e.stack).slice(1, -1), '-error');
-                const content = '<h1>500 Server Error</h1><hr>Kebab';
-                data.res.setHeader('content-type', 'text/html; charset=utf-8');
-                data.res.setHeader('content-length', Buffer.byteLength(content));
-                lCore.writeHead(data.res, 500);
-                data.res.end(content);
+                respond500(data.res);
                 await waitCtr(cctr);
                 return true;
             }

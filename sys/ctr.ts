@@ -334,6 +334,20 @@ export class Ctr {
     }
 
     /**
+     * --- 设置校验错误返回值 ---
+     * @param rtn 返回值数组
+     * @param lastVal 规则最后一项
+     * @param msgSuffix 可选的消息后缀
+     */
+    private _setCheckError(rtn: kebab.Json[], lastVal: kebab.Json, msgSuffix?: string): void {
+        rtn[0] = lastVal[0];
+        rtn[1] = msgSuffix ? lastVal[1] + msgSuffix : lastVal[1];
+        if (lastVal[2]) {
+            rtn[2] = lastVal[2];
+        }
+    }
+
+    /**
      * --- 检测提交的数据类型 ---
      * @param input 要校验的输入项
      * @param rule 规则, int, double, num(可字符串), array, bool, string, ascii
@@ -348,10 +362,7 @@ export class Ctr {
         for (const key in rule) {
             const val = rule[key];
             // --- key 就是上面的 xx ---
-            if (input[key] === undefined) {
-                // --- 原值不存在则设定为 null ---
-                input[key] = null;
-            }
+            input[key] ??= null;
             // --- 判断是否需要遍历 val ---
             const c = val.length;
             if (c === 0) {
@@ -359,20 +370,17 @@ export class Ctr {
             }
             // --- ['require', '> 6', [0, 'xx 必须大于 6']] ---
             const lastK = c - 1;
-            if ((val[lastK][0] === undefined) || (val[lastK][1] === undefined) || !Number.isInteger(val[lastK][0]) || (typeof val[lastK][1] !== 'string')) {
+            const lastVal = val[lastK];
+            if ((lastVal[0] === undefined) || (lastVal[1] === undefined) || !Number.isInteger(lastVal[0]) || (typeof lastVal[1] !== 'string')) {
                 rtn[0] = 0;
-                rtn[1] = 'Param error(' + key + ')';
+                rtn[1] = `Param error(${key})`;
                 return false;
             }
             for (let k = 0; k < lastK; ++k) {
                 const v = val[k] ?? '';
                 if (Array.isArray(v)) {
                     if (v.length === 0) {
-                        rtn[0] = val[lastK][0];
-                        rtn[1] = val[lastK][1];
-                        if (val[lastK][2]) {
-                            rtn[2] = val[lastK][2];
-                        }
+                        this._setCheckError(rtn, lastVal);
                         return false;
                     }
                     // --- 判断提交的数据是否在此 array 之内，若没有提交数据，则自动设置为第一个项 ---
@@ -380,23 +388,14 @@ export class Ctr {
                         input[key] = v[0];
                     }
                     else if (!v.includes(input[key])) {
-                        // --- 不在 ---
-                        rtn[0] = val[lastK][0];
-                        rtn[1] = val[lastK][1];
-                        if (val[lastK][2]) {
-                            rtn[2] = val[lastK][2];
-                        }
+                        this._setCheckError(rtn, lastVal);
                         return false;
                     }
                 }
                 else if (v instanceof RegExp) {
                     // --- 正则 ---
                     if (input[key] !== null && !v.test(input[key])) {
-                        rtn[0] = val[lastK][0];
-                        rtn[1] = val[lastK][1];
-                        if (val[lastK][2]) {
-                            rtn[2] = val[lastK][2];
-                        }
+                        this._setCheckError(rtn, lastVal);
                         return false;
                     }
                 }
@@ -405,196 +404,110 @@ export class Ctr {
                     if (input[key] !== null) {
                         const r = lCore.checkType(input[key], v.type);
                         if (r) {
-                            rtn[0] = val[lastK][0];
-                            rtn[1] = typeof val[lastK][1] === 'string' ? val[lastK][1] + '(' + r + ')' : val[lastK][1];
-                            if (val[lastK][2]) {
-                                rtn[2] = val[lastK][2];
-                            }
+                            this._setCheckError(rtn, lastVal, typeof lastVal[1] === 'string' ? `(${r})` : undefined);
                             return false;
                         }
                     }
                 }
                 else {
+                    /** --- 是否需要返回错误 --- */
+                    let needReturn = false;
                     switch (v) {
                         case 'require': {
-                            if ((input[key] === null) || (input[key] === '')) {
-                                rtn[0] = val[lastK][0];
-                                rtn[1] = val[lastK][1];
-                                if (val[lastK][2]) {
-                                    rtn[2] = val[lastK][2];
-                                }
-                                return false;
-                            }
+                            needReturn = (input[key] === null) || (input[key] === '');
                             break;
                         }
                         case 'int':
                         case 'integer': {
                             // --- 必须是数字型且是整数 ---
-                            if (input[key] && !Number.isSafeInteger(input[key])) {
-                                rtn[0] = val[lastK][0];
-                                rtn[1] = val[lastK][1];
-                                if (val[lastK][2]) {
-                                    rtn[2] = val[lastK][2];
-                                }
-                                return false;
-                            }
+                            needReturn = input[key] && !Number.isSafeInteger(input[key]);
                             break;
                         }
                         case 'float':
                         case 'double': {
                             // --- 必须是数字型 ---
-                            if (input[key] && (typeof input[key] !== 'number')) {
-                                rtn[0] = val[lastK][0];
-                                rtn[1] = val[lastK][1];
-                                if (val[lastK][2]) {
-                                    rtn[2] = val[lastK][2];
-                                }
-                                return false;
-                            }
+                            needReturn = input[key] && (typeof input[key] !== 'number');
                             break;
                         }
                         case 'num':
                         case 'number': {
                             // --- 可字符串数字 ---
-                            if (input[key] && (typeof input[key] !== 'number') && !/^[0-9]+\.?[0-9]*$/.test(input[key])) {
-                                rtn[0] = val[lastK][0];
-                                rtn[1] = val[lastK][1];
-                                if (val[lastK][2]) {
-                                    rtn[2] = val[lastK][2];
-                                }
-                                return false;
-                            }
+                            needReturn = input[key] && (typeof input[key] !== 'number') && !/^[0-9]+\.?[0-9]*$/.test(input[key]);
                             break;
                         }
                         case 'array': {
-                            if (input[key] !== null && !Array.isArray(input[key])) {
-                                rtn[0] = val[lastK][0];
-                                rtn[1] = val[lastK][1];
-                                if (val[lastK][2]) {
-                                    rtn[2] = val[lastK][2];
-                                }
-                                return false;
-                            }
+                            needReturn = input[key] !== null && !Array.isArray(input[key]);
                             break;
                         }
                         case 'bool':
                         case 'boolean': {
-                            if (input[key] !== null && (typeof input[key] !== 'boolean')) {
-                                // --- 如果不是 bool 直接失败，字符串的 true, false 也会失败 ---
-                                rtn[0] = val[lastK][0];
-                                rtn[1] = val[lastK][1];
-                                if (val[lastK][2]) {
-                                    rtn[2] = val[lastK][2];
-                                }
-                                return false;
-                            }
+                            // --- 如果不是 bool 直接失败，字符串的 true, false 也会失败 ---
+                            needReturn = input[key] !== null && (typeof input[key] !== 'boolean');
                             break;
                         }
                         case 'string': {
-                            if (input[key] !== null && (typeof input[key] !== 'string')) {
-                                // --- 如果不是 string 直接失败 ---
-                                rtn[0] = val[lastK][0];
-                                rtn[1] = val[lastK][1];
-                                if (val[lastK][2]) {
-                                    rtn[2] = val[lastK][2];
-                                }
-                                return false;
-                            }
+                            // --- 如果不是 string 直接失败 ---
+                            needReturn = input[key] !== null && (typeof input[key] !== 'string');
                             break;
                         }
                         case 'ascii': {
                             // --- 必须是 ASCII 字符 ---
-                            if (input[key] !== null && !lText.isAscii(input[key])) {
-                                rtn[0] = val[lastK][0];
-                                rtn[1] = val[lastK][1];
-                                if (val[lastK][2]) {
-                                    rtn[2] = val[lastK][2];
-                                }
-                                return false;
-                            }
+                            needReturn = input[key] !== null && !lText.isAscii(input[key]);
                             break;
                         }
                         default: {
-                            let match: RegExpExecArray | null;
-                            if (input[key] !== null) {
-                                if (v[0] === '/') {
-                                    // --- 正则 ---
-                                    if (!(new RegExp(v.slice(1, -1))).test(input[key])) {
-                                        rtn[0] = val[lastK][0];
-                                        rtn[1] = val[lastK][1];
-                                        if (val[lastK][2]) {
-                                            rtn[2] = val[lastK][2];
-                                        }
-                                        return false;
-                                    }
-                                }
-                                else if ((match = /^([><=]+) *([0-9]+)$/.exec(v))) {
+                            if (input[key] === null) {
+                                break;
+                            }
+                            if (v[0] === '/') {
+                                // --- 正则 ---
+                                needReturn = !(new RegExp(v.slice(1, -1))).test(input[key]);
+                            }
+                            else {
+                                const match = /^([><=]+) *([0-9]+)$/.exec(v);
+                                if (match) {
                                     // --- 判断表达式 ---
-                                    let needReturn = false;
                                     const inputNum = Number(input[key]);
                                     const num = Number(match[2]);
                                     switch (match[1]) {
                                         case '>': {
-                                            if (inputNum <= num) {
-                                                needReturn = true;
-                                            }
+                                            needReturn = inputNum <= num;
                                             break;
                                         }
                                         case '<': {
-                                            if (inputNum >= num) {
-                                                needReturn = true;
-                                            }
+                                            needReturn = inputNum >= num;
                                             break;
                                         }
                                         case '>=': {
-                                            if (inputNum < num) {
-                                                needReturn = true;
-                                            }
+                                            needReturn = inputNum < num;
                                             break;
                                         }
                                         case '<=': {
-                                            if (inputNum > num) {
-                                                needReturn = true;
-                                            }
+                                            needReturn = inputNum > num;
                                             break;
                                         }
                                         case '=':
                                         case '==':
                                         case '===': {
-                                            if (inputNum !== num) {
-                                                needReturn = true;
-                                            }
+                                            needReturn = inputNum !== num;
                                             break;
                                         }
                                         case '!=':
                                         case '<>': {
-                                            if (inputNum === num) {
-                                                needReturn = true;
-                                            }
+                                            needReturn = inputNum === num;
                                             break;
                                         }
                                     }
-                                    if (needReturn) {
-                                        rtn[0] = val[lastK][0];
-                                        rtn[1] = val[lastK][1];
-                                        if (val[lastK][2]) {
-                                            rtn[2] = val[lastK][2];
-                                        }
-                                        return false;
-                                    }
                                 }
                                 else {
-                                    if (input[key] !== v) {
-                                        rtn[0] = val[lastK][0];
-                                        rtn[1] = val[lastK][1];
-                                        if (val[lastK][2]) {
-                                            rtn[2] = val[lastK][2];
-                                        }
-                                        return false;
-                                    }
+                                    needReturn = input[key] !== v;
                                 }
                             }
                         }
+                    }
+                    if (needReturn) {
+                        this._setCheckError(rtn, lastVal);
+                        return false;
                     }
                 }
             }

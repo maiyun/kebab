@@ -855,52 +855,29 @@ export async function ls(opt: {
  * @param obj 要克隆的对象
  */
 export function clone<T>(obj: T): T {
-    let newObj: any = {};
-    if (obj instanceof Array) {
-        newObj = [];
-        for (let i = 0; i < obj.length; ++i) {
-            if (obj[i] instanceof Date) {
-                newObj[i] = new Date(obj[i].getTime());
-            }
-            else if (obj[i] instanceof FormData) {
-                const fd = new FormData();
-                for (const item of obj[i]) {
-                    fd.append(item[0], item[1]);
-                }
-                newObj[i] = fd;
-            }
-            else if (obj[i] === null) {
-                newObj[i] = null;
-            }
-            else if (typeof obj[i] === 'object') {
-                newObj[i] = clone(obj[i]);
-            }
-            else {
-                newObj[i] = obj[i];
-            }
+    const isArray = obj instanceof Array;
+    const newObj: any = isArray ? [] : {};
+    const keys = isArray ? (obj as any[]).keys() : Object.keys(obj as object);
+    for (const key of keys) {
+        const val = (obj as any)[key];
+        if (val instanceof Date) {
+            newObj[key] = new Date(val.getTime());
         }
-    }
-    else {
-        for (const key in obj) {
-            if (obj[key] instanceof Date) {
-                newObj[key] = new Date(obj[key].getTime());
+        else if (val instanceof FormData) {
+            const fd = new FormData();
+            for (const item of val) {
+                fd.append(item[0], item[1]);
             }
-            else if (obj[key] instanceof FormData) {
-                const fd = new FormData();
-                for (const item of obj[key]) {
-                    fd.append(item[0], item[1]);
-                }
-                newObj[key] = fd;
-            }
-            else if (obj[key] === null) {
-                newObj[key] = null;
-            }
-            else if (typeof obj[key] === 'object') {
-                newObj[key] = clone(obj[key]);
-            }
-            else {
-                newObj[key] = obj[key];
-            }
+            newObj[key] = fd;
+        }
+        else if (val === null) {
+            newObj[key] = null;
+        }
+        else if (typeof val === 'object') {
+            newObj[key] = clone(val);
+        }
+        else {
+            newObj[key] = val;
         }
     }
     return newObj;
