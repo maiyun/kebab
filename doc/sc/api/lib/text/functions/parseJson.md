@@ -8,7 +8,7 @@
 
 > **parseJson**(`str`): `any`
 
-Defined in: [lib/text.ts:514](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L514)
+Defined in: [lib/text.ts:509](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L509)
 
 将字符串解析为对象，返回 false 代表解析失败，支持 BigInt
 

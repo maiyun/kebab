@@ -11,6 +11,10 @@
 - [ICookieOptions](interfaces/ICookieOptions.md)
 - [ILogOptions](interfaces/ILogOptions.md)
 
+## Type Aliases
+
+- [TPm2Action](type-aliases/TPm2Action.md)
+
 ## Variables
 
 - [global](variables/global.md)
@@ -48,6 +52,7 @@
 - [random](functions/random.md)
 - [realIP](functions/realIP.md)
 - [removeGlobal](functions/removeGlobal.md)
+- [sendPm2](functions/sendPm2.md)
 - [sendReload](functions/sendReload.md)
 - [sendRestart](functions/sendRestart.md)
 - [setCookie](functions/setCookie.md)

@@ -8,7 +8,7 @@
 
 > **htmlescape**(`html`): `string`
 
-Defined in: [lib/text.ts:437](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L437)
+Defined in: [lib/text.ts:432](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L432)
 
 HTML 特殊字符转换为实体字符
 

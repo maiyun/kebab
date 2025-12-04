@@ -562,7 +562,7 @@ export type TPm2Action = 'start' | 'stop' | 'restart';
 /**
  * --- 向本机或局域网 RPC 发送 PM2 操作 ---
  * @param name PM2 进程名称
- * @param pm2Action PM2 操作类型
+ * @param action PM2 操作类型
  * @param hosts 局域网列表
  */
 export async function sendPm2(

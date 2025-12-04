@@ -8,7 +8,7 @@
 
 > **queryStringify**(`query`, `encode`): `string`
 
-Defined in: [lib/text.ts:379](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L379)
+Defined in: [lib/text.ts:374](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L374)
 
 将对象转换为 query string
 

@@ -8,7 +8,7 @@
 
 > **isFalsy**(`val`): `val is TFalsy`
 
-Defined in: [lib/text.ts:603](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L603)
+Defined in: [lib/text.ts:598](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L598)
 
 判断一个值是否是虚假的（为 null/undefined/空字符串/false/0）
 
