@@ -3,6 +3,7 @@
         "module": "esnext",
         "removeComments": false,
         "preserveConstEnums": true, // 保留 const 和 enum 声明
+        "rootDir": "./",
         "outDir": "./",
         "sourceMap": false,
         "target": "ES2022",
