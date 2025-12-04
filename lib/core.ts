@@ -556,6 +556,50 @@ export async function sendRestart(hosts?: string[] | 'config'): Promise<string[]
     return rtn;
 }
 
+/** --- PM2 操作类型 --- */
+export type TPm2Action = 'start' | 'stop' | 'restart';
+
+/**
+ * --- 向本机或局域网 RPC 发送 PM2 操作 ---
+ * @param name PM2 进程名称
+ * @param pm2Action PM2 操作类型
+ * @param hosts 局域网列表
+ */
+export async function sendPm2(
+    name: string, action: TPm2Action = 'restart', hosts?: string[] | 'config'
+): Promise<string[]> {
+    if (hosts === 'config') {
+        hosts = globalConfig.hosts;
+    }
+    hosts ??= ['127.0.0.1'];
+    // --- 局域网模式 ---
+    const time = lTime.stamp();
+    /** --- 返回成功的 host --- */
+    const rtn: string[] = [];
+    for (const host of hosts) {
+        const res = await lNet.get('http://' + host + ':' + globalConfig.rpcPort.toString() + '/' + lCrypto.aesEncrypt(lText.stringifyJson({
+            'action': 'pm2',
+            'time': time,
+            'name': name,
+            'pm2Action': action
+        }), globalConfig.rpcSecret), {
+            'timeout': 10
+        });
+        const content = await res.getContent();
+        if (!content) {
+            continue;
+        }
+        const str = content.toString();
+        if (str === 'Done') {
+            rtn.push(host);
+        }
+        else {
+            debug('[CORE][sendPm2] rpc server content error:', str);
+        }
+    }
+    return rtn;
+}
+
 /** --- 跨进程全局变量 --- */
 export const global: Record<string, any> = {};
 

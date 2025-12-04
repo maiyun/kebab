@@ -167,6 +167,7 @@ export default class extends sCtr.Ctr {
             `<br><a href="${this._config.const.urlBase}test/core-ls">View "test/core-ls"</a>`,
             `<br><a href="${this._config.const.urlBase}test/core-reload">View "test/core-reload"</a>`,
             `<br><a href="${this._config.const.urlBase}test/core-restart">View "test/core-restart"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/core-pm2?name=cron&action=restart">View "test/core-pm2"</a>`,
             `<br><a href="${this._config.const.urlBase}test/core-global">View "test/core-global"</a>`,
             `<br><a href="${this._config.const.urlBase}test/core-updatecode">View "test/core-updatecode"</a>`,
 
@@ -1446,6 +1447,19 @@ to: ${to}`
     public async coreRestart(): Promise<string> {
         await lCore.sendRestart();
         return 'The restart request has been sent, please review the console.<br><br>' + this._getEnd();
+    }
+
+    public async corePm2(): Promise<string> {
+        const name = this._get['name'] ?? '';
+        const action = (this._get['action'] ?? 'restart') as lCore.TPm2Action;
+        if (!name) {
+            return 'Please provide the PM2 process name via ?name=xxx&action=restart<br>action: start, stop, restart (default: restart)<br><br>' + this._getEnd();
+        }
+        if (action !== 'start' && action !== 'stop' && action !== 'restart') {
+            return 'Invalid action. Must be: start, stop, restart<br><br>' + this._getEnd();
+        }
+        const list = await lCore.sendPm2(name, action);
+        return `PM2 ${action} request has been sent for "${name}".<br>Success hosts: ${JSON.stringify(list)}<br><br>` + this._getEnd();
     }
 
     public async coreGlobal(): Promise<string> {

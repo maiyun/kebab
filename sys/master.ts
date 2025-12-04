@@ -148,6 +148,29 @@ function createRpcListener(): void {
                     lCore.global[msg.key] = msg.data;
                     break;
                 }
+                case 'pm2': {
+                    // --- 执行 PM2 操作 ---
+                    if (!msg.name || typeof msg.name !== 'string') {
+                        res.end('Invalid name');
+                        return;
+                    }
+                    // --- 安全过滤，只允许字母、数字、下划线、短横线 ---
+                    if (!/^[a-zA-Z0-9_-]+$/.test(msg.name)) {
+                        res.end('Invalid name format');
+                        return;
+                    }
+                    // --- 校验 pm2Action ---
+                    if (msg.pm2Action !== 'start' && msg.pm2Action !== 'stop' && msg.pm2Action !== 'restart') {
+                        res.end('Invalid pm2Action');
+                        return;
+                    }
+                    const rtn = await lCore.exec(`pm2 ${msg.pm2Action} ${msg.name}`);
+                    if (rtn === false) {
+                        res.end('Exec failed');
+                        return;
+                    }
+                    break;
+                }
                 case 'code': {
                     // --- 更新 code 代码包 ---
                     const rtn = await sRoute.getFormData(req);
