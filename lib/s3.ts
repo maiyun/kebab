@@ -1,7 +1,7 @@
 /**
  * Project: Kebab, User: Tang Rukun, JianSuoQiYue
  * Date: 2024-2-18 18:32:45
- * Last: 2024-2-18 18:32:47, 2024-3-16 16:42:27, 2024-5-31 21:36:26, 2024-7-8 00:28:42, 2024-7-19 11:32:43, 2025-6-10 21:45:34
+ * Last: 2024-2-18 18:32:47, 2024-3-16 16:42:27, 2024-5-31 21:36:26, 2024-7-8 00:28:42, 2024-7-19 11:32:43, 2025-6-10 21:45:34, 2025-12-5 23:42:59
  */
 
 // --- 库和定义 ---
@@ -11,12 +11,6 @@ import * as stream from 'stream';
 import * as sCtr from '#kebab/sys/ctr.js';
 import * as lCore from '#kebab/lib/core.js';
 import * as lText from '#kebab/lib/text.js';
-
-/** --- s3 的连接对象 --- */
-const links: Array<{
-    'token': string;
-    'link': s3.S3Client;
-}> = [];
 
 /**
  * --- s3 文档：https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/client/s3/ ---
@@ -48,7 +42,7 @@ export interface IOptions {
 
 export class S3 {
 
-    private readonly _link;
+    private readonly _link: s3.S3Client;
 
     /** --- bucket 名 --- */
     private _bucket: string = '';
@@ -81,12 +75,6 @@ export class S3 {
                 endpoint = undefined;
             }
         }
-        const token = `${opt.service}-${account}-${secretId}-${region}`;
-        const link = links.find((item) => item.token === token);
-        if (link) {
-            this._link = link.link;
-            return;
-        }
         this._link = new s3.S3Client({
             'region': region,
             'credentials': {
@@ -94,10 +82,6 @@ export class S3 {
                 'secretAccessKey': secretKey,
             },
             'endpoint': endpoint,
-        });
-        links.push({
-            'token': token,
-            'link': this._link,
         });
     }
 
@@ -143,14 +127,14 @@ export class S3 {
                     'Body': content,
                     'ContentLength': length,
                     'ContentType': type,
-                    'ContentDisposition': disposition
+                    'ContentDisposition': disposition,
                 }
             });
             const res = await upload.done();
             return (res.Location && res.Bucket && res.Key) ? res : false;
         }
         catch (e: any) {
-            lCore.log(this._ctr, '[S3][putObject] ' + lText.stringifyJson(e.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+            lCore.log(this._ctr, '[LIB][S3][putObject] ' + lText.stringifyJson(e.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
             return false;
         }
     }
@@ -170,8 +154,8 @@ export class S3 {
             const r = await this._link.send(go);
             return r.Body;
         }
-        catch {
-            // await lCore.log(this._ctr, '[getObject, s3] ' + lText.stringifyJson(e.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+        catch (e: any) {
+            lCore.log(this._ctr, '[LIB][S3][getObject] ' + lText.stringifyJson(e.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
             return false;
         }
     }
@@ -190,8 +174,8 @@ export class S3 {
             await this._link.send(doc);
             return true;
         }
-        catch {
-            // await lCore.log(this._ctr, '[deleteObject, s3] ' + lText.stringifyJson(e.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+        catch (e: any) {
+            lCore.log(this._ctr, '[LIB][S3][deleteObject] ' + lText.stringifyJson(e.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
             return false;
         }
     }
@@ -213,7 +197,7 @@ export class S3 {
             return true;
         }
         catch (e: any) {
-            lCore.log(this._ctr, '[S3][deleteObjects] ' + lText.stringifyJson(e.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+            lCore.log(this._ctr, '[LIB][S3][deleteObjects] ' + lText.stringifyJson(e.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
             return false;
         }
     }
@@ -233,10 +217,18 @@ export class S3 {
         }
         catch (e: any) {
             if (e.$metadata?.httpStatusCode !== 404) {
-                lCore.log(this._ctr, '[S3][headObject] ' + lText.stringifyJson(e.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+                lCore.log(this._ctr, '[LIB][S3][headObject] ' + lText.stringifyJson(e.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
             }
             return false;
         }
+    }
+
+    /**
+     * --- 销毁连接，释放资源 ---
+     * --- 一般会自动垃圾回收，但高频接口也可主动调用 ---
+     */
+    public destroy(): void {
+        this._link.destroy();
     }
 
 }
