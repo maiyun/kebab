@@ -22,9 +22,19 @@ Defined in: [lib/kv.ts:956](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 ### oetc?
 
-[`IConfigKv`](../../../index/interfaces/IConfigKv.md)
-
 可用来覆盖 ctr 的一些选项，如 index
+
+#### index?
+
+`number`
+
+#### pwd?
+
+`string`
+
+#### user?
+
+`string`
 
 ## Returns
 

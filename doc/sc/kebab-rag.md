@@ -1385,7 +1385,7 @@ index/variables/VER.md
 
 # Variable: VER
 
-> `const` **VER**: `"7.1.1"` = `'7.1.1'`
+> `const` **VER**: `"7.1.2"` = `'7.1.2'`
 
 Defined in: [index.ts:10](https://github.com/maiyunnet/kebab/blob/master/index.ts#L10)
 
@@ -9509,9 +9509,19 @@ Defined in: [lib/kv.ts:956](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 ### oetc?
 
-[`IConfigKv`](../../../index/interfaces/IConfigKv.md)
-
 可用来覆盖 ctr 的一些选项，如 index
+
+#### index?
+
+`number`
+
+#### pwd?
+
+`string`
+
+#### user?
+
+`string`
 
 ## Returns
 
@@ -9552,7 +9562,7 @@ lib/kv/interfaces/IConnectionInfo.md
 
 # Interface: IConnectionInfo
 
-Defined in: [lib/kv.ts:968](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L968)
+Defined in: [lib/kv.ts:972](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L972)
 
 连接信息
 
@@ -9562,7 +9572,7 @@ Defined in: [lib/kv.ts:968](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **conn**: `ICommandClient`
 
-Defined in: [lib/kv.ts:972](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L972)
+Defined in: [lib/kv.ts:976](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L976)
 
 ***
 
@@ -9570,7 +9580,7 @@ Defined in: [lib/kv.ts:972](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **host**: `string`
 
-Defined in: [lib/kv.ts:969](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L969)
+Defined in: [lib/kv.ts:973](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L973)
 
 ***
 
@@ -9578,7 +9588,7 @@ Defined in: [lib/kv.ts:969](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **index**: `number`
 
-Defined in: [lib/kv.ts:971](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L971)
+Defined in: [lib/kv.ts:975](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L975)
 
 ***
 
@@ -9586,7 +9596,7 @@ Defined in: [lib/kv.ts:971](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **port**: `number`
 
-Defined in: [lib/kv.ts:970](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L970)
+Defined in: [lib/kv.ts:974](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L974)
 
 lib/kv/interfaces/IZRangeOptions.md
 ---
