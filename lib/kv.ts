@@ -951,9 +951,13 @@ end`;
 /**
  * --- 获取 Kv 对象 ---
  * @param ctrEtc 控制器或配置信息
+ * @param oetc 可用来覆盖 ctr 的一些选项，如 index
  */
-export function get(ctrEtc: sCtr.Ctr | kebab.IConfigKv): Kv {
+export function get(ctrEtc: sCtr.Ctr | kebab.IConfigKv, oetc?: kebab.IConfigKv): Kv {
     const etc = ctrEtc instanceof sCtr.Ctr ? ctrEtc.getPrototype('_config').kv : ctrEtc;
+    if (oetc) {
+        Object.assign(etc, oetc);
+    }
     return new Kv(etc);
 
 }
