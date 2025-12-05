@@ -8,7 +8,7 @@
 
 > **removeGlobal**(`key`, `hosts?`): `Promise`\<`string`[]\>
 
-Defined in: [lib/core.ts:653](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L653)
+Defined in: [lib/core.ts:696](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L696)
 
 移除某个跨线程/跨内网服务器全局变量
 

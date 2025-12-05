@@ -52,6 +52,7 @@
 - [random](functions/random.md)
 - [realIP](functions/realIP.md)
 - [removeGlobal](functions/removeGlobal.md)
+- [sendNpm](functions/sendNpm.md)
 - [sendPm2](functions/sendPm2.md)
 - [sendReload](functions/sendReload.md)
 - [sendRestart](functions/sendRestart.md)

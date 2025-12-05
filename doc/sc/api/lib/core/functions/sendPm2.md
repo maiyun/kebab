@@ -8,7 +8,7 @@
 
 > **sendPm2**(`name`, `action`, `hosts?`): `Promise`\<`string`[]\>
 
-Defined in: [lib/core.ts:568](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L568)
+Defined in: [lib/core.ts:572](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L572)
 
 向本机或局域网 RPC 发送 PM2 操作
 
