@@ -34,19 +34,19 @@
     "jszip": "^3.10.1",
     "mysql2": "^3.15.3",
     "node-cron": "^4.2.1",
-    "openai": "^6.9.1",
+    "openai": "^6.10.0",
     "pg": "^8.16.3",
     "ssh2": "^1.17.0",
     "svg-captcha": "^1.4.0",
-    "tencentcloud-sdk-nodejs": "^4.1.152"
+    "tencentcloud-sdk-nodejs": "^4.1.153"
   },
   "devDependencies": {
     "@litert/eslint-plugin-rules": "^0.3.1",
     "@types/ejs": "^3.1.5",
     "@types/node": "^24.10.1",
     "@types/pg": "^8.15.6",
-    "@typescript/native-preview": "^7.0.0-dev.20251203.1",
     "typedoc": "^0.28.15",
-    "typedoc-plugin-markdown": "^4.9.0"
+    "typedoc-plugin-markdown": "^4.9.0",
+    "typescript": "^5.9.3"
   }
 }

@@ -464,9 +464,13 @@ export async function passThroughAppend(
  * --- 执行命令行 ---
  * @param command 命令字符串
  */
-export function exec(command: string): Promise<string | false> {
+export function exec(command: string, options: {
+    'cwd'?: string;
+} = {}): Promise<string | false> {
     return new Promise(function(resolve) {
-        cp.exec(command, function(err, stdout) {
+        cp.exec(command, {
+            'cwd': options.cwd,
+        }, function(err, stdout) {
             if (err) {
                 resolve(false);
                 return;
@@ -583,7 +587,7 @@ export async function sendPm2(
             'name': name,
             'pm2Action': action
         }), globalConfig.rpcSecret), {
-            'timeout': 10
+            'timeout': 2
         });
         const content = await res.getContent();
         if (!content) {
@@ -595,6 +599,45 @@ export async function sendPm2(
         }
         else {
             debug('[CORE][sendPm2] rpc server content error:', str);
+        }
+    }
+    return rtn;
+}
+
+/**
+ * --- 向本机或局域网 RPC 发送 npm install 操作 ---
+ * @param path 路径，如 /home/kebab/
+ * @param hosts 局域网列表
+ */
+export async function sendNpm(
+    path: string, hosts?: string[] | 'config'
+): Promise<string[]> {
+    if (hosts === 'config') {
+        hosts = globalConfig.hosts;
+    }
+    hosts ??= ['127.0.0.1'];
+    // --- 局域网模式 ---
+    const time = lTime.stamp();
+    /** --- 返回成功的 host --- */
+    const rtn: string[] = [];
+    for (const host of hosts) {
+        const res = await lNet.get('http://' + host + ':' + globalConfig.rpcPort.toString() + '/' + lCrypto.aesEncrypt(lText.stringifyJson({
+            'action': 'npm',
+            'time': time,
+            'path': path
+        }), globalConfig.rpcSecret), {
+            'timeout': 2
+        });
+        const content = await res.getContent();
+        if (!content) {
+            continue;
+        }
+        const str = content.toString();
+        if (str === 'Done') {
+            rtn.push(host);
+        }
+        else {
+            debug('[CORE][sendNpmInstall] rpc server content error:', str);
         }
     }
     return rtn;
@@ -655,7 +698,7 @@ export async function removeGlobal(key: string, hosts?: string[]): Promise<strin
 }
 
 /**
- * --- 上传并覆盖代码文件，config.json、kebab.json、.js.map、.ts, .gitignore 不会被覆盖和新建 ---
+ * --- 上传并覆盖代码文件，config.json、kebab.json、.js.map、.ts, .gitignore 不会被覆盖和新创建 ---
  * @param sourcePath zip 文件
  * @param path 要更新的目标路径，无所谓是否 / 开头 / 结尾，是对方 kebab 的根据路径开始算起
  * @param hosts 局域网多机部署，不设置默认本机部署

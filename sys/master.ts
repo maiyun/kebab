@@ -1,7 +1,7 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2019-5-2 21:03:42
- * Last: 2020-3-7 10:33:17, 2022-07-22 13:40:10, 2022-09-06 22:40:58, 2024-2-7 01:44:59, 2024-7-2 15:17:09, 2025-6-13 13:06:43
+ * Last: 2020-3-7 10:33:17, 2022-07-22 13:40:10, 2022-09-06 22:40:58, 2024-2-7 01:44:59, 2024-7-2 15:17:09, 2025-6-13 13:06:43, 2025-12-5 13:15:03
  */
 import * as os from 'os';
 import * as cluster from 'cluster';
@@ -166,6 +166,25 @@ function createRpcListener(): void {
                     }
                     const rtn = await lCore.exec(`pm2 ${msg.pm2Action} ${msg.name}`);
                     if (rtn === false) {
+                        res.end('Exec failed');
+                        return;
+                    }
+                    break;
+                }
+                case 'npm': {
+                    // --- 执行 npm install 操作 ---
+                    if (!msg.path || typeof msg.path !== 'string') {
+                        res.end('Invalid path');
+                        return;
+                    }
+                    if (!await lFs.isDir(msg.path)) {
+                        res.end('Path not found');
+                        return;
+                    }
+                    const rtn = await lCore.exec('npm i --omit=dev --omit=optional', {
+                        'cwd': msg.path,
+                    });
+                    if (!rtn) {
                         res.end('Exec failed');
                         return;
                     }

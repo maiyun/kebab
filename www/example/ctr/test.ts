@@ -168,6 +168,7 @@ export default class extends sCtr.Ctr {
             `<br><a href="${this._config.const.urlBase}test/core-reload">View "test/core-reload"</a>`,
             `<br><a href="${this._config.const.urlBase}test/core-restart">View "test/core-restart"</a>`,
             `<br><a href="${this._config.const.urlBase}test/core-pm2?name=cron&action=restart">View "test/core-pm2"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/core-npm">View "test/core-npm"</a>`,
             `<br><a href="${this._config.const.urlBase}test/core-global">View "test/core-global"</a>`,
             `<br><a href="${this._config.const.urlBase}test/core-updatecode">View "test/core-updatecode"</a>`,
 
@@ -1460,6 +1461,23 @@ to: ${to}`
         }
         const list = await lCore.sendPm2(name, action);
         return `PM2 ${action} request has been sent for "${name}".<br>Success hosts: ${JSON.stringify(list)}<br><br>` + this._getEnd();
+    }
+
+    public async coreNpm(): Promise<any> {
+        // --- 创建一个临时目录 ---
+        const path = kebab.ROOT_CWD + 'temp_npm_test/';
+        await lFs.mkdir(path);
+        // --- 创建一个 package.json ---
+        await lFs.putContent(path + 'package.json', JSON.stringify({
+            'name': 'temp-npm-test',
+            'version': '1.0.0',
+            'dependencies': {
+                'is-number': '^7.0.0'
+            }
+        }));
+
+        const list = await lCore.sendNpm(path);
+        return `NPM request has been sent.<br>Success hosts: ${JSON.stringify(list)}<br><br>` + this._getEnd();
     }
 
     public async coreGlobal(): Promise<string> {
