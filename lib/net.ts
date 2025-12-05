@@ -248,6 +248,7 @@ export async function request(
             'connectionOptions': {
                 'remoteHost': typeof hosts === 'string' ? hosts : hosts[hostname],
             },
+            'keepAlive': opt.keep,
         });
     }
     catch (err: kebab.Json) {
@@ -717,7 +718,9 @@ export interface IRequestOptions {
         'auth': string;
         'data'?: any;
     };
-    /** --- 默认为 default --- */
+    /** --- 连接是否保持长连接（即是否允许复用），默认为 true --- */
+    'keep'?: boolean;
+    /** --- 复用池名，默认为 default --- */
     'reuse'?: string;
     /** --- cookie 托管对象 --- */
     'cookie'?: Record<string, ICookie>;
