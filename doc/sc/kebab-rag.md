@@ -1385,7 +1385,7 @@ index/variables/VER.md
 
 # Variable: VER
 
-> `const` **VER**: `"7.1.0"` = `'7.1.0'`
+> `const` **VER**: `"7.1.1"` = `'7.1.1'`
 
 Defined in: [index.ts:10](https://github.com/maiyunnet/kebab/blob/master/index.ts#L10)
 
@@ -9493,9 +9493,9 @@ lib/kv/functions/get.md
 
 # Function: get()
 
-> **get**(`ctrEtc`): [`Kv`](../classes/Kv.md)
+> **get**(`ctrEtc`, `oetc?`): [`Kv`](../classes/Kv.md)
 
-Defined in: [lib/kv.ts:955](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L955)
+Defined in: [lib/kv.ts:956](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L956)
 
 获取 Kv 对象
 
@@ -9506,6 +9506,12 @@ Defined in: [lib/kv.ts:955](https://github.com/maiyunnet/kebab/blob/master/lib/k
 控制器或配置信息
 
 [`IConfigKv`](../../../index/interfaces/IConfigKv.md) | [`Ctr`](../../../sys/ctr/classes/Ctr.md)
+
+### oetc?
+
+[`IConfigKv`](../../../index/interfaces/IConfigKv.md)
+
+可用来覆盖 ctr 的一些选项，如 index
 
 ## Returns
 
@@ -9546,7 +9552,7 @@ lib/kv/interfaces/IConnectionInfo.md
 
 # Interface: IConnectionInfo
 
-Defined in: [lib/kv.ts:964](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L964)
+Defined in: [lib/kv.ts:968](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L968)
 
 连接信息
 
@@ -9556,7 +9562,7 @@ Defined in: [lib/kv.ts:964](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **conn**: `ICommandClient`
 
-Defined in: [lib/kv.ts:968](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L968)
+Defined in: [lib/kv.ts:972](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L972)
 
 ***
 
@@ -9564,7 +9570,7 @@ Defined in: [lib/kv.ts:968](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **host**: `string`
 
-Defined in: [lib/kv.ts:965](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L965)
+Defined in: [lib/kv.ts:969](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L969)
 
 ***
 
@@ -9572,7 +9578,7 @@ Defined in: [lib/kv.ts:965](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **index**: `number`
 
-Defined in: [lib/kv.ts:967](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L967)
+Defined in: [lib/kv.ts:971](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L971)
 
 ***
 
@@ -9580,7 +9586,7 @@ Defined in: [lib/kv.ts:967](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **port**: `number`
 
-Defined in: [lib/kv.ts:966](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L966)
+Defined in: [lib/kv.ts:970](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L970)
 
 lib/kv/interfaces/IZRangeOptions.md
 ---
