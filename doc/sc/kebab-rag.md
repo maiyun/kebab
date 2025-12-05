@@ -1385,7 +1385,7 @@ index/variables/VER.md
 
 # Variable: VER
 
-> `const` **VER**: `"7.3.0"` = `'7.3.0'`
+> `const` **VER**: `"7.3.1"` = `'7.3.1'`
 
 Defined in: [index.ts:10](https://github.com/maiyunnet/kebab/blob/master/index.ts#L10)
 
@@ -11614,7 +11614,7 @@ lib/s3/classes/S3.md
 
 # Class: S3
 
-Defined in: [lib/s3.ts:49](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L49)
+Defined in: [lib/s3.ts:43](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L43)
 
 ## Constructors
 
@@ -11622,7 +11622,7 @@ Defined in: [lib/s3.ts:49](https://github.com/maiyunnet/kebab/blob/master/lib/s3
 
 > **new S3**(`ctr`, `opt`): `S3`
 
-Defined in: [lib/s3.ts:58](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L58)
+Defined in: [lib/s3.ts:52](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L52)
 
 #### Parameters
 
@@ -11644,7 +11644,7 @@ Defined in: [lib/s3.ts:58](https://github.com/maiyunnet/kebab/blob/master/lib/s3
 
 > **deleteObject**(`key`, `bucket?`): `Promise`\<`boolean`\>
 
-Defined in: [lib/s3.ts:184](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L184)
+Defined in: [lib/s3.ts:168](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L168)
 
 删除对象
 
@@ -11672,7 +11672,7 @@ bucket 名
 
 > **deleteObjects**(`keys`, `bucket?`): `Promise`\<`boolean`\>
 
-Defined in: [lib/s3.ts:204](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L204)
+Defined in: [lib/s3.ts:188](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L188)
 
 批量删除对象
 
@@ -11696,11 +11696,26 @@ bucket 名
 
 ***
 
+### destroy()
+
+> **destroy**(): `void`
+
+Defined in: [lib/s3.ts:230](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L230)
+
+销毁连接，释放资源
+一般会自动垃圾回收，但高频接口也可主动调用
+
+#### Returns
+
+`void`
+
+***
+
 ### getObject()
 
 > **getObject**(`key`, `bucket?`): `Promise`\<`false` \| `Readable` & `SdkStreamMixin` \| `Blob` & `SdkStreamMixin` \| `ReadableStream`\<`any`\> & `SdkStreamMixin` \| `undefined`\>
 
-Defined in: [lib/s3.ts:164](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L164)
+Defined in: [lib/s3.ts:148](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L148)
 
 获取对象流，可通过流获取 buffer 或 text
 
@@ -11728,7 +11743,7 @@ bucket 名
 
 > **headObject**(`key`, `bucket?`): `Promise`\<`false` \| `HeadObjectCommandOutput`\>
 
-Defined in: [lib/s3.ts:226](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L226)
+Defined in: [lib/s3.ts:210](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L210)
 
 检测对象是否存在
 
@@ -11756,7 +11771,7 @@ bucket 名
 
 > **putObject**(`key`, `content`, `length?`, `bucket?`): `Promise`\<`false` \| `CompleteMultipartUploadCommandOutput`\>
 
-Defined in: [lib/s3.ts:119](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L119)
+Defined in: [lib/s3.ts:103](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L103)
 
 上传对象（可传流且也可无需设置 length） --
 
@@ -11796,7 +11811,7 @@ bucket 名
 
 > **setBucket**(`bucket`): `void`
 
-Defined in: [lib/s3.ts:108](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L108)
+Defined in: [lib/s3.ts:92](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L92)
 
 修改预定义 bucket
 
@@ -11823,7 +11838,7 @@ lib/s3/enumerations/ESERVICE.md
 
 # Enumeration: ESERVICE
 
-Defined in: [lib/s3.ts:26](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L26)
+Defined in: [lib/s3.ts:20](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L20)
 
 服务商定义
 
@@ -11833,7 +11848,7 @@ Defined in: [lib/s3.ts:26](https://github.com/maiyunnet/kebab/blob/master/lib/s3
 
 > **ALIBABA**: `2`
 
-Defined in: [lib/s3.ts:29](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L29)
+Defined in: [lib/s3.ts:23](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L23)
 
 ***
 
@@ -11841,7 +11856,7 @@ Defined in: [lib/s3.ts:29](https://github.com/maiyunnet/kebab/blob/master/lib/s3
 
 > **AMAZON**: `0`
 
-Defined in: [lib/s3.ts:27](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L27)
+Defined in: [lib/s3.ts:21](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L21)
 
 ***
 
@@ -11849,7 +11864,7 @@ Defined in: [lib/s3.ts:27](https://github.com/maiyunnet/kebab/blob/master/lib/s3
 
 > **CF**: `3`
 
-Defined in: [lib/s3.ts:30](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L30)
+Defined in: [lib/s3.ts:24](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L24)
 
 ***
 
@@ -11857,7 +11872,7 @@ Defined in: [lib/s3.ts:30](https://github.com/maiyunnet/kebab/blob/master/lib/s3
 
 > **TENCENT**: `1`
 
-Defined in: [lib/s3.ts:28](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L28)
+Defined in: [lib/s3.ts:22](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L22)
 
 lib/s3/functions/get.md
 ---
@@ -11872,7 +11887,7 @@ lib/s3/functions/get.md
 
 > **get**(`ctr`, `opt`): [`S3`](../classes/S3.md)
 
-Defined in: [lib/s3.ts:248](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L248)
+Defined in: [lib/s3.ts:240](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L240)
 
 创建一个对象存储对象
 
@@ -11930,7 +11945,7 @@ lib/s3/interfaces/IOptions.md
 
 # Interface: IOptions
 
-Defined in: [lib/s3.ts:34](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L34)
+Defined in: [lib/s3.ts:28](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L28)
 
 选项
 
@@ -11940,7 +11955,7 @@ Defined in: [lib/s3.ts:34](https://github.com/maiyunnet/kebab/blob/master/lib/s3
 
 > `optional` **account**: `string`
 
-Defined in: [lib/s3.ts:38](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L38)
+Defined in: [lib/s3.ts:32](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L32)
 
 cf r2 使用
 
@@ -11950,7 +11965,7 @@ cf r2 使用
 
 > `optional` **bucket**: `string`
 
-Defined in: [lib/s3.ts:46](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L46)
+Defined in: [lib/s3.ts:40](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L40)
 
 预定义 bucket
 
@@ -11960,7 +11975,7 @@ Defined in: [lib/s3.ts:46](https://github.com/maiyunnet/kebab/blob/master/lib/s3
 
 > `optional` **region**: `string`
 
-Defined in: [lib/s3.ts:44](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L44)
+Defined in: [lib/s3.ts:38](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L38)
 
 区域
 
@@ -11970,7 +11985,7 @@ Defined in: [lib/s3.ts:44](https://github.com/maiyunnet/kebab/blob/master/lib/s3
 
 > `optional` **secretId**: `string`
 
-Defined in: [lib/s3.ts:40](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L40)
+Defined in: [lib/s3.ts:34](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L34)
 
 密钥键
 
@@ -11980,7 +11995,7 @@ Defined in: [lib/s3.ts:40](https://github.com/maiyunnet/kebab/blob/master/lib/s3
 
 > `optional` **secretKey**: `string`
 
-Defined in: [lib/s3.ts:42](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L42)
+Defined in: [lib/s3.ts:36](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L36)
 
 密钥值
 
@@ -11990,7 +12005,7 @@ Defined in: [lib/s3.ts:42](https://github.com/maiyunnet/kebab/blob/master/lib/s3
 
 > **service**: [`ESERVICE`](../enumerations/ESERVICE.md)
 
-Defined in: [lib/s3.ts:36](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L36)
+Defined in: [lib/s3.ts:30](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L30)
 
 服务商 -
 
