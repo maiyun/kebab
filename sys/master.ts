@@ -30,6 +30,8 @@ const workerList: Record<string, {
  * --- 最终调用执行的函数块 ---
  */
 async function run(): Promise<void> {
+    // --- 设置 cluster 调度策略为 round-robin（在支持的平台上启用负载均衡） ---
+    cluster.default.schedulingPolicy = cluster.default.SCHED_RR;
     // --- 读取配置文件 ---
     const configContent = await lFs.getContent(kebab.CONF_CWD + 'config.json', 'utf8');
     if (!configContent) {
