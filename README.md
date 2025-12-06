@@ -1,11 +1,13 @@
 <p align="center"><img src="./doc/icon.png" width="64" height="64" alt="Kebab"></p>
 <p align="center">
-    <a href="https://github.com/maiyun/kebab/blob/master/LICENSE">
+    <a href="https://github.com/maiyun/kebab/blob/main/LICENSE">
         <img alt="License" src="https://img.shields.io/github/license/maiyun/kebab?color=blue" />
+    </a>
+    <a href="https://www.npmjs.com/package/@maiyunnet/kebab">
+        <img alt="NPM stable version" src="https://img.shields.io/npm/v/@maiyunnet/kebab?color=brightgreen&logo=npm" />
     </a>
     <a href="https://github.com/maiyun/kebab/releases">
         <img alt="GitHub releases" src="https://img.shields.io/github/v/release/maiyun/kebab?color=brightgreen&logo=github" />
-        <img alt="GitHub pre-releases" src="https://img.shields.io/github/v/release/maiyun/kebab?color=yellow&logo=github&include_prereleases" />
     </a>
     <a href="https://github.com/maiyun/kebab/issues">
         <img alt="GitHub issues" src="https://img.shields.io/github/issues/maiyun/kebab?color=blue&logo=github" />
