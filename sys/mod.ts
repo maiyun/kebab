@@ -188,6 +188,7 @@ export default class Mod {
             'pre'?: string;
             'ctr'?: sCtr.Ctr;
             'index'?: string;
+            'ignore'?: boolean;
         } = {}
     ): Promise<boolean | null | false> {
         const sq = lSql.get({
@@ -197,7 +198,7 @@ export default class Mod {
         });
         if (!vs) {
             // --- 单行 ---
-            sq.insert(this._$table + (opt.index ? ('_' + opt.index) : ''));
+            sq.insert(this._$table + (opt.index ? ('_' + opt.index) : ''), opt.ignore);
             sq.values(cs);
             const r = await db.execute(sq.getSql(), sq.getData());
             if (r.packet === null) {
@@ -217,7 +218,7 @@ export default class Mod {
         /** --- 总批次数量 --- */
         const batch = Math.ceil(vs.length / line);
         for (let i = 0; i < batch; ++i) {
-            sq.insert(this._$table + (opt.index ? ('_' + opt.index) : ''));
+            sq.insert(this._$table + (opt.index ? ('_' + opt.index) : ''), opt.ignore);
             sq.values(cs, vs.slice(i * line, (i + 1) * line));
             const r = await db.execute(sq.getSql(), sq.getData());
             if (r.packet === null) {
@@ -247,6 +248,7 @@ export default class Mod {
             'pre'?: string;
             'ctr'?: sCtr.Ctr;
             'index'?: string;
+            'ignore'?: boolean;
         } = {}
     ): string {
         const sq = lSql.get({
@@ -254,7 +256,7 @@ export default class Mod {
             'ctr': opt.ctr,
             'pre': opt.pre ?? this._$pre,
         });
-        sq.insert(this._$table + (opt.index ? ('_' + opt.index) : '')).values(cs, vs);
+        sq.insert(this._$table + (opt.index ? ('_' + opt.index) : ''), opt.ignore).values(cs, vs);
         return sq.format();
     }
 

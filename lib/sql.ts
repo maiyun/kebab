@@ -43,6 +43,9 @@ export class Sql {
     /** --- PostgreSQL 占位符计数器 --- */
     private _placeholderCounter: number = 1;
 
+    /** --- 是否忽略错误 --- */
+    private _ignore: boolean = false;
+
     // --- 实例化 ---
     public constructor(opt: {
         'service': ESERVICE;
@@ -67,12 +70,18 @@ export class Sql {
     /**
      * --- 插入数据前导 ---
      * @param table 表名
+     * @param ignore 是否忽略错误（MySQL: INSERT IGNORE, PGSQL: ON CONFLICT DO NOTHING）
      */
-    public insert(table: string): this {
+    public insert(table: string, ignore: boolean = false): this {
         this._data = [];
         this._placeholderCounter = 1;
         this._alias.length = 0;
-        const sql = 'INSERT INTO ' + this.field(table, this._pre);
+        this._ignore = ignore;
+        let sql = 'INSERT ';
+        if (ignore && this._service === ESERVICE.MYSQL) {
+            sql += 'IGNORE ';
+        }
+        sql += 'INTO ' + this.field(table, this._pre);
         this._sql = [sql];
         return this;
     }
@@ -129,6 +138,9 @@ export class Sql {
             sql = sql.slice(0, -2) + ') VALUES (' + values.slice(0, -2) + ')';
         }
         this._sql.push(sql);
+        if (this._ignore && this._service === ESERVICE.PGSQL) {
+            this._sql.push(' ON CONFLICT DO NOTHING');
+        }
         return this;
     }
 

@@ -2724,6 +2724,13 @@ Result:<pre id="result">Nothing.</pre>`);
 <b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
 <b>format() :</b> ${sql.format(s, sd)}<hr>`);
 
+                s = sql.insert('user', true).values(['name', 'age'], ['Ah', '16']).getSql();
+                sd = sql.getData();
+                echo.push(`<pre>sql.insert('user', true).values(['name', 'age'], ['Ah', '16']);</pre>
+<b>getSql() :</b> ${s}<br>
+<b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
+<b>format() :</b> ${sql.format(s, sd)}<hr>`);
+
                 s = sql.insert('user').values({ 'name': 'Bob', 'age': '24' }).getSql();
                 sd = sql.getData();
                 echo.push(`<pre>sql.insert('user').values({ 'name': 'Bob', 'age': '24' });</pre>
