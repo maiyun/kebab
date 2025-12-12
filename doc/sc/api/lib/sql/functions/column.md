@@ -8,7 +8,7 @@
 
 > **column**(`field`): `object`
 
-Defined in: [lib/sql.ts:1116](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L1116)
+Defined in: [lib/sql.ts:1128](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L1128)
 
 创建字段对象
 
