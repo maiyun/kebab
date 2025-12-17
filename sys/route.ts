@@ -932,8 +932,13 @@ export function getPost(
 export function getFormData(
     req: http2.Http2ServerRequest | http.IncomingMessage,
     events: {
+        /**
+         * --- 文件开始上传时触发，返回 true 则跳过该文件的保存 ---
+         */
         onfilestart?: (name: string) => boolean | undefined;
+        /** --- 文件上传时触发，仅 start 返回 true 时触发 --- */
         onfiledata?: (chunk: Buffer) => void;
+        /** --- 文件上传结束时触发，仅 start 返回 true 时触发 --- */
         onfileend?: () => void;
     } = {}
 ): Promise<{
@@ -941,6 +946,11 @@ export function getFormData(
     'files': Record<string, kebab.IPostFile | kebab.IPostFile[]>;
 } | false> {
     return new Promise(function(resolve) {
+        if (req.readableEnded) {
+            lCore.debug('[ROUTE][GETFORMDATA] request readableEnded before getFormData');
+            resolve({ 'post': {}, 'files': {} });
+            return;
+        }
         const ct = req.headers['content-type'] ?? '';
         if (!ct) {
             resolve({ 'post': {}, 'files': {} });
@@ -1072,22 +1082,20 @@ export function getFormData(
                         if (io === -1) {
                             // --- 没找到结束标语，将预留 boundary 长度之前的写入到文件 ---
                             const writeBuffer = buffer.subarray(0, -boundary.length - 4);
-                            if (ftmpName === '') {
-                                events.onfiledata?.(writeBuffer);
-                            }
-                            else {
+                            if (ftmpName) {
                                 ftmpStream.write(writeBuffer);
                                 ftmpSize += Buffer.byteLength(writeBuffer);
+                            }
+                            else {
+                                // --- 跳过该文件 ---
+                                events.onfiledata?.(writeBuffer);
                             }
                             buffer = buffer.subarray(-boundary.length - 4);
                             return;
                         }
                         // --- 找到结束标语，结束标语之前的写入文件，之后的重新放回 buffer ---
                         const writeBuffer = buffer.subarray(0, io);
-                        if (ftmpName === '') {
-                            events.onfileend?.();
-                        }
-                        else {
+                        if (ftmpName) {
                             ftmpStream.write(writeBuffer);
                             ftmpSize += Buffer.byteLength(writeBuffer);
                             ftmpStream.end(() => {
@@ -1127,6 +1135,10 @@ export function getFormData(
                                 rtn.files[name] = val;
                             }
                         }
+                        else {
+                            // --- 跳过该文件 ---
+                            events.onfileend?.();
+                        }
                         // --- 重置状态机 ---
                         state = EState.WAIT;
                         buffer = buffer.subarray(io + 4 + boundary.length);
@@ -1135,11 +1147,31 @@ export function getFormData(
                 }
             }
         });
-        req.on('error', function() {
+        req.on('error', function(e) {
+            if ((state === EState.FILE) && ftmpName) {
+                ftmpStream.destroy();
+            }
+            lCore.debug('[ROUTE][GETFORMDATA] request error before getFormData: ' + e.message);
+            lCore.log({}, '[ROUTE][GETFORMDATA] request error before getFormData: ' + (e.stack ?? ''), '-error');
             resolve(false);
         });
         req.on('end', function() {
             readEnd = true;
+            if (state === EState.FILE) {
+                if (ftmpName) {
+                    ftmpStream.end(() => {
+                        --writeFileLength;
+                        if (!writeFileLength) {
+                            // --- 文件也写完了 ---
+                            resolve(rtn);
+                        }
+                    });
+                    return;
+                }
+                // --- 跳过该文件 ---
+                events.onfileend?.();
+                --writeFileLength;
+            }
             if (writeFileLength) {
                 // --- 文件没写完 ---
                 return;
