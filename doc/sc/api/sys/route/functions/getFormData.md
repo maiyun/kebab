@@ -28,13 +28,19 @@ Defined in: [sys/route.ts:932](https://github.com/maiyunnet/kebab/blob/master/sy
 
 (`chunk`) => `void`
 
+文件上传时触发，仅 start 返回 true 时触发
+
 #### onfileend?
 
 () => `void`
 
+文件上传结束时触发，仅 start 返回 true 时触发
+
 #### onfilestart?
 
 (`name`) => `boolean` \| `undefined`
+
+文件开始上传时触发，返回 true 则跳过该文件的保存
 
 ## Returns
 
