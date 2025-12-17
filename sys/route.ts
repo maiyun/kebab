@@ -947,7 +947,6 @@ export function getFormData(
 } | false> {
     return new Promise(function(resolve) {
         if (req.readableEnded) {
-            lCore.debug('[ROUTE][GETFORMDATA] request readableEnded before getFormData');
             resolve({ 'post': {}, 'files': {} });
             return;
         }
