@@ -8,6 +8,7 @@
 
 ## Enumerations
 
+- [EJSON](enumerations/EJSON.md)
 - [ESERVICE](enumerations/ESERVICE.md)
 
 ## Classes
