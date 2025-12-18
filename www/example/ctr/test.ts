@@ -224,6 +224,7 @@ export default class extends sCtr.Ctr {
             `<br><a href="${this._config.const.urlBase}test/sql?type=upsert">View "test/sql?type=upsert"</a> <a href="${this._config.const.urlBase}test/sql?type=upsert&s=pgsql">pgsql</a>`,
             `<br><a href="${this._config.const.urlBase}test/sql?type=delete">View "test/sql?type=delete"</a> <a href="${this._config.const.urlBase}test/sql?type=delete&s=pgsql">pgsql</a>`,
             `<br><a href="${this._config.const.urlBase}test/sql?type=where">View "test/sql?type=where"</a> <a href="${this._config.const.urlBase}test/sql?type=where&s=pgsql">pgsql</a>`,
+            `<br><a href="${this._config.const.urlBase}test/sql?type=json">View "test/sql?type=json"</a> <a href="${this._config.const.urlBase}test/sql?type=json&s=pgsql">pgsql</a>`,
             `<br><a href="${this._config.const.urlBase}test/sql?type=having">View "test/sql?type=having"</a> <a href="${this._config.const.urlBase}test/sql?type=having&s=pgsql">pgsql</a>`,
             `<br><a href="${this._config.const.urlBase}test/sql?type=by">View "test/sql?type=by"</a> <a href="${this._config.const.urlBase}test/sql?type=by&s=pgsql">pgsql</a>`,
             `<br><a href="${this._config.const.urlBase}test/sql?type=field">View "test/sql?type=field"</a> <a href="${this._config.const.urlBase}test/sql?type=field&s=pgsql">pgsql</a>`,
@@ -2948,6 +2949,48 @@ Result:<pre id="result">Nothing.</pre>`);
 <b>format() :</b> ${sql.format(s, sd)}`);
                 break;
             }
+            case 'json': {
+                // --- json contains ---
+                let s = sql.select('*', 'user').where([['info', lSql.EJSON.CONTAINS, { 'a': 1 }]]).getSql();
+                let sd = sql.getData();
+                echo.push(`<pre>sql.select('*', 'user').where([['info', lSql.EJSON.CONTAINS, { 'a': 1 }]]);</pre>
+<b>getSql() :</b> ${s}<br>
+<b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
+<b>format() :</b> ${sql.format(s, sd)}<hr>`);
+
+                // --- json contained by ---
+                s = sql.select('*', 'user').where([['info', lSql.EJSON.CONTAINED_BY, { 'a': 1, 'b': 2 }]]).getSql();
+                sd = sql.getData();
+                echo.push(`<pre>sql.select('*', 'user').where([['info', lSql.EJSON.CONTAINED_BY, { 'a': 1, 'b': 2 }]]);</pre>
+<b>getSql() :</b> ${s}<br>
+<b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
+<b>format() :</b> ${sql.format(s, sd)}<hr>`);
+
+                // --- json key exists ---
+                s = sql.select('*', 'user').where([['info', lSql.EJSON.HAS_KEY, 'age']]).getSql();
+                sd = sql.getData();
+                echo.push(`<pre>sql.select('*', 'user').where([['info', lSql.EJSON.HAS_KEY, 'age']]);</pre>
+<b>getSql() :</b> ${s}<br>
+<b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
+<b>format() :</b> ${sql.format(s, sd)}<hr>`);
+
+                // --- json any key exists ---
+                s = sql.select('*', 'user').where([['info', lSql.EJSON.HAS_ANY_KEYS, ['age', 'name']]]).getSql();
+                sd = sql.getData();
+                echo.push(`<pre>sql.select('*', 'user').where([['info', lSql.EJSON.HAS_ANY_KEYS, ['age', 'name']]]);</pre>
+<b>getSql() :</b> ${s}<br>
+<b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
+<b>format() :</b> ${sql.format(s, sd)}<hr>`);
+
+                // --- json all keys exist ---
+                s = sql.select('*', 'user').where([['info', lSql.EJSON.HAS_ALL_KEYS, ['age', 'name']]]).getSql();
+                sd = sql.getData();
+                echo.push(`<pre>sql.select('*', 'user').where([['info', lSql.EJSON.HAS_ALL_KEYS, ['age', 'name']]]);</pre>
+<b>getSql() :</b> ${s}<br>
+<b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
+<b>format() :</b> ${sql.format(s, sd)}`);
+                break;
+            }
             case 'where': {
                 let s = sql.select('*', 'user').where([{ 'city': 'la' }, ['age', '>', '10'], ['level', 'in', ['1', '2', '3']], ['age + age2 + age3 + 10', '>', 20]]).getSql();
                 let sd = sql.getData();
@@ -3035,6 +3078,17 @@ Result:<pre id="result">Nothing.</pre>`);
                 s = sql.select('*', 'user').where([{ 'city': 'la', 'area': null }, ['age', '>', '10'], ['soft', '<>', null], ['ware', 'IS', null]]).getSql();
                 sd = sql.getData();
                 echo.push(`<pre>sql.select('*', 'user').where([{ 'city': 'la', 'area': null }, ['age', '>', '10'], ['soft', '<>', null], ['ware', 'IS', null]]);</pre>
+<b>getSql() :</b> ${s}<br>
+<b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
+<b>format() :</b> ${sql.format(s, sd)}<hr>`);
+
+                s = sql.select('*', 'user').where([
+                    ['info', 'json', { 'a': 1 }]
+                ]).getSql();
+                sd = sql.getData();
+                echo.push(`<pre>sql.select('*', 'user').where([
+    ['info', 'json', { 'a': 1 }]
+]);</pre>
 <b>getSql() :</b> ${s}<br>
 <b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
 <b>format() :</b> ${sql.format(s, sd)}`);

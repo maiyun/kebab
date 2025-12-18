@@ -17,6 +17,20 @@ export enum ESERVICE {
     'PGSQL',
 }
 
+/** --- JSON 查询操作符 --- */
+export enum EJSON {
+    /** --- 包含 (MySQL: JSON_CONTAINS, PG: @>) --- */
+    'CONTAINS' = 'json',
+    /** --- 被包含 (MySQL: JSON_CONTAINS, PG: <@) --- */
+    'CONTAINED_BY' = 'json_in',
+    /** --- 存在 Key (MySQL: JSON_CONTAINS_PATH one, PG: ?) --- */
+    'HAS_KEY' = 'json_key',
+    /** --- 存在任意 Key (MySQL: JSON_CONTAINS_PATH one, PG: ?|) --- */
+    'HAS_ANY_KEYS' = 'json_any',
+    /** --- 存在所有 Key (MySQL: JSON_CONTAINS_PATH all, PG: ?&) --- */
+    'HAS_ALL_KEYS' = 'json_all',
+}
+
 /** --- field 用 token --- */
 let columnToken = '';
 
@@ -435,6 +449,7 @@ export class Sql {
      * --- 5. '$or': [{'city': 'bj'}, {'city': 'sh'}, [['age', '>', '10']]], 'type': '2' ---
      * --- 6. 'city_in': column('city_out') ---
      * --- 7. ['JSON_CONTAINS(`uid`, ?)', ['hello']] ---
+     * --- 8. ['info', 'json', {'a': 1}] ---
      * @param s 筛选数据
      */
     public where(s: string | kebab.Json): this {
@@ -483,6 +498,55 @@ export class Sql {
                     sql += this.field(v[0]) + ' AND ';
                     if (v[1] !== undefined) {
                         data.push(...v[1]);
+                    }
+                }
+                else if (typeof v[1] === 'string' && ['json', 'json_in', 'json_key', 'json_any', 'json_all'].includes(v[1].toLowerCase())) {
+                    // --- json ---
+                    const op = v[1].toLowerCase();
+                    const nv = v[2];
+                    if (op === 'json') {
+                        if (this._service === ESERVICE.MYSQL) {
+                            sql += `JSON_CONTAINS(${this.field(v[0])}, ${this._placeholder()}) AND `;
+                            data.push(lText.stringifyJson(nv));
+                        }
+                        else {
+                            sql += `${this.field(v[0])} @> ${this._placeholder()} AND `;
+                            data.push(lText.stringifyJson(nv));
+                        }
+                    }
+                    else if (op === 'json_in') {
+                        if (this._service === ESERVICE.MYSQL) {
+                            sql += `JSON_CONTAINS(${this._placeholder()}, ${this.field(v[0])}) AND `;
+                            data.push(lText.stringifyJson(nv));
+                        }
+                        else {
+                            sql += `${this.field(v[0])} <@ ${this._placeholder()} AND `;
+                            data.push(lText.stringifyJson(nv));
+                        }
+                    }
+                    else {
+                        // --- json_key, json_any, json_all ---
+                        const keys: string[] = Array.isArray(nv) ? nv : [nv];
+                        if (this._service === ESERVICE.MYSQL) {
+                            const type = op === 'json_all' ? 'all' : 'one';
+                            let pathSql = '';
+                            for (const k of keys) {
+                                pathSql += ', ' + this._placeholder();
+                                data.push(k.startsWith('$') ? k : `$.${k}`);
+                            }
+                            sql += `JSON_CONTAINS_PATH(${this.field(v[0])}, '${type}'${pathSql}) AND `;
+                        }
+                        else {
+                            if (op === 'json_key' && keys.length === 1) {
+                                sql += `${this.field(v[0])} ? ${this._placeholder()} AND `;
+                                data.push(keys[0]);
+                            }
+                            else {
+                                const pgOp = op === 'json_all' ? '?&' : '?|';
+                                sql += `${this.field(v[0])} ${pgOp} ${this._placeholder()} AND `;
+                                data.push(keys);
+                            }
+                        }
                     }
                 }
                 else if (v[2] === null) {
@@ -1095,6 +1159,15 @@ export function format(sql: string, data: kebab.DbValue[], service: ESERVICE = E
         }
         if (val instanceof Buffer) {
             return `'\\x${val.toString('hex')}'`;
+        }
+        if (Array.isArray(val)) {
+            // --- PGSQL Array ---
+            return `ARRAY[${val.map(v => {
+                if (typeof v === 'string') {
+                    return `'${v.replace(/'/g, "''")}'`;
+                }
+                return v;
+            }).join(', ')}]`;
         }
         return `'${lText.stringifyJson(val).replace(/'/g, "''")}'`;
     });
