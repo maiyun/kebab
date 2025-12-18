@@ -140,6 +140,11 @@ export class Ctr {
         if (!this._timer) {
             return;
         }
+        if (this._res.headersSent) {
+            // --- 已经开始输出的，不能设置 timeout ---
+            lCore.debug('[CTR][TIMEOUT][SET] headersSent is true, can not set timeout');
+            return;
+        }
         this._timer.timeout = num;
         clearTimeout(this._timer.timer);
         this._timer.timer = setTimeout(this._timer.callback, num);
