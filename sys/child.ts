@@ -127,7 +127,9 @@ async function run(): Promise<void> {
         const host = (req.headers[':authority'] ?? req.headers['host'] ?? '');
         if (!host) {
             lCore.writeHead(res, 403);
-            res.end('403 Forbidden');
+            res.end('403 Forbidden', () => {
+                req.socket.destroy();
+            });
             return;
         }
         wrapWithLinkCount(
@@ -154,7 +156,9 @@ async function run(): Promise<void> {
         if (!host) {
             res.setHeader('x-kebab-error', '0');
             lCore.writeHead(res, 403);
-            res.end();
+            res.end('403 Forbidden', () => {
+                req.socket.destroy();
+            });
             return;
         }
         wrapWithLinkCount(
@@ -229,7 +233,9 @@ async function requestHandler(
     if (!vhost) {
         res.setHeader('x-kebab-error', '1');
         lCore.writeHead(res, 403);
-        res.end();
+        res.end('403 Forbidden', () => {
+            req.socket.destroy();
+        });
         return;
         /*
         const text = '<h1>Kebab: No permissions</h1>host: ' + (req.headers[':authority'] as string | undefined ?? req.headers['host'] ?? '') + '<br>url: ' + (lText.htmlescape(req.url ?? ''));
