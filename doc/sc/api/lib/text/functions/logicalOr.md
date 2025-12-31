@@ -8,7 +8,7 @@
 
 > **logicalOr**\<`T`, `T2`\>(`v1`, `v2`): `T` *extends* [`TFalsy`](../type-aliases/TFalsy.md) ? `T2` : `T`
 
-Defined in: [lib/text.ts:615](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L615)
+Defined in: [lib/text.ts:635](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L635)
 
 类似 || 运算符的效果
 

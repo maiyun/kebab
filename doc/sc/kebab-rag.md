@@ -1385,7 +1385,7 @@ index/variables/VER.md
 
 # Variable: VER
 
-> `const` **VER**: `"7.5.0"` = `'7.5.0'`
+> `const` **VER**: `"7.6.0"` = `'7.6.0'`
 
 Defined in: [index.ts:10](https://github.com/maiyunnet/kebab/blob/master/index.ts#L10)
 
@@ -14853,7 +14853,7 @@ lib/text/functions/getFilename.md
 
 > **getFilename**(`path`): `string`
 
-Defined in: [lib/text.ts:456](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L456)
+Defined in: [lib/text.ts:476](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L476)
 
 获取文件名
 
@@ -14882,7 +14882,7 @@ lib/text/functions/htmlescape.md
 
 > **htmlescape**(`html`): `string`
 
-Defined in: [lib/text.ts:432](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L432)
+Defined in: [lib/text.ts:452](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L452)
 
 HTML 特殊字符转换为实体字符
 
@@ -14911,7 +14911,7 @@ lib/text/functions/int2str.md
 
 > **int2str**(`int`, `digits`, `decimal`): `string`
 
-Defined in: [lib/text.ts:647](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L647)
+Defined in: [lib/text.ts:667](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L667)
 
 为解决精度问题，将整数转换为小数字符串
 以下几个示例都是当 digits 为 3、decimal 为 2 时
@@ -15044,7 +15044,7 @@ lib/text/functions/isFalsy.md
 
 > **isFalsy**(`val`): `val is TFalsy`
 
-Defined in: [lib/text.ts:598](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L598)
+Defined in: [lib/text.ts:618](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L618)
 
 判断一个值是否是虚假的（为 null/undefined/空字符串/false/0）
 
@@ -15185,7 +15185,7 @@ lib/text/functions/isRealPath.md
 
 > **isRealPath**(`path`): `boolean`
 
-Defined in: [lib/text.ts:444](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L444)
+Defined in: [lib/text.ts:464](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L464)
 
 判断是否是绝对路径，是返回 true，相对路径返回 false
 
@@ -15214,7 +15214,7 @@ lib/text/functions/isTruthy.md
 
 > **isTruthy**\<`T`\>(`val`): `val is Exclude<T, TFalsy>`
 
-Defined in: [lib/text.ts:606](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L606)
+Defined in: [lib/text.ts:626](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L626)
 
 判断一个值是否是真实的（不为 null/undefined/空字符串/false/0）
 
@@ -15249,7 +15249,7 @@ lib/text/functions/logicalOr.md
 
 > **logicalOr**\<`T`, `T2`\>(`v1`, `v2`): `T` *extends* [`TFalsy`](../type-aliases/TFalsy.md) ? `T2` : `T`
 
-Defined in: [lib/text.ts:615](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L615)
+Defined in: [lib/text.ts:635](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L635)
 
 类似 || 运算符的效果
 
@@ -15393,7 +15393,7 @@ lib/text/functions/parseJson.md
 
 > **parseJson**(`str`): `any`
 
-Defined in: [lib/text.ts:509](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L509)
+Defined in: [lib/text.ts:529](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L529)
 
 将字符串解析为对象，返回 false 代表解析失败，支持 BigInt
 
@@ -15449,7 +15449,7 @@ lib/text/functions/queryParse.md
 
 > **queryParse**(`query`): `Record`\<`string`, `string` \| `string`[]\>
 
-Defined in: [lib/text.ts:395](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L395)
+Defined in: [lib/text.ts:415](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L415)
 
 将 query string 转换为对象
 
@@ -15476,27 +15476,65 @@ lib/text/functions/queryStringify.md
 
 # Function: queryStringify()
 
-> **queryStringify**(`query`, `encode`): `string`
+## Call Signature
+
+> **queryStringify**(`query`, `encode?`): `string`
 
 Defined in: [lib/text.ts:374](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L374)
 
 将对象转换为 query string
 
-## Parameters
+### Parameters
 
-### query
+#### query
 
 `Record`\<`string`, `any`\>
 
 要转换的对象
 
-### encode
+#### encode?
 
-`boolean` = `true`
+`boolean`
 
-是否转义
+是否转义，默认为 true
 
-## Returns
+### Returns
+
+`string`
+
+## Call Signature
+
+> **queryStringify**(`query`, `options`): `string`
+
+Defined in: [lib/text.ts:380](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L380)
+
+将对象转换为 query string
+
+### Parameters
+
+#### query
+
+`Record`\<`string`, `any`\>
+
+要转换的对象
+
+#### options
+
+选项
+
+##### equal?
+
+`string`
+
+等号分隔符，默认 =
+
+##### hyphen?
+
+`string`
+
+连字符分隔符，默认 &
+
+### Returns
 
 `string`
 
@@ -15548,7 +15586,7 @@ lib/text/functions/str2int.md
 
 > **str2int**(`str`, `digits`): `number`
 
-Defined in: [lib/text.ts:629](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L629)
+Defined in: [lib/text.ts:649](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L649)
 
 为解决精度问题，将字符串数字转换为整数显示
 以下几个示例都是当 digits 为 2 时
@@ -15588,7 +15626,7 @@ lib/text/functions/stringifyBuffer.md
 
 > **stringifyBuffer**(`buf`): `string`
 
-Defined in: [lib/text.ts:552](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L552)
+Defined in: [lib/text.ts:572](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L572)
 
 输出文本格式的 buffer
 
@@ -15617,7 +15655,7 @@ lib/text/functions/stringifyJson.md
 
 > **stringifyJson**(`obj`, `space?`): `string`
 
-Defined in: [lib/text.ts:539](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L539)
+Defined in: [lib/text.ts:559](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L559)
 
 将对象转换为 json 字符串，返回 false 代表解析失败，支持 BigInt
 
@@ -15652,7 +15690,7 @@ lib/text/functions/stringifyResult.md
 
 > **stringifyResult**(`rtn`): `string`
 
-Defined in: [lib/text.ts:469](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L469)
+Defined in: [lib/text.ts:489](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L489)
 
 将普通的返回 JSON 对象序列化为字符串
 
@@ -15681,7 +15719,7 @@ lib/text/functions/trimJson.md
 
 > **trimJson**(`json`): `any`
 
-Defined in: [lib/text.ts:560](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L560)
+Defined in: [lib/text.ts:580](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L580)
 
 递归删除 json 中的字符串首尾空格，会返回一个新的对象
 
@@ -15878,7 +15916,7 @@ lib/text/type-aliases/TFalsy.md
 
 > **TFalsy** = `false` \| `""` \| `0` \| `null` \| `undefined` \| *typeof* `NaN`
 
-Defined in: [lib/text.ts:592](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L592)
+Defined in: [lib/text.ts:612](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L612)
 
 虚假值类型
 
