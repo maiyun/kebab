@@ -369,23 +369,43 @@ export function isIdCardCN(idcard: string): boolean {
 /**
  * --- 将对象转换为 query string ---
  * @param query 要转换的对象
- * @param encode 是否转义
+ * @param encode 是否转义，默认为 true
  */
-export function queryStringify(query: Record<string, any>, encode: boolean = true): string {
-    if (encode) {
-        return Object.entries(query).map(([k, v]) => {
-            if (Array.isArray(v)) {
-                return v.map((i) => `${encodeURIComponent(k)}=${encodeURIComponent(i)}`).join('&');
-            }
-            return `${encodeURIComponent(k)}=${encodeURIComponent(v)}`;
-        }).join('&');
+export function queryStringify(query: Record<string, any>, encode?: boolean): string;
+/**
+ * --- 将对象转换为 query string ---
+ * @param query 要转换的对象
+ * @param options 选项
+ */
+export function queryStringify(query: Record<string, any>, options: {
+    /** --- 等号分隔符，默认 = --- */
+    'equal'?: string;
+    /** --- 连字符分隔符，默认 & --- */
+    'hyphen'?: string;
+}): string;
+export function queryStringify(query: Record<string, any>, encode: boolean | {
+    /** --- 等号分隔符，默认 = --- */
+    'equal'?: string;
+    /** --- 连字符分隔符，默认 & --- */
+    'hyphen'?: string;
+} = true): string {
+    let isEncode = true;
+    let equal = '=';
+    let hyphen = '&';
+    if (typeof encode === 'object') {
+        equal = encode.equal ?? '=';
+        hyphen = encode.hyphen ?? '&';
+    }
+    else {
+        isEncode = encode;
     }
     return Object.entries(query).map(([k, v]) => {
+        const key = isEncode ? encodeURIComponent(k) : k;
         if (Array.isArray(v)) {
-            return v.map((i) => `${k}=${i}`).join('&');
+            return v.map(i => `${key}${equal}${isEncode ? encodeURIComponent(i) : i}`).join(hyphen);
         }
-        return `${k}=${v}`;
-    }).join('&');
+        return `${key}${equal}${isEncode ? encodeURIComponent(v) : v}`;
+    }).join(hyphen);
 }
 
 /**

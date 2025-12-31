@@ -3291,7 +3291,7 @@ const rtn = cons.migration(rows, newTables);</pre>`);
         return echo.join('') + '<br><br>' + this._getEnd();
     }
 
-    public text(): string {
+    public async text(): Promise<string> {
         const echo = `<pre>json_encode(lText.parseUrl('HtTp://uSer:pAss@sUBDom.TopdOm23.CoM:29819/Adm@xw2Ksiz/dszas?Mdi=KdiMs1&a=JDd#hehHe'))</pre>
 ${lText.htmlescape(JSON.stringify(lText.parseUrl('HtTp://uSer:pAss@sUBDom.TopdOm23.CoM:29819/Adm@xw2Ksiz/dszas?Mdi=KdiMs1&a=JDd#hehHe')))}
 <pre>json_encode(lText.parseUrl('HtTp://uSer@sUBDom.TopdOm23.CoM/Admx%20w2Ksiz/dszas'))</pre>
@@ -3357,19 +3357,29 @@ ${JSON.stringify(lText.isDomain('www.xxx.com.cn'))}
 <pre>lText.isDomain('com');</pre>
 ${JSON.stringify(lText.isDomain('com'))}
 <pre>lText.parseDomain('www.xxx.com.cn');</pre>
-${JSON.stringify(lText.parseDomain('www.xxx.com.cn'))}
+${JSON.stringify(await lText.parseDomain('www.xxx.com.cn'))}
 <pre>lText.parseDomain('www.xxx.us');</pre>
-${JSON.stringify(lText.parseDomain('www.xxx.us'))}
+${JSON.stringify(await lText.parseDomain('www.xxx.us'))}
 <pre>lText.parseDomain('xxx.co.jp');</pre>
-${JSON.stringify(lText.parseDomain('xxx.co.jp'))}
+${JSON.stringify(await lText.parseDomain('xxx.co.jp'))}
 <pre>lText.parseDomain('js.cn');</pre>
-${JSON.stringify(lText.parseDomain('js.cn'))}
+${JSON.stringify(await lText.parseDomain('js.cn'))}
 <pre>lText.parseDomain('xxx.cn');</pre>
-${JSON.stringify(lText.parseDomain('xxx.cn'))}
+${JSON.stringify(await lText.parseDomain('xxx.cn'))}
 <pre>lText.parseJson('{"num":90071992547409993149,"num2":3242354,"num3":"16565","str":"abc","bool":false}');</pre>
 ${lText.stringifyJson(lText.parseJson('{"num":90071992547409993149,"num2":3242354,"num3":"16565","str":"abc","bool":false}'))}
 <pre>lText.isIdCardCN('110101200007284901')</pre>
-${JSON.stringify(lText.isIdCardCN('110101200007284901'))}`;
+${JSON.stringify(lText.isIdCardCN('110101200007284901'))}
+<pre>lText.queryStringify({'a': 1, 'b': '2'});</pre>
+${lText.queryStringify({ 'a': 1, 'b': '2' })}
+<pre>lText.queryStringify({ 'a': 1, 'b': '2' }, false);</pre>
+${lText.queryStringify({ 'a': 1, 'b': '2' }, false)}
+<pre>lText.queryStringify({ 'a': 1, 'b': '2' }, { 'equal': ':', 'hyphen': '|' });</pre>
+${lText.queryStringify({ 'a': 1, 'b': '2' }, { 'equal': ':', 'hyphen': '|' })}
+<pre>lText.queryStringify({ 'a': [1, 2], 'b': '3' }, { 'equal': ':', 'hyphen': '|' });</pre>
+${lText.queryStringify({ 'a': [1, 2], 'b': '3' }, { 'equal': ':', 'hyphen': '|' })}
+<pre>lText.queryStringify({ 'a': [1, 2], 'b': '3' }, { 'equal': '', 'hyphen': '' });</pre>
+${lText.queryStringify({ 'a': [1, 2], 'b': '3' }, { 'equal': '', 'hyphen': '' })}`;
         return echo + '<br><br>' + this._getEnd();
     }
 
