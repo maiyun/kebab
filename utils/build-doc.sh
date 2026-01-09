@@ -12,7 +12,7 @@ if [[ -n $(git status --porcelain "./index.ts" "./main.ts" "./lib" "./sys") ]]; 
 fi
 
 rm -rf $API_DOC_OUTPUT_DIR
-rm -f doc/sc/kebab-rag.md
+rm -f doc/kebab-rag.md
 
 mkdir -p $(dirname $API_DOC_OUTPUT_DIR)
 
@@ -43,8 +43,8 @@ for f in "${extra_files[@]}"; do
     # --- 去掉路径和 .md ---
     # filename=$(basename "$f" .md)
     filename=$(basename "$f")
-    printf "\n%s\n---\n\n" "$filename" >> "doc/sc/kebab-rag.md"
-    cat "$f" >> "doc/sc/kebab-rag.md"
+    printf "\n%s\n---\n\n" "$filename" >> "doc/kebab-rag.md"
+    cat "$f" >> "doc/kebab-rag.md"
   fi
 done
 
@@ -55,7 +55,7 @@ find "$API_DOC_OUTPUT_DIR" -name "*.md" | sort | while read file; do
   # --- 去掉 .md 扩展名 ---
   # module_name="${relpath%.md}"
 
-  # printf "\n%s\n---\n\n" "$module_name" >> "doc/sc/kebab-rag.md"
-  printf "\n%s\n---\n\n" "$relpath" >> "doc/sc/kebab-rag.md"
-  cat "$file" >> "doc/sc/kebab-rag.md"
+  # printf "\n%s\n---\n\n" "$module_name" >> "doc/kebab-rag.md"
+  printf "\n%s\n---\n\n" "$relpath" >> "doc/kebab-rag.md"
+  cat "$file" >> "doc/kebab-rag.md"
 done

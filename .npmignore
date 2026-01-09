@@ -9,6 +9,7 @@ eslint.config.cjs
 .npmignore
 .DS_Store
 /doc/
+!/doc/kebab-rag.md
 *.ts
 !*.d.ts
 tsconfig.json
