@@ -8,8 +8,8 @@ eslint.config.cjs
 .gitignore
 .npmignore
 .DS_Store
-/doc/
-!/doc/kebab-rag.md
+doc/**
+!doc/kebab-rag.md
 *.ts
 !*.d.ts
 tsconfig.json
