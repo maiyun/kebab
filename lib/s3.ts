@@ -103,6 +103,7 @@ export class S3 {
     public async putObject(
         key: string, content: string | Buffer | stream.Readable, length?: number | {
             'length'?: number;
+            /** --- content-type，如 application/javascript --- */
             'type'?: string;
             'disposition'?: string;
             'bucket'?: string;
