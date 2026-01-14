@@ -492,7 +492,12 @@ export async function readToResponse(path: string,
     // --- 判断缓存以及 MIME 和编码 ---
     let charset = '';
     const mimeData = mime.getData(path);
-    if (['htm', 'html', 'css', 'js', 'xml', 'jpg', 'jpeg', 'svg', 'gif', 'png', 'json'].includes(mimeData.extension)) {
+    // --- 特殊路径 ---
+    if (path.endsWith('/+esm')) {
+        mimeData.mime = 'text/javascript';
+        mimeData.extension = 'js';
+    }
+    if (['htm', 'html', 'css', 'js', 'mjs', 'xml', 'jpg', 'jpeg', 'svg', 'gif', 'png', 'json'].includes(mimeData.extension)) {
         charset = '; charset=utf-8';
         // --- 这些文件可能需要缓存 ---
         const hash = `W/"${stat.size.toString(16)}-${stat.mtime.getTime().toString(16)}"`;
