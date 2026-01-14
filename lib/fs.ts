@@ -494,7 +494,7 @@ export async function readToResponse(path: string,
     const mimeData = mime.getData(path);
     // --- 特殊路径 ---
     if (path.endsWith('/+esm')) {
-        mimeData.mime = 'text/javascript';
+        mimeData.mime = 'application/javascript';
         mimeData.extension = 'js';
     }
     if (['htm', 'html', 'css', 'js', 'mjs', 'xml', 'jpg', 'jpeg', 'svg', 'gif', 'png', 'json'].includes(mimeData.extension)) {
