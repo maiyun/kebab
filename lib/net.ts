@@ -17,7 +17,7 @@ import * as lTime from '#kebab/lib/time.js';
 import * as lCore from './core.js';
 import * as sCtr from '#kebab/sys/ctr.js';
 // --- 自己 ---
-import * as fd from './net/formdata.js';
+import * as lFd from './net/formdata.js';
 import * as lRequest from './net/request.js';
 import * as lResponse from './net/response.js';
 
@@ -31,6 +31,19 @@ export async function getCa(): Promise<string> {
     }
     ca = (await lFs.getContent(kebab.LIB_PATH + 'net/cacert.pem', 'utf8')) ?? '';
     return ca;
+}
+
+/** --- 获取 mproxy 的 URL --- */
+function getMproxyUrl(u: string, mproxy: {
+    'url': string;
+    'auth': string;
+    'data'?: kebab.Json;
+}): string {
+    return mproxy.url + (mproxy.url.includes('?') ? '&' : '?') + lText.queryStringify({
+        'url': u,
+        'auth': mproxy.auth,
+        'data': mproxy.data ? lText.stringifyJson(mproxy.data) : '{}',
+    });
 }
 
 /** --- 复用的 hc 对象列表 --- */
@@ -78,7 +91,7 @@ export async function post(
  */
 export async function postJson(
     u: string,
-    data: any[] | Record<string, kebab.Json>,
+    data: kebab.Json[] | Record<string, kebab.Json>,
     opt: IRequestOptions = {}
 ): Promise<lResponse.Response> {
     opt.method = 'POST';
@@ -94,8 +107,8 @@ export async function postJson(
  * @returns JSON 数据，失败时返回 null
  */
 export async function postJsonResponseJson(
-    u: string, data: any[] | Record<string, kebab.Json>, opt: IRequestOptions = {}
-): Promise<any | null> {
+    u: string, data: kebab.Json[] | Record<string, kebab.Json>, opt: IRequestOptions = {}
+): Promise<kebab.Json | null> {
     opt.method = 'POST';
     opt.type = 'json';
     const res = await request(u, data, opt);
@@ -122,7 +135,7 @@ export function fetch(
         'mproxy'?: {
             'url': string;
             'auth': string;
-            'data'?: any;
+            'data'?: kebab.Json;
         };
     } = {},
 ): Promise<Response> {
@@ -137,11 +150,7 @@ export function fetch(
     if (!hostname) {
         throw new Error('Kebab TypeError: Hostname is empty');
     }
-    return global.fetch(init.mproxy ? init.mproxy.url + (init.mproxy.url.includes('?') ? '&' : '?') + lText.queryStringify({
-        'url': u,
-        'auth': init.mproxy.auth,
-        'data': init.mproxy.data ? lText.stringifyJson(init.mproxy.data) : '{}',
-    }) : u, init);
+    return global.fetch(init.mproxy ? getMproxyUrl(u, init.mproxy) : u, init);
 }
 
 /**
@@ -150,7 +159,7 @@ export function fetch(
  */
 export async function request(
     u: string,
-    data?: Record<string, any> | Buffer | string | stream.Readable,
+    data?: Record<string, kebab.Json> | Buffer | string | stream.Readable,
     opt: IRequestOptions = {}
 ): Promise<lResponse.Response> {
     const uri = lText.parseUrl(u);
@@ -192,7 +201,7 @@ export async function request(
                 headers['content-type'] = 'application/json; charset=utf-8';
             }
         }
-        else if (data instanceof fd.FormData) {
+        else if (data instanceof lFd.FormData) {
             headers['content-type'] = 'multipart/form-data; boundary=' + data.getBoundary();
             headers['content-length'] = data.getLength();
         }
@@ -234,11 +243,7 @@ export async function request(
             reuses[reuse] = hc.createHttpClient();
         }
         req = await reuses[reuse].request({
-            'url': opt.mproxy ? opt.mproxy.url + (opt.mproxy.url.includes('?') ? '&' : '?') + lText.queryStringify({
-                'url': u,
-                'auth': opt.mproxy.auth,
-                'data': opt.mproxy.data ? lText.stringifyJson(opt.mproxy.data) : '{}',
-            }) : u,
+            'url': opt.mproxy ? getMproxyUrl(u, opt.mproxy) : u,
             'method': method,
             'data': data,
             'headers': headers,
@@ -288,7 +293,7 @@ export async function request(
     switch (req.protocol) {
         case hc.EProtocol.HTTPS_2:
         case hc.EProtocol.HTTP_2: {
-            req.headers['http-version'] = '2.0';
+            res.headers['http-version'] = '2.0';
             break;
         }
         default: {
@@ -455,8 +460,8 @@ async function buildCookieObject(
             'exp': exp,
             'path': path,
             'domain': domainN,
-            'secure': cookieTmp['secure'] !== undefined ? true : false,
-            'httponly': cookieTmp['httponly'] !== undefined ? true : false
+            'secure': cookieTmp['secure'] !== undefined,
+            'httponly': cookieTmp['httponly'] !== undefined
         };
     }
 }
@@ -528,8 +533,8 @@ export function resetCookieSession(cookie: Record<string, ICookie>): void {
 /**
  * --- 创建 FormData 对象 ---
  */
-export function getFormData(): fd.FormData {
-    return new fd.FormData();
+export function getFormData(): lFd.FormData {
+    return new lFd.FormData();
 }
 
 /** --- proxy 要剔除的基础头部 --- */
@@ -629,7 +634,7 @@ export async function mproxy(
  * --- 获取 mproxy 的附加数据 ---
  * @param ctr 当前控制器
  */
-export function mproxyData(ctr: sCtr.Ctr): any {
+export function mproxyData(ctr: sCtr.Ctr): kebab.Json {
     const get = ctr.getPrototype('_get');
     if (!get['data']) {
         return {};
@@ -716,7 +721,7 @@ export interface IRequestOptions {
     'mproxy'?: {
         'url': string;
         'auth': string;
-        'data'?: any;
+        'data'?: kebab.Json;
     };
     /** --- 连接是否保持长连接（即是否允许复用），默认为 true --- */
     'keep'?: boolean;
@@ -756,7 +761,7 @@ export interface IRproxyOptions {
     'mproxy'?: {
         'url': string;
         'auth': string;
-        'data'?: any;
+        'data'?: kebab.Json;
     };
     /** --- 默认为 default --- */
     'reuse'?: string;
