@@ -218,6 +218,7 @@ export class Ctr {
 
     /**
      * --- 实例化后会执行的方法，可重写此方法 ---
+     * @returns 返回 true 或 undefined 则继续执行 onReady，否则中止且对应的返回值将作为输出结果（WebSocket 下中止将断开连接）
      */
     public onLoad(): boolean | string | kebab.DbValue[] |
     Promise<boolean | string | kebab.DbValue[]> {
@@ -226,6 +227,7 @@ export class Ctr {
 
     /**
      * --- onLoad 执行后会执行的方法，可重写此方法 ---
+     * @returns 返回 true 或 undefined 则继续执行 action，否则中止且对应的返回值将作为输出结果（WebSocket 下中止将断开连接）
      */
     public onReady(): boolean | string | kebab.DbValue[] |
     Promise<boolean | string | kebab.DbValue[]> {
@@ -235,6 +237,7 @@ export class Ctr {
     /**
      * --- 整个结束前会执行本方法，可重写此方法对输出结果再处理一次（Websocket 模式无效） ---
      * @param rtn 之前用户的输出结果
+     * @returns 处理后的输出结果，将作为最终发送给客户端的内容
      */
     public onUnload(rtn: boolean | string | kebab.DbValue[]): boolean | string | kebab.DbValue[] |
     Promise<boolean | string | kebab.DbValue[]> {
@@ -243,6 +246,7 @@ export class Ctr {
 
     /**
      * --- WebSocket 下在建立 Server 连接之前可对 WebSocket 的信息进行配置 ---
+     * @returns WebSocket 配置参数，包含自定义 header 和超时时间
      */
     public onUpgrade(): {
         'headers'?: http.OutgoingHttpHeaders;
@@ -253,7 +257,9 @@ export class Ctr {
 
     /**
      * --- WebSocket 下当收到数据时会自动被调用的事件，即只文本和二进制数据，返回内容会被发送给 socket ---
-     * --- 但返回 false 连接会被中断，什么都不返回则什么都不做 ---
+     * @param data 数据
+     * @param opcode 操作码
+     * @returns 返回内容会被发送给 socket；若返回 false 则连接会被中断；不返回则不发送任何内容
      */
     public onData(data: Buffer | string, opcode: lWs.EOpcode): kebab.Json;
     public onData(): string {
@@ -294,7 +300,10 @@ export class Ctr {
         return;
     }
 
-    /** --- 请求发送开始时调用，返回 -1-流程中断，一般用于代理/反代,0-框架不会自动处理 post,1-自动处理(默认)（仅会在 middle 内触发） --- */
+    /**
+     * --- 请求发送开始时调用（仅会在 middle 内触发） ---
+     * @returns 1-自动处理 POST (默认)，0-框架不自动处理 POST，-1-流程中断 (通常用于代理/反代场景)
+     */
     public onReqStart(): number | Promise<number> {
         return 1;
     }
