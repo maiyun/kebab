@@ -8,7 +8,7 @@
 
 > **isIdCardCN**(`idcard`): `boolean`
 
-Defined in: [lib/text.ts:346](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L346)
+Defined in: [lib/text.ts:367](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L367)
 
 是否是中国大陆身份证号码
 

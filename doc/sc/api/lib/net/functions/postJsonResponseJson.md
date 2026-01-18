@@ -8,7 +8,7 @@
 
 > **postJsonResponseJson**(`u`, `data`, `opt`): `Promise`\<`any`\>
 
-Defined in: [lib/net.ts:96](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L96)
+Defined in: [lib/net.ts:109](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L109)
 
 发起 JSON 请求并解析 JSON 响应
 

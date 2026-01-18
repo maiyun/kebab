@@ -8,7 +8,7 @@
 
 > **mproxy**(`ctr`, `auth`, `opt`): `Promise`\<`number`\>
 
-Defined in: [lib/ws.ts:481](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L481)
+Defined in: [lib/ws.ts:489](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L489)
 
 正向 mproxy 代理，读取 get 的 url 为实际请求地址
 get: url, auth

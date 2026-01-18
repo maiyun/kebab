@@ -8,7 +8,7 @@
 
 > **get**(`u`, `opt`): `Promise`\<[`Response`](../response/classes/Response.md)\>
 
-Defined in: [lib/net.ts:54](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L54)
+Defined in: [lib/net.ts:67](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L67)
 
 发起一个 get 请求
 

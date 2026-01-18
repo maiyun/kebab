@@ -8,7 +8,7 @@
 
 > **fetch**(`input`, `init`): `Promise`\<`Response`\>
 
-Defined in: [lib/net.ts:118](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L118)
+Defined in: [lib/net.ts:131](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L131)
 
 发起一个原生 fetch 请求，增加了一些框架选项，注意：会抛出错误
 

@@ -41,6 +41,7 @@
 - [match](functions/match.md)
 - [nlReplace](functions/nlReplace.md)
 - [parseDomain](functions/parseDomain.md)
+- [parseHost](functions/parseHost.md)
 - [parseJson](functions/parseJson.md)
 - [parseUrl](functions/parseUrl.md)
 - [queryParse](functions/queryParse.md)

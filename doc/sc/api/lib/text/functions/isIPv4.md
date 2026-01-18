@@ -8,7 +8,7 @@
 
 > **isIPv4**(`ip`): `boolean`
 
-Defined in: [lib/text.ts:202](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L202)
+Defined in: [lib/text.ts:223](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L223)
 
 是否是 IPv4
 

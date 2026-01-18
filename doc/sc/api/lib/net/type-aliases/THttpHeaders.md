@@ -8,7 +8,7 @@
 
 > **THttpHeaders** = `http.IncomingHttpHeaders` & `object`
 
-Defined in: [lib/net.ts:767](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L767)
+Defined in: [lib/net.ts:772](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L772)
 
 http headers
 

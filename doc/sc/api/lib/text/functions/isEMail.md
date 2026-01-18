@@ -8,7 +8,7 @@
 
 > **isEMail**(`email`): `boolean`
 
-Defined in: [lib/text.ts:192](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L192)
+Defined in: [lib/text.ts:213](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L213)
 
 是否是邮件地址
 

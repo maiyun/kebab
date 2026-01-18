@@ -8,7 +8,7 @@
 
 > **postJson**(`u`, `data`, `opt`): `Promise`\<[`Response`](../response/classes/Response.md)\>
 
-Defined in: [lib/net.ts:79](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L79)
+Defined in: [lib/net.ts:92](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L92)
 
 发起 JSON 请求
 

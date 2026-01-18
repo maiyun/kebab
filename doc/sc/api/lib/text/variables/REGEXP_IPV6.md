@@ -8,4 +8,4 @@
 
 > `const` **REGEXP\_IPV6**: `RegExp`
 
-Defined in: [lib/text.ts:206](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L206)
+Defined in: [lib/text.ts:227](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L227)

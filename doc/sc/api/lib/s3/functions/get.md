@@ -8,7 +8,7 @@
 
 > **get**(`ctr`, `opt`): [`S3`](../classes/S3.md)
 
-Defined in: [lib/s3.ts:240](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L240)
+Defined in: [lib/s3.ts:241](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L241)
 
 创建一个对象存储对象
 
