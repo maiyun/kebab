@@ -152,10 +152,10 @@ export async function run(data: {
         'mobile': data.req.headers['user-agent'] ? data.req.headers['user-agent'].toLowerCase().includes('mobile') : false,
         'wechat': data.req.headers['user-agent'] ? data.req.headers['user-agent'].toLowerCase().includes('micromessenger') : false,
         'miniprogram': data.req.headers['referer'] ? (data.req.headers['referer'].toLowerCase().startsWith('https://servicewechat.com/') ? 'wechat' : '') : '',
-        'https': data.uri.protocol === 'https' ? true : false,
+        'https': data.uri.protocol === 'https:' ? true : false,
         'host': data.uri.host ?? '',
         'hostname': data.uri.hostname ?? '',
-        'hostport': data.uri.port ? parseInt(data.uri.port) : (data.uri.protocol === 'https' ? 443 : 80),
+        'hostport': data.uri.port ? parseInt(data.uri.port) : (data.uri.protocol === 'https:' ? 443 : 80),
         'uri': data.uri,
 
         // --- 服务端用的路径 ---

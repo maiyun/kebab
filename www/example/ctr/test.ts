@@ -247,6 +247,7 @@ export default class extends sCtr.Ctr {
             `<br><a href="${this._config.const.urlBase}test/ws-server?ac=rproxy2">View ws rproxy2 (handler)</a>`,
             `<br><a href="${this._config.const.urlBase}test/ws-client">View "test/ws-client"</a>`,
             `<br><a href="${this._config.const.urlBase}test/ws-client?ac=mproxy">View ws mproxy</a>`,
+            `<br><a href="${this._config.const.urlBase}test/ws-client?ac=hosts">View ws hosts</a>`,
 
             '<br><br><b>Ssh:</b>',
             `<br><br><a href="${this._config.const.urlBase}test/ssh?type=shell">View "test/ssh?type=shell"</a>`,
@@ -3294,6 +3295,8 @@ const rtn = cons.migration(rows, newTables);</pre>`);
     public async text(): Promise<string> {
         const echo = `<pre>json_encode(lText.parseUrl('HtTp://uSer:pAss@sUBDom.TopdOm23.CoM:29819/Adm@xw2Ksiz/dszas?Mdi=KdiMs1&a=JDd#hehHe'))</pre>
 ${lText.htmlescape(JSON.stringify(lText.parseUrl('HtTp://uSer:pAss@sUBDom.TopdOm23.CoM:29819/Adm@xw2Ksiz/dszas?Mdi=KdiMs1&a=JDd#hehHe')))}
+<pre>json_encode(lText.parseUrl('HtTp://uSer:pAss@[::1]:29819/Adm@xw2Ksiz/dszas?Mdi=KdiMs1&a=JDd#hehHe'))</pre>
+${lText.htmlescape(JSON.stringify(lText.parseUrl('HtTp://uSer:pAss@[::1]:29819/Adm@xw2Ksiz/dszas?Mdi=KdiMs1&a=JDd#hehHe')))}
 <pre>json_encode(lText.parseUrl('HtTp://uSer@sUBDom.TopdOm23.CoM/Admx%20w2Ksiz/dszas'))</pre>
 ${lText.htmlescape(JSON.stringify(lText.parseUrl('HtTp://uSer@sUBDom.TopdOm23.CoM/Admx%20w2Ksiz/dszas')))}
 <pre>json_encode(lText.parseUrl('C:\\Windows\\Mi@sc'))</pre>
@@ -3484,16 +3487,21 @@ setInterval(() => {
     }
 
     public async wsClient(): Promise<string> {
-        const ws = await lWs.connect('ws' + (this._config.const.https ? 's' : '') + '://' + this._config.const.host + '/test', {
-            'mproxy': this._get['ac'] === 'mproxy' ? {
-                'url': `ws${this._config.const.https ? 's' : ''}://${this._config.const.host}/mproxy`,
-                'auth': '123456'
-            } : undefined
-        });
+        const host = (this._get['ac'] === 'hosts') ? 'www.maiyun.net:' + this._config.const.hostport : this._config.const.host;
+        const ws = await lWs.connect(
+            'ws' + (this._config.const.https ? 's' : '') + '://' + host + '/test',
+            {
+                'mproxy': this._get['ac'] === 'mproxy' ? {
+                    'url': `ws${this._config.const.https ? 's' : ''}://${this._config.const.host}/mproxy`,
+                    'auth': '123456'
+                } : undefined,
+                'hosts': (this._get['ac'] === 'hosts') ? '127.0.0.1' : undefined
+            }
+        );
         if (!ws) {
-            return '<div>Connect "ws' + (this._config.const.https ? 's' : '') + '://' + this._config.const.host + '/test" failed.</div><br>' + this._getEnd();
+            return '<div>Connect "ws' + (this._config.const.https ? 's' : '') + '://' + host + '/test" failed.</div><br>' + this._getEnd();
         }
-        const echo: string[] = ['<div>Connected "ws' + (this._config.const.https ? 's' : '') + '://' + this._config.const.host + '/test".</div>'];
+        const echo: string[] = ['<div>Connected "ws' + (this._config.const.https ? 's' : '') + '://' + host + '/test".</div>'];
         // --- 绑定事件 ---
         await new Promise<void>((resolve) => {
             (async () => {

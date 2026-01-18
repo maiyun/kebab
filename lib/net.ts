@@ -341,7 +341,7 @@ export function setCookie(cookie: Record<string, ICookie>, name: string, value: 
 } = {}): void {
     const tim = lTime.stamp();
     const ttl = opt.ttl ?? 0;
-    domain = domain.split(':')[0];
+    domain = lText.parseHost(domain).hostname;
     const domainN = domain.startsWith('.') ? domain.slice(1) : domain;
 
     let exp = -1992199400;
@@ -395,7 +395,7 @@ async function buildCookieObject(
         // --- 获取定义的 domain ---
         let domain = '', domainN = '';
         if (cookieTmp['domain']) {
-            cookieTmp['domain'] = cookieTmp['domain'].split(':')[0];
+            cookieTmp['domain'] = lText.parseHost(cookieTmp['domain']).hostname;
             if (!(cookieTmp['domain'].startsWith('.'))) {
                 domain = '.' + cookieTmp['domain'];
                 domainN = cookieTmp['domain'];
@@ -481,7 +481,7 @@ export function buildCookieQuery(cookie: Record<string, ICookie>, uri: kebab.IUr
             continue;
         }
         uri.path ??= '/';
-        if (item.secure && (uri.protocol === 'https')) {
+        if (item.secure && (uri.protocol !== 'https:')) {
             continue;
         }
         // --- 判断 path 是否匹配 ---

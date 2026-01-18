@@ -22,6 +22,32 @@ export function sizeFormat(size: number, spliter: string = ' '): string {
 }
 
 /**
+ * --- 解析主机名和端口号 ---
+ * @param host 如 example.com:8080、[::1]:8080
+ */
+export function parseHost(host: string): {
+    'rawHostname': string;
+    'hostname': string;
+    'port': string | null;
+} {
+    const rtn = {
+        'rawHostname': host,
+        'hostname': host,
+        'port': null as string | null,
+    };
+    const match = /^(\[?([\w:.-]+?)\]?)(:([0-9]{1,}))?$/.exec(host);
+    if (!match) {
+        return rtn;
+    }
+    rtn.rawHostname = match[1];
+    rtn.hostname = match[2];
+    if (match[4]) {
+        rtn.port = match[4];
+    }
+    return rtn;
+}
+
+/**
  * --- 格式化一段 URL ---
  * @param url
  */
@@ -82,16 +108,11 @@ export function parseUrl(url: string): kebab.IUrlParse {
             url = url.slice(auth + 1);
         }
         if (url) {
-            const port = url.indexOf(':');
-            if (port > -1) {
-                rtn['hostname'] = url.slice(0, port).toLowerCase();
-                rtn['port'] = url.slice(port + 1);
-                rtn['host'] = rtn['hostname'] + (rtn['port'] ? ':' + rtn['port'] : '');
-            }
-            else {
-                rtn['hostname'] = url.toLowerCase();
-                rtn['host'] = rtn['hostname'];
-            }
+            // --- 只剩下 host 了 ---
+            const hostInfo = parseHost(url);
+            rtn['hostname'] = hostInfo.hostname.toLowerCase();
+            rtn['port'] = hostInfo.port;
+            rtn['host'] = url;
         }
     }
     else {
@@ -210,7 +231,7 @@ export const REGEXP_IPV6 = /^(\w*?:){2,7}[\w.]*$/i;
  * @param ip
  */
 export function isIPv6(ip: string): boolean {
-    return REGEXP_IPV6.test(ip + ':');
+    return REGEXP_IPV6.test(ip);
 }
 
 export const REGEXP_DOMAIN = /^.+?\.((?![0-9]).)+$/i;

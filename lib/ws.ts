@@ -147,13 +147,21 @@ export class Socket {
         const ca: string | null = puri ?
             puri.protocol === 'wss:' ? await lNet.getCa() : null :
             uri.protocol === 'wss:' ? await lNet.getCa() : null;
-        if (!ca && (typeof hosts === 'string' ? hosts : hosts[uri.hostname])) {
-            // --- 没有 ca，但是要设置 额外的 host ---
-            headers['host'] = uri.hostname + (uri.port ? ':' + uri.port : '');
+        if (typeof hosts === 'string' ? hosts : hosts[uri.hostname]) {
+            // --- 要设置额外的 host ---
+            headers['host'] = uri.hostname;
+            if (uri.port) {
+                if (lText.isIPv6(headers['host'])) {
+                    headers['host'] = `[${headers['host']}]`;
+                }
+                headers['host'] += ':' + uri.port;
+            }
         }
         try {
             // --- 重定义 IP ---
             const host = puri?.hostname ?? uri.hostname ?? '';
+            /** --- 真正的连接远程 IP / HOST --- */
+            const rhost = typeof hosts === 'string' ? hosts : hosts[host];
             const port = (puri ? puri.port : uri.port) ?? 443;
             const path = puri ? puri.path + (puri.path?.includes('?') ? '&' : '?') + lText.queryStringify({
                 'url': u,
@@ -161,7 +169,7 @@ export class Socket {
             }) : uri.path;
             const cli = ca ?
                 liws.createSecureClient({
-                    'hostname': (typeof hosts === 'string' ? hosts : hosts[host]) || host,
+                    'hostname': rhost || host,
                     'port': port,
                     'path': path,
                     'servername': host,
@@ -172,7 +180,7 @@ export class Socket {
                     'ca': ca,
                 }) :
                 liws.createClient({
-                    'hostname': (typeof hosts === 'string' ? hosts : hosts[host]) || host,
+                    'hostname': rhost || host,
                     'port': port,
                     'path': path,
                     'headers': headers,
