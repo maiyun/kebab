@@ -3,8 +3,8 @@
  * Date: 2019-5-2 21:03:42
  * Last: 2020-3-7 10:33:17, 2022-07-22 13:40:10, 2022-09-06 22:40:58, 2024-2-7 01:44:59, 2024-7-2 15:17:09, 2025-6-13 13:06:43, 2025-12-5 13:15:03
  */
+import cluster from 'cluster';
 import * as os from 'os';
-import * as cluster from 'cluster';
 import * as http from 'http';
 // --- 库和定义 ---
 import * as kebab from '#kebab/index.js';
@@ -31,7 +31,7 @@ const workerList: Record<string, {
  */
 async function run(): Promise<void> {
     // --- 设置 cluster 调度策略为 round-robin（在支持的平台上启用负载均衡） ---
-    cluster.default.schedulingPolicy = cluster.default.SCHED_RR;
+    cluster.schedulingPolicy = cluster.SCHED_RR;
     // --- 读取配置文件 ---
     const configContent = await lFs.getContent(kebab.CONF_CWD + 'config.json', 'utf8');
     if (!configContent) {
@@ -57,10 +57,10 @@ async function run(): Promise<void> {
     for (let i = 0; i < cpuLengthMax; ++i) {
         await createChildProcess(i);
     }
-    cluster.default.on('listening', function(worker, address) {
+    cluster.on('listening', function(worker: cluster.Worker, address: { 'address': string; 'port': number; 'addressType': number | string; }) {
         // --- 子进程开始监听 ---
         lCore.display(`[master] Listening: worker ${worker.process.pid ?? 'undefined'}, Address: ${address.address}:${address.port}.`);
-    }).on('exit', function(worker, code) {
+    }).on('exit', function(worker: cluster.Worker, code: number) {
         (async function() {
             if (!worker.process.pid) {
                 return;
@@ -431,7 +431,7 @@ async function checkWorkerLost(): Promise<void> {
  * @param cpu CPU ID
  */
 async function createChildProcess(cpu: number): Promise<void> {
-    const worker = cluster.default.fork();
+    const worker = cluster.fork();
     if (!worker.process.pid) {
         return;
     }
@@ -448,7 +448,7 @@ async function createChildProcess(cpu: number): Promise<void> {
         lCore.display(`[master] Worker ${worker.process.pid} start on cpu #${cpu}.`);
     }
     // --- 监听子进程发来的讯息，并扩散给所有子进程 ---
-    worker.on('message', function(msg) {
+    worker.on('message', function(msg: kebab.Json) {
         (async function() {
             switch (msg.action) {
                 case 'reload': {

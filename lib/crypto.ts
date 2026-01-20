@@ -47,8 +47,9 @@ export function generateKeyPair(type: string, options: {
         };
         options.privateKeyEncoding.type ??= 'pkcs8';
         options.privateKeyEncoding.format ??= 'pem';
+        /** --- 由于 generateKeyPair 重载过多且 options 为 any，此处参数也采用 any --- */
         crypto.generateKeyPair(type as any, options as any, (
-            err: Error | null, publicKey: string | Buffer, privateKey: string | Buffer
+            err: Error | null, publicKey: any, privateKey: any
         ) => {
             resolve({
                 'private': privateKey,
