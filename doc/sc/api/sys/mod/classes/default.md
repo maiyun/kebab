@@ -212,7 +212,7 @@ Defined in: [sys/mod.ts:68](https://github.com/maiyunnet/kebab/blob/master/sys/m
 
 > `protected` **\_keyGenerator**(): `string`
 
-Defined in: [sys/mod.ts:1752](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1752)
+Defined in: [sys/mod.ts:1758](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1758)
 
 当 _key 不为空时，则依据继承此方法的方法自动生成填充 key
 
@@ -234,7 +234,7 @@ Defined in: [sys/mod.ts:1752](https://github.com/maiyunnet/kebab/blob/master/sys
 
 > **all**(): `Promise`\<`false` \| [`Rows`](Rows.md)\<`Mod`\>\>
 
-Defined in: [sys/mod.ts:1119](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1119)
+Defined in: [sys/mod.ts:1125](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1125)
 
 ##### Returns
 
@@ -244,7 +244,7 @@ Defined in: [sys/mod.ts:1119](https://github.com/maiyunnet/kebab/blob/master/sys
 
 > **all**(`key`): `Promise`\<`false` \| `Record`\<`string`, `Mod`\>\>
 
-Defined in: [sys/mod.ts:1120](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1120)
+Defined in: [sys/mod.ts:1126](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1126)
 
 ##### Parameters
 
@@ -270,7 +270,7 @@ Defined in: [sys/mod.ts:1120](https://github.com/maiyunnet/kebab/blob/master/sys
 
 > **allArray**(): `Promise`\<`false` \| `Record`\<`string`, `any`\>[]\>
 
-Defined in: [sys/mod.ts:1294](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1294)
+Defined in: [sys/mod.ts:1300](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1300)
 
 ##### Returns
 
@@ -280,7 +280,7 @@ Defined in: [sys/mod.ts:1294](https://github.com/maiyunnet/kebab/blob/master/sys
 
 > **allArray**(`key`): `Promise`\<`false` \| `Record`\<`string`, `Record`\<`string`, `any`\>\>\>
 
-Defined in: [sys/mod.ts:1295](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1295)
+Defined in: [sys/mod.ts:1301](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1301)
 
 ##### Parameters
 
@@ -298,7 +298,7 @@ Defined in: [sys/mod.ts:1295](https://github.com/maiyunnet/kebab/blob/master/sys
 
 > **append**(`sql`): `this`
 
-Defined in: [sys/mod.ts:1661](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1661)
+Defined in: [sys/mod.ts:1667](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1667)
 
 在 sql 最后追加字符串
 
@@ -318,7 +318,7 @@ Defined in: [sys/mod.ts:1661](https://github.com/maiyunnet/kebab/blob/master/sys
 
 > **by**(`c`, `d`): `this`
 
-Defined in: [sys/mod.ts:1617](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1617)
+Defined in: [sys/mod.ts:1623](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1623)
 
 ORDER BY
 
@@ -346,7 +346,7 @@ ORDER BY
 
 > **contain**(`contain`): `this`
 
-Defined in: [sys/mod.ts:1670](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1670)
+Defined in: [sys/mod.ts:1676](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1676)
 
 设置闭包含数据
 
@@ -374,7 +374,7 @@ Defined in: [sys/mod.ts:1670](https://github.com/maiyunnet/kebab/blob/master/sys
 
 > **count**(): `Promise`\<`number`\>
 
-Defined in: [sys/mod.ts:1483](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1483)
+Defined in: [sys/mod.ts:1489](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1489)
 
 根据当前条件，筛选出当前条目该有的数据条数
 
@@ -388,7 +388,7 @@ Defined in: [sys/mod.ts:1483](https://github.com/maiyunnet/kebab/blob/master/sys
 
 > **countSql**(): `string`
 
-Defined in: [sys/mod.ts:1503](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1503)
+Defined in: [sys/mod.ts:1509](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1509)
 
 获取当前条件下的 count 的 SQL 语句
 
@@ -418,7 +418,7 @@ true-成功,false-报错,null-唯一键非 _$key 键冲突
 
 > **crossJoin**(`f`, `s`, `index`, `pre`): `this`
 
-Defined in: [sys/mod.ts:1577](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1577)
+Defined in: [sys/mod.ts:1583](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1583)
 
 cross join 方法
 
@@ -466,7 +466,7 @@ ON 信息
 
 > **explain**(`all?`): `Promise`\<`string` \| `false`\>
 
-Defined in: [sys/mod.ts:1416](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1416)
+Defined in: [sys/mod.ts:1422](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1422)
 
 ##### Parameters
 
@@ -482,7 +482,7 @@ Defined in: [sys/mod.ts:1416](https://github.com/maiyunnet/kebab/blob/master/sys
 
 > **explain**(`all`): `Promise`\<`false` \| `Record`\<`string`, `any`\>\>
 
-Defined in: [sys/mod.ts:1417](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1417)
+Defined in: [sys/mod.ts:1423](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1423)
 
 ##### Parameters
 
@@ -500,7 +500,7 @@ Defined in: [sys/mod.ts:1417](https://github.com/maiyunnet/kebab/blob/master/sys
 
 > **filter**(`s`): `this`
 
-Defined in: [sys/mod.ts:1595](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1595)
+Defined in: [sys/mod.ts:1601](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1601)
 
 筛选器
 
@@ -534,7 +534,7 @@ Defined in: [sys/mod.ts:1595](https://github.com/maiyunnet/kebab/blob/master/sys
 
 > **first**(`lock`, `array`): `Promise`\<`false` \| `Record`\<`string`, `any`\> \| `null`\>
 
-Defined in: [sys/mod.ts:1008](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1008)
+Defined in: [sys/mod.ts:1014](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1014)
 
 ##### Parameters
 
@@ -554,7 +554,7 @@ Defined in: [sys/mod.ts:1008](https://github.com/maiyunnet/kebab/blob/master/sys
 
 > **first**(`lock?`, `array?`): `Promise`\<`false` \| `Mod` & `Record`\<`string`, `any`\> \| `null`\>
 
-Defined in: [sys/mod.ts:1012](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1012)
+Defined in: [sys/mod.ts:1018](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1018)
 
 ##### Parameters
 
@@ -576,7 +576,7 @@ Defined in: [sys/mod.ts:1012](https://github.com/maiyunnet/kebab/blob/master/sys
 
 > **firstArray**(`lock`): `Promise`\<`false` \| `Record`\<`string`, `any`\> \| `null`\>
 
-Defined in: [sys/mod.ts:1052](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1052)
+Defined in: [sys/mod.ts:1058](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1058)
 
 获取数据库第一个原生对象
 
@@ -598,7 +598,7 @@ Defined in: [sys/mod.ts:1052](https://github.com/maiyunnet/kebab/blob/master/sys
 
 > **format**(`sql?`, `data?`): `string`
 
-Defined in: [sys/mod.ts:1697](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1697)
+Defined in: [sys/mod.ts:1703](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1703)
 
 获取带 data 的 sql 语句
 
@@ -626,7 +626,7 @@ sql 语句
 
 > **fullJoin**(`f`, `s`, `index`, `pre`): `this`
 
-Defined in: [sys/mod.ts:1565](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1565)
+Defined in: [sys/mod.ts:1571](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1571)
 
 full join 方法
 
@@ -688,7 +688,7 @@ Defined in: [sys/mod.ts:811](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 > **getData**(): `any`[]
 
-Defined in: [sys/mod.ts:1688](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1688)
+Defined in: [sys/mod.ts:1694](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1694)
 
 获取全部 data
 
@@ -702,7 +702,7 @@ Defined in: [sys/mod.ts:1688](https://github.com/maiyunnet/kebab/blob/master/sys
 
 > **getSql**(): `string`
 
-Defined in: [sys/mod.ts:1681](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1681)
+Defined in: [sys/mod.ts:1687](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1687)
 
 获取 sql 语句
 
@@ -716,7 +716,7 @@ Defined in: [sys/mod.ts:1681](https://github.com/maiyunnet/kebab/blob/master/sys
 
 > **group**(`c`): `this`
 
-Defined in: [sys/mod.ts:1626](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1626)
+Defined in: [sys/mod.ts:1632](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1632)
 
 GROUP BY
 
@@ -738,7 +738,7 @@ GROUP BY
 
 > **having**(`s`): `this`
 
-Defined in: [sys/mod.ts:1586](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1586)
+Defined in: [sys/mod.ts:1592](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1592)
 
 筛选器
 
@@ -760,7 +760,7 @@ Defined in: [sys/mod.ts:1586](https://github.com/maiyunnet/kebab/blob/master/sys
 
 > **innerJoin**(`f`, `s`, `index`, `pre`): `this`
 
-Defined in: [sys/mod.ts:1553](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1553)
+Defined in: [sys/mod.ts:1559](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1559)
 
 inner join 方法
 
@@ -800,7 +800,7 @@ ON 信息
 
 > **join**(`f`, `s`, `type`, `index`, `pre`): `this`
 
-Defined in: [sys/mod.ts:1517](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1517)
+Defined in: [sys/mod.ts:1523](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1523)
 
 #### Parameters
 
@@ -844,7 +844,7 @@ ON 信息
 
 > **langText**(`col`, `lang`): `string`
 
-Defined in: [sys/mod.ts:1732](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1732)
+Defined in: [sys/mod.ts:1738](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1738)
 
 获取字段的可用语种文本
 
@@ -872,7 +872,7 @@ Defined in: [sys/mod.ts:1732](https://github.com/maiyunnet/kebab/blob/master/sys
 
 > **leftJoin**(`f`, `s`, `index`, `pre`): `this`
 
-Defined in: [sys/mod.ts:1529](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1529)
+Defined in: [sys/mod.ts:1535](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1535)
 
 left join 方法
 
@@ -912,7 +912,7 @@ ON 信息
 
 > **limit**(`a`, `b`): `this`
 
-Defined in: [sys/mod.ts:1639](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1639)
+Defined in: [sys/mod.ts:1645](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1645)
 
 LIMIT
 
@@ -940,7 +940,7 @@ LIMIT
 
 > **page**(`count`, `page`): `this`
 
-Defined in: [sys/mod.ts:1650](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1650)
+Defined in: [sys/mod.ts:1656](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1656)
 
 分页
 
@@ -968,7 +968,7 @@ Defined in: [sys/mod.ts:1650](https://github.com/maiyunnet/kebab/blob/master/sys
 
 > **refresh**(`lock`): `Promise`\<`boolean` \| `null`\>
 
-Defined in: [sys/mod.ts:933](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L933)
+Defined in: [sys/mod.ts:939](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L939)
 
 刷新当前模型获取最新数据
 
@@ -990,7 +990,7 @@ Defined in: [sys/mod.ts:933](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 > **remove**(): `Promise`\<`boolean`\>
 
-Defined in: [sys/mod.ts:990](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L990)
+Defined in: [sys/mod.ts:996](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L996)
 
 移除本条目
 
@@ -1004,7 +1004,7 @@ Defined in: [sys/mod.ts:990](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 > **rightJoin**(`f`, `s`, `index`, `pre`): `this`
 
-Defined in: [sys/mod.ts:1541](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1541)
+Defined in: [sys/mod.ts:1547](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1547)
 
 right join 方法
 
@@ -1044,7 +1044,7 @@ ON 信息
 
 > **save**(`where?`): `Promise`\<`boolean`\>
 
-Defined in: [sys/mod.ts:961](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L961)
+Defined in: [sys/mod.ts:967](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L967)
 
 更新 set 的数据到数据库，有未保存数据时才保存
 
@@ -1136,7 +1136,7 @@ Defined in: [sys/mod.ts:773](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 > **toArray**\<`TC`\>(): [`TOnlyProperties`](../type-aliases/TOnlyProperties.md)\<`InstanceType`\<`TC`\>\> & `Record`\<`string`, `any`\>
 
-Defined in: [sys/mod.ts:1704](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1704)
+Defined in: [sys/mod.ts:1710](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1710)
 
 获取值对象，获取的是新创建的数组
 
@@ -1156,7 +1156,7 @@ Defined in: [sys/mod.ts:1704](https://github.com/maiyunnet/kebab/blob/master/sys
 
 > **total**(`f`): `Promise`\<`number`\>
 
-Defined in: [sys/mod.ts:1459](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1459)
+Defined in: [sys/mod.ts:1465](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1465)
 
 获取总条数，自动抛弃 LIMIT，仅用于获取数据的情况（select）
 
@@ -1176,7 +1176,7 @@ Defined in: [sys/mod.ts:1459](https://github.com/maiyunnet/kebab/blob/master/sys
 
 > **union**(`f`, `type`): `this`
 
-Defined in: [sys/mod.ts:1063](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1063)
+Defined in: [sys/mod.ts:1069](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1069)
 
 联合查询表数据
 
@@ -1204,7 +1204,7 @@ Defined in: [sys/mod.ts:1063](https://github.com/maiyunnet/kebab/blob/master/sys
 
 > **unionAll**(`f`): `this`
 
-Defined in: [sys/mod.ts:1093](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1093)
+Defined in: [sys/mod.ts:1099](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1099)
 
 所有联合查询表数据
 
@@ -1226,7 +1226,7 @@ Defined in: [sys/mod.ts:1093](https://github.com/maiyunnet/kebab/blob/master/sys
 
 > **unsaved**(): `boolean`
 
-Defined in: [sys/mod.ts:1723](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1723)
+Defined in: [sys/mod.ts:1729](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1729)
 
 当前是否设置了未保存 --=
 
@@ -1240,7 +1240,7 @@ Defined in: [sys/mod.ts:1723](https://github.com/maiyunnet/kebab/blob/master/sys
 
 > **updates**(): `Record`\<`string`, `any`\>
 
-Defined in: [sys/mod.ts:1712](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1712)
+Defined in: [sys/mod.ts:1718](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1718)
 
 获取当前设置要提交的数据
 
@@ -1254,7 +1254,7 @@ Defined in: [sys/mod.ts:1712](https://github.com/maiyunnet/kebab/blob/master/sys
 
 > **upsert**(`conflict`): `Promise`\<`boolean`\>
 
-Defined in: [sys/mod.ts:903](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L903)
+Defined in: [sys/mod.ts:909](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L909)
 
 插入数据，如果存在则更新（UPSERT）
 
@@ -1276,7 +1276,7 @@ Defined in: [sys/mod.ts:903](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 > **where**(`s`): `this`
 
-Defined in: [sys/mod.ts:1606](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1606)
+Defined in: [sys/mod.ts:1612](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1612)
 
 是 filter 的别名
 

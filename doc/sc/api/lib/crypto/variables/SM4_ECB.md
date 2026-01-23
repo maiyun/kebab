@@ -8,6 +8,6 @@
 
 > `const` **SM4\_ECB**: `"sm4-ecb"` = `'sm4-ecb'`
 
-Defined in: [lib/crypto.ts:153](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L153)
+Defined in: [lib/crypto.ts:154](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L154)
 
 SM4 如果未设置 iv，则默认这个

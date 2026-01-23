@@ -6,7 +6,7 @@
 
 # Interface: IModUnionItem
 
-Defined in: [sys/mod.ts:1766](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1766)
+Defined in: [sys/mod.ts:1772](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1772)
 
 ## Properties
 
@@ -14,7 +14,7 @@ Defined in: [sys/mod.ts:1766](https://github.com/maiyunnet/kebab/blob/master/sys
 
 > **field**: `string`
 
-Defined in: [sys/mod.ts:1767](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1767)
+Defined in: [sys/mod.ts:1773](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1773)
 
 ***
 
@@ -22,4 +22,4 @@ Defined in: [sys/mod.ts:1767](https://github.com/maiyunnet/kebab/blob/master/sys
 
 > `optional` **where**: `any`
 
-Defined in: [sys/mod.ts:1768](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1768)
+Defined in: [sys/mod.ts:1774](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1774)

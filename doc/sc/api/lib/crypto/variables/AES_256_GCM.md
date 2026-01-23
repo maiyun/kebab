@@ -8,6 +8,6 @@
 
 > `const` **AES\_256\_GCM**: `"aes-256-gcm"` = `'aes-256-gcm'`
 
-Defined in: [lib/crypto.ts:150](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L150)
+Defined in: [lib/crypto.ts:151](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L151)
 
 非流直接使用 GCM

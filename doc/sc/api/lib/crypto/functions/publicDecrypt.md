@@ -8,7 +8,7 @@
 
 > **publicDecrypt**(`key`, `buffer`): `Buffer`
 
-Defined in: [lib/crypto.ts:124](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L124)
+Defined in: [lib/crypto.ts:125](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L125)
 
 非对称公钥解密
 

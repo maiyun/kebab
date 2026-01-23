@@ -8,7 +8,7 @@
 
 > **cipherDecrypt**(`encrypt`, `key`, `iv`, `method`, `output`): `string` \| `false` \| `Buffer`\<`ArrayBufferLike`\>
 
-Defined in: [lib/crypto.ts:276](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L276)
+Defined in: [lib/crypto.ts:277](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L277)
 
 cipher 解密
 

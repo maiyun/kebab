@@ -16,13 +16,13 @@ Defined in: [lib/net/formdata.ts:22](https://github.com/maiyunnet/kebab/blob/mas
 
 ### Constructor
 
-> **new FormData**(`opts?`): `FormData`
+> **new FormData**(`options?`): `FormData`
 
-Defined in: node\_modules/@types/node/stream.d.ts:163
+Defined in: node\_modules/@types/node/stream.d.ts:98
 
 #### Parameters
 
-##### opts?
+##### options?
 
 `ReadableOptions`\<`Readable`\>
 

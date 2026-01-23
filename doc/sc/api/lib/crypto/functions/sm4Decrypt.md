@@ -10,7 +10,7 @@
 
 > **sm4Decrypt**(`encrypt`, `key`, `iv`, `method`, `output`): `false` \| `Buffer`\<`ArrayBufferLike`\>
 
-Defined in: [lib/crypto.ts:372](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L372)
+Defined in: [lib/crypto.ts:373](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L373)
 
 SM4 解密
 
@@ -52,7 +52,7 @@ SM4 解密
 
 > **sm4Decrypt**(`encrypt`, `key`, `iv?`, `method?`, `output?`): `string` \| `false`
 
-Defined in: [lib/crypto.ts:373](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L373)
+Defined in: [lib/crypto.ts:374](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L374)
 
 SM4 解密
 

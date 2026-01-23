@@ -8,4 +8,4 @@
 
 > `const` **SM4\_CBC**: `"sm4-cbc"` = `'sm4-cbc'`
 
-Defined in: [lib/crypto.ts:154](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L154)
+Defined in: [lib/crypto.ts:155](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L155)
