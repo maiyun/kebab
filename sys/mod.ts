@@ -867,8 +867,11 @@ export default class Mod {
                 }
                 // --- 未处理的错误 ---
                 const service = this._db.getService();
-                lCore.debug('[MOD][create0][' + cstr._$table + ']', service !== null ? lDb.ESERVICE[service] : 'NONE', r);
                 lCore.log(this._ctr ?? {}, '[MOD][create0][' + cstr._$table + '] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+                if (lCore.globalConfig.debug) {
+                    lCore.debug('[MOD][create0][' + cstr._$table + ']', service !== null ? lDb.ESERVICE[service] : 'NONE', r);
+                    lCore.debug(this._sql.format());
+                }
                 return false;
             }
         }
@@ -878,8 +881,11 @@ export default class Mod {
             r = await this._db.execute(this._sql.getSql(), this._sql.getData());
             if (r.error) {
                 if (r.error.errno !== 1062) {
-                    lCore.debug('[MOD][create1][' + cstr._$table + ']', r);
                     lCore.log(this._ctr ?? {}, '[MOD][create1][' + cstr._$table + '] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+                    if (lCore.globalConfig.debug) {
+                        lCore.debug('[MOD][create1][' + cstr._$table + ']', r);
+                        lCore.debug(this._sql.format());
+                    }
                     return false;
                 }
                 return null;
