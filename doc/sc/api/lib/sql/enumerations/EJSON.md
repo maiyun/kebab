@@ -18,7 +18,7 @@ JSON 查询操作符
 
 Defined in: [lib/sql.ts:25](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L25)
 
-被包含 (MySQL: JSON_CONTAINS, PG: <@)
+被包含值 (MySQL: JSON_CONTAINS, PG: <@)
 
 ***
 
@@ -28,7 +28,7 @@ Defined in: [lib/sql.ts:25](https://github.com/maiyunnet/kebab/blob/master/lib/s
 
 Defined in: [lib/sql.ts:23](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L23)
 
-包含 (MySQL: JSON_CONTAINS, PG: @>)
+包含值 (MySQL: JSON_CONTAINS, PG: @>)
 
 ***
 
@@ -38,7 +38,7 @@ Defined in: [lib/sql.ts:23](https://github.com/maiyunnet/kebab/blob/master/lib/s
 
 Defined in: [lib/sql.ts:31](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L31)
 
-存在所有 Key (MySQL: JSON_CONTAINS_PATH all, PG: ?&)
+存在所有 Key 不含值 (MySQL: JSON_CONTAINS_PATH all, PG: ?&)
 
 ***
 
@@ -48,7 +48,7 @@ Defined in: [lib/sql.ts:31](https://github.com/maiyunnet/kebab/blob/master/lib/s
 
 Defined in: [lib/sql.ts:29](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L29)
 
-存在任意 Key (MySQL: JSON_CONTAINS_PATH one, PG: ?|)
+存在任意 Key 不含值 (MySQL: JSON_CONTAINS_PATH one, PG: ?|)
 
 ***
 
@@ -58,4 +58,14 @@ Defined in: [lib/sql.ts:29](https://github.com/maiyunnet/kebab/blob/master/lib/s
 
 Defined in: [lib/sql.ts:27](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L27)
 
-存在 Key (MySQL: JSON_CONTAINS_PATH one, PG: ?)
+存在 Key 不含值 (MySQL: JSON_CONTAINS_PATH one, PG: ?)
+
+***
+
+### OVERLAPS
+
+> **OVERLAPS**: `"json_overlaps"`
+
+Defined in: [lib/sql.ts:33](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L33)
+
+简单数组重叠 (MySQL: JSON_OVERLAPS, PG: &&)
