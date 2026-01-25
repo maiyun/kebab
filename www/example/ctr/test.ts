@@ -2989,6 +2989,14 @@ Result:<pre id="result">Nothing.</pre>`);
                 echo.push(`<pre>sql.select('*', 'user').where([['info', lSql.EJSON.HAS_ALL_KEYS, ['age', 'name']]]);</pre>
 <b>getSql() :</b> ${s}<br>
 <b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
+<b>format() :</b> ${sql.format(s, sd)}<hr>`);
+
+                // --- overlaps ---
+                s = sql.select('*', 'test').where([['tags', lSql.EJSON.OVERLAPS, ['a', 'b']]]).getSql();
+                sd = sql.getData();
+                echo.push(`<pre>sql.select('*', 'test').where([['tags', lSql.EJSON.OVERLAPS, ['a', 'b']]]);</pre>
+<b>getSql() :</b> ${s}<br>
+<b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
 <b>format() :</b> ${sql.format(s, sd)}`);
                 break;
             }

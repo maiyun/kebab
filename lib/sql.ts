@@ -19,16 +19,18 @@ export enum ESERVICE {
 
 /** --- JSON 查询操作符 --- */
 export enum EJSON {
-    /** --- 包含 (MySQL: JSON_CONTAINS, PG: @>) --- */
+    /** --- 包含值 (MySQL: JSON_CONTAINS, PG: @>) --- */
     'CONTAINS' = 'json',
-    /** --- 被包含 (MySQL: JSON_CONTAINS, PG: <@) --- */
+    /** --- 被包含值 (MySQL: JSON_CONTAINS, PG: <@) --- */
     'CONTAINED_BY' = 'json_in',
-    /** --- 存在 Key (MySQL: JSON_CONTAINS_PATH one, PG: ?) --- */
+    /** --- 存在 Key 不含值 (MySQL: JSON_CONTAINS_PATH one, PG: ?) --- */
     'HAS_KEY' = 'json_key',
-    /** --- 存在任意 Key (MySQL: JSON_CONTAINS_PATH one, PG: ?|) --- */
+    /** --- 存在任意 Key 不含值 (MySQL: JSON_CONTAINS_PATH one, PG: ?|) --- */
     'HAS_ANY_KEYS' = 'json_any',
-    /** --- 存在所有 Key (MySQL: JSON_CONTAINS_PATH all, PG: ?&) --- */
+    /** --- 存在所有 Key 不含值 (MySQL: JSON_CONTAINS_PATH all, PG: ?&) --- */
     'HAS_ALL_KEYS' = 'json_all',
+    /** --- 简单数组重叠 (MySQL: JSON_OVERLAPS, PG: &&) --- */
+    'OVERLAPS' = 'json_overlaps',
 }
 
 /** --- field 用 token --- */
@@ -500,7 +502,7 @@ export class Sql {
                         data.push(...v[1]);
                     }
                 }
-                else if (typeof v[1] === 'string' && ['json', 'json_in', 'json_key', 'json_any', 'json_all'].includes(v[1].toLowerCase())) {
+                else if (typeof v[1] === 'string' && ['json', 'json_in', 'json_key', 'json_any', 'json_all', 'json_overlaps'].includes(v[1].toLowerCase())) {
                     // --- json ---
                     const op = v[1].toLowerCase();
                     const nv = v[2];
@@ -522,6 +524,16 @@ export class Sql {
                         else {
                             sql += `${this.field(v[0])} <@ ${this._placeholder()} AND `;
                             data.push(lText.stringifyJson(nv));
+                        }
+                    }
+                    else if (op === 'json_overlaps') {
+                        if (this._service === ESERVICE.MYSQL) {
+                            sql += `JSON_OVERLAPS(${this.field(v[0])}, ${this._placeholder()}) AND `;
+                            data.push(lText.stringifyJson(nv));
+                        }
+                        else {
+                            sql += `${this.field(v[0])} && ${this._placeholder()} AND `;
+                            data.push(nv);
                         }
                     }
                     else {
