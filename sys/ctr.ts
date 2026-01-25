@@ -3,9 +3,9 @@
  * Date: 2020-3-14 17:24:38
  * Last: 2020-3-30 15:31:40, 2022-07-22 16:59:00, 2022-09-12 23:51:56, 2022-09-23 15:53:58, 2022-12-29 01:18:08, 2023-2-28 20:07:57, 2023-12-27 18:39:35, 2024-3-1 19:38:53, 2024-4-9 16:03:58, 2025-2-12 18:55:44, 2025-6-12 16:56:08
  */
+import ejs from 'ejs';
 import * as http from 'http';
 import * as http2 from 'http2';
-import * as ejs from 'ejs';
 import * as kebab from '#kebab/index.js';
 import * as lCore from '#kebab/lib/core.js';
 import * as lFs from '#kebab/lib/fs.js';

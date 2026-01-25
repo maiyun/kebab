@@ -805,6 +805,8 @@ export function log(opt: sCtr.Ctr | ILogOptions, msg: string, fend: string = '')
             hostname = 'system';
         }
 
+        hostname = hostname.replace(/:/g, '_');
+
         const realIp = req?.socket.remoteAddress ?? '';
         const clientIp = req ? ip(headers, req) : '';
 
