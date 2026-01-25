@@ -1385,7 +1385,7 @@ index/variables/VER.md
 
 # Variable: VER
 
-> `const` **VER**: `"7.8.0"` = `'7.8.0'`
+> `const` **VER**: `"7.8.1"` = `'7.8.1'`
 
 Defined in: [index.ts:10](https://github.com/maiyunnet/kebab/blob/master/index.ts#L10)
 
@@ -2711,7 +2711,7 @@ lib/core/functions/clone.md
 
 > **clone**\<`T`\>(`obj`): `T`
 
-Defined in: [lib/core.ts:944](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L944)
+Defined in: [lib/core.ts:946](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L946)
 
 完整的克隆一份数组/对象
 
@@ -2775,7 +2775,7 @@ lib/core/functions/debug.md
 
 > **debug**(`message?`, ...`optionalParams?`): `void`
 
-Defined in: [lib/core.ts:978](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L978)
+Defined in: [lib/core.ts:980](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L980)
 
 打印调试信息，线上环境不会打印
 
@@ -2810,7 +2810,7 @@ lib/core/functions/display.md
 
 > **display**(`message?`, ...`optionalParams?`): `void`
 
-Defined in: [lib/core.ts:991](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L991)
+Defined in: [lib/core.ts:993](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L993)
 
 向控制台直接显示内容，一般情况下禁止使用
 
@@ -2915,7 +2915,7 @@ lib/core/functions/getLog.md
 
 > **getLog**(`opt`): `Promise`\<`false` \| `string`[][] \| `null`\>
 
-Defined in: [lib/core.ts:851](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L851)
+Defined in: [lib/core.ts:853](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L853)
 
 获取日志内容为一个数组
 
@@ -3062,7 +3062,7 @@ lib/core/functions/ls.md
 
 > **ls**(`opt`): `Promise`\<`object`[]\>
 
-Defined in: [lib/core.ts:905](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L905)
+Defined in: [lib/core.ts:907](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L907)
 
 获取目录内文件/文件夹列表
 
@@ -3754,7 +3754,7 @@ lib/core/functions/write.md
 
 > **write**(`res`, `data`): `void`
 
-Defined in: [lib/core.ts:1025](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1025)
+Defined in: [lib/core.ts:1027](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1027)
 
 向 res 发送数据
 
@@ -3789,7 +3789,7 @@ lib/core/functions/writeEventStreamHead.md
 
 > **writeEventStreamHead**(`res`): `void`
 
-Defined in: [lib/core.ts:1013](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1013)
+Defined in: [lib/core.ts:1015](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1015)
 
 ## Parameters
 
@@ -3814,7 +3814,7 @@ lib/core/functions/writeHead.md
 
 > **writeHead**(`res`, `statusCode`, `headers?`): `void`
 
-Defined in: [lib/core.ts:1002](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1002)
+Defined in: [lib/core.ts:1004](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1004)
 
 让 res 发送头部（前提是头部没有被发送才能调用本方法
 
