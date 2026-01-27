@@ -209,20 +209,38 @@ export class Socket {
                 return;
             }
             const buf: Buffer = Buffer.concat(msg.data);
-            this._on.message({
-                'opcode': msg.opcode,
-                'data': buf,
-            }) as any;
+            if (this._on.message) {
+                this._on.message({
+                    'opcode': msg.opcode,
+                    'data': buf,
+                }) as any;
+            }
+            else {
+                this._waitMsg.push({
+                    'opcode': msg.opcode,
+                    'data': buf,
+                });
+            }
         }).on('drain', () => {
-            this._on.drain() as any;
+            this._on.drain?.() as any;
         }).on('error', (e) => {
-            this._on.error(e) as any;
+            if (this._on.error) {
+                this._on.error(e) as any;
+            }
+            else {
+                this._error = e;
+            }
         }).on('end', () => {
-            this._on.end() as any;
+            this._on.end?.() as any;
         }).on('close', () => {
-            this._on.close() as any;
+            if (this._on.close) {
+                this._on.close() as any;
+            }
+            else {
+                this._close = true;
+            }
         }).on('timeout', () => {
-            this._on.timeout() as any;
+            this._on.timeout?.() as any;
         });
     }
 
@@ -238,31 +256,27 @@ export class Socket {
     /** --- 还未开启 close 监听时是不是就已经 close --- */
     private _close: boolean = false;
 
-    /** --- 未绑定自定义监听事件的默认执行函数 --- */
-    private _on = {
+    /** --- 绑定的自定义监听事件（未绑定则默认在 _bindEvent 执行） --- */
+    private _on: {
         /** --- 消息 --- */
-        message: (msg: {
+        message?: (msg: {
             'opcode': EOpcode;
             'data': Buffer;
-        }): void | Promise<void> => {
-            this._waitMsg.push(msg);
-        },
-        drain: (): void | Promise<void> => {
-            // --- nothing ---
-        },
-        error: (e: any): void | Promise<void> => {
-            this._error = e;
-        },
-        close: (): void | Promise<void> => {
-            this._close = true;
-        },
-        end: (): void | Promise<void> => {
-            // --- nothing ---
-        },
-        timeout: (): void | Promise<void> => {
-            // --- nothing ---
-        }
-    };
+        }) => void | Promise<void>;
+        drain?: () => void | Promise<void>;
+        error?: (e: any) => void | Promise<void>;
+        close?: () => void | Promise<void>;
+        end?: () => void | Promise<void>;
+        timeout?: () => void | Promise<void>;
+    } = {
+            /** --- 消息 --- */
+            message: undefined,
+            drain: undefined,
+            error: undefined,
+            close: undefined,
+            end: undefined,
+            timeout: undefined,
+        };
 
     /** --- 绑定监听 --- */
     public on(event: 'message', cb: (msg: {
@@ -270,7 +284,7 @@ export class Socket {
         'data': Buffer;
     }) => void | Promise<void>): this;
     public on(event: 'error', cb: (error: any) => void | Promise<void>): this;
-    public on(event: 'drain' | 'close' | 'end', cb: () => void | Promise<void>): this;
+    public on(event: 'drain' | 'close' | 'end' | 'timeout', cb: () => void | Promise<void>): this;
     public on(event: keyof typeof this._on, cb: (param?: any) => void | Promise<void>): this {
         this._on[event] = cb;
         switch (event) {
@@ -295,13 +309,19 @@ export class Socket {
                 break;
             }
             default: {
-                // --- drain, close ---
+                // --- drain, close, timeout ---
                 if (!this._close) {
                     break;
                 }
                 cb() as any;
             }
         }
+        return this;
+    }
+
+    /** --- 取消监听 --- */
+    public off(event: 'message' | 'drain' | 'error' | 'close' | 'end' | 'timeout'): this {
+        this._on[event] = undefined;
         return this;
     }
 
