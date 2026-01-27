@@ -8,7 +8,7 @@
 
 > **rsocket**(`ctr`, `host`, `port`): `Promise`\<`boolean`\>
 
-Defined in: [lib/ws.ts:555](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L555)
+Defined in: [lib/ws.ts:575](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L575)
 
 反向代理，将本 websocket 连接反代到其他真正的 socket，在 ws 的 onLoad 事件中使用
 

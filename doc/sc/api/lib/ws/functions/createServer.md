@@ -8,7 +8,7 @@
 
 > **createServer**(`request`, `socket`, `head?`, `options?`): [`Socket`](../classes/Socket.md)
 
-Defined in: [lib/ws.ts:401](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L401)
+Defined in: [lib/ws.ts:421](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L421)
 
 创建一个 ws 服务器接收处理器
 
