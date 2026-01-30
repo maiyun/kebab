@@ -10,7 +10,7 @@
 
 Defined in: [lib/net.ts:131](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L131)
 
-发起一个原生 fetch 请求，增加了一些框架选项，注意：会抛出错误
+发起一个完全兼容 fetch 的请求
 
 ## Parameters
 
@@ -24,7 +24,7 @@ Defined in: [lib/net.ts:131](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 `RequestInit` & `object` = `{}`
 
-增加 mproxy
+增加 mproxy、hosts
 
 ## Returns
 

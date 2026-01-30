@@ -6,7 +6,7 @@
 
 # Class: FormData
 
-Defined in: [lib/net/formdata.ts:22](https://github.com/maiyunnet/kebab/blob/master/lib/net/formdata.ts#L22)
+Defined in: [lib/net/formdata.ts:37](https://github.com/maiyunnet/kebab/blob/master/lib/net/formdata.ts#L37)
 
 ## Extends
 
@@ -40,7 +40,7 @@ Defined in: node\_modules/@types/node/stream.d.ts:98
 
 > **\_read**(): `void`
 
-Defined in: [lib/net/formdata.ts:115](https://github.com/maiyunnet/kebab/blob/master/lib/net/formdata.ts#L115)
+Defined in: [lib/net/formdata.ts:146](https://github.com/maiyunnet/kebab/blob/master/lib/net/formdata.ts#L146)
 
 间隔读取（on data 或 pipe 触发）
 
@@ -58,7 +58,7 @@ Defined in: [lib/net/formdata.ts:115](https://github.com/maiyunnet/kebab/blob/ma
 
 > **getBoundary**(): `string`
 
-Defined in: [lib/net/formdata.ts:93](https://github.com/maiyunnet/kebab/blob/master/lib/net/formdata.ts#L93)
+Defined in: [lib/net/formdata.ts:124](https://github.com/maiyunnet/kebab/blob/master/lib/net/formdata.ts#L124)
 
 获取 boundary
 
@@ -72,7 +72,7 @@ Defined in: [lib/net/formdata.ts:93](https://github.com/maiyunnet/kebab/blob/mas
 
 > **getLength**(): `number`
 
-Defined in: [lib/net/formdata.ts:100](https://github.com/maiyunnet/kebab/blob/master/lib/net/formdata.ts#L100)
+Defined in: [lib/net/formdata.ts:131](https://github.com/maiyunnet/kebab/blob/master/lib/net/formdata.ts#L131)
 
 获取总字节长度
 
@@ -86,7 +86,7 @@ Defined in: [lib/net/formdata.ts:100](https://github.com/maiyunnet/kebab/blob/ma
 
 > **getSent**(): `number`
 
-Defined in: [lib/net/formdata.ts:107](https://github.com/maiyunnet/kebab/blob/master/lib/net/formdata.ts#L107)
+Defined in: [lib/net/formdata.ts:138](https://github.com/maiyunnet/kebab/blob/master/lib/net/formdata.ts#L138)
 
 获取已发送的字节长度
 
@@ -96,11 +96,45 @@ Defined in: [lib/net/formdata.ts:107](https://github.com/maiyunnet/kebab/blob/ma
 
 ***
 
+### putBuffer()
+
+> **putBuffer**(`key`, `buffer`, `fname`): `void`
+
+Defined in: [lib/net/formdata.ts:109](https://github.com/maiyunnet/kebab/blob/master/lib/net/formdata.ts#L109)
+
+添加 Buffer 数据
+
+#### Parameters
+
+##### key
+
+`string`
+
+键
+
+##### buffer
+
+`Buffer`
+
+Buffer 数据
+
+##### fname
+
+`string`
+
+文件名
+
+#### Returns
+
+`void`
+
+***
+
 ### putFile()
 
 > **putFile**(`key`, `path`, `fname?`): `Promise`\<`boolean`\>
 
-Defined in: [lib/net/formdata.ts:67](https://github.com/maiyunnet/kebab/blob/master/lib/net/formdata.ts#L67)
+Defined in: [lib/net/formdata.ts:81](https://github.com/maiyunnet/kebab/blob/master/lib/net/formdata.ts#L81)
 
 添加文件
 
@@ -134,7 +168,7 @@ Defined in: [lib/net/formdata.ts:67](https://github.com/maiyunnet/kebab/blob/mas
 
 > **putString**(`key`, `val`): `void`
 
-Defined in: [lib/net/formdata.ts:50](https://github.com/maiyunnet/kebab/blob/master/lib/net/formdata.ts#L50)
+Defined in: [lib/net/formdata.ts:65](https://github.com/maiyunnet/kebab/blob/master/lib/net/formdata.ts#L65)
 
 添加字符串
 

@@ -10,6 +10,6 @@
 
 - [FormData](classes/FormData.md)
 
-## Interfaces
+## Type Aliases
 
-- [IItem](interfaces/IItem.md)
+- [IItem](type-aliases/IItem.md)

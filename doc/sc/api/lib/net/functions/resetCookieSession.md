@@ -8,7 +8,7 @@
 
 > **resetCookieSession**(`cookie`): `void`
 
-Defined in: [lib/net.ts:524](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L524)
+Defined in: [lib/net.ts:645](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L645)
 
 模拟重启浏览器后的状态
 
