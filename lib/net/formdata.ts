@@ -9,15 +9,30 @@ import * as core from '#kebab/lib/core.js';
 import * as fs from '#kebab/lib/fs.js';
 
 /** --- Item 对象 --- */
-export interface IItem {
+export type IItem = {
     /** --- key 键 --- */
     'key': string;
-    'isFile': boolean;
-    'isString': boolean;
-    /** --- 值或者文件名 --- */
+    'type': 'string';
+    /** --- 字符串值 --- */
     'value': string;
+    'path': '';
+} | {
+    /** --- key 键 --- */
+    'key': string;
+    'type': 'file';
+    /** --- 文件名 --- */
+    'value': string;
+    /** --- 文件路径 --- */
     'path': string;
-}
+} | {
+    /** --- key 键 --- */
+    'key': string;
+    'type': 'buffer';
+    /** --- 文件名 --- */
+    'value': string;
+    /** --- Buffer 数据 --- */
+    'path': Buffer;
+};
 
 export class FormData extends stream.Readable {
 
@@ -50,8 +65,7 @@ export class FormData extends stream.Readable {
     public putString(key: string, val: string): void {
         this._data.push({
             'key': key,
-            'isFile': false,
-            'isString': true,
+            'type': 'string',
             'value': val,
             'path': ''
         });
@@ -76,8 +90,7 @@ export class FormData extends stream.Readable {
         }
         this._data.push({
             'key': key,
-            'isFile': true,
-            'isString': false,
+            'type': 'file',
             'value': fname,
             'path': path
         });
@@ -85,6 +98,24 @@ export class FormData extends stream.Readable {
             76 + Buffer.byteLength(key) + Buffer.byteLength(fname) +
             mime.getMime(fname).length + stat.size + 2;
         return true;
+    }
+
+    /**
+     * --- 添加 Buffer 数据 ---
+     * @param key 键
+     * @param buffer Buffer 数据
+     * @param fname 文件名
+     */
+    public putBuffer(key: string, buffer: Buffer, fname: string): void {
+        this._data.push({
+            'key': key,
+            'type': 'buffer',
+            'value': fname,
+            'path': buffer
+        });
+        this._length += this._boundary.length +
+            76 + Buffer.byteLength(key) + Buffer.byteLength(fname) +
+            mime.getMime(fname).length + buffer.byteLength + 2;
     }
 
     /**
@@ -132,7 +163,18 @@ export class FormData extends stream.Readable {
             this.push(push);
             return;
         }
-        if (item.isString) {
+        if (item.type === 'buffer') {
+            // --- Buffer 数据 ---
+            const push = `--${this._boundary}\r\nContent-Disposition: form-data; name="${item.key}"; filename="${item.value}"\r\nContent-Type: ${mime.getMime(item.value)}\r\n\r\n`;
+            this._sent += Buffer.byteLength(push);
+            this.push(push);
+            this._sent += item.path.byteLength;
+            this.push(item.path);
+            const pushEnd = '\r\n';
+            this._sent += Buffer.byteLength(pushEnd);
+            this.push(pushEnd);
+        }
+        else if (item.type === 'string') {
             // --- 字段 ---
             const push = `--${this._boundary}\r\nContent-Disposition: form-data; name="${item.key}"\r\n\r\n${item.value}\r\n`;
             this._sent += Buffer.byteLength(push);

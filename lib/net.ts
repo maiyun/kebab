@@ -124,11 +124,11 @@ export async function postJsonResponseJson(
 }
 
 /**
- * --- 发起一个原生 fetch 请求，增加了一些框架选项，注意：会抛出错误 ---
+ * --- 发起一个完全兼容 fetch 的请求 ---
  * @param input 请求的 URL 或 Request 对象
- * @param init 增加 mproxy
+ * @param init 增加 mproxy、hosts
  */
-export function fetch(
+export async function fetch(
     input: string | URL | Request,
     init: RequestInit & {
         /** --- 正向 mproxy 代理，url 如 https://xxx/abc --- */
@@ -137,20 +137,141 @@ export function fetch(
             'auth': string;
             'data'?: kebab.Json;
         };
+        /** --- 自定义 host 映射，如 {'www.maiyun.net': '127.0.0.1'}，或全部映射到一个 host --- */
+        'hosts'?: Record<string, string> | string;
     } = {},
 ): Promise<Response> {
-    const u = (input instanceof Request) ?
-        input.url :
-        input instanceof URL ? input.toString() : input;
-    const uri = lText.parseUrl(u);
-    /** --- 正向代理的地址 --- */
-    const puri = init.mproxy ? lText.parseUrl(init.mproxy.url) : null;
-    /** --- 定义请求 host --- */
-    const hostname = (puri ? puri.hostname : uri.hostname) ?? '';
-    if (!hostname) {
-        throw new Error('Kebab TypeError: Hostname is empty');
+    // --- 解析 URL ---
+    let u: string;
+    let method: IRequestOptions['method'] = 'GET';
+    let headers: THttpHeaders = {};
+    let body: Record<string, kebab.Json> | Buffer | string | stream.Readable | undefined;
+    // --- 处理 input 参数 ---
+    if (input instanceof Request) {
+        u = input.url;
+        method = input.method.toUpperCase() as IRequestOptions['method'];
+        for (const [key, value] of input.headers) {
+            headers[key.toLowerCase()] = value;
+        }
+        if (input.body) {
+            body = Buffer.from(await input.arrayBuffer());
+        }
     }
-    return global.fetch(init.mproxy ? getMproxyUrl(u, init.mproxy) : u, init);
+    else {
+        u = input instanceof URL ? input.toString() : input;
+    }
+    // --- 处理 init 参数 ---
+    if (init.method) {
+        method = init.method.toUpperCase() as IRequestOptions['method'];
+    }
+    // --- 处理 headers ---
+    if (init.headers) {
+        if (init.headers instanceof Headers) {
+            for (const [key, value] of init.headers) {
+                headers[key.toLowerCase()] = value;
+            }
+        }
+        else if (Array.isArray(init.headers)) {
+            for (const [key, value] of init.headers) {
+                headers[key.toLowerCase()] = value;
+            }
+        }
+        else {
+            for (const key in init.headers) {
+                headers[key.toLowerCase()] = init.headers[key];
+            }
+        }
+    }
+    // --- 处理 body ---
+    if (init.body !== undefined && init.body !== null) {
+        if (typeof init.body === 'string') {
+            body = init.body;
+        }
+        else if (init.body instanceof ArrayBuffer) {
+            body = Buffer.from(init.body);
+        }
+        else if (init.body instanceof URLSearchParams) {
+            body = init.body.toString();
+            headers['content-type'] ??= 'application/x-www-form-urlencoded';
+        }
+        else if (init.body instanceof Blob) {
+            body = Buffer.from(await init.body.arrayBuffer());
+        }
+        else if (init.body instanceof FormData) {
+            // --- 原生 FormData 转为框架 FormData ---
+            const fd = getFormData();
+            for (const [key, value] of init.body.entries()) {
+                if (typeof value === 'string') {
+                    fd.putString(key, value);
+                }
+                else {
+                    fd.putBuffer(key, Buffer.from(await value.arrayBuffer()), value.name);
+                }
+            }
+            body = fd as unknown as stream.Readable;
+            headers['content-type'] = 'multipart/form-data; boundary=' + fd.getBoundary();
+            headers['content-length'] = fd.getLength().toString();
+        }
+        else if (init.body instanceof ReadableStream) {
+            body = stream.Readable.fromWeb(init.body as Parameters<typeof stream.Readable.fromWeb>[0]);
+        }
+        else if (ArrayBuffer.isView(init.body)) {
+            // --- ArrayBufferView (Uint8Array 等 TypedArray) ---
+            body = Buffer.from(init.body.buffer, init.body.byteOffset, init.body.byteLength);
+        }
+    }
+    // --- 构建请求选项 ---
+    const opt: IRequestOptions = {
+        'method': method,
+        'headers': headers,
+        'hosts': init.hosts,
+        'mproxy': init.mproxy,
+        'follow': init.redirect === 'follow' ? 10 : 0,
+    };
+    // --- 检查是否已中止（注意：请求发起后无法中止） ---
+    if (init.signal?.aborted) {
+        return new Response(null, {
+            'status': 0,
+            'statusText': 'Aborted',
+        });
+    }
+    // --- 发起请求 ---
+    const res = await request(u, body, opt);
+    // --- 转换为原生 Response ---
+    const resStream = res.getStream();
+    const resHeaders = new Headers();
+    if (res.headers) {
+        for (const key in res.headers) {
+            if (key.startsWith('http-')) {
+                continue;
+            }
+            const value = res.headers[key];
+            if (value === undefined) {
+                continue;
+            }
+            if (Array.isArray(value)) {
+                for (const v of value) {
+                    resHeaders.append(key, v);
+                }
+            }
+            else {
+                resHeaders.set(key, value.toString());
+            }
+        }
+    }
+    const status = res.headers?.['http-code'] ?? (res.error ? 0 : 200);
+    if (res.error || !resStream) {
+        return new Response(null, {
+            'status': status,
+            'statusText': res.error?.message ?? 'Unknown Error',
+            'headers': resHeaders,
+        });
+    }
+    return new Response(stream.Readable.toWeb(resStream) as BodyInit, {
+        'status': status,
+        'statusText': '',
+        'headers': resHeaders,
+    });
 }
 
 /**
