@@ -1385,7 +1385,7 @@ index/variables/VER.md
 
 # Variable: VER
 
-> `const` **VER**: `"7.10.0"` = `'7.10.0'`
+> `const` **VER**: `"7.10.1"` = `'7.10.1'`
 
 Defined in: [index.ts:10](https://github.com/maiyunnet/kebab/blob/master/index.ts#L10)
 
@@ -15528,11 +15528,17 @@ lib/text/functions/parseJson.md
 
 # Function: parseJson()
 
-> **parseJson**(`str`): `any`
+> **parseJson**\<`T`\>(`str`): `false` \| `T`
 
 Defined in: [lib/text.ts:550](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L550)
 
 将字符串解析为对象，返回 false 代表解析失败，支持 BigInt
+
+## Type Parameters
+
+### T
+
+`T`
 
 ## Parameters
 
@@ -15544,7 +15550,7 @@ Defined in: [lib/text.ts:550](https://github.com/maiyunnet/kebab/blob/master/lib
 
 ## Returns
 
-`any`
+`false` \| `T`
 
 lib/text/functions/parseUrl.md
 ---

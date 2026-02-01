@@ -6,11 +6,17 @@
 
 # Function: parseJson()
 
-> **parseJson**(`str`): `any`
+> **parseJson**\<`T`\>(`str`): `false` \| `T`
 
 Defined in: [lib/text.ts:550](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L550)
 
 将字符串解析为对象，返回 false 代表解析失败，支持 BigInt
+
+## Type Parameters
+
+### T
+
+`T`
 
 ## Parameters
 
@@ -22,4 +28,4 @@ Defined in: [lib/text.ts:550](https://github.com/maiyunnet/kebab/blob/master/lib
 
 ## Returns
 
-`any`
+`false` \| `T`
