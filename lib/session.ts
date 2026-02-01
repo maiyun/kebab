@@ -19,13 +19,13 @@ CREATE TABLE `session` (
 */
 
 // --- 库和定义 ---
-import * as core from '#kebab/lib/core.js';
-import * as time from '#kebab/lib/time.js';
-import * as db from '#kebab/lib/db.js';
-import * as kv from '#kebab/lib/kv.js';
-import * as sql from '#kebab/lib/sql.js';
-import * as text from '#kebab/lib/text.js';
-import * as ctr from '#kebab/sys/ctr.js';
+import * as lCore from '#kebab/lib/core.js';
+import * as lTime from '#kebab/lib/time.js';
+import * as lDb from '#kebab/lib/db.js';
+import * as lKv from '#kebab/lib/kv.js';
+import * as lSql from '#kebab/lib/sql.js';
+import * as lText from '#kebab/lib/text.js';
+import * as sCtr from '#kebab/sys/ctr.js';
 
 export interface IOptions {
     'name'?: string;
@@ -37,10 +37,10 @@ export interface IOptions {
 export class Session {
 
     /** --- 数据库操作对象 --- */
-    private _link!: db.Pool | kv.Kv;
+    private _link!: lDb.Pool | lKv.Kv;
 
     /** --- Sql 对象 ---  */
-    private _sql!: sql.Sql;
+    private _sql!: lSql.Sql;
 
     /** --- session 在前端或 Kv 中储存的名前缀 --- */
     private _name!: string;
@@ -52,7 +52,7 @@ export class Session {
     private _ttl: number = 0;
 
     /** --- ctr 对象 --- */
-    private _ctr!: ctr.Ctr;
+    private _ctr!: sCtr.Ctr;
 
     /**
      * --- 初始化函数，相当于 construct ---
@@ -63,8 +63,8 @@ export class Session {
      * @returns false 表示系统错误
      */
     public async init(
-        ctr: ctr.Ctr,
-        link: db.Pool | kv.Kv,
+        ctr: sCtr.Ctr,
+        link: lDb.Pool | lKv.Kv,
         auth: boolean = false,
         opt: IOptions = {}
     ): Promise<boolean> {
@@ -72,7 +72,7 @@ export class Session {
         const ssl = opt.ssl ?? config.session.ssl ?? false;
         this._name = opt.name ?? config.session.name;
         this._ttl = opt.ttl ?? config.session.ttl ?? 172800;
-        const tim: number = time.stamp();
+        const tim: number = lTime.stamp();
         this._ctr = ctr;
 
         if (auth) {
@@ -87,8 +87,8 @@ export class Session {
         }
 
         this._link = link;
-        if (link instanceof db.Pool) {
-            this._sql = sql.get({
+        if (link instanceof lDb.Pool) {
+            this._sql = lSql.get({
                 'service': link.getService(),
                 'ctr': ctr,
                 'pre': opt.sqlPre,
@@ -102,7 +102,7 @@ export class Session {
         // --- 有 token 则查看 token 的信息是否存在
         if (this._token !== '') {
             // --- 如果启用了内存加速则在内存找 ---
-            if (this._link instanceof kv.Kv) {
+            if (this._link instanceof lKv.Kv) {
                 // --- Kv ---
                 const data = await this._link.getJson(this._name + '_' + this._token);
                 if (data === null) {
@@ -123,7 +123,7 @@ export class Session {
                 ]);
                 const data = await this._link.query(this._sql.getSql(), this._sql.getData());
                 if (data.rows?.[0]) {
-                    session = text.parseJson(data.rows[0].data);
+                    session = lText.parseJson<any>(data.rows[0].data);
                 }
                 else if (data.result === -500) {
                     return false;
@@ -143,13 +143,13 @@ export class Session {
         // --- 数据库的 Session 已经过期加新 Session ---
         // --- 如果不存在不允许加新则返回错误 ---
         if (needInsert) {
-            if (this._link instanceof kv.Kv) {
+            if (this._link instanceof lKv.Kv) {
                 let count = 0;
                 do {
                     if (count === 5) {
                         return false;
                     }
-                    this._token = core.random(16, core.RANDOM_LUN);
+                    this._token = lCore.random(16, lCore.RANDOM_LUN);
                     ++count;
                 } while (!await this._link.set(this._name + '_' + this._token, [], this._ttl, 'nx'));
             }
@@ -159,7 +159,7 @@ export class Session {
                     if (count === 5) {
                         return false;
                     }
-                    this._token = core.random(16, core.RANDOM_LUN);
+                    this._token = lCore.random(16, lCore.RANDOM_LUN);
                     this._sql.insert('session').values({
                         'token': this._token,
                         'data': '{}',
@@ -180,7 +180,7 @@ export class Session {
             }
         }
 
-        core.setCookie(ctr, this._name, this._token, {
+        lCore.setCookie(ctr, this._name, this._token, {
             'ttl': this._ttl,
             'ssl': ssl
         });
@@ -206,13 +206,13 @@ export class Session {
      * --- 页面整体结束时，要写入到 Kv 或 数据库 ---
      */
     public async update(): Promise<void> {
-        if (this._link instanceof kv.Kv) {
+        if (this._link instanceof lKv.Kv) {
             await this._link.set(this._name + '_' + this._token, this._ctr.getPrototype('_session'), this._ttl);
         }
         else {
             this._sql.update('session', [{
-                'data': text.stringifyJson(this._ctr.getPrototype('_session')),
-                'time_update': time.stamp()
+                'data': lText.stringifyJson(this._ctr.getPrototype('_session')),
+                'time_update': lTime.stamp(),
             }]).where([{
                 'token': this._token
             }]);
@@ -225,14 +225,14 @@ export class Session {
      * --- 仅能在 Db 模式执行，非 Db 模式则等于没运行 ---
      */
     private async _gc(): Promise<void> {
-        if (!(this._link instanceof db.Pool)) {
+        if (!(this._link instanceof lDb.Pool)) {
             return;
         }
-        if (core.rand(0, 20) !== 10) {
+        if (lCore.rand(0, 20) !== 10) {
             return;
         }
         this._sql.delete('session').where([
-            ['time_update', '<', time.stamp() - this._ttl]
+            ['time_update', '<', lTime.stamp() - this._ttl]
         ]);
         await this._link.execute(this._sql.getSql(), this._sql.getData());
     }

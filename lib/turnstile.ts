@@ -40,7 +40,7 @@ export async function verify(ctr: sCtr.Ctr, opt: {
                 return false;
             }
             const str = content.toString();
-            const json = lText.parseJson(str);
+            const json = lText.parseJson<any>(str);
             if (!json) {
                 return false;
             }

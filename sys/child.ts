@@ -473,7 +473,7 @@ async function reload(): Promise<void> {
     if (!configContent) {
         throw `File '${kebab.CONF_CWD}config.json' not found.`;
     }
-    const config = lText.parseJson(configContent);
+    const config = lText.parseJson<any>(configContent);
     for (const key in lCore.globalConfig) {
         delete lCore.globalConfig[key];
     }
@@ -491,7 +491,7 @@ async function reload(): Promise<void> {
         if (!fstr) {
             continue;
         }
-        let list: kebab.IVhost | kebab.IVhost[] = lText.parseJson(fstr);
+        let list: kebab.IVhost | kebab.IVhost[] = lText.parseJson<any>(fstr);
         if (!Array.isArray(list)) {
             list = [list];
         }
@@ -518,7 +518,7 @@ async function reloadCert(): Promise<void> {
     try {
         const certConfig = await lFs.getContent(kebab.CONF_CWD + 'cert.json', 'utf8');
         if (certConfig) {
-            const certs = lText.parseJson(certConfig);
+            const certs = lText.parseJson<any>(certConfig);
             for (const item of certs) {
                 const key = await lFs.getContent(lText.isRealPath(item.key) ? item.key : kebab.CERT_CWD + item.key, 'utf8');
                 const cert = await lFs.getContent(lText.isRealPath(item.cert) ? item.cert : kebab.CERT_CWD + item.cert, 'utf8');

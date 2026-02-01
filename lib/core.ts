@@ -891,7 +891,7 @@ export async function getLog(opt: {
         return false;
     }
     const str = content.toString();
-    const j = lText.parseJson(str);
+    const j = lText.parseJson<any>(str);
     if (!j) {
         // --- 解析失败，系统错误 ---
         debug('[CORE][getLog] rpc server content error');
@@ -932,7 +932,7 @@ export async function ls(opt: {
         return [];
     }
     const str = content.toString();
-    const j = lText.parseJson(str);
+    const j = lText.parseJson<any>(str);
     if (!j) {
         return [];
     }

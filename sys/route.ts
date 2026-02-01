@@ -110,10 +110,10 @@ export async function run(data: {
             }
             return true;
         }
-        kebabConfigs[data.rootPath + 'kebab.json'] = lText.parseJson(configContent);
+        kebabConfigs[data.rootPath + 'kebab.json'] = lText.parseJson<any>(configContent);
         const routeContent = await lFs.getContent(data.rootPath + 'route.json', 'utf8');
         if (routeContent) {
-            kebabConfigs[data.rootPath + 'kebab.json'].route = lText.parseJson(routeContent);
+            kebabConfigs[data.rootPath + 'kebab.json'].route = lText.parseJson<any>(routeContent);
         }
         // --- 将全局的项目应用到 vhostConfigs 里，但当 vhostConfigs 有项，则不应用 ---
         for (const name in lCore.globalConfig) {
@@ -898,7 +898,7 @@ export function getPost(
             // --- 判断 json 还是普通 ---
             if (ct.includes('json')) {
                 try {
-                    const raw = lText.parseJson(s);
+                    const raw = lText.parseJson<any>(s);
                     resolve({
                         'input': s,
                         'raw': raw,

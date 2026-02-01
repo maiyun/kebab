@@ -226,7 +226,7 @@ async function run(): Promise<void> {
         throw `File '${kebab.CONF_CWD}config.json' not found.`;
     }
     /** --- 系统 config.json --- */
-    const config = lText.parseJson(configContent);
+    const config = lText.parseJson<any>(configContent);
     for (const key in config) {
         lCore.globalConfig[key] = config[key];
     }

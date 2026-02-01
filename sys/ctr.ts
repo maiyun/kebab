@@ -641,7 +641,7 @@ export class Ctr {
         if (!content) {
             return null;
         }
-        const json = lText.parseJson(content);
+        const json = lText.parseJson<any>(content);
         loadedData[realPath] = json;
         return json;
     }

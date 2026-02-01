@@ -547,7 +547,7 @@ export function stringifyResult(rtn: kebab.Json): string {
  * --- 将字符串解析为对象，返回 false 代表解析失败，支持 BigInt ---
  * @param str 要解析的 json 字符串
  */
-export function parseJson(str: string): any {
+export function parseJson<T>(str: string): T | false {
     try {
         str = str.replace(/("[\w-]+?" *: *)([-+0-9]+)([ \r\n]*[,}]|$)/g, (v, v1, v2, v3) => {
             return v1 + '"-mybigint-' + v2 + '"' + v3;
