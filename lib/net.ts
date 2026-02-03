@@ -360,9 +360,7 @@ export async function request(
             };
             return res;
         }
-        if (!reuses[reuse]) {
-            reuses[reuse] = hc.createHttpClient();
-        }
+        reuses[reuse] ??= hc.createHttpClient();
         req = await reuses[reuse].request({
             'url': opt.mproxy ? getMproxyUrl(u, opt.mproxy) : u,
             'method': method,
