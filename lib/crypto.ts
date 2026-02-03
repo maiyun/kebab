@@ -181,7 +181,10 @@ export function cipherEncrypt(original: string | Buffer, key: crypto.CipherKey, 
                 }
             }
         }
-        const cip = crypto.createCipheriv(method, key, iv);
+        /** --- 由于 createCipheriv 在 method 为 string 类型时无法自动匹配 GCM 类型的 options，故此处使用 any --- */
+        const cip = crypto.createCipheriv(method, key, iv, (method === AES_256_GCM) ? {
+            'authTagLength': 16,
+        } as any : undefined);
         let r: string | Buffer;
         if (output !== 'buffer') {
             // --- base64 ---
@@ -291,7 +294,10 @@ export function cipherDecrypt(encrypt: string | Buffer, key: crypto.CipherKey, i
                 }
             }
         }
-        const cip = crypto.createDecipheriv(method, key, iv);
+        /** --- 由于 createDecipheriv 在 method 为 string 类型时无法自动匹配 GCM 类型的 options，故此处使用 any --- */
+        const cip = crypto.createDecipheriv(method, key, iv, (method === AES_256_GCM) ? {
+            'authTagLength': 16,
+        } as any : undefined);
         if (method === AES_256_GCM) {
             if (typeof encrypt === 'string') {
                 (cip as crypto.DecipherGCM).setAuthTag(Buffer.from(encrypt.slice(-32), 'hex'));

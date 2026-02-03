@@ -1951,6 +1951,12 @@ headers: <pre>${JSON.stringify(res.headers, null, 4)}</pre>
 content: <pre>${(await res.getContent())?.toString() ?? 'null'}</pre>
 error: ${JSON.stringify(res.error)}`);
 
+        const res2 = await lNet.get(this._internalUrl + 'test?abc');
+        echo.push(`<pre>Net.get('${this._internalUrl}test?abc');</pre>
+headers: <pre>${JSON.stringify(res2.headers, null, 4)}</pre>
+content: <pre>${(await res2.getContent())?.toString().slice(0, 500) ?? 'null'}</pre>
+error: ${JSON.stringify(res2.error)}`);
+
         return echo.join('') + '<br><br>' + this._getEnd();
     }
 
