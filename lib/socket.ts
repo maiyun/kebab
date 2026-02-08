@@ -47,8 +47,12 @@ export function rwebsocket(
             /** --- 远程端的双向 websocket --- */
             const rws = await lWs.connect(url, opt);
             if (!rws) {
+                socket.end();
                 return false;
             }
+            const timer = setInterval(() => {
+                rws.ping();
+            }, 10_000);
             rws.on('message', msg => {
                 switch (msg.opcode) {
                     case lWs.EOpcode.TEXT:
@@ -72,10 +76,14 @@ export function rwebsocket(
                     }
                 }
             }).on('close', () => {
+                clearInterval(timer);
                 socket.end();
             });
             socket.on('data', data => {
                 rws.writeBinary(data);
+            }).on('close', () => {
+                clearInterval(timer);
+                rws.end();
             }).on('end', () => {
                 rws.end();
                 lCore.display('[' + lTime.format(null, 'Y-m-d H:i:s') + '] Client disconnected: ' + socket.remoteAddress + ':' + socket.remotePort);
