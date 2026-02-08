@@ -818,12 +818,24 @@ export class Sql {
     public getSql(): string  {
         let sql = this._sql.join('');
         if (this._pre) {
-            return this._alias.reduce((result, item) => {
+            // --- 预编译 RegExp 对象以提高性能 ---
+            const regexCache: RegExp[] = [];
+            for (const item of this._alias) {
                 if (this._service === ESERVICE.MYSQL) {
-                    return result.replace(new RegExp('`' + this._pre + item + '`', 'g'), '`' + item + '`');
+                    regexCache.push(new RegExp('`' + this._pre + item + '`', 'g'));
                 }
-                return result.replace(new RegExp(`"${this._pre}"."${item}"`, 'g'), '"' + item + '"');
-            }, sql);
+                else {
+                    regexCache.push(new RegExp(`"${this._pre}"."${item}"`, 'g'));
+                }
+            }
+            for (let i = 0; i < this._alias.length; ++i) {
+                if (this._service === ESERVICE.MYSQL) {
+                    sql = sql.replace(regexCache[i], '`' + this._alias[i] + '`');
+                }
+                else {
+                    sql = sql.replace(regexCache[i], '"' + this._alias[i] + '"');
+                }
+            }
         }
         return sql;
     }

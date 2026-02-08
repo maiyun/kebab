@@ -46,16 +46,28 @@ export async function regular(task: IRegular, immediate: string = ''): Promise<b
         'rcount': 0,
     };
     if (content) {
-        const json = JSON.parse(content);
-        obj.last = json.last;
-        obj.count = json.count;
+        try {
+            const json = JSON.parse(content);
+            obj.last = json.last ?? obj.last;
+            obj.count = json.count ?? obj.count;
+        }
+        catch {
+            // --- 如果 JSON 解析失败，使用默认值 ---
+        }
     }
     await lFs.putContent(kebab.LOG_CWD + `cron/${obj.name}.json`, JSON.stringify(obj));
     // --- 好，先注册 ---
     nodeCron.schedule(task.rule, () => {
         /** --- 当前日期字符串 --- */
         const date = lTime.format(null, 'YmdHi');
-        obj.callback(date, false) as any;
+        try {
+            obj.callback(date, false) as any;
+        }
+        catch (e: any) {
+            const msg = `[CRON][${obj.name}] ${lText.stringifyJson(e.message ?? '').slice(1, -1).replace(/"/g, '""')}`;
+            lCore.debug(msg);
+            lCore.log({}, msg, '-error');
+        }
         // --- 设置执行后的数据 ---
         obj.last = date;
         ++obj.count;

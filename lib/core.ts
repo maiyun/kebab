@@ -118,7 +118,7 @@ export function random(length: number = 8, source: string = RANDOM_LN, block: st
     let len = block.length;
     if (len > 0) {
         for (let i = 0; i < len; ++i) {
-            source = source.replace(block[i], '');
+            source = source.replaceAll(block[i], '');
         }
     }
     len = source.length;

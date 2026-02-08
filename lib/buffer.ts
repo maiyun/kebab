@@ -112,7 +112,7 @@ export class Writer {
 
     /** --- [4 字节] 写入一个无符号 32 位整数（大端模式） --- */
     public writeUInt32BE(value: number): void {
-        this._buffer.writeUint32BE(value, this._offset);
+        this._buffer.writeUInt32BE(value, this._offset);
         this._offset += 4;
     }
 
