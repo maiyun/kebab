@@ -391,16 +391,20 @@ export async function request(
     let total: number = 0;
     if (save && (!req.headers['location'] || follow === 0)) {
         await new Promise<void>(function(resolve) {
-            req.getStream().on('end', () => {
+            const ws = lFs.createWriteStream(save);
+            req.getStream().on('error', () => {
+                resolve();
+            }).pipe(ws);
+            ws.on('finish', () => {
                 lFs.stats(save).then((stat) => {
                     total = stat?.size ?? 0;
                     resolve();
                 }).catch(() => {
                     resolve();
                 });
-            }).on('error', function() {
+            }).on('error', () => {
                 resolve();
-            }).pipe(lFs.createWriteStream(save));
+            });
         });
     }
     // --- 创建 Response 对象 ---
@@ -430,8 +434,15 @@ export async function request(
     }
     // --- 哦，要追踪 ---
     headers['referer'] = u;
-    return request(lText.urlResolve(u, req.headers['location'] as string), data, {
-        'method': method,
+    let nextMethod = method;
+    let nextData = data;
+    const status = res.headers['http-code'];
+    if (status === 303 || ((status === 301 || status === 302) && method === 'POST')) {
+        nextMethod = 'GET';
+        nextData = undefined;
+    }
+    return request(lText.urlResolve(u, req.headers['location'] as string), nextData, {
+        'method': nextMethod,
         'type': type,
         'timeout': timeout,
         'follow': follow - 1,

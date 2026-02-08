@@ -80,10 +80,11 @@ export function rand(min: number, max: number, prec: number = 0): number {
     if (prec < 0) {
         prec = 0;
     }
+    if (prec === 0) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
     const p = Math.pow(10, prec);
-    min = min * p;
-    max = max * p;
-    return Math.round(Math.random() * (max - min) + min) / p;
+    return Math.round((Math.random() * (max - min) + min) * p) / p;
 }
 
 // --- 随机 ---

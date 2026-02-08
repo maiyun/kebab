@@ -13,10 +13,11 @@ import * as lCore from './core.js';
  * @param spliter 分隔符
  */
 export function sizeFormat(size: number, spliter: string = ' '): string {
-    const units = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB'];
+    const units = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
     let i = 0;
-    for (; i < 6 && size >= 1024.0; ++i) {
+    while (i < units.length - 1 && size >= 1024.0) {
         size /= 1024.0;
+        i++;
     }
     return (Math.round(size * 100) / 100).toString() + spliter + units[i];
 }
@@ -421,12 +422,20 @@ export function queryStringify(query: Record<string, any>, encode: boolean | {
         isEncode = encode;
     }
     return Object.entries(query).map(([k, v]) => {
+        if (v === undefined) {
+            return '';
+        }
         const key = isEncode ? encodeURIComponent(k) : k;
         if (Array.isArray(v)) {
-            return v.map(i => `${key}${equal}${isEncode ? encodeURIComponent(i) : i}`).join(hyphen);
+            return v.map(i => {
+                if (i === undefined) {
+                    return '';
+                }
+                return `${key}${equal}${isEncode ? encodeURIComponent(i) : i}`;
+            }).filter(s => s).join(hyphen);
         }
         return `${key}${equal}${isEncode ? encodeURIComponent(v) : v}`;
-    }).join(hyphen);
+    }).filter(s => s).join(hyphen);
 }
 
 /**

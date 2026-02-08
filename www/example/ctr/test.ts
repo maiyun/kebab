@@ -1147,9 +1147,14 @@ const base64 = cap.getBase64();</pre>phrase:`];
     }
 
     public coreRand(): string {
+        const counts = [0, 0, 0];
+        for (let i = 0; i < 10000; ++i) {
+            ++counts[lCore.rand(0, 2)];
+        }
         return '<pre>lCore.rand(1.2, 7.1, 1);</pre>' + lCore.rand(1.2, 7.1, 1).toString() +
             '<pre>lCore.rand(1.2, 7.1, 5);</pre>' + lCore.rand(1.2, 7.1, 5).toString() +
             '<pre>lCore.rand(1.298, 7.1891, 2);</pre>' + lCore.rand(1.298, 7.1891, 2).toString() +
+            `<br><br>lCore.rand(0, 2) distribution (10000 runs): 0=${counts[0]}, 1=${counts[1]}, 2=${counts[2]}` +
             '<br><br>' + this._getEnd();
     }
 
@@ -3402,7 +3407,9 @@ ${lText.queryStringify({ 'a': 1, 'b': '2' }, { 'equal': ':', 'hyphen': '|' })}
 <pre>lText.queryStringify({ 'a': [1, 2], 'b': '3' }, { 'equal': ':', 'hyphen': '|' });</pre>
 ${lText.queryStringify({ 'a': [1, 2], 'b': '3' }, { 'equal': ':', 'hyphen': '|' })}
 <pre>lText.queryStringify({ 'a': [1, 2], 'b': '3' }, { 'equal': '', 'hyphen': '' });</pre>
-${lText.queryStringify({ 'a': [1, 2], 'b': '3' }, { 'equal': '', 'hyphen': '' })}`;
+${lText.queryStringify({ 'a': [1, 2], 'b': '3' }, { 'equal': '', 'hyphen': '' })}
+<pre>lText.sizeFormat(1024 * 1024 * 2);</pre>
+${lText.sizeFormat(1024 * 1024 * 2)}`;
         return echo + '<br><br>' + this._getEnd();
     }
 
@@ -3715,7 +3722,28 @@ const rtn: any[] = [];
 rtn.push(reader.readUInt8());
 rtn.push(reader.readUInt16BE());
 rtn.push(reader.readBCDString());</pre>${JSON.stringify(rtn)}`);
-        return echo.join('') + '<br><br>' + this._getEnd();
+
+        // --- Bug Checks ---
+        echo.push('<h3>Bug Checks</h3>');
+
+        // --- 1. writeString Offset Bug ---
+        const wBug = lBuffer.getWriter(10);
+        wBug.writeString('A');
+        wBug.writeUInt8(0xFF);
+        const bBug = wBug.get();
+        echo.push(`<div>writeString('A') + writeUInt8(0xFF) [Expected: 41ff]: <b>${bBug.toString('hex')}</b></div>`);
+
+        // --- 2. writeUInt32BE Typo Check ---
+        try {
+            const wTypo = lBuffer.getWriter(4);
+            wTypo.writeUInt32BE(0xAABBCCDD);
+            echo.push(`<div>writeUInt32BE(0xAABBCCDD) [Expected: Success]: <b>Success</b></div>`);
+        }
+        catch (e) {
+            echo.push(`<div>writeUInt32BE(0xAABBCCDD) [Expected: Success]: <b style="color:red">Failed: ${(e as Error).message}</b></div>`);
+        }
+
+        return echo.join('') + '<br>' + this._getEnd();
     }
 
     public async lan(): Promise<string> {

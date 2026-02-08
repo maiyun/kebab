@@ -61,16 +61,9 @@ export class Reader {
     /** --- 读取普通 string --- */
     public readString(length?: number, encoding: BufferEncoding = 'utf8'): string {
         length ??= this._buffer.length - this._offset;
-        const buf: number[] = [];
-        for (let i = 0; i < length; i++) {
-            const byte = this._buffer.readUInt8(this._offset + i);
-            if (byte === 0x00) {
-                continue;
-            }
-            buf.push(byte);
-        }
+        const str = this._buffer.toString(encoding, this._offset, this._offset + length);
         this._offset += length;
-        return Buffer.from(buf).toString(encoding);
+        return str.replace(/\0/g, '');
     }
 
     /** --- 读取 Buffer --- */
@@ -112,12 +105,15 @@ export class Writer {
 
     /** --- [4 字节] 写入一个无符号 32 位整数（大端模式） --- */
     public writeUInt32BE(value: number): void {
-        this._buffer.writeUint32BE(value, this._offset);
+        this._buffer.writeUInt32BE(value, this._offset);
         this._offset += 4;
     }
 
     /** --- [每字节 2 数字] 写入一个 BCD 编码的字符串（仅支持数字） --- */
     public writeBCDString(value: string): void {
+        if (value.length % 2 !== 0) {
+            value = '0' + value;
+        }
         for (let i = 0; i < value.length; i += 2) {
             const high = parseInt(value[i], 10);    // --- 取十位 ---
             const low = parseInt(value[i + 1], 10); // --- 取个位 ---
@@ -128,12 +124,9 @@ export class Writer {
 
     /** --- 写入普通字符串，返回写入的长度 --- */
     public writeString(value: string, encoding: BufferEncoding = 'utf8'): number {
-        const bytes = Buffer.from(value, encoding);
-        for (const byte of bytes) {
-            this.writeUInt8(byte);
-        }
-        this._offset += bytes.length;
-        return bytes.length;
+        const len = this._buffer.write(value, this._offset, encoding);
+        this._offset += len;
+        return len;
     }
 
     /** --- 返回 Buffer 对象 --- */
