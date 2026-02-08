@@ -12,6 +12,7 @@ import * as crypto from 'crypto';
 import * as lFs from '#kebab/lib/fs.js';
 import * as lCore from '#kebab/lib/core.js';
 import * as lText from '#kebab/lib/text.js';
+import * as sMonitor from '#kebab/sys/monitor.js';
 import * as sCtr from '#kebab/sys/ctr.js';
 import * as kebab from '#kebab/index.js';
 // --- 初始化 ---
@@ -57,16 +58,20 @@ const linkCount: Record<string, number> = {};
  * @param key 连接标识
  * @param handler 实际处理函数
  * @param errorPrefix 错误日志前缀
+ * @param method 请求方法
  */
 function wrapWithLinkCount(
     key: string,
     handler: () => Promise<void>,
-    errorPrefix: string
+    errorPrefix: string,
+    method: string = 'GET'
 ): void {
     linkCount[key] = (linkCount[key] ?? 0) + 1;
+    const trackId = sMonitor.track(key, method);
     handler().catch((e: any) => {
         lCore.log({}, `${errorPrefix} ${lText.stringifyJson((e.stack as string)).slice(1, -1)}`, '-error');
     }).finally(() => {
+        sMonitor.untrack(trackId);
         --linkCount[key];
         if (!linkCount[key]) {
             delete linkCount[key];
@@ -135,7 +140,8 @@ async function run(): Promise<void> {
         wrapWithLinkCount(
             host + req.url,
             () => requestHandler(req, res, true),
-            '[CHILD][http2][request]'
+            '[CHILD][http2][request]',
+            req.method ?? 'GET'
         );
     }).on('tlsClientError', (err, socket) => {
         socket.destroy();
@@ -148,7 +154,8 @@ async function run(): Promise<void> {
         wrapWithLinkCount(
             host + (req.url ?? ''),
             () => upgradeHandler(req, socket, true, head),
-            '[CHILD][http2][upgrade]'
+            '[CHILD][http2][upgrade]',
+            'UPGRADE'
         );
     }).listen(lCore.globalConfig.httpsPort);
     httpServer = http.createServer(function(req: http.IncomingMessage, res: http.ServerResponse): void {
@@ -164,7 +171,8 @@ async function run(): Promise<void> {
         wrapWithLinkCount(
             host + (req.url ?? ''),
             () => requestHandler(req, res, false),
-            '[CHILD][http][request]'
+            '[CHILD][http][request]',
+            req.method ?? 'GET'
         );
     }).on('clientError', (err, socket) => {
         socket.destroy();
@@ -177,9 +185,12 @@ async function run(): Promise<void> {
         wrapWithLinkCount(
             host + (req.url ?? ''),
             () => upgradeHandler(req, socket, false, head),
-            '[CHILD][http][upgrade]'
+            '[CHILD][http][upgrade]',
+            'UPGRADE'
         );
     }).listen(lCore.globalConfig.httpPort);
+    // --- 启动性能监控 ---
+    sMonitor.start();
 }
 
 /**
@@ -559,6 +570,7 @@ process.on('message', function(msg: kebab.Json) {
                 httpServer.close();
                 http2Server.close();
                 clearInterval(hbTimer);
+                sMonitor.stop();
                 // --- 等待连接全部断开 ---
                 /** --- 当前已等待时间，等待不超过 1 小时 --- */
                 let waiting = 0;

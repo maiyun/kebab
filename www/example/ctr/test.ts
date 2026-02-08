@@ -22,6 +22,7 @@ import * as lBuffer from '#kebab/lib/buffer.js';
 import * as lLan from '#kebab/lib/lan.js';
 import * as lCron from '#kebab/lib/cron.js';
 import * as lAi from '#kebab/lib/ai.js';
+import * as sMonitor from '#kebab/sys/monitor.js';
 import * as sCtr from '#kebab/sys/ctr.js';
 // --- mod ---
 import mTest from '../mod/test.js';
@@ -267,6 +268,11 @@ export default class extends sCtr.Ctr {
 
             '<br><br><b>Cron:</b>',
             `<br><br><a href="${this._config.const.urlBase}test/cron">View "test/cron"</a>`,
+
+            '<br><br><b>Monitor:</b>',
+            `<br><br><a href="${this._config.const.urlBase}test/monitor-snapshot">View "test/monitor-snapshot"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/monitor-spike">View "test/monitor-spike" (non-blocking CPU spike)</a>`,
+            `<br><a href="${this._config.const.urlBase}test/monitor-spike?mode=block">View "test/monitor-spike?mode=block" (event loop block)</a>`,
         ];
         echo.push('<br><br>' + this._getEnd());
 
@@ -3901,6 +3907,103 @@ send.addEventListener('click', async () => {
             lCore.debug(`Total Tokens: ${chunk.usage.total_tokens}`);
         }
         lCore.debug('AI DONE');
+    }
+
+    // --- Monitor ---
+
+    /**
+     * --- 获取当前性能快照 ---
+     */
+    public monitorSnapshot(): string {
+        const snapshot = sMonitor.getSnapshot();
+        const echo: string[] = [
+            '<b>Monitor Snapshot</b>',
+            '<hr>',
+            `<b>PID:</b> ${snapshot.pid}`,
+            `<br><b>Process CPU (single core):</b> ${snapshot.cpuProcess}%`,
+            `<br><b>System CPU (total):</b> ${snapshot.cpuOs}%`,
+            `<br><b>Event Loop Lag:</b> ${snapshot.eloopLag}ms`,
+            '<br><br><b>Memory:</b>',
+            `<br>RSS: ${lText.sizeFormat(snapshot.mem.rss)}`,
+            `<br>Heap Used: ${lText.sizeFormat(snapshot.mem.heapUsed)}`,
+            `<br>Heap Total: ${lText.sizeFormat(snapshot.mem.heapTotal)}`,
+            `<br>External: ${lText.sizeFormat(snapshot.mem.external)}`,
+            `<br>ArrayBuffers: ${lText.sizeFormat(snapshot.mem.arrayBuffers)}`,
+            '<br><br><b>V8 Heap:</b>',
+            `<br>Used: ${lText.sizeFormat(snapshot.heap.usedSize)}`,
+            `<br>Total: ${lText.sizeFormat(snapshot.heap.totalSize)}`,
+            `<br>Limit: ${lText.sizeFormat(snapshot.heap.sizeLimit)}`,
+            '<br><br><b>OS Memory:</b>',
+            `<br>Used: ${lText.sizeFormat(snapshot.osMem.total - snapshot.osMem.free)}`,
+            `<br>Total: ${lText.sizeFormat(snapshot.osMem.total)}`,
+            `<br><br><b>Active Requests:</b> ${snapshot.activeCount}`,
+        ];
+        for (const req of snapshot.activeRequests) {
+            echo.push(`<br>[${req.method}] ${lText.htmlescape(req.url)} - ${req.duration}ms, CPU: ${req.cpuUser + req.cpuSystem}us, MEM_DELTA: ${lText.sizeFormat(req.memDelta)}`);
+        }
+        echo.push('<br><br>' + this._getEnd());
+        return echo.join('');
+    }
+
+    /**
+     * --- 模拟 CPU 骤升或事件循环阻塞，触发 monitor 告警和诊断采集 ---
+     * --- ?mode=block 模拟死循环阻塞，否则模拟非阻塞 CPU 骤升 ---
+     */
+    public async monitorSpike(): Promise<string> {
+        const mode = (this._get['mode'] === 'block')
+            ? 'block'
+            : 'spike';
+        const echo: string[] = [
+            `<b>Monitor Spike Simulation (${mode})</b>`,
+            '<hr>',
+        ];
+        const before = sMonitor.getSnapshot();
+        echo.push(
+            `<b>Before:</b> Process CPU ${before.cpuProcess}%, ` +
+            `System CPU ${before.cpuOs}%, ` +
+            `RSS ${lText.sizeFormat(before.mem.rss)}`,
+        );
+        const start = Date.now();
+        let count = 0;
+        if (mode === 'block') {
+            // --- 阻塞事件循环 20 秒，测试看门狗远程诊断采集 ---
+            while (Date.now() - start < 20_000) {
+                Math.sqrt(Math.random());
+                ++count;
+            }
+        }
+        else {
+            // --- 不阻塞事件循环，测试 check() 的 spike 检测 ---
+            await new Promise<void>((resolve) => {
+                const burn = (): void => {
+                    const batchEnd = Date.now() + 50;
+                    while (Date.now() < batchEnd) {
+                        Math.sqrt(Math.random() * 1000000);
+                        ++count;
+                    }
+                    if (Date.now() - start < 20_000) {
+                        setImmediate(burn);
+                    }
+                    else {
+                        resolve();
+                    }
+                };
+                burn();
+            });
+        }
+        const after = sMonitor.getSnapshot();
+        echo.push(
+            `<br><b>After:</b> Process CPU ${after.cpuProcess}%, ` +
+            `System CPU ${after.cpuOs}%, ` +
+            `RSS ${lText.sizeFormat(after.mem.rss)}, ` +
+            `Iterations: ${count}`,
+        );
+        echo.push(
+            '<br><br>Check <code>log/monitor/{pid}/</code> for' +
+            ' diagnostic files.',
+        );
+        echo.push('<br><br>' + this._getEnd());
+        return echo.join('');
     }
 
     /**

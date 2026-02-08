@@ -32,6 +32,14 @@ const workerList: Record<string, {
 async function run(): Promise<void> {
     // --- 设置 cluster 调度策略为 round-robin（在支持的平台上启用负载均衡） ---
     cluster.schedulingPolicy = cluster.SCHED_RR;
+    // --- 设置 worker 进程的 Node 启动参数 ---
+    cluster.setupPrimary({
+        'execArgv': [
+            ...process.execArgv,
+            // --- 堆接近上限时自动生成堆快照（最多 3 次），用于定位内存泄漏 ---
+            '--heapsnapshot-near-heap-limit=3',
+        ],
+    });
     // --- 读取配置文件 ---
     const configContent = await lFs.getContent(kebab.CONF_CWD + 'config.json', 'utf8');
     if (!configContent) {
