@@ -34,7 +34,7 @@ Defined in: [lib/buffer.ts:9](https://github.com/maiyunnet/kebab/blob/master/lib
 
 > **length**(): `number`
 
-Defined in: [lib/buffer.ts:83](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L83)
+Defined in: [lib/buffer.ts:76](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L76)
 
 获取完整的 buffer 长度
 
@@ -68,7 +68,7 @@ Defined in: [lib/buffer.ts:49](https://github.com/maiyunnet/kebab/blob/master/li
 
 > **readBuffer**(`length?`): `Buffer`
 
-Defined in: [lib/buffer.ts:77](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L77)
+Defined in: [lib/buffer.ts:70](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L70)
 
 读取 Buffer
 

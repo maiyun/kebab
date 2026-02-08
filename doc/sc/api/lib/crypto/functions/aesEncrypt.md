@@ -10,7 +10,7 @@
 
 > **aesEncrypt**(`original`, `key`, `iv`, `method`, `output`): `false` \| `Buffer`\<`ArrayBufferLike`\>
 
-Defined in: [lib/crypto.ts:227](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L227)
+Defined in: [lib/crypto.ts:230](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L230)
 
 AES 加密
 
@@ -54,7 +54,7 @@ AES 加密
 
 > **aesEncrypt**(`original`, `key`, `iv?`, `method?`, `output?`): `string` \| `false`
 
-Defined in: [lib/crypto.ts:228](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L228)
+Defined in: [lib/crypto.ts:231](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L231)
 
 AES 加密
 

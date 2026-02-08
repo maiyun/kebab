@@ -8,7 +8,7 @@
 
 > **getWriter**(`size`): [`Writer`](../classes/Writer.md)
 
-Defined in: [lib/buffer.ts:158](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L158)
+Defined in: [lib/buffer.ts:151](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L151)
 
 Buffer Writer 对象
 

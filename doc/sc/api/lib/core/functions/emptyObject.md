@@ -8,7 +8,7 @@
 
 > **emptyObject**(`obj`, `deep`): `void`
 
-Defined in: [lib/core.ts:409](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L409)
+Defined in: [lib/core.ts:410](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L410)
 
 将对象的所有属性清除包括键，不会破坏引用关系，对象变量依然保证是引用状态
 

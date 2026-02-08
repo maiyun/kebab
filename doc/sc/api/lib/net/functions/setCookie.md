@@ -8,7 +8,7 @@
 
 > **setCookie**(`cookie`, `name`, `value`, `domain`, `opt`): `void`
 
-Defined in: [lib/net.ts:457](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L457)
+Defined in: [lib/net.ts:466](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L466)
 
 对 cookie 对象进行操作
 

@@ -10,7 +10,7 @@
 
 > **hashHmac**(`algorithm`, `data`, `key?`, `format?`): `string`
 
-Defined in: [lib/crypto.ts:388](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L388)
+Defined in: [lib/crypto.ts:394](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L394)
 
 hash 或 hmac 加密
 
@@ -46,7 +46,7 @@ hash 或 hmac 加密
 
 > **hashHmac**(`algorithm`, `data`, `key`, `format`): `Buffer`
 
-Defined in: [lib/crypto.ts:389](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L389)
+Defined in: [lib/crypto.ts:395](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L395)
 
 hash 或 hmac 加密
 

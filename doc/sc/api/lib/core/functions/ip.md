@@ -8,7 +8,7 @@
 
 > **ip**(`ctr`, `req?`): `string`
 
-Defined in: [lib/core.ts:328](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L328)
+Defined in: [lib/core.ts:329](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L329)
 
 获取 IP（非安全 IP）
 

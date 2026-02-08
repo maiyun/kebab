@@ -8,6 +8,6 @@
 
 > `const` **REAL\_IP\_CF**: `"cf-connecting-ip"` = `'cf-connecting-ip'`
 
-Defined in: [lib/core.ts:355](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L355)
+Defined in: [lib/core.ts:356](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L356)
 
 使用的是 Cloudflare

@@ -8,6 +8,6 @@
 
 > `const` **REAL\_IP\_X**: `"x-forwarded-for"` = `'x-forwarded-for'`
 
-Defined in: [lib/core.ts:353](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L353)
+Defined in: [lib/core.ts:354](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L354)
 
 使用 X-Forwarded-For 的 CDN 厂商

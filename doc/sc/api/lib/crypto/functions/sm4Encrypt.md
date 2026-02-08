@@ -10,7 +10,7 @@
 
 > **sm4Encrypt**(`original`, `key`, `iv`, `method`, `output`): `false` \| `Buffer`\<`ArrayBufferLike`\>
 
-Defined in: [lib/crypto.ts:260](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L260)
+Defined in: [lib/crypto.ts:263](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L263)
 
 SM4 加密
 
@@ -52,7 +52,7 @@ SM4 加密
 
 > **sm4Encrypt**(`original`, `key`, `iv?`, `method?`, `output?`): `string` \| `false`
 
-Defined in: [lib/crypto.ts:261](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L261)
+Defined in: [lib/crypto.ts:264](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L264)
 
 SM4 加密
 

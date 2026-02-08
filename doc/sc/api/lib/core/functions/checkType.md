@@ -8,7 +8,7 @@
 
 > **checkType**(`val`, `type`, `tree`): `string`
 
-Defined in: [lib/core.ts:200](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L200)
+Defined in: [lib/core.ts:201](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L201)
 
 判断一个对象是否符合示例组，返回空字符串代表校验通过，返回：应该的类型:位置:传入的类型
 

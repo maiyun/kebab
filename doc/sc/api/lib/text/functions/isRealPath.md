@@ -8,7 +8,7 @@
 
 > **isRealPath**(`path`): `boolean`
 
-Defined in: [lib/text.ts:485](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L485)
+Defined in: [lib/text.ts:494](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L494)
 
 判断是否是绝对路径，是返回 true，相对路径返回 false
 

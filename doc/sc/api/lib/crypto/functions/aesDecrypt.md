@@ -10,7 +10,7 @@
 
 > **aesDecrypt**(`encrypt`, `key`, `iv`, `method`, `output`): `false` \| `Buffer`\<`ArrayBufferLike`\>
 
-Defined in: [lib/crypto.ts:340](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L340)
+Defined in: [lib/crypto.ts:346](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L346)
 
 AES 解密
 
@@ -52,7 +52,7 @@ AES 解密
 
 > **aesDecrypt**(`encrypt`, `key`, `iv?`, `method?`, `output?`): `string` \| `false`
 
-Defined in: [lib/crypto.ts:341](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L341)
+Defined in: [lib/crypto.ts:347](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L347)
 
 AES 解密
 

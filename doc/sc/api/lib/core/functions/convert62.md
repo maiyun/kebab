@@ -8,7 +8,7 @@
 
 > **convert62**(`n`): `string`
 
-Defined in: [lib/core.ts:141](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L141)
+Defined in: [lib/core.ts:142](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L142)
 
 将 10 进制转换为 62 进制
 

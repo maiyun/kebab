@@ -8,7 +8,7 @@
 
 > **isDomain**(`domain`): `boolean`
 
-Defined in: [lib/text.ts:244](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L244)
+Defined in: [lib/text.ts:245](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L245)
 
 判断是否是域名
 

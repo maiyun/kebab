@@ -6,7 +6,7 @@
 
 # Interface: IDomain
 
-Defined in: [lib/text.ts:276](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L276)
+Defined in: [lib/text.ts:277](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L277)
 
 解析后的 domain
 
@@ -16,7 +16,7 @@ Defined in: [lib/text.ts:276](https://github.com/maiyunnet/kebab/blob/master/lib
 
 > **domain**: `string` \| `null`
 
-Defined in: [lib/text.ts:279](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L279)
+Defined in: [lib/text.ts:280](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L280)
 
 ***
 
@@ -24,7 +24,7 @@ Defined in: [lib/text.ts:279](https://github.com/maiyunnet/kebab/blob/master/lib
 
 > **sld**: `string` \| `null`
 
-Defined in: [lib/text.ts:278](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L278)
+Defined in: [lib/text.ts:279](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L279)
 
 ***
 
@@ -32,7 +32,7 @@ Defined in: [lib/text.ts:278](https://github.com/maiyunnet/kebab/blob/master/lib
 
 > **sub**: `string` \| `null`
 
-Defined in: [lib/text.ts:280](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L280)
+Defined in: [lib/text.ts:281](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L281)
 
 ***
 
@@ -40,4 +40,4 @@ Defined in: [lib/text.ts:280](https://github.com/maiyunnet/kebab/blob/master/lib
 
 > **tld**: `string` \| `null`
 
-Defined in: [lib/text.ts:277](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L277)
+Defined in: [lib/text.ts:278](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L278)

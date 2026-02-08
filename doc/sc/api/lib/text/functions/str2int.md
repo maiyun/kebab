@@ -8,7 +8,7 @@
 
 > **str2int**(`str`, `digits`): `number`
 
-Defined in: [lib/text.ts:670](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L670)
+Defined in: [lib/text.ts:679](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L679)
 
 为解决精度问题，将字符串数字转换为整数显示
 以下几个示例都是当 digits 为 2 时
