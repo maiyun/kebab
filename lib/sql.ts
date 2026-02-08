@@ -809,22 +809,16 @@ export class Sql {
     public getSql(): string  {
         let sql = this._sql.join('');
         if (this._pre) {
-            // --- 预编译 RegExp 对象以提高性能 ---
-            const regexCache: RegExp[] = [];
+            // --- 预编译 RegExp 对象并缓存替换字符串以提高性能 ---
+            const isMysql = this._service === ESERVICE.MYSQL;
             for (const item of this._alias) {
-                if (this._service === ESERVICE.MYSQL) {
-                    regexCache.push(new RegExp('`' + this._pre + item + '`', 'g'));
+                if (isMysql) {
+                    const regex = new RegExp('`' + this._pre + item + '`', 'g');
+                    sql = sql.replace(regex, '`' + item + '`');
                 }
                 else {
-                    regexCache.push(new RegExp(`"${this._pre}"."${item}"`, 'g'));
-                }
-            }
-            for (let i = 0; i < this._alias.length; ++i) {
-                if (this._service === ESERVICE.MYSQL) {
-                    sql = sql.replace(regexCache[i], '`' + this._alias[i] + '`');
-                }
-                else {
-                    sql = sql.replace(regexCache[i], '"' + this._alias[i] + '"');
+                    const regex = new RegExp(`"${this._pre}"."${item}"`, 'g');
+                    sql = sql.replace(regex, '"' + item + '"');
                 }
             }
         }
