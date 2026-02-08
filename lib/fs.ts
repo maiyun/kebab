@@ -51,6 +51,7 @@ export async function getContent(path: string, options?: BufferEncoding | {
             const data: Buffer[] = [];
             rs.on('data', (chunk) => {
                 if (!(chunk instanceof Buffer)) {
+                    rs.destroy();
                     return;
                 }
                 data.push(chunk);
@@ -432,7 +433,9 @@ export function pipe(path: string, destination: NodeJS.WritableStream, options?:
     'end'?: boolean;
 }): Promise<boolean> {
     return new Promise((resolve) => {
-        createReadStream(path).on('error', function() {
+        const rs = createReadStream(path);
+        rs.on('error', function() {
+            rs.destroy();
             resolve(false);
         }).on('end', function() {
             resolve(true);

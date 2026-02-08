@@ -124,18 +124,19 @@ export class Sql {
             }
             // --- INSERT INTO xx (id, name) VALUES (?, ?) ---
             // --- INSERT INTO xx (id, name) VALUES (?, ?), (?, ?) ---
+            const valueParts: string[] = [];
             for (const v of vs as kebab.DbValue[][]) {
-                sql += '(';
+                const rowParts: string[] = [];
                 for (const v1 of v) {
                     const result = this._processValue(v1);
-                    sql += result.sql + ', ';
+                    rowParts.push(result.sql);
                     if (result.data !== undefined) {
                         this._data.push(...result.data);
                     }
                 }
-                sql = sql.slice(0, -2) + '), ';
+                valueParts.push('(' + rowParts.join(', ') + ')');
             }
-            sql = sql.slice(0, -2);
+            sql += valueParts.join(', ');
         }
         else {
             // --- {'id': '1', 'name': 'wow'} ---
@@ -465,18 +466,8 @@ export class Sql {
         }
         else {
             // --- array ---
-            let go: boolean = false;
-            if (Array.isArray(s)) {
-                if (s.length) {
-                    go = true;
-                }
-            }
-            else {
-                if (Object.keys(s).length) {
-                    go = true;
-                }
-            }
-            if (go) {
+            const hasContent = Array.isArray(s) ? s.length > 0 : Object.keys(s).length > 0;
+            if (hasContent) {
                 const whereSub = this._whereSub(s);
                 if (whereSub !== '') {
                     this._sql.push(' WHERE ' + whereSub);

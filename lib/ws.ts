@@ -195,6 +195,15 @@ export class Socket {
             return this;
         }
         catch {
+            // --- 连接失败时清理资源 ---
+            if (this._ws) {
+                try {
+                    this._ws.destroy();
+                }
+                catch {
+                    // --- 忽略销毁错误 ---
+                }
+            }
             return null;
         }
     }
@@ -620,6 +629,7 @@ export async function rsocket(
                 resolve(true);
             });
         }).on('error', () => {
+            socket.destroy();
             resolve(false);
         });
     });

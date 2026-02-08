@@ -169,7 +169,7 @@ export class Session {
                     ++count;
                     const r = await this._link.execute(this._sql.getSql(), this._sql.getData());
                     if (r.error) {
-                        if (r.error.errno !== 1062) {
+                        if ((r.error as any).errno !== 1062) {
                             return false;
                         }
                     }

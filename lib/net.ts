@@ -391,6 +391,7 @@ export async function request(
     let total: number = 0;
     if (save && (!req.headers['location'] || follow === 0)) {
         await new Promise<void>(function(resolve) {
+            const writeStream = lFs.createWriteStream(save);
             req.getStream().on('end', () => {
                 lFs.stats(save).then((stat) => {
                     total = stat?.size ?? 0;
@@ -399,8 +400,12 @@ export async function request(
                     resolve();
                 });
             }).on('error', function() {
+                writeStream.destroy();
                 resolve();
-            }).pipe(lFs.createWriteStream(save));
+            }).pipe(writeStream);
+            writeStream.on('error', function() {
+                resolve();
+            });
         });
     }
     // --- 创建 Response 对象 ---
@@ -742,7 +747,9 @@ export async function mproxy(
     }
     lCore.writeHead(res, rres.headers?.['http-code'] ?? 200);
     await new Promise<void>((resolve) => {
-        stream.pipe(res).on('finish', () => {
+        stream.on('error', () => {
+            resolve();
+        }).pipe(res).on('finish', () => {
             resolve();
         });
     });
