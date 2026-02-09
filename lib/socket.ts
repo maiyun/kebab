@@ -41,6 +41,7 @@ export function rwebsocket(
 ): net.Server {
     /** --- 请求端产生的双向 socket --- */
     const server = net.createServer(socket => {
+        socket.setKeepAlive(true);
         (async () => {
             // --- 每次进一个新连接都反代到一个新 WebSocket ---
             lCore.display('[' + lTime.format(null, 'Y-m-d H:i:s') + '] New client: ' + socket.remoteAddress + ':' + socket.remotePort);

@@ -583,6 +583,7 @@ export async function rsocket(
         /** --- 对端真实 tcp socket --- */
         const socket = new net.Socket();
         socket.connect(port, host, () => {
+            socket.setKeepAlive(true);
             // --- 连接成功 ---
             // --- 监听发送端的 ---
             ws.on('message', msg => {
