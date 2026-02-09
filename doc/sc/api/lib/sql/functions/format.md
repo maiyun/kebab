@@ -6,7 +6,7 @@
 
 # Function: format()
 
-> **format**(`sql`, `data`, `service`): `string`
+> **format**(`sql`, `data`, `service?`): `string`
 
 Defined in: [lib/sql.ts:1154](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L1154)
 
@@ -26,7 +26,7 @@ SQL 字符串
 
 DATA 数据
 
-### service
+### service?
 
 [`ESERVICE`](../enumerations/ESERVICE.md) = `ESERVICE.MYSQL`
 

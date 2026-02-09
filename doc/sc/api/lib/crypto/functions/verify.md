@@ -6,7 +6,7 @@
 
 # Function: verify()
 
-> **verify**(`data`, `object`, `signature`, `algorithm`): `boolean`
+> **verify**(`data`, `object`, `signature`, `algorithm?`): `boolean`
 
 Defined in: [lib/crypto.ts:90](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L90)
 
@@ -32,7 +32,7 @@ Defined in: [lib/crypto.ts:90](https://github.com/maiyunnet/kebab/blob/master/li
 
 签名
 
-### algorithm
+### algorithm?
 
 `string` = `'sha256'`
 

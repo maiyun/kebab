@@ -6,7 +6,7 @@
 
 # Function: regular()
 
-> **regular**(`task`, `immediate`): `Promise`\<`boolean`\>
+> **regular**(`task`, `immediate?`): `Promise`\<`boolean`\>
 
 Defined in: [lib/cron.ts:26](https://github.com/maiyunnet/kebab/blob/master/lib/cron.ts#L26)
 
@@ -20,7 +20,7 @@ Defined in: [lib/cron.ts:26](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 计划任务对象
 
-### immediate
+### immediate?
 
 `string` = `''`
 

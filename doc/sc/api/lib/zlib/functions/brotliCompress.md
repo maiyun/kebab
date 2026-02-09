@@ -6,7 +6,7 @@
 
 # Function: brotliCompress()
 
-> **brotliCompress**(`buffer`, `options`): `Promise`\<`Buffer`\<`ArrayBufferLike`\> \| `null`\>
+> **brotliCompress**(`buffer`, `options?`): `Promise`\<`Buffer`\<`ArrayBufferLike`\> \| `null`\>
 
 Defined in: [lib/zlib.ts:212](https://github.com/maiyunnet/kebab/blob/master/lib/zlib.ts#L212)
 
@@ -20,7 +20,7 @@ Brotli 压缩一段
 
 段
 
-### options
+### options?
 
 `ZlibOptions` = `{}`
 

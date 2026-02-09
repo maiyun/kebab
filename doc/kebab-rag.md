@@ -1385,7 +1385,7 @@ index/variables/VER.md
 
 # Variable: VER
 
-> `const` **VER**: `"8.0.0"` = `'8.0.0'`
+> `const` **VER**: `"8.0.1"` = `'8.0.1'`
 
 Defined in: [index.ts:10](https://github.com/maiyunnet/kebab/blob/master/index.ts#L10)
 
@@ -1974,7 +1974,7 @@ Defined in: [lib/buffer.ts:113](https://github.com/maiyunnet/kebab/blob/master/l
 
 ### writeString()
 
-> **writeString**(`value`, `encoding`): `number`
+> **writeString**(`value`, `encoding?`): `number`
 
 Defined in: [lib/buffer.ts:126](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L126)
 
@@ -1986,7 +1986,7 @@ Defined in: [lib/buffer.ts:126](https://github.com/maiyunnet/kebab/blob/master/l
 
 `string`
 
-##### encoding
+##### encoding?
 
 `BufferEncoding` = `'utf8'`
 
@@ -2227,7 +2227,7 @@ lib/captcha/functions/get.md
 
 # Function: get()
 
-> **get**(`width`, `height`, `length`): [`Captcha`](../classes/Captcha.md)
+> **get**(`width`, `height`, `length?`): [`Captcha`](../classes/Captcha.md)
 
 Defined in: [lib/captcha.ts:57](https://github.com/maiyunnet/kebab/blob/master/lib/captcha.ts#L57)
 
@@ -2247,7 +2247,7 @@ Defined in: [lib/captcha.ts:57](https://github.com/maiyunnet/kebab/blob/master/l
 
 高度
 
-### length
+### length?
 
 `number` = `4`
 
@@ -2426,7 +2426,7 @@ lib/consistent/functions/addToCircle.md
 
 # Function: addToCircle()
 
-> **addToCircle**(`circle`, `node`, `vcount`): `void`
+> **addToCircle**(`circle`, `node`, `vcount?`): `void`
 
 Defined in: [lib/consistent.ts:167](https://github.com/maiyunnet/kebab/blob/master/lib/consistent.ts#L167)
 
@@ -2446,7 +2446,7 @@ node 节点名一个或多个
 
 `string` | `string`[]
 
-### vcount
+### vcount?
 
 `number` = `300`
 
@@ -2467,7 +2467,7 @@ lib/consistent/functions/fast.md
 
 # Function: fast()
 
-> **fast**(`key`, `nodes`, `vcount`): `string` \| `null`
+> **fast**(`key`, `nodes`, `vcount?`): `string` \| `null`
 
 Defined in: [lib/consistent.ts:124](https://github.com/maiyunnet/kebab/blob/master/lib/consistent.ts#L124)
 
@@ -2487,7 +2487,7 @@ node 列表
 
 `string` | `string`[]
 
-### vcount
+### vcount?
 
 `number` = `300`
 
@@ -2508,7 +2508,7 @@ lib/consistent/functions/findInCircle.md
 
 # Function: findInCircle()
 
-> **findInCircle**(`circle`, `key`, `keys`): `string` \| `null`
+> **findInCircle**(`circle`, `key`, `keys?`): `string` \| `null`
 
 Defined in: [lib/consistent.ts:188](https://github.com/maiyunnet/kebab/blob/master/lib/consistent.ts#L188)
 
@@ -2528,7 +2528,7 @@ Defined in: [lib/consistent.ts:188](https://github.com/maiyunnet/kebab/blob/mast
 
 `string` | `number`
 
-### keys
+### keys?
 
 `string`[] = `[]`
 
@@ -2549,13 +2549,13 @@ lib/consistent/functions/get.md
 
 # Function: get()
 
-> **get**(`vcount`): [`Consistent`](../classes/Consistent.md)
+> **get**(`vcount?`): [`Consistent`](../classes/Consistent.md)
 
 Defined in: [lib/consistent.ts:114](https://github.com/maiyunnet/kebab/blob/master/lib/consistent.ts#L114)
 
 ## Parameters
 
-### vcount
+### vcount?
 
 `number` = `300`
 
@@ -2574,7 +2574,7 @@ lib/consistent/functions/getRange.md
 
 # Function: getRange()
 
-> **getRange**(`min`, `max`, `pre`): `string`[]
+> **getRange**(`min`, `max`, `pre?`): `string`[]
 
 Defined in: [lib/consistent.ts:153](https://github.com/maiyunnet/kebab/blob/master/lib/consistent.ts#L153)
 
@@ -2594,7 +2594,7 @@ Defined in: [lib/consistent.ts:153](https://github.com/maiyunnet/kebab/blob/mast
 
 最大值（含）
 
-### pre
+### pre?
 
 `string` = `''`
 
@@ -2668,7 +2668,7 @@ lib/core/functions/checkType.md
 
 # Function: checkType()
 
-> **checkType**(`val`, `type`, `tree`): `string`
+> **checkType**(`val`, `type`, `tree?`): `string`
 
 Defined in: [lib/core.ts:201](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L201)
 
@@ -2688,7 +2688,7 @@ Defined in: [lib/core.ts:201](https://github.com/maiyunnet/kebab/blob/master/lib
 
 示例组
 
-### tree
+### tree?
 
 `string` = `'root'`
 
@@ -2773,7 +2773,7 @@ lib/core/functions/debug.md
 
 # Function: debug()
 
-> **debug**(`message?`, ...`optionalParams?`): `void`
+> **debug**(`message?`, ...`optionalParams`): `void`
 
 Defined in: [lib/core.ts:981](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L981)
 
@@ -2787,7 +2787,7 @@ Defined in: [lib/core.ts:981](https://github.com/maiyunnet/kebab/blob/master/lib
 
 参数
 
-### optionalParams?
+### optionalParams
 
 ...`any`[]
 
@@ -2808,7 +2808,7 @@ lib/core/functions/display.md
 
 # Function: display()
 
-> **display**(`message?`, ...`optionalParams?`): `void`
+> **display**(`message?`, ...`optionalParams`): `void`
 
 Defined in: [lib/core.ts:994](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L994)
 
@@ -2822,7 +2822,7 @@ Defined in: [lib/core.ts:994](https://github.com/maiyunnet/kebab/blob/master/lib
 
 参数
 
-### optionalParams?
+### optionalParams
 
 ...`any`[]
 
@@ -2843,7 +2843,7 @@ lib/core/functions/emptyObject.md
 
 # Function: emptyObject()
 
-> **emptyObject**(`obj`, `deep`): `void`
+> **emptyObject**(`obj`, `deep?`): `void`
 
 Defined in: [lib/core.ts:410](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L410)
 
@@ -2857,7 +2857,7 @@ Defined in: [lib/core.ts:410](https://github.com/maiyunnet/kebab/blob/master/lib
 
 要清除的对象
 
-### deep
+### deep?
 
 `boolean` = `false`
 
@@ -2878,7 +2878,7 @@ lib/core/functions/exec.md
 
 # Function: exec()
 
-> **exec**(`command`, `options`): `Promise`\<`string` \| `false`\>
+> **exec**(`command`, `options?`): `Promise`\<`string` \| `false`\>
 
 Defined in: [lib/core.ts:468](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L468)
 
@@ -2892,7 +2892,7 @@ Defined in: [lib/core.ts:468](https://github.com/maiyunnet/kebab/blob/master/lib
 
 命令字符串
 
-### options
+### options?
 
 #### cwd?
 
@@ -3019,7 +3019,7 @@ lib/core/functions/log.md
 
 # Function: log()
 
-> **log**(`opt`, `msg`, `fend`): `void`
+> **log**(`opt`, `msg`, `fend?`): `void`
 
 Defined in: [lib/core.ts:774](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L774)
 
@@ -3039,7 +3039,7 @@ Defined in: [lib/core.ts:774](https://github.com/maiyunnet/kebab/blob/master/lib
 
 自定义内容
 
-### fend
+### fend?
 
 `string` = `''`
 
@@ -3103,7 +3103,7 @@ lib/core/functions/muid.md
 
 # Function: muid()
 
-> **muid**(`ctr`, `opt`): `string`
+> **muid**(`ctr`, `opt?`): `string`
 
 Defined in: [lib/core.ts:289](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L289)
 
@@ -3117,7 +3117,7 @@ Defined in: [lib/core.ts:289](https://github.com/maiyunnet/kebab/blob/master/lib
 
 Ctr 对象
 
-### opt
+### opt?
 
 参数
 
@@ -3201,7 +3201,7 @@ lib/core/functions/passThroughAppend.md
 
 # Function: passThroughAppend()
 
-> **passThroughAppend**(`passThrough`, `data`, `end`): `Promise`\<`void`\>
+> **passThroughAppend**(`passThrough`, `data`, `end?`): `Promise`\<`void`\>
 
 Defined in: [lib/core.ts:429](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L429)
 
@@ -3221,7 +3221,7 @@ passThrough 对象
 
 数组
 
-### end
+### end?
 
 `boolean` = `true`
 
@@ -3271,7 +3271,7 @@ lib/core/functions/rand.md
 
 # Function: rand()
 
-> **rand**(`min`, `max`, `prec`): `number`
+> **rand**(`min`, `max`, `prec?`): `number`
 
 Defined in: [lib/core.ts:79](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L79)
 
@@ -3291,7 +3291,7 @@ Defined in: [lib/core.ts:79](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 <= 最大值
 
-### prec
+### prec?
 
 `number` = `0`
 
@@ -3312,7 +3312,7 @@ lib/core/functions/random.md
 
 # Function: random()
 
-> **random**(`length`, `source`, `block`): `string`
+> **random**(`length?`, `source?`, `block?`): `string`
 
 Defined in: [lib/core.ts:117](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L117)
 
@@ -3320,19 +3320,19 @@ Defined in: [lib/core.ts:117](https://github.com/maiyunnet/kebab/blob/master/lib
 
 ## Parameters
 
-### length
+### length?
 
 `number` = `8`
 
 长度
 
-### source
+### source?
 
 `string` = `RANDOM_LN`
 
 采样值
 
-### block
+### block?
 
 `string` = `''`
 
@@ -3353,7 +3353,7 @@ lib/core/functions/realIP.md
 
 # Function: realIP()
 
-> **realIP**(`ctr`, `name`): `string`
+> **realIP**(`ctr`, `name?`): `string`
 
 Defined in: [lib/core.ts:363](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L363)
 
@@ -3365,7 +3365,7 @@ Defined in: [lib/core.ts:363](https://github.com/maiyunnet/kebab/blob/master/lib
 
 [`Ctr`](../../../sys/ctr/classes/Ctr.md)
 
-### name
+### name?
 
 `string` = `''`
 
@@ -3456,7 +3456,7 @@ lib/core/functions/sendPm2.md
 
 # Function: sendPm2()
 
-> **sendPm2**(`name`, `action`, `hosts?`): `Promise`\<`string`[]\>
+> **sendPm2**(`name`, `action?`, `hosts?`): `Promise`\<`string`[]\>
 
 Defined in: [lib/core.ts:573](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L573)
 
@@ -3470,7 +3470,7 @@ Defined in: [lib/core.ts:573](https://github.com/maiyunnet/kebab/blob/master/lib
 
 PM2 进程名称
 
-### action
+### action?
 
 [`TPm2Action`](../type-aliases/TPm2Action.md) = `'restart'`
 
@@ -3553,7 +3553,7 @@ lib/core/functions/setCookie.md
 
 # Function: setCookie()
 
-> **setCookie**(`ctr`, `name`, `value`, `opt`): `void`
+> **setCookie**(`ctr`, `name`, `value`, `opt?`): `void`
 
 Defined in: [lib/core.ts:50](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L50)
 
@@ -3579,7 +3579,7 @@ ctr 实例
 
 值
 
-### opt
+### opt?
 
 [`ICookieOptions`](../interfaces/ICookieOptions.md) = `{}`
 
@@ -4358,7 +4358,7 @@ lib/cron/functions/regular.md
 
 # Function: regular()
 
-> **regular**(`task`, `immediate`): `Promise`\<`boolean`\>
+> **regular**(`task`, `immediate?`): `Promise`\<`boolean`\>
 
 Defined in: [lib/cron.ts:26](https://github.com/maiyunnet/kebab/blob/master/lib/cron.ts#L26)
 
@@ -4372,7 +4372,7 @@ Defined in: [lib/cron.ts:26](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 计划任务对象
 
-### immediate
+### immediate?
 
 `string` = `''`
 
@@ -4868,7 +4868,7 @@ lib/crypto/functions/cipherDecrypt.md
 
 # Function: cipherDecrypt()
 
-> **cipherDecrypt**(`encrypt`, `key`, `iv`, `method`, `output`): `string` \| `false` \| `Buffer`\<`ArrayBufferLike`\>
+> **cipherDecrypt**(`encrypt`, `key`, `iv?`, `method?`, `output?`): `string` \| `false` \| `Buffer`\<`ArrayBufferLike`\>
 
 Defined in: [lib/crypto.ts:280](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L280)
 
@@ -4888,19 +4888,19 @@ cipher 解密
 
 密钥 32 个英文字母和数字
 
-### iv
+### iv?
 
 `string` = `''`
 
 向量 16(CTR) 或 12(GCM) 个英文字母和数字
 
-### method
+### method?
 
 `string` = `AES_256_ECB`
 
 加密方法
 
-### output
+### output?
 
 输出类型
 
@@ -4921,7 +4921,7 @@ lib/crypto/functions/cipherEncrypt.md
 
 # Function: cipherEncrypt()
 
-> **cipherEncrypt**(`original`, `key`, `iv`, `method`, `output`): `string` \| `false` \| `Buffer`\<`ArrayBufferLike`\>
+> **cipherEncrypt**(`original`, `key`, `iv?`, `method?`, `output?`): `string` \| `false` \| `Buffer`\<`ArrayBufferLike`\>
 
 Defined in: [lib/crypto.ts:167](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L167)
 
@@ -4941,19 +4941,19 @@ cipher 加密，强烈不建议使用 AES_256_ECB
 
 密钥 32 个英文字母和数字
 
-### iv
+### iv?
 
 `string` = `''`
 
 向量 16(CTR) 或 12(GCM) 个英文字母和数字
 
-### method
+### method?
 
 `string` = `AES_256_ECB`
 
 加密方法
 
-### output
+### output?
 
 输出类型
 
@@ -5124,7 +5124,7 @@ lib/crypto/functions/generateKeyPair.md
 
 # Function: generateKeyPair()
 
-> **generateKeyPair**(`type`, `options`): `Promise`\<\{ `private`: `string` \| `Buffer`\<`ArrayBufferLike`\>; `public`: `string` \| `Buffer`\<`ArrayBufferLike`\>; \}\>
+> **generateKeyPair**(`type`, `options?`): `Promise`\<\{ `private`: `string` \| `Buffer`\<`ArrayBufferLike`\>; `public`: `string` \| `Buffer`\<`ArrayBufferLike`\>; \}\>
 
 Defined in: [lib/crypto.ts:18](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L18)
 
@@ -5138,7 +5138,7 @@ Defined in: [lib/crypto.ts:18](https://github.com/maiyunnet/kebab/blob/master/li
 
 如 rsa/ec
 
-### options
+### options?
 
 参数
 
@@ -5801,7 +5801,7 @@ lib/crypto/functions/verify.md
 
 # Function: verify()
 
-> **verify**(`data`, `object`, `signature`, `algorithm`): `boolean`
+> **verify**(`data`, `object`, `signature`, `algorithm?`): `boolean`
 
 Defined in: [lib/crypto.ts:90](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L90)
 
@@ -5827,7 +5827,7 @@ Defined in: [lib/crypto.ts:90](https://github.com/maiyunnet/kebab/blob/master/li
 
 签名
 
-### algorithm
+### algorithm?
 
 `string` = `'sha256'`
 
@@ -6161,7 +6161,7 @@ Defined in: [lib/db/conn.ts:73](https://github.com/maiyunnet/kebab/blob/master/l
 
 ### isAvailable()
 
-> **isAvailable**(`last`): `Promise`\<`boolean`\>
+> **isAvailable**(`last?`): `Promise`\<`boolean`\>
 
 Defined in: [lib/db/conn.ts:154](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L154)
 
@@ -6169,7 +6169,7 @@ Defined in: [lib/db/conn.ts:154](https://github.com/maiyunnet/kebab/blob/master/
 
 #### Parameters
 
-##### last
+##### last?
 
 `boolean` = `true`
 
@@ -6374,7 +6374,7 @@ lib/db/functions/get.md
 
 # Function: get()
 
-> **get**(`ctrEtc`, `opt`): [`Pool`](../pool/classes/Pool.md)
+> **get**(`ctrEtc`, `opt?`): [`Pool`](../pool/classes/Pool.md)
 
 Defined in: [lib/db.ts:68](https://github.com/maiyunnet/kebab/blob/master/lib/db.ts#L68)
 
@@ -6388,7 +6388,7 @@ Defined in: [lib/db.ts:68](https://github.com/maiyunnet/kebab/blob/master/lib/db
 
 [`IConfigDb`](../../../index/interfaces/IConfigDb.md) | [`Ctr`](../../../sys/ctr/classes/Ctr.md)
 
-### opt
+### opt?
 
 选项
 
@@ -6903,7 +6903,7 @@ Defined in: [lib/db/tran.ts:9](https://github.com/maiyunnet/kebab/blob/master/li
 
 ### Constructor
 
-> **new Transaction**(`ctr`, `conn`, `opts`): `Transaction`
+> **new Transaction**(`ctr`, `conn`, `opts?`): `Transaction`
 
 Defined in: [lib/db/tran.ts:28](https://github.com/maiyunnet/kebab/blob/master/lib/db/tran.ts#L28)
 
@@ -6917,7 +6917,7 @@ Defined in: [lib/db/tran.ts:28](https://github.com/maiyunnet/kebab/blob/master/l
 
 [`Connection`](../../conn/classes/Connection.md)
 
-##### opts
+##### opts?
 
 ###### danger?
 
@@ -7664,7 +7664,7 @@ lib/fs/functions/copyFolder.md
 
 # Function: copyFolder()
 
-> **copyFolder**(`from`, `to`, `ignore`): `Promise`\<`number`\>
+> **copyFolder**(`from`, `to`, `ignore?`): `Promise`\<`number`\>
 
 Defined in: [lib/fs.ts:341](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L341)
 
@@ -7684,7 +7684,7 @@ Defined in: [lib/fs.ts:341](https://github.com/maiyunnet/kebab/blob/master/lib/f
 
 目标，末尾加 /
 
-### ignore
+### ignore?
 
 `RegExp`[] = `[]`
 
@@ -7900,7 +7900,7 @@ lib/fs/functions/mkdir.md
 
 # Function: mkdir()
 
-> **mkdir**(`path`, `mode`): `Promise`\<`boolean`\>
+> **mkdir**(`path`, `mode?`): `Promise`\<`boolean`\>
 
 Defined in: [lib/fs.ts:207](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L207)
 
@@ -7914,7 +7914,7 @@ Defined in: [lib/fs.ts:207](https://github.com/maiyunnet/kebab/blob/master/lib/f
 
 要创建的路径，如 /a/b/c/
 
-### mode
+### mode?
 
 `number` = `0o755`
 
@@ -7978,7 +7978,7 @@ lib/fs/functions/putContent.md
 
 # Function: putContent()
 
-> **putContent**(`path`, `data`, `options`): `Promise`\<`boolean`\>
+> **putContent**(`path`, `data`, `options?`): `Promise`\<`boolean`\>
 
 Defined in: [lib/fs.ts:93](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L93)
 
@@ -7998,7 +7998,7 @@ Defined in: [lib/fs.ts:93](https://github.com/maiyunnet/kebab/blob/master/lib/fs
 
 `string` | `Buffer`\<`ArrayBufferLike`\>
 
-### options
+### options?
 
 选项
 
@@ -8406,7 +8406,7 @@ Defined in: [lib/kv.ts:60](https://github.com/maiyunnet/kebab/blob/master/lib/kv
 
 ### add()
 
-> **add**(`key`, `val`, `ttl`): `Promise`\<`boolean`\>
+> **add**(`key`, `val`, `ttl?`): `Promise`\<`boolean`\>
 
 Defined in: [lib/kv.ts:115](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L115)
 
@@ -8422,7 +8422,7 @@ Defined in: [lib/kv.ts:115](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 `string` | `number` | `object`
 
-##### ttl
+##### ttl?
 
 `number` = `0`
 
@@ -8520,7 +8520,7 @@ Defined in: [lib/kv.ts:780](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 ### decr()
 
-> **decr**(`key`, `num`): `Promise`\<`number` \| `false`\>
+> **decr**(`key`, `num?`): `Promise`\<`number` \| `false`\>
 
 Defined in: [lib/kv.ts:387](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L387)
 
@@ -8532,7 +8532,7 @@ Defined in: [lib/kv.ts:387](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 `string`
 
-##### num
+##### num?
 
 `number` = `1`
 
@@ -8892,7 +8892,7 @@ key / val 数组
 
 ### hSet()
 
-> **hSet**(`key`, `field`, `val`, `mod`): `Promise`\<`boolean`\>
+> **hSet**(`key`, `field`, `val`, `mod?`): `Promise`\<`boolean`\>
 
 Defined in: [lib/kv.ts:519](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L519)
 
@@ -8918,7 +8918,7 @@ key 名
 
 `string` | `number` | `object`
 
-##### mod
+##### mod?
 
 空,nx(key不存在才建立)
 
@@ -8932,7 +8932,7 @@ key 名
 
 ### incr()
 
-> **incr**(`key`, `num`): `Promise`\<`number` \| `false`\>
+> **incr**(`key`, `num?`): `Promise`\<`number` \| `false`\>
 
 Defined in: [lib/kv.ts:359](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L359)
 
@@ -8944,7 +8944,7 @@ Defined in: [lib/kv.ts:359](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 `string`
 
-##### num
+##### num?
 
 `number` = `1`
 
@@ -9180,7 +9180,7 @@ Defined in: [lib/kv.ts:252](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 ### replace()
 
-> **replace**(`key`, `val`, `ttl`): `Promise`\<`boolean`\>
+> **replace**(`key`, `val`, `ttl?`): `Promise`\<`boolean`\>
 
 Defined in: [lib/kv.ts:129](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L129)
 
@@ -9200,7 +9200,7 @@ Defined in: [lib/kv.ts:129](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 `string` | `number` | `object`
 
-##### ttl
+##### ttl?
 
 `number` = `0`
 
@@ -9254,7 +9254,7 @@ Defined in: [lib/kv.ts:728](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 ### scan()
 
-> **scan**(`cursor`, `pattern`, `count`): `Promise`\<`false` \| `IScanResult`\<`string`\>\>
+> **scan**(`cursor?`, `pattern?`, `count?`): `Promise`\<`false` \| `IScanResult`\<`string`\>\>
 
 Defined in: [lib/kv.ts:458](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L458)
 
@@ -9262,17 +9262,17 @@ Defined in: [lib/kv.ts:458](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 #### Parameters
 
-##### cursor
+##### cursor?
 
 `number` = `0`
 
-##### pattern
+##### pattern?
 
 `string` = `'*'`
 
 例如 *
 
-##### count
+##### count?
 
 `number` = `10`
 
@@ -9286,7 +9286,7 @@ Defined in: [lib/kv.ts:458](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 ### set()
 
-> **set**(`key`, `val`, `ttl`, `mod`): `Promise`\<`boolean`\>
+> **set**(`key`, `val`, `ttl?`, `mod?`): `Promise`\<`boolean`\>
 
 Defined in: [lib/kv.ts:83](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L83)
 
@@ -9302,13 +9302,13 @@ Defined in: [lib/kv.ts:83](https://github.com/maiyunnet/kebab/blob/master/lib/kv
 
 `string` | `number` | `object`
 
-##### ttl
+##### ttl?
 
 `number` = `0`
 
 秒，0 为不限制
 
-##### mod
+##### mod?
 
 设置模式: 空,nx（key不存在才建立）,xx（key存在才修改）
 
@@ -10202,7 +10202,7 @@ lib/net/functions/fetch.md
 
 # Function: fetch()
 
-> **fetch**(`input`, `init`): `Promise`\<`Response`\>
+> **fetch**(`input`, `init?`): `Promise`\<`Response`\>
 
 Defined in: [lib/net.ts:131](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L131)
 
@@ -10216,7 +10216,7 @@ Defined in: [lib/net.ts:131](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 `string` | `Request` | `URL`
 
-### init
+### init?
 
 `RequestInit` & `object` = `{}`
 
@@ -10278,7 +10278,7 @@ lib/net/functions/get.md
 
 # Function: get()
 
-> **get**(`u`, `opt`): `Promise`\<[`Response`](../response/classes/Response.md)\>
+> **get**(`u`, `opt?`): `Promise`\<[`Response`](../response/classes/Response.md)\>
 
 Defined in: [lib/net.ts:67](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L67)
 
@@ -10292,7 +10292,7 @@ Defined in: [lib/net.ts:67](https://github.com/maiyunnet/kebab/blob/master/lib/n
 
 请求的 URL
 
-### opt
+### opt?
 
 [`IRequestOptions`](../interfaces/IRequestOptions.md) = `{}`
 
@@ -10355,7 +10355,7 @@ lib/net/functions/mproxy.md
 
 # Function: mproxy()
 
-> **mproxy**(`ctr`, `auth`, `opt`): `Promise`\<`number`\>
+> **mproxy**(`ctr`, `auth`, `opt?`): `Promise`\<`number`\>
 
 Defined in: [lib/net.ts:718](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L718)
 
@@ -10376,7 +10376,7 @@ get: url, auth
 
 校验字符串，读取 get 的 auth 和本参数做比对
 
-### opt
+### opt?
 
 [`IMproxyOptions`](../interfaces/IMproxyOptions.md) = `{}`
 
@@ -10453,7 +10453,7 @@ lib/net/functions/post.md
 
 # Function: post()
 
-> **post**(`u`, `data`, `opt`): `Promise`\<[`Response`](../response/classes/Response.md)\>
+> **post**(`u`, `data`, `opt?`): `Promise`\<[`Response`](../response/classes/Response.md)\>
 
 Defined in: [lib/net.ts:77](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L77)
 
@@ -10473,7 +10473,7 @@ Defined in: [lib/net.ts:77](https://github.com/maiyunnet/kebab/blob/master/lib/n
 
 `string` | `Record`\<`string`, `any`\> | `Buffer`\<`ArrayBufferLike`\> | `Readable`
 
-### opt
+### opt?
 
 [`IRequestOptions`](../interfaces/IRequestOptions.md) = `{}`
 
@@ -10494,7 +10494,7 @@ lib/net/functions/postJson.md
 
 # Function: postJson()
 
-> **postJson**(`u`, `data`, `opt`): `Promise`\<[`Response`](../response/classes/Response.md)\>
+> **postJson**(`u`, `data`, `opt?`): `Promise`\<[`Response`](../response/classes/Response.md)\>
 
 Defined in: [lib/net.ts:92](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L92)
 
@@ -10514,7 +10514,7 @@ Defined in: [lib/net.ts:92](https://github.com/maiyunnet/kebab/blob/master/lib/n
 
 `any`[] | `Record`\<`string`, `any`\>
 
-### opt
+### opt?
 
 [`IRequestOptions`](../interfaces/IRequestOptions.md) = `{}`
 
@@ -10535,7 +10535,7 @@ lib/net/functions/postJsonResponseJson.md
 
 # Function: postJsonResponseJson()
 
-> **postJsonResponseJson**(`u`, `data`, `opt`): `Promise`\<`any`\>
+> **postJsonResponseJson**(`u`, `data`, `opt?`): `Promise`\<`any`\>
 
 Defined in: [lib/net.ts:109](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L109)
 
@@ -10555,7 +10555,7 @@ Defined in: [lib/net.ts:109](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 `any`[] | `Record`\<`string`, `any`\>
 
-### opt
+### opt?
 
 [`IRequestOptions`](../interfaces/IRequestOptions.md) = `{}`
 
@@ -10644,7 +10644,7 @@ lib/net/functions/rproxy.md
 
 # Function: rproxy()
 
-> **rproxy**(`ctr`, `route`, `opt`): `Promise`\<`boolean`\>
+> **rproxy**(`ctr`, `route`, `opt?`): `Promise`\<`boolean`\>
 
 Defined in: [lib/net.ts:785](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L785)
 
@@ -10664,7 +10664,7 @@ Defined in: [lib/net.ts:785](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 要反代的路由
 
-### opt
+### opt?
 
 [`IRproxyOptions`](../interfaces/IRproxyOptions.md) = `{}`
 
@@ -10685,7 +10685,7 @@ lib/net/functions/setCookie.md
 
 # Function: setCookie()
 
-> **setCookie**(`cookie`, `name`, `value`, `domain`, `opt`): `void`
+> **setCookie**(`cookie`, `name`, `value`, `domain`, `opt?`): `void`
 
 Defined in: [lib/net.ts:466](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L466)
 
@@ -10717,7 +10717,7 @@ Defined in: [lib/net.ts:466](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 应用网址，如 .xxx.com
 
-### opt
+### opt?
 
 选项 ttl, path, ssl, httponly
 
@@ -11249,7 +11249,7 @@ Defined in: [lib/net/request.ts:29](https://github.com/maiyunnet/kebab/blob/mast
 
 ### follow()
 
-> **follow**(`follow`): `this`
+> **follow**(`follow?`): `this`
 
 Defined in: [lib/net/request.ts:86](https://github.com/maiyunnet/kebab/blob/master/lib/net/request.ts#L86)
 
@@ -11257,7 +11257,7 @@ Defined in: [lib/net/request.ts:86](https://github.com/maiyunnet/kebab/blob/mast
 
 #### Parameters
 
-##### follow
+##### follow?
 
 `number` = `5`
 
@@ -12274,7 +12274,7 @@ lib/scan/functions/scanned.md
 
 # Function: scanned()
 
-> **scanned**(`link`, `token`, `opt`): `Promise`\<`boolean`\>
+> **scanned**(`link`, `token`, `opt?`): `Promise`\<`boolean`\>
 
 Defined in: [lib/scan.ts:265](https://github.com/maiyunnet/kebab/blob/master/lib/scan.ts#L265)
 
@@ -12294,7 +12294,7 @@ Db 或 Kv
 
 必填
 
-### opt
+### opt?
 
 [`IStaticOptions`](../interfaces/IStaticOptions.md) = `{}`
 
@@ -12315,7 +12315,7 @@ lib/scan/functions/setData.md
 
 # Function: setData()
 
-> **setData**(`link`, `token`, `data`, `opt`): `Promise`\<`boolean`\>
+> **setData**(`link`, `token`, `data`, `opt?`): `Promise`\<`boolean`\>
 
 Defined in: [lib/scan.ts:323](https://github.com/maiyunnet/kebab/blob/master/lib/scan.ts#L323)
 
@@ -12335,7 +12335,7 @@ Defined in: [lib/scan.ts:323](https://github.com/maiyunnet/kebab/blob/master/lib
 
 `string` | `number` | `Record`\<`string`, `any`\>
 
-### opt
+### opt?
 
 [`IStaticOptions`](../interfaces/IStaticOptions.md) = `{}`
 
@@ -12510,7 +12510,7 @@ Defined in: [lib/session.ts:194](https://github.com/maiyunnet/kebab/blob/master/
 
 ### init()
 
-> **init**(`ctr`, `link`, `auth`, `opt`): `Promise`\<`boolean`\>
+> **init**(`ctr`, `link`, `auth?`, `opt?`): `Promise`\<`boolean`\>
 
 Defined in: [lib/session.ts:65](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L65)
 
@@ -12530,13 +12530,13 @@ Kv 或 Db 实例
 
 [`Pool`](../../db/pool/classes/Pool.md) | [`Kv`](../../kv/classes/Kv.md)
 
-##### auth
+##### auth?
 
 `boolean` = `false`
 
 设为 true 则优先从头 Authorization 或 post _auth 值读取 token
 
-##### opt
+##### opt?
 
 [`IOptions`](../interfaces/IOptions.md) = `{}`
 
@@ -12637,7 +12637,7 @@ lib/socket/functions/rwebsocket.md
 
 # Function: rwebsocket()
 
-> **rwebsocket**(`port`, `url`, `opt`): `Server`
+> **rwebsocket**(`port`, `url`, `opt?`): `Server`
 
 Defined in: [lib/socket.ts:37](https://github.com/maiyunnet/kebab/blob/master/lib/socket.ts#L37)
 
@@ -12657,7 +12657,7 @@ Defined in: [lib/socket.ts:37](https://github.com/maiyunnet/kebab/blob/master/li
 
 反代到的 WebSocket
 
-### opt
+### opt?
 
 [`IRwebsocketOptions`](../interfaces/IRwebsocketOptions.md) = `{}`
 
@@ -12854,7 +12854,7 @@ Defined in: [lib/sql.ts:860](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 ### by()
 
-> **by**(`c`, `d`): `this`
+> **by**(`c`, `d?`): `this`
 
 Defined in: [lib/sql.ts:661](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L661)
 
@@ -12868,7 +12868,7 @@ ORDER BY
 
 `string` | (`string` \| `string`[])[]
 
-##### d
+##### d?
 
 排序规则
 
@@ -12910,7 +12910,7 @@ Defined in: [lib/sql.ts:729](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 ### crossJoin()
 
-> **crossJoin**(`f`, `s`, `suf`, `pre`): `this`
+> **crossJoin**(`f`, `s?`, `suf?`, `pre?`): `this`
 
 Defined in: [lib/sql.ts:416](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L416)
 
@@ -12924,19 +12924,19 @@ cross join 方法
 
 表名
 
-##### s
+##### s?
 
 `any` = `[]`
 
 ON 信息
 
-##### suf
+##### suf?
 
 `string` = `''`
 
 表后缀
 
-##### pre
+##### pre?
 
 `string` = `''`
 
@@ -12972,7 +12972,7 @@ Defined in: [lib/sql.ts:311](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 ### field()
 
-> **field**(`str`, `pre`, `suf`): `string`
+> **field**(`str`, `pre?`, `suf?`): `string`
 
 Defined in: [lib/sql.ts:871](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L871)
 
@@ -12984,13 +12984,13 @@ Defined in: [lib/sql.ts:871](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 `string` | `number` | (`string` \| `string`[])[]
 
-##### pre
+##### pre?
 
 `string` = `''`
 
 表前缀，仅请在 field 表名时倒入前缀
 
-##### suf
+##### suf?
 
 `string` = `''`
 
@@ -13028,7 +13028,7 @@ Defined in: [lib/sql.ts:850](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 ### fullJoin()
 
-> **fullJoin**(`f`, `s`, `suf`, `pre`): `this`
+> **fullJoin**(`f`, `s?`, `suf?`, `pre?`): `this`
 
 Defined in: [lib/sql.ts:405](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L405)
 
@@ -13042,19 +13042,19 @@ full join 方法
 
 表名
 
-##### s
+##### s?
 
 `any` = `[]`
 
 ON 信息
 
-##### suf
+##### suf?
 
 `string` = `''`
 
 表后缀
 
-##### pre
+##### pre?
 
 `string` = `''`
 
@@ -13132,7 +13132,7 @@ GROUP BY
 
 ### having()
 
-> **having**(`s`): `this`
+> **having**(`s?`): `this`
 
 Defined in: [lib/sql.ts:423](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L423)
 
@@ -13140,7 +13140,7 @@ having 后置筛选器，用法类似 where
 
 #### Parameters
 
-##### s
+##### s?
 
 `any` = `''`
 
@@ -13152,7 +13152,7 @@ having 后置筛选器，用法类似 where
 
 ### innerJoin()
 
-> **innerJoin**(`f`, `s`, `suf`, `pre`): `this`
+> **innerJoin**(`f`, `s?`, `suf?`, `pre?`): `this`
 
 Defined in: [lib/sql.ts:394](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L394)
 
@@ -13166,19 +13166,19 @@ inner join 方法
 
 表名
 
-##### s
+##### s?
 
 `any` = `[]`
 
 ON 信息
 
-##### suf
+##### suf?
 
 `string` = `''`
 
 表后缀
 
-##### pre
+##### pre?
 
 `string` = `''`
 
@@ -13192,7 +13192,7 @@ ON 信息
 
 ### insert()
 
-> **insert**(`table`, `ignore`): `this`
+> **insert**(`table`, `ignore?`): `this`
 
 Defined in: [lib/sql.ts:91](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L91)
 
@@ -13206,7 +13206,7 @@ Defined in: [lib/sql.ts:91](https://github.com/maiyunnet/kebab/blob/master/lib/s
 
 表名
 
-##### ignore
+##### ignore?
 
 `boolean` = `false`
 
@@ -13220,7 +13220,7 @@ Defined in: [lib/sql.ts:91](https://github.com/maiyunnet/kebab/blob/master/lib/s
 
 ### join()
 
-> **join**(`f`, `s`, `type`, `suf`, `pre`): `this`
+> **join**(`f`, `s?`, `type?`, `suf?`, `pre?`): `this`
 
 Defined in: [lib/sql.ts:346](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L346)
 
@@ -13234,25 +13234,25 @@ join 方法
 
 表名
 
-##### s
+##### s?
 
 `any` = `[]`
 
 ON 信息
 
-##### type
+##### type?
 
 `string` = `'INNER'`
 
 类型
 
-##### suf
+##### suf?
 
 `string` = `''`
 
 表后缀
 
-##### pre
+##### pre?
 
 `string` = `''`
 
@@ -13266,7 +13266,7 @@ ON 信息
 
 ### leftJoin()
 
-> **leftJoin**(`f`, `s`, `suf`, `pre`): `this`
+> **leftJoin**(`f`, `s?`, `suf?`, `pre?`): `this`
 
 Defined in: [lib/sql.ts:372](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L372)
 
@@ -13280,19 +13280,19 @@ left join 方法
 
 表名
 
-##### s
+##### s?
 
 `any` = `[]`
 
 ON 信息
 
-##### suf
+##### suf?
 
 `string` = `''`
 
 表后缀
 
-##### pre
+##### pre?
 
 `string` = `''`
 
@@ -13306,7 +13306,7 @@ ON 信息
 
 ### limit()
 
-> **limit**(`a`, `b`): `this`
+> **limit**(`a`, `b?`): `this`
 
 Defined in: [lib/sql.ts:705](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L705)
 
@@ -13320,7 +13320,7 @@ LIMIT（limit、offset, limit）
 
 起始（offset）
 
-##### b
+##### b?
 
 `number` = `0`
 
@@ -13348,7 +13348,7 @@ Defined in: [lib/sql.ts:720](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 ### rightJoin()
 
-> **rightJoin**(`f`, `s`, `suf`, `pre`): `this`
+> **rightJoin**(`f`, `s?`, `suf?`, `pre?`): `this`
 
 Defined in: [lib/sql.ts:383](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L383)
 
@@ -13362,19 +13362,19 @@ right join 方法
 
 表名
 
-##### s
+##### s?
 
 `any` = `[]`
 
 ON 信息
 
-##### suf
+##### suf?
 
 `string` = `''`
 
 表后缀
 
-##### pre
+##### pre?
 
 `string` = `''`
 
@@ -13416,7 +13416,7 @@ Defined in: [lib/sql.ts:202](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 ### union()
 
-> **union**(`lsql`, `type`): `this`
+> **union**(`lsql`, `type?`): `this`
 
 Defined in: [lib/sql.ts:323](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L323)
 
@@ -13430,7 +13430,7 @@ Defined in: [lib/sql.ts:323](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 sql 对象
 
-##### type
+##### type?
 
 `string` = `''`
 
@@ -13522,7 +13522,7 @@ Defined in: [lib/sql.ts:168](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 ### values()
 
-> **values**(`cs`, `vs`): `this`
+> **values**(`cs`, `vs?`): `this`
 
 Defined in: [lib/sql.ts:110](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L110)
 
@@ -13536,7 +13536,7 @@ Defined in: [lib/sql.ts:110](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 `string`[] | `Record`\<`string`, [`DbValue`](../../../index/type-aliases/DbValue.md)\>
 
-##### vs
+##### vs?
 
 [] | [][] 数据
 
@@ -13761,7 +13761,7 @@ lib/sql/functions/format.md
 
 # Function: format()
 
-> **format**(`sql`, `data`, `service`): `string`
+> **format**(`sql`, `data`, `service?`): `string`
 
 Defined in: [lib/sql.ts:1154](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L1154)
 
@@ -13781,7 +13781,7 @@ SQL 字符串
 
 DATA 数据
 
-### service
+### service?
 
 [`ESERVICE`](../enumerations/ESERVICE.md) = `ESERVICE.MYSQL`
 
@@ -14239,7 +14239,7 @@ Defined in: [lib/ssh/sftp.ts:418](https://github.com/maiyunnet/kebab/blob/master
 
 ### downloadFile()
 
-> **downloadFile**(`remoteFile`, `localFile`, `options`): `Promise`\<`boolean`\>
+> **downloadFile**(`remoteFile`, `localFile`, `options?`): `Promise`\<`boolean`\>
 
 Defined in: [lib/ssh/sftp.ts:442](https://github.com/maiyunnet/kebab/blob/master/lib/ssh/sftp.ts#L442)
 
@@ -14259,7 +14259,7 @@ Defined in: [lib/ssh/sftp.ts:442](https://github.com/maiyunnet/kebab/blob/master
 
 本地路径
 
-##### options
+##### options?
 
 `TransferOptions` = `{}`
 
@@ -14377,7 +14377,7 @@ Defined in: [lib/ssh/sftp.ts:229](https://github.com/maiyunnet/kebab/blob/master
 
 ### mkdir()
 
-> **mkdir**(`path`, `mode`): `Promise`\<`boolean`\>
+> **mkdir**(`path`, `mode?`): `Promise`\<`boolean`\>
 
 Defined in: [lib/ssh/sftp.ts:242](https://github.com/maiyunnet/kebab/blob/master/lib/ssh/sftp.ts#L242)
 
@@ -14391,7 +14391,7 @@ Defined in: [lib/ssh/sftp.ts:242](https://github.com/maiyunnet/kebab/blob/master
 
 要创建的路径，如 /a/b/c/
 
-##### mode
+##### mode?
 
 `number` = `0o755`
 
@@ -14405,7 +14405,7 @@ Defined in: [lib/ssh/sftp.ts:242](https://github.com/maiyunnet/kebab/blob/master
 
 ### pipe()
 
-> **pipe**\<`T`\>(`path`, `destination`, `options`): `Promise`\<`boolean`\>
+> **pipe**\<`T`\>(`path`, `destination`, `options?`): `Promise`\<`boolean`\>
 
 Defined in: [lib/ssh/sftp.ts:400](https://github.com/maiyunnet/kebab/blob/master/lib/ssh/sftp.ts#L400)
 
@@ -14431,7 +14431,7 @@ Defined in: [lib/ssh/sftp.ts:400](https://github.com/maiyunnet/kebab/blob/master
 
 要写入的流
 
-##### options
+##### options?
 
 写入后是否终止写入流，默认终止
 
@@ -14447,7 +14447,7 @@ Defined in: [lib/ssh/sftp.ts:400](https://github.com/maiyunnet/kebab/blob/master
 
 ### putContent()
 
-> **putContent**(`path`, `data`, `options`): `Promise`\<`boolean`\>
+> **putContent**(`path`, `data`, `options?`): `Promise`\<`boolean`\>
 
 Defined in: [lib/ssh/sftp.ts:109](https://github.com/maiyunnet/kebab/blob/master/lib/ssh/sftp.ts#L109)
 
@@ -14467,7 +14467,7 @@ Defined in: [lib/ssh/sftp.ts:109](https://github.com/maiyunnet/kebab/blob/master
 
 `string` | `Buffer`\<`ArrayBufferLike`\>
 
-##### options
+##### options?
 
 `WriteFileOptions` = `{}`
 
@@ -14685,7 +14685,7 @@ Defined in: [lib/ssh/sftp.ts:169](https://github.com/maiyunnet/kebab/blob/master
 
 ### uploadFile()
 
-> **uploadFile**(`localFile`, `remoteFile`, `options`): `Promise`\<`boolean`\>
+> **uploadFile**(`localFile`, `remoteFile`, `options?`): `Promise`\<`boolean`\>
 
 Defined in: [lib/ssh/sftp.ts:466](https://github.com/maiyunnet/kebab/blob/master/lib/ssh/sftp.ts#L466)
 
@@ -14703,7 +14703,7 @@ Defined in: [lib/ssh/sftp.ts:466](https://github.com/maiyunnet/kebab/blob/master
 
 `string`
 
-##### options
+##### options?
 
 `TransferOptions` = `{}`
 
@@ -14791,7 +14791,7 @@ Defined in: [lib/ssh/shell.ts:77](https://github.com/maiyunnet/kebab/blob/master
 
 ### getContent()
 
-> **getContent**(`tryCount`): `Promise`\<`Buffer`\<`ArrayBufferLike`\>\>
+> **getContent**(`tryCount?`): `Promise`\<`Buffer`\<`ArrayBufferLike`\>\>
 
 Defined in: [lib/ssh/shell.ts:96](https://github.com/maiyunnet/kebab/blob/master/lib/ssh/shell.ts#L96)
 
@@ -14799,7 +14799,7 @@ Defined in: [lib/ssh/shell.ts:96](https://github.com/maiyunnet/kebab/blob/master
 
 #### Parameters
 
-##### tryCount
+##### tryCount?
 
 `number` = `10`
 
@@ -15005,7 +15005,7 @@ lib/text/functions/int2str.md
 
 # Function: int2str()
 
-> **int2str**(`int`, `digits`, `decimal`): `string`
+> **int2str**(`int`, `digits?`, `decimal?`): `string`
 
 Defined in: [lib/text.ts:697](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L697)
 
@@ -15024,13 +15024,13 @@ int 传入 2，返回 '0.00'
 
 要转换的整数
 
-### digits
+### digits?
 
 `number` = `4`
 
 小数点左移位数
 
-### decimal
+### decimal?
 
 `number` = `2`
 
@@ -15423,7 +15423,7 @@ lib/text/functions/nlReplace.md
 
 # Function: nlReplace()
 
-> **nlReplace**(`str`, `to`): `string`
+> **nlReplace**(`str`, `to?`): `string`
 
 Defined in: [lib/text.ts:265](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L265)
 
@@ -15437,7 +15437,7 @@ Defined in: [lib/text.ts:265](https://github.com/maiyunnet/kebab/blob/master/lib
 
 要替换的字符串
 
-### to
+### to?
 
 `string` = '\n'
 
@@ -15692,7 +15692,7 @@ lib/text/functions/sizeFormat.md
 
 # Function: sizeFormat()
 
-> **sizeFormat**(`size`, `spliter`): `string`
+> **sizeFormat**(`size`, `spliter?`): `string`
 
 Defined in: [lib/text.ts:15](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L15)
 
@@ -15706,7 +15706,7 @@ Defined in: [lib/text.ts:15](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 文件大小
 
-### spliter
+### spliter?
 
 `string` = `' '`
 
@@ -15727,7 +15727,7 @@ lib/text/functions/str2int.md
 
 # Function: str2int()
 
-> **str2int**(`str`, `digits`): `number`
+> **str2int**(`str`, `digits?`): `number`
 
 Defined in: [lib/text.ts:679](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L679)
 
@@ -15746,7 +15746,7 @@ str 传入 '6'，返回 600
 
 要转换的数字字符串
 
-### digits
+### digits?
 
 `number` = `3`
 
@@ -16322,7 +16322,7 @@ lib/time/functions/get.md
 
 # Function: get()
 
-> **get**(`ctr`, `opt`): [`Time`](../classes/Time.md)
+> **get**(`ctr`, `opt?`): [`Time`](../classes/Time.md)
 
 Defined in: [lib/time.ts:113](https://github.com/maiyunnet/kebab/blob/master/lib/time.ts#L113)
 
@@ -16334,7 +16334,7 @@ Defined in: [lib/time.ts:113](https://github.com/maiyunnet/kebab/blob/master/lib
 
 [`Ctr`](../../../sys/ctr/classes/Ctr.md)
 
-### opt
+### opt?
 
 [`IOptions`](../interfaces/IOptions.md) = `{}`
 
@@ -16990,7 +16990,7 @@ Defined in: [lib/ws.ts:361](https://github.com/maiyunnet/kebab/blob/master/lib/w
 
 ### connect()
 
-> **connect**(`u`, `opt`): `Promise`\<`Socket` \| `null`\>
+> **connect**(`u`, `opt?`): `Promise`\<`Socket` \| `null`\>
 
 Defined in: [lib/ws.ts:123](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L123)
 
@@ -17004,7 +17004,7 @@ Defined in: [lib/ws.ts:123](https://github.com/maiyunnet/kebab/blob/master/lib/w
 
 以 ws, wss 开头的地址
 
-##### opt
+##### opt?
 
 [`IConnectOptions`](../interfaces/IConnectOptions.md) = `{}`
 
@@ -17341,7 +17341,7 @@ lib/ws/functions/connect.md
 
 # Function: connect()
 
-> **connect**(`u`, `opt`): `Promise`\<[`Socket`](../classes/Socket.md) \| `null`\>
+> **connect**(`u`, `opt?`): `Promise`\<[`Socket`](../classes/Socket.md) \| `null`\>
 
 Defined in: [lib/ws.ts:411](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L411)
 
@@ -17355,7 +17355,7 @@ Defined in: [lib/ws.ts:411](https://github.com/maiyunnet/kebab/blob/master/lib/w
 
 以 ws, wss 开头的地址
 
-### opt
+### opt?
 
 [`IConnectOptions`](../interfaces/IConnectOptions.md) = `{}`
 
@@ -17425,7 +17425,7 @@ lib/ws/functions/mproxy.md
 
 # Function: mproxy()
 
-> **mproxy**(`ctr`, `auth`, `opt`): `Promise`\<`number`\>
+> **mproxy**(`ctr`, `auth`, `opt?`): `Promise`\<`number`\>
 
 Defined in: [lib/ws.ts:509](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L509)
 
@@ -17446,7 +17446,7 @@ get: url, auth
 
 校验字符串，读取 get 的 auth 和本参数做比对
 
-### opt
+### opt?
 
 [`IMproxyOptions`](../interfaces/IMproxyOptions.md) = `{}`
 
@@ -17467,7 +17467,7 @@ lib/ws/functions/rproxy.md
 
 # Function: rproxy()
 
-> **rproxy**(`ctr`, `url`, `opt`): `Promise`\<`boolean`\>
+> **rproxy**(`ctr`, `url`, `opt?`): `Promise`\<`boolean`\>
 
 Defined in: [lib/ws.ts:546](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L546)
 
@@ -17487,7 +17487,7 @@ Defined in: [lib/ws.ts:546](https://github.com/maiyunnet/kebab/blob/master/lib/w
 
 反代真实请求地址，如有 get 需要自行添加
 
-### opt
+### opt?
 
 [`IRproxyOptions`](../interfaces/IRproxyOptions.md) = `{}`
 
@@ -17931,7 +17931,7 @@ Defined in: [lib/zip.ts:338](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 ### generate()
 
-> **generate**\<`T`\>(`options`): `Promise`\<[`IZipOutputByType`](../interfaces/IZipOutputByType.md)\[`T`\]\>
+> **generate**\<`T`\>(`options?`): `Promise`\<[`IZipOutputByType`](../interfaces/IZipOutputByType.md)\[`T`\]\>
 
 Defined in: [lib/zip.ts:350](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L350)
 
@@ -17945,7 +17945,7 @@ Defined in: [lib/zip.ts:350](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 #### Parameters
 
-##### options
+##### options?
 
 选项
 
@@ -18083,7 +18083,7 @@ Defined in: [lib/zip.ts:146](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 ### putContent()
 
-> **putContent**\<`T`\>(`path`, `data`, `options`): `void`
+> **putContent**\<`T`\>(`path`, `data`, `options?`): `void`
 
 Defined in: [lib/zip.ts:51](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L51)
 
@@ -18109,7 +18109,7 @@ Defined in: [lib/zip.ts:51](https://github.com/maiyunnet/kebab/blob/master/lib/z
 
 要写入的内容
 
-##### options
+##### options?
 
 选项
 
@@ -18706,7 +18706,7 @@ lib/zlib/functions/brotliCompress.md
 
 # Function: brotliCompress()
 
-> **brotliCompress**(`buffer`, `options`): `Promise`\<`Buffer`\<`ArrayBufferLike`\> \| `null`\>
+> **brotliCompress**(`buffer`, `options?`): `Promise`\<`Buffer`\<`ArrayBufferLike`\> \| `null`\>
 
 Defined in: [lib/zlib.ts:212](https://github.com/maiyunnet/kebab/blob/master/lib/zlib.ts#L212)
 
@@ -18720,7 +18720,7 @@ Brotli 压缩一段
 
 段
 
-### options
+### options?
 
 `ZlibOptions` = `{}`
 
@@ -18811,7 +18811,7 @@ lib/zlib/functions/createBrotliCompress.md
 
 # Function: createBrotliCompress()
 
-> **createBrotliCompress**(`options`): `BrotliCompress`
+> **createBrotliCompress**(`options?`): `BrotliCompress`
 
 Defined in: [lib/zlib.ts:57](https://github.com/maiyunnet/kebab/blob/master/lib/zlib.ts#L57)
 
@@ -18819,7 +18819,7 @@ Defined in: [lib/zlib.ts:57](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 ## Parameters
 
-### options
+### options?
 
 `ZlibOptions` = `{}`
 
@@ -18861,7 +18861,7 @@ lib/zlib/functions/createCompress.md
 
 # Function: createCompress()
 
-> **createCompress**(`types`, `options`): [`ICompress`](../interfaces/ICompress.md) \| `null`
+> **createCompress**(`types`, `options?`): [`ICompress`](../interfaces/ICompress.md) \| `null`
 
 Defined in: [lib/zlib.ts:74](https://github.com/maiyunnet/kebab/blob/master/lib/zlib.ts#L74)
 
@@ -18875,7 +18875,7 @@ Defined in: [lib/zlib.ts:74](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 用 , 间隔的字符串，如 gzip,deflate
 
-### options
+### options?
 
 `ZlibOptions` = `{}`
 
@@ -18925,7 +18925,7 @@ lib/zlib/functions/createDeflate.md
 
 # Function: createDeflate()
 
-> **createDeflate**(`options`): `Deflate`
+> **createDeflate**(`options?`): `Deflate`
 
 Defined in: [lib/zlib.ts:41](https://github.com/maiyunnet/kebab/blob/master/lib/zlib.ts#L41)
 
@@ -18933,7 +18933,7 @@ Defined in: [lib/zlib.ts:41](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 ## Parameters
 
-### options
+### options?
 
 `ZlibOptions` = `{}`
 
@@ -18975,7 +18975,7 @@ lib/zlib/functions/createGzip.md
 
 # Function: createGzip()
 
-> **createGzip**(`options`): `Gzip`
+> **createGzip**(`options?`): `Gzip`
 
 Defined in: [lib/zlib.ts:25](https://github.com/maiyunnet/kebab/blob/master/lib/zlib.ts#L25)
 
@@ -18983,7 +18983,7 @@ Defined in: [lib/zlib.ts:25](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 ## Parameters
 
-### options
+### options?
 
 `ZlibOptions` = `{}`
 
@@ -19060,7 +19060,7 @@ lib/zlib/functions/deflate.md
 
 # Function: deflate()
 
-> **deflate**(`buffer`, `options`): `Promise`\<`Buffer`\<`ArrayBufferLike`\> \| `null`\>
+> **deflate**(`buffer`, `options?`): `Promise`\<`Buffer`\<`ArrayBufferLike`\> \| `null`\>
 
 Defined in: [lib/zlib.ts:176](https://github.com/maiyunnet/kebab/blob/master/lib/zlib.ts#L176)
 
@@ -19074,7 +19074,7 @@ Deflate 压缩一段
 
 段
 
-### options
+### options?
 
 `ZlibOptions` = `{}`
 
@@ -19124,7 +19124,7 @@ lib/zlib/functions/gzip.md
 
 # Function: gzip()
 
-> **gzip**(`buffer`, `options`): `Promise`\<`Buffer`\<`ArrayBufferLike`\> \| `null`\>
+> **gzip**(`buffer`, `options?`): `Promise`\<`Buffer`\<`ArrayBufferLike`\> \| `null`\>
 
 Defined in: [lib/zlib.ts:140](https://github.com/maiyunnet/kebab/blob/master/lib/zlib.ts#L140)
 
@@ -19138,7 +19138,7 @@ Gzip 压缩一段
 
 段
 
-### options
+### options?
 
 `ZlibOptions` = `{}`
 
@@ -19828,7 +19828,7 @@ Defined in: [sys/ctr.ts:323](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 ### \_getRunTime()
 
-> `protected` **\_getRunTime**(`ms`): `number`
+> `protected` **\_getRunTime**(`ms?`): `number`
 
 Defined in: [sys/ctr.ts:315](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L315)
 
@@ -19836,7 +19836,7 @@ Defined in: [sys/ctr.ts:315](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 #### Parameters
 
-##### ms
+##### ms?
 
 `boolean` = `false`
 
@@ -19850,7 +19850,7 @@ Defined in: [sys/ctr.ts:315](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 ### \_handleFormData()
 
-> `protected` **\_handleFormData**(`events`): `Promise`\<`boolean`\>
+> `protected` **\_handleFormData**(`events?`): `Promise`\<`boolean`\>
 
 Defined in: [sys/ctr.ts:843](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L843)
 
@@ -19858,7 +19858,7 @@ Defined in: [sys/ctr.ts:843](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 #### Parameters
 
-##### events
+##### events?
 
 文件处理情况
 
@@ -19930,7 +19930,7 @@ Defined in: [sys/ctr.ts:635](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 ### \_loadLocale()
 
-> `protected` **\_loadLocale**(`loc`, `pkg`): `Promise`\<`boolean`\>
+> `protected` **\_loadLocale**(`loc`, `pkg?`): `Promise`\<`boolean`\>
 
 Defined in: [sys/ctr.ts:683](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L683)
 
@@ -19944,7 +19944,7 @@ Defined in: [sys/ctr.ts:683](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 要加载的目标语言
 
-##### pkg
+##### pkg?
 
 `string` = `'default'`
 
@@ -19958,7 +19958,7 @@ Defined in: [sys/ctr.ts:683](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 ### \_loadView()
 
-> `protected` **\_loadView**(`path`, `data`): `Promise`\<`string`\>
+> `protected` **\_loadView**(`path`, `data?`): `Promise`\<`string`\>
 
 Defined in: [sys/ctr.ts:332](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L332)
 
@@ -19970,7 +19970,7 @@ Defined in: [sys/ctr.ts:332](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 `string`
 
-##### data
+##### data?
 
 `any` = `{}`
 
@@ -20048,7 +20048,7 @@ Defined in: [sys/ctr.ts:828](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 ### \_startSession()
 
-> `protected` **\_startSession**(`link`, `auth`, `opt`): `Promise`\<`boolean`\>
+> `protected` **\_startSession**(`link`, `auth?`, `opt?`): `Promise`\<`boolean`\>
 
 Defined in: [sys/ctr.ts:667](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L667)
 
@@ -20062,13 +20062,13 @@ Kv 或 Db 实例
 
 [`Pool`](../../../lib/db/pool/classes/Pool.md) | [`Kv`](../../../lib/kv/classes/Kv.md)
 
-##### auth
+##### auth?
 
 `boolean` = `false`
 
 设为 true 则从头 Authorization 或 post _auth 值读取 token
 
-##### opt
+##### opt?
 
 [`IOptions`](../../../lib/session/interfaces/IOptions.md) = `{}`
 
@@ -20907,7 +20907,7 @@ Defined in: [sys/mod.ts:1667](https://github.com/maiyunnet/kebab/blob/master/sys
 
 ### by()
 
-> **by**(`c`, `d`): `this`
+> **by**(`c`, `d?`): `this`
 
 Defined in: [sys/mod.ts:1623](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1623)
 
@@ -20921,7 +20921,7 @@ ORDER BY
 
 `string` | (`string` \| `string`[])[]
 
-##### d
+##### d?
 
 排序规则
 
@@ -21007,7 +21007,7 @@ true-成功,false-报错,null-唯一键非 _$key 键冲突
 
 ### crossJoin()
 
-> **crossJoin**(`f`, `s`, `index`, `pre`): `this`
+> **crossJoin**(`f`, `s`, `index?`, `pre?`): `this`
 
 Defined in: [sys/mod.ts:1583](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1583)
 
@@ -21027,13 +21027,13 @@ cross join 方法
 
 ON 信息
 
-##### index
+##### index?
 
 `string` = `''`
 
 给本表增加 index 分表项
 
-##### pre
+##### pre?
 
 `string` = `''`
 
@@ -21165,7 +21165,7 @@ Defined in: [sys/mod.ts:1018](https://github.com/maiyunnet/kebab/blob/master/sys
 
 ### firstArray()
 
-> **firstArray**(`lock`): `Promise`\<`false` \| `Record`\<`string`, `any`\> \| `null`\>
+> **firstArray**(`lock?`): `Promise`\<`false` \| `Record`\<`string`, `any`\> \| `null`\>
 
 Defined in: [sys/mod.ts:1058](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1058)
 
@@ -21173,7 +21173,7 @@ Defined in: [sys/mod.ts:1058](https://github.com/maiyunnet/kebab/blob/master/sys
 
 #### Parameters
 
-##### lock
+##### lock?
 
 `boolean` = `false`
 
@@ -21215,7 +21215,7 @@ sql 语句
 
 ### fullJoin()
 
-> **fullJoin**(`f`, `s`, `index`, `pre`): `this`
+> **fullJoin**(`f`, `s`, `index?`, `pre?`): `this`
 
 Defined in: [sys/mod.ts:1571](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1571)
 
@@ -21235,13 +21235,13 @@ full join 方法
 
 ON 信息
 
-##### index
+##### index?
 
 `string` = `''`
 
 给本表增加 index 分表项
 
-##### pre
+##### pre?
 
 `string` = `''`
 
@@ -21349,7 +21349,7 @@ Defined in: [sys/mod.ts:1592](https://github.com/maiyunnet/kebab/blob/master/sys
 
 ### innerJoin()
 
-> **innerJoin**(`f`, `s`, `index`, `pre`): `this`
+> **innerJoin**(`f`, `s`, `index?`, `pre?`): `this`
 
 Defined in: [sys/mod.ts:1559](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1559)
 
@@ -21369,13 +21369,13 @@ inner join 方法
 
 ON 信息
 
-##### index
+##### index?
 
 `string` = `''`
 
 给本表增加 index 分表项
 
-##### pre
+##### pre?
 
 `string` = `''`
 
@@ -21389,7 +21389,7 @@ ON 信息
 
 ### join()
 
-> **join**(`f`, `s`, `type`, `index`, `pre`): `this`
+> **join**(`f`, `s?`, `type?`, `index?`, `pre?`): `this`
 
 Defined in: [sys/mod.ts:1523](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1523)
 
@@ -21401,25 +21401,25 @@ Defined in: [sys/mod.ts:1523](https://github.com/maiyunnet/kebab/blob/master/sys
 
 表名
 
-##### s
+##### s?
 
 `any` = `[]`
 
 ON 信息
 
-##### type
+##### type?
 
 `string` = `'INNER'`
 
 类型
 
-##### index
+##### index?
 
 `string` = `''`
 
 给本表增加 index 分表项
 
-##### pre
+##### pre?
 
 `string` = `''`
 
@@ -21461,7 +21461,7 @@ Defined in: [sys/mod.ts:1738](https://github.com/maiyunnet/kebab/blob/master/sys
 
 ### leftJoin()
 
-> **leftJoin**(`f`, `s`, `index`, `pre`): `this`
+> **leftJoin**(`f`, `s`, `index?`, `pre?`): `this`
 
 Defined in: [sys/mod.ts:1535](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1535)
 
@@ -21481,13 +21481,13 @@ left join 方法
 
 ON 信息
 
-##### index
+##### index?
 
 `string` = `''`
 
 给本表增加 index 分表项
 
-##### pre
+##### pre?
 
 `string` = `''`
 
@@ -21501,7 +21501,7 @@ ON 信息
 
 ### limit()
 
-> **limit**(`a`, `b`): `this`
+> **limit**(`a`, `b?`): `this`
 
 Defined in: [sys/mod.ts:1645](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1645)
 
@@ -21515,7 +21515,7 @@ LIMIT
 
 起始
 
-##### b
+##### b?
 
 `number` = `0`
 
@@ -21529,7 +21529,7 @@ LIMIT
 
 ### page()
 
-> **page**(`count`, `page`): `this`
+> **page**(`count`, `page?`): `this`
 
 Defined in: [sys/mod.ts:1656](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1656)
 
@@ -21543,7 +21543,7 @@ Defined in: [sys/mod.ts:1656](https://github.com/maiyunnet/kebab/blob/master/sys
 
 每页条数
 
-##### page
+##### page?
 
 `number` = `1`
 
@@ -21557,7 +21557,7 @@ Defined in: [sys/mod.ts:1656](https://github.com/maiyunnet/kebab/blob/master/sys
 
 ### refresh()
 
-> **refresh**(`lock`): `Promise`\<`boolean` \| `null`\>
+> **refresh**(`lock?`): `Promise`\<`boolean` \| `null`\>
 
 Defined in: [sys/mod.ts:939](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L939)
 
@@ -21565,7 +21565,7 @@ Defined in: [sys/mod.ts:939](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 #### Parameters
 
-##### lock
+##### lock?
 
 `boolean` = `false`
 
@@ -21593,7 +21593,7 @@ Defined in: [sys/mod.ts:996](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 ### rightJoin()
 
-> **rightJoin**(`f`, `s`, `index`, `pre`): `this`
+> **rightJoin**(`f`, `s`, `index?`, `pre?`): `this`
 
 Defined in: [sys/mod.ts:1547](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1547)
 
@@ -21613,13 +21613,13 @@ right join 方法
 
 ON 信息
 
-##### index
+##### index?
 
 `string` = `''`
 
 给本表增加 index 分表项
 
-##### pre
+##### pre?
 
 `string` = `''`
 
@@ -21745,7 +21745,7 @@ Defined in: [sys/mod.ts:1710](https://github.com/maiyunnet/kebab/blob/master/sys
 
 ### total()
 
-> **total**(`f`): `Promise`\<`number`\>
+> **total**(`f?`): `Promise`\<`number`\>
 
 Defined in: [sys/mod.ts:1465](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1465)
 
@@ -21753,7 +21753,7 @@ Defined in: [sys/mod.ts:1465](https://github.com/maiyunnet/kebab/blob/master/sys
 
 #### Parameters
 
-##### f
+##### f?
 
 `string` = `'*'`
 
@@ -21765,7 +21765,7 @@ Defined in: [sys/mod.ts:1465](https://github.com/maiyunnet/kebab/blob/master/sys
 
 ### union()
 
-> **union**(`f`, `type`): `this`
+> **union**(`f`, `type?`): `this`
 
 Defined in: [sys/mod.ts:1069](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1069)
 
@@ -21779,7 +21779,7 @@ Defined in: [sys/mod.ts:1069](https://github.com/maiyunnet/kebab/blob/master/sys
 
 `string` | `string`[] | [`Sql`](../../../lib/sql/classes/Sql.md) | [`IModUnionItem`](../interfaces/IModUnionItem.md) | [`IModUnionItem`](../interfaces/IModUnionItem.md)[]
 
-##### type
+##### type?
 
 `string` = `''`
 
@@ -21919,7 +21919,7 @@ Defined in: [sys/mod.ts:168](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 ### find()
 
-> `static` **find**\<`T`\>(`db`, `val`, `opt`): `Promise`\<`false` \| `T` & `Record`\<`string`, `any`\> \| `null`\>
+> `static` **find**\<`T`\>(`db`, `val`, `opt?`): `Promise`\<`false` \| `T` & `Record`\<`string`, `any`\> \| `null`\>
 
 Defined in: [sys/mod.ts:599](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L599)
 
@@ -21945,7 +21945,7 @@ Defined in: [sys/mod.ts:599](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 `string` | `number` | `null`
 
-##### opt
+##### opt?
 
 选项
 
@@ -21979,7 +21979,7 @@ Defined in: [sys/mod.ts:599](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 ### getCreate()
 
-> `static` **getCreate**\<`T`\>(`db`, `opt`): `T`
+> `static` **getCreate**\<`T`\>(`db`, `opt?`): `T`
 
 Defined in: [sys/mod.ts:581](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L581)
 
@@ -21999,7 +21999,7 @@ Defined in: [sys/mod.ts:581](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 [`Transaction`](../../../lib/db/tran/classes/Transaction.md) | [`Pool`](../../../lib/db/pool/classes/Pool.md)
 
-##### opt
+##### opt?
 
 选项
 
@@ -22247,7 +22247,7 @@ Defined in: [sys/mod.ts:638](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 ### oneArray()
 
-> `static` **oneArray**(`db`, `s`, `opt`): `Promise`\<`false` \| `Record`\<`string`, `any`\> \| `null`\>
+> `static` **oneArray**(`db`, `s`, `opt?`): `Promise`\<`false` \| `Record`\<`string`, `any`\> \| `null`\>
 
 Defined in: [sys/mod.ts:713](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L713)
 
@@ -22267,7 +22267,7 @@ Defined in: [sys/mod.ts:713](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 筛选条件数组或字符串
 
-##### opt
+##### opt?
 
 选项
 
@@ -22295,7 +22295,7 @@ Defined in: [sys/mod.ts:713](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 ### primarys()
 
-> `static` **primarys**(`db`, `where`, `opt`): `Promise`\<`false` \| `any`[]\>
+> `static` **primarys**(`db`, `where?`, `opt?`): `Promise`\<`false` \| `any`[]\>
 
 Defined in: [sys/mod.ts:733](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L733)
 
@@ -22309,13 +22309,13 @@ Defined in: [sys/mod.ts:733](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 [`Transaction`](../../../lib/db/tran/classes/Transaction.md) | [`Pool`](../../../lib/db/pool/classes/Pool.md)
 
-##### where
+##### where?
 
 `any` = `''`
 
 where 条件
 
-##### opt
+##### opt?
 
 选项
 
@@ -22339,7 +22339,7 @@ where 条件
 
 ### removeByWhere()
 
-> `static` **removeByWhere**(`db`, `where`, `opt`): `Promise`\<`number` \| `false` \| `null`\>
+> `static` **removeByWhere**(`db`, `where`, `opt?`): `Promise`\<`number` \| `false` \| `null`\>
 
 Defined in: [sys/mod.ts:269](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L269)
 
@@ -22359,7 +22359,7 @@ Defined in: [sys/mod.ts:269](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 筛选条件
 
-##### opt
+##### opt?
 
 选项
 
@@ -22391,7 +22391,7 @@ Defined in: [sys/mod.ts:269](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 ### removeByWhereSql()
 
-> `static` **removeByWhereSql**(`db`, `where`, `opt`): [`Sql`](../../../lib/sql/classes/Sql.md)
+> `static` **removeByWhereSql**(`db`, `where`, `opt?`): [`Sql`](../../../lib/sql/classes/Sql.md)
 
 Defined in: [sys/mod.ts:313](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L313)
 
@@ -22411,7 +22411,7 @@ Defined in: [sys/mod.ts:313](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 筛选条件
 
-##### opt
+##### opt?
 
 选项
 
@@ -22443,7 +22443,7 @@ Defined in: [sys/mod.ts:313](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 ### select()
 
-> `static` **select**\<`T`\>(`db`, `c`, `opt`): `T` & `Record`\<`string`, `any`\>
+> `static` **select**\<`T`\>(`db`, `c`, `opt?`): `T` & `Record`\<`string`, `any`\>
 
 Defined in: [sys/mod.ts:522](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L522)
 
@@ -22469,7 +22469,7 @@ select 自定字段
 
 `string` | `string`[]
 
-##### opt
+##### opt?
 
 选项
 
@@ -22537,7 +22537,7 @@ Defined in: [sys/mod.ts:760](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 ### updateByWhere()
 
-> `static` **updateByWhere**(`db`, `data`, `where`, `opt`): `Promise`\<`number` \| `false` \| `null`\>
+> `static` **updateByWhere**(`db`, `data`, `where`, `opt?`): `Promise`\<`number` \| `false` \| `null`\>
 
 Defined in: [sys/mod.ts:346](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L346)
 
@@ -22563,7 +22563,7 @@ Defined in: [sys/mod.ts:346](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 筛选条件
 
-##### opt
+##### opt?
 
 选项
 
@@ -22595,7 +22595,7 @@ Defined in: [sys/mod.ts:346](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 ### updateByWhereSql()
 
-> `static` **updateByWhereSql**(`db`, `data`, `where`, `opt`): [`Sql`](../../../lib/sql/classes/Sql.md)
+> `static` **updateByWhereSql**(`db`, `data`, `where`, `opt?`): [`Sql`](../../../lib/sql/classes/Sql.md)
 
 Defined in: [sys/mod.ts:392](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L392)
 
@@ -22621,7 +22621,7 @@ Defined in: [sys/mod.ts:392](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 筛选条件
 
-##### opt
+##### opt?
 
 选项
 
@@ -22653,7 +22653,7 @@ Defined in: [sys/mod.ts:392](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 ### updateList()
 
-> `static` **updateList**(`db`, `data`, `key`, `opt`): `Promise`\<`boolean` \| `null`\>
+> `static` **updateList**(`db`, `data`, `key`, `opt?`): `Promise`\<`boolean` \| `null`\>
 
 Defined in: [sys/mod.ts:426](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L426)
 
@@ -22679,7 +22679,7 @@ Defined in: [sys/mod.ts:426](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 用于定位的主键或唯一键字段名
 
-##### opt
+##### opt?
 
 选项
 
@@ -22703,7 +22703,7 @@ Defined in: [sys/mod.ts:426](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 ### where()
 
-> `static` **where**\<`T`\>(`db`, `s`, `opt`): `T` & `Record`\<`string`, `any`\>
+> `static` **where**\<`T`\>(`db`, `s?`, `opt?`): `T` & `Record`\<`string`, `any`\>
 
 Defined in: [sys/mod.ts:552](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L552)
 
@@ -22723,13 +22723,13 @@ Defined in: [sys/mod.ts:552](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 [`Transaction`](../../../lib/db/tran/classes/Transaction.md) | [`Pool`](../../../lib/db/pool/classes/Pool.md)
 
-##### s
+##### s?
 
 `any` = `''`
 
 筛选条件数组或字符串
 
-##### opt
+##### opt?
 
 选项
 
@@ -22794,13 +22794,13 @@ Defined in: [sys/mod.ts:19](https://github.com/maiyunnet/kebab/blob/master/sys/m
 
 ### Constructor
 
-> **new Rows**\<`T`\>(`initialItems`): `Rows`\<`T`\>
+> **new Rows**\<`T`\>(`initialItems?`): `Rows`\<`T`\>
 
 Defined in: [sys/mod.ts:23](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L23)
 
 #### Parameters
 
-##### initialItems
+##### initialItems?
 
 `T`[] = `[]`
 
@@ -23104,7 +23104,7 @@ sys/route/functions/getFormData.md
 
 # Function: getFormData()
 
-> **getFormData**(`req`, `events`): `Promise`\<`false` \| \{ `files`: `Record`\<`string`, [`IPostFile`](../../../index/interfaces/IPostFile.md) \| [`IPostFile`](../../../index/interfaces/IPostFile.md)[]\>; `post`: `Record`\<`string`, [`Json`](../../../index/type-aliases/Json.md)\>; \}\>
+> **getFormData**(`req`, `events?`): `Promise`\<`false` \| \{ `files`: `Record`\<`string`, [`IPostFile`](../../../index/interfaces/IPostFile.md) \| [`IPostFile`](../../../index/interfaces/IPostFile.md)[]\>; `post`: `Record`\<`string`, [`Json`](../../../index/type-aliases/Json.md)\>; \}\>
 
 Defined in: [sys/route.ts:932](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L932)
 
@@ -23118,7 +23118,7 @@ Defined in: [sys/route.ts:932](https://github.com/maiyunnet/kebab/blob/master/sy
 
 `IncomingMessage` | `Http2ServerRequest`
 
-### events
+### events?
 
 文件处理情况
 

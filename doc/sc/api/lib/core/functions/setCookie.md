@@ -6,7 +6,7 @@
 
 # Function: setCookie()
 
-> **setCookie**(`ctr`, `name`, `value`, `opt`): `void`
+> **setCookie**(`ctr`, `name`, `value`, `opt?`): `void`
 
 Defined in: [lib/core.ts:50](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L50)
 
@@ -32,7 +32,7 @@ ctr 实例
 
 值
 
-### opt
+### opt?
 
 [`ICookieOptions`](../interfaces/ICookieOptions.md) = `{}`
 

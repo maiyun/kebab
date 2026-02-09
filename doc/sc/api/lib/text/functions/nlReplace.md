@@ -6,7 +6,7 @@
 
 # Function: nlReplace()
 
-> **nlReplace**(`str`, `to`): `string`
+> **nlReplace**(`str`, `to?`): `string`
 
 Defined in: [lib/text.ts:265](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L265)
 
@@ -20,7 +20,7 @@ Defined in: [lib/text.ts:265](https://github.com/maiyunnet/kebab/blob/master/lib
 
 要替换的字符串
 
-### to
+### to?
 
 `string` = '\n'
 

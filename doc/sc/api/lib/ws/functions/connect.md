@@ -6,7 +6,7 @@
 
 # Function: connect()
 
-> **connect**(`u`, `opt`): `Promise`\<[`Socket`](../classes/Socket.md) \| `null`\>
+> **connect**(`u`, `opt?`): `Promise`\<[`Socket`](../classes/Socket.md) \| `null`\>
 
 Defined in: [lib/ws.ts:411](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L411)
 
@@ -20,7 +20,7 @@ Defined in: [lib/ws.ts:411](https://github.com/maiyunnet/kebab/blob/master/lib/w
 
 以 ws, wss 开头的地址
 
-### opt
+### opt?
 
 [`IConnectOptions`](../interfaces/IConnectOptions.md) = `{}`
 

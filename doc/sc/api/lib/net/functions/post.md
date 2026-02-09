@@ -6,7 +6,7 @@
 
 # Function: post()
 
-> **post**(`u`, `data`, `opt`): `Promise`\<[`Response`](../response/classes/Response.md)\>
+> **post**(`u`, `data`, `opt?`): `Promise`\<[`Response`](../response/classes/Response.md)\>
 
 Defined in: [lib/net.ts:77](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L77)
 
@@ -26,7 +26,7 @@ Defined in: [lib/net.ts:77](https://github.com/maiyunnet/kebab/blob/master/lib/n
 
 `string` | `Record`\<`string`, `any`\> | `Buffer`\<`ArrayBufferLike`\> | `Readable`
 
-### opt
+### opt?
 
 [`IRequestOptions`](../interfaces/IRequestOptions.md) = `{}`
 

@@ -6,7 +6,7 @@
 
 # Function: createCompress()
 
-> **createCompress**(`types`, `options`): [`ICompress`](../interfaces/ICompress.md) \| `null`
+> **createCompress**(`types`, `options?`): [`ICompress`](../interfaces/ICompress.md) \| `null`
 
 Defined in: [lib/zlib.ts:74](https://github.com/maiyunnet/kebab/blob/master/lib/zlib.ts#L74)
 
@@ -20,7 +20,7 @@ Defined in: [lib/zlib.ts:74](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 用 , 间隔的字符串，如 gzip,deflate
 
-### options
+### options?
 
 `ZlibOptions` = `{}`
 

@@ -6,7 +6,7 @@
 
 # Function: getRange()
 
-> **getRange**(`min`, `max`, `pre`): `string`[]
+> **getRange**(`min`, `max`, `pre?`): `string`[]
 
 Defined in: [lib/consistent.ts:153](https://github.com/maiyunnet/kebab/blob/master/lib/consistent.ts#L153)
 
@@ -26,7 +26,7 @@ Defined in: [lib/consistent.ts:153](https://github.com/maiyunnet/kebab/blob/mast
 
 最大值（含）
 
-### pre
+### pre?
 
 `string` = `''`
 

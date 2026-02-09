@@ -14,7 +14,7 @@ Defined in: [lib/db/tran.ts:9](https://github.com/maiyunnet/kebab/blob/master/li
 
 ### Constructor
 
-> **new Transaction**(`ctr`, `conn`, `opts`): `Transaction`
+> **new Transaction**(`ctr`, `conn`, `opts?`): `Transaction`
 
 Defined in: [lib/db/tran.ts:28](https://github.com/maiyunnet/kebab/blob/master/lib/db/tran.ts#L28)
 
@@ -28,7 +28,7 @@ Defined in: [lib/db/tran.ts:28](https://github.com/maiyunnet/kebab/blob/master/l
 
 [`Connection`](../../conn/classes/Connection.md)
 
-##### opts
+##### opts?
 
 ###### danger?
 

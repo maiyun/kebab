@@ -6,7 +6,7 @@
 
 # Function: scanned()
 
-> **scanned**(`link`, `token`, `opt`): `Promise`\<`boolean`\>
+> **scanned**(`link`, `token`, `opt?`): `Promise`\<`boolean`\>
 
 Defined in: [lib/scan.ts:265](https://github.com/maiyunnet/kebab/blob/master/lib/scan.ts#L265)
 
@@ -26,7 +26,7 @@ Db 或 Kv
 
 必填
 
-### opt
+### opt?
 
 [`IStaticOptions`](../interfaces/IStaticOptions.md) = `{}`
 

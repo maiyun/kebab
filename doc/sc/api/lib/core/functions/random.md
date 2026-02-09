@@ -6,7 +6,7 @@
 
 # Function: random()
 
-> **random**(`length`, `source`, `block`): `string`
+> **random**(`length?`, `source?`, `block?`): `string`
 
 Defined in: [lib/core.ts:117](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L117)
 
@@ -14,19 +14,19 @@ Defined in: [lib/core.ts:117](https://github.com/maiyunnet/kebab/blob/master/lib
 
 ## Parameters
 
-### length
+### length?
 
 `number` = `8`
 
 长度
 
-### source
+### source?
 
 `string` = `RANDOM_LN`
 
 采样值
 
-### block
+### block?
 
 `string` = `''`
 

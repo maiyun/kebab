@@ -6,7 +6,7 @@
 
 # Function: str2int()
 
-> **str2int**(`str`, `digits`): `number`
+> **str2int**(`str`, `digits?`): `number`
 
 Defined in: [lib/text.ts:679](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L679)
 
@@ -25,7 +25,7 @@ str 传入 '6'，返回 600
 
 要转换的数字字符串
 
-### digits
+### digits?
 
 `number` = `3`
 

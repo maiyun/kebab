@@ -6,7 +6,7 @@
 
 # Function: createBrotliCompress()
 
-> **createBrotliCompress**(`options`): `BrotliCompress`
+> **createBrotliCompress**(`options?`): `BrotliCompress`
 
 Defined in: [lib/zlib.ts:57](https://github.com/maiyunnet/kebab/blob/master/lib/zlib.ts#L57)
 
@@ -14,7 +14,7 @@ Defined in: [lib/zlib.ts:57](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 ## Parameters
 
-### options
+### options?
 
 `ZlibOptions` = `{}`
 

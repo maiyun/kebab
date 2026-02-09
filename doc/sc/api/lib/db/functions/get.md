@@ -6,7 +6,7 @@
 
 # Function: get()
 
-> **get**(`ctrEtc`, `opt`): [`Pool`](../pool/classes/Pool.md)
+> **get**(`ctrEtc`, `opt?`): [`Pool`](../pool/classes/Pool.md)
 
 Defined in: [lib/db.ts:68](https://github.com/maiyunnet/kebab/blob/master/lib/db.ts#L68)
 
@@ -20,7 +20,7 @@ Defined in: [lib/db.ts:68](https://github.com/maiyunnet/kebab/blob/master/lib/db
 
 [`IConfigDb`](../../../index/interfaces/IConfigDb.md) | [`Ctr`](../../../sys/ctr/classes/Ctr.md)
 
-### opt
+### opt?
 
 选项
 

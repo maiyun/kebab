@@ -6,7 +6,7 @@
 
 # Function: mproxy()
 
-> **mproxy**(`ctr`, `auth`, `opt`): `Promise`\<`number`\>
+> **mproxy**(`ctr`, `auth`, `opt?`): `Promise`\<`number`\>
 
 Defined in: [lib/ws.ts:509](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L509)
 
@@ -27,7 +27,7 @@ get: url, auth
 
 校验字符串，读取 get 的 auth 和本参数做比对
 
-### opt
+### opt?
 
 [`IMproxyOptions`](../interfaces/IMproxyOptions.md) = `{}`
 

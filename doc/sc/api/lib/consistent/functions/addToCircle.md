@@ -6,7 +6,7 @@
 
 # Function: addToCircle()
 
-> **addToCircle**(`circle`, `node`, `vcount`): `void`
+> **addToCircle**(`circle`, `node`, `vcount?`): `void`
 
 Defined in: [lib/consistent.ts:167](https://github.com/maiyunnet/kebab/blob/master/lib/consistent.ts#L167)
 
@@ -26,7 +26,7 @@ node 节点名一个或多个
 
 `string` | `string`[]
 
-### vcount
+### vcount?
 
 `number` = `300`
 

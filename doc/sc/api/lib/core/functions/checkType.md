@@ -6,7 +6,7 @@
 
 # Function: checkType()
 
-> **checkType**(`val`, `type`, `tree`): `string`
+> **checkType**(`val`, `type`, `tree?`): `string`
 
 Defined in: [lib/core.ts:201](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L201)
 
@@ -26,7 +26,7 @@ Defined in: [lib/core.ts:201](https://github.com/maiyunnet/kebab/blob/master/lib
 
 示例组
 
-### tree
+### tree?
 
 `string` = `'root'`
 

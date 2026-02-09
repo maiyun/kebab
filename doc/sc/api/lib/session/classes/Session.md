@@ -50,7 +50,7 @@ Defined in: [lib/session.ts:194](https://github.com/maiyunnet/kebab/blob/master/
 
 ### init()
 
-> **init**(`ctr`, `link`, `auth`, `opt`): `Promise`\<`boolean`\>
+> **init**(`ctr`, `link`, `auth?`, `opt?`): `Promise`\<`boolean`\>
 
 Defined in: [lib/session.ts:65](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L65)
 
@@ -70,13 +70,13 @@ Kv 或 Db 实例
 
 [`Pool`](../../db/pool/classes/Pool.md) | [`Kv`](../../kv/classes/Kv.md)
 
-##### auth
+##### auth?
 
 `boolean` = `false`
 
 设为 true 则优先从头 Authorization 或 post _auth 值读取 token
 
-##### opt
+##### opt?
 
 [`IOptions`](../interfaces/IOptions.md) = `{}`
 

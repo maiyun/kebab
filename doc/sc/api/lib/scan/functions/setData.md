@@ -6,7 +6,7 @@
 
 # Function: setData()
 
-> **setData**(`link`, `token`, `data`, `opt`): `Promise`\<`boolean`\>
+> **setData**(`link`, `token`, `data`, `opt?`): `Promise`\<`boolean`\>
 
 Defined in: [lib/scan.ts:323](https://github.com/maiyunnet/kebab/blob/master/lib/scan.ts#L323)
 
@@ -26,7 +26,7 @@ Defined in: [lib/scan.ts:323](https://github.com/maiyunnet/kebab/blob/master/lib
 
 `string` | `number` | `Record`\<`string`, `any`\>
 
-### opt
+### opt?
 
 [`IStaticOptions`](../interfaces/IStaticOptions.md) = `{}`
 

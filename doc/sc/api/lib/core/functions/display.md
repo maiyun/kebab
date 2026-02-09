@@ -6,7 +6,7 @@
 
 # Function: display()
 
-> **display**(`message?`, ...`optionalParams?`): `void`
+> **display**(`message?`, ...`optionalParams`): `void`
 
 Defined in: [lib/core.ts:994](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L994)
 
@@ -20,7 +20,7 @@ Defined in: [lib/core.ts:994](https://github.com/maiyunnet/kebab/blob/master/lib
 
 参数
 
-### optionalParams?
+### optionalParams
 
 ...`any`[]
 

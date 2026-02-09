@@ -6,7 +6,7 @@
 
 # Function: copyFolder()
 
-> **copyFolder**(`from`, `to`, `ignore`): `Promise`\<`number`\>
+> **copyFolder**(`from`, `to`, `ignore?`): `Promise`\<`number`\>
 
 Defined in: [lib/fs.ts:341](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L341)
 
@@ -26,7 +26,7 @@ Defined in: [lib/fs.ts:341](https://github.com/maiyunnet/kebab/blob/master/lib/f
 
 目标，末尾加 /
 
-### ignore
+### ignore?
 
 `RegExp`[] = `[]`
 

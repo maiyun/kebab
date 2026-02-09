@@ -6,7 +6,7 @@
 
 # Function: putContent()
 
-> **putContent**(`path`, `data`, `options`): `Promise`\<`boolean`\>
+> **putContent**(`path`, `data`, `options?`): `Promise`\<`boolean`\>
 
 Defined in: [lib/fs.ts:93](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L93)
 
@@ -26,7 +26,7 @@ Defined in: [lib/fs.ts:93](https://github.com/maiyunnet/kebab/blob/master/lib/fs
 
 `string` | `Buffer`\<`ArrayBufferLike`\>
 
-### options
+### options?
 
 选项
 

@@ -6,7 +6,7 @@
 
 # Function: createDeflate()
 
-> **createDeflate**(`options`): `Deflate`
+> **createDeflate**(`options?`): `Deflate`
 
 Defined in: [lib/zlib.ts:41](https://github.com/maiyunnet/kebab/blob/master/lib/zlib.ts#L41)
 
@@ -14,7 +14,7 @@ Defined in: [lib/zlib.ts:41](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 ## Parameters
 
-### options
+### options?
 
 `ZlibOptions` = `{}`
 

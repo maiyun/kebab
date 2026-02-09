@@ -6,7 +6,7 @@
 
 # Function: findInCircle()
 
-> **findInCircle**(`circle`, `key`, `keys`): `string` \| `null`
+> **findInCircle**(`circle`, `key`, `keys?`): `string` \| `null`
 
 Defined in: [lib/consistent.ts:188](https://github.com/maiyunnet/kebab/blob/master/lib/consistent.ts#L188)
 
@@ -26,7 +26,7 @@ Defined in: [lib/consistent.ts:188](https://github.com/maiyunnet/kebab/blob/mast
 
 `string` | `number`
 
-### keys
+### keys?
 
 `string`[] = `[]`
 

@@ -6,7 +6,7 @@
 
 # Function: createGzip()
 
-> **createGzip**(`options`): `Gzip`
+> **createGzip**(`options?`): `Gzip`
 
 Defined in: [lib/zlib.ts:25](https://github.com/maiyunnet/kebab/blob/master/lib/zlib.ts#L25)
 
@@ -14,7 +14,7 @@ Defined in: [lib/zlib.ts:25](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 ## Parameters
 
-### options
+### options?
 
 `ZlibOptions` = `{}`
 

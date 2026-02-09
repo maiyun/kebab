@@ -6,7 +6,7 @@
 
 # Function: muid()
 
-> **muid**(`ctr`, `opt`): `string`
+> **muid**(`ctr`, `opt?`): `string`
 
 Defined in: [lib/core.ts:289](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L289)
 
@@ -20,7 +20,7 @@ Defined in: [lib/core.ts:289](https://github.com/maiyunnet/kebab/blob/master/lib
 
 Ctr 对象
 
-### opt
+### opt?
 
 参数
 

@@ -6,7 +6,7 @@
 
 # Function: int2str()
 
-> **int2str**(`int`, `digits`, `decimal`): `string`
+> **int2str**(`int`, `digits?`, `decimal?`): `string`
 
 Defined in: [lib/text.ts:697](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L697)
 
@@ -25,13 +25,13 @@ int 传入 2，返回 '0.00'
 
 要转换的整数
 
-### digits
+### digits?
 
 `number` = `4`
 
 小数点左移位数
 
-### decimal
+### decimal?
 
 `number` = `2`
 

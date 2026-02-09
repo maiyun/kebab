@@ -6,7 +6,7 @@
 
 # Function: mkdir()
 
-> **mkdir**(`path`, `mode`): `Promise`\<`boolean`\>
+> **mkdir**(`path`, `mode?`): `Promise`\<`boolean`\>
 
 Defined in: [lib/fs.ts:207](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L207)
 
@@ -20,7 +20,7 @@ Defined in: [lib/fs.ts:207](https://github.com/maiyunnet/kebab/blob/master/lib/f
 
 要创建的路径，如 /a/b/c/
 
-### mode
+### mode?
 
 `number` = `0o755`
 

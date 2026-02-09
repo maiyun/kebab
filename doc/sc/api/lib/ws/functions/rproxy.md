@@ -6,7 +6,7 @@
 
 # Function: rproxy()
 
-> **rproxy**(`ctr`, `url`, `opt`): `Promise`\<`boolean`\>
+> **rproxy**(`ctr`, `url`, `opt?`): `Promise`\<`boolean`\>
 
 Defined in: [lib/ws.ts:546](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L546)
 
@@ -26,7 +26,7 @@ Defined in: [lib/ws.ts:546](https://github.com/maiyunnet/kebab/blob/master/lib/w
 
 反代真实请求地址，如有 get 需要自行添加
 
-### opt
+### opt?
 
 [`IRproxyOptions`](../interfaces/IRproxyOptions.md) = `{}`
 

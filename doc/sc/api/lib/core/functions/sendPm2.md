@@ -6,7 +6,7 @@
 
 # Function: sendPm2()
 
-> **sendPm2**(`name`, `action`, `hosts?`): `Promise`\<`string`[]\>
+> **sendPm2**(`name`, `action?`, `hosts?`): `Promise`\<`string`[]\>
 
 Defined in: [lib/core.ts:573](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L573)
 
@@ -20,7 +20,7 @@ Defined in: [lib/core.ts:573](https://github.com/maiyunnet/kebab/blob/master/lib
 
 PM2 进程名称
 
-### action
+### action?
 
 [`TPm2Action`](../type-aliases/TPm2Action.md) = `'restart'`
 

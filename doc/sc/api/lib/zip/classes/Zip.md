@@ -55,7 +55,7 @@ Defined in: [lib/zip.ts:338](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 ### generate()
 
-> **generate**\<`T`\>(`options`): `Promise`\<[`IZipOutputByType`](../interfaces/IZipOutputByType.md)\[`T`\]\>
+> **generate**\<`T`\>(`options?`): `Promise`\<[`IZipOutputByType`](../interfaces/IZipOutputByType.md)\[`T`\]\>
 
 Defined in: [lib/zip.ts:350](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L350)
 
@@ -69,7 +69,7 @@ Defined in: [lib/zip.ts:350](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 #### Parameters
 
-##### options
+##### options?
 
 选项
 
@@ -207,7 +207,7 @@ Defined in: [lib/zip.ts:146](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 ### putContent()
 
-> **putContent**\<`T`\>(`path`, `data`, `options`): `void`
+> **putContent**\<`T`\>(`path`, `data`, `options?`): `void`
 
 Defined in: [lib/zip.ts:51](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L51)
 
@@ -233,7 +233,7 @@ Defined in: [lib/zip.ts:51](https://github.com/maiyunnet/kebab/blob/master/lib/z
 
 要写入的内容
 
-##### options
+##### options?
 
 选项
 

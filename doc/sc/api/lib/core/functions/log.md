@@ -6,7 +6,7 @@
 
 # Function: log()
 
-> **log**(`opt`, `msg`, `fend`): `void`
+> **log**(`opt`, `msg`, `fend?`): `void`
 
 Defined in: [lib/core.ts:774](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L774)
 
@@ -26,7 +26,7 @@ Defined in: [lib/core.ts:774](https://github.com/maiyunnet/kebab/blob/master/lib
 
 自定义内容
 
-### fend
+### fend?
 
 `string` = `''`
 

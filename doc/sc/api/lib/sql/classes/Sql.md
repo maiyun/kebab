@@ -68,7 +68,7 @@ Defined in: [lib/sql.ts:860](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 ### by()
 
-> **by**(`c`, `d`): `this`
+> **by**(`c`, `d?`): `this`
 
 Defined in: [lib/sql.ts:661](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L661)
 
@@ -82,7 +82,7 @@ ORDER BY
 
 `string` | (`string` \| `string`[])[]
 
-##### d
+##### d?
 
 排序规则
 
@@ -124,7 +124,7 @@ Defined in: [lib/sql.ts:729](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 ### crossJoin()
 
-> **crossJoin**(`f`, `s`, `suf`, `pre`): `this`
+> **crossJoin**(`f`, `s?`, `suf?`, `pre?`): `this`
 
 Defined in: [lib/sql.ts:416](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L416)
 
@@ -138,19 +138,19 @@ cross join 方法
 
 表名
 
-##### s
+##### s?
 
 `any` = `[]`
 
 ON 信息
 
-##### suf
+##### suf?
 
 `string` = `''`
 
 表后缀
 
-##### pre
+##### pre?
 
 `string` = `''`
 
@@ -186,7 +186,7 @@ Defined in: [lib/sql.ts:311](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 ### field()
 
-> **field**(`str`, `pre`, `suf`): `string`
+> **field**(`str`, `pre?`, `suf?`): `string`
 
 Defined in: [lib/sql.ts:871](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L871)
 
@@ -198,13 +198,13 @@ Defined in: [lib/sql.ts:871](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 `string` | `number` | (`string` \| `string`[])[]
 
-##### pre
+##### pre?
 
 `string` = `''`
 
 表前缀，仅请在 field 表名时倒入前缀
 
-##### suf
+##### suf?
 
 `string` = `''`
 
@@ -242,7 +242,7 @@ Defined in: [lib/sql.ts:850](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 ### fullJoin()
 
-> **fullJoin**(`f`, `s`, `suf`, `pre`): `this`
+> **fullJoin**(`f`, `s?`, `suf?`, `pre?`): `this`
 
 Defined in: [lib/sql.ts:405](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L405)
 
@@ -256,19 +256,19 @@ full join 方法
 
 表名
 
-##### s
+##### s?
 
 `any` = `[]`
 
 ON 信息
 
-##### suf
+##### suf?
 
 `string` = `''`
 
 表后缀
 
-##### pre
+##### pre?
 
 `string` = `''`
 
@@ -346,7 +346,7 @@ GROUP BY
 
 ### having()
 
-> **having**(`s`): `this`
+> **having**(`s?`): `this`
 
 Defined in: [lib/sql.ts:423](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L423)
 
@@ -354,7 +354,7 @@ having 后置筛选器，用法类似 where
 
 #### Parameters
 
-##### s
+##### s?
 
 `any` = `''`
 
@@ -366,7 +366,7 @@ having 后置筛选器，用法类似 where
 
 ### innerJoin()
 
-> **innerJoin**(`f`, `s`, `suf`, `pre`): `this`
+> **innerJoin**(`f`, `s?`, `suf?`, `pre?`): `this`
 
 Defined in: [lib/sql.ts:394](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L394)
 
@@ -380,19 +380,19 @@ inner join 方法
 
 表名
 
-##### s
+##### s?
 
 `any` = `[]`
 
 ON 信息
 
-##### suf
+##### suf?
 
 `string` = `''`
 
 表后缀
 
-##### pre
+##### pre?
 
 `string` = `''`
 
@@ -406,7 +406,7 @@ ON 信息
 
 ### insert()
 
-> **insert**(`table`, `ignore`): `this`
+> **insert**(`table`, `ignore?`): `this`
 
 Defined in: [lib/sql.ts:91](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L91)
 
@@ -420,7 +420,7 @@ Defined in: [lib/sql.ts:91](https://github.com/maiyunnet/kebab/blob/master/lib/s
 
 表名
 
-##### ignore
+##### ignore?
 
 `boolean` = `false`
 
@@ -434,7 +434,7 @@ Defined in: [lib/sql.ts:91](https://github.com/maiyunnet/kebab/blob/master/lib/s
 
 ### join()
 
-> **join**(`f`, `s`, `type`, `suf`, `pre`): `this`
+> **join**(`f`, `s?`, `type?`, `suf?`, `pre?`): `this`
 
 Defined in: [lib/sql.ts:346](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L346)
 
@@ -448,25 +448,25 @@ join 方法
 
 表名
 
-##### s
+##### s?
 
 `any` = `[]`
 
 ON 信息
 
-##### type
+##### type?
 
 `string` = `'INNER'`
 
 类型
 
-##### suf
+##### suf?
 
 `string` = `''`
 
 表后缀
 
-##### pre
+##### pre?
 
 `string` = `''`
 
@@ -480,7 +480,7 @@ ON 信息
 
 ### leftJoin()
 
-> **leftJoin**(`f`, `s`, `suf`, `pre`): `this`
+> **leftJoin**(`f`, `s?`, `suf?`, `pre?`): `this`
 
 Defined in: [lib/sql.ts:372](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L372)
 
@@ -494,19 +494,19 @@ left join 方法
 
 表名
 
-##### s
+##### s?
 
 `any` = `[]`
 
 ON 信息
 
-##### suf
+##### suf?
 
 `string` = `''`
 
 表后缀
 
-##### pre
+##### pre?
 
 `string` = `''`
 
@@ -520,7 +520,7 @@ ON 信息
 
 ### limit()
 
-> **limit**(`a`, `b`): `this`
+> **limit**(`a`, `b?`): `this`
 
 Defined in: [lib/sql.ts:705](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L705)
 
@@ -534,7 +534,7 @@ LIMIT（limit、offset, limit）
 
 起始（offset）
 
-##### b
+##### b?
 
 `number` = `0`
 
@@ -562,7 +562,7 @@ Defined in: [lib/sql.ts:720](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 ### rightJoin()
 
-> **rightJoin**(`f`, `s`, `suf`, `pre`): `this`
+> **rightJoin**(`f`, `s?`, `suf?`, `pre?`): `this`
 
 Defined in: [lib/sql.ts:383](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L383)
 
@@ -576,19 +576,19 @@ right join 方法
 
 表名
 
-##### s
+##### s?
 
 `any` = `[]`
 
 ON 信息
 
-##### suf
+##### suf?
 
 `string` = `''`
 
 表后缀
 
-##### pre
+##### pre?
 
 `string` = `''`
 
@@ -630,7 +630,7 @@ Defined in: [lib/sql.ts:202](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 ### union()
 
-> **union**(`lsql`, `type`): `this`
+> **union**(`lsql`, `type?`): `this`
 
 Defined in: [lib/sql.ts:323](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L323)
 
@@ -644,7 +644,7 @@ Defined in: [lib/sql.ts:323](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 sql 对象
 
-##### type
+##### type?
 
 `string` = `''`
 
@@ -736,7 +736,7 @@ Defined in: [lib/sql.ts:168](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 ### values()
 
-> **values**(`cs`, `vs`): `this`
+> **values**(`cs`, `vs?`): `this`
 
 Defined in: [lib/sql.ts:110](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L110)
 
@@ -750,7 +750,7 @@ Defined in: [lib/sql.ts:110](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 `string`[] | `Record`\<`string`, [`DbValue`](../../../index/type-aliases/DbValue.md)\>
 
-##### vs
+##### vs?
 
 [] | [][] 数据
 

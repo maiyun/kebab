@@ -6,7 +6,7 @@
 
 # Function: fetch()
 
-> **fetch**(`input`, `init`): `Promise`\<`Response`\>
+> **fetch**(`input`, `init?`): `Promise`\<`Response`\>
 
 Defined in: [lib/net.ts:131](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L131)
 
@@ -20,7 +20,7 @@ Defined in: [lib/net.ts:131](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 `string` | `Request` | `URL`
 
-### init
+### init?
 
 `RequestInit` & `object` = `{}`
 

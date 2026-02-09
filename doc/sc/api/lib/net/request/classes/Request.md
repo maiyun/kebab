@@ -52,7 +52,7 @@ Defined in: [lib/net/request.ts:29](https://github.com/maiyunnet/kebab/blob/mast
 
 ### follow()
 
-> **follow**(`follow`): `this`
+> **follow**(`follow?`): `this`
 
 Defined in: [lib/net/request.ts:86](https://github.com/maiyunnet/kebab/blob/master/lib/net/request.ts#L86)
 
@@ -60,7 +60,7 @@ Defined in: [lib/net/request.ts:86](https://github.com/maiyunnet/kebab/blob/mast
 
 #### Parameters
 
-##### follow
+##### follow?
 
 `number` = `5`
 

@@ -58,7 +58,7 @@ Defined in: [lib/ssh/shell.ts:77](https://github.com/maiyunnet/kebab/blob/master
 
 ### getContent()
 
-> **getContent**(`tryCount`): `Promise`\<`Buffer`\<`ArrayBufferLike`\>\>
+> **getContent**(`tryCount?`): `Promise`\<`Buffer`\<`ArrayBufferLike`\>\>
 
 Defined in: [lib/ssh/shell.ts:96](https://github.com/maiyunnet/kebab/blob/master/lib/ssh/shell.ts#L96)
 
@@ -66,7 +66,7 @@ Defined in: [lib/ssh/shell.ts:96](https://github.com/maiyunnet/kebab/blob/master
 
 #### Parameters
 
-##### tryCount
+##### tryCount?
 
 `number` = `10`
 

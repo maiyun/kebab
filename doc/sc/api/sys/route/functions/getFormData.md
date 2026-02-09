@@ -6,7 +6,7 @@
 
 # Function: getFormData()
 
-> **getFormData**(`req`, `events`): `Promise`\<`false` \| \{ `files`: `Record`\<`string`, [`IPostFile`](../../../index/interfaces/IPostFile.md) \| [`IPostFile`](../../../index/interfaces/IPostFile.md)[]\>; `post`: `Record`\<`string`, [`Json`](../../../index/type-aliases/Json.md)\>; \}\>
+> **getFormData**(`req`, `events?`): `Promise`\<`false` \| \{ `files`: `Record`\<`string`, [`IPostFile`](../../../index/interfaces/IPostFile.md) \| [`IPostFile`](../../../index/interfaces/IPostFile.md)[]\>; `post`: `Record`\<`string`, [`Json`](../../../index/type-aliases/Json.md)\>; \}\>
 
 Defined in: [sys/route.ts:932](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L932)
 
@@ -20,7 +20,7 @@ Defined in: [sys/route.ts:932](https://github.com/maiyunnet/kebab/blob/master/sy
 
 `IncomingMessage` | `Http2ServerRequest`
 
-### events
+### events?
 
 文件处理情况
 

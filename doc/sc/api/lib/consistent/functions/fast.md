@@ -6,7 +6,7 @@
 
 # Function: fast()
 
-> **fast**(`key`, `nodes`, `vcount`): `string` \| `null`
+> **fast**(`key`, `nodes`, `vcount?`): `string` \| `null`
 
 Defined in: [lib/consistent.ts:124](https://github.com/maiyunnet/kebab/blob/master/lib/consistent.ts#L124)
 
@@ -26,7 +26,7 @@ node 列表
 
 `string` | `string`[]
 
-### vcount
+### vcount?
 
 `number` = `300`
 

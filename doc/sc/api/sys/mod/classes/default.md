@@ -316,7 +316,7 @@ Defined in: [sys/mod.ts:1667](https://github.com/maiyunnet/kebab/blob/master/sys
 
 ### by()
 
-> **by**(`c`, `d`): `this`
+> **by**(`c`, `d?`): `this`
 
 Defined in: [sys/mod.ts:1623](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1623)
 
@@ -330,7 +330,7 @@ ORDER BY
 
 `string` | (`string` \| `string`[])[]
 
-##### d
+##### d?
 
 排序规则
 
@@ -416,7 +416,7 @@ true-成功,false-报错,null-唯一键非 _$key 键冲突
 
 ### crossJoin()
 
-> **crossJoin**(`f`, `s`, `index`, `pre`): `this`
+> **crossJoin**(`f`, `s`, `index?`, `pre?`): `this`
 
 Defined in: [sys/mod.ts:1583](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1583)
 
@@ -436,13 +436,13 @@ cross join 方法
 
 ON 信息
 
-##### index
+##### index?
 
 `string` = `''`
 
 给本表增加 index 分表项
 
-##### pre
+##### pre?
 
 `string` = `''`
 
@@ -574,7 +574,7 @@ Defined in: [sys/mod.ts:1018](https://github.com/maiyunnet/kebab/blob/master/sys
 
 ### firstArray()
 
-> **firstArray**(`lock`): `Promise`\<`false` \| `Record`\<`string`, `any`\> \| `null`\>
+> **firstArray**(`lock?`): `Promise`\<`false` \| `Record`\<`string`, `any`\> \| `null`\>
 
 Defined in: [sys/mod.ts:1058](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1058)
 
@@ -582,7 +582,7 @@ Defined in: [sys/mod.ts:1058](https://github.com/maiyunnet/kebab/blob/master/sys
 
 #### Parameters
 
-##### lock
+##### lock?
 
 `boolean` = `false`
 
@@ -624,7 +624,7 @@ sql 语句
 
 ### fullJoin()
 
-> **fullJoin**(`f`, `s`, `index`, `pre`): `this`
+> **fullJoin**(`f`, `s`, `index?`, `pre?`): `this`
 
 Defined in: [sys/mod.ts:1571](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1571)
 
@@ -644,13 +644,13 @@ full join 方法
 
 ON 信息
 
-##### index
+##### index?
 
 `string` = `''`
 
 给本表增加 index 分表项
 
-##### pre
+##### pre?
 
 `string` = `''`
 
@@ -758,7 +758,7 @@ Defined in: [sys/mod.ts:1592](https://github.com/maiyunnet/kebab/blob/master/sys
 
 ### innerJoin()
 
-> **innerJoin**(`f`, `s`, `index`, `pre`): `this`
+> **innerJoin**(`f`, `s`, `index?`, `pre?`): `this`
 
 Defined in: [sys/mod.ts:1559](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1559)
 
@@ -778,13 +778,13 @@ inner join 方法
 
 ON 信息
 
-##### index
+##### index?
 
 `string` = `''`
 
 给本表增加 index 分表项
 
-##### pre
+##### pre?
 
 `string` = `''`
 
@@ -798,7 +798,7 @@ ON 信息
 
 ### join()
 
-> **join**(`f`, `s`, `type`, `index`, `pre`): `this`
+> **join**(`f`, `s?`, `type?`, `index?`, `pre?`): `this`
 
 Defined in: [sys/mod.ts:1523](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1523)
 
@@ -810,25 +810,25 @@ Defined in: [sys/mod.ts:1523](https://github.com/maiyunnet/kebab/blob/master/sys
 
 表名
 
-##### s
+##### s?
 
 `any` = `[]`
 
 ON 信息
 
-##### type
+##### type?
 
 `string` = `'INNER'`
 
 类型
 
-##### index
+##### index?
 
 `string` = `''`
 
 给本表增加 index 分表项
 
-##### pre
+##### pre?
 
 `string` = `''`
 
@@ -870,7 +870,7 @@ Defined in: [sys/mod.ts:1738](https://github.com/maiyunnet/kebab/blob/master/sys
 
 ### leftJoin()
 
-> **leftJoin**(`f`, `s`, `index`, `pre`): `this`
+> **leftJoin**(`f`, `s`, `index?`, `pre?`): `this`
 
 Defined in: [sys/mod.ts:1535](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1535)
 
@@ -890,13 +890,13 @@ left join 方法
 
 ON 信息
 
-##### index
+##### index?
 
 `string` = `''`
 
 给本表增加 index 分表项
 
-##### pre
+##### pre?
 
 `string` = `''`
 
@@ -910,7 +910,7 @@ ON 信息
 
 ### limit()
 
-> **limit**(`a`, `b`): `this`
+> **limit**(`a`, `b?`): `this`
 
 Defined in: [sys/mod.ts:1645](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1645)
 
@@ -924,7 +924,7 @@ LIMIT
 
 起始
 
-##### b
+##### b?
 
 `number` = `0`
 
@@ -938,7 +938,7 @@ LIMIT
 
 ### page()
 
-> **page**(`count`, `page`): `this`
+> **page**(`count`, `page?`): `this`
 
 Defined in: [sys/mod.ts:1656](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1656)
 
@@ -952,7 +952,7 @@ Defined in: [sys/mod.ts:1656](https://github.com/maiyunnet/kebab/blob/master/sys
 
 每页条数
 
-##### page
+##### page?
 
 `number` = `1`
 
@@ -966,7 +966,7 @@ Defined in: [sys/mod.ts:1656](https://github.com/maiyunnet/kebab/blob/master/sys
 
 ### refresh()
 
-> **refresh**(`lock`): `Promise`\<`boolean` \| `null`\>
+> **refresh**(`lock?`): `Promise`\<`boolean` \| `null`\>
 
 Defined in: [sys/mod.ts:939](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L939)
 
@@ -974,7 +974,7 @@ Defined in: [sys/mod.ts:939](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 #### Parameters
 
-##### lock
+##### lock?
 
 `boolean` = `false`
 
@@ -1002,7 +1002,7 @@ Defined in: [sys/mod.ts:996](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 ### rightJoin()
 
-> **rightJoin**(`f`, `s`, `index`, `pre`): `this`
+> **rightJoin**(`f`, `s`, `index?`, `pre?`): `this`
 
 Defined in: [sys/mod.ts:1547](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1547)
 
@@ -1022,13 +1022,13 @@ right join 方法
 
 ON 信息
 
-##### index
+##### index?
 
 `string` = `''`
 
 给本表增加 index 分表项
 
-##### pre
+##### pre?
 
 `string` = `''`
 
@@ -1154,7 +1154,7 @@ Defined in: [sys/mod.ts:1710](https://github.com/maiyunnet/kebab/blob/master/sys
 
 ### total()
 
-> **total**(`f`): `Promise`\<`number`\>
+> **total**(`f?`): `Promise`\<`number`\>
 
 Defined in: [sys/mod.ts:1465](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1465)
 
@@ -1162,7 +1162,7 @@ Defined in: [sys/mod.ts:1465](https://github.com/maiyunnet/kebab/blob/master/sys
 
 #### Parameters
 
-##### f
+##### f?
 
 `string` = `'*'`
 
@@ -1174,7 +1174,7 @@ Defined in: [sys/mod.ts:1465](https://github.com/maiyunnet/kebab/blob/master/sys
 
 ### union()
 
-> **union**(`f`, `type`): `this`
+> **union**(`f`, `type?`): `this`
 
 Defined in: [sys/mod.ts:1069](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1069)
 
@@ -1188,7 +1188,7 @@ Defined in: [sys/mod.ts:1069](https://github.com/maiyunnet/kebab/blob/master/sys
 
 `string` | `string`[] | [`Sql`](../../../lib/sql/classes/Sql.md) | [`IModUnionItem`](../interfaces/IModUnionItem.md) | [`IModUnionItem`](../interfaces/IModUnionItem.md)[]
 
-##### type
+##### type?
 
 `string` = `''`
 
@@ -1328,7 +1328,7 @@ Defined in: [sys/mod.ts:168](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 ### find()
 
-> `static` **find**\<`T`\>(`db`, `val`, `opt`): `Promise`\<`false` \| `T` & `Record`\<`string`, `any`\> \| `null`\>
+> `static` **find**\<`T`\>(`db`, `val`, `opt?`): `Promise`\<`false` \| `T` & `Record`\<`string`, `any`\> \| `null`\>
 
 Defined in: [sys/mod.ts:599](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L599)
 
@@ -1354,7 +1354,7 @@ Defined in: [sys/mod.ts:599](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 `string` | `number` | `null`
 
-##### opt
+##### opt?
 
 选项
 
@@ -1388,7 +1388,7 @@ Defined in: [sys/mod.ts:599](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 ### getCreate()
 
-> `static` **getCreate**\<`T`\>(`db`, `opt`): `T`
+> `static` **getCreate**\<`T`\>(`db`, `opt?`): `T`
 
 Defined in: [sys/mod.ts:581](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L581)
 
@@ -1408,7 +1408,7 @@ Defined in: [sys/mod.ts:581](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 [`Transaction`](../../../lib/db/tran/classes/Transaction.md) | [`Pool`](../../../lib/db/pool/classes/Pool.md)
 
-##### opt
+##### opt?
 
 选项
 
@@ -1656,7 +1656,7 @@ Defined in: [sys/mod.ts:638](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 ### oneArray()
 
-> `static` **oneArray**(`db`, `s`, `opt`): `Promise`\<`false` \| `Record`\<`string`, `any`\> \| `null`\>
+> `static` **oneArray**(`db`, `s`, `opt?`): `Promise`\<`false` \| `Record`\<`string`, `any`\> \| `null`\>
 
 Defined in: [sys/mod.ts:713](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L713)
 
@@ -1676,7 +1676,7 @@ Defined in: [sys/mod.ts:713](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 筛选条件数组或字符串
 
-##### opt
+##### opt?
 
 选项
 
@@ -1704,7 +1704,7 @@ Defined in: [sys/mod.ts:713](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 ### primarys()
 
-> `static` **primarys**(`db`, `where`, `opt`): `Promise`\<`false` \| `any`[]\>
+> `static` **primarys**(`db`, `where?`, `opt?`): `Promise`\<`false` \| `any`[]\>
 
 Defined in: [sys/mod.ts:733](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L733)
 
@@ -1718,13 +1718,13 @@ Defined in: [sys/mod.ts:733](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 [`Transaction`](../../../lib/db/tran/classes/Transaction.md) | [`Pool`](../../../lib/db/pool/classes/Pool.md)
 
-##### where
+##### where?
 
 `any` = `''`
 
 where 条件
 
-##### opt
+##### opt?
 
 选项
 
@@ -1748,7 +1748,7 @@ where 条件
 
 ### removeByWhere()
 
-> `static` **removeByWhere**(`db`, `where`, `opt`): `Promise`\<`number` \| `false` \| `null`\>
+> `static` **removeByWhere**(`db`, `where`, `opt?`): `Promise`\<`number` \| `false` \| `null`\>
 
 Defined in: [sys/mod.ts:269](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L269)
 
@@ -1768,7 +1768,7 @@ Defined in: [sys/mod.ts:269](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 筛选条件
 
-##### opt
+##### opt?
 
 选项
 
@@ -1800,7 +1800,7 @@ Defined in: [sys/mod.ts:269](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 ### removeByWhereSql()
 
-> `static` **removeByWhereSql**(`db`, `where`, `opt`): [`Sql`](../../../lib/sql/classes/Sql.md)
+> `static` **removeByWhereSql**(`db`, `where`, `opt?`): [`Sql`](../../../lib/sql/classes/Sql.md)
 
 Defined in: [sys/mod.ts:313](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L313)
 
@@ -1820,7 +1820,7 @@ Defined in: [sys/mod.ts:313](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 筛选条件
 
-##### opt
+##### opt?
 
 选项
 
@@ -1852,7 +1852,7 @@ Defined in: [sys/mod.ts:313](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 ### select()
 
-> `static` **select**\<`T`\>(`db`, `c`, `opt`): `T` & `Record`\<`string`, `any`\>
+> `static` **select**\<`T`\>(`db`, `c`, `opt?`): `T` & `Record`\<`string`, `any`\>
 
 Defined in: [sys/mod.ts:522](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L522)
 
@@ -1878,7 +1878,7 @@ select 自定字段
 
 `string` | `string`[]
 
-##### opt
+##### opt?
 
 选项
 
@@ -1946,7 +1946,7 @@ Defined in: [sys/mod.ts:760](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 ### updateByWhere()
 
-> `static` **updateByWhere**(`db`, `data`, `where`, `opt`): `Promise`\<`number` \| `false` \| `null`\>
+> `static` **updateByWhere**(`db`, `data`, `where`, `opt?`): `Promise`\<`number` \| `false` \| `null`\>
 
 Defined in: [sys/mod.ts:346](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L346)
 
@@ -1972,7 +1972,7 @@ Defined in: [sys/mod.ts:346](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 筛选条件
 
-##### opt
+##### opt?
 
 选项
 
@@ -2004,7 +2004,7 @@ Defined in: [sys/mod.ts:346](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 ### updateByWhereSql()
 
-> `static` **updateByWhereSql**(`db`, `data`, `where`, `opt`): [`Sql`](../../../lib/sql/classes/Sql.md)
+> `static` **updateByWhereSql**(`db`, `data`, `where`, `opt?`): [`Sql`](../../../lib/sql/classes/Sql.md)
 
 Defined in: [sys/mod.ts:392](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L392)
 
@@ -2030,7 +2030,7 @@ Defined in: [sys/mod.ts:392](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 筛选条件
 
-##### opt
+##### opt?
 
 选项
 
@@ -2062,7 +2062,7 @@ Defined in: [sys/mod.ts:392](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 ### updateList()
 
-> `static` **updateList**(`db`, `data`, `key`, `opt`): `Promise`\<`boolean` \| `null`\>
+> `static` **updateList**(`db`, `data`, `key`, `opt?`): `Promise`\<`boolean` \| `null`\>
 
 Defined in: [sys/mod.ts:426](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L426)
 
@@ -2088,7 +2088,7 @@ Defined in: [sys/mod.ts:426](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 用于定位的主键或唯一键字段名
 
-##### opt
+##### opt?
 
 选项
 
@@ -2112,7 +2112,7 @@ Defined in: [sys/mod.ts:426](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 ### where()
 
-> `static` **where**\<`T`\>(`db`, `s`, `opt`): `T` & `Record`\<`string`, `any`\>
+> `static` **where**\<`T`\>(`db`, `s?`, `opt?`): `T` & `Record`\<`string`, `any`\>
 
 Defined in: [sys/mod.ts:552](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L552)
 
@@ -2132,13 +2132,13 @@ Defined in: [sys/mod.ts:552](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 [`Transaction`](../../../lib/db/tran/classes/Transaction.md) | [`Pool`](../../../lib/db/pool/classes/Pool.md)
 
-##### s
+##### s?
 
 `any` = `''`
 
 筛选条件数组或字符串
 
-##### opt
+##### opt?
 
 选项
 

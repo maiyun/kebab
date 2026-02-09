@@ -6,7 +6,7 @@
 
 # Function: sizeFormat()
 
-> **sizeFormat**(`size`, `spliter`): `string`
+> **sizeFormat**(`size`, `spliter?`): `string`
 
 Defined in: [lib/text.ts:15](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L15)
 
@@ -20,7 +20,7 @@ Defined in: [lib/text.ts:15](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 文件大小
 
-### spliter
+### spliter?
 
 `string` = `' '`
 

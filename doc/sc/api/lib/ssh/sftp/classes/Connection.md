@@ -153,7 +153,7 @@ Defined in: [lib/ssh/sftp.ts:418](https://github.com/maiyunnet/kebab/blob/master
 
 ### downloadFile()
 
-> **downloadFile**(`remoteFile`, `localFile`, `options`): `Promise`\<`boolean`\>
+> **downloadFile**(`remoteFile`, `localFile`, `options?`): `Promise`\<`boolean`\>
 
 Defined in: [lib/ssh/sftp.ts:442](https://github.com/maiyunnet/kebab/blob/master/lib/ssh/sftp.ts#L442)
 
@@ -173,7 +173,7 @@ Defined in: [lib/ssh/sftp.ts:442](https://github.com/maiyunnet/kebab/blob/master
 
 本地路径
 
-##### options
+##### options?
 
 `TransferOptions` = `{}`
 
@@ -291,7 +291,7 @@ Defined in: [lib/ssh/sftp.ts:229](https://github.com/maiyunnet/kebab/blob/master
 
 ### mkdir()
 
-> **mkdir**(`path`, `mode`): `Promise`\<`boolean`\>
+> **mkdir**(`path`, `mode?`): `Promise`\<`boolean`\>
 
 Defined in: [lib/ssh/sftp.ts:242](https://github.com/maiyunnet/kebab/blob/master/lib/ssh/sftp.ts#L242)
 
@@ -305,7 +305,7 @@ Defined in: [lib/ssh/sftp.ts:242](https://github.com/maiyunnet/kebab/blob/master
 
 要创建的路径，如 /a/b/c/
 
-##### mode
+##### mode?
 
 `number` = `0o755`
 
@@ -319,7 +319,7 @@ Defined in: [lib/ssh/sftp.ts:242](https://github.com/maiyunnet/kebab/blob/master
 
 ### pipe()
 
-> **pipe**\<`T`\>(`path`, `destination`, `options`): `Promise`\<`boolean`\>
+> **pipe**\<`T`\>(`path`, `destination`, `options?`): `Promise`\<`boolean`\>
 
 Defined in: [lib/ssh/sftp.ts:400](https://github.com/maiyunnet/kebab/blob/master/lib/ssh/sftp.ts#L400)
 
@@ -345,7 +345,7 @@ Defined in: [lib/ssh/sftp.ts:400](https://github.com/maiyunnet/kebab/blob/master
 
 要写入的流
 
-##### options
+##### options?
 
 写入后是否终止写入流，默认终止
 
@@ -361,7 +361,7 @@ Defined in: [lib/ssh/sftp.ts:400](https://github.com/maiyunnet/kebab/blob/master
 
 ### putContent()
 
-> **putContent**(`path`, `data`, `options`): `Promise`\<`boolean`\>
+> **putContent**(`path`, `data`, `options?`): `Promise`\<`boolean`\>
 
 Defined in: [lib/ssh/sftp.ts:109](https://github.com/maiyunnet/kebab/blob/master/lib/ssh/sftp.ts#L109)
 
@@ -381,7 +381,7 @@ Defined in: [lib/ssh/sftp.ts:109](https://github.com/maiyunnet/kebab/blob/master
 
 `string` | `Buffer`\<`ArrayBufferLike`\>
 
-##### options
+##### options?
 
 `WriteFileOptions` = `{}`
 
@@ -599,7 +599,7 @@ Defined in: [lib/ssh/sftp.ts:169](https://github.com/maiyunnet/kebab/blob/master
 
 ### uploadFile()
 
-> **uploadFile**(`localFile`, `remoteFile`, `options`): `Promise`\<`boolean`\>
+> **uploadFile**(`localFile`, `remoteFile`, `options?`): `Promise`\<`boolean`\>
 
 Defined in: [lib/ssh/sftp.ts:466](https://github.com/maiyunnet/kebab/blob/master/lib/ssh/sftp.ts#L466)
 
@@ -617,7 +617,7 @@ Defined in: [lib/ssh/sftp.ts:466](https://github.com/maiyunnet/kebab/blob/master
 
 `string`
 
-##### options
+##### options?
 
 `TransferOptions` = `{}`
 

@@ -6,7 +6,7 @@
 
 # Function: gzip()
 
-> **gzip**(`buffer`, `options`): `Promise`\<`Buffer`\<`ArrayBufferLike`\> \| `null`\>
+> **gzip**(`buffer`, `options?`): `Promise`\<`Buffer`\<`ArrayBufferLike`\> \| `null`\>
 
 Defined in: [lib/zlib.ts:140](https://github.com/maiyunnet/kebab/blob/master/lib/zlib.ts#L140)
 
@@ -20,7 +20,7 @@ Gzip 压缩一段
 
 段
 
-### options
+### options?
 
 `ZlibOptions` = `{}`
 

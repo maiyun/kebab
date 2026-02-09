@@ -6,7 +6,7 @@
 
 # Function: emptyObject()
 
-> **emptyObject**(`obj`, `deep`): `void`
+> **emptyObject**(`obj`, `deep?`): `void`
 
 Defined in: [lib/core.ts:410](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L410)
 
@@ -20,7 +20,7 @@ Defined in: [lib/core.ts:410](https://github.com/maiyunnet/kebab/blob/master/lib
 
 要清除的对象
 
-### deep
+### deep?
 
 `boolean` = `false`
 

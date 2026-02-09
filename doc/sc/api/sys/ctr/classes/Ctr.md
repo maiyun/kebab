@@ -538,7 +538,7 @@ Defined in: [sys/ctr.ts:323](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 ### \_getRunTime()
 
-> `protected` **\_getRunTime**(`ms`): `number`
+> `protected` **\_getRunTime**(`ms?`): `number`
 
 Defined in: [sys/ctr.ts:315](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L315)
 
@@ -546,7 +546,7 @@ Defined in: [sys/ctr.ts:315](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 #### Parameters
 
-##### ms
+##### ms?
 
 `boolean` = `false`
 
@@ -560,7 +560,7 @@ Defined in: [sys/ctr.ts:315](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 ### \_handleFormData()
 
-> `protected` **\_handleFormData**(`events`): `Promise`\<`boolean`\>
+> `protected` **\_handleFormData**(`events?`): `Promise`\<`boolean`\>
 
 Defined in: [sys/ctr.ts:843](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L843)
 
@@ -568,7 +568,7 @@ Defined in: [sys/ctr.ts:843](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 #### Parameters
 
-##### events
+##### events?
 
 文件处理情况
 
@@ -640,7 +640,7 @@ Defined in: [sys/ctr.ts:635](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 ### \_loadLocale()
 
-> `protected` **\_loadLocale**(`loc`, `pkg`): `Promise`\<`boolean`\>
+> `protected` **\_loadLocale**(`loc`, `pkg?`): `Promise`\<`boolean`\>
 
 Defined in: [sys/ctr.ts:683](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L683)
 
@@ -654,7 +654,7 @@ Defined in: [sys/ctr.ts:683](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 要加载的目标语言
 
-##### pkg
+##### pkg?
 
 `string` = `'default'`
 
@@ -668,7 +668,7 @@ Defined in: [sys/ctr.ts:683](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 ### \_loadView()
 
-> `protected` **\_loadView**(`path`, `data`): `Promise`\<`string`\>
+> `protected` **\_loadView**(`path`, `data?`): `Promise`\<`string`\>
 
 Defined in: [sys/ctr.ts:332](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L332)
 
@@ -680,7 +680,7 @@ Defined in: [sys/ctr.ts:332](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 `string`
 
-##### data
+##### data?
 
 `any` = `{}`
 
@@ -758,7 +758,7 @@ Defined in: [sys/ctr.ts:828](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 ### \_startSession()
 
-> `protected` **\_startSession**(`link`, `auth`, `opt`): `Promise`\<`boolean`\>
+> `protected` **\_startSession**(`link`, `auth?`, `opt?`): `Promise`\<`boolean`\>
 
 Defined in: [sys/ctr.ts:667](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L667)
 
@@ -772,13 +772,13 @@ Kv 或 Db 实例
 
 [`Pool`](../../../lib/db/pool/classes/Pool.md) | [`Kv`](../../../lib/kv/classes/Kv.md)
 
-##### auth
+##### auth?
 
 `boolean` = `false`
 
 设为 true 则从头 Authorization 或 post _auth 值读取 token
 
-##### opt
+##### opt?
 
 [`IOptions`](../../../lib/session/interfaces/IOptions.md) = `{}`
 

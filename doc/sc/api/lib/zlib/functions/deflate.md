@@ -6,7 +6,7 @@
 
 # Function: deflate()
 
-> **deflate**(`buffer`, `options`): `Promise`\<`Buffer`\<`ArrayBufferLike`\> \| `null`\>
+> **deflate**(`buffer`, `options?`): `Promise`\<`Buffer`\<`ArrayBufferLike`\> \| `null`\>
 
 Defined in: [lib/zlib.ts:176](https://github.com/maiyunnet/kebab/blob/master/lib/zlib.ts#L176)
 
@@ -20,7 +20,7 @@ Deflate 压缩一段
 
 段
 
-### options
+### options?
 
 `ZlibOptions` = `{}`
 

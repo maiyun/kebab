@@ -24,13 +24,13 @@ Defined in: [sys/mod.ts:19](https://github.com/maiyunnet/kebab/blob/master/sys/m
 
 ### Constructor
 
-> **new Rows**\<`T`\>(`initialItems`): `Rows`\<`T`\>
+> **new Rows**\<`T`\>(`initialItems?`): `Rows`\<`T`\>
 
 Defined in: [sys/mod.ts:23](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L23)
 
 #### Parameters
 
-##### initialItems
+##### initialItems?
 
 `T`[] = `[]`
 

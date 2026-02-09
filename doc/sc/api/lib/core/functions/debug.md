@@ -6,7 +6,7 @@
 
 # Function: debug()
 
-> **debug**(`message?`, ...`optionalParams?`): `void`
+> **debug**(`message?`, ...`optionalParams`): `void`
 
 Defined in: [lib/core.ts:981](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L981)
 
@@ -20,7 +20,7 @@ Defined in: [lib/core.ts:981](https://github.com/maiyunnet/kebab/blob/master/lib
 
 参数
 
-### optionalParams?
+### optionalParams
 
 ...`any`[]
 

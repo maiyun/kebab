@@ -6,7 +6,7 @@
 
 # Function: exec()
 
-> **exec**(`command`, `options`): `Promise`\<`string` \| `false`\>
+> **exec**(`command`, `options?`): `Promise`\<`string` \| `false`\>
 
 Defined in: [lib/core.ts:468](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L468)
 
@@ -20,7 +20,7 @@ Defined in: [lib/core.ts:468](https://github.com/maiyunnet/kebab/blob/master/lib
 
 命令字符串
 
-### options
+### options?
 
 #### cwd?
 

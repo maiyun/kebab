@@ -158,7 +158,7 @@ Defined in: [lib/db/conn.ts:73](https://github.com/maiyunnet/kebab/blob/master/l
 
 ### isAvailable()
 
-> **isAvailable**(`last`): `Promise`\<`boolean`\>
+> **isAvailable**(`last?`): `Promise`\<`boolean`\>
 
 Defined in: [lib/db/conn.ts:154](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L154)
 
@@ -166,7 +166,7 @@ Defined in: [lib/db/conn.ts:154](https://github.com/maiyunnet/kebab/blob/master/
 
 #### Parameters
 
-##### last
+##### last?
 
 `boolean` = `true`
 

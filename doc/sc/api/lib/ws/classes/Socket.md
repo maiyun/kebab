@@ -112,7 +112,7 @@ Defined in: [lib/ws.ts:361](https://github.com/maiyunnet/kebab/blob/master/lib/w
 
 ### connect()
 
-> **connect**(`u`, `opt`): `Promise`\<`Socket` \| `null`\>
+> **connect**(`u`, `opt?`): `Promise`\<`Socket` \| `null`\>
 
 Defined in: [lib/ws.ts:123](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L123)
 
@@ -126,7 +126,7 @@ Defined in: [lib/ws.ts:123](https://github.com/maiyunnet/kebab/blob/master/lib/w
 
 以 ws, wss 开头的地址
 
-##### opt
+##### opt?
 
 [`IConnectOptions`](../interfaces/IConnectOptions.md) = `{}`
 

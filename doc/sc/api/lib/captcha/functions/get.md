@@ -6,7 +6,7 @@
 
 # Function: get()
 
-> **get**(`width`, `height`, `length`): [`Captcha`](../classes/Captcha.md)
+> **get**(`width`, `height`, `length?`): [`Captcha`](../classes/Captcha.md)
 
 Defined in: [lib/captcha.ts:57](https://github.com/maiyunnet/kebab/blob/master/lib/captcha.ts#L57)
 
@@ -26,7 +26,7 @@ Defined in: [lib/captcha.ts:57](https://github.com/maiyunnet/kebab/blob/master/l
 
 高度
 
-### length
+### length?
 
 `number` = `4`
 

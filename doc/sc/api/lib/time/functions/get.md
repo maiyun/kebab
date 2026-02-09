@@ -6,7 +6,7 @@
 
 # Function: get()
 
-> **get**(`ctr`, `opt`): [`Time`](../classes/Time.md)
+> **get**(`ctr`, `opt?`): [`Time`](../classes/Time.md)
 
 Defined in: [lib/time.ts:113](https://github.com/maiyunnet/kebab/blob/master/lib/time.ts#L113)
 
@@ -18,7 +18,7 @@ Defined in: [lib/time.ts:113](https://github.com/maiyunnet/kebab/blob/master/lib
 
 [`Ctr`](../../../sys/ctr/classes/Ctr.md)
 
-### opt
+### opt?
 
 [`IOptions`](../interfaces/IOptions.md) = `{}`
 

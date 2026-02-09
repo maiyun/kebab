@@ -6,7 +6,7 @@
 
 # Function: passThroughAppend()
 
-> **passThroughAppend**(`passThrough`, `data`, `end`): `Promise`\<`void`\>
+> **passThroughAppend**(`passThrough`, `data`, `end?`): `Promise`\<`void`\>
 
 Defined in: [lib/core.ts:429](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L429)
 
@@ -26,7 +26,7 @@ passThrough 对象
 
 数组
 
-### end
+### end?
 
 `boolean` = `true`
 

@@ -6,7 +6,7 @@
 
 # Function: generateKeyPair()
 
-> **generateKeyPair**(`type`, `options`): `Promise`\<\{ `private`: `string` \| `Buffer`\<`ArrayBufferLike`\>; `public`: `string` \| `Buffer`\<`ArrayBufferLike`\>; \}\>
+> **generateKeyPair**(`type`, `options?`): `Promise`\<\{ `private`: `string` \| `Buffer`\<`ArrayBufferLike`\>; `public`: `string` \| `Buffer`\<`ArrayBufferLike`\>; \}\>
 
 Defined in: [lib/crypto.ts:18](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L18)
 
@@ -20,7 +20,7 @@ Defined in: [lib/crypto.ts:18](https://github.com/maiyunnet/kebab/blob/master/li
 
 如 rsa/ec
 
-### options
+### options?
 
 参数
 

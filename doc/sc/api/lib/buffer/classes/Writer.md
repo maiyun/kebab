@@ -66,7 +66,7 @@ Defined in: [lib/buffer.ts:113](https://github.com/maiyunnet/kebab/blob/master/l
 
 ### writeString()
 
-> **writeString**(`value`, `encoding`): `number`
+> **writeString**(`value`, `encoding?`): `number`
 
 Defined in: [lib/buffer.ts:126](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L126)
 
@@ -78,7 +78,7 @@ Defined in: [lib/buffer.ts:126](https://github.com/maiyunnet/kebab/blob/master/l
 
 `string`
 
-##### encoding
+##### encoding?
 
 `BufferEncoding` = `'utf8'`
 

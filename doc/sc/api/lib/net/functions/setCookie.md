@@ -6,7 +6,7 @@
 
 # Function: setCookie()
 
-> **setCookie**(`cookie`, `name`, `value`, `domain`, `opt`): `void`
+> **setCookie**(`cookie`, `name`, `value`, `domain`, `opt?`): `void`
 
 Defined in: [lib/net.ts:466](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L466)
 
@@ -38,7 +38,7 @@ Defined in: [lib/net.ts:466](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 应用网址，如 .xxx.com
 
-### opt
+### opt?
 
 选项 ttl, path, ssl, httponly
 

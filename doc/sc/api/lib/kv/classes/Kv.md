@@ -42,7 +42,7 @@ Defined in: [lib/kv.ts:60](https://github.com/maiyunnet/kebab/blob/master/lib/kv
 
 ### add()
 
-> **add**(`key`, `val`, `ttl`): `Promise`\<`boolean`\>
+> **add**(`key`, `val`, `ttl?`): `Promise`\<`boolean`\>
 
 Defined in: [lib/kv.ts:115](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L115)
 
@@ -58,7 +58,7 @@ Defined in: [lib/kv.ts:115](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 `string` | `number` | `object`
 
-##### ttl
+##### ttl?
 
 `number` = `0`
 
@@ -156,7 +156,7 @@ Defined in: [lib/kv.ts:780](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 ### decr()
 
-> **decr**(`key`, `num`): `Promise`\<`number` \| `false`\>
+> **decr**(`key`, `num?`): `Promise`\<`number` \| `false`\>
 
 Defined in: [lib/kv.ts:387](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L387)
 
@@ -168,7 +168,7 @@ Defined in: [lib/kv.ts:387](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 `string`
 
-##### num
+##### num?
 
 `number` = `1`
 
@@ -528,7 +528,7 @@ key / val 数组
 
 ### hSet()
 
-> **hSet**(`key`, `field`, `val`, `mod`): `Promise`\<`boolean`\>
+> **hSet**(`key`, `field`, `val`, `mod?`): `Promise`\<`boolean`\>
 
 Defined in: [lib/kv.ts:519](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L519)
 
@@ -554,7 +554,7 @@ key 名
 
 `string` | `number` | `object`
 
-##### mod
+##### mod?
 
 空,nx(key不存在才建立)
 
@@ -568,7 +568,7 @@ key 名
 
 ### incr()
 
-> **incr**(`key`, `num`): `Promise`\<`number` \| `false`\>
+> **incr**(`key`, `num?`): `Promise`\<`number` \| `false`\>
 
 Defined in: [lib/kv.ts:359](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L359)
 
@@ -580,7 +580,7 @@ Defined in: [lib/kv.ts:359](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 `string`
 
-##### num
+##### num?
 
 `number` = `1`
 
@@ -816,7 +816,7 @@ Defined in: [lib/kv.ts:252](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 ### replace()
 
-> **replace**(`key`, `val`, `ttl`): `Promise`\<`boolean`\>
+> **replace**(`key`, `val`, `ttl?`): `Promise`\<`boolean`\>
 
 Defined in: [lib/kv.ts:129](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L129)
 
@@ -836,7 +836,7 @@ Defined in: [lib/kv.ts:129](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 `string` | `number` | `object`
 
-##### ttl
+##### ttl?
 
 `number` = `0`
 
@@ -890,7 +890,7 @@ Defined in: [lib/kv.ts:728](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 ### scan()
 
-> **scan**(`cursor`, `pattern`, `count`): `Promise`\<`false` \| `IScanResult`\<`string`\>\>
+> **scan**(`cursor?`, `pattern?`, `count?`): `Promise`\<`false` \| `IScanResult`\<`string`\>\>
 
 Defined in: [lib/kv.ts:458](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L458)
 
@@ -898,17 +898,17 @@ Defined in: [lib/kv.ts:458](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 #### Parameters
 
-##### cursor
+##### cursor?
 
 `number` = `0`
 
-##### pattern
+##### pattern?
 
 `string` = `'*'`
 
 例如 *
 
-##### count
+##### count?
 
 `number` = `10`
 
@@ -922,7 +922,7 @@ Defined in: [lib/kv.ts:458](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 ### set()
 
-> **set**(`key`, `val`, `ttl`, `mod`): `Promise`\<`boolean`\>
+> **set**(`key`, `val`, `ttl?`, `mod?`): `Promise`\<`boolean`\>
 
 Defined in: [lib/kv.ts:83](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L83)
 
@@ -938,13 +938,13 @@ Defined in: [lib/kv.ts:83](https://github.com/maiyunnet/kebab/blob/master/lib/kv
 
 `string` | `number` | `object`
 
-##### ttl
+##### ttl?
 
 `number` = `0`
 
 秒，0 为不限制
 
-##### mod
+##### mod?
 
 设置模式: 空,nx（key不存在才建立）,xx（key存在才修改）
 

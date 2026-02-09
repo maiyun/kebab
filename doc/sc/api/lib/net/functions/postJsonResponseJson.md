@@ -6,7 +6,7 @@
 
 # Function: postJsonResponseJson()
 
-> **postJsonResponseJson**(`u`, `data`, `opt`): `Promise`\<`any`\>
+> **postJsonResponseJson**(`u`, `data`, `opt?`): `Promise`\<`any`\>
 
 Defined in: [lib/net.ts:109](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L109)
 
@@ -26,7 +26,7 @@ Defined in: [lib/net.ts:109](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 `any`[] | `Record`\<`string`, `any`\>
 
-### opt
+### opt?
 
 [`IRequestOptions`](../interfaces/IRequestOptions.md) = `{}`
 

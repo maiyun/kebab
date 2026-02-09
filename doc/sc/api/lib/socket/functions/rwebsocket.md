@@ -6,7 +6,7 @@
 
 # Function: rwebsocket()
 
-> **rwebsocket**(`port`, `url`, `opt`): `Server`
+> **rwebsocket**(`port`, `url`, `opt?`): `Server`
 
 Defined in: [lib/socket.ts:37](https://github.com/maiyunnet/kebab/blob/master/lib/socket.ts#L37)
 
@@ -26,7 +26,7 @@ Defined in: [lib/socket.ts:37](https://github.com/maiyunnet/kebab/blob/master/li
 
 反代到的 WebSocket
 
-### opt
+### opt?
 
 [`IRwebsocketOptions`](../interfaces/IRwebsocketOptions.md) = `{}`
 

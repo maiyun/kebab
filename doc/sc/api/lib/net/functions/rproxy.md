@@ -6,7 +6,7 @@
 
 # Function: rproxy()
 
-> **rproxy**(`ctr`, `route`, `opt`): `Promise`\<`boolean`\>
+> **rproxy**(`ctr`, `route`, `opt?`): `Promise`\<`boolean`\>
 
 Defined in: [lib/net.ts:785](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L785)
 
@@ -26,7 +26,7 @@ Defined in: [lib/net.ts:785](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 要反代的路由
 
-### opt
+### opt?
 
 [`IRproxyOptions`](../interfaces/IRproxyOptions.md) = `{}`
 

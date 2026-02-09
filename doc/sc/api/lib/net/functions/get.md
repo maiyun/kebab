@@ -6,7 +6,7 @@
 
 # Function: get()
 
-> **get**(`u`, `opt`): `Promise`\<[`Response`](../response/classes/Response.md)\>
+> **get**(`u`, `opt?`): `Promise`\<[`Response`](../response/classes/Response.md)\>
 
 Defined in: [lib/net.ts:67](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L67)
 
@@ -20,7 +20,7 @@ Defined in: [lib/net.ts:67](https://github.com/maiyunnet/kebab/blob/master/lib/n
 
 请求的 URL
 
-### opt
+### opt?
 
 [`IRequestOptions`](../interfaces/IRequestOptions.md) = `{}`
 
