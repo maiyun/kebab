@@ -107,17 +107,25 @@ function captureDiag(blockSec: number): void {
         return;
     }
     let didPause = false;
+    /** --- 10s 超时与 Debugger.enable 回调存在竞态，超时后 session 已断开，回调仍在断开的 session 上操作 --- */
+    let timedOut = false;
     /** --- scriptId → URL 映射表 --- */
     const scriptUrls: Record<string, string> = {};
     const pauseTimeout = setTimeout(() => {
         if (!didPause) {
+            timedOut = true;
             try {
                 session.post('Debugger.disable');
             }
             catch {
                 // --- 忽略 ---
             }
-            session.disconnect();
+            try {
+                session.disconnect();
+            }
+            catch {
+                // --- 忽略 ---
+            }
             capturing = false;
         }
     }, 10_000);
@@ -125,6 +133,9 @@ function captureDiag(blockSec: number): void {
         scriptUrls[msg.params.scriptId] = msg.params.url ?? '';
     });
     session.on('Debugger.paused', (msg) => {
+        if (timedOut) {
+            return;
+        }
         didPause = true;
         clearTimeout(pauseTimeout);
         let stackLines: string[] = [];
@@ -143,7 +154,24 @@ function captureDiag(blockSec: number): void {
         catch {
             // --- 忽略堆栈解析错误 ---
         }
-        session.post('Debugger.resume', () => {
+        session.post('Debugger.resume', (resumeErr) => {
+            if (resumeErr) {
+                // --- resume 失败仍尝试 disable 并断开，防止主线程卡死 ---
+                try {
+                    session.post('Debugger.disable');
+                }
+                catch {
+                    // --- 忽略 ---
+                }
+                try {
+                    session.disconnect();
+                }
+                catch {
+                    // --- 忽略 ---
+                }
+                capturing = false;
+                return;
+            }
             session.post('Debugger.disable', () => {
                 // --- 写入堆栈文件 ---
                 try {
@@ -173,20 +201,45 @@ function captureDiag(blockSec: number): void {
         });
     });
     session.post('Debugger.enable', (err) => {
-        if (err) {
+        if (err || timedOut) {
             clearTimeout(pauseTimeout);
-            session.disconnect();
-            capturing = false;
-            return;
-        }
-        session.post('Debugger.pause', (err2) => {
-            if (err2) {
-                clearTimeout(pauseTimeout);
-                session.post('Debugger.disable');
+            if (!timedOut) {
                 session.disconnect();
                 capturing = false;
             }
-        });
+            return;
+        }
+        if (timedOut) {
+            clearTimeout(pauseTimeout);
+            return;
+        }
+        try {
+            session.post('Debugger.pause', (err2) => {
+                if (err2 || timedOut) {
+                    clearTimeout(pauseTimeout);
+                    if (!timedOut) {
+                        try {
+                            session.post('Debugger.disable');
+                        }
+                        catch {
+                            // --- 忽略 ---
+                        }
+                        session.disconnect();
+                        capturing = false;
+                    }
+                }
+            });
+        }
+        catch {
+            clearTimeout(pauseTimeout);
+            try {
+                session.disconnect();
+            }
+            catch {
+                // --- 忽略 ---
+            }
+            capturing = false;
+        }
     });
 }
 
@@ -207,6 +260,7 @@ function collectProfile(
         }
         session.post('Profiler.start', (err2) => {
             if (err2) {
+                session.post('Profiler.disable');
                 session.disconnect();
                 capturing = false;
                 return;
@@ -242,7 +296,7 @@ function collectProfile(
 setInterval(() => {
     const lastHb = Atomics.load(view, 0);
     const now = Math.floor(Date.now() / 1000);
-    if (lastHb <= 0 || now - lastHb <= data.threshold) {
+    if (lastHb <= 0 || now - lastHb < data.threshold) {
         return;
     }
     if (now - lastAlertTime < data.cooldown) {

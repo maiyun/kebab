@@ -173,6 +173,7 @@ export function start(opt?: {
     lastCpuTime = Date.now();
     lastOsCpus = os.cpus();
     spikeCounter = 0;
+    lastDiagnosticTime = 0;
     // --- 初始化心跳共享内存 ---
     heartbeatBuffer = new SharedArrayBuffer(4);
     heartbeatView = new Int32Array(heartbeatBuffer);
@@ -204,6 +205,7 @@ export function stop(): void {
         });
         watchdog = null;
     }
+    activeRequests.clear();
     heartbeatBuffer = null;
     heartbeatView = null;
 }
