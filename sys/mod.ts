@@ -1034,7 +1034,7 @@ export default class Mod {
         }
         const r = await this._db.query(this._sql.getSql(), this._sql.getData());
         if (r.rows === null) {
-            lCore.log(this._ctr ?? {}, '[first, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+            lCore.log(this._ctr ?? {}, '[MOD][first] ' + (lText.stringifyJson(r.error?.message ?? '').slice(1, -1) + '-' + this._sql.format()).replace(/"/g, '""'), '-error');
             return false;
         }
         if (r.rows.length === 0) {

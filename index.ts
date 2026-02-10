@@ -149,7 +149,7 @@ export interface IConfigDb {
     'host': string;
     'port': number;
     'charset': string;
-    'name': string;
+    'name'?: string;
 
     'user': string;
     'pwd': string;

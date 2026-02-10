@@ -21,7 +21,7 @@ export interface IConnectionInfo {
     'last': number;
     'host': string;
     'port': number;
-    'name': string;
+    'name'?: string;
     'user': string;
 
     'lost': boolean;
