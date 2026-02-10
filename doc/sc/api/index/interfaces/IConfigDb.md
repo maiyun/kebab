@@ -28,9 +28,9 @@ Defined in: [index.ts:149](https://github.com/maiyunnet/kebab/blob/master/index.
 
 ***
 
-### name
+### name?
 
-> **name**: `string`
+> `optional` **name**: `string`
 
 Defined in: [index.ts:152](https://github.com/maiyunnet/kebab/blob/master/index.ts#L152)
 

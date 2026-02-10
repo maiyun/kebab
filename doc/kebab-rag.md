@@ -576,9 +576,9 @@ Defined in: [index.ts:149](https://github.com/maiyunnet/kebab/blob/master/index.
 
 ***
 
-### name
+### name?
 
-> **name**: `string`
+> `optional` **name**: `string`
 
 Defined in: [index.ts:152](https://github.com/maiyunnet/kebab/blob/master/index.ts#L152)
 
@@ -1385,7 +1385,7 @@ index/variables/VER.md
 
 # Variable: VER
 
-> `const` **VER**: `"8.0.1"` = `'8.0.1'`
+> `const` **VER**: `"8.0.2"` = `'8.0.2'`
 
 Defined in: [index.ts:10](https://github.com/maiyunnet/kebab/blob/master/index.ts#L10)
 
@@ -6838,9 +6838,9 @@ Defined in: [lib/db/pool.ts:27](https://github.com/maiyunnet/kebab/blob/master/l
 
 ***
 
-### name
+### name?
 
-> **name**: `string`
+> `optional` **name**: `string`
 
 Defined in: [lib/db/pool.ts:24](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L24)
 
