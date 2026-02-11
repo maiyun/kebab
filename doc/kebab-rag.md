@@ -1385,7 +1385,7 @@ index/variables/VER.md
 
 # Variable: VER
 
-> `const` **VER**: `"8.0.3"` = `'8.0.3'`
+> `const` **VER**: `"8.0.4"` = `'8.0.4'`
 
 Defined in: [index.ts:10](https://github.com/maiyunnet/kebab/blob/master/index.ts#L10)
 
@@ -12836,7 +12836,7 @@ Defined in: [lib/sql.ts:66](https://github.com/maiyunnet/kebab/blob/master/lib/s
 
 > **append**(`sql`): `this`
 
-Defined in: [lib/sql.ts:860](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L860)
+Defined in: [lib/sql.ts:874](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L874)
 
 在 sql 最后追加字符串
 
@@ -12856,7 +12856,7 @@ Defined in: [lib/sql.ts:860](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **by**(`c`, `d?`): `this`
 
-Defined in: [lib/sql.ts:661](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L661)
+Defined in: [lib/sql.ts:668](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L668)
 
 ORDER BY
 
@@ -12884,7 +12884,7 @@ ORDER BY
 
 > **copy**(`f?`, `opt?`): `Sql`
 
-Defined in: [lib/sql.ts:729](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L729)
+Defined in: [lib/sql.ts:736](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L736)
 
 创建一个本对象的一个新的 sql 对象拷贝
 
@@ -12912,7 +12912,7 @@ Defined in: [lib/sql.ts:729](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **crossJoin**(`f`, `s?`, `suf?`, `pre?`): `this`
 
-Defined in: [lib/sql.ts:416](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L416)
+Defined in: [lib/sql.ts:423](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L423)
 
 cross join 方法
 
@@ -12974,7 +12974,7 @@ Defined in: [lib/sql.ts:311](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **field**(`str`, `pre?`, `suf?`): `string`
 
-Defined in: [lib/sql.ts:871](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L871)
+Defined in: [lib/sql.ts:885](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L885)
 
 对字段进行包裹
 
@@ -12982,7 +12982,7 @@ Defined in: [lib/sql.ts:871](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 ##### str
 
-`string` | `number` | (`string` \| `string`[])[]
+`string` | `number` | \[`string`, `string`[]\]
 
 ##### pre?
 
@@ -13006,7 +13006,7 @@ Defined in: [lib/sql.ts:871](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **format**(`sql?`, `data?`): `string`
 
-Defined in: [lib/sql.ts:850](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L850)
+Defined in: [lib/sql.ts:864](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L864)
 
 获取带 data 的 sql 语句
 
@@ -13030,7 +13030,7 @@ Defined in: [lib/sql.ts:850](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **fullJoin**(`f`, `s?`, `suf?`, `pre?`): `this`
 
-Defined in: [lib/sql.ts:405](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L405)
+Defined in: [lib/sql.ts:412](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L412)
 
 full join 方法
 
@@ -13070,7 +13070,7 @@ ON 信息
 
 > **getData**(): [`DbValue`](../../../index/type-aliases/DbValue.md)[]
 
-Defined in: [lib/sql.ts:834](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L834)
+Defined in: [lib/sql.ts:848](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L848)
 
 获取全部 data
 
@@ -13084,7 +13084,7 @@ Defined in: [lib/sql.ts:834](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **getPre**(): `string`
 
-Defined in: [lib/sql.ts:841](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L841)
+Defined in: [lib/sql.ts:855](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L855)
 
 获取定义的 pre
 
@@ -13098,7 +13098,7 @@ Defined in: [lib/sql.ts:841](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **getSql**(): `string`
 
-Defined in: [lib/sql.ts:818](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L818)
+Defined in: [lib/sql.ts:832](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L832)
 
 获取 sql 语句
 
@@ -13112,7 +13112,7 @@ Defined in: [lib/sql.ts:818](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **group**(`c`): `this`
 
-Defined in: [lib/sql.ts:685](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L685)
+Defined in: [lib/sql.ts:692](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L692)
 
 GROUP BY
 
@@ -13134,7 +13134,7 @@ GROUP BY
 
 > **having**(`s?`): `this`
 
-Defined in: [lib/sql.ts:423](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L423)
+Defined in: [lib/sql.ts:430](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L430)
 
 having 后置筛选器，用法类似 where
 
@@ -13154,7 +13154,7 @@ having 后置筛选器，用法类似 where
 
 > **innerJoin**(`f`, `s?`, `suf?`, `pre?`): `this`
 
-Defined in: [lib/sql.ts:394](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L394)
+Defined in: [lib/sql.ts:401](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L401)
 
 inner join 方法
 
@@ -13222,7 +13222,7 @@ Defined in: [lib/sql.ts:91](https://github.com/maiyunnet/kebab/blob/master/lib/s
 
 > **join**(`f`, `s?`, `type?`, `suf?`, `pre?`): `this`
 
-Defined in: [lib/sql.ts:346](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L346)
+Defined in: [lib/sql.ts:353](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L353)
 
 join 方法
 
@@ -13268,7 +13268,7 @@ ON 信息
 
 > **leftJoin**(`f`, `s?`, `suf?`, `pre?`): `this`
 
-Defined in: [lib/sql.ts:372](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L372)
+Defined in: [lib/sql.ts:379](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L379)
 
 left join 方法
 
@@ -13308,7 +13308,7 @@ ON 信息
 
 > **limit**(`a`, `b?`): `this`
 
-Defined in: [lib/sql.ts:705](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L705)
+Defined in: [lib/sql.ts:712](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L712)
 
 LIMIT（limit、offset, limit）
 
@@ -13336,7 +13336,7 @@ LIMIT（limit、offset, limit）
 
 > **lock**(): `this`
 
-Defined in: [lib/sql.ts:720](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L720)
+Defined in: [lib/sql.ts:727](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L727)
 
 追加消极锁，通常不建议使用
 
@@ -13350,7 +13350,7 @@ Defined in: [lib/sql.ts:720](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **rightJoin**(`f`, `s?`, `suf?`, `pre?`): `this`
 
-Defined in: [lib/sql.ts:383](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L383)
+Defined in: [lib/sql.ts:390](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L390)
 
 right join 方法
 
@@ -13446,7 +13446,7 @@ sql 对象
 
 > **unionAll**(`lsql`): `this`
 
-Defined in: [lib/sql.ts:334](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L334)
+Defined in: [lib/sql.ts:341](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L341)
 
 所有联查另一个 sql 对象
 
@@ -13552,7 +13552,7 @@ Defined in: [lib/sql.ts:110](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **where**(`s`): `this`
 
-Defined in: [lib/sql.ts:457](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L457)
+Defined in: [lib/sql.ts:464](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L464)
 
 筛选器
 1. 'city': 'bj', 'type': '2'
@@ -13695,7 +13695,7 @@ lib/sql/functions/aoMix.md
 
 > **aoMix**(`arr`): `Record`\<`string`, `string` \| `number` \| [`Json`](../../../index/type-aliases/Json.md)\>
 
-Defined in: [lib/sql.ts:1192](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L1192)
+Defined in: [lib/sql.ts:1210](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L1210)
 
 将数组兑换为组合的对象（Array/Object mix）
 
@@ -13724,7 +13724,7 @@ lib/sql/functions/column.md
 
 > **column**(`field`): `object`
 
-Defined in: [lib/sql.ts:1213](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L1213)
+Defined in: [lib/sql.ts:1231](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L1231)
 
 创建字段对象
 
@@ -13763,7 +13763,7 @@ lib/sql/functions/format.md
 
 > **format**(`sql`, `data`, `service?`): `string`
 
-Defined in: [lib/sql.ts:1154](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L1154)
+Defined in: [lib/sql.ts:1172](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L1172)
 
 返回代入后的完整 SQL 字符串，这并不安全不能直接执行，只是用来调试打印 sql 语句
 
@@ -13804,7 +13804,7 @@ lib/sql/functions/get.md
 
 > **get**(`opt`): [`Sql`](../classes/Sql.md)
 
-Defined in: [lib/sql.ts:1127](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L1127)
+Defined in: [lib/sql.ts:1145](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L1145)
 
 创建 sql 对象
 
