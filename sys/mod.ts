@@ -202,7 +202,7 @@ export default class Mod {
             sq.values(cs);
             const r = await db.execute(sq.getSql(), sq.getData());
             if (r.packet === null) {
-                lCore.log(opt.ctr ?? {}, '[MOD][insert] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1), '-error');
+                lCore.log(opt.ctr ?? {}, '[MOD][insert] ' + (lText.stringifyJson(r.error?.message ?? '').slice(1, -1) + '-' + sq.format()).replaceAll('"', '""'), '-error');
                 return false;
             }
             return r.packet.affected ? true : null;
@@ -222,7 +222,7 @@ export default class Mod {
             sq.values(cs, vs.slice(i * line, (i + 1) * line));
             const r = await db.execute(sq.getSql(), sq.getData());
             if (r.packet === null) {
-                lCore.log(opt.ctr ?? {}, '[MOD][insert] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1), '-error');
+                lCore.log(opt.ctr ?? {}, '[MOD][insert] ' + (lText.stringifyJson(r.error?.message ?? '').slice(1, -1) + '-' + sq.format()).replaceAll('"', '""'), '-error');
                 return false;
             }
             if (r.packet.affected) {
@@ -294,7 +294,7 @@ export default class Mod {
             }
             const r = await db.execute(sq.getSql(), sq.getData());
             if (r.packet === null) {
-                lCore.log(opt.ctr ?? {}, '[MOD][removeByWhere] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+                lCore.log(opt.ctr ?? {}, '[MOD][removeByWhere] ' + (lText.stringifyJson(r.error?.message ?? '').slice(1, -1) + '-' + sq.format()).replaceAll('"', '""'), '-error');
                 return false;
             }
             if (r.packet.affected) {
@@ -372,7 +372,7 @@ export default class Mod {
             }
             const r = await db.execute(sq.getSql(), sq.getData());
             if (r.packet === null) {
-                lCore.log(opt.ctr ?? {}, '[MOD][updateByWhere] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+                lCore.log(opt.ctr ?? {}, '[MOD][updateByWhere] ' + (lText.stringifyJson(r.error?.message ?? '').slice(1, -1) + '-' + sq.format()).replaceAll('"', '""'), '-error');
                 return false;
             }
             if (r.packet.affected) {
@@ -505,7 +505,7 @@ export default class Mod {
 
             const r = await db.execute(sq.getSql(), sq.getData());
             if (r.packet === null) {
-                lCore.log(opt.ctr ?? {}, '[MOD][updateList] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+                lCore.log(opt.ctr ?? {}, '[MOD][updateList] ' + (lText.stringifyJson(r.error?.message ?? '').slice(1, -1) + ' - ' + sq.format()).replaceAll('"', '""'), '-error');
                 return false;
             }
         }
@@ -743,7 +743,7 @@ export default class Mod {
         sq.select(this._$primary, this._$table + (opt.index ? ('_' + opt.index) : '')).where(where);
         const r = await db.query(sq.getSql(), sq.getData());
         if (r.rows === null) {
-            lCore.log(opt.ctr ?? {}, '[primarys, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+            lCore.log(opt.ctr ?? {}, '[MOD][PRIMARYS] ' + (lText.stringifyJson(r.error?.message ?? '').slice(1, -1) + ' - ' + sq.format()).replaceAll('"', '""'), '-error');
             return false;
         }
         const primarys: any[] = [];
@@ -867,7 +867,7 @@ export default class Mod {
                 }
                 // --- 未处理的错误 ---
                 const service = this._db.getService();
-                lCore.log(this._ctr ?? {}, '[MOD][create0][' + cstr._$table + '] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+                lCore.log(this._ctr ?? {}, '[MOD][create0][' + cstr._$table + '] ' + (lText.stringifyJson(r.error?.message ?? '').slice(1, -1) + ' - ' + this._sql.format()).replaceAll('"', '""'), '-error');
                 if (lCore.globalConfig.debug) {
                     lCore.debug('[MOD][create0][' + cstr._$table + ']', service !== null ? lDb.ESERVICE[service] : 'NONE', r);
                     lCore.debug(this._sql.format());
@@ -881,7 +881,7 @@ export default class Mod {
             r = await this._db.execute(this._sql.getSql(), this._sql.getData());
             if (r.error) {
                 if (r.error.errno !== 1062) {
-                    lCore.log(this._ctr ?? {}, '[MOD][create1][' + cstr._$table + '] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+                    lCore.log(this._ctr ?? {}, '[MOD][create1][' + cstr._$table + '] ' + (lText.stringifyJson(r.error?.message ?? '').slice(1, -1) + ' - ' + this._sql.format()).replaceAll('"', '""'), '-error');
                     if (lCore.globalConfig.debug) {
                         lCore.debug('[MOD][create1][' + cstr._$table + ']', r);
                         lCore.debug(this._sql.format());
@@ -946,7 +946,7 @@ export default class Mod {
         }
         const r = await this._db.query(this._sql.getSql(), this._sql.getData());
         if (r.rows === null) {
-            lCore.log(this._ctr ?? {}, '[MOD][refresh] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+            lCore.log(this._ctr ?? {}, '[MOD][refresh] ' + (lText.stringifyJson(r.error?.message ?? '').slice(1, -1) + ' - ' + this._sql.format()).replace(/"/g, '""'), '-error');
             return false;
         }
         if (r.rows.length === 0) {
@@ -978,7 +978,7 @@ export default class Mod {
         });
         const r = await this._db.execute(this._sql.getSql(), this._sql.getData());
         if (r.packet === null) {
-            lCore.log(this._ctr ?? {}, '[MOD][save] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+            lCore.log(this._ctr ?? {}, '[MOD][save] ' + (lText.stringifyJson(r.error?.message ?? '').slice(1, -1) + ' - ' + this._sql.format()).replaceAll('"', '""'), '-error');
             return false;
         }
         if (r.packet.affected) {
@@ -1000,7 +1000,7 @@ export default class Mod {
         }]);
         const r = await this._db.execute(this._sql.getSql(), this._sql.getData());
         if (r.packet === null) {
-            lCore.log(this._ctr ?? {}, '[remove, mod] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+            lCore.log(this._ctr ?? {}, '[MOD][remove] ' + (lText.stringifyJson(r.error?.message ?? '').slice(1, -1) + ' - ' + this._sql.format()).replaceAll('"', '""'), '-error');
             return false;
         }
         if (r.packet.affected) {
@@ -1034,7 +1034,7 @@ export default class Mod {
         }
         const r = await this._db.query(this._sql.getSql(), this._sql.getData());
         if (r.rows === null) {
-            lCore.log(this._ctr ?? {}, '[MOD][first] ' + (lText.stringifyJson(r.error?.message ?? '').slice(1, -1) + '-' + this._sql.format()).replace(/"/g, '""'), '-error');
+            lCore.log(this._ctr ?? {}, '[MOD][first] ' + (lText.stringifyJson(r.error?.message ?? '').slice(1, -1) + ' - ' + this._sql.format()).replaceAll('"', '""'), '-error');
             return false;
         }
         if (r.rows.length === 0) {
@@ -1173,7 +1173,7 @@ export default class Mod {
                 const lsql = sql.replace(/ LIMIT [0-9 ,]+(OFFSET [0-9]+)?/g, ` LIMIT ${remain} OFFSET ${cz}`);
                 const r = await this._db.query(lsql, this._sql.getData());
                 if (r.rows === null) {
-                    lCore.log(this._ctr ?? {}, '[MOD][all] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+                    lCore.log(this._ctr ?? {}, '[MOD][all] ' + (lText.stringifyJson(r.error?.message ?? '').slice(1, -1) + ' - ' + this._sql.format()).replaceAll('"', '""'), '-error');
                     return false;
                 }
                 if (key) {
@@ -1214,7 +1214,7 @@ export default class Mod {
         const contain = this._contain ? lCore.clone(this._contain.list) : null;
         const r = await this._db.query(this._sql.getSql(), this._sql.getData());
         if (r.rows === null) {
-            lCore.log(this._ctr ?? {}, '[MOD][all] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+            lCore.log(this._ctr ?? {}, '[MOD][all] ' + (lText.stringifyJson(r.error?.message ?? '').slice(1, -1) + ' - ' + this._sql.format()).replaceAll('"', '""'), '-error');
             return false;
         }
         // --- 检查没被查到的必包含项 ---
@@ -1354,7 +1354,7 @@ export default class Mod {
                 const lsql = sql.replace(/ LIMIT [0-9 ,]+(OFFSET [0-9]+)?/g, ` LIMIT ${remain} OFFSET ${cz}`);
                 const r = await this._db.query(lsql, this._sql.getData());
                 if (r.rows === null) {
-                    lCore.log(this._ctr ?? {}, '[MOD][allArray] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+                    lCore.log(this._ctr ?? {}, '[MOD][allArray] ' + (lText.stringifyJson(r.error?.message ?? '').slice(1, -1) + ' - ' + this._sql.format()).replaceAll('"', '""'), '-error');
                     return false;
                 }
                 if (key) {
@@ -1376,7 +1376,7 @@ export default class Mod {
         const contain = this._contain ? lCore.clone(this._contain.list) : null;
         const r = await this._db.query(this._sql.getSql(), this._sql.getData());
         if (r.rows === null) {
-            lCore.log(this._ctr ?? {}, '[MOD][allArray] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+            lCore.log(this._ctr ?? {}, '[MOD][allArray] ' + (lText.stringifyJson(r.error?.message ?? '').slice(1, -1) + ' - ' + this._sql.format()).replaceAll('"', '""'), '-error');
             return false;
         }
         // --- 检查没被查到的必包含项 ---
@@ -1428,7 +1428,7 @@ export default class Mod {
     public async explain(all = false): Promise<false | string | Record<string, any>> {
         const r = await this._db.query('EXPLAIN ' + this._sql.getSql(), this._sql.getData());
         if (r.rows === null) {
-            lCore.log(this._ctr ?? {}, '[MOD][explain] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+            lCore.log(this._ctr ?? {}, '[MOD][explain] ' + (lText.stringifyJson(r.error?.message ?? '').slice(1, -1) + ' - ' + this._sql.format()).replaceAll('"', '""'), '-error');
             return false;
         }
         if (!r.rows[0]) {
@@ -1473,7 +1473,7 @@ export default class Mod {
         const sql: string = this._formatTotal(this._sql.getSql(), f);
         const r = await this._db.query(sql, this._sql.getData());
         if (r.rows === null) {
-            lCore.log(this._ctr ?? {}, '[MOD][total] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+            lCore.log(this._ctr ?? {}, '[MOD][total] ' + (lText.stringifyJson(r.error?.message ?? '').slice(1, -1) + ' - ' + this._sql.format()).replaceAll('"', '""'), '-error');
             return 0;
         }
         let count = 0;
@@ -1493,7 +1493,7 @@ export default class Mod {
         );
         const r = await this._db.query(sql, this._sql.getData());
         if (r.rows === null) {
-            lCore.log(this._ctr ?? {}, '[MOD][count] ' + lText.stringifyJson(r.error?.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+            lCore.log(this._ctr ?? {}, '[MOD][count] ' + (lText.stringifyJson(r.error?.message ?? '').slice(1, -1) + ' - ' + this._sql.format()).replaceAll('"', '""'), '-error');
             return 0;
         }
         let count = 0;
