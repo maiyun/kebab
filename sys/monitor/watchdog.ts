@@ -115,6 +115,12 @@ function captureDiag(blockSec: number): void {
         if (!didPause) {
             timedOut = true;
             try {
+                session.post('Debugger.resume');
+            }
+            catch {
+                // --- 忽略 ---
+            }
+            try {
                 session.post('Debugger.disable');
             }
             catch {
@@ -209,10 +215,6 @@ function captureDiag(blockSec: number): void {
             }
             return;
         }
-        if (timedOut) {
-            clearTimeout(pauseTimeout);
-            return;
-        }
         try {
             session.post('Debugger.pause', (err2) => {
                 if (err2 || timedOut) {
@@ -297,6 +299,10 @@ setInterval(() => {
     const lastHb = Atomics.load(view, 0);
     const now = Math.floor(Date.now() / 1000);
     if (lastHb <= 0 || now - lastHb < data.threshold) {
+        return;
+    }
+    // --- 调试模式下跳过阻塞检测，避免干扰 IDE 调试器 ---
+    if (Atomics.load(view, 1) === 1) {
         return;
     }
     if (now - lastAlertTime < data.cooldown) {

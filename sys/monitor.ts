@@ -68,6 +68,13 @@ let lastDiagnosticTime: number = 0;
 /** --- 是否正在进行 CPU Profile 采集 --- */
 let profiling: boolean = false;
 
+/**
+ * --- 检测当前是否处于调试模式（以 --inspect 启动或 IDE 调试器已连接） ---
+ */
+function isDebugMode(): boolean {
+    return !!inspector.url();
+}
+
 // --- 看门狗相关 ---
 
 /** --- 看门狗 Worker 实例 --- */
@@ -174,10 +181,11 @@ export function start(opt?: {
     lastOsCpus = os.cpus();
     spikeCounter = 0;
     lastDiagnosticTime = 0;
-    // --- 初始化心跳共享内存 ---
-    heartbeatBuffer = new SharedArrayBuffer(4);
+    // --- 初始化心跳共享内存（索引 0: 秒级时间戳, 索引 1: 调试模式标志） ---
+    heartbeatBuffer = new SharedArrayBuffer(8);
     heartbeatView = new Int32Array(heartbeatBuffer);
     Atomics.store(heartbeatView, 0, Math.floor(Date.now() / 1000));
+    Atomics.store(heartbeatView, 1, isDebugMode() ? 1 : 0);
     // --- 启用事件循环延迟直方图 ---
     eloopHistogram = perfHooks.monitorEventLoopDelay({ 'resolution': 20 });
     eloopHistogram.enable();
@@ -358,6 +366,8 @@ function check(): void {
     // --- 更新心跳时间戳，让看门狗线程知道主线程还活着 ---
     if (heartbeatView) {
         Atomics.store(heartbeatView, 0, Math.floor(now / 1000));
+        // --- 更新调试模式标志，让看门狗线程知道当前是否在调试 ---
+        Atomics.store(heartbeatView, 1, isDebugMode() ? 1 : 0);
     }
     /** --- 计算本周期进程 CPU 使用率（单核基准） --- */
     let cpuPercent = 0;
@@ -383,6 +393,11 @@ function check(): void {
     }
     // --- 检测事件循环阻塞：实际间隔远大于预期说明事件循环曾被阻塞 ---
     if (actualElapsed > INTERVAL * 3) {
+        // --- 调试模式下断点暂停会导致计时差异，跳过阻塞检测 ---
+        if (isDebugMode()) {
+            spikeCounter = 0;
+            return;
+        }
         const blockMs = actualElapsed - INTERVAL;
         const alerts: string[] = [
             `ELOOP_BLOCKED ${Math.round(blockMs)}ms`
