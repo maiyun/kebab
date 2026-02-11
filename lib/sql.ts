@@ -321,9 +321,16 @@ export class Sql {
      * @param type 类型
      */
     public union(lsql: Sql, type: string = ''): this {
+        const offset = this._data.length;
         this._data = this._data.concat(lsql.getData());
         this._sql.push(' UNION ' + (type ? type + ' ' : ''));
-        this._sql.push(lsql.getSql());
+        let unionSql = lsql.getSql();
+        // --- PGSQL: 偏移 $N 占位符编号 ---
+        if (this._service === ESERVICE.PGSQL && offset > 0) {
+            unionSql = unionSql.replace(/\$(\d+)/g, (_, n) => `$${parseInt(n) + offset}`);
+        }
+        this._sql.push(unionSql);
+        this._placeholderCounter = this._data.length + 1;
         return this;
     }
 
@@ -801,6 +808,13 @@ export class Sql {
             }
             sql[0] = sql[0].replace(/FROM [`\w, ]+/, 'FROM ' + table);
         }
+        // --- PGSQL: 修改 where 后重新编号 $N 占位符 ---
+        if (this._service === ESERVICE.PGSQL && opt.where !== undefined) {
+            let counter = 1;
+            for (let i = 0; i < sql.length; ++i) {
+                sql[i] = sql[i].replace(/\$\d+/g, () => `$${counter++}`);
+            }
+        }
         return get({
             'service': this._service,
             'ctr': this._ctr,
@@ -868,10 +882,14 @@ export class Sql {
      * @param pre 表前缀，仅请在 field 表名时倒入前缀
      * @param suf 表后缀，仅请在 field 表名时倒入后缀，前面加 # 代表要强制 AS，可能是分表查询时用
      */
-    public field(str: string | number | Array<string | string[]>, pre: string = '', suf: string = ''): string {
+    public field(str: string | number | [string, string[]], pre: string = '', suf: string = ''): string {
         const q = this._service === ESERVICE.MYSQL ? '`' : '"';
         if (Array.isArray(str)) {
             this._data.push(...str[1]);
+            // --- PGSQL: 将 ? 占位符转换为 $N ---
+            if (this._service === ESERVICE.PGSQL) {
+                return this.field(str[0].replace(/\?/g, () => this._placeholder()));
+            }
             return this.field(str[0]);
         }
         if (typeof str === 'number') {
