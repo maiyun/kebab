@@ -148,7 +148,7 @@ export interface IConfigTurnstile {
 export interface IConfigDb {
     'host': string;
     'port': number;
-    'charset': string;
+    'charset'?: string;
     'name'?: string;
 
     'user': string;
