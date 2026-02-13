@@ -12,9 +12,9 @@ Defined in: [index.ts:148](https://github.com/maiyunnet/kebab/blob/master/index.
 
 ## Properties
 
-### charset
+### charset?
 
-> **charset**: `string`
+> `optional` **charset**: `string`
 
 Defined in: [index.ts:151](https://github.com/maiyunnet/kebab/blob/master/index.ts#L151)
 
