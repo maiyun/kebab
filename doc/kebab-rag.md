@@ -1385,7 +1385,7 @@ index/variables/VER.md
 
 # Variable: VER
 
-> `const` **VER**: `"8.0.5"` = `'8.0.5'`
+> `const` **VER**: `"8.0.6"` = `'8.0.6'`
 
 Defined in: [index.ts:10](https://github.com/maiyunnet/kebab/blob/master/index.ts#L10)
 
@@ -6645,7 +6645,7 @@ Defined in: [lib/db/pool.ts:126](https://github.com/maiyunnet/kebab/blob/master/
 
 > **beginTransaction**(`ctr`): `Promise`\<[`Transaction`](../../tran/classes/Transaction.md) \| `null`\>
 
-Defined in: [lib/db/pool.ts:189](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L189)
+Defined in: [lib/db/pool.ts:194](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L194)
 
 开启事务，返回事务对象并锁定连接，别人任何人不可用，有 ctr 的话必传 this，独立执行时可传 null
 
@@ -6665,7 +6665,7 @@ Defined in: [lib/db/pool.ts:189](https://github.com/maiyunnet/kebab/blob/master/
 
 > **execute**(`sql`, `values?`): `Promise`\<[`IPacket`](../../interfaces/IPacket.md)\>
 
-Defined in: [lib/db/pool.ts:169](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L169)
+Defined in: [lib/db/pool.ts:174](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L174)
 
 执行一条 SQL 并获得影响行数对象 packet，连接失败抛出错误
 
@@ -6689,11 +6689,25 @@ Defined in: [lib/db/pool.ts:169](https://github.com/maiyunnet/kebab/blob/master/
 
 ***
 
+### getName()
+
+> **getName**(): `string`
+
+Defined in: [lib/db/pool.ts:140](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L140)
+
+获取当前连接的数据库名称
+
+#### Returns
+
+`string`
+
+***
+
 ### getQueries()
 
 > **getQueries**(): `number`
 
-Defined in: [lib/db/pool.ts:321](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L321)
+Defined in: [lib/db/pool.ts:326](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L326)
 
 获取 SQL 执行次数
 
@@ -6721,7 +6735,7 @@ Defined in: [lib/db/pool.ts:135](https://github.com/maiyunnet/kebab/blob/master/
 
 > **query**(`sql`, `values?`): `Promise`\<[`IData`](../../interfaces/IData.md)\>
 
-Defined in: [lib/db/pool.ts:145](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L145)
+Defined in: [lib/db/pool.ts:150](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L150)
 
 执行一条 SQL，无视顺序和相同连接，随用随取
 
