@@ -136,6 +136,11 @@ export class Pool {
         return this._service;
     }
 
+    /** --- 获取当前连接的数据库名称 --- */
+    public getName(): string {
+        return this._etc.name ?? '';
+    }
+
     /**
      * --- 执行一条 SQL，无视顺序和相同连接，随用随取 ---
      * @param sql 执行的 SQL 字符串
