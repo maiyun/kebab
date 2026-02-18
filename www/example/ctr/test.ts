@@ -154,8 +154,12 @@ export default class extends sCtr.Ctr {
             '<br><br><b>Library test:</b>',
 
             `<br><br><b>Ai:</b>`,
-            `<br><br><a href="${this._config.const.urlBase}test/ai">View "test/ai"</a>`,
             `<br><a href="${this._config.const.urlBase}test/ai-stream">View "test/ai-stream"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/ai?action=chat">View "test/ai?action=chat"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/ai?action=text-to-image">View "test/ai?action=text-to-image"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/ai?action=image-to-image">View "test/ai?action=image-to-image"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/ai?action=text-to-video">View "test/ai?action=text-to-video"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/ai?action=image-to-video">View "test/ai?action=image-to-video"</a>`,
 
             '<br><br><b>Core:</b>',
             `<br><br><a href="${this._config.const.urlBase}test/core-random">View "test/core-random"</a>`,
@@ -3787,31 +3791,179 @@ rtn.push(reader.readBCDString());</pre>${JSON.stringify(rtn)}`);
     }
 
     public async ai(): Promise<string> {
-        const ai = lAi.get(this, {
-            'service': lAi.ESERVICE.ALICN,
-        });
         const echo = [`<pre>const ai = lAi.get(this, {
-    'service': lAi.ESERVICE.ALICN,
+    'service': lAi.ESERVICE.${lText.htmlescape(this._get['service']?.toUpperCase() ?? 'ALICN')},
 });</pre>`];
-        const completion = await ai.chat({
-            'model': 'qwen-plus',
-            'messages': [
-                { 'role': 'system', 'content': 'You are Kebab, a friendly and knowledgeable assistant based on an open-source Node framework. You do not mention any model names or AI identity. You can chat casually, answer questions, and provide guidance naturally. Respond in a human-like, approachable manner, as if you are a helpful companion rather than a traditional AI assistant.' },
-                { 'role': 'user', 'content': '你是谁？' },
-            ],
+
+        const ai = lAi.get(this, {
+            'service': (lAi.ESERVICE as any)[this._get['service']?.toUpperCase() ?? 'ALICN'] ?? lAi.ESERVICE.ALICN,
         });
-        echo.push(`<pre>await ai.chat({
-    'model': 'qwen-plus',
+
+        switch (this._get['action']) {
+            case 'text-to-image': {
+                // --- 文生图 ---
+                let model = 'z-image-turbo';
+                let size = [1280, 720];
+                if (ai.service !== lAi.ESERVICE.ALICN && ai.service !== lAi.ESERVICE.ALIAS) {
+                    switch (ai.service) {
+                        case lAi.ESERVICE.AZURE:
+                        case lAi.ESERVICE.AZURE2:
+                        case lAi.ESERVICE.AZURE3: {
+                            model = 'FLUX.2-pro';
+                            break;
+                        }
+                        default: {
+                            // --- 火山引擎 ---
+                            model = 'doubao-seedream-4-5-251128';
+                            size = [2560, 1440];
+                        }
+                    }
+                }
+                const imgResult = await ai.image({
+                    'model': model,
+                    'prompt': 'A cute cat sitting on a windowsill watching the sunset',
+                    'size': size,
+                    'n': 1,
+                });
+                echo.push(`<pre>await ai.image({
+    'model': '${model}',
+    'prompt': 'A cute cat sitting on a windowsill watching the sunset',
+    'size': [${size[0]}, ${size[1]}],
+    'n': 1,
+});</pre>`);
+                if (imgResult && imgResult.list?.length) {
+                    for (const img of imgResult.list) {
+                        echo.push(`<div><img src="${img.url.startsWith('http') ? img.url : 'data:image/png;base64,' + img.url}" style="max-width: 512px;" /></div>${lText.htmlescape(img.text)}`);
+                    }
+                    echo.push('<br>request: ' + imgResult.request, ', seed: ' + imgResult.seed);
+                }
+                else {
+                    echo.push('Failed');
+                }
+                break;
+            }
+            case 'image-to-image': {
+                // --- 图生图 ---
+                let model = 'wan2.6-image';
+                let size = [1280, 720];
+                const prompt = '用图1的绘画风格重绘图2的场景，桌上增加一盘番茄炒蛋';
+                if (ai.service !== lAi.ESERVICE.ALICN && ai.service !== lAi.ESERVICE.ALIAS) {
+                    switch (ai.service) {
+                        default: {
+                            // --- 火山引擎 ---
+                            model = 'doubao-seedream-4-5-251128';
+                            size = [2560, 1440];
+                        }
+                    }
+                }
+                const imgResult = await ai.image({
+                    'model': model,
+                    'imgs': [
+                        'https://cdn.wanx.aliyuncs.com/tmp/pressure/umbrella1.png',
+                        'https://img.alicdn.com/imgextra/i3/O1CN01SfG4J41UYn9WNt4X1_!!6000000002530-49-tps-1696-960.webp',
+                    ],
+                    'prompt': prompt,
+                    'size': size,
+                    'n': 1,
+                });
+                echo.push(`<pre>await ai.image({
+    'model': '${model}',
+    'imgs': [
+        'https://cdn.wanx.aliyuncs.com/tmp/pressure/umbrella1.png',
+        'https://img.alicdn.com/imgextra/i3/O1CN01SfG4J41UYn9WNt4X1_!!6000000002530-49-tps-1696-960.webp',
+    ],
+    'prompt': '${prompt}',
+    'size': [${size[0]}, ${size[1]}],
+    'n': 1,
+});</pre>`);
+                if (imgResult && imgResult.list?.length) {
+                    echo.push(`<div>Reference Images:</div><div>
+    <img src="https://cdn.wanx.aliyuncs.com/tmp/pressure/umbrella1.png" style="max-width: 256px; margin-right: 5px;" />
+    <img src="https://img.alicdn.com/imgextra/i3/O1CN01SfG4J41UYn9WNt4X1_!!6000000002530-49-tps-1696-960.webp" style="max-width: 256px;" />
+</div>`);
+                    for (const img of imgResult.list) {
+                        echo.push(`<div><img src="${img.url.startsWith('http') ? img.url : 'data:image/png;base64,' + img.url}" style="max-width: 512px;" /></div>${lText.htmlescape(img.text || prompt)}`);
+                    }
+                    echo.push('<br>request: ' + imgResult.request, ', seed: ' + imgResult.seed);
+                }
+                else {
+                    echo.push('Failed');
+                }
+                break;
+            }
+            case 'text-to-video': {
+                // --- 文生视频 ---
+                const model = 'wan2.6-t2v';
+                const vidResult = await ai.video({
+                    'prompt': 'A cat playing with a ball of yarn',
+                    'model': model,
+                });
+                echo.push(`<pre>await aiVid.video({
+    'prompt': 'A cat playing with a ball of yarn',
+    'model': '${model}',
+});</pre>`);
+                if (vidResult) {
+                    echo.push(`<pre>${JSON.stringify(vidResult, null, 4)}</pre><a href="${this._config.const.urlBase}test/ai?action=video-poll&task=${vidResult.task}">poll</a>`);
+                }
+                else {
+                    echo.push('Failed');
+                }
+                break;
+            }
+            case 'image-to-video': {
+                // --- 图生视频 ---
+                echo.push('Not yet implemented');
+                break;
+            }
+            case 'video-poll': {
+                // --- 视频生成轮询 ---
+                if (!this._get['task']) {
+                    echo.push('Task ID not found.');
+                    break;
+                }
+                const pollResult = await ai.poll({
+                    'type': 'video',
+                    'task': this._get['task'],
+                });
+                echo.push(`<pre>await ai.poll({
+    'type': 'video',
+    'task': '${this._get['task']}',
+});</pre>`);
+                if (pollResult) {
+                    echo.push(`<pre>${JSON.stringify(pollResult, null, 4)}</pre>Result.`);
+                }
+                else {
+                    echo.push('Failed');
+                }
+                break;
+            }
+            default: {
+                // --- CHAT ---
+                let model = ai.service === lAi.ESERVICE.ALICN ? 'qwen-plus' : 'doubao-seed-2-0-mini-260215';
+                if (ai.service === lAi.ESERVICE.AZURE) {
+                    model = 'gpt-4.1-nano';
+                }
+                const completion = await ai.chat({
+                    'model': model,
+                    'messages': [
+                        { 'role': 'system', 'content': 'You are Kebab, a friendly and knowledgeable assistant based on an open-source Node framework. You do not mention any model names or AI identity. You can chat casually, answer questions, and provide guidance naturally. Respond in a human-like, approachable manner, as if you are a helpful companion rather than a traditional AI assistant.' },
+                        { 'role': 'user', 'content': '你是谁？' },
+                    ],
+                });
+                echo.push(`<pre>await ai.chat({
+    'model': ${model},
     'messages': [
         { 'role': 'system', 'content': 'You are Kebab, a friendly and knowledgeable assistant based on an open-source Node framework. You do not mention any model names or AI identity. You can chat casually, answer questions, and provide guidance naturally. Respond in a human-like, approachable manner, as if you are a helpful companion rather than a traditional AI assistant.' },
         { 'role': 'user', 'content': '你是谁？' },
     ],
 });</pre>`);
-        if (completion) {
-            echo.push(JSON.stringify(completion.choices[0].message.content));
-        }
-        else {
-            echo.push('Failed');
+                if (completion) {
+                    echo.push(JSON.stringify(completion.choices[0].message.content));
+                }
+                else {
+                    echo.push('Failed');
+                }
+            }
         }
         return echo.join('') + '<br><br>' + this._getEnd();
     }

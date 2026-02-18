@@ -180,6 +180,14 @@ async function run(): Promise<void> {
         config.ai['AZURE3'] ??= {};
         config.ai['AZURE3'].endpoint ??= '';
         config.ai['AZURE3'].skey ??= '';
+        config.ai['GEMINI'] ??= {};
+        config.ai['GEMINI'].skey ??= '';
+        config.ai['GROK'] ??= {};
+        config.ai['GROK'].skey ??= '';
+        config.ai['VOLCN'] ??= {};
+        config.ai['VOLCN'].skey ??= '';
+        config.ai['VOLAS'] ??= {};
+        config.ai['VOLAS'].skey ??= '';
         // --- config - vector ---
         config.vector ??= {};
         config.vector.host ??= '127.0.0.1';
