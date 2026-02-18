@@ -6,7 +6,7 @@
 
 # Enumeration: ESERVICE
 
-Defined in: [lib/ai.ts:18](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L18)
+Defined in: [lib/ai.ts:19](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L19)
 
 服务商定义
 
@@ -16,7 +16,7 @@ Defined in: [lib/ai.ts:18](https://github.com/maiyunnet/kebab/blob/master/lib/ai
 
 > **ALIAS**: `1`
 
-Defined in: [lib/ai.ts:22](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L22)
+Defined in: [lib/ai.ts:23](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L23)
 
 阿里国际区
 
@@ -26,7 +26,7 @@ Defined in: [lib/ai.ts:22](https://github.com/maiyunnet/kebab/blob/master/lib/ai
 
 > **ALICN**: `0`
 
-Defined in: [lib/ai.ts:20](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L20)
+Defined in: [lib/ai.ts:21](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L21)
 
 阿里中国大陆区
 
@@ -36,7 +36,7 @@ Defined in: [lib/ai.ts:20](https://github.com/maiyunnet/kebab/blob/master/lib/ai
 
 > **AZURE**: `2`
 
-Defined in: [lib/ai.ts:24](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L24)
+Defined in: [lib/ai.ts:25](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L25)
 
 微软 Azure
 
@@ -46,7 +46,7 @@ Defined in: [lib/ai.ts:24](https://github.com/maiyunnet/kebab/blob/master/lib/ai
 
 > **AZURE2**: `3`
 
-Defined in: [lib/ai.ts:26](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L26)
+Defined in: [lib/ai.ts:27](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L27)
 
 微软 Azure 2
 
@@ -56,6 +56,46 @@ Defined in: [lib/ai.ts:26](https://github.com/maiyunnet/kebab/blob/master/lib/ai
 
 > **AZURE3**: `4`
 
-Defined in: [lib/ai.ts:28](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L28)
+Defined in: [lib/ai.ts:29](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L29)
 
 微软 Azure 3
+
+***
+
+### GEMINI
+
+> **GEMINI**: `5`
+
+Defined in: [lib/ai.ts:31](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L31)
+
+Gemini
+
+***
+
+### GROK
+
+> **GROK**: `6`
+
+Defined in: [lib/ai.ts:33](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L33)
+
+Grok
+
+***
+
+### VOLAS
+
+> **VOLAS**: `8`
+
+Defined in: [lib/ai.ts:37](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L37)
+
+火山引擎国际区
+
+***
+
+### VOLCN
+
+> **VOLCN**: `7`
+
+Defined in: [lib/ai.ts:35](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L35)
+
+火山引擎中国大陆区

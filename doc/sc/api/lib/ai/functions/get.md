@@ -8,7 +8,7 @@
 
 > **get**(`ctrEtc`, `opt`): [`Ai`](../classes/Ai.md)
 
-Defined in: [lib/ai.ts:154](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L154)
+Defined in: [lib/ai.ts:589](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L589)
 
 创建一个 AI 对象
 

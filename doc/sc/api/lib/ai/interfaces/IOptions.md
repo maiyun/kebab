@@ -6,7 +6,7 @@
 
 # Interface: IOptions
 
-Defined in: [lib/ai.ts:32](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L32)
+Defined in: [lib/ai.ts:41](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L41)
 
 选项
 
@@ -16,7 +16,7 @@ Defined in: [lib/ai.ts:32](https://github.com/maiyunnet/kebab/blob/master/lib/ai
 
 > `optional` **endpoint**: `string`
 
-Defined in: [lib/ai.ts:36](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L36)
+Defined in: [lib/ai.ts:45](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L45)
 
 接入点
 
@@ -26,7 +26,7 @@ Defined in: [lib/ai.ts:36](https://github.com/maiyunnet/kebab/blob/master/lib/ai
 
 > `optional` **fetch**: (`input`, `init?`) => `Promise`\<`Response`\>
 
-Defined in: [lib/ai.ts:40](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L40)
+Defined in: [lib/ai.ts:49](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L49)
 
 自定义 fetch 函数
 
@@ -50,7 +50,7 @@ Defined in: [lib/ai.ts:40](https://github.com/maiyunnet/kebab/blob/master/lib/ai
 
 > `optional` **secretKey**: `string`
 
-Defined in: [lib/ai.ts:38](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L38)
+Defined in: [lib/ai.ts:47](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L47)
 
 密钥
 
@@ -60,6 +60,6 @@ Defined in: [lib/ai.ts:38](https://github.com/maiyunnet/kebab/blob/master/lib/ai
 
 > **service**: [`ESERVICE`](../enumerations/ESERVICE.md)
 
-Defined in: [lib/ai.ts:34](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L34)
+Defined in: [lib/ai.ts:43](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L43)
 
 服务商 -
