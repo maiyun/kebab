@@ -10,6 +10,14 @@ Defined in: [lib/session.ts:30](https://github.com/maiyunnet/kebab/blob/master/l
 
 ## Properties
 
+### domain?
+
+> `optional` **domain**: `string`
+
+Defined in: [lib/session.ts:34](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L34)
+
+***
+
 ### name?
 
 > `optional` **name**: `string`
@@ -22,7 +30,7 @@ Defined in: [lib/session.ts:31](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **sqlPre**: `string`
 
-Defined in: [lib/session.ts:34](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L34)
+Defined in: [lib/session.ts:35](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L35)
 
 ***
 

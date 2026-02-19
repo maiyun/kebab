@@ -8,7 +8,7 @@
 
 > **format**(`zone`, `f`, `date?`): `string`
 
-Defined in: [lib/time.ts:161](https://github.com/maiyunnet/kebab/blob/master/lib/time.ts#L161)
+Defined in: [lib/time.ts:167](https://github.com/maiyunnet/kebab/blob/master/lib/time.ts#L167)
 
 将时间对象转换为时间字符串
 

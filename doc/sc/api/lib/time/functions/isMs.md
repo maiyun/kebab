@@ -8,7 +8,7 @@
 
 > **isMs**(`time`): `boolean`
 
-Defined in: [lib/time.ts:151](https://github.com/maiyunnet/kebab/blob/master/lib/time.ts#L151)
+Defined in: [lib/time.ts:157](https://github.com/maiyunnet/kebab/blob/master/lib/time.ts#L157)
 
 是否是毫秒
 
