@@ -2181,6 +2181,16 @@ content: <pre>${(await res.getContent())?.toString() ?? 'null'}</pre>`);
             'ttl': 60,
             'httponly': true
         });
+
+        // --- 用于测试 BUG 的额外 Cookie ---
+        this._res.setHeader('Set-Cookie', [
+            ...(this._res.getHeader('Set-Cookie') as string[]),
+            'test-del=; Max-Age=0; Path=/',
+            'test-equals=val=with=equals; Path=/',
+            'test-expires=val; Expires=Wed, 21 Oct 2035 07:28:00 GMT; Path=/',
+            'test-invalid=%invalid; Path=/'
+        ]);
+
         return `lCore.setCookie(this, 'test0', 'session');
 lCore.setCookie(this, 'test1', 'normal', {
     'ttl': 10

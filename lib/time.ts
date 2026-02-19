@@ -125,6 +125,12 @@ export function stamp(date?: Date | string, zone?: number | sCtr.Ctr | null): nu
             return Math.floor(date.getTime() / 1000);
         }
         if (zone === null || zone === undefined) {
+            /** --- 如果不传 zone，则尝试由 Date 自行解析（能自动识别字符串内的时区） --- */
+            const t = (new Date(date)).getTime();
+            if (!isNaN(t)) {
+                return Math.floor(t / 1000);
+            }
+            /** --- 解析不到的情况下走系统默认时区 --- */
             zone = -(new Date()).getTimezoneOffset();
         }
         else if (zone instanceof sCtr.Ctr) {
