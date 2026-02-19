@@ -172,9 +172,8 @@ export function start(opt?: {
     memThreshold = opt?.mem ?? 0;
     eloopThreshold = opt?.eloop ?? 500;
     if (memThreshold === 0) {
-        // --- 自动计算：系统总内存的 80% / CPU 核心数 ---
-        const cpuCount = os.cpus().length;
-        memThreshold = Math.floor((os.totalmem() * 0.8) / cpuCount / 1024 / 1024);
+        // --- 自动计算：系统总内存的 80% ---
+        memThreshold = Math.floor((os.totalmem() * 0.8) / 1024 / 1024);
     }
     lastCpuUsage = process.cpuUsage();
     lastCpuTime = Date.now();
@@ -192,7 +191,7 @@ export function start(opt?: {
     timer = setInterval(check, INTERVAL);
     // --- 启动看门狗线程 ---
     startWatchdog();
-    lCore.debug(`[MONITOR] Started, CPU: ${cpuThreshold}%, MEM: ${memThreshold}MB, ELOOP: ${eloopThreshold}ms`);
+    lCore.debug(`[MONITOR] [PARENT] [${process.pid}] Started, CPU Threshold: ${cpuThreshold}%, MEM Threshold: ${memThreshold}MB, ELOOP Threshold: ${eloopThreshold}ms`);
 }
 
 /**
@@ -258,7 +257,7 @@ function startWatchdog(): void {
                 watchdog = null;
             }
         });
-        lCore.debug('[MONITOR] Watchdog thread started');
+        lCore.debug(`[MONITOR] [THREAD] [${process.pid}] Watchdog started`);
     }
     catch (e) {
         lCore.debug('[MONITOR] Failed to start watchdog', e);
