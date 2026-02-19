@@ -510,12 +510,25 @@ async function buildCookieObject(
         for (let index = 0; index < list.length; ++index) {
             const item = list[index];
             const arr = item.split('=');
+            /** --- 提取 key 并修整 --- */
             const key = arr[0].trim();
-            const val = arr[1] ?? '';
+            if (key === '') {
+                continue;
+            }
+            /** --- 提取 value --- */
+            let val = '';
+            if (arr.length > 1) {
+                val = item.slice(item.indexOf('=') + 1).trim();
+            }
             if (index === 0) {
                 // --- 用户定义的信息 ---
                 cookieTmp['name'] = key;
-                cookieTmp['value'] = decodeURIComponent(val);
+                try {
+                    cookieTmp['value'] = decodeURIComponent(val);
+                }
+                catch {
+                    cookieTmp['value'] = val;
+                }
             }
             else {
                 // --- cookie 配置信息，可转小写方便读取 ---
@@ -565,15 +578,26 @@ async function buildCookieObject(
             }
         }
         const cookieKey = cookieTmp['name'] + '-' + domainN;
-        if (cookieTmp['max-age'] && (Number(cookieTmp['max-age']) <= 0)) {
-            if (cookie[cookieKey]) {
-                delete cookie[cookieKey];
-                continue;
+        let exp = -1992199400;
+        if (cookieTmp['max-age'] !== undefined) {
+            const maxAge = Number(cookieTmp['max-age']);
+            if (!(isNaN(maxAge))) {
+                if (maxAge <= 0) {
+                    delete cookie[cookieKey];
+                    continue;
+                }
+                exp = tim + maxAge;
             }
         }
-        let exp = -1992199400;
-        if (cookieTmp['max-age']) {
-            exp = tim + Number(cookieTmp['max-age']);
+        if ((exp === -1992199400) && cookieTmp['expires']) {
+            const expires = lTime.stamp(cookieTmp['expires']);
+            if (!(isNaN(expires))) {
+                if (expires <= tim) {
+                    delete cookie[cookieKey];
+                    continue;
+                }
+                exp = expires;
+            }
         }
         // --- path ---
         let path = cookieTmp['path'] ?? '';

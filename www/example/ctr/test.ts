@@ -2105,7 +2105,7 @@ error: ${JSON.stringify(res.error)}`);
 lNet.get(this._internalUrl + 'test/net-cookie1', {
     'cookie': cookie
 });</pre>
-headers: <pre>${JSON.stringify(res.headers, null, 4)}</pre>
+headers: <pre>${lText.htmlescape(JSON.stringify(res.headers, null, 4))}</pre>
 content: <pre>${(await res.getContent())?.toString() ?? 'null'}</pre>
 cookie: <pre>${JSON.stringify(cookie, null, 4)}</pre><hr>`);
 
