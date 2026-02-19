@@ -31,6 +31,7 @@ export interface IOptions {
     'name'?: string;
     'ttl'?: number;
     'ssl'?: boolean;
+    'domain'?: string;
     'sqlPre'?: string;
 }
 
@@ -182,7 +183,8 @@ export class Session {
 
         lCore.setCookie(ctr, this._name, this._token, {
             'ttl': this._ttl,
-            'ssl': ssl
+            'domain': opt.domain,
+            'ssl': ssl,
         });
 
         return true;
