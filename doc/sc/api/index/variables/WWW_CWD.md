@@ -8,4 +8,4 @@
 
 > `const` **WWW\_CWD**: `string`
 
-Defined in: [index.ts:36](https://github.com/maiyunnet/kebab/blob/master/index.ts#L36)
+Defined in: [index.ts:38](https://github.com/maiyunnet/kebab/blob/master/index.ts#L38)

@@ -8,4 +8,6 @@
 
 > `const` **LIB\_CWD**: `string`
 
-Defined in: [index.ts:34](https://github.com/maiyunnet/kebab/blob/master/index.ts#L34)
+Defined in: [index.ts:36](https://github.com/maiyunnet/kebab/blob/master/index.ts#L36)
+
+用户的根 LIB，以 / 结尾

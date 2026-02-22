@@ -6,7 +6,7 @@
 
 # Interface: IConfigAi
 
-Defined in: [index.ts:118](https://github.com/maiyunnet/kebab/blob/master/index.ts#L118)
+Defined in: [index.ts:120](https://github.com/maiyunnet/kebab/blob/master/index.ts#L120)
 
 AI
 
@@ -16,7 +16,7 @@ AI
 
 > `optional` **endpoint**: `string`
 
-Defined in: [index.ts:120](https://github.com/maiyunnet/kebab/blob/master/index.ts#L120)
+Defined in: [index.ts:122](https://github.com/maiyunnet/kebab/blob/master/index.ts#L122)
 
 目前只有微软 Azure 有
 
@@ -26,4 +26,4 @@ Defined in: [index.ts:120](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **skey**: `string`
 
-Defined in: [index.ts:121](https://github.com/maiyunnet/kebab/blob/master/index.ts#L121)
+Defined in: [index.ts:123](https://github.com/maiyunnet/kebab/blob/master/index.ts#L123)

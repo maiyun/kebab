@@ -6,7 +6,7 @@
 
 # Interface: IConfigKv
 
-Defined in: [index.ts:174](https://github.com/maiyunnet/kebab/blob/master/index.ts#L174)
+Defined in: [index.ts:176](https://github.com/maiyunnet/kebab/blob/master/index.ts#L176)
 
 kv
 
@@ -16,7 +16,7 @@ kv
 
 > **host**: `string`
 
-Defined in: [index.ts:175](https://github.com/maiyunnet/kebab/blob/master/index.ts#L175)
+Defined in: [index.ts:177](https://github.com/maiyunnet/kebab/blob/master/index.ts#L177)
 
 ***
 
@@ -24,7 +24,7 @@ Defined in: [index.ts:175](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **index**: `number`
 
-Defined in: [index.ts:177](https://github.com/maiyunnet/kebab/blob/master/index.ts#L177)
+Defined in: [index.ts:179](https://github.com/maiyunnet/kebab/blob/master/index.ts#L179)
 
 ***
 
@@ -32,7 +32,7 @@ Defined in: [index.ts:177](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **port**: `number`
 
-Defined in: [index.ts:176](https://github.com/maiyunnet/kebab/blob/master/index.ts#L176)
+Defined in: [index.ts:178](https://github.com/maiyunnet/kebab/blob/master/index.ts#L178)
 
 ***
 
@@ -40,7 +40,7 @@ Defined in: [index.ts:176](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **pre**: `string`
 
-Defined in: [index.ts:178](https://github.com/maiyunnet/kebab/blob/master/index.ts#L178)
+Defined in: [index.ts:180](https://github.com/maiyunnet/kebab/blob/master/index.ts#L180)
 
 ***
 
@@ -48,7 +48,7 @@ Defined in: [index.ts:178](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **pwd**: `string`
 
-Defined in: [index.ts:181](https://github.com/maiyunnet/kebab/blob/master/index.ts#L181)
+Defined in: [index.ts:183](https://github.com/maiyunnet/kebab/blob/master/index.ts#L183)
 
 ***
 
@@ -56,4 +56,4 @@ Defined in: [index.ts:181](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **user**: `string`
 
-Defined in: [index.ts:180](https://github.com/maiyunnet/kebab/blob/master/index.ts#L180)
+Defined in: [index.ts:182](https://github.com/maiyunnet/kebab/blob/master/index.ts#L182)

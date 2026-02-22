@@ -6,7 +6,7 @@
 
 # Interface: IConfigConst
 
-Defined in: [index.ts:190](https://github.com/maiyunnet/kebab/blob/master/index.ts#L190)
+Defined in: [index.ts:192](https://github.com/maiyunnet/kebab/blob/master/index.ts#L192)
 
 常量
 
@@ -16,7 +16,7 @@ Defined in: [index.ts:190](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **ctrPath**: `string`
 
-Defined in: [index.ts:215](https://github.com/maiyunnet/kebab/blob/master/index.ts#L215)
+Defined in: [index.ts:217](https://github.com/maiyunnet/kebab/blob/master/index.ts#L217)
 
 ***
 
@@ -24,7 +24,7 @@ Defined in: [index.ts:215](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **dataPath**: `string`
 
-Defined in: [index.ts:217](https://github.com/maiyunnet/kebab/blob/master/index.ts#L217)
+Defined in: [index.ts:219](https://github.com/maiyunnet/kebab/blob/master/index.ts#L219)
 
 ***
 
@@ -32,7 +32,7 @@ Defined in: [index.ts:217](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **host**: `string`
 
-Defined in: [index.ts:206](https://github.com/maiyunnet/kebab/blob/master/index.ts#L206)
+Defined in: [index.ts:208](https://github.com/maiyunnet/kebab/blob/master/index.ts#L208)
 
 ***
 
@@ -40,7 +40,7 @@ Defined in: [index.ts:206](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **hostname**: `string`
 
-Defined in: [index.ts:207](https://github.com/maiyunnet/kebab/blob/master/index.ts#L207)
+Defined in: [index.ts:209](https://github.com/maiyunnet/kebab/blob/master/index.ts#L209)
 
 ***
 
@@ -48,7 +48,7 @@ Defined in: [index.ts:207](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **hostport**: `number`
 
-Defined in: [index.ts:208](https://github.com/maiyunnet/kebab/blob/master/index.ts#L208)
+Defined in: [index.ts:210](https://github.com/maiyunnet/kebab/blob/master/index.ts#L210)
 
 ***
 
@@ -56,7 +56,7 @@ Defined in: [index.ts:208](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **https**: `boolean`
 
-Defined in: [index.ts:205](https://github.com/maiyunnet/kebab/blob/master/index.ts#L205)
+Defined in: [index.ts:207](https://github.com/maiyunnet/kebab/blob/master/index.ts#L207)
 
 ***
 
@@ -64,7 +64,7 @@ Defined in: [index.ts:205](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **miniprogram**: `""` \| `"wechat"`
 
-Defined in: [index.ts:204](https://github.com/maiyunnet/kebab/blob/master/index.ts#L204)
+Defined in: [index.ts:206](https://github.com/maiyunnet/kebab/blob/master/index.ts#L206)
 
 ***
 
@@ -72,7 +72,7 @@ Defined in: [index.ts:204](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **mobile**: `boolean`
 
-Defined in: [index.ts:202](https://github.com/maiyunnet/kebab/blob/master/index.ts#L202)
+Defined in: [index.ts:204](https://github.com/maiyunnet/kebab/blob/master/index.ts#L204)
 
 ***
 
@@ -80,7 +80,7 @@ Defined in: [index.ts:202](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **modPath**: `string`
 
-Defined in: [index.ts:214](https://github.com/maiyunnet/kebab/blob/master/index.ts#L214)
+Defined in: [index.ts:216](https://github.com/maiyunnet/kebab/blob/master/index.ts#L216)
 
 ***
 
@@ -88,7 +88,7 @@ Defined in: [index.ts:214](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **path**: `string`
 
-Defined in: [index.ts:192](https://github.com/maiyunnet/kebab/blob/master/index.ts#L192)
+Defined in: [index.ts:194](https://github.com/maiyunnet/kebab/blob/master/index.ts#L194)
 
 不以 / 开头，不含 qs
 
@@ -98,7 +98,7 @@ Defined in: [index.ts:192](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **qs**: `string`
 
-Defined in: [index.ts:194](https://github.com/maiyunnet/kebab/blob/master/index.ts#L194)
+Defined in: [index.ts:196](https://github.com/maiyunnet/kebab/blob/master/index.ts#L196)
 
 不含 ? 开头
 
@@ -108,7 +108,7 @@ Defined in: [index.ts:194](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **qss**: `string`
 
-Defined in: [index.ts:196](https://github.com/maiyunnet/kebab/blob/master/index.ts#L196)
+Defined in: [index.ts:198](https://github.com/maiyunnet/kebab/blob/master/index.ts#L198)
 
 含 ? 开头
 
@@ -118,7 +118,7 @@ Defined in: [index.ts:196](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **rootPath**: `string`
 
-Defined in: [index.ts:213](https://github.com/maiyunnet/kebab/blob/master/index.ts#L213)
+Defined in: [index.ts:215](https://github.com/maiyunnet/kebab/blob/master/index.ts#L215)
 
 ***
 
@@ -126,7 +126,7 @@ Defined in: [index.ts:213](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **startMemory**: `number`
 
-Defined in: [index.ts:198](https://github.com/maiyunnet/kebab/blob/master/index.ts#L198)
+Defined in: [index.ts:200](https://github.com/maiyunnet/kebab/blob/master/index.ts#L200)
 
 ***
 
@@ -134,7 +134,7 @@ Defined in: [index.ts:198](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **startTime**: `bigint`
 
-Defined in: [index.ts:197](https://github.com/maiyunnet/kebab/blob/master/index.ts#L197)
+Defined in: [index.ts:199](https://github.com/maiyunnet/kebab/blob/master/index.ts#L199)
 
 ***
 
@@ -142,7 +142,7 @@ Defined in: [index.ts:197](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **uri**: [`IUrlParse`](IUrlParse.md)
 
-Defined in: [index.ts:209](https://github.com/maiyunnet/kebab/blob/master/index.ts#L209)
+Defined in: [index.ts:211](https://github.com/maiyunnet/kebab/blob/master/index.ts#L211)
 
 ***
 
@@ -150,7 +150,7 @@ Defined in: [index.ts:209](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **urlBase**: `string`
 
-Defined in: [index.ts:222](https://github.com/maiyunnet/kebab/blob/master/index.ts#L222)
+Defined in: [index.ts:224](https://github.com/maiyunnet/kebab/blob/master/index.ts#L224)
 
 ***
 
@@ -158,7 +158,7 @@ Defined in: [index.ts:222](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **urlFull**: `string`
 
-Defined in: [index.ts:224](https://github.com/maiyunnet/kebab/blob/master/index.ts#L224)
+Defined in: [index.ts:226](https://github.com/maiyunnet/kebab/blob/master/index.ts#L226)
 
 ***
 
@@ -166,7 +166,7 @@ Defined in: [index.ts:224](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **urlStc**: `string`
 
-Defined in: [index.ts:223](https://github.com/maiyunnet/kebab/blob/master/index.ts#L223)
+Defined in: [index.ts:225](https://github.com/maiyunnet/kebab/blob/master/index.ts#L225)
 
 ***
 
@@ -174,7 +174,7 @@ Defined in: [index.ts:223](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **urlStcFull**: `string`
 
-Defined in: [index.ts:225](https://github.com/maiyunnet/kebab/blob/master/index.ts#L225)
+Defined in: [index.ts:227](https://github.com/maiyunnet/kebab/blob/master/index.ts#L227)
 
 ***
 
@@ -182,7 +182,7 @@ Defined in: [index.ts:225](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **viewPath**: `string`
 
-Defined in: [index.ts:216](https://github.com/maiyunnet/kebab/blob/master/index.ts#L216)
+Defined in: [index.ts:218](https://github.com/maiyunnet/kebab/blob/master/index.ts#L218)
 
 ***
 
@@ -190,7 +190,7 @@ Defined in: [index.ts:216](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **wechat**: `boolean`
 
-Defined in: [index.ts:203](https://github.com/maiyunnet/kebab/blob/master/index.ts#L203)
+Defined in: [index.ts:205](https://github.com/maiyunnet/kebab/blob/master/index.ts#L205)
 
 ***
 
@@ -198,4 +198,4 @@ Defined in: [index.ts:203](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **wsPath**: `string`
 
-Defined in: [index.ts:218](https://github.com/maiyunnet/kebab/blob/master/index.ts#L218)
+Defined in: [index.ts:220](https://github.com/maiyunnet/kebab/blob/master/index.ts#L220)

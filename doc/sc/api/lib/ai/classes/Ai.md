@@ -104,7 +104,7 @@ Defined in: [lib/ai.ts:152](https://github.com/maiyunnet/kebab/blob/master/lib/a
 
 > **embedding**(`body`): `Promise`\<`false` \| `APIPromise`\<`CreateEmbeddingResponse`\>\>
 
-Defined in: [lib/ai.ts:172](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L172)
+Defined in: [lib/ai.ts:175](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L175)
 
 创建向量
 
@@ -124,7 +124,7 @@ Defined in: [lib/ai.ts:172](https://github.com/maiyunnet/kebab/blob/master/lib/a
 
 > **image**(`opt`): `Promise`\<`false` \| \{ `list`: `object`[]; `request`: `string`; `seed`: `number`; \}\>
 
-Defined in: [lib/ai.ts:186](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L186)
+Defined in: [lib/ai.ts:191](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L191)
 
 生成图像，不支持 GEMINI、GROK 服务商
 
@@ -186,7 +186,7 @@ Defined in: [lib/ai.ts:186](https://github.com/maiyunnet/kebab/blob/master/lib/a
 
 > **poll**(`opt`): `Promise`\<`false` \| \{ `add?`: `number`; `end?`: `number`; `error?`: `string`; `start?`: `number`; `status`: `"PENDING"` \| `"RUNNING"` \| `"SUCCEEDED"` \| `"FAILED"` \| `"CANCELED"` \| `"UNKNOWN"`; `task`: `string`; `url?`: `string`; \}\>
 
-Defined in: [lib/ai.ts:534](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L534)
+Defined in: [lib/ai.ts:539](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L539)
 
 轮询任务
 
@@ -212,7 +212,7 @@ Defined in: [lib/ai.ts:534](https://github.com/maiyunnet/kebab/blob/master/lib/a
 
 > **video**(`opt`): `Promise`\<`false` \| \{ `request`: `string`; `seed`: `number`; `status`: `"PENDING"` \| `"RUNNING"` \| `"SUCCEEDED"` \| `"FAILED"` \| `"CANCELED"` \| `"UNKNOWN"`; `task`: `string`; \}\>
 
-Defined in: [lib/ai.ts:366](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L366)
+Defined in: [lib/ai.ts:371](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L371)
 
 异步生成视频，仅支持 ALICN、ALIAS
 

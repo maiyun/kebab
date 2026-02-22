@@ -8,4 +8,4 @@
 
 > `const` **CERT\_CWD**: `string`
 
-Defined in: [index.ts:32](https://github.com/maiyunnet/kebab/blob/master/index.ts#L32)
+Defined in: [index.ts:33](https://github.com/maiyunnet/kebab/blob/master/index.ts#L33)

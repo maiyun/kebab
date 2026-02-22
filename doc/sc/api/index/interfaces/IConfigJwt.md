@@ -6,7 +6,7 @@
 
 # Interface: IConfigJwt
 
-Defined in: [index.ts:159](https://github.com/maiyunnet/kebab/blob/master/index.ts#L159)
+Defined in: [index.ts:161](https://github.com/maiyunnet/kebab/blob/master/index.ts#L161)
 
 Jwt 信息
 
@@ -16,7 +16,7 @@ Jwt 信息
 
 > **auth**: `boolean`
 
-Defined in: [index.ts:164](https://github.com/maiyunnet/kebab/blob/master/index.ts#L164)
+Defined in: [index.ts:166](https://github.com/maiyunnet/kebab/blob/master/index.ts#L166)
 
 ***
 
@@ -24,7 +24,7 @@ Defined in: [index.ts:164](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **name**: `string`
 
-Defined in: [index.ts:160](https://github.com/maiyunnet/kebab/blob/master/index.ts#L160)
+Defined in: [index.ts:162](https://github.com/maiyunnet/kebab/blob/master/index.ts#L162)
 
 ***
 
@@ -32,7 +32,7 @@ Defined in: [index.ts:160](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **secret**: `string`
 
-Defined in: [index.ts:163](https://github.com/maiyunnet/kebab/blob/master/index.ts#L163)
+Defined in: [index.ts:165](https://github.com/maiyunnet/kebab/blob/master/index.ts#L165)
 
 ***
 
@@ -40,7 +40,7 @@ Defined in: [index.ts:163](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **ssl**: `boolean`
 
-Defined in: [index.ts:162](https://github.com/maiyunnet/kebab/blob/master/index.ts#L162)
+Defined in: [index.ts:164](https://github.com/maiyunnet/kebab/blob/master/index.ts#L164)
 
 ***
 
@@ -48,4 +48,4 @@ Defined in: [index.ts:162](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **ttl**: `number`
 
-Defined in: [index.ts:161](https://github.com/maiyunnet/kebab/blob/master/index.ts#L161)
+Defined in: [index.ts:163](https://github.com/maiyunnet/kebab/blob/master/index.ts#L163)

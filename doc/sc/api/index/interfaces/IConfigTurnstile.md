@@ -6,7 +6,7 @@
 
 # Interface: IConfigTurnstile
 
-Defined in: [index.ts:134](https://github.com/maiyunnet/kebab/blob/master/index.ts#L134)
+Defined in: [index.ts:136](https://github.com/maiyunnet/kebab/blob/master/index.ts#L136)
 
 人机码信息
 
@@ -16,7 +16,7 @@ Defined in: [index.ts:134](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **CF**: `object`
 
-Defined in: [index.ts:135](https://github.com/maiyunnet/kebab/blob/master/index.ts#L135)
+Defined in: [index.ts:137](https://github.com/maiyunnet/kebab/blob/master/index.ts#L137)
 
 #### sid
 
@@ -32,7 +32,7 @@ Defined in: [index.ts:135](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **TENCENT**: `object`
 
-Defined in: [index.ts:139](https://github.com/maiyunnet/kebab/blob/master/index.ts#L139)
+Defined in: [index.ts:141](https://github.com/maiyunnet/kebab/blob/master/index.ts#L141)
 
 #### aid
 

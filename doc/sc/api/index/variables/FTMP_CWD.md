@@ -8,4 +8,4 @@
 
 > `const` **FTMP\_CWD**: `string`
 
-Defined in: [index.ts:38](https://github.com/maiyunnet/kebab/blob/master/index.ts#L38)
+Defined in: [index.ts:40](https://github.com/maiyunnet/kebab/blob/master/index.ts#L40)

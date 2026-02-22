@@ -6,7 +6,7 @@
 
 # Interface: IConfigDb
 
-Defined in: [index.ts:148](https://github.com/maiyunnet/kebab/blob/master/index.ts#L148)
+Defined in: [index.ts:150](https://github.com/maiyunnet/kebab/blob/master/index.ts#L150)
 
 数据库
 
@@ -16,7 +16,7 @@ Defined in: [index.ts:148](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > `optional` **charset**: `string`
 
-Defined in: [index.ts:151](https://github.com/maiyunnet/kebab/blob/master/index.ts#L151)
+Defined in: [index.ts:153](https://github.com/maiyunnet/kebab/blob/master/index.ts#L153)
 
 ***
 
@@ -24,7 +24,7 @@ Defined in: [index.ts:151](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **host**: `string`
 
-Defined in: [index.ts:149](https://github.com/maiyunnet/kebab/blob/master/index.ts#L149)
+Defined in: [index.ts:151](https://github.com/maiyunnet/kebab/blob/master/index.ts#L151)
 
 ***
 
@@ -32,7 +32,7 @@ Defined in: [index.ts:149](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > `optional` **name**: `string`
 
-Defined in: [index.ts:152](https://github.com/maiyunnet/kebab/blob/master/index.ts#L152)
+Defined in: [index.ts:154](https://github.com/maiyunnet/kebab/blob/master/index.ts#L154)
 
 ***
 
@@ -40,7 +40,7 @@ Defined in: [index.ts:152](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **port**: `number`
 
-Defined in: [index.ts:150](https://github.com/maiyunnet/kebab/blob/master/index.ts#L150)
+Defined in: [index.ts:152](https://github.com/maiyunnet/kebab/blob/master/index.ts#L152)
 
 ***
 
@@ -48,7 +48,7 @@ Defined in: [index.ts:150](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **pwd**: `string`
 
-Defined in: [index.ts:155](https://github.com/maiyunnet/kebab/blob/master/index.ts#L155)
+Defined in: [index.ts:157](https://github.com/maiyunnet/kebab/blob/master/index.ts#L157)
 
 ***
 
@@ -56,4 +56,4 @@ Defined in: [index.ts:155](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **user**: `string`
 
-Defined in: [index.ts:154](https://github.com/maiyunnet/kebab/blob/master/index.ts#L154)
+Defined in: [index.ts:156](https://github.com/maiyunnet/kebab/blob/master/index.ts#L156)

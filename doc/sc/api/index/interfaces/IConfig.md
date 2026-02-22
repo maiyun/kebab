@@ -6,7 +6,7 @@
 
 # Interface: IConfig
 
-Defined in: [index.ts:50](https://github.com/maiyunnet/kebab/blob/master/index.ts#L50)
+Defined in: [index.ts:52](https://github.com/maiyunnet/kebab/blob/master/index.ts#L52)
 
 目录配置文件
 
@@ -20,7 +20,7 @@ Defined in: [index.ts:50](https://github.com/maiyunnet/kebab/blob/master/index.t
 
 > **ai**: `Record`\<`string`, [`IConfigAi`](IConfigAi.md)\>
 
-Defined in: [index.ts:81](https://github.com/maiyunnet/kebab/blob/master/index.ts#L81)
+Defined in: [index.ts:83](https://github.com/maiyunnet/kebab/blob/master/index.ts#L83)
 
 ***
 
@@ -28,7 +28,7 @@ Defined in: [index.ts:81](https://github.com/maiyunnet/kebab/blob/master/index.t
 
 > **const**: [`IConfigConst`](IConfigConst.md)
 
-Defined in: [index.ts:62](https://github.com/maiyunnet/kebab/blob/master/index.ts#L62)
+Defined in: [index.ts:64](https://github.com/maiyunnet/kebab/blob/master/index.ts#L64)
 
 ***
 
@@ -36,7 +36,7 @@ Defined in: [index.ts:62](https://github.com/maiyunnet/kebab/blob/master/index.t
 
 > **db**: `Record`\<`string`, \{ `default`: [`IConfigDb`](IConfigDb.md); `read`: [`IConfigDb`](IConfigDb.md); \}\> & `object`
 
-Defined in: [index.ts:63](https://github.com/maiyunnet/kebab/blob/master/index.ts#L63)
+Defined in: [index.ts:65](https://github.com/maiyunnet/kebab/blob/master/index.ts#L65)
 
 #### Type Declaration
 
@@ -50,7 +50,7 @@ Defined in: [index.ts:63](https://github.com/maiyunnet/kebab/blob/master/index.t
 
 > **dns**: `Record`\<`string`, [`IConfigDns`](IConfigDns.md)\>
 
-Defined in: [index.ts:77](https://github.com/maiyunnet/kebab/blob/master/index.ts#L77)
+Defined in: [index.ts:79](https://github.com/maiyunnet/kebab/blob/master/index.ts#L79)
 
 ***
 
@@ -58,7 +58,7 @@ Defined in: [index.ts:77](https://github.com/maiyunnet/kebab/blob/master/index.t
 
 > **kv**: [`IConfigKv`](IConfigKv.md)
 
-Defined in: [index.ts:69](https://github.com/maiyunnet/kebab/blob/master/index.ts#L69)
+Defined in: [index.ts:71](https://github.com/maiyunnet/kebab/blob/master/index.ts#L71)
 
 ***
 
@@ -66,7 +66,7 @@ Defined in: [index.ts:69](https://github.com/maiyunnet/kebab/blob/master/index.t
 
 > **lang**: [`IConfigLang`](IConfigLang.md)
 
-Defined in: [index.ts:78](https://github.com/maiyunnet/kebab/blob/master/index.ts#L78)
+Defined in: [index.ts:80](https://github.com/maiyunnet/kebab/blob/master/index.ts#L80)
 
 ***
 
@@ -74,7 +74,7 @@ Defined in: [index.ts:78](https://github.com/maiyunnet/kebab/blob/master/index.t
 
 > **route**: `Record`\<`string`, `string`\>
 
-Defined in: [index.ts:70](https://github.com/maiyunnet/kebab/blob/master/index.ts#L70)
+Defined in: [index.ts:72](https://github.com/maiyunnet/kebab/blob/master/index.ts#L72)
 
 ***
 
@@ -82,7 +82,7 @@ Defined in: [index.ts:70](https://github.com/maiyunnet/kebab/blob/master/index.t
 
 > **s3**: `Record`\<`string`, [`IConfigS3`](IConfigS3.md)\>
 
-Defined in: [index.ts:79](https://github.com/maiyunnet/kebab/blob/master/index.ts#L79)
+Defined in: [index.ts:81](https://github.com/maiyunnet/kebab/blob/master/index.ts#L81)
 
 ***
 
@@ -90,7 +90,7 @@ Defined in: [index.ts:79](https://github.com/maiyunnet/kebab/blob/master/index.t
 
 > **session**: `object`
 
-Defined in: [index.ts:71](https://github.com/maiyunnet/kebab/blob/master/index.ts#L71)
+Defined in: [index.ts:73](https://github.com/maiyunnet/kebab/blob/master/index.ts#L73)
 
 #### name
 
@@ -110,7 +110,7 @@ Defined in: [index.ts:71](https://github.com/maiyunnet/kebab/blob/master/index.t
 
 > **set**: `object`
 
-Defined in: [index.ts:51](https://github.com/maiyunnet/kebab/blob/master/index.ts#L51)
+Defined in: [index.ts:53](https://github.com/maiyunnet/kebab/blob/master/index.ts#L53)
 
 #### Index Signature
 
@@ -146,7 +146,7 @@ Defined in: [index.ts:51](https://github.com/maiyunnet/kebab/blob/master/index.t
 
 > **sql**: [`IConfigSql`](IConfigSql.md)
 
-Defined in: [index.ts:76](https://github.com/maiyunnet/kebab/blob/master/index.ts#L76)
+Defined in: [index.ts:78](https://github.com/maiyunnet/kebab/blob/master/index.ts#L78)
 
 ***
 
@@ -154,7 +154,7 @@ Defined in: [index.ts:76](https://github.com/maiyunnet/kebab/blob/master/index.t
 
 > **turnstile**: [`IConfigTurnstile`](IConfigTurnstile.md)
 
-Defined in: [index.ts:80](https://github.com/maiyunnet/kebab/blob/master/index.ts#L80)
+Defined in: [index.ts:82](https://github.com/maiyunnet/kebab/blob/master/index.ts#L82)
 
 ***
 
@@ -162,4 +162,4 @@ Defined in: [index.ts:80](https://github.com/maiyunnet/kebab/blob/master/index.t
 
 > **vector**: [`IConfigVector`](IConfigVector.md)
 
-Defined in: [index.ts:82](https://github.com/maiyunnet/kebab/blob/master/index.ts#L82)
+Defined in: [index.ts:84](https://github.com/maiyunnet/kebab/blob/master/index.ts#L84)

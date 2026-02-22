@@ -6,7 +6,7 @@
 
 # Interface: IConfigSql
 
-Defined in: [index.ts:185](https://github.com/maiyunnet/kebab/blob/master/index.ts#L185)
+Defined in: [index.ts:187](https://github.com/maiyunnet/kebab/blob/master/index.ts#L187)
 
 sql
 
@@ -16,4 +16,4 @@ sql
 
 > **pre**: `string`
 
-Defined in: [index.ts:186](https://github.com/maiyunnet/kebab/blob/master/index.ts#L186)
+Defined in: [index.ts:188](https://github.com/maiyunnet/kebab/blob/master/index.ts#L188)

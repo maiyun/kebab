@@ -8,4 +8,4 @@
 
 > `const` **VHOST\_CWD**: `string`
 
-Defined in: [index.ts:33](https://github.com/maiyunnet/kebab/blob/master/index.ts#L33)
+Defined in: [index.ts:34](https://github.com/maiyunnet/kebab/blob/master/index.ts#L34)

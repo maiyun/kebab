@@ -8,4 +8,4 @@
 
 > `const` **SYS\_PATH**: `string`
 
-Defined in: [index.ts:21](https://github.com/maiyunnet/kebab/blob/master/index.ts#L21)
+Defined in: [index.ts:22](https://github.com/maiyunnet/kebab/blob/master/index.ts#L22)
