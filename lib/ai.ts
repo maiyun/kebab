@@ -162,8 +162,11 @@ export class Ai {
             return await this.link.chat.completions.create(body);
         }
         catch (e: any) {
-            lCore.debug('[AI][CHAT]', e);
-            lCore.log(this._ctr ?? {}, `[AI][CHAT] ${e.message}`, '-error');
+            // --- https://www.alibabacloud.com/help/en/model-studio/error-code#inappropriate-content ---
+            if (!e.message.includes('Input data may contain inappropriate content')) {
+                lCore.debug('[AI][CHAT]', e);
+                lCore.log(this._ctr ?? {}, `[AI][CHAT] ${e.message}`, '-error');
+            }
             return false;
         }
     }
@@ -176,8 +179,10 @@ export class Ai {
             return await this.link.embeddings.create(body);
         }
         catch (e: any) {
-            lCore.debug('[AI][EMBEDDING]', e);
-            lCore.log(this._ctr ?? {}, `[AI][EMBEDDING] ${e.message}`, '-error');
+            if (!e.message.includes('Input data may contain inappropriate content')) {
+                lCore.debug('[AI][EMBEDDING]', e);
+                lCore.log(this._ctr ?? {}, `[AI][EMBEDDING] ${e.message}`, '-error');
+            }
             return false;
         }
     }

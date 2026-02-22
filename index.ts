@@ -17,6 +17,7 @@ const dirname = imu.slice(0, imu.lastIndexOf('/'));
 
 /** --- 框架根目录，以 / 结尾  --- */
 export const ROOT_PATH = dirname + '/';
+/** --- 框架的 LIB，以 / 结尾 --- */
 export const LIB_PATH = ROOT_PATH + 'lib/';
 export const SYS_PATH = ROOT_PATH + 'sys/';
 
@@ -31,6 +32,7 @@ export const ROOT_CWD = cwd + '/';
 export const CONF_CWD = ROOT_CWD + 'conf/';
 export const CERT_CWD = CONF_CWD + 'cert/';
 export const VHOST_CWD = CONF_CWD + 'vhost/';
+/** --- 用户的根 LIB，以 / 结尾 --- */
 export const LIB_CWD = ROOT_CWD + 'lib/';
 export const LOG_CWD = ROOT_CWD + 'log/';
 export const WWW_CWD = ROOT_CWD + 'www/';
