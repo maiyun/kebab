@@ -1,7 +1,7 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2020-3-7 23:51:15
- * Last: 2020-3-7 23:51:18, 2022-07-22 14:14:09, 2022-9-27 14:52:19, 2023-5-23 21:42:46, 2024-7-2 15:12:28
+ * Last: 2020-3-7 23:51:18, 2022-07-22 14:14:09, 2022-9-27 14:52:19, 2023-5-23 21:42:46, 2024-7-2 15:12:28, 2026-2-23 13:08:11
  */
 import * as http from 'http';
 import * as lFs from '#kebab/lib/fs.js';
@@ -10,6 +10,8 @@ import * as lTime from '#kebab/lib/time.js';
 import * as lCore from '#kebab/lib/core.js';
 import * as lCrypto from '#kebab/lib/crypto.js';
 import * as kebab from '#kebab/index.js';
+
+// --- 检查语言包：node ./source/main locale -l ./source/www/example/data/locale/sc -d ./source/www/example ---
 
 /** --- 解析命令 --- */
 const cmds = process.argv.slice(2);
@@ -225,6 +227,139 @@ async function run(): Promise<void> {
             }
         }
         lCore.display('DONE');
+        // --- 退出进程 ---
+        process.exit();
+    }
+
+    if (cmds[0] === 'locale') {
+        let localePath = '';
+        let dirPath = '';
+        for (let i = 1; i < cmds.length; i++) {
+            if (cmds[i] === '-l' || cmds[i] === '--locale') {
+                localePath = cmds[i + 1];
+                i++;
+            }
+            else if (cmds[i] === '-d' || cmds[i] === '--dir') {
+                dirPath = cmds[i + 1];
+                i++;
+            }
+        }
+        if (!localePath || !dirPath) {
+            process.exit();
+        }
+        const appLocaleList: string[] = [];
+        const readDir = async (path: string): Promise<void> => {
+            const dlist = await lFs.readDir(path);
+            for (const item of dlist) {
+                if (item.name === '.' || item.name === '..') {
+                    continue;
+                }
+                if (item.isDirectory()) {
+                    await readDir(path + '/' + item.name);
+                    continue;
+                }
+                if (
+                    !item.name.endsWith('.ejs') &&
+                    !item.name.endsWith('.ts')
+                ) {
+                    continue;
+                }
+
+                // --- ts 文件可能是前端的代码，所以要排除掉前端的 ts 文件 ---
+                let content = await lFs.getContent(path + '/' + item.name, 'utf8');
+                if (!content) {
+                    continue;
+                }
+
+                if (item.name.endsWith('.ts')) {
+                    // --- ts 文件可能是前端的代码，所以要排除掉前端的 ts 文件 ---
+                    if (content.includes('AbstractPage')) {
+                        continue;
+                    }
+                    // --- 移除 TS 多行注释 ---
+                    content = content.replace(/\/\*[\s\S]*?\*\//g, '');
+                    // --- 移除 TS 单行注释 ---
+                    content = content.replace(/(^|[^\:])\/\/.*/g, '$1');
+                }
+                else if (item.name.endsWith('.ejs')) {
+                    // --- ejs 文件，只保留 <% %> 内部的内容，因为外部是前端代码 ---
+                    const matches = content.match(/<%[\s\S]*?%>/g);
+                    if (!matches) {
+                        continue;
+                    }
+                    content = matches.join('\n');
+                    // --- 移除多行注释 ---
+                    content = content.replace(/\/\*[\s\S]*?\*\//g, '');
+                    // --- 移除单行注释 ---
+                    content = content.replace(/(^|[^\:])\/\/.*/g, '$1');
+                }
+
+                const reg = /(?:\b|_)l\s*\(\s*(['"])(.+?)\1/g;
+                let match: RegExpExecArray | null;
+                while (match = reg.exec(content)) {
+                    const key = match[2];
+                    if (appLocaleList.includes(key)) {
+                        continue;
+                    }
+                    appLocaleList.push(key);
+                }
+            }
+        };
+
+        /** --- 提取目录 --- */
+        const lastSlash = localePath.lastIndexOf('/');
+        const dir = lastSlash === -1 ? '.' : localePath.slice(0, lastSlash);
+        /** --- 提取前缀，如 'sc' --- */
+        const prefix = lastSlash === -1 ? localePath : localePath.slice(lastSlash + 1);
+
+        const localeList: string[] = [];
+        const getKeys = (o: any, p = ''): void => {
+            for (const k in o) {
+                const nk = p ? p + '.' + k : k;
+                if (typeof o[k] === 'object' && o[k] !== null && !Array.isArray(o[k])) {
+                    getKeys(o[k], nk);
+                }
+                else {
+                    localeList.push(nk);
+                }
+            }
+        };
+
+        const files = await lFs.readDir(dir);
+        let found = false;
+        for (const file of files) {
+            if (file.isFile() && file.name.startsWith(prefix + '.') && file.name.endsWith('.json')) {
+                found = true;
+                const content = await lFs.getContent(dir + '/' + file.name, 'utf8');
+                if (!content) {
+                    continue;
+                }
+                const obj = lText.parseJson<any>(content);
+                if (typeof obj !== 'object') {
+                    continue;
+                }
+                getKeys(obj);
+            }
+        }
+
+        if (!found) {
+            lCore.display('Locale files not found: ' + localePath + '.*.json');
+            process.exit();
+        }
+        appLocaleList.length = 0;
+        await readDir(dirPath);
+
+        const set1 = new Set(localeList);
+        const set2 = new Set(appLocaleList);
+
+        /** --- 只在第一个数组中存在的元素 --- */
+        const onlyInFirst = localeList.filter(item => !set2.has(item));
+        /** --- 只在第二个数组中存在的元素 --- */
+        const onlyInSecond = appLocaleList.filter(item => !set1.has(item));
+
+        lCore.display('More', onlyInFirst);
+        lCore.display('Less', onlyInSecond);
+        // --- 退出进程 ---
         process.exit();
     }
 
