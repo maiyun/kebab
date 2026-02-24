@@ -128,8 +128,7 @@ export default class extends sCtr.Ctr {
 
             '<br><br><b>Ctr:</b>',
             `<br><br><a href="${this._config.const.urlBase}test/ctr-xsrf">View "test/ctr-xsrf"</a>`,
-            `<br><a href="${this._config.const.urlBase}test/ctr-checkinput">View "test/ctr-checkinput"</a>`,
-            `<br><a href="${this._config.const.urlBase}test/ctr-checkinput-schema">View "test/ctr-checkinput-schema"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/ctr-checkinput">View "test/ctr-checkinput"</a> <a href="${this._config.const.urlBase}test/ctr-checkinput-schema">schema</a>`,
             `<br><a href="${this._config.const.urlBase}test/ctr-locale">View "test/ctr-locale"</a>`,
             `<br><a href="${this._config.const.urlBase}test/ctr-cachettl">View "test/ctr-cachettl"</a>`,
             `<br><a href="${this._config.const.urlBase}test/ctr-httpcode">View "test/ctr-httpcode"</a>`,
