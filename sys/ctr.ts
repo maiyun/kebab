@@ -423,6 +423,16 @@ export class Ctr {
                         }
                     }
                 }
+                else if (typeof v === 'object' && v.schema !== undefined) {
+                    // --- core.checkSchema ---
+                    if (input[key] !== null) {
+                        const r = lCore.checkSchema(input[key], v.schema);
+                        if (r) {
+                            this._setCheckError(rtn, lastVal, typeof lastVal[1] === 'string' ? `(${r})` : undefined);
+                            return false;
+                        }
+                    }
+                }
                 else {
                     /** --- 是否需要返回错误 --- */
                     let needReturn = false;

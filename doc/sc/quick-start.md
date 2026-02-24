@@ -28,3 +28,25 @@
     - `stc/`: 静态资源目录
     - `view/`: 视图目录，存放 ejs 文件
     - `ws/`: WebSocket 目录
+
+## 集成 JSON Schema
+
+控制器的 `_checkInput` 方法已集成 JSON Schema（ajv、ajv-formats），可通过 `schema` 参数使用，例如：
+
+```ts
+const retur: kebab.Json[] = [];
+if (!this._checkInput(this._post, {
+  'sdata': [{
+    'schema': {
+      'type': 'object',
+      'properties': {
+        'foo': { 'type': 'integer' },
+        'bar': { 'type': 'string' }
+      },
+      'required': ['foo']
+    }
+  }, [0, 'The sdata param is incorrect.']],
+}, retur)) {
+  return retur;
+}
+```

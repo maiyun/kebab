@@ -129,6 +129,7 @@ export default class extends sCtr.Ctr {
             '<br><br><b>Ctr:</b>',
             `<br><br><a href="${this._config.const.urlBase}test/ctr-xsrf">View "test/ctr-xsrf"</a>`,
             `<br><a href="${this._config.const.urlBase}test/ctr-checkinput">View "test/ctr-checkinput"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/ctr-checkinput-schema">View "test/ctr-checkinput-schema"</a>`,
             `<br><a href="${this._config.const.urlBase}test/ctr-locale">View "test/ctr-locale"</a>`,
             `<br><a href="${this._config.const.urlBase}test/ctr-cachettl">View "test/ctr-cachettl"</a>`,
             `<br><a href="${this._config.const.urlBase}test/ctr-httpcode">View "test/ctr-httpcode"</a>`,
@@ -167,6 +168,7 @@ export default class extends sCtr.Ctr {
             `<br><a href="${this._config.const.urlBase}test/core-convert62">View "test/core-convert62"</a>`,
             `<br><a href="${this._config.const.urlBase}test/core-purify">View "test/core-purify"</a>`,
             `<br><a href="${this._config.const.urlBase}test/core-checktype">View "test/core-checktype"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/core-checkschema">View "test/core-checkschema"</a>`,
             `<br><a href="${this._config.const.urlBase}test/core-muid">View "test/core-muid"</a>`,
             `<br><a href="${this._config.const.urlBase}test/core-getlog">View "test/core-getlog"</a>`,
             `<br><a href="${this._config.const.urlBase}test/core-ls">View "test/core-ls"</a>`,
@@ -525,6 +527,64 @@ function postFd() {
             'type': [{ 'type': { 'a': 1, 'b': '' } }, [0, 'The type param is incorrect']],
             'json': [{ 'type': { 'a': '1', 'b': [ { 'c': 1 } ] } }, [0, 'The json param is incorrect']],
             'json2': [{ 'type': { 'a': '1', 'b': 0, 'c?': { 'd': '1' } } }, [0, 'The json2 param is incorrect']],
+        }, retur)) {
+            return retur;
+        }
+        return [1, { 'post': this._post }];
+    }
+
+    public ctrCheckinputSchema(): string {
+        const echo: string[] = [
+            '<b>Test _checkInput by JSON Schema</b><br><br>',
+        ];
+
+        const post = [
+            { 'sdata': { 'foo': 1, 'bar': 'abc' } },
+            { 'sdata': { 'foo': '1', 'bar': 'abc' } },
+            { 'sdata': { 'bar': 'abc' } },
+            { 'sdata': { 'foo': 1, 'bar': 'abc', 'baz': 1 } },
+        ];
+        for (const item of post) {
+            const str = lText.stringifyJson(item).replace(/"/g, '&quot;');
+            echo.push(`<input type="button" value="Post '${str}'" onclick="post('${str}')"><br>`);
+        }
+
+        echo.push(`<script>
+function post(p) {
+    document.getElementById('result').innerText = 'Waiting...';
+    fetch('${this._config.const.urlBase}test/ctr-checkinput-schema1', {
+        method: 'POST',
+        headers: {
+            'content-type': 'application/json'
+        },
+        body: p
+    }).then(function(r) {
+        return r.text();
+    }).then(function(t) {
+        document.getElementById('result').innerText = t;
+    });
+}
+</script>
+<br>Result:<pre id="result">Nothing.</pre>`);
+        return echo.join('') + this._getEnd();
+    }
+
+    public async ctrCheckinputSchema1(): Promise<kebab.Json[]> {
+        if (!await this._handleFormData()) {
+            return [0];
+        }
+        const retur: kebab.Json[] = [];
+        if (!this._checkInput(this._post, {
+            'sdata': [{
+                'schema': {
+                    'type': 'object',
+                    'properties': {
+                        'foo': { 'type': 'integer' },
+                        'bar': { 'type': 'string' }
+                    },
+                    'required': ['foo']
+                }
+            }, [0, 'The sdata param is incorrect.']],
         }, retur)) {
             return retur;
         }
@@ -1319,6 +1379,33 @@ lCore.checkType(o7, type2): ${lCore.checkType(o7, type2)}<br><br>
 o8:<pre>${JSON.stringify(o8)}</pre>
 lCore.checkType(o8, type1): ${lCore.checkType(o8, type1)}<br>
 lCore.checkType(o8, type2): ${lCore.checkType(o8, type2)}
+<br><br>${this._getEnd()}`;
+    }
+
+    public coreCheckschema(): string {
+        const schema = {
+            'type': 'object',
+            'properties': {
+                'foo': { 'type': 'integer' },
+                'bar': { 'type': 'string' }
+            },
+            'required': ['foo'],
+            'additionalProperties': false
+        };
+        const o1 = { 'foo': 1, 'bar': 'abc' };
+        const o2 = { 'foo': '1', 'bar': 'abc' };
+        const o3 = { 'bar': 'abc' };
+        const o4 = { 'foo': 1, 'bar': 'abc', 'baz': 1 };
+
+        return `schema:<pre>${JSON.stringify(schema, null, 2)}</pre>
+o1:<pre>${JSON.stringify(o1)}</pre>
+lCore.checkSchema(o1, schema): ${lCore.checkSchema(o1, schema)}<br><br>
+o2:<pre>${JSON.stringify(o2)}</pre>
+lCore.checkSchema(o2, schema): ${lCore.checkSchema(o2, schema)}<br><br>
+o3:<pre>${JSON.stringify(o3)}</pre>
+lCore.checkSchema(o3, schema): ${lCore.checkSchema(o3, schema)}<br><br>
+o4:<pre>${JSON.stringify(o4)}</pre>
+lCore.checkSchema(o4, schema): ${lCore.checkSchema(o4, schema)}
 <br><br>${this._getEnd()}`;
     }
 

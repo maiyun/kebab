@@ -9,6 +9,8 @@ import * as http2 from 'http2';
 import * as stream from 'stream';
 import * as os from 'os';
 import * as net from 'net';
+import Ajv from 'ajv';
+import addFormats from 'ajv-formats';
 import * as kebab from '#kebab/index.js';
 import * as lTime from '#kebab/lib/time.js';
 import * as lFs from '#kebab/lib/fs.js';
@@ -29,6 +31,13 @@ export const globalConfig: kebab.IConfig & {
     'hosts': string[];
     'ind': string[];
 } = {} as kebab.Json;
+
+/** --- JSON Schema 校验器 --- */
+const ajv = new Ajv({
+    'allErrors': true,
+    'strict': false
+});
+addFormats(ajv);
 
 /** --- Cookie 设置的选项 --- */
 export interface ICookieOptions {
@@ -279,6 +288,23 @@ export function checkType(val: any, type: any, tree: string = 'root'): string {
         return '';
     }
     return vtype === ttype ? '' : ttype + ':' + tree + ':' + vtype;
+}
+
+/**
+ * --- 判断一个对象是否符合 JSON Schema ---
+ * @param val 对象
+ * @param schema JSON Schema
+ */
+export function checkSchema(val: any, schema: any): string {
+    const validate = ajv.compile(schema);
+    if (validate(val)) {
+        return '';
+    }
+    const err = validate.errors?.[0];
+    if (!err) {
+        return 'schema error';
+    }
+    return `${lText.logicalOr(err.instancePath, 'root')}${err.message ? ': ' + err.message : ''}`;
 }
 
 /**
