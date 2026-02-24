@@ -8,7 +8,7 @@
 
 > **writeEventStreamHead**(`res`): `void`
 
-Defined in: [lib/core.ts:1016](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1016)
+Defined in: [lib/core.ts:1042](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1042)
 
 ## Parameters
 

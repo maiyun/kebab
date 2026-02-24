@@ -8,7 +8,7 @@
 
 > `const` **globalConfig**: [`IConfig`](../../../index/interfaces/IConfig.md) & `object`
 
-Defined in: [lib/core.ts:22](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L22)
+Defined in: [lib/core.ts:24](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L24)
 
 全局参数
 

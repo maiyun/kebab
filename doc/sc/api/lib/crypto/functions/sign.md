@@ -32,7 +32,7 @@ Defined in: [lib/crypto.ts:69](https://github.com/maiyunnet/kebab/blob/master/li
 
 输出格式
 
-`"hex"` | `"base64"` | `"binary"`
+`"binary"` | `"hex"` | `"base64"`
 
 #### algorithm?
 

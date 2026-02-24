@@ -6,7 +6,7 @@
 
 # Interface: ICookieOptions
 
-Defined in: [lib/core.ts:34](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L34)
+Defined in: [lib/core.ts:43](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L43)
 
 Cookie 设置的选项
 
@@ -16,7 +16,7 @@ Cookie 设置的选项
 
 > `optional` **domain**: `string`
 
-Defined in: [lib/core.ts:37](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L37)
+Defined in: [lib/core.ts:46](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L46)
 
 ***
 
@@ -24,7 +24,7 @@ Defined in: [lib/core.ts:37](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > `optional` **httponly**: `boolean`
 
-Defined in: [lib/core.ts:39](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L39)
+Defined in: [lib/core.ts:48](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L48)
 
 ***
 
@@ -32,7 +32,7 @@ Defined in: [lib/core.ts:39](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > `optional` **path**: `string`
 
-Defined in: [lib/core.ts:36](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L36)
+Defined in: [lib/core.ts:45](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L45)
 
 ***
 
@@ -40,7 +40,7 @@ Defined in: [lib/core.ts:36](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > `optional` **samesite**: `"Strict"` \| `"Lax"` \| `"None"`
 
-Defined in: [lib/core.ts:40](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L40)
+Defined in: [lib/core.ts:49](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L49)
 
 ***
 
@@ -48,7 +48,7 @@ Defined in: [lib/core.ts:40](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > `optional` **ssl**: `boolean`
 
-Defined in: [lib/core.ts:38](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L38)
+Defined in: [lib/core.ts:47](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L47)
 
 ***
 
@@ -56,4 +56,4 @@ Defined in: [lib/core.ts:38](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > `optional` **ttl**: `number`
 
-Defined in: [lib/core.ts:35](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L35)
+Defined in: [lib/core.ts:44](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L44)

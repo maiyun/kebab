@@ -8,7 +8,7 @@
 
 > **passThroughAppend**(`passThrough`, `data`, `end?`): `Promise`\<`void`\>
 
-Defined in: [lib/core.ts:429](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L429)
+Defined in: [lib/core.ts:455](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L455)
 
 调用前自行创建 passThrough，并且调用 pipe 绑定到应该绑定的对象，然后再调用本函数
 

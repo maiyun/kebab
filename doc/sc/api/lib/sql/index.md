@@ -21,3 +21,4 @@
 - [column](functions/column.md)
 - [format](functions/format.md)
 - [get](functions/get.md)
+- [json](functions/json.md)

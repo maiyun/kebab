@@ -33,6 +33,7 @@
 
 ## Functions
 
+- [checkSchema](functions/checkSchema.md)
 - [checkType](functions/checkType.md)
 - [clone](functions/clone.md)
 - [convert62](functions/convert62.md)

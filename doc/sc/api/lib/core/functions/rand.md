@@ -8,7 +8,7 @@
 
 > **rand**(`min`, `max`, `prec?`): `number`
 
-Defined in: [lib/core.ts:79](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L79)
+Defined in: [lib/core.ts:88](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L88)
 
 生成基础的范围随机数
 
