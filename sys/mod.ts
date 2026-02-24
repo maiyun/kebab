@@ -173,6 +173,11 @@ export default class Mod {
         return lSql.column(field);
     }
 
+    /** --- 创建 JSON 字符串对象，用于 PGSQL 的 jsonb 字段 --- */
+    public static json(obj: kebab.Json): any {
+        return lSql.json(obj);
+    }
+
     /**
      * --- 添加一个序列（允许超过 65536 的占位符会被拆分多次执行） ---
      * @param db 数据库对象
