@@ -64,7 +64,7 @@ Defined in: [lib/net/response.ts:30](https://github.com/maiyunnet/kebab/blob/mas
 
 > **getRawStream**(): `Readable` \| `null`
 
-Defined in: [lib/net/response.ts:55](https://github.com/maiyunnet/kebab/blob/master/lib/net/response.ts#L55)
+Defined in: [lib/net/response.ts:65](https://github.com/maiyunnet/kebab/blob/master/lib/net/response.ts#L65)
 
 获取原生响应读取流对象
 
@@ -78,7 +78,7 @@ Defined in: [lib/net/response.ts:55](https://github.com/maiyunnet/kebab/blob/mas
 
 > **getStream**(): `Readable` \| `null`
 
-Defined in: [lib/net/response.ts:48](https://github.com/maiyunnet/kebab/blob/master/lib/net/response.ts#L48)
+Defined in: [lib/net/response.ts:53](https://github.com/maiyunnet/kebab/blob/master/lib/net/response.ts#L53)
 
 获取响应读取流对象
 
@@ -92,7 +92,7 @@ Defined in: [lib/net/response.ts:48](https://github.com/maiyunnet/kebab/blob/mas
 
 > **setContent**(`v`): `void`
 
-Defined in: [lib/net/response.ts:41](https://github.com/maiyunnet/kebab/blob/master/lib/net/response.ts#L41)
+Defined in: [lib/net/response.ts:46](https://github.com/maiyunnet/kebab/blob/master/lib/net/response.ts#L46)
 
 用户自定义的 content 内容
 
