@@ -349,7 +349,7 @@ async function requestHandler(
                         'rootPath': vhost.real + now,
                         'urlBase': '/' + now,
                         'path': path.slice(1),
-                        'timer': timer
+                        'timer': timer,
                     })) {
                         return;
                     }
@@ -637,14 +637,34 @@ async function getVhostByHostname(hostname: string): Promise<kebab.IVhost & {
     /** --- 真实路径，以 / 结尾 --- */
     'real': string;
 } | null> {
-    let vGlobal!: kebab.IVhost;
+    /** --- 全局泛匹配（*）的对象 --- */
+    let vGlobal: kebab.IVhost | null = null;
+    /** --- 全局泛匹配（*）的真实路径，例如 /www/wwwroot/ --- */
     let vGlobalReal = '';
-    let vSub!: kebab.IVhost;
+    /** --- 通配符匹配（*.abc.com）的对象 --- */
+    let vSub: kebab.IVhost | null = null;
+    /** --- 通配符匹配（*.abc.com）的真实路径，例如 /www/wwwroot/abc/ --- */
     let vSubReal = '';
-    for (const vhost of vhosts) {
+    /** --- 条目循环标签 --- */
+    vhostLoop: for (const vhost of vhosts) {
         for (let domain of vhost.domains) {
+            if (domain === hostname) {
+                // --- 完全匹配 ---
+                const real = getVhostReal(vhost.root);
+                if (await lFs.isDir(real)) {
+                    return { ...vhost, real };
+                }
+            }
+            if (vSub && vGlobal) {
+                // --- 意味着已经找到了更精准的子域名匹配和全局匹配，后续所有 vhost 和 domain 无需再通过正则或磁盘 IO 进行匹配判断 ---
+                break vhostLoop;
+            }
             if (domain === '*') {
                 // --- 全局泛匹配 ---
+                if (vGlobal) {
+                    // --- 已经有了全局匹配结果，无需重复赋值，跳过后续逻辑以节省性能 ---
+                    continue;
+                }
                 const real = getVhostReal(vhost.root);
                 if (await lFs.isDir(real)) {
                     vGlobal = vhost;
@@ -653,20 +673,17 @@ async function getVhostByHostname(hostname: string): Promise<kebab.IVhost & {
             }
             else if (domain.includes('*')) {
                 // --- 通配符匹配 ---
-                domain = domain.replace(/\./g, '\\.').replace(/\*/g, '[\\w-]+?');
-                if (new RegExp(`^${domain}$`).test(hostname)) {
+                if (vSub) {
+                    // --- 已经存在子域名通配符匹配结果，按照优先级不再寻找其他通配符匹配，跳过正则计算 ---
+                    continue;
+                }
+                const pattern = domain.replace(/\./g, '\\.').replace(/\*/g, '[\\w-]+?');
+                if (new RegExp(`^${pattern}$`).test(hostname)) {
                     const real = getVhostReal(vhost.root);
                     if (await lFs.isDir(real)) {
                         vSub = vhost;
                         vSubReal = real;
                     }
-                }
-            }
-            else if (domain === hostname) {
-                // --- 完全匹配 ---
-                const real = getVhostReal(vhost.root);
-                if (await lFs.isDir(real)) {
-                    return { ...vhost, real };
                 }
             }
         }

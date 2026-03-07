@@ -31,7 +31,12 @@ export class Response {
         if (this._content) {
             return this._content;
         }
-        return this._req ? this._req.getBuffer() : null;
+        try {
+            return this._req ? await this._req.getBuffer() : null;
+        }
+        catch {
+            return null;
+        }
     }
 
     /**
@@ -46,14 +51,24 @@ export class Response {
      * --- 获取响应读取流对象 ---
      */
     public getStream(): stream.Readable | null {
-        return this._req ? this._req.getStream() : null;
+        try {
+            return this._req ? this._req.getStream() : null;
+        }
+        catch {
+            return null;
+        }
     }
 
     /**
      * --- 获取原生响应读取流对象 ---
      */
     public getRawStream(): stream.Readable | null {
-        return this._req ? this._req.getRawStream() : null;
+        try {
+            return this._req ? this._req.getRawStream() : null;
+        }
+        catch {
+            return null;
+        }
     }
 
 }
