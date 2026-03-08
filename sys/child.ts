@@ -1,7 +1,7 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2019-5-3 23:54
- * Last: 2020-3-31 15:01:07, 2020-4-9 22:28:50, 2022-07-22 14:19:46, 2022-9-29 22:11:07, 2023-5-1 18:26:57, 2024-1-12 13:32:00, 2024-3-4 16:49:19
+ * Last: 2020-3-31 15:01:07, 2020-4-9 22:28:50, 2022-07-22 14:19:46, 2022-9-29 22:11:07, 2023-5-1 18:26:57, 2024-1-12 13:32:00, 2024-3-4 16:49:19, 2026-3-8 16:21:40
  */
 import * as http2 from 'http2';
 import * as tls from 'tls';
@@ -37,6 +37,9 @@ let certList: Array<{
 
 /** --- server: index --- */
 let certHostIndex: Record<string, number> = {};
+
+/** --- 默认证书 --- */
+let defaultSc: tls.SecureContext | undefined;
 
 /** --- 最后一次加载证书到内存的时间 --- */
 let certLastLoad: number = 0;
@@ -123,6 +126,11 @@ async function run(): Promise<void> {
                 certHostIndex[servername] = i;
                 return;
             }
+            if (defaultSc) {
+                cb(null, defaultSc);
+                return;
+            }
+            lCore.display(`[CHILD][SNICallback] CERT NOT FOUND for servername: ${servername}`);
             const err = new Error('CERT NOT FOUND');
             cb(err);
         },
@@ -552,6 +560,7 @@ async function reloadCert(): Promise<void> {
         // --- NOTHING ---
     }
     certList = cl;
+    defaultSc = cl.length > 0 ? cl[0].sc : undefined;
     certHostIndex = {};
 }
 
