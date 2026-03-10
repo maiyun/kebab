@@ -409,7 +409,7 @@ async function upgradeHandler(
     /** --- 当前的 vhost 配置文件 --- */
     const vhost = await getVhostByHostname(uri.hostname ?? '');
     if (!vhost) {
-        socket.destroy();
+        socket.end();
         return;
     }
     /** --- 请求的路径部分，前导带 / 末尾不一定，用户怎么请求就是什么 --- */
@@ -429,7 +429,7 @@ async function upgradeHandler(
             /** --- 'abc' / 'def.json' ---  */
             let stat = await lFs.stats(vhost.real + now + item);
             if (!stat) {
-                socket.destroy();
+                socket.end();
                 return;
             }
             if (stat.isDirectory()) {
@@ -453,7 +453,7 @@ async function upgradeHandler(
             }
             else {
                 // --- 文件，报错 ---
-                socket.destroy();
+                socket.end();
                 return;
             }
         }
@@ -481,7 +481,7 @@ async function upgradeHandler(
         }
     }
     // --- 最后一层，又不是动态层 ---
-    socket.destroy();
+    socket.end();
 }
 
 /**
