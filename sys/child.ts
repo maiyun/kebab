@@ -244,7 +244,7 @@ async function requestHandler(
         host = req.headers['host'];
     }
     if (host === undefined) {
-        res.end();
+        res.end('403 Forbidden');
         return;
     }
     const hostInfo = lText.parseHost(host);
