@@ -140,9 +140,8 @@ async function run(): Promise<void> {
         const host = (req.headers[':authority'] ?? req.headers['host'] ?? '');
         if (!host) {
             lCore.writeHead(res, 403);
-            res.end('403 Forbidden', () => {
-                req.socket.destroy();
-            });
+            // --- 不能用 req.socket.destroy() 可能会导致底层复用（如 CDN） 的连接被直接断开 ---
+            res.end('403 Forbidden');
             return;
         }
         wrapWithLinkCount(
@@ -171,9 +170,8 @@ async function run(): Promise<void> {
         if (!host) {
             res.setHeader('x-kebab-error', '0');
             lCore.writeHead(res, 403);
-            res.end('403 Forbidden', () => {
-                req.socket.destroy();
-            });
+            // --- 不能用 req.socket.destroy() 可能会导致底层复用（如 CDN） 的连接被直接断开 ---
+            res.end('403 Forbidden');
             return;
         }
         wrapWithLinkCount(
@@ -182,8 +180,12 @@ async function run(): Promise<void> {
             '[CHILD][http][request]',
             req.method ?? 'GET'
         );
-    }).on('clientError', (err, socket) => {
-        socket.destroy();
+    }).on('clientError', (err: any, socket) => {
+        // --- 不能用 socket.destroy() 可能会导致底层复用（如 CDN） 的连接被直接断开 ---
+        if (err.code === 'ECONNRESET' || !socket.writable) {
+            return;
+        }
+        socket.end('HTTP/1.1 400 Bad Request\r\n\r\n');
     }).on('upgrade', function(req: http.IncomingMessage, socket: net.Socket, head: Buffer): void {
         const host = (req.headers['host'] ?? '');
         if (!host) {
@@ -257,9 +259,8 @@ async function requestHandler(
     if (!vhost) {
         res.setHeader('x-kebab-error', '1');
         lCore.writeHead(res, 403);
-        res.end('403 Forbidden', () => {
-            req.socket.destroy();
-        });
+        // --- 不能用 req.socket.destroy() 可能会导致底层复用（如 CDN） 的连接被直接断开 ---
+        res.end('403 Forbidden');
         return;
         /*
         const text = '<h1>Kebab: No permissions</h1>host: ' + (req.headers[':authority'] as string | undefined ?? req.headers['host'] ?? '') + '<br>url: ' + (lText.htmlescape(req.url ?? ''));
