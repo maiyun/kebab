@@ -150,6 +150,7 @@ export default class extends sCtr.Ctr {
             `<br><a href="${this._config.const.urlBase}test/mod-insert">View "test/mod-insert"</a>`,
             `<br><a href="${this._config.const.urlBase}test/mod-upsert">View "test/mod-upsert"</a>`,
             `<br><a href="${this._config.const.urlBase}test/mod-update-list">View "test/mod-update-list"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/mod-contain">View "test/mod-contain"</a>`,
 
             '<br><br><b>Library test:</b>',
 
@@ -1174,6 +1175,39 @@ const res2 = await test2.upsert('name');</pre>Result: ${res2}<br><br>`);
             'ctr': this,
             'pre': this._get['s'] === 'pgsql' ? 'm' : undefined,
         });
+
+        return echo.join('') + '<br>' + this._getEnd();
+    }
+
+    public async modContain(): Promise<string> {
+        const echo = ['<b style="color: red;">In a production environment, please delete "mod/test.ts" and "mod/testdata.ts" files.</b>'];
+        const db = this._get['s'] === 'pgsql' ? lDb.get(this, {
+            'service': lDb.ESERVICE.PGSQL,
+        }) : lDb.get(this);
+
+        echo.push('<br><br><b>Testing mod.contain with leftJoin and AS clauses:</b><br>');
+        const pre = this._get['s'] === 'pgsql' ? 'm' : undefined;
+
+        const q = mTest.select<mTest>(db, [
+            'a.id', 'a.name', 'a.token', 'g.content', 'a.time_add'
+        ], {
+            'ctr': this,
+            'alias': 'a',
+            'contain': {
+                'key': 'a.token',
+                'list': ['ul_token_0', 'ul_token_1']
+            },
+            'pre': pre,
+        }).leftJoin('testdata g', {
+            'a.id': mTest.column('g.test_id')
+        }, undefined, pre).limit(2);
+
+        echo.push(`<pre><b>SQL generated:</b>\n<code>${q.getSql()}</code></pre>`);
+
+        const rows = await q.allArray('id');
+
+        echo.push('<b>Result Data:</b>');
+        echo.push(`<pre><code>${lText.stringifyJson(rows, 4)}</code></pre>`);
 
         return echo.join('') + '<br>' + this._getEnd();
     }

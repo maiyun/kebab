@@ -1149,7 +1149,7 @@ export default class Mod {
             for (let i = 0; i < this._index.length; ++i) {
                 // --- 先计算 total ---
                 if (i > 0) {
-                    sql = sql.replace(/(FROM [a-zA-Z0-9`"_.]+?_)[0-9_]+/, '$1' + this._index[i]);
+                    sql = sql.replace(/(FROM [a-zA-Z0-9`"_.]+?_)[\w]+/, '$1' + this._index[i]);
                 }
                 const tsql = this._formatTotal(sql);
                 const tr = await this._db.query(tsql, this._sql.getData());
@@ -1190,7 +1190,7 @@ export default class Mod {
                             'ctr': this._ctr,
                             'pre': this._sql.getPre(),
                             'row': row,
-                            'index': this._index,
+                            'index': this._index[i],
                         });
                         (list as Record<string, this>)[row[key]] = obj;
                         --remain;
@@ -1205,7 +1205,7 @@ export default class Mod {
                         'ctr': this._ctr,
                         'pre': this._sql.getPre(),
                         'row': row,
-                        'index': this._index,
+                        'index': this._index[i],
                     });
                     (list as this[]).push(obj);
                     --remain;
@@ -1223,9 +1223,10 @@ export default class Mod {
             return false;
         }
         // --- 检查没被查到的必包含项 ---
+        const containKeyStr = this._contain ? (this._contain.key.includes('.') ? this._contain.key.split('.').pop()! : this._contain.key) : '';
         for (const row of r.rows) {
             if (this._contain && contain) {
-                const io = contain.indexOf(row[this._contain.key]);
+                const io = contain.indexOf(row[containKeyStr]);
                 if (io !== -1) {
                     contain.splice(io, 1);
                 }
@@ -1328,7 +1329,7 @@ export default class Mod {
             for (let i = 0; i < this._index.length; ++i) {
                 // --- 先计算 total ---
                 if (i > 0) {
-                    sql = sql.replace(/(FROM [a-zA-Z0-9`"_.]+?_)[0-9_]+/, '$1' + this._index[i]);
+                    sql = sql.replace(/(FROM [a-zA-Z0-9`"_.]+?_)[\w]+/, '$1' + this._index[i]);
                 }
                 const tsql = this._formatTotal(sql);
                 const tr = await this._db.query(tsql, this._sql.getData());
@@ -1385,9 +1386,10 @@ export default class Mod {
             return false;
         }
         // --- 检查没被查到的必包含项 ---
+        const containKeyStr = this._contain ? (this._contain.key.includes('.') ? this._contain.key.split('.').pop()! : this._contain.key) : '';
         for (const row of r.rows) {
             if (this._contain && contain) {
-                const io = contain.indexOf(row[this._contain.key]);
+                const io = contain.indexOf(row[containKeyStr]);
                 if (io !== -1) {
                     contain.splice(io, 1);
                 }
@@ -1455,13 +1457,13 @@ export default class Mod {
     private _formatTotal(sql: string, f: string = '*'): string {
         const q = this._db.getService() === lDb.ESERVICE.MYSQL ? '`' : '"';
         sql = sql
-            .replace(/ LIMIT [0-9 ,]+(OFFSET [0-9]+)?/g, '')
-            .replace(/ ORDER BY [\w`",. ]+(DESC|ASC)?/g, '');
+            .replace(/ LIMIT [0-9 ,]+(OFFSET [0-9]+)?/ig, '')
+            .replace(/ ORDER BY [\w`",. ]+(DESC|ASC)?/ig, '');
         if (sql.includes(' GROUP BY ')) {
-            return 'SELECT COUNT(0) AS `count` FROM(' + sql + ') AS `f`';
+            return `SELECT COUNT(0) AS ${q}count${q} FROM(` + sql + `) AS ${q}f${q}`;
         }
         return sql
-            .replace(/SELECT .+? FROM/g, `SELECT COUNT(${this._sql.field(f)}) AS ${q}count${q} FROM`);
+            .replace(/SELECT .+? FROM/is, `SELECT COUNT(${this._sql.field(f)}) AS ${q}count${q} FROM`);
     }
 
     /**
@@ -1492,10 +1494,11 @@ export default class Mod {
      * --- 根据当前条件，筛选出当前条目该有的数据条数 ---
      */
     public async count(): Promise<number> {
-        const sql: string = this._sql.getSql().replace(/SELECT .+? FROM/, this._db.getService() === lDb.ESERVICE.MYSQL ?
-            'SELECT COUNT(0) AS `count` FROM' :
-            'SELECT COUNT(0) AS "count" FROM'
-        );
+        const sql: string = this._sql.getSql()
+            .replace(/SELECT .+? FROM/is, this._db.getService() === lDb.ESERVICE.MYSQL ?
+                'SELECT COUNT(0) AS `count` FROM' :
+                'SELECT COUNT(0) AS "count" FROM'
+            );
         const r = await this._db.query(sql, this._sql.getData());
         if (r.rows === null) {
             lCore.log(this._ctr ?? {}, '[MOD][count] ' + (lText.stringifyJson(r.error?.message ?? '').slice(1, -1) + ' - ' + this._sql.format()).replaceAll('"', '""'), '-error');
@@ -1512,9 +1515,10 @@ export default class Mod {
      * --- 获取当前条件下的 count 的 SQL 语句 ---
      */
     public countSql(): string {
-        const sql: string = this._sql.getSql().replace(/SELECT .+? FROM/, this._db.getService() === lDb.ESERVICE.MYSQL ?
-            'SELECT COUNT(0) AS `count` FROM' : 'SELECT COUNT(0) AS "count" FROM'
-        );
+        const sql: string = this._sql.getSql()
+            .replace(/SELECT .+? FROM/is, this._db.getService() === lDb.ESERVICE.MYSQL ?
+                'SELECT COUNT(0) AS `count` FROM' : 'SELECT COUNT(0) AS "count" FROM'
+            );
         return this._sql.format(sql, this._sql.getData());
     }
 

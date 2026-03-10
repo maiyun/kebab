@@ -69,6 +69,7 @@ export class Sql {
         'pre'?: string;
         'data'?: kebab.DbValue[];
         'sql'?: string[];
+        'alias'?: string[];
     }) {
         this._ctr = opt.ctr;
         this._pre = opt.pre ?? '';
@@ -78,6 +79,9 @@ export class Sql {
         }
         if (opt.sql) {
             this._sql = opt.sql;
+        }
+        if (opt.alias) {
+            this._alias = opt.alias;
         }
     }
 
@@ -821,6 +825,7 @@ export class Sql {
             'pre': this._pre,
             'data': data,
             'sql': sql,
+            'alias': lCore.clone(this._alias),
         });
     }
 
@@ -836,7 +841,7 @@ export class Sql {
                 if (this._service === ESERVICE.MYSQL) {
                     return result.replace(new RegExp('`' + this._pre + item + '`', 'g'), '`' + item + '`');
                 }
-                return result.replace(new RegExp(`"${this._pre}"."${item}"`, 'g'), '"' + item + '"');
+                return result.replace(new RegExp(`"${this._pre}"\\."${item}"`, 'g'), '"' + item + '"');
             }, sql);
         }
         return sql;
@@ -1148,6 +1153,7 @@ export function get(opt: {
     'pre'?: string;
     'data'?: kebab.DbValue[];
     'sql'?: string[];
+    'alias'?: string[];
 }): Sql {
     let pre = opt.pre ?? opt.ctr?.getPrototype('_config').sql.pre;
     if (pre) {
