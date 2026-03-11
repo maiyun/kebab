@@ -8,7 +8,7 @@
 
 > **get**(`opt`): [`Sql`](../classes/Sql.md)
 
-Defined in: [lib/sql.ts:1150](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L1150)
+Defined in: [lib/sql.ts:1187](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L1187)
 
 创建 sql 对象
 

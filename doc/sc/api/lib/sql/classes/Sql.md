@@ -54,7 +54,7 @@ Defined in: [lib/sql.ts:66](https://github.com/maiyunnet/kebab/blob/master/lib/s
 
 > **append**(`sql`): `this`
 
-Defined in: [lib/sql.ts:879](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L879)
+Defined in: [lib/sql.ts:916](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L916)
 
 在 sql 最后追加字符串
 
@@ -192,7 +192,7 @@ Defined in: [lib/sql.ts:315](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **field**(`str`, `pre?`, `suf?`): `string`
 
-Defined in: [lib/sql.ts:890](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L890)
+Defined in: [lib/sql.ts:927](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L927)
 
 对字段进行包裹
 
@@ -224,7 +224,7 @@ Defined in: [lib/sql.ts:890](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **format**(`sql?`, `data?`): `string`
 
-Defined in: [lib/sql.ts:869](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L869)
+Defined in: [lib/sql.ts:906](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L906)
 
 获取带 data 的 sql 语句
 
@@ -288,7 +288,7 @@ ON 信息
 
 > **getData**(): [`DbValue`](../../../index/type-aliases/DbValue.md)[]
 
-Defined in: [lib/sql.ts:853](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L853)
+Defined in: [lib/sql.ts:890](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L890)
 
 获取全部 data
 
@@ -302,7 +302,7 @@ Defined in: [lib/sql.ts:853](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **getPre**(): `string`
 
-Defined in: [lib/sql.ts:860](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L860)
+Defined in: [lib/sql.ts:897](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L897)
 
 获取定义的 pre
 
@@ -316,7 +316,7 @@ Defined in: [lib/sql.ts:860](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **getSql**(): `string`
 
-Defined in: [lib/sql.ts:837](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L837)
+Defined in: [lib/sql.ts:874](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L874)
 
 获取 sql 语句
 
