@@ -1187,27 +1187,49 @@ const res2 = await test2.upsert('name');</pre>Result: ${res2}<br><br>`);
 
         echo.push('<br><br><b>Testing mod.contain with leftJoin and AS clauses:</b><br>');
         const pre = this._get['s'] === 'pgsql' ? 'm' : undefined;
+        const index = this._get['s'] === 'pgsql' ? undefined : '0';
 
-        const q = mTest.select<mTest>(db, [
+        const q1 = mTest.select<mTest>(db, [
+            'a.id', 'a.name', 'a.token', 'g.content', 'a.time_add'
+        ], {
+            'ctr': this,
+            'alias': 'a',
+            'contain': {
+                'key': 'token',
+                'list': ['test_0', 'test_3', 'test_10']
+            },
+            'pre': pre,
+        }).leftJoin('test_data g', {
+            'a.id': mTest.column('g.test_id')
+        }, index).limit(2);
+
+        const rows1 = await q1.allArray();
+
+        echo.push('<b>Case 1: contain.key = token (without prefix)</b>');
+        echo.push(`<pre><b>SQL generated:</b>\n<code>${q1.getSql()}</code></pre>`);
+        echo.push('<b>Result Data:</b>');
+        echo.push(`<pre><code>${lText.stringifyJson(rows1, 4)}</code></pre>`);
+
+        const q2 = mTest.select<mTest>(db, [
             'a.id', 'a.name', 'a.token', 'g.content', 'a.time_add'
         ], {
             'ctr': this,
             'alias': 'a',
             'contain': {
                 'key': 'a.token',
-                'list': ['ul_token_0', 'ul_token_1']
+                'list': ['test_0', 'test_3', 'test_10']
             },
             'pre': pre,
-        }).leftJoin('testdata g', {
+        }).leftJoin('test_data g', {
             'a.id': mTest.column('g.test_id')
-        }, undefined, pre).limit(2);
+        }, index).limit(2);
 
-        echo.push(`<pre><b>SQL generated:</b>\n<code>${q.getSql()}</code></pre>`);
+        const rows2 = await q2.allArray();
 
-        const rows = await q.allArray('id');
-
+        echo.push('<b>Case 2: contain.key = a.token (with prefix)</b>');
+        echo.push(`<pre><b>SQL generated:</b>\n<code>${q2.getSql()}</code></pre>`);
         echo.push('<b>Result Data:</b>');
-        echo.push(`<pre><code>${lText.stringifyJson(rows, 4)}</code></pre>`);
+        echo.push(`<pre><code>${lText.stringifyJson(rows2, 4)}</code></pre>`);
 
         return echo.join('') + '<br>' + this._getEnd();
     }

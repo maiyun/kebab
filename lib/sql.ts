@@ -743,18 +743,36 @@ export class Sql {
         const sql: string[] = lCore.clone(this._sql);
         const data: any[] = lCore.clone(this._data);
         if (opt.where !== undefined) {
+            let found = false;
             if (typeof opt.where === 'string') {
                 // --- string ---
                 for (let i = 0; i < sql.length; ++i) {
                     if (!sql[i].startsWith(' WHERE ')) {
                         continue;
                     }
+                    found = true;
                     sql[i] = opt.where ? (' WHERE ' + opt.where) : '';
                     data.splice(
                         this._whereDataPosition[0],
                         this._whereDataPosition[1] - this._whereDataPosition[0]
                     );
                     break;
+                }
+                if (!found && opt.where) {
+                    // --- 没找到原来的且现在要加（有可能 opt.where 是空字符串，所以这里必须判断一次） ---
+                    let index = sql.length;
+                    for (let i = 0; i < sql.length; ++i) {
+                        if (
+                            sql[i].startsWith(' ORDER BY ') ||
+                            sql[i].startsWith(' GROUP BY ') ||
+                            sql[i].startsWith(' LIMIT ') ||
+                            sql[i].startsWith(' FOR UPDATE')
+                        ) {
+                            index = i;
+                            break;
+                        }
+                    }
+                    sql.splice(index, 0, ' WHERE ' + opt.where);
                 }
             }
             else {
@@ -775,6 +793,7 @@ export class Sql {
                     if (!sql[i].startsWith(' WHERE ')) {
                         continue;
                     }
+                    found = true;
                     if (go) {
                         // --- 修改 where ---
                         const d: any[] = [];
@@ -794,6 +813,24 @@ export class Sql {
                         );
                     }
                     break;
+                }
+                if (!found && go) {
+                    // --- 没找到原来的且现在要加 ---
+                    let index = sql.length;
+                    for (let i = 0; i < sql.length; ++i) {
+                        if (
+                            sql[i].startsWith(' ORDER BY ') ||
+                            sql[i].startsWith(' GROUP BY ') ||
+                            sql[i].startsWith(' LIMIT ') ||
+                            sql[i].startsWith(' FOR UPDATE')
+                        ) {
+                            index = i;
+                            break;
+                        }
+                    }
+                    const d: any[] = [];
+                    sql.splice(index, 0, ' WHERE ' + this._whereSub(opt.where, d));
+                    data.push(...d);
                 }
             }
         }

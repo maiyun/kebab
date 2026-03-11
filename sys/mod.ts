@@ -106,6 +106,9 @@ export default class Mod {
     /** --- ctr 对象 --- */
     protected _ctr?: sCtr.Ctr = undefined;
 
+    /** --- 主表筛选前缀，优先 alias，其次表名 --- */
+    protected _fieldPrefix: string = '';
+
     /**
      * --- 构造函数 ---
      * @param opt 选项
@@ -151,10 +154,13 @@ export default class Mod {
         }
         /** --- 是否有 select --- */
         const select = opt.select ?? (opt.where ? '*' : '');
+        const table =
+            ((this.constructor as any)._$table as string) +
+            (this._index !== null ? ('_' + this._index[0]) : '');
+        this._fieldPrefix = opt.alias ?? table;
         this._sql.select(
             select,
-            ((this.constructor as any)._$table as string) +
-            (this._index !== null ? ('_' + this._index[0]) : '') +
+            table +
             (opt.alias ? ' ' + opt.alias : '')
         );
         if (opt.where !== undefined) {
@@ -1236,10 +1242,13 @@ export default class Mod {
         if (this._contain && contain?.length) {
             const csql = this._sql.copy(undefined, {
                 'where': {
-                    [this._contain.key]: contain,
+                    [this._getContainWhereKey()]: contain,
                 }
             });
             cr = await this._db.query(csql.getSql(), csql.getData());
+            if (cr.rows === null) {
+                lCore.log(this._ctr ?? {}, '[MOD][all] ' + (lText.stringifyJson(cr.    error?.message ?? '').slice(1, -1) + ' - ' + csql.format()).replaceAll('"', '""'), '-error');
+            }
         }
         if (key) {
             const list: Record<string, this> = {};
@@ -1399,10 +1408,13 @@ export default class Mod {
         if (this._contain && contain?.length) {
             const csql = this._sql.copy(undefined, {
                 'where': {
-                    [this._contain.key]: contain,
+                    [this._getContainWhereKey()]: contain,
                 }
             });
             cr = await this._db.query(csql.getSql(), csql.getData());
+            if (cr.rows === null) {
+                lCore.log(this._ctr ?? {}, '[MOD][allArray] ' + (lText.stringifyJson(cr.    error?.message ?? '').slice(1, -1) + ' - ' + csql.format()).replaceAll('"', '""'), '-error');
+            }
         }
         if (key) {
             const list: Record<string, Record<string, any>> = {};
@@ -1452,6 +1464,21 @@ export default class Mod {
                 'scan': r.rows[0]['QUERY PLAN'],
                 'filter': r.rows[1]['QUERY PLAN'],
             };
+    }
+
+    /** --- 获取 contain 补查时使用的 where key（联表且无前缀时自动补主表前缀） --- */
+    private _getContainWhereKey(): string {
+        if (!this._contain) {
+            return '';
+        }
+        if (this._contain.key.includes('.')) {
+            return this._contain.key;
+        }
+        // --- 有 join 时统一补前缀，兼容 pgsql 并保持 mysql 行为一致 ---
+        if (!/\sJOIN\s/i.test(this._sql.getSql())) {
+            return this._contain.key;
+        }
+        return `${this._fieldPrefix}.${this._contain.key}`;
     }
 
     private _formatTotal(sql: string, f: string = '*'): string {
