@@ -782,7 +782,7 @@ Kv 或 Db 实例
 
 [`IOptions`](../../../lib/session/interfaces/IOptions.md) = `{}`
 
-name, ttl, ssl, sqlPre
+选项
 
 #### Returns
 

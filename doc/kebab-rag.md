@@ -1410,7 +1410,7 @@ index/variables/VER.md
 
 # Variable: VER
 
-> `const` **VER**: `"8.5.4"` = `'8.5.4'`
+> `const` **VER**: `"8.6.0"` = `'8.6.0'`
 
 Defined in: [index.ts:10](https://github.com/maiyunnet/kebab/blob/master/index.ts#L10)
 
@@ -12771,7 +12771,7 @@ lib/session/classes/Session.md
 
 # Class: Session
 
-Defined in: [lib/session.ts:38](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L38)
+Defined in: [lib/session.ts:39](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L39)
 
 ## Constructors
 
@@ -12789,7 +12789,7 @@ Defined in: [lib/session.ts:38](https://github.com/maiyunnet/kebab/blob/master/l
 
 > **getName**(): `string`
 
-Defined in: [lib/session.ts:203](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L203)
+Defined in: [lib/session.ts:207](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L207)
 
 获取当前的 cookie 的 name 值
 
@@ -12803,7 +12803,7 @@ Defined in: [lib/session.ts:203](https://github.com/maiyunnet/kebab/blob/master/
 
 > **getToken**(): `string`
 
-Defined in: [lib/session.ts:196](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L196)
+Defined in: [lib/session.ts:200](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L200)
 
 获取当前的 token 值
 
@@ -12817,7 +12817,7 @@ Defined in: [lib/session.ts:196](https://github.com/maiyunnet/kebab/blob/master/
 
 > **init**(`ctr`, `link`, `auth?`, `opt?`): `Promise`\<`boolean`\>
 
-Defined in: [lib/session.ts:66](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L66)
+Defined in: [lib/session.ts:67](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L67)
 
 初始化函数，相当于 construct
 
@@ -12859,7 +12859,7 @@ false 表示系统错误
 
 > **update**(): `Promise`\<`void`\>
 
-Defined in: [lib/session.ts:210](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L210)
+Defined in: [lib/session.ts:214](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L214)
 
 页面整体结束时，要写入到 Kv 或 数据库
 
@@ -12930,6 +12930,14 @@ Defined in: [lib/session.ts:35](https://github.com/maiyunnet/kebab/blob/master/l
 > `optional` **ssl**: `boolean`
 
 Defined in: [lib/session.ts:33](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L33)
+
+***
+
+### token?
+
+> `optional` **token**: `string`
+
+Defined in: [lib/session.ts:36](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L36)
 
 ***
 
@@ -20423,7 +20431,7 @@ Kv 或 Db 实例
 
 [`IOptions`](../../../lib/session/interfaces/IOptions.md) = `{}`
 
-name, ttl, ssl, sqlPre
+选项
 
 #### Returns
 

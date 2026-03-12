@@ -42,6 +42,14 @@ Defined in: [lib/session.ts:33](https://github.com/maiyunnet/kebab/blob/master/l
 
 ***
 
+### token?
+
+> `optional` **token**: `string`
+
+Defined in: [lib/session.ts:36](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L36)
+
+***
+
 ### ttl?
 
 > `optional` **ttl**: `number`
