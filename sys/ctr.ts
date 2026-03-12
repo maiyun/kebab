@@ -556,14 +556,17 @@ export class Ctr {
      * --- 当前页面开启 XSRF 支持（主要检测 cookie 是否存在） ---
      * --- 如果当前页面有 CDN，请不要使用 ---
      */
-    protected _enabledXsrf(): void {
+    protected _enabledXsrf(opt?: {
+        'domain'?: string;
+    }): void {
         // --- 设置 XSRF 值 ---
         if (this._cookie['XSRF-TOKEN'] === undefined) {
             const xsrf = lCore.random(16, lCore.RANDOM_LUN);
             this._xsrf = xsrf;
             lCore.setCookie(this, 'XSRF-TOKEN', xsrf, {
                 'path': '/',
-                'httponly': true
+                'httponly': true,
+                'domain': opt?.domain,
             });
             this._cookie['XSRF-TOKEN'] = xsrf;
         }
