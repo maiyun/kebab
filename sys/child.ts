@@ -135,7 +135,12 @@ async function run(): Promise<void> {
             cb(err);
         },
         'ciphers': 'ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA:ECDHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA256:DHE-RSA-AES256-SHA:ECDHE-ECDSA-DES-CBC3-SHA:ECDHE-RSA-DES-CBC3-SHA:EDH-RSA-DES-CBC3-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:DES-CBC3-SHA:!DSS',
-        'allowHTTP1': true
+        'allowHTTP1': true,
+        // --- 防止 CDN 回源时 HTTP/2 流异常导致 RST_STREAM ---
+        'maxSessionMemory': 32,
+        'settings': {
+            'maxConcurrentStreams': 128,
+        }
     }, function(req: http2.Http2ServerRequest, res: http2.Http2ServerResponse): void {
         const host = (req.headers[':authority'] ?? req.headers['host'] ?? '');
         if (!host) {
@@ -165,6 +170,8 @@ async function run(): Promise<void> {
             'UPGRADE'
         );
     }).listen(lCore.globalConfig.httpsPort);
+    // --- 增大 HTTP/2 超时，防止 CDN 预建连接被 Node.js 过早关闭 ---
+    http2Server.setTimeout(120_000);
     httpServer = http.createServer(function(req: http.IncomingMessage, res: http.ServerResponse): void {
         const host = (req.headers['host'] ?? '');
         if (!host) {
@@ -199,6 +206,9 @@ async function run(): Promise<void> {
             'UPGRADE'
         );
     }).listen(lCore.globalConfig.httpPort);
+    // --- 增大超时，防止 CDN 回源 Keep-Alive 连接被 Node.js 过早关闭导致 net_exception_peer_error ---
+    httpServer.headersTimeout = 120_000;
+    httpServer.keepAliveTimeout = 65_000;
     // --- 启动性能监控 ---
     sMonitor.start();
 }
