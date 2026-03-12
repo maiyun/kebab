@@ -137,6 +137,7 @@ export default class extends sCtr.Ctr {
             `<br><a href="${this._config.const.urlBase}test/ctr-asynctask">View "test/ctr-asynctask"</a>`,
             `<br><a href="${this._config.const.urlBase}test/ctr-timeout-long">View "test/ctr-timeout-long"</a>`,
             `<br><a href="${this._config.const.urlBase}test/ctr-timeout-short">View "test/ctr-timeout-short"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/ctr-session-token">View "test/ctr-session-token"</a>`,
             `<br><a href="${this._config.const.urlBase}test/ctr-500">View "test/ctr-500"</a>`,
 
             '<br><br><b>Middle:</b>',
@@ -689,6 +690,15 @@ Result:<pre id="result">Nothing.</pre>` + this._getEnd();
         await lCore.sleep(15_000);
         echo.push('5');
         return [1, { 'list': echo }];
+    }
+
+    public async ctrSessionToken(): Promise<kebab.Json[]> {
+        const link = lDb.get(this);
+        await this._startSession(link, false, {
+            'token': 'TEST_TOKEN_1234'
+        });
+        const currentToken = this._sess?.getToken();
+        return [1, { 'status': currentToken === 'TEST_TOKEN_1234' ? 'success' : 'failed', 'token': currentToken }];
     }
 
     public async ctr500(): Promise<void> {

@@ -672,7 +672,7 @@ export class Ctr {
      * --- 开启 Session ---
      * @param link Kv 或 Db 实例
      * @param auth 设为 true 则从头 Authorization 或 post _auth 值读取 token
-     * @param opt name, ttl, ssl, sqlPre
+     * @param opt 选项
      */
     protected _startSession(
         link: lDb.Pool | lKv.Kv,

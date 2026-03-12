@@ -33,6 +33,7 @@ export interface IOptions {
     'ssl'?: boolean;
     'domain'?: string;
     'sqlPre'?: string;
+    'token'?: string;
 }
 
 export class Session {
@@ -76,7 +77,10 @@ export class Session {
         const tim: number = lTime.stamp();
         this._ctr = ctr;
 
-        if (auth) {
+        if (opt.token) {
+            this._token = opt.token;
+        }
+        else if (auth) {
             const a = ctr.getAuthorization();
             if (a && typeof a !== 'string' && (a.user === 'token')) {
                 this._token = a.pwd;
@@ -152,7 +156,7 @@ export class Session {
                     }
                     this._token = lCore.random(16, lCore.RANDOM_LUN);
                     ++count;
-                } while (!await this._link.set(this._name + '_' + this._token, [], this._ttl, 'nx'));
+                } while (!await this._link.set(this._name + '_' + this._token, {}, this._ttl, 'nx'));
             }
             else {
                 let count = 0;
