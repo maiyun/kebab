@@ -347,6 +347,9 @@ export async function request(
                 'name': 'Possible mProxy error',
                 'message': 'hostname not found',
             };
+            if (opt.log === undefined || opt.log) {
+                lCore.log({}, `[NET][REQUEST] ${res.error.message}`, '-neterror');
+            }
             return res;
         }
         if (typeof hosts === 'string' ?
@@ -358,6 +361,9 @@ export async function request(
                 'name': 'hosts error',
                 'message': 'hosts param error',
             };
+            if (opt.log === undefined || opt.log) {
+                lCore.log({}, `[NET][REQUEST] ${res.error.message}`, '-neterror');
+            }
             return res;
         }
         reuses[reuse] ??= hc.createHttpClient();
