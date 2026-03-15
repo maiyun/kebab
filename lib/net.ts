@@ -378,6 +378,9 @@ export async function request(
     catch (err: kebab.Json) {
         const res = new lResponse.Response(null);
         res.error = err;
+        if (opt.log === undefined || opt.log) {
+            lCore.log({}, `[NET][REQUEST] ${err.message}`, '-neterror');
+        }
         return res;
     }
     // --- 处理返回值 ---
@@ -883,6 +886,8 @@ export interface IRequestOptions {
     'reuse'?: string;
     /** --- cookie 托管对象 --- */
     'cookie'?: Record<string, ICookie>;
+    /** --- 若有异常写入文件日志，默认为 true --- */
+    'log'?: boolean;
 }
 
 /** --- 正向代理请求的传入参数选项 --- */
