@@ -124,7 +124,7 @@ Defined in: [sys/mod.ts:33](https://github.com/maiyunnet/kebab/blob/master/sys/m
 
 ### map()
 
-> **map**\<`TU`\>(`allbackfn`): `TU`[]
+> **map**\<`TU`\>(`callbackfn`): `TU`[]
 
 Defined in: [sys/mod.ts:48](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L48)
 
@@ -138,7 +138,7 @@ Defined in: [sys/mod.ts:48](https://github.com/maiyunnet/kebab/blob/master/sys/m
 
 #### Parameters
 
-##### allbackfn
+##### callbackfn
 
 (`value`, `index`) => `TU`
 

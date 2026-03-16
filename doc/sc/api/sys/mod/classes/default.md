@@ -1632,7 +1632,7 @@ Defined in: [sys/mod.ts:637](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 #### Call Signature
 
-> `static` **one**\<`T`\>(`db`, `s`, `opt`): `Promise`\<`false` \| `T` & `Record`\<`string`, `any`\> \| `null`\>
+> `static` **one**\<`T`\>(`db`, `s`, `opt?`): `Promise`\<`false` \| `T` & `Record`\<`string`, `any`\> \| `null`\>
 
 Defined in: [sys/mod.ts:649](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L649)
 
@@ -1652,7 +1652,7 @@ Defined in: [sys/mod.ts:649](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 `any`
 
-###### opt
+###### opt?
 
 ###### array?
 

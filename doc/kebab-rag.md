@@ -1410,7 +1410,7 @@ index/variables/VER.md
 
 # Variable: VER
 
-> `const` **VER**: `"8.6.3"` = `'8.6.3'`
+> `const` **VER**: `"8.6.4"` = `'8.6.4'`
 
 Defined in: [index.ts:10](https://github.com/maiyunnet/kebab/blob/master/index.ts#L10)
 
@@ -22612,7 +22612,7 @@ Defined in: [sys/mod.ts:637](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 #### Call Signature
 
-> `static` **one**\<`T`\>(`db`, `s`, `opt`): `Promise`\<`false` \| `T` & `Record`\<`string`, `any`\> \| `null`\>
+> `static` **one**\<`T`\>(`db`, `s`, `opt?`): `Promise`\<`false` \| `T` & `Record`\<`string`, `any`\> \| `null`\>
 
 Defined in: [sys/mod.ts:649](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L649)
 
@@ -22632,7 +22632,7 @@ Defined in: [sys/mod.ts:649](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 `any`
 
-###### opt
+###### opt?
 
 ###### array?
 
@@ -23313,7 +23313,7 @@ Defined in: [sys/mod.ts:33](https://github.com/maiyunnet/kebab/blob/master/sys/m
 
 ### map()
 
-> **map**\<`TU`\>(`allbackfn`): `TU`[]
+> **map**\<`TU`\>(`callbackfn`): `TU`[]
 
 Defined in: [sys/mod.ts:48](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L48)
 
@@ -23327,7 +23327,7 @@ Defined in: [sys/mod.ts:48](https://github.com/maiyunnet/kebab/blob/master/sys/m
 
 #### Parameters
 
-##### allbackfn
+##### callbackfn
 
 (`value`, `index`) => `TU`
 
