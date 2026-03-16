@@ -8,7 +8,7 @@
 
 > **fetch**(`input`, `init?`): `Promise`\<`Response`\>
 
-Defined in: [lib/net.ts:131](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L131)
+Defined in: [lib/net.ts:133](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L133)
 
 发起一个完全兼容 fetch 的请求
 

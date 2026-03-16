@@ -8,7 +8,7 @@
 
 > **open**(`u`): [`Request`](../request/classes/Request.md)
 
-Defined in: [lib/net.ts:58](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L58)
+Defined in: [lib/net.ts:60](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L60)
 
 创建一个请求对象
 
