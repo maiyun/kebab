@@ -38,11 +38,13 @@ function getMproxyUrl(u: string, mproxy: {
     'url': string;
     'auth': string;
     'data'?: kebab.Json;
+    'hosts'?: Record<string, string> | string;
 }): string {
     return mproxy.url + (mproxy.url.includes('?') ? '&' : '?') + lText.queryStringify({
         'url': u,
         'auth': mproxy.auth,
         'data': mproxy.data ? lText.stringifyJson(mproxy.data) : '{}',
+        'hosts': mproxy.hosts ? lText.stringifyJson(mproxy.hosts) : 'null',
     });
 }
 
@@ -768,10 +770,13 @@ export async function mproxy(
     }
     (opt as kebab.Json).method = req.method ?? 'GET';
     opt.headers ??= {};
+    /** --- 传来的 hosts --- */
+    const hosts = lText.parseJson<any>(get['hosts']);
     const headers = Object.assign(filterHeaders(req.headers, undefined, opt.filter), opt.headers);
     // --- 发起请求 ---
     const rres = await request(get['url'], req, {
         ...opt,
+        'hosts': lText.logicalOr(hosts, opt.hosts),
         headers
     });
     const stream = rres.getRawStream();
@@ -842,7 +847,7 @@ export async function rproxy(
         // --- 发起请求 ---
         const rres = await request(route[key] + lpath, req, {
             ...opt,
-            headers
+            headers,
         });
         const stream = rres.getRawStream();
         if (!stream) {
@@ -885,6 +890,8 @@ export interface IRequestOptions {
         'url': string;
         'auth': string;
         'data'?: kebab.Json;
+        /** --- 落地端自定义 host 映射，如 {'www.maiyun.net': '127.0.0.1'}，或全部映射到一个 host --- */
+        'hosts'?: Record<string, string> | string;
     };
     /** --- 连接是否保持长连接（即是否允许复用），默认为 true --- */
     'keep'?: boolean;
@@ -927,6 +934,8 @@ export interface IRproxyOptions {
         'url': string;
         'auth': string;
         'data'?: kebab.Json;
+        /** --- 落地端自定义 host 映射，如 {'www.maiyun.net': '127.0.0.1'}，或全部映射到一个 host --- */
+        'hosts'?: Record<string, string> | string;
     };
     /** --- 默认为 default --- */
     'reuse'?: string;
