@@ -45,10 +45,10 @@ export class Rows<T extends Mod> implements IRows<T> {
     }
 
     /** --- 重塑对象内容为数组 --- */
-    public map<TU>(allbackfn: (value: T, index: number) => TU): TU[] {
+    public map<TU>(callbackfn: (value: T, index: number) => TU): TU[] {
         const items: TU[] = [];
         for (let i = 0; i < this._items.length; ++i) {
-            items.push(allbackfn(this._items[i], i));
+            items.push(callbackfn(this._items[i], i));
         }
         return items;
     }
@@ -649,7 +649,7 @@ export default class Mod {
     public static async one<T extends Mod>(
         db: lDb.Pool | lDb.Transaction,
         s: string | kebab.Json,
-        opt: {
+        opt?: {
             'ctr'?: sCtr.Ctr;
             'pre'?: string;
             'index'?: string | string[];
@@ -947,7 +947,7 @@ export default class Mod {
      * --- 刷新当前模型获取最新数据 ---
      * @param lock 是否加锁
      */
-    public async refresh(lock = false): Promise<boolean | null> {
+    public async refresh(lock: boolean = false): Promise<boolean | null> {
         const cstr = this.constructor as any;
         this._sql.select('*', (cstr._$table as string) + (this._index ? ('_' + this._index[0]) : '')).where([{
             [cstr._$primary]: this._data[cstr._$primary]
@@ -1164,7 +1164,7 @@ export default class Mod {
                 }
                 let count = 0;
                 for (const item of tr.rows) {
-                    count += item.count;
+                    count += Number(item.count);
                 }
                 this._total.push(count);
                 if (remain === 0) {
@@ -1347,7 +1347,7 @@ export default class Mod {
                 }
                 let count = 0;
                 for (const item of tr.rows) {
-                    count += item.count;
+                    count += Number(item.count);
                 }
                 this._total.push(count);
                 if (remain === 0) {
@@ -1444,7 +1444,7 @@ export default class Mod {
      * --- 获取数查询（SELECT）扫描情况，获取字符串或对象 ---
      * @param all 是否获取完全的情况，默认不获取，只返回扫描情况
      */
-    public async explain(all = false): Promise<false | string | Record<string, any>> {
+    public async explain(all: boolean = false): Promise<false | string | Record<string, any>> {
         const r = await this._db.query('EXPLAIN ' + this._sql.getSql(), this._sql.getData());
         if (r.rows === null) {
             lCore.log(this._ctr ?? {}, '[MOD][explain] ' + (lText.stringifyJson(r.error?.message ?? '').slice(1, -1) + ' - ' + this._sql.format()).replaceAll('"', '""'), '-error');
@@ -1512,7 +1512,7 @@ export default class Mod {
         }
         let count = 0;
         for (const item of r.rows) {
-            count += item.count;
+            count += Number(item.count);
         }
         return count;
     }
@@ -1533,7 +1533,7 @@ export default class Mod {
         }
         let count = 0;
         for (const item of r.rows) {
-            count += item.count;
+            count += Number(item.count);
         }
         return count;
     }
