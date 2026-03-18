@@ -202,10 +202,12 @@ export class Connection {
             else {
                 const res = await this._link.execute(sql, values);
                 rtn.rows = res[0] as any[];
-                rtn.fields = res[1].map(item => ({
-                    'name': item.orgName || item.name,
-                    'length': item.length ?? -1,
-                }));
+                if (res[1]) {
+                    rtn.fields = res[1].map(item => ({
+                        'name': item.orgName || item.name,
+                        'length': item.length ?? -1,
+                    }));
+                }
             }
             if (Date.now() - time > 200) {
                 lCore.log({}, '[WARNING][DB][Connection][query] slow sql 200ms: ' + sql, '-warning');
@@ -214,7 +216,7 @@ export class Connection {
         catch (e: any) {
             rtn.error = {
                 'message': e.message,
-                'errno': e.errno ?? Number(e.code.replace(/[a-zA-Z]/g, '')),
+                'errno': e.errno ?? (e.code ? Number(e.code.replace(/[a-zA-Z]/g, '')) : 0),
             };
             rtn.result = -500;
         }
@@ -282,7 +284,7 @@ export class Connection {
             }
         }
         catch (e: any) {
-            let errno = e.errno ?? Number(e.code.replace(/[a-zA-Z]/g, ''));
+            let errno = e.errno ?? (e.code ? Number(e.code.replace(/[a-zA-Z]/g, '')) : 0);
             if (errno === 23505) {
                 errno = 1062;
             }
