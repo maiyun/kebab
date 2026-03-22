@@ -68,12 +68,16 @@ export interface IPacket {
 export function get(ctrEtc: sCtr.Ctr | kebab.IConfigDb, opt: {
     /** --- 服务商，默认 PGSQL --- */
     'service'?: ESERVICE;
+    /** --- 是否使用只读库，默认 false --- */
+    'read'?: boolean;
 } = {}): Pool {
     if (ctrEtc instanceof sCtr.Ctr) {
         // --- 从 ctr 中读取连接信息 ---
         const config = ctrEtc.getPrototype('_config');
         const service = opt.service ? ESERVICE[opt.service] : config.db.default;
-        return new Pool(config.db[service].default, {
+        /** --- 读写分离：若 read 为 true 且存在 read 配置且 read 配置的 host 不为空，则使用 read 库 --- */
+        const dbKey = (opt.read && config.db[service].read?.host) ? 'read' : 'default';
+        return new Pool(config.db[service][dbKey], {
             'service': service === 'MYSQL' ? ESERVICE.MYSQL : ESERVICE.PGSQL,
         });
     }

@@ -4,6 +4,8 @@
  * Last: 2020-3-7 23:51:18, 2022-07-22 14:14:09, 2022-9-27 14:52:19, 2023-5-23 21:42:46, 2024-7-2 15:12:28, 2026-2-23 13:08:11
  */
 import * as http from 'http';
+import * as childProcess from 'child_process';
+import { fileURLToPath } from 'url';
 import * as lFs from '#kebab/lib/fs.js';
 import * as lText from '#kebab/lib/text.js';
 import * as lTime from '#kebab/lib/time.js';
@@ -82,6 +84,7 @@ async function run(): Promise<void> {
         config.max ??= 64;
         config.hosts ??= [];
         config.ind ??= [];
+        config.logFormat ??= 'jsonl';
         // --- config - set ---
         config.set ??= {};
         config.set.timezone ??= 8;
@@ -360,6 +363,165 @@ async function run(): Promise<void> {
         lCore.display('More', onlyInFirst);
         lCore.display('Less', onlyInSecond);
         // --- 退出进程 ---
+        process.exit();
+    }
+
+    if (cmds[0] === 'build') {
+        // --- 构建命令：使用 esbuild 打包入口 .tsx 文件为自包含 bundle ---
+        // --- 只打包「直属于指定目录」的 .tsx，子目录内的组件文件不会被打包 ---
+        // --- 推荐目录结构：stc/view/app.tsx（入口）+ stc/view/pages/home.tsx（子组件）---
+        // --- 用法：node ./source/main build [-d www/myapp/stc/view] ---
+        let targetDir = '';
+        for (let i = 1; i < cmds.length; i++) {
+            if ((cmds[i] === '-d' || cmds[i] === '--dir') && cmds[i + 1]) {
+                targetDir = cmds[i + 1];
+                i++;
+            }
+        }
+
+        /** --- 扫描目录下直属的 .tsx 文件（非递归），子目录内文件不作为打包入口 --- */
+        const entryPoints: string[] = [];
+        const scanDir = async (dir: string): Promise<void> => {
+            const items = await lFs.readDir(dir);
+            for (const item of items) {
+                if (item.name === '.' || item.name === '..') {
+                    continue;
+                }
+                if (!item.isDirectory() && item.name.endsWith('.tsx')) {
+                    entryPoints.push(`${dir}/${item.name}`);
+                }
+            }
+        };
+
+        if (targetDir) {
+            // --- 指定了目录，只扫描该目录下的直属 .tsx ---
+            const absTarget = targetDir.startsWith('/') || /^[A-Za-z]:/.test(targetDir)
+                ? targetDir
+                : kebab.ROOT_CWD + targetDir.replace(/^\//, '');
+            if (await lFs.isDir(absTarget)) {
+                await scanDir(absTarget);
+            }
+            else {
+                lCore.display('KEBAB', 'BUILD', '[DIR NOT FOUND]', absTarget);
+                process.exit();
+                return;
+            }
+        }
+        else {
+            // --- 未指定目录：扫描 www/*/stc/ 及其直接子目录下的 .tsx ---
+            // --- 即扫描 stc/*.tsx 和 stc/*/*.tsx（如 stc/view/app.tsx），不再深入 ---
+            const wwwItems = await lFs.readDir(kebab.WWW_CWD);
+            for (const wwwItem of wwwItems) {
+                if (wwwItem.name === '.' || wwwItem.name === '..' || !wwwItem.isDirectory()) {
+                    continue;
+                }
+                const stcPath = `${kebab.WWW_CWD}${wwwItem.name}/stc`;
+                if (!await lFs.isDir(stcPath)) {
+                    continue;
+                }
+                // --- 扫描 stc/ 直属文件 ---
+                await scanDir(stcPath);
+                // --- 扫描 stc/ 的直接子目录（如 view/），取其顶层 .tsx 作为入口 ---
+                const stcItems = await lFs.readDir(stcPath);
+                for (const stcItem of stcItems) {
+                    if (stcItem.name === '.' || stcItem.name === '..' || !stcItem.isDirectory()) {
+                        continue;
+                    }
+                    await scanDir(`${stcPath}/${stcItem.name}`);
+                }
+            }
+        }
+
+        if (entryPoints.length === 0) {
+            lCore.display('KEBAB', 'BUILD', 'No .tsx files found.');
+            process.exit();
+            return;
+        }
+        lCore.display('KEBAB', 'BUILD', `Found ${entryPoints.length} file(s).`);
+
+        const esbuild = await import('esbuild');
+        for (const entry of entryPoints) {
+            const outfile = entry.replace(/\.tsx$/, '.bundle.js');
+            lCore.display('KEBAB', 'BUILD', entry.replace(kebab.ROOT_CWD, ''), '→', outfile.replace(kebab.ROOT_CWD, ''));
+            try {
+                /** --- 组件文件名（不含扩展名），用于生成 stdin 入口的 import 语句 --- */
+                const basename = entry.split('/').pop()!.replace(/\.tsx$/, '');
+                /** --- 组件所在目录，esbuild 以此为基准解析相对 import --- */
+                const resolveDir = entry.substring(0, entry.lastIndexOf('/'));
+                // --- stdin 入口：含水合逻辑，_routerBase 在 props 中时自动包裹 BrowserRouter ---
+                // --- React/react-dom/react-router-dom 全部打入 bundle，浏览器只加载一个 JS ---
+                const stdinContent = [
+                    `import{hydrateRoot}from'react-dom/client';`,
+                    `import{createElement}from'react';`,
+                    `import{BrowserRouter}from'react-router-dom';`,
+                    `import App from'./${basename}.tsx';`,
+                    `const el=document.getElementById('__kebab_props__');`,
+                    `if(el){`,
+                    `const p=JSON.parse(el.textContent??'{}');`,
+                    `if(typeof p._routerBase==='string'){`,
+                    `hydrateRoot(document,createElement(BrowserRouter,{basename:p._routerBase},createElement(App,p)));`,
+                    `}else{`,
+                    `hydrateRoot(document,createElement(App,p));`,
+                    `}`,
+                    `}`,
+                ].join('');
+                await esbuild.build({
+                    'stdin': {
+                        'contents': stdinContent,
+                        'resolveDir': resolveDir,
+                        'sourcefile': basename + '.hydrate.tsx',
+                        'loader': 'tsx',
+                    },
+                    'bundle': true,
+                    // --- 无 external：React 全部打入 bundle，生成自包含文件，浏览器只加载一个 JS ---
+                    'format': 'esm',
+                    'jsx': 'automatic',
+                    'jsxImportSource': 'react',
+                    'platform': 'browser',
+                    'target': 'es2022',
+                    'minify': true,
+                    'outfile': outfile,
+                });
+                lCore.display('KEBAB', 'BUILD', 'JS', outfile.replace(kebab.ROOT_CWD, ''));
+                // --- 构建 Tailwind CSS：生成同名 .css 文件 ---
+                const cssOut = entry.replace(/\.tsx$/, '.css');
+                /** --- 临时 CSS 输入文件，@source 扫描当前目录及子目录所有 tsx 文件 ---  */
+                const tmpCss = entry + '.__tw__.css';
+                await lFs.putContent(tmpCss, `@import "tailwindcss";\n@source "./**/*.tsx";\n`);
+                try {
+                    /** --- 直接用当前 Node.js 执行 CLI 的 JS 入口，跨平台无需 shell --- */
+                    const twJs = fileURLToPath(new URL('../node_modules/@tailwindcss/cli/dist/index.mjs', import.meta.url));
+                    await new Promise<void>((resolve, reject) => {
+                        const proc = childProcess.spawn(
+                            process.execPath,
+                            [twJs, '-i', tmpCss, '-o', cssOut, '--minify'],
+                            { 'shell': false }
+                        );
+                        const errLines: string[] = [];
+                        proc.stderr.on('data', (d: Buffer) => errLines.push(d.toString()));
+                        proc.on('close', (code) => {
+                            if (code === 0) {
+                                resolve();
+                            }
+                            else {
+                                reject(new Error(errLines.join('').trim() || `tailwindcss exit ${code ?? 'null'}`));
+                            }
+                        });
+                    });
+                    lCore.display('KEBAB', 'BUILD', 'CSS', cssOut.replace(kebab.ROOT_CWD, ''));
+                }
+                catch (e: kebab.Json) {
+                    lCore.display('KEBAB', 'BUILD', 'CSS SKIP (tailwindcss not installed?)', e.message ?? '');
+                }
+                finally {
+                    await lFs.unlink(tmpCss);
+                }
+            }
+            catch (e: kebab.Json) {
+                lCore.display('KEBAB', 'BUILD', 'FAILED', entry.replace(kebab.ROOT_CWD, ''), e.message ?? '');
+            }
+        }
+        lCore.display('DONE');
         process.exit();
     }
 

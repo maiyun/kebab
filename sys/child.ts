@@ -499,11 +499,13 @@ async function upgradeHandler(
  */
 async function reload(): Promise<void> {
     // --- 清除全局 config，并重新加载全局信息 ---
+    await lCore.loadEnv(kebab.ROOT_CWD);
     const configContent = await lFs.getContent(kebab.CONF_CWD + 'config.json', 'utf8');
     if (!configContent) {
         throw `File '${kebab.CONF_CWD}config.json' not found.`;
     }
     const config = lText.parseJson<any>(configContent);
+    lCore.resolveEnvVars(config);
     for (const key in lCore.globalConfig) {
         delete lCore.globalConfig[key];
     }

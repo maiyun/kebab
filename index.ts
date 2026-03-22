@@ -157,15 +157,6 @@ export interface IConfigDb {
     'pwd': string;
 }
 
-/** --- Jwt 信息 --- */
-export interface IConfigJwt {
-    'name': string;
-    'ttl': number;
-    'ssl': boolean;
-    'secret': string;
-    'auth': boolean;
-}
-
 /** --- DNS --- */
 export interface IConfigDns {
     'sid': string;

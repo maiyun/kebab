@@ -30,6 +30,8 @@ export const globalConfig: kebab.IConfig & {
     'max': number;
     'hosts': string[];
     'ind': string[];
+    /** --- 日志格式，csv 或 jsonl，默认 jsonl --- */
+    'logFormat': 'csv' | 'jsonl';
 } = {} as kebab.Json;
 
 /** --- JSON Schema 校验器 --- */
@@ -843,31 +845,57 @@ export function log(opt: sCtr.Ctr | ILogOptions, msg: string, fend: string = '')
         if (!rtn) {
             return;
         }
-        path += h + '.csv';
-        if (!await lFs.isFile(path)) {
-            if (!await lFs.putContent(path, 'TIME,UNIX,URL,COOKIE,SESSION,USER_AGENT,REALIP,CLIENTIP,OS,PROCESS,MESSAGE\n', {
+        const format = globalConfig.logFormat ?? 'jsonl';
+        if (format === 'jsonl') {
+            // --- JSON Lines 格式 ---
+            path += h + '.jsonl';
+            const entry = lText.stringifyJson({
+                'time': lTime.format(null, 'H:i:s'),
+                'unix': lTime.stamp(),
+                'url': urlFull + wpath + (Object.keys(get).length ? '?' + lText.queryStringify(get) : ''),
+                'cookie': cookie,
+                'session': session,
+                'userAgent': headers['user-agent'] ?? '',
+                'realIp': realIp,
+                'clientIp': clientIp,
+                'osMem': lText.sizeFormat(os.totalmem() - os.freemem(), ''),
+                'procMem': lText.sizeFormat(process.memoryUsage().rss, ''),
+                'message': msg,
+            }) + '\n';
+            await lFs.putContent(path, entry, {
                 'encoding': 'utf8',
-                'mode': 0o777
-            })) {
-                return;
-            }
+                'mode': 0o777,
+                'flag': 'a'
+            });
         }
-        await lFs.putContent(path, '"' +
-            lTime.format(null, 'H:i:s') + '","' +
-            lTime.stamp().toString() + '","' +
-            urlFull + wpath + (Object.keys(get).length ? '?' + lText.queryStringify(get).replace(/"/g, '""') : '') + '","' +
-            lText.queryStringify(cookie).replace(/"/g, '""') + '","' +
-            lText.stringifyJson(session).replace(/"/g, '""') + '","' +
-            (headers['user-agent']?.replace(/"/g, '""') ?? 'No HTTP_USER_AGENT') + '","' +
-            realIp.replace(/"/g, '""') + '","' +
-            clientIp.replace(/"/g, '""') + '","' +
-            lText.sizeFormat(os.totalmem() - os.freemem(), '') + '","' +
-            lText.sizeFormat(process.memoryUsage().rss, '') + '","' +
-            JSON.stringify(msg).slice(1, -1).replace(/"/g, '""') + '"\n', {
-            'encoding': 'utf8',
-            'mode': 0o777,
-            'flag': 'a'
-        });
+        else {
+            // --- CSV 格式（默认） ---
+            path += h + '.csv';
+            if (!await lFs.isFile(path)) {
+                if (!await lFs.putContent(path, 'TIME,UNIX,URL,COOKIE,SESSION,USER_AGENT,REALIP,CLIENTIP,OS,PROCESS,MESSAGE\n', {
+                    'encoding': 'utf8',
+                    'mode': 0o777
+                })) {
+                    return;
+                }
+            }
+            await lFs.putContent(path, '"' +
+                lTime.format(null, 'H:i:s') + '","' +
+                lTime.stamp().toString() + '","' +
+                urlFull + wpath + (Object.keys(get).length ? '?' + lText.queryStringify(get).replace(/"/g, '""') : '') + '","' +
+                lText.queryStringify(cookie).replace(/"/g, '""') + '","' +
+                lText.stringifyJson(session).replace(/"/g, '""') + '","' +
+                (headers['user-agent']?.replace(/"/g, '""') ?? 'No HTTP_USER_AGENT') + '","' +
+                realIp.replace(/"/g, '""') + '","' +
+                clientIp.replace(/"/g, '""') + '","' +
+                lText.sizeFormat(os.totalmem() - os.freemem(), '') + '","' +
+                lText.sizeFormat(process.memoryUsage().rss, '') + '","' +
+                JSON.stringify(msg).slice(1, -1).replace(/"/g, '""') + '"\n', {
+                'encoding': 'utf8',
+                'mode': 0o777,
+                'flag': 'a'
+            });
+        }
     })().catch((e) => {
         display('[CORE] [log]', e);
     });
@@ -1062,5 +1090,52 @@ export function write(
     }
     else {
         res.write(data);
+    }
+}
+
+/**
+ * --- 加载 .env 文件到 process.env，若文件不存在则跳过 ---
+ * @param dir .env 文件所在目录路径（以 / 结尾）
+ */
+export async function loadEnv(dir: string): Promise<void> {
+    const content = await lFs.getContent(dir + '.env', 'utf8');
+    if (!content) {
+        return;
+    }
+    const lines = content.split('\n');
+    for (const line of lines) {
+        const trimmed = line.trim();
+        // --- 空行或注释行跳过 ---
+        if (!trimmed || trimmed.startsWith('#')) {
+            continue;
+        }
+        const eqIndex = trimmed.indexOf('=');
+        if (eqIndex === -1) {
+            continue;
+        }
+        const key = trimmed.slice(0, eqIndex).trim();
+        let val = trimmed.slice(eqIndex + 1).trim();
+        // --- 去掉首尾引号 ---
+        if ((val.startsWith('\'') && val.endsWith('\'')) || (val.startsWith('"') && val.endsWith('"'))) {
+            val = val.slice(1, -1);
+        }
+        process.env[key] = val;
+    }
+}
+
+/**
+ * --- 将配置对象中的 ${ENV_VAR} 占位符替换为 process.env 的值 ---
+ * @param obj 配置对象
+ */
+export function resolveEnvVars(obj: Record<string, any>): void {
+    for (const key in obj) {
+        if (typeof obj[key] === 'string') {
+            obj[key] = obj[key].replace(/\$\{([^}]+)\}/g, (_: string, envKey: string) => {
+                return process.env[envKey] ?? '';
+            });
+        }
+        else if (typeof obj[key] === 'object' && obj[key] !== null) {
+            resolveEnvVars(obj[key]);
+        }
     }
 }

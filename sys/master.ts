@@ -1,10 +1,11 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2019-5-2 21:03:42
- * Last: 2020-3-7 10:33:17, 2022-07-22 13:40:10, 2022-09-06 22:40:58, 2024-2-7 01:44:59, 2024-7-2 15:17:09, 2025-6-13 13:06:43, 2025-12-5 13:15:03
+ * Last: 2020-3-7 10:33:17, 2022-07-22 13:40:10, 2022-09-06 22:40:58, 2024-2-7 01:44:59, 2024-7-2 15:17:09, 2025-6-13 13:06:43, 2025-12-5 13:15:03, 2026-3-22 00:00:00
  */
 import cluster from 'cluster';
 import * as os from 'os';
+import * as fs from 'fs';
 import * as http from 'http';
 // --- 库和定义 ---
 import * as kebab from '#kebab/index.js';
@@ -41,17 +42,21 @@ async function run(): Promise<void> {
         ],
     });
     // --- 读取配置文件 ---
+    await lCore.loadEnv(kebab.ROOT_CWD);
     const configContent = await lFs.getContent(kebab.CONF_CWD + 'config.json', 'utf8');
     if (!configContent) {
         throw `File '${kebab.CONF_CWD}config.json' not found.`;
     }
     /** --- 系统 config.json --- */
     const config = lText.parseJson<any>(configContent);
+    lCore.resolveEnvVars(config);
     for (const key in config) {
         lCore.globalConfig[key] = config[key];
     }
     // --- 监听 RPC 命令 ---
     createRpcListener();
+    // --- 开发模式下启用文件监听自动重载 ---
+    startFileWatcher();
     // --- 30 秒检测一次是否有丢失的子进程 ---
     setInterval(function() {
         checkWorkerLost().catch(function(e) {
@@ -291,7 +296,9 @@ function createRpcListener(): void {
                 }
                 case 'log': {
                     // --- 获取日志信息 ---
-                    const path = kebab.LOG_CWD + msg.hostname + (msg.fend ?? '') + '/' + msg.path + '.csv';
+                    const format = lCore.globalConfig.logFormat ?? 'jsonl';
+                    const ext = format === 'jsonl' ? '.jsonl' : '.csv';
+                    const path = kebab.LOG_CWD + msg.hostname + (msg.fend ?? '') + '/' + msg.path + ext;
                     if (!await lFs.isFile(path)) {
                         res.end(lText.stringifyJson({
                             'result': 1,
@@ -508,6 +515,20 @@ async function createChildProcess(cpu: number): Promise<void> {
                     workerList[msg.pid].hbtime = Date.now();
                     break;
                 }
+                case 'ws-broadcast': {
+                    // --- 将 WebSocket 广播消息转发给所有其他子进程 ---
+                    for (const pid in workerList) {
+                        if (workerList[pid].worker === worker) {
+                            continue;
+                        }
+                        workerList[pid].worker.send({
+                            'action': 'ws-broadcast',
+                            'channel': msg.channel,
+                            'data': msg.data,
+                        });
+                    }
+                    break;
+                }
             }
         })().catch(function(e) {
             lCore.display('[createChildProcess] [message]', e);
@@ -521,6 +542,84 @@ async function createChildProcess(cpu: number): Promise<void> {
             'data': lCore.global
         });
     }
+}
+
+/**
+ * --- 开发模式下的文件监听自动重载（HMR），仅在 debug: true 时启用 ---
+ */
+function startFileWatcher(): void {
+    if (!lCore.globalConfig.debug) {
+        return;
+    }
+    /** --- 防抖定时器 --- */
+    let debounceTimer: NodeJS.Timeout | null = null;
+    /** --- 是否正在重启中 --- */
+    let restarting = false;
+
+    /**
+     * --- 监听指定目录的文件变化 ---
+     * @param dir 要监听的目录路径
+     */
+    const watchDir = (dir: string): void => {
+        try {
+            fs.watch(dir, { 'recursive': true }, (eventType, filename) => {
+                if (!filename) {
+                    return;
+                }
+                // --- 仅关注 .js 文件和 .json 配置文件的变更 ---
+                if (
+                    !filename.endsWith('.js') &&
+                    !filename.endsWith('.json')
+                ) {
+                    return;
+                }
+                // --- 忽略日志目录和临时目录 ---
+                if (filename.includes('log/') || filename.includes('ftmp/') || filename.includes('node_modules/')) {
+                    return;
+                }
+                // --- 防抖：500ms 内多次变化只触发一次 ---
+                if (debounceTimer) {
+                    clearTimeout(debounceTimer);
+                }
+                debounceTimer = setTimeout(() => {
+                    debounceTimer = null;
+                    if (restarting) {
+                        return;
+                    }
+                    restarting = true;
+                    lCore.display(`[HMR] File changed: ${filename}, reloading workers...`);
+                    (async () => {
+                        // --- 为所有子进程发送 stop 信息并重启 ---
+                        for (const pid in workerList) {
+                            workerList[pid].worker.send({
+                                'action': 'stop'
+                            });
+                            await createChildProcess(workerList[pid].cpu);
+                            delete workerList[pid];
+                        }
+                        restarting = false;
+                        lCore.display('[HMR] All workers reloaded.');
+                    })().catch((e) => {
+                        restarting = false;
+                        lCore.display('[HMR] Reload error:', e);
+                    });
+                }, 500);
+            });
+            lCore.display(`[HMR] Watching directory: ${dir}`);
+        }
+        catch {
+            lCore.display(`[HMR] Cannot watch directory: ${dir}`);
+        }
+    };
+
+    // --- 监听 www/ 目录（用户项目代码）---
+    watchDir(kebab.WWW_CWD);
+    // --- 监听 ind/ 目录（独立任务代码）---
+    watchDir(kebab.IND_CWD);
+    // --- 监听 lib/ 目录（用户自定义库）---
+    watchDir(kebab.LIB_CWD);
+    // --- 监听 mod/ 目录（用户模型）---
+    watchDir(kebab.MOD_CWD);
 }
 
 run().catch(function(e): void {

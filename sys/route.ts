@@ -928,6 +928,7 @@ export function getPost(
  * --- 获取 formdata 的 post ---
  * @param req 请求头
  * @param events 文件处理情况
+ * @param limits 文件上传限制
  */
 export function getFormData(
     req: http2.Http2ServerRequest | http.IncomingMessage,
@@ -940,6 +941,12 @@ export function getFormData(
         onfiledata?: (chunk: Buffer) => void;
         /** --- 文件上传结束时触发，仅 start 返回 true 时触发 --- */
         onfileend?: () => void;
+    } = {},
+    limits: {
+        /** --- 单个文件最大字节数 --- */
+        'maxFileSize'?: number;
+        /** --- 允许的文件扩展名（含点号），如 ['.jpg', '.png', '.pdf'] --- */
+        'allowedExts'?: string[];
     } = {}
 ): Promise<{
     'post': Record<string, kebab.Json>;
@@ -1033,6 +1040,16 @@ export function getFormData(
                             ++writeFileLength;
                             state = EState.FILE;
                             fileName = match[1];
+                            // --- 检查文件扩展名限制 ---
+                            if (limits.allowedExts?.length) {
+                                const extIo = fileName.lastIndexOf('.');
+                                const ext = extIo !== -1 ? fileName.slice(extIo).toLowerCase() : '';
+                                if (!limits.allowedExts.includes(ext)) {
+                                    // --- 扩展名不允许，跳过该文件 ---
+                                    ftmpName = '';
+                                    break;
+                                }
+                            }
                             const fr = events.onfilestart?.(name);
                             if (fr !== true) {
                                 // --- 创建文件流 ---
@@ -1082,8 +1099,20 @@ export function getFormData(
                             // --- 没找到结束标语，将预留 boundary 长度之前的写入到文件 ---
                             const writeBuffer = buffer.subarray(0, -boundary.length - 4);
                             if (ftmpName) {
-                                ftmpStream.write(writeBuffer);
-                                ftmpSize += Buffer.byteLength(writeBuffer);
+                                // --- 检查文件大小限制 ---
+                                if (
+                                    limits.maxFileSize &&
+                                    (ftmpSize + Buffer.byteLength(writeBuffer) > limits.maxFileSize)
+                                ) {
+                                    ftmpStream.destroy();
+                                    lFs.unlink(kebab.FTMP_CWD + ftmpName).catch(() => {});
+                                    ftmpName = '';
+                                    --writeFileLength;
+                                }
+                                else {
+                                    ftmpStream.write(writeBuffer);
+                                    ftmpSize += Buffer.byteLength(writeBuffer);
+                                }
                             }
                             else {
                                 // --- 跳过该文件 ---

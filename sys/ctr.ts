@@ -348,6 +348,148 @@ export class Ctr {
     }
 
     /**
+     * --- 加载 React 全页面进行 SSR 渲染，组件需渲染完整 HTML 文档（含 html/head/body），无需 EJS ---
+     * --- 框架自动注入 props：_urlBase/_urlFull/_urlStc/_staticVer/_staticPath/_staticPathFull ---
+     * --- 多语言：自动注入 _locale（当前语言名）和 _localeData（已载语言包的合并键值对） ---
+     * --- 组件内创建：const l = (key: string, ...args: string[]): string => { let i = 0; return (_localeData[key] ?? key).replace(/\?/g, () => args[i++] ?? ''); }; ---
+     * @param path 页面组件路径（相对于 stc/ 目录，不含扩展名，tsx 编译后的 .js）
+     * @param props 传入组件的 props，框架常量自动合并，整体序列化为内联 JSON 供客户端水合复用
+     * @param opt 可选配置
+     */
+    protected async _loadReactPage(
+        path: string,
+        props: Record<string, kebab.Json> = {},
+        opt: {
+            /** --- 是否注入客户端水合脚本（import map + hydrateRoot），默认 true --- */
+            'hydrate'?: boolean;
+            /** --- react/react-dom/react-router-dom 版本号，用于 esm.sh CDN，默认 19 --- */
+            'reactVer'?: string;
+            /**
+             * --- 路由模式，不传则不注入任何 Router，组件自行管理路由（如 MemoryRouter）或无路由 ---
+             * --- 'browser'：服务端用 StaticRouter，客户端用 BrowserRouter，地址栏与路由联动 ---
+             * --- 组件本身只需使用 Routes/Route/Link 等，不要包含任何 Router 包裹层 ---
+             */
+            'router'?: 'browser';
+            /**
+             * --- BrowserRouter 的 basename，相对于 urlBase，默认空字符串 ---
+             * --- 例如组件挂载在 /test/react-router-page，则填 'test/react-router-page' ---
+             */
+            'routerBase'?: string;
+            /**
+             * --- 静态资源基础路径，覆盖 config.set.staticPath，用于指定 CDN 或自定义路径 ---
+             * --- 影响 _staticPath prop 以及水合脚本中 JS 文件的 URL 前缀 ---
+             */
+            'staticPath'?: string;
+        } = {}
+    ): Promise<string> {
+        // --- 组件 JS 从 stc 目录读取，浏览器同样通过 staticPath（支持 CDN）下载 ---
+        const componentPath = this._config.const.rootPath + 'stc/' + path + '.js';
+        if (!await lFs.isFile(componentPath)) {
+            return '';
+        }
+        try {
+            const reactDomServer = await import('react-dom/server');
+            const importPath = componentPath.startsWith('/')
+                ? componentPath
+                : `file:///${componentPath.replace(/\\/g, '/')}`;
+            const mod = await import(importPath);
+            const component = mod.default;
+            const react = await import('react');
+            // --- 语言包数据：合并所有已加载包的键值，供组件使用 _localeData 实现多语言 ---
+            const localeData: Record<string, string> = {};
+            for (const pkg in this._localeData) {
+                Object.assign(localeData, this._localeData[pkg]);
+            }
+            // --- 把框架常量合并进 props，与 _loadView 行为一致 ---
+            const staticPath = opt.staticPath ?? this._config.set.staticPath;
+            const fullProps: Record<string, kebab.Json> = {
+                ...props,
+                '_urlBase': this._config.const.urlBase,
+                '_urlFull': this._config.const.urlFull,
+                '_urlStc': this._config.const.urlStc,
+                '_staticVer': this._config.set.staticVer,
+                '_staticPath': staticPath,
+                '_staticPathFull': this._config.set.staticPathFull,
+                '_locale': this._locale,
+                '_localeData': localeData,
+            };
+            if (opt.hydrate !== false) {
+                const reactVer = opt.reactVer ?? '19';
+                const esm = 'https://esm.sh/';
+                // --- 检查是否有 npx kebab build 生成的自包含预构建包 ---
+                const bundlePath = this._config.const.rootPath + 'stc/' + path + '.bundle.js';
+                const hasBundle = await lFs.isFile(bundlePath);
+                if (opt.router === 'browser') {
+                    // --- BrowserRouter 模式：_routerBase 注入 props，bundle 读取此值决定是否包裹 BrowserRouter ---
+                    const base = opt.routerBase ?? '';
+                    const routerBase = this._config.const.urlBase + base.replace(/^\//, '');
+                    fullProps['_routerBase'] = routerBase.replace(/\/$/, '');
+                }
+                if (hasBundle) {
+                    // --- bundle 模式：bundle 自包含 React + 水合逻辑，无需 import map，一个 JS 文件搞定 ---
+                    const clientUrl = `${staticPath}${path}.bundle.js?v=${this._config.set.staticVer}`;
+                    fullProps['_hydrateScript'] = `import'${clientUrl}';`;
+                }
+                else {
+                    // --- 开发模式（tsc 编译 .js）：通过 esm.sh import map 解析 bare import ---
+                    const clientUrl = `${staticPath}${path}.js?v=${this._config.set.staticVer}`;
+                    fullProps['_importMapJson'] = lText.stringifyJson({
+                        'imports': {
+                            'react': `${esm}react@${reactVer}`,
+                            'react-dom': `${esm}react-dom@${reactVer}`,
+                            'react-dom/client': `${esm}react-dom@${reactVer}/client`,
+                            'react/jsx-runtime': `${esm}react@${reactVer}/jsx-runtime`,
+                            'react-router-dom': `${esm}react-router-dom@7?external=react,react-dom`,
+                        },
+                    });
+                    if (opt.router === 'browser') {
+                        fullProps['_hydrateScript'] =
+                            `import{hydrateRoot}from'react-dom/client';` +
+                            `import{createElement}from'react';` +
+                            `import{BrowserRouter}from'react-router-dom';` +
+                            `import App from'${clientUrl}';` +
+                            `const p=JSON.parse(document.getElementById('__kebab_props__').textContent);` +
+                            `hydrateRoot(document,createElement(BrowserRouter,{basename:p._routerBase},createElement(App,p)));`;
+                    }
+                    else {
+                        fullProps['_hydrateScript'] =
+                            `import{hydrateRoot}from'react-dom/client';` +
+                            `import{createElement}from'react';` +
+                            `import App from'${clientUrl}';` +
+                            `const p=JSON.parse(document.getElementById('__kebab_props__').textContent);` +
+                            `hydrateRoot(document,createElement(App,p));`;
+                    }
+                }
+                // --- _propsJson 序列化当前 fullProps（不含 _propsJson 本身，避免循环引用）---
+                // --- 客户端水合时读取此 JSON，_propsJson 缺失，suppressHydrationWarning 处理差异 ---
+                fullProps['_propsJson'] = lText.stringifyJson(fullProps).replace(/<\/script>/gi, '<\\/script>');
+            }
+            // --- BrowserRouter 模式：服务端用 StaticRouter 渲染，与客户端的 BrowserRouter 等价 ---
+            // --- component 来自动态 import，TypeScript 无法精确推断，需要明确限定 element 类型 ---
+            let element: Parameters<typeof reactDomServer.renderToString>[0] =
+                react.createElement(component as Parameters<typeof react.createElement>[0], fullProps);
+            if (opt.router === 'browser') {
+                // --- StaticRouter 在 react-router-dom v7 中从主包直接导出，无需 /server 子路径 ---
+                const lReactRouter = await import('react-router-dom');
+                const reqUrl = this._req.url ?? '/';
+                element = react.createElement(
+                    lReactRouter.StaticRouter,
+                    {
+                        'location': reqUrl,
+                        'basename': fullProps['_routerBase'] as string,
+                    },
+                    react.createElement(component as Parameters<typeof react.createElement>[0], fullProps)
+                );
+            }
+            return '<!DOCTYPE html>' + reactDomServer.renderToString(element);
+        }
+        catch (e: kebab.Json) {
+            lCore.debug(`[CTR][_loadReactPage] ${e.message ?? ''}`);
+            return '';
+        }
+    }
+
+    /**
      * --- 设置校验错误返回值 ---
      * @param rtn 返回值数组
      * @param lastVal 规则最后一项
@@ -606,9 +748,9 @@ export class Ctr {
     private _authorization: { 'user': string; 'pwd': string; } | null = null;
 
     /**
-     * --- 通过 header 或 _auth 获取鉴权信息或 JWT 信息（不解析） ---
+     * --- 通过 header 或 _auth 获取 Basic Auth 鉴权信息 ---
      */
-    public getAuthorization(): { 'user': string; 'pwd': string; } | false | string {
+    public getAuthorization(): { 'user': string; 'pwd': string; } | false {
         if (this._authorization !== null) {
             return this._authorization;
         }
@@ -628,10 +770,6 @@ export class Ctr {
         let authArr = auth.split(' ');
         if (authArr[1] === undefined) {
             return false;
-        }
-        if (authArr[1].includes('.')) {
-            // --- 不解析，解析使用 JWT 类解析 ---
-            return authArr[1];
         }
         if (!(auth = lCrypto.base64Decode(authArr[1]))) {
             return false;
@@ -760,12 +898,38 @@ export class Ctr {
 
     /**
      * --- 开启跨域请求 ---
-     * 返回 true 接续执行，返回 false 需要中断用户本次访问（options请求）
+     * @param opt 可选 CORS 配置
+     * 返回 true 接续执行，返回 false 需要中断用户本次访问（options 请求）
      */
-    protected _cross(): boolean {
-        this._res.setHeader('access-control-allow-origin', '*');
-        this._res.setHeader('access-control-allow-headers', '*');
-        this._res.setHeader('access-control-allow-methods', '*');
+    protected _cross(opt: {
+        /** --- 允许的来源列表，留空为 '*' --- */
+        'origins'?: string[];
+        /** --- 允许的请求头 --- */
+        'headers'?: string;
+        /** --- 允许的方法 --- */
+        'methods'?: string;
+        /** --- 是否允许发送凭据（cookie），默认 false --- */
+        'credentials'?: boolean;
+    } = {}): boolean {
+        if (opt.origins?.length) {
+            const reqOrigin = this._headers['origin'] ?? '';
+            if (opt.origins.includes(reqOrigin)) {
+                this._res.setHeader('access-control-allow-origin', reqOrigin);
+                this._res.setHeader('vary', 'Origin');
+            }
+            else {
+                this._res.setHeader('access-control-allow-origin', opt.origins[0]);
+                this._res.setHeader('vary', 'Origin');
+            }
+        }
+        else {
+            this._res.setHeader('access-control-allow-origin', '*');
+        }
+        this._res.setHeader('access-control-allow-headers', opt.headers ?? '*');
+        this._res.setHeader('access-control-allow-methods', opt.methods ?? '*');
+        if (opt.credentials) {
+            this._res.setHeader('access-control-allow-credentials', 'true');
+        }
         if (this._req.method === 'OPTIONS') {
             this._res.setHeader('access-control-max-age', '3600');
             this._httpCode = 204;

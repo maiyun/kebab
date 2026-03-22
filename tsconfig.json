@@ -14,12 +14,14 @@
         "paths": {
             "#kebab/*": ["./*"]
         },
-        "moduleResolution": "node",
+        "moduleResolution": "bundler",
         "resolveJsonModule": true,
-        "esModuleInterop": true
+        "esModuleInterop": true,
+        "jsx": "react-jsx"          // --- 支持 .tsx 文件，与 tsc watch 集成，无需额外编译命令 ---
     },
     "include": [
-        "./**/*.ts"
+        "./**/*.ts",
+        "./**/*.tsx"
     ],
     "exclude": [
         "node_modules"

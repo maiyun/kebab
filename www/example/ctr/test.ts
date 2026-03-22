@@ -21,6 +21,7 @@ import * as lZip from '#kebab/lib/zip.js';
 import * as lBuffer from '#kebab/lib/buffer.js';
 import * as lLan from '#kebab/lib/lan.js';
 import * as lCron from '#kebab/lib/cron.js';
+import * as lRateLimit from '#kebab/lib/ratelimit.js';
 import * as lAi from '#kebab/lib/ai.js';
 import * as sMonitor from '#kebab/sys/monitor.js';
 import * as sCtr from '#kebab/sys/ctr.js';
@@ -114,6 +115,9 @@ export default class extends sCtr.Ctr {
 
             '<br><br><b>View:</b>',
             `<br><br><a href="${this._config.const.urlBase}test/view">View "test/view"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/react-page">View "test/react-page" (SSR)</a>`,
+            `<br><a href="${this._config.const.urlBase}test/react-router-page">View "test/react-router-page" (SSR + BrowserRouter)</a>`,
+            `<br><a href="${this._config.const.urlBase}test/react-router-page-data?path=/user">View "test/react-router-page-data?path=/user" (Data API)</a>`,
 
             '<br><br><b>Return json:</b>',
             `<br><br><a href="${this._config.const.urlBase}test/json?type=1">View "test/json?type=1"</a>`,
@@ -133,6 +137,7 @@ export default class extends sCtr.Ctr {
             `<br><a href="${this._config.const.urlBase}test/ctr-cachettl">View "test/ctr-cachettl"</a>`,
             `<br><a href="${this._config.const.urlBase}test/ctr-httpcode">View "test/ctr-httpcode"</a>`,
             `<br><a href="${this._config.const.urlBase}test/ctr-cross">View "test/ctr-cross"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/ctr-cross-fine">View "test/ctr-cross-fine"</a>`,
             `<br><a href="${this._config.const.urlBase}test/ctr-readable">View "test/ctr-readable"</a>`,
             `<br><a href="${this._config.const.urlBase}test/ctr-asynctask">View "test/ctr-asynctask"</a>`,
             `<br><a href="${this._config.const.urlBase}test/ctr-timeout-long">View "test/ctr-timeout-long"</a>`,
@@ -179,12 +184,14 @@ export default class extends sCtr.Ctr {
             `<br><a href="${this._config.const.urlBase}test/core-npm">View "test/core-npm"</a>`,
             `<br><a href="${this._config.const.urlBase}test/core-global">View "test/core-global"</a>`,
             `<br><a href="${this._config.const.urlBase}test/core-updatecode">View "test/core-updatecode"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/core-env">View "test/core-env"</a>`,
 
             '<br><br><b>Crypto:</b>',
             `<br><br><a href="${this._config.const.urlBase}test/crypto">View "test/crypto"</a>`,
 
             '<br><br><b>Db:</b>',
             `<br><br><a href="${this._config.const.urlBase}test/db">View "test/db"</a> <a href="${this._config.const.urlBase}test/db?s=pgsql">pgsql</a>`,
+            `<br><br><a href="${this._config.const.urlBase}test/db-read">View "test/db-read"</a>`,
 
             `<br><br><b>Vector:</b>`,
             `<br><br><a href="${this._config.const.urlBase}test/vector">View "test/vector"</a>`,
@@ -280,6 +287,9 @@ export default class extends sCtr.Ctr {
             `<br><br><a href="${this._config.const.urlBase}test/monitor-snapshot">View "test/monitor-snapshot"</a>`,
             `<br><a href="${this._config.const.urlBase}test/monitor-spike">View "test/monitor-spike" (non-blocking CPU spike)</a>`,
             `<br><a href="${this._config.const.urlBase}test/monitor-spike?mode=block">View "test/monitor-spike?mode=block" (event loop block)</a>`,
+
+            '<br><br><b>Rate Limit:</b>',
+            `<br><br><a href="${this._config.const.urlBase}test/ratelimit">View "test/ratelimit"</a>`,
         ];
         echo.push('<br><br>' + this._getEnd());
 
@@ -1880,6 +1890,21 @@ exec: ${JSON.stringify(exec)}<br><br>`);
         this._dbTable(stmt, echo);
 
         return echo.join('') + '<br>queries: ' + db.getQueries().toString() + '<br>' + this._getEnd();
+    }
+
+    /**
+     * --- 数据库读写分离测试 ---
+     */
+    public dbRead(): string {
+        const echo: string[] = [];
+        echo.push('<b>DB Read Separation Test</b><hr>');
+        echo.push('<pre>const db = lDb.get(this);\nconst dbRead = lDb.get(this, { \'read\': true });</pre>');
+        const config = this._config;
+        const service = config.db.default;
+        echo.push(`Service: ${service}`);
+        echo.push(`<br>Default host: ${config.db[service]?.default?.host ?? '(not configured)'}`);
+        echo.push(`<br>Read host: ${config.db[service]?.read?.host ?? '(not configured, will fallback to default)'}`);
+        return echo.join('') + '<br><br>' + this._getEnd();
     }
 
     private _dbTable(stmt: lDb.IData, echo: kebab.Json[]): void {
@@ -4346,6 +4371,130 @@ send.addEventListener('click', async () => {
         );
         echo.push('<br><br>' + this._getEnd());
         return echo.join('');
+    }
+
+    /**
+     * --- Rate Limit 限流测试 ---
+     */
+    public async ratelimit(): Promise<string> {
+        const echo: string[] = [];
+        echo.push('<b>Rate Limit Test</b><hr>');
+        const kv = lKv.get(this);
+        // --- 滑动窗口限流 ---
+        echo.push('<pre>const kv = lKv.get(this);\nconst rtn = await lRateLimit.check(kv, \'test-api\', { \'max\': 5, \'window\': 60 });</pre>');
+        const rtn = await lRateLimit.check(kv, 'test-api', { 'max': 5, 'window': 60 });
+        echo.push(`Result: ${JSON.stringify(rtn)}`);
+        // --- 固定窗口限流 ---
+        echo.push('<br><br><pre>const rtn2 = await lRateLimit.checkFixed(kv, \'test-fixed\', { \'max\': 10, \'window\': 60 });</pre>');
+        const rtn2 = await lRateLimit.checkFixed(kv, 'test-fixed', { 'max': 10, 'window': 60 });
+        echo.push(`Result: ${JSON.stringify(rtn2)}`);
+        return echo.join('') + '<br><br>' + this._getEnd();
+    }
+
+    /**
+     * --- React 全页模式测试：组件自主渲染完整 HTML 文档 + 客户端水合，无需 EJS ---
+     */
+    public async reactPage(): Promise<string> {
+        // --- Ctr 方法负责数据准备（可以查数据库、调接口等），组件不包含任何服务端专属代码 ---
+        return this._loadReactPage('view/react-page', {
+            'title': 'Kebab React Full Page',
+            'serverTime': lTime.format(this, 'Y-m-d H:i:s'),
+            'node': process.version,
+        });
+    }
+
+    /**
+     * --- 根据前端路由路径获取对应页面数据，SSR 和 API 共用此方法 ---
+     * @param routePath 前端路由路径，如 /user、/user/42
+     */
+    private _getRouteData(routePath: string): Record<string, kebab.Json> {
+        const data: Record<string, kebab.Json> = {};
+        // --- 演示用户数据（实际项目中可查数据库） ---
+        const users = [
+            { 'id': '1', 'name': 'Alice', 'email': 'alice@example.com' },
+            { 'id': '2', 'name': 'Bob', 'email': 'bob@example.com' },
+            { 'id': '42', 'name': 'Eve', 'email': 'eve@example.com' },
+        ];
+        if (routePath === '/user' || routePath === '/user/') {
+            data['users'] = users;
+        }
+        else {
+            const match = /^\/user\/(\d+)/.exec(routePath);
+            if (match) {
+                const user = users.find(u => u.id === match[1]);
+                if (user) {
+                    data['user'] = user;
+                }
+            }
+        }
+        return data;
+    }
+
+    /**
+     * --- BrowserRouter 全页面演示：地址栏联动 + 嵌套路由 + 深链接直接访问 ---
+     * --- SSR 时通过 _getRouteData 获取匹配路由的数据注入 props ---
+     */
+    public async reactRouterPage(): Promise<string> {
+        // --- 从请求 URL 中解析前端路由路径 ---
+        const reqUrl = (this._req.url ?? '/').split('?')[0];
+        const basePrefix = this._config.const.urlBase + 'test/react-router-page';
+        const routePath = reqUrl.startsWith(basePrefix)
+            ? (reqUrl.substring(basePrefix.length) || '/')
+            : '/';
+        const routeData = this._getRouteData(routePath);
+        return this._loadReactPage('view/react-router-page', {
+            'title': 'Kebab React Router',
+            'serverTime': lTime.format(this, 'Y-m-d H:i:s'),
+            'node': process.version,
+            ...routeData,
+        }, {
+            'router': 'browser',
+            'routerBase': 'test/react-router-page',
+        });
+    }
+
+    /**
+     * --- BrowserRouter SPA 导航时的数据 API，与 SSR 共用 _getRouteData ---
+     */
+    public reactRouterPageData(): kebab.Json[] {
+        const routePath = this._get['path'] ?? '/';
+        return [1, this._getRouteData(routePath)];
+    }
+
+    /**
+     * --- .env 环境变量测试 ---
+     */
+    public coreEnv(): string {
+        const echo: string[] = [];
+        echo.push('<b>Env Test</b><hr>');
+        echo.push('<pre>process.env.NODE_ENV</pre>');
+        echo.push(`Result: ${lText.htmlescape(process.env.NODE_ENV ?? '(not set)')}`);
+        echo.push('<br><br><pre>lCore.globalConfig.logFormat</pre>');
+        echo.push(`Result: ${lText.htmlescape(lCore.globalConfig.logFormat ?? 'jsonl')}`);
+        echo.push('<br><br><pre>lCore.globalConfig.debug</pre>');
+        echo.push(`Result: ${lCore.globalConfig.debug}`);
+        return echo.join('') + '<br><br>' + this._getEnd();
+    }
+
+    /**
+     * --- CORS 精细化配置测试 ---
+     */
+    public ctrCrossFine(): string {
+        const echo: string[] = [];
+        echo.push('<b>CORS Fine-grained Test</b><hr>');
+        echo.push('<pre>this._cross({ \'origins\': [\'http://localhost:3000\'], \'credentials\': true });</pre>');
+        this._cross({
+            'origins': ['http://localhost:3000', 'http://127.0.0.1:8081'],
+            'credentials': true,
+        });
+        const headers: Record<string, string> = {};
+        for (const [key, val] of Object.entries(this._res.getHeaders())) {
+            if (key.startsWith('access-control-')) {
+                headers[key] = String(val);
+            }
+        }
+        echo.push(`Response CORS Headers: <pre>${JSON.stringify(headers, null, 4)}</pre>`);
+        return echo.join('') + '<br><br>' + this._getEnd();
     }
 
     /**
