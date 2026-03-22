@@ -66,9 +66,9 @@ Defined in: [lib/session.ts:67](https://github.com/maiyunnet/kebab/blob/master/l
 
 ##### link
 
-Kv 或 Db 实例
+[`Pool`](../../db/pool/classes/Pool.md) \| [`Kv`](../../kv/classes/Kv.md)
 
-[`Pool`](../../db/pool/classes/Pool.md) | [`Kv`](../../kv/classes/Kv.md)
+Kv 或 Db 实例
 
 ##### auth?
 

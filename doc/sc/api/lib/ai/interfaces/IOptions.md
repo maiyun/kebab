@@ -14,7 +14,7 @@ Defined in: [lib/ai.ts:41](https://github.com/maiyunnet/kebab/blob/master/lib/ai
 
 ### endpoint?
 
-> `optional` **endpoint**: `string`
+> `optional` **endpoint?**: `string`
 
 Defined in: [lib/ai.ts:45](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L45)
 
@@ -22,9 +22,9 @@ Defined in: [lib/ai.ts:45](https://github.com/maiyunnet/kebab/blob/master/lib/ai
 
 ***
 
-### fetch()?
+### fetch?
 
-> `optional` **fetch**: (`input`, `init?`) => `Promise`\<`Response`\>
+> `optional` **fetch?**: (`input`, `init?`) => `Promise`\<`Response`\>
 
 Defined in: [lib/ai.ts:49](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L49)
 
@@ -34,7 +34,7 @@ Defined in: [lib/ai.ts:49](https://github.com/maiyunnet/kebab/blob/master/lib/ai
 
 ##### input
 
-`string` | `Request` | `URL`
+`string` \| `Request` \| `URL`
 
 ##### init?
 
@@ -48,7 +48,7 @@ Defined in: [lib/ai.ts:49](https://github.com/maiyunnet/kebab/blob/master/lib/ai
 
 ### secretKey?
 
-> `optional` **secretKey**: `string`
+> `optional` **secretKey?**: `string`
 
 Defined in: [lib/ai.ts:47](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L47)
 

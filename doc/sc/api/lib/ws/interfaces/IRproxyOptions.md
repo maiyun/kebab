@@ -12,9 +12,9 @@ Defined in: [lib/ws.ts:71](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 ## Properties
 
-### filter()?
+### filter?
 
-> `optional` **filter**: (`h`) => `boolean`
+> `optional` **filter?**: (`h`) => `boolean`
 
 Defined in: [lib/ws.ts:79](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L79)
 
@@ -34,7 +34,7 @@ Defined in: [lib/ws.ts:79](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 ### headers?
 
-> `optional` **headers**: [`THttpHeaders`](../../net/type-aliases/THttpHeaders.md)
+> `optional` **headers?**: [`THttpHeaders`](../../net/type-aliases/THttpHeaders.md)
 
 Defined in: [lib/ws.ts:77](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L77)
 
@@ -42,7 +42,7 @@ Defined in: [lib/ws.ts:77](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 ### hosts?
 
-> `optional` **hosts**: `string` \| `Record`\<`string`, `string`\>
+> `optional` **hosts?**: `string` \| `Record`\<`string`, `string`\>
 
 Defined in: [lib/ws.ts:75](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L75)
 
@@ -52,7 +52,7 @@ Defined in: [lib/ws.ts:75](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 ### local?
 
-> `optional` **local**: `string`
+> `optional` **local?**: `string`
 
 Defined in: [lib/ws.ts:76](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L76)
 
@@ -60,7 +60,7 @@ Defined in: [lib/ws.ts:76](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 ### masking?
 
-> `optional` **masking**: `boolean`
+> `optional` **masking?**: `boolean`
 
 Defined in: [lib/ws.ts:83](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L83)
 
@@ -70,7 +70,7 @@ Defined in: [lib/ws.ts:83](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 ### mode?
 
-> `optional` **mode**: [`EFrameReceiveMode`](../enumerations/EFrameReceiveMode.md)
+> `optional` **mode?**: [`EFrameReceiveMode`](../enumerations/EFrameReceiveMode.md)
 
 Defined in: [lib/ws.ts:81](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L81)
 
@@ -80,7 +80,7 @@ Defined in: [lib/ws.ts:81](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 ### mproxy?
 
-> `optional` **mproxy**: `object`
+> `optional` **mproxy?**: `object`
 
 Defined in: [lib/ws.ts:85](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L85)
 
@@ -98,7 +98,7 @@ Defined in: [lib/ws.ts:85](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 ### timeout?
 
-> `optional` **timeout**: `number`
+> `optional` **timeout?**: `number`
 
 Defined in: [lib/ws.ts:73](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L73)
 

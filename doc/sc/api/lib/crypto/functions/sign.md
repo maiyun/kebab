@@ -24,15 +24,15 @@ Defined in: [lib/crypto.ts:69](https://github.com/maiyunnet/kebab/blob/master/li
 
 #### privateKey
 
-私钥
+`KeyLike` \| `SignKeyObjectInput` \| `SignPrivateKeyInput` \| `SignJsonWebKeyInput`
 
-`KeyLike` | `SignKeyObjectInput` | `SignPrivateKeyInput` | `SignJsonWebKeyInput`
+私钥
 
 #### format
 
-输出格式
+`"binary"` \| `"hex"` \| `"base64"`
 
-`"binary"` | `"hex"` | `"base64"`
+输出格式
 
 #### algorithm?
 
@@ -62,9 +62,9 @@ Defined in: [lib/crypto.ts:72](https://github.com/maiyunnet/kebab/blob/master/li
 
 #### privateKey
 
-私钥
+`KeyLike` \| `SignKeyObjectInput` \| `SignPrivateKeyInput` \| `SignJsonWebKeyInput`
 
-`KeyLike` | `SignKeyObjectInput` | `SignPrivateKeyInput` | `SignJsonWebKeyInput`
+私钥
 
 #### format?
 

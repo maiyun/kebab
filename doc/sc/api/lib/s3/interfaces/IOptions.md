@@ -14,7 +14,7 @@ Defined in: [lib/s3.ts:28](https://github.com/maiyunnet/kebab/blob/master/lib/s3
 
 ### account?
 
-> `optional` **account**: `string`
+> `optional` **account?**: `string`
 
 Defined in: [lib/s3.ts:32](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L32)
 
@@ -24,7 +24,7 @@ cf r2 使用
 
 ### bucket?
 
-> `optional` **bucket**: `string`
+> `optional` **bucket?**: `string`
 
 Defined in: [lib/s3.ts:40](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L40)
 
@@ -34,7 +34,7 @@ Defined in: [lib/s3.ts:40](https://github.com/maiyunnet/kebab/blob/master/lib/s3
 
 ### region?
 
-> `optional` **region**: `string`
+> `optional` **region?**: `string`
 
 Defined in: [lib/s3.ts:38](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L38)
 
@@ -44,7 +44,7 @@ Defined in: [lib/s3.ts:38](https://github.com/maiyunnet/kebab/blob/master/lib/s3
 
 ### secretId?
 
-> `optional` **secretId**: `string`
+> `optional` **secretId?**: `string`
 
 Defined in: [lib/s3.ts:34](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L34)
 
@@ -54,7 +54,7 @@ Defined in: [lib/s3.ts:34](https://github.com/maiyunnet/kebab/blob/master/lib/s3
 
 ### secretKey?
 
-> `optional` **secretKey**: `string`
+> `optional` **secretKey?**: `string`
 
 Defined in: [lib/s3.ts:36](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L36)
 

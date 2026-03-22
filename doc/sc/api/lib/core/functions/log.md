@@ -8,7 +8,7 @@
 
 > **log**(`opt`, `msg`, `fend?`): `void`
 
-Defined in: [lib/core.ts:800](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L800)
+Defined in: [lib/core.ts:802](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L802)
 
 写入文件日志
 
@@ -16,9 +16,9 @@ Defined in: [lib/core.ts:800](https://github.com/maiyunnet/kebab/blob/master/lib
 
 ### opt
 
-选项
+[`Ctr`](../../../sys/ctr/classes/Ctr.md) \| [`ILogOptions`](../interfaces/ILogOptions.md)
 
-[`Ctr`](../../../sys/ctr/classes/Ctr.md) | [`ILogOptions`](../interfaces/ILogOptions.md)
+选项
 
 ### msg
 

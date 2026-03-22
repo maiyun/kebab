@@ -14,7 +14,7 @@ Defined in: [lib/vector.ts:18](https://github.com/maiyunnet/kebab/blob/master/li
 
 ### host?
 
-> `optional` **host**: `string`
+> `optional` **host?**: `string`
 
 Defined in: [lib/vector.ts:20](https://github.com/maiyunnet/kebab/blob/master/lib/vector.ts#L20)
 
@@ -24,7 +24,7 @@ Defined in: [lib/vector.ts:20](https://github.com/maiyunnet/kebab/blob/master/li
 
 ### name?
 
-> `optional` **name**: `string`
+> `optional` **name?**: `string`
 
 Defined in: [lib/vector.ts:24](https://github.com/maiyunnet/kebab/blob/master/lib/vector.ts#L24)
 
@@ -34,7 +34,7 @@ Defined in: [lib/vector.ts:24](https://github.com/maiyunnet/kebab/blob/master/li
 
 ### port?
 
-> `optional` **port**: `number`
+> `optional` **port?**: `number`
 
 Defined in: [lib/vector.ts:22](https://github.com/maiyunnet/kebab/blob/master/lib/vector.ts#L22)
 
@@ -44,7 +44,7 @@ Defined in: [lib/vector.ts:22](https://github.com/maiyunnet/kebab/blob/master/li
 
 ### pwd?
 
-> `optional` **pwd**: `string`
+> `optional` **pwd?**: `string`
 
 Defined in: [lib/vector.ts:28](https://github.com/maiyunnet/kebab/blob/master/lib/vector.ts#L28)
 
@@ -54,7 +54,7 @@ Defined in: [lib/vector.ts:28](https://github.com/maiyunnet/kebab/blob/master/li
 
 ### user?
 
-> `optional` **user**: `string`
+> `optional` **user?**: `string`
 
 Defined in: [lib/vector.ts:26](https://github.com/maiyunnet/kebab/blob/master/lib/vector.ts#L26)
 

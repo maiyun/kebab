@@ -8,7 +8,7 @@
 
 > **updateCode**(`sourcePath`, `path`, `hosts?`, `config?`, `strict?`): `Promise`\<`Record`\<`string`, \{ `result`: `boolean`; `return`: `string`; \}\>\>
 
-Defined in: [lib/core.ts:735](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L735)
+Defined in: [lib/core.ts:737](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L737)
 
 上传并覆盖代码文件，config.json、kebab.json、.js.map、.ts, .gitignore 不会被覆盖和新创建
 
@@ -28,9 +28,9 @@ zip 文件
 
 ### hosts?
 
-局域网多机部署，不设置默认本机部署
+`string`[] \| `"config"`
 
-`string`[] | `"config"`
+局域网多机部署，不设置默认本机部署
 
 ### config?
 

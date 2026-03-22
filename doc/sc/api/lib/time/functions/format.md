@@ -16,9 +16,9 @@ Defined in: [lib/time.ts:167](https://github.com/maiyunnet/kebab/blob/master/lib
 
 ### zone
 
-时区小时或 ctr 对象，如 8，设置 null 则以系统时区为准
+`number` \| [`Ctr`](../../../sys/ctr/classes/Ctr.md) \| `null`
 
-`number` | [`Ctr`](../../../sys/ctr/classes/Ctr.md) | `null`
+时区小时或 ctr 对象，如 8，设置 null 则以系统时区为准
 
 ### f
 
@@ -28,9 +28,9 @@ Defined in: [lib/time.ts:167](https://github.com/maiyunnet/kebab/blob/master/lib
 
 ### date?
 
-时间对象秒/毫秒级数字均可
+`number` \| `Date`
 
-`number` | `Date`
+时间对象秒/毫秒级数字均可
 
 ## Returns
 

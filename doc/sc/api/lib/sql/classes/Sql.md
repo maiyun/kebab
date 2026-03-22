@@ -82,15 +82,15 @@ ORDER BY
 
 ##### c
 
-字段字符串或数组
+`string` \| (`string` \| `string`[])[]
 
-`string` | (`string` \| `string`[])[]
+字段字符串或数组
 
 ##### d?
 
-排序规则
+`"DESC"` \| `"ASC"`
 
-`"DESC"` | `"ASC"`
+排序规则
 
 #### Returns
 
@@ -110,9 +110,9 @@ Defined in: [lib/sql.ts:740](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 ##### f?
 
-可为空，可设置新对象的 table 名变化
+`string` \| `string`[]
 
-`string` | `string`[]
+可为空，可设置新对象的 table 名变化
 
 ##### opt?
 
@@ -200,7 +200,7 @@ Defined in: [lib/sql.ts:927](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 ##### str
 
-`string` | `number` | \[`string`, `string`[]\]
+`string` \| `number` \| \[`string`, `string`[]\]
 
 ##### pre?
 
@@ -338,9 +338,9 @@ GROUP BY
 
 ##### c
 
-字段字符串或数组
+`string` \| `string`[]
 
-`string` | `string`[]
+字段字符串或数组
 
 #### Returns
 
@@ -616,15 +616,15 @@ Defined in: [lib/sql.ts:206](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 ##### c
 
-字段字符串或字段数组
+`string` \| (`string` \| `any`[])[]
 
-`string` | (`string` \| `any`[])[]
+字段字符串或字段数组
 
 ##### f
 
-表，允许多张表
+`string` \| `string`[]
 
-`string` | `string`[]
+表，允许多张表
 
 #### Returns
 
@@ -728,9 +728,9 @@ Defined in: [lib/sql.ts:172](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 ##### conflict?
 
-冲突字段，PostgreSQL 用于指定 ON CONFLICT 字段；MySQL 时忽略，因为会对所有唯一键冲突执行更新
+`string` \| `string`[]
 
-`string` | `string`[]
+冲突字段，PostgreSQL 用于指定 ON CONFLICT 字段；MySQL 时忽略，因为会对所有唯一键冲突执行更新
 
 #### Returns
 
@@ -750,15 +750,15 @@ Defined in: [lib/sql.ts:114](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 ##### cs
 
-[] 数据列或字段列
+`string`[] \| `Record`\<`string`, [`DbValue`](../../../index/type-aliases/DbValue.md)\>
 
-`string`[] | `Record`\<`string`, [`DbValue`](../../../index/type-aliases/DbValue.md)\>
+[] 数据列或字段列
 
 ##### vs?
 
-[] | [][] 数据
+[`DbValue`](../../../index/type-aliases/DbValue.md)[] \| [`DbValue`](../../../index/type-aliases/DbValue.md)[][]
 
-[`DbValue`](../../../index/type-aliases/DbValue.md)[] | [`DbValue`](../../../index/type-aliases/DbValue.md)[][]
+[] | [][] 数据
 
 #### Returns
 

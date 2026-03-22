@@ -16,9 +16,9 @@ Defined in: [lib/net.ts:133](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 ### input
 
-请求的 URL 或 Request 对象
+`string` \| `Request` \| `URL`
 
-`string` | `Request` | `URL`
+请求的 URL 或 Request 对象
 
 ### init?
 

@@ -12,7 +12,7 @@ Defined in: [lib/ssh.ts:13](https://github.com/maiyunnet/kebab/blob/master/lib/s
 
 ### mproxy?
 
-> `optional` **mproxy**: `object`
+> `optional` **mproxy?**: `object`
 
 Defined in: [lib/ssh.ts:14](https://github.com/maiyunnet/kebab/blob/master/lib/ssh.ts#L14)
 

@@ -16,7 +16,7 @@ Defined in: [lib/scan.ts:323](https://github.com/maiyunnet/kebab/blob/master/lib
 
 ### link
 
-[`Pool`](../../db/pool/classes/Pool.md) | [`Kv`](../../kv/classes/Kv.md)
+[`Pool`](../../db/pool/classes/Pool.md) \| [`Kv`](../../kv/classes/Kv.md)
 
 ### token
 
@@ -24,7 +24,7 @@ Defined in: [lib/scan.ts:323](https://github.com/maiyunnet/kebab/blob/master/lib
 
 ### data
 
-`string` | `number` | `Record`\<`string`, `any`\>
+`string` \| `number` \| `Record`\<`string`, `any`\>
 
 ### opt?
 

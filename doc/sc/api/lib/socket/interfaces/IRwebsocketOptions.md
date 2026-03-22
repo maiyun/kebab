@@ -12,7 +12,7 @@ Defined in: [lib/socket.ts:12](https://github.com/maiyunnet/kebab/blob/master/li
 
 ### cookie?
 
-> `optional` **cookie**: `Record`\<`string`, [`ICookie`](../../net/interfaces/ICookie.md)\>
+> `optional` **cookie?**: `Record`\<`string`, [`ICookie`](../../net/interfaces/ICookie.md)\>
 
 Defined in: [lib/socket.ts:19](https://github.com/maiyunnet/kebab/blob/master/lib/socket.ts#L19)
 
@@ -22,7 +22,7 @@ cookie 托管对象
 
 ### headers?
 
-> `optional` **headers**: [`THttpHeaders`](../../net/type-aliases/THttpHeaders.md)
+> `optional` **headers?**: [`THttpHeaders`](../../net/type-aliases/THttpHeaders.md)
 
 Defined in: [lib/socket.ts:17](https://github.com/maiyunnet/kebab/blob/master/lib/socket.ts#L17)
 
@@ -30,7 +30,7 @@ Defined in: [lib/socket.ts:17](https://github.com/maiyunnet/kebab/blob/master/li
 
 ### hosts?
 
-> `optional` **hosts**: `Record`\<`string`, `string`\>
+> `optional` **hosts?**: `Record`\<`string`, `string`\>
 
 Defined in: [lib/socket.ts:15](https://github.com/maiyunnet/kebab/blob/master/lib/socket.ts#L15)
 
@@ -38,7 +38,7 @@ Defined in: [lib/socket.ts:15](https://github.com/maiyunnet/kebab/blob/master/li
 
 ### local?
 
-> `optional` **local**: `string`
+> `optional` **local?**: `string`
 
 Defined in: [lib/socket.ts:16](https://github.com/maiyunnet/kebab/blob/master/lib/socket.ts#L16)
 
@@ -46,7 +46,7 @@ Defined in: [lib/socket.ts:16](https://github.com/maiyunnet/kebab/blob/master/li
 
 ### masking?
 
-> `optional` **masking**: `boolean`
+> `optional` **masking?**: `boolean`
 
 Defined in: [lib/socket.ts:23](https://github.com/maiyunnet/kebab/blob/master/lib/socket.ts#L23)
 
@@ -56,7 +56,7 @@ Defined in: [lib/socket.ts:23](https://github.com/maiyunnet/kebab/blob/master/li
 
 ### mode?
 
-> `optional` **mode**: [`EFrameReceiveMode`](../../ws/enumerations/EFrameReceiveMode.md)
+> `optional` **mode?**: [`EFrameReceiveMode`](../../ws/enumerations/EFrameReceiveMode.md)
 
 Defined in: [lib/socket.ts:21](https://github.com/maiyunnet/kebab/blob/master/lib/socket.ts#L21)
 
@@ -66,7 +66,7 @@ Defined in: [lib/socket.ts:21](https://github.com/maiyunnet/kebab/blob/master/li
 
 ### mproxy?
 
-> `optional` **mproxy**: `object`
+> `optional` **mproxy?**: `object`
 
 Defined in: [lib/socket.ts:25](https://github.com/maiyunnet/kebab/blob/master/lib/socket.ts#L25)
 
@@ -84,7 +84,7 @@ Defined in: [lib/socket.ts:25](https://github.com/maiyunnet/kebab/blob/master/li
 
 ### timeout?
 
-> `optional` **timeout**: `number`
+> `optional` **timeout?**: `number`
 
 Defined in: [lib/socket.ts:14](https://github.com/maiyunnet/kebab/blob/master/lib/socket.ts#L14)
 

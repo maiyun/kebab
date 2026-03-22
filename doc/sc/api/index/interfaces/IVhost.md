@@ -6,7 +6,7 @@
 
 # Interface: IVhost
 
-Defined in: [index.ts:231](https://github.com/maiyunnet/kebab/blob/master/index.ts#L231)
+Defined in: [index.ts:222](https://github.com/maiyunnet/kebab/blob/master/index.ts#L222)
 
 虚拟机配置对象
 
@@ -16,23 +16,23 @@ Defined in: [index.ts:231](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > `readonly` **domains**: `string`[]
 
-Defined in: [index.ts:233](https://github.com/maiyunnet/kebab/blob/master/index.ts#L233)
+Defined in: [index.ts:224](https://github.com/maiyunnet/kebab/blob/master/index.ts#L224)
 
 ***
 
 ### name?
 
-> `readonly` `optional` **name**: `string`
+> `readonly` `optional` **name?**: `string`
 
-Defined in: [index.ts:232](https://github.com/maiyunnet/kebab/blob/master/index.ts#L232)
+Defined in: [index.ts:223](https://github.com/maiyunnet/kebab/blob/master/index.ts#L223)
 
 ***
 
 ### remark?
 
-> `readonly` `optional` **remark**: `string`
+> `readonly` `optional` **remark?**: `string`
 
-Defined in: [index.ts:235](https://github.com/maiyunnet/kebab/blob/master/index.ts#L235)
+Defined in: [index.ts:226](https://github.com/maiyunnet/kebab/blob/master/index.ts#L226)
 
 ***
 
@@ -40,4 +40,4 @@ Defined in: [index.ts:235](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > `readonly` **root**: `string`
 
-Defined in: [index.ts:234](https://github.com/maiyunnet/kebab/blob/master/index.ts#L234)
+Defined in: [index.ts:225](https://github.com/maiyunnet/kebab/blob/master/index.ts#L225)

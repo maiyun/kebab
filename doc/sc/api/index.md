@@ -27,6 +27,7 @@
 - [lib/net/formdata](lib/net/formdata/index.md)
 - [lib/net/request](lib/net/request/index.md)
 - [lib/net/response](lib/net/response/index.md)
+- [lib/ratelimit](lib/ratelimit/index.md)
 - [lib/s3](lib/s3/index.md)
 - [lib/scan](lib/scan/index.md)
 - [lib/session](lib/session/index.md)

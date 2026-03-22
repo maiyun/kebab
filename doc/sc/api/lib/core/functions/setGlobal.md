@@ -8,7 +8,7 @@
 
 > **setGlobal**(`key`, `data`, `hosts?`): `Promise`\<`string`[]\>
 
-Defined in: [lib/core.ts:682](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L682)
+Defined in: [lib/core.ts:684](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L684)
 
 设置跨线程/指定的局域网主机的全局变量
 
@@ -28,9 +28,9 @@ Defined in: [lib/core.ts:682](https://github.com/maiyunnet/kebab/blob/master/lib
 
 ### hosts?
 
-局域网列表
+`string`[] \| `"config"`
 
-`string`[] | `"config"`
+局域网列表
 
 ## Returns
 

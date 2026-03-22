@@ -26,7 +26,7 @@ Defined in: [lib/db/conn.ts:59](https://github.com/maiyunnet/kebab/blob/master/l
 
 ##### link
 
-`Connection` | `Client`
+`Connection` \| `Client`
 
 #### Returns
 

@@ -18,9 +18,9 @@ AES GCM 托管加密
 
 #### original
 
-原始字符串
+`string` \| `Buffer`\<`ArrayBufferLike`\>
 
-`string` | `Buffer`\<`ArrayBufferLike`\>
+原始字符串
 
 #### key
 
@@ -50,9 +50,9 @@ AES GCM 托管加密
 
 #### original
 
-原始字符串
+`string` \| `Buffer`\<`ArrayBufferLike`\>
 
-`string` | `Buffer`\<`ArrayBufferLike`\>
+原始字符串
 
 #### key
 

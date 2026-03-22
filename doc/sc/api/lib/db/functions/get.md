@@ -16,13 +16,19 @@ Defined in: [lib/db.ts:68](https://github.com/maiyunnet/kebab/blob/master/lib/db
 
 ### ctrEtc
 
-控制器对象或数据库配置信息
+[`IConfigDb`](../../../index/interfaces/IConfigDb.md) \| [`Ctr`](../../../sys/ctr/classes/Ctr.md)
 
-[`IConfigDb`](../../../index/interfaces/IConfigDb.md) | [`Ctr`](../../../sys/ctr/classes/Ctr.md)
+控制器对象或数据库配置信息
 
 ### opt?
 
 选项
+
+#### read?
+
+`boolean`
+
+是否使用只读库，默认 false
 
 #### service?
 

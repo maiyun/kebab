@@ -40,9 +40,9 @@ Defined in: [lib/consistent.ts:34](https://github.com/maiyunnet/kebab/blob/maste
 
 ##### node
 
-node 节点名一个或多个
+`string` \| `string`[]
 
-`string` | `string`[]
+node 节点名一个或多个
 
 #### Returns
 
@@ -62,9 +62,9 @@ Defined in: [lib/consistent.ts:59](https://github.com/maiyunnet/kebab/blob/maste
 
 ##### key
 
-为给定键取 Hash，取得顺时针方向上最近的一个虚拟节点对应的实际节点
+`string` \| `number`
 
-`string` | `number`
+为给定键取 Hash，取得顺时针方向上最近的一个虚拟节点对应的实际节点
 
 #### Returns
 
@@ -98,15 +98,15 @@ Defined in: [lib/consistent.ts:74](https://github.com/maiyunnet/kebab/blob/maste
 
 ##### keys
 
-原始数据 key 集
+`string` \| `number` \| (`string` \| `number`)[]
 
-`string` | `number` | (`string` \| `number`)[]
+原始数据 key 集
 
 ##### node
 
-新增的节点一个或多个
+`string` \| `string`[]
 
-`string` | `string`[]
+新增的节点一个或多个
 
 #### Returns
 
@@ -126,9 +126,9 @@ Defined in: [lib/consistent.ts:43](https://github.com/maiyunnet/kebab/blob/maste
 
 ##### node
 
-node 节点名
+`string` \| `string`[]
 
-`string` | `string`[]
+node 节点名
 
 #### Returns
 

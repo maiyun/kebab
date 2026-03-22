@@ -20,6 +20,6 @@ Defined in: [sys/mod.ts:1809](https://github.com/maiyunnet/kebab/blob/master/sys
 
 ### where?
 
-> `optional` **where**: `any`
+> `optional` **where?**: `any`
 
 Defined in: [sys/mod.ts:1810](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L1810)

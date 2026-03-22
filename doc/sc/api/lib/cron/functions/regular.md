@@ -8,7 +8,7 @@
 
 > **regular**(`task`, `immediate?`): `Promise`\<`boolean`\>
 
-Defined in: [lib/cron.ts:26](https://github.com/maiyunnet/kebab/blob/master/lib/cron.ts#L26)
+Defined in: [lib/cron.ts:27](https://github.com/maiyunnet/kebab/blob/master/lib/cron.ts#L27)
 
 创建定时执行的计划任务
 

@@ -22,9 +22,9 @@ Defined in: [lib/net.ts:79](https://github.com/maiyunnet/kebab/blob/master/lib/n
 
 ### data
 
-要发送的数据
+`string` \| `Record`\<`string`, `any`\> \| `Buffer`\<`ArrayBufferLike`\> \| `Readable`
 
-`string` | `Record`\<`string`, `any`\> | `Buffer`\<`ArrayBufferLike`\> | `Readable`
+要发送的数据
 
 ### opt?
 

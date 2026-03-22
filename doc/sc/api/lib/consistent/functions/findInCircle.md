@@ -22,9 +22,9 @@ Defined in: [lib/consistent.ts:188](https://github.com/maiyunnet/kebab/blob/mast
 
 ### key
 
-为给定键取 Hash，取得顺时针方向上最近的一个虚拟节点对应的实际节点
+`string` \| `number`
 
-`string` | `number`
+为给定键取 Hash，取得顺时针方向上最近的一个虚拟节点对应的实际节点
 
 ### keys?
 

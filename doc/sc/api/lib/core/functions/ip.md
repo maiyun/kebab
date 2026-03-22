@@ -8,7 +8,7 @@
 
 > **ip**(`ctr`, `req?`): `string`
 
-Defined in: [lib/core.ts:355](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L355)
+Defined in: [lib/core.ts:357](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L357)
 
 获取 IP（非安全 IP）
 
@@ -16,11 +16,11 @@ Defined in: [lib/core.ts:355](https://github.com/maiyunnet/kebab/blob/master/lib
 
 ### ctr
 
-`IncomingHttpHeaders` | [`Ctr`](../../../sys/ctr/classes/Ctr.md)
+`IncomingHttpHeaders` \| [`Ctr`](../../../sys/ctr/classes/Ctr.md)
 
 ### req?
 
-`IncomingMessage` | `Http2ServerRequest`
+`IncomingMessage` \| `Http2ServerRequest`
 
 ## Returns
 

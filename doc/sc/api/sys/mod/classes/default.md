@@ -90,7 +90,7 @@ Defined in: [sys/mod.ts:92](https://github.com/maiyunnet/kebab/blob/master/sys/m
 
 ### \_ctr?
 
-> `protected` `optional` **\_ctr**: [`Ctr`](../../ctr/classes/Ctr.md) = `undefined`
+> `protected` `optional` **\_ctr?**: [`Ctr`](../../ctr/classes/Ctr.md) = `undefined`
 
 Defined in: [sys/mod.ts:107](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L107)
 
@@ -190,7 +190,7 @@ Defined in: [sys/mod.ts:74](https://github.com/maiyunnet/kebab/blob/master/sys/m
 
 ### \_$pre?
 
-> `protected` `static` `optional` **\_$pre**: `string`
+> `protected` `static` `optional` **\_$pre?**: `string`
 
 Defined in: [sys/mod.ts:80](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L80)
 
@@ -336,15 +336,15 @@ ORDER BY
 
 ##### c
 
-字段字符串或数组
+`string` \| (`string` \| `string`[])[]
 
-`string` | (`string` \| `string`[])[]
+字段字符串或数组
 
 ##### d?
 
-排序规则
+`"DESC"` \| `"ASC"`
 
-`"DESC"` | `"ASC"`
+排序规则
 
 #### Returns
 
@@ -734,9 +734,9 @@ GROUP BY
 
 ##### c
 
-字段字符串或数组
+`string` \| `string`[]
 
-`string` | `string`[]
+字段字符串或数组
 
 #### Returns
 
@@ -1194,9 +1194,9 @@ Defined in: [sys/mod.ts:1080](https://github.com/maiyunnet/kebab/blob/master/sys
 
 ##### f
 
-要联合查询的表列表、单个表、sql 对象
+`string` \| `string`[] \| [`Sql`](../../../lib/sql/classes/Sql.md) \| [`IModUnionItem`](../interfaces/IModUnionItem.md) \| [`IModUnionItem`](../interfaces/IModUnionItem.md)[]
 
-`string` | `string`[] | [`Sql`](../../../lib/sql/classes/Sql.md) | [`IModUnionItem`](../interfaces/IModUnionItem.md) | [`IModUnionItem`](../interfaces/IModUnionItem.md)[]
+要联合查询的表列表、单个表、sql 对象
 
 ##### type?
 
@@ -1222,9 +1222,9 @@ Defined in: [sys/mod.ts:1110](https://github.com/maiyunnet/kebab/blob/master/sys
 
 ##### f
 
-要联合查询的表列表、单个表、sql 对象
+`string` \| `string`[] \| [`Sql`](../../../lib/sql/classes/Sql.md) \| [`IModUnionItem`](../interfaces/IModUnionItem.md) \| [`IModUnionItem`](../interfaces/IModUnionItem.md)[]
 
-`string` | `string`[] | [`Sql`](../../../lib/sql/classes/Sql.md) | [`IModUnionItem`](../interfaces/IModUnionItem.md) | [`IModUnionItem`](../interfaces/IModUnionItem.md)[]
+要联合查询的表列表、单个表、sql 对象
 
 #### Returns
 
@@ -1272,9 +1272,9 @@ Defined in: [sys/mod.ts:920](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 ##### conflict
 
-冲突字段，不能为 _$key 或 _$primary，应该是你要判断的唯一索引字段
+`string` \| `string`[]
 
-`string` | `string`[]
+冲突字段，不能为 _$key 或 _$primary，应该是你要判断的唯一索引字段
 
 #### Returns
 
@@ -1354,15 +1354,15 @@ Defined in: [sys/mod.ts:610](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 ##### db
 
-数据库对象
+[`Transaction`](../../../lib/db/tran/classes/Transaction.md) \| [`Pool`](../../../lib/db/pool/classes/Pool.md)
 
-[`Transaction`](../../../lib/db/tran/classes/Transaction.md) | [`Pool`](../../../lib/db/pool/classes/Pool.md)
+数据库对象
 
 ##### val
 
-主键值
+`string` \| `number` \| `null`
 
-`string` | `number` | `null`
+主键值
 
 ##### opt?
 
@@ -1414,9 +1414,9 @@ Defined in: [sys/mod.ts:592](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 ##### db
 
-数据库对象
+[`Transaction`](../../../lib/db/tran/classes/Transaction.md) \| [`Pool`](../../../lib/db/pool/classes/Pool.md)
 
-[`Transaction`](../../../lib/db/tran/classes/Transaction.md) | [`Pool`](../../../lib/db/pool/classes/Pool.md)
+数据库对象
 
 ##### opt?
 
@@ -1452,21 +1452,21 @@ Defined in: [sys/mod.ts:194](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 ##### db
 
-数据库对象
+[`Transaction`](../../../lib/db/tran/classes/Transaction.md) \| [`Pool`](../../../lib/db/pool/classes/Pool.md)
 
-[`Transaction`](../../../lib/db/tran/classes/Transaction.md) | [`Pool`](../../../lib/db/pool/classes/Pool.md)
+数据库对象
 
 ##### cs
 
-字段列表
+`string`[] \| `Record`\<`string`, `any`\>
 
-`string`[] | `Record`\<`string`, `any`\>
+字段列表
 
 ##### vs?
 
-数据列表
+`any`[] \| `any`[][]
 
-`any`[] | `any`[][]
+数据列表
 
 ##### opt?
 
@@ -1506,21 +1506,21 @@ Defined in: [sys/mod.ts:254](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 ##### db
 
-数据库对象
+[`Transaction`](../../../lib/db/tran/classes/Transaction.md) \| [`Pool`](../../../lib/db/pool/classes/Pool.md)
 
-[`Transaction`](../../../lib/db/tran/classes/Transaction.md) | [`Pool`](../../../lib/db/pool/classes/Pool.md)
+数据库对象
 
 ##### cs
 
-字段列表
+`string`[] \| `Record`\<`string`, `any`\>
 
-`string`[] | `Record`\<`string`, `any`\>
+字段列表
 
 ##### vs?
 
-数据列表
+`any`[] \| `any`[][]
 
-`any`[] | `any`[][]
+数据列表
 
 ##### opt?
 
@@ -1594,7 +1594,7 @@ Defined in: [sys/mod.ts:637](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 ###### db
 
-[`Transaction`](../../../lib/db/tran/classes/Transaction.md) | [`Pool`](../../../lib/db/pool/classes/Pool.md)
+[`Transaction`](../../../lib/db/tran/classes/Transaction.md) \| [`Pool`](../../../lib/db/pool/classes/Pool.md)
 
 ###### s
 
@@ -1646,7 +1646,7 @@ Defined in: [sys/mod.ts:649](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 ###### db
 
-[`Transaction`](../../../lib/db/tran/classes/Transaction.md) | [`Pool`](../../../lib/db/pool/classes/Pool.md)
+[`Transaction`](../../../lib/db/tran/classes/Transaction.md) \| [`Pool`](../../../lib/db/pool/classes/Pool.md)
 
 ###### s
 
@@ -1696,9 +1696,9 @@ Defined in: [sys/mod.ts:724](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 ##### db
 
-数据库对象
+[`Transaction`](../../../lib/db/tran/classes/Transaction.md) \| [`Pool`](../../../lib/db/pool/classes/Pool.md)
 
-[`Transaction`](../../../lib/db/tran/classes/Transaction.md) | [`Pool`](../../../lib/db/pool/classes/Pool.md)
+数据库对象
 
 ##### s
 
@@ -1744,9 +1744,9 @@ Defined in: [sys/mod.ts:744](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 ##### db
 
-数据库对象
+[`Transaction`](../../../lib/db/tran/classes/Transaction.md) \| [`Pool`](../../../lib/db/pool/classes/Pool.md)
 
-[`Transaction`](../../../lib/db/tran/classes/Transaction.md) | [`Pool`](../../../lib/db/pool/classes/Pool.md)
+数据库对象
 
 ##### where?
 
@@ -1788,9 +1788,9 @@ Defined in: [sys/mod.ts:280](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 ##### db
 
-数据库对象
+[`Transaction`](../../../lib/db/tran/classes/Transaction.md) \| [`Pool`](../../../lib/db/pool/classes/Pool.md)
 
-[`Transaction`](../../../lib/db/tran/classes/Transaction.md) | [`Pool`](../../../lib/db/pool/classes/Pool.md)
+数据库对象
 
 ##### where
 
@@ -1840,9 +1840,9 @@ Defined in: [sys/mod.ts:324](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 ##### db
 
-数据库对象
+[`Transaction`](../../../lib/db/tran/classes/Transaction.md) \| [`Pool`](../../../lib/db/pool/classes/Pool.md)
 
-[`Transaction`](../../../lib/db/tran/classes/Transaction.md) | [`Pool`](../../../lib/db/pool/classes/Pool.md)
+数据库对象
 
 ##### where
 
@@ -1898,15 +1898,15 @@ select 自定字段
 
 ##### db
 
-数据库对象
+[`Transaction`](../../../lib/db/tran/classes/Transaction.md) \| [`Pool`](../../../lib/db/pool/classes/Pool.md)
 
-[`Transaction`](../../../lib/db/tran/classes/Transaction.md) | [`Pool`](../../../lib/db/pool/classes/Pool.md)
+数据库对象
 
 ##### c
 
-字段字符串或字段数组
+`string` \| `string`[]
 
-`string` | `string`[]
+字段字符串或字段数组
 
 ##### opt?
 
@@ -1986,9 +1986,9 @@ Defined in: [sys/mod.ts:357](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 ##### db
 
-数据库对象
+[`Transaction`](../../../lib/db/tran/classes/Transaction.md) \| [`Pool`](../../../lib/db/pool/classes/Pool.md)
 
-[`Transaction`](../../../lib/db/tran/classes/Transaction.md) | [`Pool`](../../../lib/db/pool/classes/Pool.md)
+数据库对象
 
 ##### data
 
@@ -2044,9 +2044,9 @@ Defined in: [sys/mod.ts:403](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 ##### db
 
-数据库对象
+[`Transaction`](../../../lib/db/tran/classes/Transaction.md) \| [`Pool`](../../../lib/db/pool/classes/Pool.md)
 
-[`Transaction`](../../../lib/db/tran/classes/Transaction.md) | [`Pool`](../../../lib/db/pool/classes/Pool.md)
+数据库对象
 
 ##### data
 
@@ -2102,9 +2102,9 @@ Defined in: [sys/mod.ts:437](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 ##### db
 
-数据库对象
+[`Transaction`](../../../lib/db/tran/classes/Transaction.md) \| [`Pool`](../../../lib/db/pool/classes/Pool.md)
 
-[`Transaction`](../../../lib/db/tran/classes/Transaction.md) | [`Pool`](../../../lib/db/pool/classes/Pool.md)
+数据库对象
 
 ##### data
 
@@ -2158,9 +2158,9 @@ Defined in: [sys/mod.ts:563](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 ##### db
 
-数据库对象
+[`Transaction`](../../../lib/db/tran/classes/Transaction.md) \| [`Pool`](../../../lib/db/pool/classes/Pool.md)
 
-[`Transaction`](../../../lib/db/tran/classes/Transaction.md) | [`Pool`](../../../lib/db/pool/classes/Pool.md)
+数据库对象
 
 ##### s?
 

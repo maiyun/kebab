@@ -16,7 +16,7 @@ Defined in: [lib/ai.ts:594](https://github.com/maiyunnet/kebab/blob/master/lib/a
 
 ### ctrEtc
 
-[`IConfigAi`](../../../index/interfaces/IConfigAi.md) | [`Ctr`](../../../sys/ctr/classes/Ctr.md)
+[`IConfigAi`](../../../index/interfaces/IConfigAi.md) \| [`Ctr`](../../../sys/ctr/classes/Ctr.md)
 
 ### opt
 

@@ -20,7 +20,7 @@ Defined in: [lib/net.ts:283](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 ### data?
 
-`string` | `Record`\<`string`, `any`\> | `Buffer`\<`ArrayBufferLike`\> | `Readable`
+`string` \| `Record`\<`string`, `any`\> \| `Buffer`\<`ArrayBufferLike`\> \| `Readable`
 
 ### opt?
 

@@ -22,9 +22,9 @@ Defined in: [lib/net.ts:111](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 ### data
 
-数据
+`any`[] \| `Record`\<`string`, `any`\>
 
-`any`[] | `Record`\<`string`, `any`\>
+数据
 
 ### opt?
 

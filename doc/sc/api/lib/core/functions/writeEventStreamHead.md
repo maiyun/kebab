@@ -8,13 +8,13 @@
 
 > **writeEventStreamHead**(`res`): `void`
 
-Defined in: [lib/core.ts:1042](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1042)
+Defined in: [lib/core.ts:1070](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1070)
 
 ## Parameters
 
 ### res
 
-`Http2ServerResponse`\<`Http2ServerRequest`\> | `ServerResponse`\<`IncomingMessage`\>
+`Http2ServerResponse`\<`Http2ServerRequest`\> \| `ServerResponse`\<`IncomingMessage`\>
 
 ## Returns
 

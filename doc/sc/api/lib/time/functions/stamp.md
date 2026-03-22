@@ -16,15 +16,15 @@ Defined in: [lib/time.ts:122](https://github.com/maiyunnet/kebab/blob/master/lib
 
 ### date?
 
-Date 对象可选
+`string` \| `Date`
 
-`string` | `Date`
+Date 对象可选
 
 ### zone?
 
-时区小时或 ctr 对象，如 8，设置 null 则以系统时区为准
+`number` \| [`Ctr`](../../../sys/ctr/classes/Ctr.md) \| `null`
 
-`number` | [`Ctr`](../../../sys/ctr/classes/Ctr.md) | `null`
+时区小时或 ctr 对象，如 8，设置 null 则以系统时区为准
 
 ## Returns
 

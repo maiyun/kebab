@@ -8,7 +8,7 @@
 
 > **objectSort**\<`T`\>(`o`): `T`
 
-Defined in: [lib/core.ts:417](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L417)
+Defined in: [lib/core.ts:419](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L419)
 
 将对象进行升序排列
 

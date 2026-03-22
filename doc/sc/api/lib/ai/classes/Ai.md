@@ -20,7 +20,7 @@ Defined in: [lib/ai.ts:71](https://github.com/maiyunnet/kebab/blob/master/lib/ai
 
 ##### ctrEtc
 
-[`IConfigAi`](../../../index/interfaces/IConfigAi.md) | [`Ctr`](../../../sys/ctr/classes/Ctr.md)
+[`IConfigAi`](../../../index/interfaces/IConfigAi.md) \| [`Ctr`](../../../sys/ctr/classes/Ctr.md)
 
 ##### opt
 
@@ -184,7 +184,7 @@ Defined in: [lib/ai.ts:191](https://github.com/maiyunnet/kebab/blob/master/lib/a
 
 ### poll()
 
-> **poll**(`opt`): `Promise`\<`false` \| \{ `add?`: `number`; `end?`: `number`; `error?`: `string`; `start?`: `number`; `status`: `"PENDING"` \| `"RUNNING"` \| `"SUCCEEDED"` \| `"FAILED"` \| `"CANCELED"` \| `"UNKNOWN"`; `task`: `string`; `url?`: `string`; \}\>
+> **poll**(`opt`): `Promise`\<`false` \| \{ `add?`: `number`; `end?`: `number`; `error?`: `string`; `start?`: `number`; `status`: `"FAILED"` \| `"PENDING"` \| `"RUNNING"` \| `"SUCCEEDED"` \| `"CANCELED"` \| `"UNKNOWN"`; `task`: `string`; `url?`: `string`; \}\>
 
 Defined in: [lib/ai.ts:539](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L539)
 
@@ -204,13 +204,13 @@ Defined in: [lib/ai.ts:539](https://github.com/maiyunnet/kebab/blob/master/lib/a
 
 #### Returns
 
-`Promise`\<`false` \| \{ `add?`: `number`; `end?`: `number`; `error?`: `string`; `start?`: `number`; `status`: `"PENDING"` \| `"RUNNING"` \| `"SUCCEEDED"` \| `"FAILED"` \| `"CANCELED"` \| `"UNKNOWN"`; `task`: `string`; `url?`: `string`; \}\>
+`Promise`\<`false` \| \{ `add?`: `number`; `end?`: `number`; `error?`: `string`; `start?`: `number`; `status`: `"FAILED"` \| `"PENDING"` \| `"RUNNING"` \| `"SUCCEEDED"` \| `"CANCELED"` \| `"UNKNOWN"`; `task`: `string`; `url?`: `string`; \}\>
 
 ***
 
 ### video()
 
-> **video**(`opt`): `Promise`\<`false` \| \{ `request`: `string`; `seed`: `number`; `status`: `"PENDING"` \| `"RUNNING"` \| `"SUCCEEDED"` \| `"FAILED"` \| `"CANCELED"` \| `"UNKNOWN"`; `task`: `string`; \}\>
+> **video**(`opt`): `Promise`\<`false` \| \{ `request`: `string`; `seed`: `number`; `status`: `"FAILED"` \| `"PENDING"` \| `"RUNNING"` \| `"SUCCEEDED"` \| `"CANCELED"` \| `"UNKNOWN"`; `task`: `string`; \}\>
 
 Defined in: [lib/ai.ts:371](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L371)
 
@@ -284,10 +284,10 @@ Defined in: [lib/ai.ts:371](https://github.com/maiyunnet/kebab/blob/master/lib/a
 
 ###### shot?
 
-`"multi"` \| `"single"`
+`"single"` \| `"multi"`
 
 镜头，默认单镜头 single
 
 #### Returns
 
-`Promise`\<`false` \| \{ `request`: `string`; `seed`: `number`; `status`: `"PENDING"` \| `"RUNNING"` \| `"SUCCEEDED"` \| `"FAILED"` \| `"CANCELED"` \| `"UNKNOWN"`; `task`: `string`; \}\>
+`Promise`\<`false` \| \{ `request`: `string`; `seed`: `number`; `status`: `"FAILED"` \| `"PENDING"` \| `"RUNNING"` \| `"SUCCEEDED"` \| `"CANCELED"` \| `"UNKNOWN"`; `task`: `string`; \}\>

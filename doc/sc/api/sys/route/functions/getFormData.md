@@ -6,9 +6,9 @@
 
 # Function: getFormData()
 
-> **getFormData**(`req`, `events?`): `Promise`\<`false` \| \{ `files`: `Record`\<`string`, [`IPostFile`](../../../index/interfaces/IPostFile.md) \| [`IPostFile`](../../../index/interfaces/IPostFile.md)[]\>; `post`: `Record`\<`string`, [`Json`](../../../index/type-aliases/Json.md)\>; \}\>
+> **getFormData**(`req`, `events?`, `limits?`): `Promise`\<`false` \| \{ `files`: `Record`\<`string`, [`IPostFile`](../../../index/interfaces/IPostFile.md) \| [`IPostFile`](../../../index/interfaces/IPostFile.md)[]\>; `post`: `Record`\<`string`, [`Json`](../../../index/type-aliases/Json.md)\>; \}\>
 
-Defined in: [sys/route.ts:932](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L932)
+Defined in: [sys/route.ts:933](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L933)
 
 获取 formdata 的 post
 
@@ -16,9 +16,9 @@ Defined in: [sys/route.ts:932](https://github.com/maiyunnet/kebab/blob/master/sy
 
 ### req
 
-请求头
+`IncomingMessage` \| `Http2ServerRequest`
 
-`IncomingMessage` | `Http2ServerRequest`
+请求头
 
 ### events?
 
@@ -41,6 +41,22 @@ Defined in: [sys/route.ts:932](https://github.com/maiyunnet/kebab/blob/master/sy
 (`name`) => `boolean` \| `undefined`
 
 文件开始上传时触发，返回 true 则跳过该文件的保存
+
+### limits?
+
+文件上传限制
+
+#### allowedExts?
+
+`string`[]
+
+允许的文件扩展名（含点号），如 ['.jpg', '.png', '.pdf']
+
+#### maxFileSize?
+
+`number`
+
+单个文件最大字节数
 
 ## Returns
 

@@ -20,7 +20,7 @@ Defined in: [lib/net/response.ts:23](https://github.com/maiyunnet/kebab/blob/mas
 
 ##### req
 
-`IResponse` | `null`
+`IResponse` \| `null`
 
 #### Returns
 
@@ -100,9 +100,9 @@ Defined in: [lib/net/response.ts:46](https://github.com/maiyunnet/kebab/blob/mas
 
 ##### v
 
-内容值
+`string` \| `Buffer`\<`ArrayBufferLike`\>
 
-`string` | `Buffer`\<`ArrayBufferLike`\>
+内容值
 
 #### Returns
 

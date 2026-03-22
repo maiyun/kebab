@@ -24,9 +24,9 @@ hash 或 hmac 加密
 
 #### data
 
-源数据
+`string` \| `Buffer`\<`ArrayBufferLike`\>
 
-`string` | `Buffer`\<`ArrayBufferLike`\>
+源数据
 
 #### key?
 
@@ -36,7 +36,7 @@ hash 或 hmac 加密
 
 #### format?
 
-`"hex"` | `"base64"`
+`"hex"` \| `"base64"`
 
 ### Returns
 
@@ -60,15 +60,15 @@ hash 或 hmac 加密
 
 #### data
 
-源数据
+`string` \| `Buffer`\<`ArrayBufferLike`\>
 
-`string` | `Buffer`\<`ArrayBufferLike`\>
+源数据
 
 #### key
 
-设置则采用 hmac 加密
+`CipherKey` \| `undefined`
 
-`CipherKey` | `undefined`
+设置则采用 hmac 加密
 
 #### format
 

@@ -16,9 +16,9 @@ Defined in: [sys/route.ts:825](https://github.com/maiyunnet/kebab/blob/master/sy
 
 ### cctr
 
-Ctr 对象 或 files
+[`Ctr`](../../ctr/classes/Ctr.md) \| `Record`\<`string`, [`IPostFile`](../../../index/interfaces/IPostFile.md) \| [`IPostFile`](../../../index/interfaces/IPostFile.md)[]\>
 
-[`Ctr`](../../ctr/classes/Ctr.md) | `Record`\<`string`, [`IPostFile`](../../../index/interfaces/IPostFile.md) \| [`IPostFile`](../../../index/interfaces/IPostFile.md)[]\>
+Ctr 对象 或 files
 
 ## Returns
 

@@ -16,9 +16,9 @@ base64 编码
 
 ### data
 
-字符串或 Buffer
+`string` \| `Buffer`\<`ArrayBufferLike`\>
 
-`string` | `Buffer`\<`ArrayBufferLike`\>
+字符串或 Buffer
 
 ## Returns
 

@@ -12,7 +12,7 @@ Defined in: [lib/session.ts:30](https://github.com/maiyunnet/kebab/blob/master/l
 
 ### domain?
 
-> `optional` **domain**: `string`
+> `optional` **domain?**: `string`
 
 Defined in: [lib/session.ts:34](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L34)
 
@@ -20,7 +20,7 @@ Defined in: [lib/session.ts:34](https://github.com/maiyunnet/kebab/blob/master/l
 
 ### name?
 
-> `optional` **name**: `string`
+> `optional` **name?**: `string`
 
 Defined in: [lib/session.ts:31](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L31)
 
@@ -28,7 +28,7 @@ Defined in: [lib/session.ts:31](https://github.com/maiyunnet/kebab/blob/master/l
 
 ### sqlPre?
 
-> `optional` **sqlPre**: `string`
+> `optional` **sqlPre?**: `string`
 
 Defined in: [lib/session.ts:35](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L35)
 
@@ -36,7 +36,7 @@ Defined in: [lib/session.ts:35](https://github.com/maiyunnet/kebab/blob/master/l
 
 ### ssl?
 
-> `optional` **ssl**: `boolean`
+> `optional` **ssl?**: `boolean`
 
 Defined in: [lib/session.ts:33](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L33)
 
@@ -44,7 +44,7 @@ Defined in: [lib/session.ts:33](https://github.com/maiyunnet/kebab/blob/master/l
 
 ### token?
 
-> `optional` **token**: `string`
+> `optional` **token?**: `string`
 
 Defined in: [lib/session.ts:36](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L36)
 
@@ -52,6 +52,6 @@ Defined in: [lib/session.ts:36](https://github.com/maiyunnet/kebab/blob/master/l
 
 ### ttl?
 
-> `optional` **ttl**: `number`
+> `optional` **ttl?**: `number`
 
 Defined in: [lib/session.ts:32](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L32)

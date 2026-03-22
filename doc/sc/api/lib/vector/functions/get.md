@@ -16,9 +16,9 @@ Defined in: [lib/vector.ts:165](https://github.com/maiyunnet/kebab/blob/master/l
 
 ### ctrEtc
 
-控制器或配置信息
+[`IConfigVector`](../../../index/interfaces/IConfigVector.md) \| [`Ctr`](../../../sys/ctr/classes/Ctr.md)
 
-[`IConfigVector`](../../../index/interfaces/IConfigVector.md) | [`Ctr`](../../../sys/ctr/classes/Ctr.md)
+控制器或配置信息
 
 ## Returns
 

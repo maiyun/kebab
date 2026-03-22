@@ -16,9 +16,9 @@ Defined in: [lib/scan.ts:265](https://github.com/maiyunnet/kebab/blob/master/lib
 
 ### link
 
-Db 或 Kv
+[`Pool`](../../db/pool/classes/Pool.md) \| [`Kv`](../../kv/classes/Kv.md)
 
-[`Pool`](../../db/pool/classes/Pool.md) | [`Kv`](../../kv/classes/Kv.md)
+Db 或 Kv
 
 ### token
 

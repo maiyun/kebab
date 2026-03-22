@@ -12,9 +12,9 @@ Defined in: [lib/ws.ts:55](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 ## Properties
 
-### filter()?
+### filter?
 
-> `optional` **filter**: (`h`) => `boolean`
+> `optional` **filter?**: (`h`) => `boolean`
 
 Defined in: [lib/ws.ts:63](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L63)
 
@@ -34,7 +34,7 @@ Defined in: [lib/ws.ts:63](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 ### headers?
 
-> `optional` **headers**: [`THttpHeaders`](../../net/type-aliases/THttpHeaders.md)
+> `optional` **headers?**: [`THttpHeaders`](../../net/type-aliases/THttpHeaders.md)
 
 Defined in: [lib/ws.ts:61](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L61)
 
@@ -42,7 +42,7 @@ Defined in: [lib/ws.ts:61](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 ### hosts?
 
-> `optional` **hosts**: `string` \| `Record`\<`string`, `string`\>
+> `optional` **hosts?**: `string` \| `Record`\<`string`, `string`\>
 
 Defined in: [lib/ws.ts:59](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L59)
 
@@ -52,7 +52,7 @@ Defined in: [lib/ws.ts:59](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 ### local?
 
-> `optional` **local**: `string`
+> `optional` **local?**: `string`
 
 Defined in: [lib/ws.ts:60](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L60)
 
@@ -60,7 +60,7 @@ Defined in: [lib/ws.ts:60](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 ### masking?
 
-> `optional` **masking**: `boolean`
+> `optional` **masking?**: `boolean`
 
 Defined in: [lib/ws.ts:67](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L67)
 
@@ -70,7 +70,7 @@ Defined in: [lib/ws.ts:67](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 ### mode?
 
-> `optional` **mode**: [`EFrameReceiveMode`](../enumerations/EFrameReceiveMode.md)
+> `optional` **mode?**: [`EFrameReceiveMode`](../enumerations/EFrameReceiveMode.md)
 
 Defined in: [lib/ws.ts:65](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L65)
 
@@ -80,7 +80,7 @@ Defined in: [lib/ws.ts:65](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 ### timeout?
 
-> `optional` **timeout**: `number`
+> `optional` **timeout?**: `number`
 
 Defined in: [lib/ws.ts:57](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L57)
 

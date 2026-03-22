@@ -22,7 +22,7 @@ Defined in: [lib/db/tran.ts:28](https://github.com/maiyunnet/kebab/blob/master/l
 
 ##### ctr
 
-[`Ctr`](../../../../sys/ctr/classes/Ctr.md) | `null`
+[`Ctr`](../../../../sys/ctr/classes/Ctr.md) \| `null`
 
 ##### conn
 

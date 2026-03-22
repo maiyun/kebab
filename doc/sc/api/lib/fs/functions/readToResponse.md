@@ -22,21 +22,21 @@ Defined in: [lib/fs.ts:479](https://github.com/maiyunnet/kebab/blob/master/lib/f
 
 ### req
 
-http 请求对象
+`IncomingMessage` \| `Http2ServerRequest`
 
-`IncomingMessage` | `Http2ServerRequest`
+http 请求对象
 
 ### res
 
-http 响应对象
+`Http2ServerResponse`\<`Http2ServerRequest`\> \| `ServerResponse`\<`IncomingMessage`\>
 
-`Http2ServerResponse`\<`Http2ServerRequest`\> | `ServerResponse`\<`IncomingMessage`\>
+http 响应对象
 
 ### stat?
 
-文件的 stat（如果有）
+`Stats` \| `null`
 
-`Stats` | `null`
+文件的 stat（如果有）
 
 ## Returns
 

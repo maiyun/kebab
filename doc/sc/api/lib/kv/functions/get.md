@@ -16,9 +16,9 @@ Defined in: [lib/kv.ts:956](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 ### ctrEtc
 
-控制器或配置信息
+[`IConfigKv`](../../../index/interfaces/IConfigKv.md) \| [`Ctr`](../../../sys/ctr/classes/Ctr.md)
 
-[`IConfigKv`](../../../index/interfaces/IConfigKv.md) | [`Ctr`](../../../sys/ctr/classes/Ctr.md)
+控制器或配置信息
 
 ### oetc?
 

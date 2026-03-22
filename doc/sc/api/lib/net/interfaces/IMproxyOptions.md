@@ -12,9 +12,9 @@ Defined in: [lib/net.ts:907](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 ## Properties
 
-### filter()?
+### filter?
 
-> `optional` **filter**: (`h`) => `boolean`
+> `optional` **filter?**: (`h`) => `boolean`
 
 Defined in: [lib/net.ts:916](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L916)
 
@@ -34,7 +34,7 @@ Defined in: [lib/net.ts:916](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 ### follow?
 
-> `optional` **follow**: `number`
+> `optional` **follow?**: `number`
 
 Defined in: [lib/net.ts:910](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L910)
 
@@ -42,7 +42,7 @@ Defined in: [lib/net.ts:910](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 ### headers?
 
-> `optional` **headers**: [`THttpHeaders`](../type-aliases/THttpHeaders.md)
+> `optional` **headers?**: [`THttpHeaders`](../type-aliases/THttpHeaders.md)
 
 Defined in: [lib/net.ts:914](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L914)
 
@@ -50,7 +50,7 @@ Defined in: [lib/net.ts:914](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 ### hosts?
 
-> `optional` **hosts**: `string` \| `Record`\<`string`, `string`\>
+> `optional` **hosts?**: `string` \| `Record`\<`string`, `string`\>
 
 Defined in: [lib/net.ts:912](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L912)
 
@@ -60,7 +60,7 @@ Defined in: [lib/net.ts:912](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 ### local?
 
-> `optional` **local**: `string`
+> `optional` **local?**: `string`
 
 Defined in: [lib/net.ts:913](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L913)
 
@@ -68,7 +68,7 @@ Defined in: [lib/net.ts:913](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 ### reuse?
 
-> `optional` **reuse**: `string`
+> `optional` **reuse?**: `string`
 
 Defined in: [lib/net.ts:918](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L918)
 
@@ -78,7 +78,7 @@ Defined in: [lib/net.ts:918](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 ### timeout?
 
-> `optional` **timeout**: `number`
+> `optional` **timeout?**: `number`
 
 Defined in: [lib/net.ts:909](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L909)
 

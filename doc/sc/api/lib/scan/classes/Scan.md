@@ -20,7 +20,7 @@ Defined in: [lib/scan.ts:58](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 ##### link
 
-[`Pool`](../../db/pool/classes/Pool.md) | [`Kv`](../../kv/classes/Kv.md)
+[`Pool`](../../db/pool/classes/Pool.md) \| [`Kv`](../../kv/classes/Kv.md)
 
 ##### token?
 

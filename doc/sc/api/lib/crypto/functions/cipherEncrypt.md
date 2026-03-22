@@ -16,9 +16,9 @@ cipher 加密，强烈不建议使用 AES_256_ECB
 
 ### original
 
-原始字符串
+`string` \| `Buffer`\<`ArrayBufferLike`\>
 
-`string` | `Buffer`\<`ArrayBufferLike`\>
+原始字符串
 
 ### key
 
@@ -40,9 +40,9 @@ cipher 加密，强烈不建议使用 AES_256_ECB
 
 ### output?
 
-输出类型
+`"buffer"` \| `"base64"`
 
-`"buffer"` | `"base64"`
+输出类型
 
 ## Returns
 

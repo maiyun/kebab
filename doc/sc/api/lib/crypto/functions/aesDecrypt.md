@@ -18,9 +18,9 @@ AES 解密
 
 #### encrypt
 
-需解密的字符串
+`string` \| `Buffer`\<`ArrayBufferLike`\>
 
-`string` | `Buffer`\<`ArrayBufferLike`\>
+需解密的字符串
 
 #### key
 
@@ -60,9 +60,9 @@ AES 解密
 
 #### encrypt
 
-需解密的字符串
+`string` \| `Buffer`\<`ArrayBufferLike`\>
 
-`string` | `Buffer`\<`ArrayBufferLike`\>
+需解密的字符串
 
 #### key
 

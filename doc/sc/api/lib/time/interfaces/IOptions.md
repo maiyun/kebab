@@ -12,7 +12,7 @@ Defined in: [lib/time.ts:8](https://github.com/maiyunnet/kebab/blob/master/lib/t
 
 ### data?
 
-> `optional` **data**: `string` \| `number`
+> `optional` **data?**: `string` \| `number`
 
 Defined in: [lib/time.ts:12](https://github.com/maiyunnet/kebab/blob/master/lib/time.ts#L12)
 
@@ -22,7 +22,7 @@ Defined in: [lib/time.ts:12](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 ### zone?
 
-> `optional` **zone**: `number`
+> `optional` **zone?**: `number`
 
 Defined in: [lib/time.ts:10](https://github.com/maiyunnet/kebab/blob/master/lib/time.ts#L10)
 

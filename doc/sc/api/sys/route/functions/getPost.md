@@ -16,9 +16,9 @@ Defined in: [sys/route.ts:866](https://github.com/maiyunnet/kebab/blob/master/sy
 
 ### req
 
-请求对象
+`IncomingMessage` \| `Http2ServerRequest`
 
-`IncomingMessage` | `Http2ServerRequest`
+请求对象
 
 ## Returns
 

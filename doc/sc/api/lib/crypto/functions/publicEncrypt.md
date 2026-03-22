@@ -16,15 +16,15 @@ Defined in: [lib/crypto.ts:103](https://github.com/maiyunnet/kebab/blob/master/l
 
 ### key
 
-公钥
+`KeyLike` \| `RsaPublicKey` \| `RsaPrivateKey`
 
-`KeyLike` | `RsaPublicKey` | `RsaPrivateKey`
+公钥
 
 ### buffer
 
-数据
+`string` \| `ArrayBufferView`\<`ArrayBufferLike`\>
 
-`string` | `ArrayBufferView`\<`ArrayBufferLike`\>
+数据
 
 ## Returns
 

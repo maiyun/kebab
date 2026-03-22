@@ -73,9 +73,9 @@ Defined in: [lib/ssh/sftp.ts:333](https://github.com/maiyunnet/kebab/blob/master
 
 ##### mode
 
-权限
+`string` \| `number`
 
-`string` | `number`
+权限
 
 #### Returns
 
@@ -141,9 +141,9 @@ Defined in: [lib/ssh/sftp.ts:418](https://github.com/maiyunnet/kebab/blob/master
 
 ##### options?
 
-编码或配置
+`BufferEncoding` \| `WriteStreamOptions`
 
-`BufferEncoding` | `WriteStreamOptions`
+编码或配置
 
 #### Returns
 
@@ -237,7 +237,7 @@ Defined in: [lib/ssh/sftp.ts:29](https://github.com/maiyunnet/kebab/blob/master/
 
 ###### options
 
-`BufferEncoding` | \{ `encoding`: `BufferEncoding`; `end?`: `number`; `start?`: `number`; \}
+`BufferEncoding` \| \{ `encoding`: `BufferEncoding`; `end?`: `number`; `start?`: `number`; \}
 
 ##### Returns
 
@@ -377,9 +377,9 @@ Defined in: [lib/ssh/sftp.ts:109](https://github.com/maiyunnet/kebab/blob/master
 
 ##### data
 
-要写入的内容
+`string` \| `Buffer`\<`ArrayBufferLike`\>
 
-`string` | `Buffer`\<`ArrayBufferLike`\>
+要写入的内容
 
 ##### options?
 

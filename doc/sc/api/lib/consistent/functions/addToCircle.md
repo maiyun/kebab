@@ -22,9 +22,9 @@ Defined in: [lib/consistent.ts:167](https://github.com/maiyunnet/kebab/blob/mast
 
 ### node
 
-node 节点名一个或多个
+`string` \| `string`[]
 
-`string` | `string`[]
+node 节点名一个或多个
 
 ### vcount?
 

@@ -14,7 +14,7 @@ Defined in: [lib/dns.ts:27](https://github.com/maiyunnet/kebab/blob/master/lib/d
 
 ### secretId?
 
-> `optional` **secretId**: `string`
+> `optional` **secretId?**: `string`
 
 Defined in: [lib/dns.ts:31](https://github.com/maiyunnet/kebab/blob/master/lib/dns.ts#L31)
 
@@ -24,7 +24,7 @@ Defined in: [lib/dns.ts:31](https://github.com/maiyunnet/kebab/blob/master/lib/d
 
 ### secretKey?
 
-> `optional` **secretKey**: `string`
+> `optional` **secretKey?**: `string`
 
 Defined in: [lib/dns.ts:33](https://github.com/maiyunnet/kebab/blob/master/lib/dns.ts#L33)
 

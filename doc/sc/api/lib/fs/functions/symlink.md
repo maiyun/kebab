@@ -28,9 +28,9 @@ Defined in: [lib/fs.ts:132](https://github.com/maiyunnet/kebab/blob/master/lib/f
 
 ### type?
 
-仅 Windows，类型，默认 file
+`"file"` \| `"dir"` \| `"junction"`
 
-`"file"` | `"dir"` | `"junction"`
+仅 Windows，类型，默认 file
 
 ## Returns
 

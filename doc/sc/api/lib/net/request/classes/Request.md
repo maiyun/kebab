@@ -40,9 +40,9 @@ Defined in: [lib/net/request.ts:29](https://github.com/maiyunnet/kebab/blob/mast
 
 ##### data
 
-数据
+`string` \| `Record`\<`string`, `any`\> \| `Buffer`\<`ArrayBufferLike`\> \| `Readable`
 
-`string` | `Record`\<`string`, `any`\> | `Buffer`\<`ArrayBufferLike`\> | `Readable`
+数据
 
 #### Returns
 
@@ -116,7 +116,7 @@ Defined in: [lib/net/request.ts:95](https://github.com/maiyunnet/kebab/blob/mast
 
 ##### hosts
 
-`string` | `Record`\<`string`, `string`\>
+`string` \| `Record`\<`string`, `string`\>
 
 #### Returns
 
@@ -170,7 +170,7 @@ Defined in: [lib/net/request.ts:38](https://github.com/maiyunnet/kebab/blob/mast
 
 ##### method
 
-`"GET"` | `"POST"`
+`"GET"` \| `"POST"`
 
 #### Returns
 
@@ -290,7 +290,7 @@ Defined in: [lib/net/request.ts:61](https://github.com/maiyunnet/kebab/blob/mast
 
 ##### type
 
-`"form"` | `"json"`
+`"form"` \| `"json"`
 
 #### Returns
 

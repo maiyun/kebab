@@ -8,7 +8,7 @@
 
 > **convert62**(`n`): `string`
 
-Defined in: [lib/core.ts:151](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L151)
+Defined in: [lib/core.ts:153](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L153)
 
 将 10 进制转换为 62 进制
 
@@ -16,9 +16,9 @@ Defined in: [lib/core.ts:151](https://github.com/maiyunnet/kebab/blob/master/lib
 
 ### n
 
-10 进制数字最大 9223372036854775807n
+`string` \| `number` \| `bigint`
 
-`string` | `number` | `bigint`
+10 进制数字最大 9223372036854775807n
 
 ## Returns
 

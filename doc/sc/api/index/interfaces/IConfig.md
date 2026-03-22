@@ -12,7 +12,7 @@ Defined in: [index.ts:52](https://github.com/maiyunnet/kebab/blob/master/index.t
 
 ## Indexable
 
-\[`key`: `string`\]: `Record`\<`string`, `any`\>
+> \[`key`: `string`\]: `Record`\<`string`, `any`\>
 
 ## Properties
 

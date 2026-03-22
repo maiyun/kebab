@@ -34,6 +34,12 @@ Defined in: [lib/core.ts:24](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **ind**: `string`[]
 
+### logFormat
+
+> **logFormat**: `"csv"` \| `"jsonl"`
+
+日志格式，csv 或 jsonl，默认 jsonl
+
 ### max
 
 > **max**: `number`

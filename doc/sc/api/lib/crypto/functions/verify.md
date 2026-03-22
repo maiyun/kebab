@@ -22,9 +22,9 @@ Defined in: [lib/crypto.ts:90](https://github.com/maiyunnet/kebab/blob/master/li
 
 ### object
 
-证书
+`KeyLike` \| `VerifyKeyObjectInput` \| `VerifyPublicKeyInput` \| `VerifyJsonWebKeyInput`
 
-`KeyLike` | `VerifyKeyObjectInput` | `VerifyPublicKeyInput` | `VerifyJsonWebKeyInput`
+证书
 
 ### signature
 

@@ -16,9 +16,9 @@ cipher 解密
 
 ### encrypt
 
-需解密的字符串
+`string` \| `Buffer`\<`ArrayBufferLike`\>
 
-`string` | `Buffer`\<`ArrayBufferLike`\>
+需解密的字符串
 
 ### key
 
@@ -40,9 +40,9 @@ cipher 解密
 
 ### output?
 
-输出类型
+`"buffer"` \| `"binary"`
 
-`"buffer"` | `"binary"`
+输出类型
 
 ## Returns
 

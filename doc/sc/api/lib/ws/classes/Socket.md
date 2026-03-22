@@ -174,7 +174,7 @@ Defined in: [lib/ws.ts:323](https://github.com/maiyunnet/kebab/blob/master/lib/w
 
 ##### event
 
-`"error"` | `"message"` | `"end"` | `"close"` | `"timeout"` | `"drain"`
+`"error"` \| `"message"` \| `"end"` \| `"close"` \| `"timeout"` \| `"drain"`
 
 #### Returns
 
@@ -240,7 +240,7 @@ Defined in: [lib/ws.ts:287](https://github.com/maiyunnet/kebab/blob/master/lib/w
 
 ###### event
 
-`"end"` | `"close"` | `"timeout"` | `"drain"`
+`"end"` \| `"close"` \| `"timeout"` \| `"drain"`
 
 ###### cb
 
@@ -264,7 +264,7 @@ Defined in: [lib/ws.ts:383](https://github.com/maiyunnet/kebab/blob/master/lib/w
 
 ##### data?
 
-`string` | `Buffer`\<`ArrayBufferLike`\>
+`string` \| `Buffer`\<`ArrayBufferLike`\>
 
 #### Returns
 
@@ -284,7 +284,7 @@ Defined in: [lib/ws.ts:394](https://github.com/maiyunnet/kebab/blob/master/lib/w
 
 ##### data?
 
-`string` | `Buffer`\<`ArrayBufferLike`\>
+`string` \| `Buffer`\<`ArrayBufferLike`\>
 
 #### Returns
 
@@ -304,7 +304,7 @@ Defined in: [lib/ws.ts:353](https://github.com/maiyunnet/kebab/blob/master/lib/w
 
 ##### data
 
-`string` | `Buffer`\<`ArrayBufferLike`\> | (`string` \| `Buffer`\<`ArrayBufferLike`\>)[]
+`string` \| `Buffer`\<`ArrayBufferLike`\> \| (`string` \| `Buffer`\<`ArrayBufferLike`\>)[]
 
 #### Returns
 
@@ -344,7 +344,7 @@ Defined in: [lib/ws.ts:337](https://github.com/maiyunnet/kebab/blob/master/lib/w
 
 ##### data
 
-`string` | `Buffer`\<`ArrayBufferLike`\> | (`string` \| `Buffer`\<`ArrayBufferLike`\>)[]
+`string` \| `Buffer`\<`ArrayBufferLike`\> \| (`string` \| `Buffer`\<`ArrayBufferLike`\>)[]
 
 #### Returns
 

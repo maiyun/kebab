@@ -50,7 +50,7 @@ Defined in: [lib/db/pool.ts:194](https://github.com/maiyunnet/kebab/blob/master/
 
 ##### ctr
 
-[`Ctr`](../../../../sys/ctr/classes/Ctr.md) | `null`
+[`Ctr`](../../../../sys/ctr/classes/Ctr.md) \| `null`
 
 #### Returns
 

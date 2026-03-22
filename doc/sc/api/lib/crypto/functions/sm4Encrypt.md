@@ -18,9 +18,9 @@ SM4 加密
 
 #### original
 
-原始字符串
+`string` \| `Buffer`\<`ArrayBufferLike`\>
 
-`string` | `Buffer`\<`ArrayBufferLike`\>
+原始字符串
 
 #### key
 
@@ -60,9 +60,9 @@ SM4 加密
 
 #### original
 
-原始字符串
+`string` \| `Buffer`\<`ArrayBufferLike`\>
 
-`string` | `Buffer`\<`ArrayBufferLike`\>
+原始字符串
 
 #### key
 

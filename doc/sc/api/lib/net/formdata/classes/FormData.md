@@ -18,7 +18,7 @@ Defined in: [lib/net/formdata.ts:37](https://github.com/maiyunnet/kebab/blob/mas
 
 > **new FormData**(`options?`): `FormData`
 
-Defined in: node\_modules/@types/node/stream.d.ts:98
+Defined in: node\_modules/@types/node/stream.d.ts:99
 
 #### Parameters
 

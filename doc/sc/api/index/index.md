@@ -13,7 +13,6 @@
 - [IConfigConst](interfaces/IConfigConst.md)
 - [IConfigDb](interfaces/IConfigDb.md)
 - [IConfigDns](interfaces/IConfigDns.md)
-- [IConfigJwt](interfaces/IConfigJwt.md)
 - [IConfigKv](interfaces/IConfigKv.md)
 - [IConfigLang](interfaces/IConfigLang.md)
 - [IConfigS3](interfaces/IConfigS3.md)

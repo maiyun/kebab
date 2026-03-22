@@ -40,9 +40,9 @@ Defined in: [lib/ssh/shell.ts:77](https://github.com/maiyunnet/kebab/blob/master
 
 ##### cmd?
 
-命令
+`string` \| `Buffer`\<`ArrayBufferLike`\>
 
-`string` | `Buffer`\<`ArrayBufferLike`\>
+命令
 
 ##### encoding?
 
@@ -104,9 +104,9 @@ Defined in: [lib/ssh/shell.ts:23](https://github.com/maiyunnet/kebab/blob/master
 
 ##### cmd
 
-指令
+`string` \| `Buffer`\<`ArrayBufferLike`\>
 
-`string` | `Buffer`\<`ArrayBufferLike`\>
+指令
 
 ##### encoding?
 

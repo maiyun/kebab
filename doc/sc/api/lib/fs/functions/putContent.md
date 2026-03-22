@@ -22,9 +22,9 @@ Defined in: [lib/fs.ts:93](https://github.com/maiyunnet/kebab/blob/master/lib/fs
 
 ### data
 
-要写入的内容
+`string` \| `Buffer`\<`ArrayBufferLike`\>
 
-`string` | `Buffer`\<`ArrayBufferLike`\>
+要写入的内容
 
 ### options?
 

@@ -16,15 +16,15 @@ Defined in: [lib/consistent.ts:124](https://github.com/maiyunnet/kebab/blob/mast
 
 ### key
 
-要查找的key
+`string` \| `number`
 
-`string` | `number`
+要查找的key
 
 ### nodes
 
-node 列表
+`string` \| `string`[]
 
-`string` | `string`[]
+node 列表
 
 ### vcount?
 

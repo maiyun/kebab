@@ -12,73 +12,83 @@ Defined in: [lib/net/formdata.ts:12](https://github.com/maiyunnet/kebab/blob/mas
 
 Item 对象
 
-## Type Declaration
+## Union Members
+
+### Type Literal
 
 \{ `key`: `string`; `path`: `""`; `type`: `"string"`; `value`: `string`; \}
 
-### key
+#### key
 
 > **key**: `string`
 
 key 键
 
-### path
+#### path
 
 > **path**: `""`
 
-### type
+#### type
 
 > **type**: `"string"`
 
-### value
+#### value
 
 > **value**: `string`
 
 字符串值
 
+***
+
+### Type Literal
+
 \{ `key`: `string`; `path`: `string`; `type`: `"file"`; `value`: `string`; \}
 
-### key
+#### key
 
 > **key**: `string`
 
 key 键
 
-### path
+#### path
 
 > **path**: `string`
 
 文件路径
 
-### type
+#### type
 
 > **type**: `"file"`
 
-### value
+#### value
 
 > **value**: `string`
 
 文件名
 
+***
+
+### Type Literal
+
 \{ `key`: `string`; `path`: `Buffer`; `type`: `"buffer"`; `value`: `string`; \}
 
-### key
+#### key
 
 > **key**: `string`
 
 key 键
 
-### path
+#### path
 
 > **path**: `Buffer`
 
 Buffer 数据
 
-### type
+#### type
 
 > **type**: `"buffer"`
 
-### value
+#### value
 
 > **value**: `string`
 

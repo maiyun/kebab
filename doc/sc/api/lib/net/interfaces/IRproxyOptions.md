@@ -12,9 +12,9 @@ Defined in: [lib/net.ts:922](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 ## Properties
 
-### filter()?
+### filter?
 
-> `optional` **filter**: (`h`) => `boolean`
+> `optional` **filter?**: (`h`) => `boolean`
 
 Defined in: [lib/net.ts:931](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L931)
 
@@ -34,7 +34,7 @@ Defined in: [lib/net.ts:931](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 ### follow?
 
-> `optional` **follow**: `number`
+> `optional` **follow?**: `number`
 
 Defined in: [lib/net.ts:925](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L925)
 
@@ -42,7 +42,7 @@ Defined in: [lib/net.ts:925](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 ### headers?
 
-> `optional` **headers**: [`THttpHeaders`](../type-aliases/THttpHeaders.md)
+> `optional` **headers?**: [`THttpHeaders`](../type-aliases/THttpHeaders.md)
 
 Defined in: [lib/net.ts:929](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L929)
 
@@ -50,7 +50,7 @@ Defined in: [lib/net.ts:929](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 ### hosts?
 
-> `optional` **hosts**: `string` \| `Record`\<`string`, `string`\>
+> `optional` **hosts?**: `string` \| `Record`\<`string`, `string`\>
 
 Defined in: [lib/net.ts:927](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L927)
 
@@ -60,7 +60,7 @@ Defined in: [lib/net.ts:927](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 ### local?
 
-> `optional` **local**: `string`
+> `optional` **local?**: `string`
 
 Defined in: [lib/net.ts:928](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L928)
 
@@ -68,7 +68,7 @@ Defined in: [lib/net.ts:928](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 ### mproxy?
 
-> `optional` **mproxy**: `object`
+> `optional` **mproxy?**: `object`
 
 Defined in: [lib/net.ts:933](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L933)
 
@@ -80,11 +80,11 @@ Defined in: [lib/net.ts:933](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 #### data?
 
-> `optional` **data**: `any`
+> `optional` **data?**: `any`
 
 #### hosts?
 
-> `optional` **hosts**: `string` \| `Record`\<`string`, `string`\>
+> `optional` **hosts?**: `string` \| `Record`\<`string`, `string`\>
 
 落地端自定义 host 映射，如 {'www.maiyun.net': '127.0.0.1'}，或全部映射到一个 host
 
@@ -96,7 +96,7 @@ Defined in: [lib/net.ts:933](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 ### reuse?
 
-> `optional` **reuse**: `string`
+> `optional` **reuse?**: `string`
 
 Defined in: [lib/net.ts:941](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L941)
 
@@ -106,7 +106,7 @@ Defined in: [lib/net.ts:941](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 ### timeout?
 
-> `optional` **timeout**: `number`
+> `optional` **timeout?**: `number`
 
 Defined in: [lib/net.ts:924](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L924)
 

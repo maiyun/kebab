@@ -46,21 +46,25 @@ Defined in: [lib/db.ts:47](https://github.com/maiyunnet/kebab/blob/master/lib/db
 
 Defined in: [lib/db.ts:41](https://github.com/maiyunnet/kebab/blob/master/lib/db.ts#L41)
 
-#### Type Declaration
+#### Union Members
+
+##### Type Literal
 
 \{ `affected`: `number`; `insert`: `number`; \}
 
-#### affected
+##### affected
 
 > **affected**: `number`
 
 受影响的行数
 
-#### insert
+##### insert
 
 > **insert**: `number`
 
 插入的 id
+
+***
 
 `null`
 

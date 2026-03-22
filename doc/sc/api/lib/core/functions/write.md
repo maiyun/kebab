@@ -8,7 +8,7 @@
 
 > **write**(`res`, `data`): `void`
 
-Defined in: [lib/core.ts:1054](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1054)
+Defined in: [lib/core.ts:1082](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1082)
 
 向 res 发送数据
 
@@ -16,15 +16,15 @@ Defined in: [lib/core.ts:1054](https://github.com/maiyunnet/kebab/blob/master/li
 
 ### res
 
-响应对象
+`Socket` \| `Http2ServerResponse`\<`Http2ServerRequest`\> \| `ServerResponse`\<`IncomingMessage`\>
 
-`Socket` | `Http2ServerResponse`\<`Http2ServerRequest`\> | `ServerResponse`\<`IncomingMessage`\>
+响应对象
 
 ### data
 
-数据
+`string` \| `Buffer`\<`ArrayBufferLike`\>
 
-`string` | `Buffer`\<`ArrayBufferLike`\>
+数据
 
 ## Returns
 

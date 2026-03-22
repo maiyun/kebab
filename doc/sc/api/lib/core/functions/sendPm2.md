@@ -8,7 +8,7 @@
 
 > **sendPm2**(`name`, `action?`, `hosts?`): `Promise`\<`string`[]\>
 
-Defined in: [lib/core.ts:599](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L599)
+Defined in: [lib/core.ts:601](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L601)
 
 向本机或局域网 RPC 发送 PM2 操作
 
@@ -28,9 +28,9 @@ PM2 操作类型
 
 ### hosts?
 
-局域网列表
+`string`[] \| `"config"`
 
-`string`[] | `"config"`
+局域网列表
 
 ## Returns
 

@@ -22,9 +22,9 @@ Defined in: [lib/zlib.ts:290](https://github.com/maiyunnet/kebab/blob/master/lib
 
 ### buffer
 
-段
+`InputType` \| `null`
 
-`InputType` | `null`
+段
 
 ## Returns
 

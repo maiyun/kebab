@@ -56,7 +56,7 @@ Defined in: [lib/kv.ts:115](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 ##### val
 
-`string` | `number` | `object`
+`string` \| `number` \| `object`
 
 ##### ttl?
 
@@ -116,11 +116,11 @@ Defined in: [lib/kv.ts:741](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 ##### soo
 
-`"LEFT"` | `"RIGHT"`
+`"LEFT"` \| `"RIGHT"`
 
 ##### deo
 
-`"LEFT"` | `"RIGHT"`
+`"LEFT"` \| `"RIGHT"`
 
 ##### timeout
 
@@ -142,7 +142,7 @@ Defined in: [lib/kv.ts:780](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 ##### key
 
-`string` | `string`[]
+`string` \| `string`[]
 
 ##### timeout
 
@@ -192,7 +192,7 @@ Defined in: [lib/kv.ts:335](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 ##### keys
 
-`string` | `string`[]
+`string` \| `string`[]
 
 #### Returns
 
@@ -212,9 +212,9 @@ Defined in: [lib/kv.ts:194](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 ##### keys
 
-单个或序列
+`string` \| `string`[]
 
-`string` | `string`[]
+单个或序列
 
 #### Returns
 
@@ -318,9 +318,9 @@ Defined in: [lib/kv.ts:643](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 ##### fields
 
-值序列
+`string` \| `string`[]
 
-`string` | `string`[]
+值序列
 
 #### Returns
 
@@ -550,15 +550,15 @@ key 名
 
 ##### val
 
-值
+`string` \| `number` \| `object`
 
-`string` | `number` | `object`
+值
 
 ##### mod?
 
-空,nx(key不存在才建立)
+`""` \| `"nx"`
 
-`""` | `"nx"`
+空,nx(key不存在才建立)
 
 #### Returns
 
@@ -832,9 +832,9 @@ Defined in: [lib/kv.ts:129](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 ##### val
 
-值
+`string` \| `number` \| `object`
 
-`string` | `number` | `object`
+值
 
 ##### ttl?
 
@@ -936,7 +936,7 @@ Defined in: [lib/kv.ts:83](https://github.com/maiyunnet/kebab/blob/master/lib/kv
 
 ##### val
 
-`string` | `number` | `object`
+`string` \| `number` \| `object`
 
 ##### ttl?
 
@@ -946,9 +946,9 @@ Defined in: [lib/kv.ts:83](https://github.com/maiyunnet/kebab/blob/master/lib/kv
 
 ##### mod?
 
-设置模式: 空,nx（key不存在才建立）,xx（key存在才修改）
+`""` \| `"nx"` \| `"xx"`
 
-`""` | `"nx"` | `"xx"`
+设置模式: 空,nx（key不存在才建立）,xx（key存在才修改）
 
 #### Returns
 
@@ -1004,9 +1004,9 @@ key 名
 
 ###### member
 
-成员
+`string` \| `Buffer`\<`ArrayBufferLike`\>
 
-`string` | `Buffer`\<`ArrayBufferLike`\>
+成员
 
 ##### Returns
 

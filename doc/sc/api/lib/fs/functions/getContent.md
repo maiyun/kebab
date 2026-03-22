@@ -56,7 +56,7 @@ Defined in: [lib/fs.ts:18](https://github.com/maiyunnet/kebab/blob/master/lib/fs
 
 #### options
 
-`BufferEncoding` | \{ `encoding`: `BufferEncoding`; `end?`: `number`; `start?`: `number`; \}
+`BufferEncoding` \| \{ `encoding`: `BufferEncoding`; `end?`: `number`; `start?`: `number`; \}
 
 ### Returns
 

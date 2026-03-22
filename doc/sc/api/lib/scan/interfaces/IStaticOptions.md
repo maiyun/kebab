@@ -14,7 +14,7 @@ scanned 函数的选项
 
 ### ctr?
 
-> `optional` **ctr**: [`Ctr`](../../../sys/ctr/classes/Ctr.md)
+> `optional` **ctr?**: [`Ctr`](../../../sys/ctr/classes/Ctr.md)
 
 Defined in: [lib/scan.ts:39](https://github.com/maiyunnet/kebab/blob/master/lib/scan.ts#L39)
 
@@ -22,7 +22,7 @@ Defined in: [lib/scan.ts:39](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 ### name?
 
-> `optional` **name**: `string`
+> `optional` **name?**: `string`
 
 Defined in: [lib/scan.ts:41](https://github.com/maiyunnet/kebab/blob/master/lib/scan.ts#L41)
 
@@ -30,6 +30,6 @@ Defined in: [lib/scan.ts:41](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 ### pre?
 
-> `optional` **pre**: `string`
+> `optional` **pre?**: `string`
 
 Defined in: [lib/scan.ts:40](https://github.com/maiyunnet/kebab/blob/master/lib/scan.ts#L40)

@@ -14,7 +14,7 @@ Defined in: [lib/net.ts:876](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 ### cookie?
 
-> `optional` **cookie**: `Record`\<`string`, [`ICookie`](ICookie.md)\>
+> `optional` **cookie?**: `Record`\<`string`, [`ICookie`](ICookie.md)\>
 
 Defined in: [lib/net.ts:901](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L901)
 
@@ -24,7 +24,7 @@ cookie 托管对象
 
 ### follow?
 
-> `optional` **follow**: `number`
+> `optional` **follow?**: `number`
 
 Defined in: [lib/net.ts:882](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L882)
 
@@ -34,7 +34,7 @@ Defined in: [lib/net.ts:882](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 ### headers?
 
-> `optional` **headers**: [`THttpHeaders`](../type-aliases/THttpHeaders.md)
+> `optional` **headers?**: [`THttpHeaders`](../type-aliases/THttpHeaders.md)
 
 Defined in: [lib/net.ts:887](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L887)
 
@@ -42,7 +42,7 @@ Defined in: [lib/net.ts:887](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 ### hosts?
 
-> `optional` **hosts**: `string` \| `Record`\<`string`, `string`\>
+> `optional` **hosts?**: `string` \| `Record`\<`string`, `string`\>
 
 Defined in: [lib/net.ts:884](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L884)
 
@@ -52,7 +52,7 @@ Defined in: [lib/net.ts:884](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 ### keep?
 
-> `optional` **keep**: `boolean`
+> `optional` **keep?**: `boolean`
 
 Defined in: [lib/net.ts:897](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L897)
 
@@ -62,7 +62,7 @@ Defined in: [lib/net.ts:897](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 ### local?
 
-> `optional` **local**: `string`
+> `optional` **local?**: `string`
 
 Defined in: [lib/net.ts:886](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L886)
 
@@ -70,7 +70,7 @@ Defined in: [lib/net.ts:886](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 ### log?
 
-> `optional` **log**: `boolean`
+> `optional` **log?**: `boolean`
 
 Defined in: [lib/net.ts:903](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L903)
 
@@ -80,7 +80,7 @@ Defined in: [lib/net.ts:903](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 ### method?
 
-> `optional` **method**: `"GET"` \| `"POST"` \| `"PUT"` \| `"DELETE"` \| `"OPTIONS"`
+> `optional` **method?**: `"GET"` \| `"POST"` \| `"PUT"` \| `"DELETE"` \| `"OPTIONS"`
 
 Defined in: [lib/net.ts:877](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L877)
 
@@ -88,7 +88,7 @@ Defined in: [lib/net.ts:877](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 ### mproxy?
 
-> `optional` **mproxy**: `object`
+> `optional` **mproxy?**: `object`
 
 Defined in: [lib/net.ts:889](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L889)
 
@@ -100,11 +100,11 @@ Defined in: [lib/net.ts:889](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 #### data?
 
-> `optional` **data**: `any`
+> `optional` **data?**: `any`
 
 #### hosts?
 
-> `optional` **hosts**: `string` \| `Record`\<`string`, `string`\>
+> `optional` **hosts?**: `string` \| `Record`\<`string`, `string`\>
 
 落地端自定义 host 映射，如 {'www.maiyun.net': '127.0.0.1'}，或全部映射到一个 host
 
@@ -116,7 +116,7 @@ Defined in: [lib/net.ts:889](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 ### reuse?
 
-> `optional` **reuse**: `string`
+> `optional` **reuse?**: `string`
 
 Defined in: [lib/net.ts:899](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L899)
 
@@ -126,7 +126,7 @@ Defined in: [lib/net.ts:899](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 ### save?
 
-> `optional` **save**: `string`
+> `optional` **save?**: `string`
 
 Defined in: [lib/net.ts:885](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L885)
 
@@ -134,7 +134,7 @@ Defined in: [lib/net.ts:885](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 ### timeout?
 
-> `optional` **timeout**: `number`
+> `optional` **timeout?**: `number`
 
 Defined in: [lib/net.ts:880](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L880)
 
@@ -144,6 +144,6 @@ Defined in: [lib/net.ts:880](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 ### type?
 
-> `optional` **type**: `"form"` \| `"json"`
+> `optional` **type?**: `"form"` \| `"json"`
 
 Defined in: [lib/net.ts:878](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L878)

@@ -6,7 +6,7 @@
 
 # Interface: IConfigDns
 
-Defined in: [index.ts:170](https://github.com/maiyunnet/kebab/blob/master/index.ts#L170)
+Defined in: [index.ts:161](https://github.com/maiyunnet/kebab/blob/master/index.ts#L161)
 
 DNS
 
@@ -16,7 +16,7 @@ DNS
 
 > **sid**: `string`
 
-Defined in: [index.ts:171](https://github.com/maiyunnet/kebab/blob/master/index.ts#L171)
+Defined in: [index.ts:162](https://github.com/maiyunnet/kebab/blob/master/index.ts#L162)
 
 ***
 
@@ -24,4 +24,4 @@ Defined in: [index.ts:171](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **skey**: `string`
 
-Defined in: [index.ts:172](https://github.com/maiyunnet/kebab/blob/master/index.ts#L172)
+Defined in: [index.ts:163](https://github.com/maiyunnet/kebab/blob/master/index.ts#L163)

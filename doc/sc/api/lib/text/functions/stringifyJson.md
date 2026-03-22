@@ -22,9 +22,9 @@ Defined in: [lib/text.ts:589](https://github.com/maiyunnet/kebab/blob/master/lib
 
 ### space?
 
-美化方式
+`string` \| `number`
 
-`string` | `number`
+美化方式
 
 ## Returns
 

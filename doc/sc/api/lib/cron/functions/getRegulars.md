@@ -8,7 +8,7 @@
 
 > **getRegulars**(): [`IRegularData`](../interfaces/IRegularData.md)[]
 
-Defined in: [lib/cron.ts:17](https://github.com/maiyunnet/kebab/blob/master/lib/cron.ts#L17)
+Defined in: [lib/cron.ts:18](https://github.com/maiyunnet/kebab/blob/master/lib/cron.ts#L18)
 
 获取定时任务列表
 

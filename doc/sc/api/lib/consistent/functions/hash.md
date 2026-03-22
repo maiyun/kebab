@@ -16,9 +16,9 @@ hash 函数
 
 ### val
 
-要 hash 的值
+`string` \| `number`
 
-`string` | `number`
+要 hash 的值
 
 ## Returns
 

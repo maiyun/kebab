@@ -16,12 +16,12 @@ http headers
 
 ### http-code?
 
-> `optional` **http-code**: `number`
+> `optional` **http-code?**: `number`
 
 ### http-url?
 
-> `optional` **http-url**: `string`
+> `optional` **http-url?**: `string`
 
 ### http-version?
 
-> `optional` **http-version**: `"1.1"` \| `"2.0"`
+> `optional` **http-version?**: `"1.1"` \| `"2.0"`

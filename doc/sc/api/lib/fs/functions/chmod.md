@@ -22,9 +22,9 @@ Defined in: [lib/fs.ts:278](https://github.com/maiyunnet/kebab/blob/master/lib/f
 
 ### mod
 
-权限
+`string` \| `number`
 
-`string` | `number`
+权限
 
 ## Returns
 

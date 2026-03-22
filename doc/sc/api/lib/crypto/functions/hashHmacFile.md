@@ -36,7 +36,7 @@ hash 或 hmac 加密文件
 
 #### encoding?
 
-`"hex"` | `"base64"` | `"base64url"`
+`"hex"` \| `"base64"` \| `"base64url"`
 
 ### Returns
 

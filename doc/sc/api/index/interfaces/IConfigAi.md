@@ -14,7 +14,7 @@ AI
 
 ### endpoint?
 
-> `optional` **endpoint**: `string`
+> `optional` **endpoint?**: `string`
 
 Defined in: [index.ts:122](https://github.com/maiyunnet/kebab/blob/master/index.ts#L122)
 

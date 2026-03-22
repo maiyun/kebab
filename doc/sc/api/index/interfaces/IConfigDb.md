@@ -14,7 +14,7 @@ Defined in: [index.ts:150](https://github.com/maiyunnet/kebab/blob/master/index.
 
 ### charset?
 
-> `optional` **charset**: `string`
+> `optional` **charset?**: `string`
 
 Defined in: [index.ts:153](https://github.com/maiyunnet/kebab/blob/master/index.ts#L153)
 
@@ -30,7 +30,7 @@ Defined in: [index.ts:151](https://github.com/maiyunnet/kebab/blob/master/index.
 
 ### name?
 
-> `optional` **name**: `string`
+> `optional` **name?**: `string`
 
 Defined in: [index.ts:154](https://github.com/maiyunnet/kebab/blob/master/index.ts#L154)
 

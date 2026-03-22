@@ -16,15 +16,15 @@ Defined in: [lib/net.ts:717](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 ### headers
 
-剔除前的 header
+`IncomingHttpHeaders` \| `IncomingHttpHeaders` \| [`THttpHeaders`](../type-aliases/THttpHeaders.md)
 
-`IncomingHttpHeaders` | `IncomingHttpHeaders` | [`THttpHeaders`](../type-aliases/THttpHeaders.md)
+剔除前的 header
 
 ### res?
 
-直接设置头部而不返回，可置空
+`Http2ServerResponse`\<`Http2ServerRequest`\> \| `ServerResponse`\<`IncomingMessage`\>
 
-`Http2ServerResponse`\<`Http2ServerRequest`\> | `ServerResponse`\<`IncomingMessage`\>
+直接设置头部而不返回，可置空
 
 ### filter?
 

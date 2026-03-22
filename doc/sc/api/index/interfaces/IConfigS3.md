@@ -14,7 +14,7 @@ Defined in: [index.ts:110](https://github.com/maiyunnet/kebab/blob/master/index.
 
 ### account?
 
-> `optional` **account**: `string`
+> `optional` **account?**: `string`
 
 Defined in: [index.ts:112](https://github.com/maiyunnet/kebab/blob/master/index.ts#L112)
 

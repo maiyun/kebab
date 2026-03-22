@@ -22,9 +22,9 @@ Defined in: [lib/fs.ts:401](https://github.com/maiyunnet/kebab/blob/master/lib/f
 
 ### options?
 
-编码或配置
+`BufferEncoding` \| \{ `autoClose?`: `boolean`; `encoding?`: BufferEncoding \| undefined; `end?`: `number`; `flags?`: `string`; `start?`: `number`; \}
 
-`BufferEncoding` | \{ `autoClose?`: `boolean`; `encoding?`: BufferEncoding \| undefined; `end?`: `number`; `flags?`: `string`; `start?`: `number`; \}
+编码或配置
 
 ## Returns
 

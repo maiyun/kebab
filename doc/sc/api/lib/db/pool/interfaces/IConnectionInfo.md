@@ -46,7 +46,7 @@ Defined in: [lib/db/pool.ts:27](https://github.com/maiyunnet/kebab/blob/master/l
 
 ### name?
 
-> `optional` **name**: `string`
+> `optional` **name?**: `string`
 
 Defined in: [lib/db/pool.ts:24](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L24)
 

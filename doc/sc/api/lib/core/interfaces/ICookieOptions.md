@@ -6,7 +6,7 @@
 
 # Interface: ICookieOptions
 
-Defined in: [lib/core.ts:43](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L43)
+Defined in: [lib/core.ts:45](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L45)
 
 Cookie 设置的选项
 
@@ -14,46 +14,46 @@ Cookie 设置的选项
 
 ### domain?
 
-> `optional` **domain**: `string`
-
-Defined in: [lib/core.ts:46](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L46)
-
-***
-
-### httponly?
-
-> `optional` **httponly**: `boolean`
+> `optional` **domain?**: `string`
 
 Defined in: [lib/core.ts:48](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L48)
 
 ***
 
+### httponly?
+
+> `optional` **httponly?**: `boolean`
+
+Defined in: [lib/core.ts:50](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L50)
+
+***
+
 ### path?
 
-> `optional` **path**: `string`
-
-Defined in: [lib/core.ts:45](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L45)
-
-***
-
-### samesite?
-
-> `optional` **samesite**: `"Strict"` \| `"Lax"` \| `"None"`
-
-Defined in: [lib/core.ts:49](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L49)
-
-***
-
-### ssl?
-
-> `optional` **ssl**: `boolean`
+> `optional` **path?**: `string`
 
 Defined in: [lib/core.ts:47](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L47)
 
 ***
 
+### samesite?
+
+> `optional` **samesite?**: `"Strict"` \| `"Lax"` \| `"None"`
+
+Defined in: [lib/core.ts:51](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L51)
+
+***
+
+### ssl?
+
+> `optional` **ssl?**: `boolean`
+
+Defined in: [lib/core.ts:49](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L49)
+
+***
+
 ### ttl?
 
-> `optional` **ttl**: `number`
+> `optional` **ttl?**: `number`
 
-Defined in: [lib/core.ts:44](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L44)
+Defined in: [lib/core.ts:46](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L46)
