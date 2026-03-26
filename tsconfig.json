@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
         "module": "esnext",
-        "removeComments": false,
+        "removeComments": false,    // 防止 d.ts 注释被删除
         "preserveConstEnums": true, // 保留 const 和 enum 声明
         "rootDir": "./",
         "outDir": "./",
