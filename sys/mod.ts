@@ -639,6 +639,7 @@ export default class Mod {
         s: string | kebab.Json,
         opt: {
             'ctr'?: sCtr.Ctr;
+            'lock'?: boolean;
             'pre'?: string;
             'index'?: string | string[];
             'select'?: string | string[];
@@ -651,6 +652,7 @@ export default class Mod {
         s: string | kebab.Json,
         opt?: {
             'ctr'?: sCtr.Ctr;
+            'lock'?: boolean;
             'pre'?: string;
             'index'?: string | string[];
             'select'?: string | string[];
@@ -662,13 +664,14 @@ export default class Mod {
      * --- 通过 where 条件筛选单条数据 ---
      * @param db 数据库对象
      * @param s 筛选条件数组或字符串
-     * @param opt 选项
+     * @param opt 选项，lock 需确保 where 条件命中索引，否则可能退化为表锁
      */
     public static async one<T extends Mod>(
         db: lDb.Pool | lDb.Transaction,
         s: string | kebab.Json,
         opt: {
             'ctr'?: sCtr.Ctr;
+            'lock'?: boolean;
             'pre'?: string;
             'index'?: string | string[];
             'select'?: string | string[];
@@ -688,7 +691,7 @@ export default class Mod {
             if (opt.by) {
                 o.by(opt.by[0], opt.by[1]);
             }
-            return opt.array ? o.firstArray() : o.first();
+            return opt.array ? o.firstArray(opt.lock) : o.first(opt.lock);
         }
         const indexs = (typeof opt.index === 'string') ? [opt.index] : [...new Set(opt.index)];
         for (const item of indexs) {
@@ -703,7 +706,7 @@ export default class Mod {
             if (opt.by) {
                 row.by(opt.by[0], opt.by[1]);
             }
-            const rowr = await (opt.array ? row.firstArray() : row.first());
+            const rowr = await (opt.array ? row.firstArray(opt.lock) : row.first(opt.lock));
             if (rowr) {
                 return rowr;
             }
@@ -726,6 +729,7 @@ export default class Mod {
         s: string | kebab.Json,
         opt: {
             'ctr'?: sCtr.Ctr;
+            'lock'?: boolean;
             'pre'?: string;
             'index'?: string | string[];
             'select'?: string | string[];
