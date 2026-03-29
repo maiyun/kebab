@@ -1016,15 +1016,22 @@ export class Ctr {
     /**
      * --- 获取 formdata 的信息 ---
      * @param events 文件处理情况
+     * @param limits 上传限制
      */
     protected async _handleFormData(
         events: {
             onfilestart?: (name: string) => boolean | undefined;
             onfiledata?: (chunk: Buffer) => void;
             onfileend?: () => void;
+        } = {},
+        limits: {
+            /** --- 单个文件最大字节数 --- */
+            'maxFileSize'?: number;
+            /** --- 允许的文件扩展名（含点号），如 ['.jpg', '.png', '.pdf'] --- */
+            'allowedExts'?: string[];
         } = {}
     ): Promise<boolean> {
-        const rtn = await sRoute.getFormData(this._req, events);
+        const rtn = await sRoute.getFormData(this._req, events, limits);
         if (!rtn) {
             return false;
         }
