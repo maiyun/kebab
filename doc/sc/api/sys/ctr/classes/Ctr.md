@@ -598,9 +598,9 @@ Defined in: [sys/ctr.ts:315](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 ### \_handleFormData()
 
-> `protected` **\_handleFormData**(`events?`): `Promise`\<`boolean`\>
+> `protected` **\_handleFormData**(`events?`, `limits?`): `Promise`\<`boolean`\>
 
-Defined in: [sys/ctr.ts:1020](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1020)
+Defined in: [sys/ctr.ts:1021](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1021)
 
 获取 formdata 的信息
 
@@ -621,6 +621,22 @@ Defined in: [sys/ctr.ts:1020](https://github.com/maiyunnet/kebab/blob/master/sys
 ###### onfilestart?
 
 (`name`) => `boolean` \| `undefined`
+
+##### limits?
+
+上传限制
+
+###### allowedExts?
+
+`string`[]
+
+允许的文件扩展名（含点号），如 ['.jpg', '.png', '.pdf']
+
+###### maxFileSize?
+
+`number`
+
+单个文件最大字节数
 
 #### Returns
 
