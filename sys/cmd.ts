@@ -176,6 +176,8 @@ async function run(): Promise<void> {
         config.ai['ALICN'].skey ??= '';
         config.ai['ALIAS'] ??= {};
         config.ai['ALIAS'].skey ??= '';
+        config.ai['ALINE'] ??= {};
+        config.ai['ALINE'].skey ??= '';
         config.ai['AZURE'] ??= {};
         config.ai['AZURE'].endpoint ??= '';
         config.ai['AZURE'].skey ??= '';

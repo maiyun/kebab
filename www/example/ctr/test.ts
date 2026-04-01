@@ -3991,7 +3991,11 @@ rtn.push(reader.readBCDString());</pre>${JSON.stringify(rtn)}`);
                 // --- 文生图 ---
                 let model = 'z-image-turbo';
                 let size = [1280, 720];
-                if (ai.service !== lAi.ESERVICE.ALICN && ai.service !== lAi.ESERVICE.ALIAS) {
+                if (
+                    ai.service !== lAi.ESERVICE.ALICN &&
+                    ai.service !== lAi.ESERVICE.ALIAS &&
+                    ai.service !== lAi.ESERVICE.ALINE
+                ) {
                     switch (ai.service) {
                         case lAi.ESERVICE.AZURE:
                         case lAi.ESERVICE.AZURE2:
@@ -4034,7 +4038,11 @@ rtn.push(reader.readBCDString());</pre>${JSON.stringify(rtn)}`);
                 let model = 'wan2.6-image';
                 let size = [1280, 720];
                 const prompt = '用图1的绘画风格重绘图2的场景，桌上增加一盘番茄炒蛋';
-                if (ai.service !== lAi.ESERVICE.ALICN && ai.service !== lAi.ESERVICE.ALIAS) {
+                if (
+                    ai.service !== lAi.ESERVICE.ALICN &&
+                    ai.service !== lAi.ESERVICE.ALIAS &&
+                    ai.service !== lAi.ESERVICE.ALINE
+                ) {
                     switch (ai.service) {
                         default: {
                             // --- 火山引擎 ---

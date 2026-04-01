@@ -19,8 +19,10 @@ import * as sCtr from '#kebab/sys/ctr.js';
 export enum ESERVICE {
     /** --- 阿里中国大陆区 --- */
     'ALICN',
-    /** --- 阿里国际区 --- */
+    /** --- 阿里新加坡 --- */
     'ALIAS',
+    /** --- 阿里美国 --- */
+    'ALINE',
     /** --- 微软 Azure --- */
     'AZURE',
     /** --- 微软 Azure 2 --- */
@@ -88,6 +90,10 @@ export class Ai {
             }
             case ESERVICE.ALIAS: {
                 endpoint = opt.endpoint ?? `https://dashscope-intl.aliyuncs.com/compatible-mode/v1`;
+                break;
+            }
+            case ESERVICE.ALINE: {
+                endpoint = opt.endpoint ?? `https://dashscope-us.aliyuncs.com/compatible-mode/v1`;
                 break;
             }
             case ESERVICE.AZURE: {
@@ -192,7 +198,7 @@ export class Ai {
         'model': string;
         /** --- 提示词 --- */
         'prompt': string;
-        /** --- 参考图，请注意模型是否支持，以及是否支持多张，仅支持 ALICN、ALIAS、VOLCN、VOLAS 服务商 --- */
+        /** --- 参考图，请注意模型是否支持，以及是否支持多张，仅支持 ALICN、ALIAS、ALINE、VOLCN、VOLAS 服务商 --- */
         'imgs'?: string[];
         /** --- 模型是否自动优化提示词，默认为 false，但有些服务商可能无效 --- */
         'extend'?: boolean;
@@ -219,9 +225,10 @@ export class Ai {
         const seed = opt.seed ?? lCore.rand(0, 2147483647);
         switch (this._service) {
             case ESERVICE.ALICN:
-            case ESERVICE.ALIAS: {
+            case ESERVICE.ALIAS:
+            case ESERVICE.ALINE: {
                 try {
-                    const res = await this._fetch(`https://dashscope${this._service === ESERVICE.ALIAS ? '-intl' : ''}.aliyuncs.com/api/v1/services/aigc/multimodal-generation/generation`, {
+                    const res = await this._fetch(`https://dashscope${this._service === ESERVICE.ALIAS ? '-intl' : (this._service === ESERVICE.ALINE ? '-us' : '')}.aliyuncs.com/api/v1/services/aigc/multimodal-generation/generation`, {
                         'method': 'POST',
                         'headers': {
                             'authorization': `Bearer ${this.link.apiKey}`,
@@ -367,7 +374,7 @@ export class Ai {
         }
     }
 
-    /** --- 异步生成视频，仅支持 ALICN、ALIAS --- */
+    /** --- 异步生成视频，仅支持 ALICN、ALIAS、ALINE --- */
     public async video(opt: {
         'model': string;
         /** --- 提示词，参考类可用 [I1] 指代图片，如 `[I1] 看向 [I2]` --- */
@@ -398,7 +405,7 @@ export class Ai {
         'seed': number;
         'request': string;
     } | false> {
-        if (this._service !== ESERVICE.ALICN && this._service !== ESERVICE.ALIAS) {
+        if (this._service !== ESERVICE.ALICN && this._service !== ESERVICE.ALIAS && this._service !== ESERVICE.ALINE) {
             return false;
         }
         const mode = opt.mode ?? 'text';
@@ -475,7 +482,7 @@ export class Ai {
             }
         }
         try {
-            const res = await this._fetch(`https://dashscope${this._service === ESERVICE.ALIAS ? '-intl' : ''}.aliyuncs.com/api/v1/services/aigc/video-generation/video-synthesis`, {
+            const res = await this._fetch(`https://dashscope${this._service === ESERVICE.ALIAS ? '-intl' : (this._service === ESERVICE.ALINE ? '-us' : '')}.aliyuncs.com/api/v1/services/aigc/video-generation/video-synthesis`, {
                 'method': 'POST',
                 'headers': {
                     'authorization': `Bearer ${this.link.apiKey}`,
@@ -553,11 +560,11 @@ export class Ai {
         /** --- 错误信息，成功时不返回 --- */
         'error'?: string;
     } | false> {
-        if (this._service !== ESERVICE.ALICN && this._service !== ESERVICE.ALIAS) {
+        if (this._service !== ESERVICE.ALICN && this._service !== ESERVICE.ALIAS && this._service !== ESERVICE.ALINE) {
             return false;
         }
         try {
-            const res = await this._fetch(`https://dashscope${this._service === ESERVICE.ALIAS ? '-intl' : ''}.aliyuncs.com/api/v1/tasks/${opt.task}`, {
+            const res = await this._fetch(`https://dashscope${this._service === ESERVICE.ALIAS ? '-intl' : (this._service === ESERVICE.ALINE ? '-us' : '')}.aliyuncs.com/api/v1/tasks/${opt.task}`, {
                 'method': 'GET',
                 'headers': {
                     'authorization': `Bearer ${this.link.apiKey}`,
