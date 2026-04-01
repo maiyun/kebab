@@ -6,7 +6,7 @@
 
 # Class: Ai
 
-Defined in: [lib/ai.ts:58](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L58)
+Defined in: [lib/ai.ts:60](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L60)
 
 ## Constructors
 
@@ -14,7 +14,7 @@ Defined in: [lib/ai.ts:58](https://github.com/maiyunnet/kebab/blob/master/lib/ai
 
 > **new Ai**(`ctrEtc`, `opt`): `Ai`
 
-Defined in: [lib/ai.ts:71](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L71)
+Defined in: [lib/ai.ts:73](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L73)
 
 #### Parameters
 
@@ -36,7 +36,7 @@ Defined in: [lib/ai.ts:71](https://github.com/maiyunnet/kebab/blob/master/lib/ai
 
 > `readonly` **link**: `OpenAI`
 
-Defined in: [lib/ai.ts:61](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L61)
+Defined in: [lib/ai.ts:63](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L63)
 
 openai 原生对象
 
@@ -48,7 +48,7 @@ openai 原生对象
 
 > **get** **service**(): [`ESERVICE`](../enumerations/ESERVICE.md)
 
-Defined in: [lib/ai.ts:143](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L143)
+Defined in: [lib/ai.ts:149](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L149)
 
 获取当前服务商
 
@@ -66,7 +66,7 @@ Defined in: [lib/ai.ts:143](https://github.com/maiyunnet/kebab/blob/master/lib/a
 
 > **chat**(`body`): `Promise`\<`false` \| `APIPromise`\<`ChatCompletion`\>\>
 
-Defined in: [lib/ai.ts:148](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L148)
+Defined in: [lib/ai.ts:154](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L154)
 
 创建非流式对话
 
@@ -84,7 +84,7 @@ Defined in: [lib/ai.ts:148](https://github.com/maiyunnet/kebab/blob/master/lib/a
 
 > **chat**(`body`): `Promise`\<`false` \| `APIPromise`\<`Stream`\<`ChatCompletionChunk`\>\>\>
 
-Defined in: [lib/ai.ts:152](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L152)
+Defined in: [lib/ai.ts:158](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L158)
 
 创建流式对话
 
@@ -104,7 +104,7 @@ Defined in: [lib/ai.ts:152](https://github.com/maiyunnet/kebab/blob/master/lib/a
 
 > **embedding**(`body`): `Promise`\<`false` \| `APIPromise`\<`CreateEmbeddingResponse`\>\>
 
-Defined in: [lib/ai.ts:175](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L175)
+Defined in: [lib/ai.ts:181](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L181)
 
 创建向量
 
@@ -124,7 +124,7 @@ Defined in: [lib/ai.ts:175](https://github.com/maiyunnet/kebab/blob/master/lib/a
 
 > **image**(`opt`): `Promise`\<`false` \| \{ `list`: `object`[]; `request`: `string`; `seed`: `number`; \}\>
 
-Defined in: [lib/ai.ts:191](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L191)
+Defined in: [lib/ai.ts:197](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L197)
 
 生成图像，不支持 GEMINI、GROK 服务商
 
@@ -142,7 +142,7 @@ Defined in: [lib/ai.ts:191](https://github.com/maiyunnet/kebab/blob/master/lib/a
 
 `string`[]
 
-参考图，请注意模型是否支持，以及是否支持多张，仅支持 ALICN、ALIAS、VOLCN、VOLAS 服务商
+参考图，请注意模型是否支持，以及是否支持多张，仅支持 ALICN、ALIAS、ALINE、VOLCN、VOLAS 服务商
 
 ###### model
 
@@ -186,7 +186,7 @@ Defined in: [lib/ai.ts:191](https://github.com/maiyunnet/kebab/blob/master/lib/a
 
 > **poll**(`opt`): `Promise`\<`false` \| \{ `add?`: `number`; `end?`: `number`; `error?`: `string`; `start?`: `number`; `status`: `"FAILED"` \| `"PENDING"` \| `"RUNNING"` \| `"SUCCEEDED"` \| `"CANCELED"` \| `"UNKNOWN"`; `task`: `string`; `url?`: `string`; \}\>
 
-Defined in: [lib/ai.ts:539](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L539)
+Defined in: [lib/ai.ts:546](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L546)
 
 轮询任务
 
@@ -212,9 +212,9 @@ Defined in: [lib/ai.ts:539](https://github.com/maiyunnet/kebab/blob/master/lib/a
 
 > **video**(`opt`): `Promise`\<`false` \| \{ `request`: `string`; `seed`: `number`; `status`: `"FAILED"` \| `"PENDING"` \| `"RUNNING"` \| `"SUCCEEDED"` \| `"CANCELED"` \| `"UNKNOWN"`; `task`: `string`; \}\>
 
-Defined in: [lib/ai.ts:371](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L371)
+Defined in: [lib/ai.ts:378](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L378)
 
-异步生成视频，仅支持 ALICN、ALIAS
+异步生成视频，仅支持 ALICN、ALIAS、ALINE
 
 #### Parameters
 

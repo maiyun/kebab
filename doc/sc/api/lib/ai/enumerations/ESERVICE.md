@@ -18,7 +18,7 @@ Defined in: [lib/ai.ts:19](https://github.com/maiyunnet/kebab/blob/master/lib/ai
 
 Defined in: [lib/ai.ts:23](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L23)
 
-阿里国际区
+阿里新加坡
 
 ***
 
@@ -32,11 +32,21 @@ Defined in: [lib/ai.ts:21](https://github.com/maiyunnet/kebab/blob/master/lib/ai
 
 ***
 
-### AZURE
+### ALINE
 
-> **AZURE**: `2`
+> **ALINE**: `2`
 
 Defined in: [lib/ai.ts:25](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L25)
+
+阿里美国
+
+***
+
+### AZURE
+
+> **AZURE**: `3`
+
+Defined in: [lib/ai.ts:27](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L27)
 
 微软 Azure
 
@@ -44,9 +54,9 @@ Defined in: [lib/ai.ts:25](https://github.com/maiyunnet/kebab/blob/master/lib/ai
 
 ### AZURE2
 
-> **AZURE2**: `3`
+> **AZURE2**: `4`
 
-Defined in: [lib/ai.ts:27](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L27)
+Defined in: [lib/ai.ts:29](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L29)
 
 微软 Azure 2
 
@@ -54,9 +64,9 @@ Defined in: [lib/ai.ts:27](https://github.com/maiyunnet/kebab/blob/master/lib/ai
 
 ### AZURE3
 
-> **AZURE3**: `4`
+> **AZURE3**: `5`
 
-Defined in: [lib/ai.ts:29](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L29)
+Defined in: [lib/ai.ts:31](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L31)
 
 微软 Azure 3
 
@@ -64,9 +74,9 @@ Defined in: [lib/ai.ts:29](https://github.com/maiyunnet/kebab/blob/master/lib/ai
 
 ### GEMINI
 
-> **GEMINI**: `5`
+> **GEMINI**: `6`
 
-Defined in: [lib/ai.ts:31](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L31)
+Defined in: [lib/ai.ts:33](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L33)
 
 Gemini
 
@@ -74,9 +84,9 @@ Gemini
 
 ### GROK
 
-> **GROK**: `6`
+> **GROK**: `7`
 
-Defined in: [lib/ai.ts:33](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L33)
+Defined in: [lib/ai.ts:35](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L35)
 
 Grok
 
@@ -84,9 +94,9 @@ Grok
 
 ### VOLAS
 
-> **VOLAS**: `8`
+> **VOLAS**: `9`
 
-Defined in: [lib/ai.ts:37](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L37)
+Defined in: [lib/ai.ts:39](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L39)
 
 火山引擎国际区
 
@@ -94,8 +104,8 @@ Defined in: [lib/ai.ts:37](https://github.com/maiyunnet/kebab/blob/master/lib/ai
 
 ### VOLCN
 
-> **VOLCN**: `7`
+> **VOLCN**: `8`
 
-Defined in: [lib/ai.ts:35](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L35)
+Defined in: [lib/ai.ts:37](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L37)
 
 火山引擎中国大陆区
