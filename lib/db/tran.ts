@@ -61,8 +61,8 @@ export class Transaction {
     public async query(sql: string, values?: kebab.DbValue[]): Promise<lDb.IData> {
         if (!this._conn) {
             // --- 当前连接已不可用 ---
-            lCore.display('[DB][Transaction][query] has been closed ' + (this._ctr?.getPrototype('_config').const.path ?? 'no ctr') + ': ' + sql);
-            lCore.log({}, '[DB][Transaction][query] has been closed ' + (this._ctr?.getPrototype('_config').const.path ?? 'no ctr') + ': ' + sql, '-error');
+            lCore.display('[DB][Transaction][query] has been closed, so you cannot execute SQL: ' + (this._ctr?.getPrototype('_config').const.path ?? 'no ctr') + ': ' + sql);
+            lCore.log({}, '[DB][Transaction][query] has been closed, so you cannot execute SQL: ' + (this._ctr?.getPrototype('_config').const.path ?? 'no ctr') + ': ' + sql, '-error');
             return {
                 'rows': null,
                 'fields': [],
@@ -85,8 +85,8 @@ export class Transaction {
     public async execute(sql: string, values?: kebab.DbValue[]): Promise<lDb.IPacket> {
         if (!this._conn) {
             // --- 当前连接已不可用 ---
-            lCore.display('[DB][Transaction][execute] has been closed ' + (this._ctr?.getPrototype('_config').const.path ?? 'no ctr') + ': ' + sql);
-            lCore.log({}, '(db.Transaction.execute) has been closed ' + (this._ctr?.getPrototype('_config').const.path ?? 'no ctr') + ': ' + sql, '-error');
+            lCore.display('[DB][Transaction][execute] has been closed, so you cannot execute SQL: ' + (this._ctr?.getPrototype('_config').const.path ?? 'no ctr') + ': ' + sql);
+            lCore.log({}, '[DB][Transaction][execute] has been closed, so you cannot execute SQL: ' + (this._ctr?.getPrototype('_config').const.path ?? 'no ctr') + ': ' + sql, '-error');
             return {
                 'packet': null,
                 'fields': [],
@@ -104,8 +104,8 @@ export class Transaction {
     public async commit(): Promise<boolean> {
         if (!this._conn) {
             // --- 当前连接已不可用 ---
-            lCore.display('[DB][Transaction][commit] has been closed ' + (this._ctr?.getPrototype('_config').const.path ?? 'no ctr'));
-            lCore.log({}, '[DB][Transaction][commit] has been closed ' + (this._ctr?.getPrototype('_config').const.path ?? 'no ctr'), '-error');
+            lCore.display('[DB][Transaction][commit] has been closed, so you cannot commit: ' + (this._ctr?.getPrototype('_config').const.path ?? 'no ctr'));
+            lCore.log({}, '[DB][Transaction][commit] has been closed, so you cannot commit: ' + (this._ctr?.getPrototype('_config').const.path ?? 'no ctr'), '-error');
             return false;
         }
         const r = await this._conn.commit();
@@ -126,8 +126,8 @@ export class Transaction {
     public async rollback(): Promise<boolean> {
         if (!this._conn) {
             // --- 当前连接已不可用 ---
-            lCore.display('[DB][Transaction][rollback] has been closed: ' + (this._ctr?.getPrototype('_config').const.path ?? 'no ctr'));
-            lCore.log({}, '[DB][Transaction][rollback] has been closed: ' + (this._ctr?.getPrototype('_config').const.path ?? 'no ctr'), '-error');
+            lCore.display('[DB][Transaction][rollback] has been closed, so you cannot rollback: ' + (this._ctr?.getPrototype('_config').const.path ?? 'no ctr'));
+            lCore.log({}, '[DB][Transaction][rollback] has been closed, so you cannot rollback: ' + (this._ctr?.getPrototype('_config').const.path ?? 'no ctr'), '-error');
             return false;
         }
         const r = await this._conn.rollback();
