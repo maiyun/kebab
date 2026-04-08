@@ -518,7 +518,7 @@ function logSpike(
  */
 function getOsCpuPercent(): number {
     const cpus = os.cpus();
-    if (!lastOsCpus || lastOsCpus.length !== cpus.length) {
+    if (lastOsCpus?.length !== cpus.length) {
         lastOsCpus = cpus;
         return 0;
     }

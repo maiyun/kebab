@@ -1,12 +1,15 @@
 /**
  * --- Kebab React 全页面示例组件 ---
  *
- * node ./source/main build -d source/www/example/stc/view
+ * node ./source/main build -d source/www/example/stc
+ *
+ * 【文件命名约定】
+ * 文件名以 .page.tsx 结尾的为页面入口（本文件），框架会将其打包为 .page.bundle.js。
+ * 其余 .tsx 均视为组件（如 stc/lib/ui/button.tsx），不会被单独打包。
  *
  * 【使用方式】
- * 在 Ctr 方法中调用 _loadReactPage('view/react-page', { ...props })，
- * 框架自动注入 _importMapJson / _hydrateScript / _propsJson 三个内部 props，
- * 组件在 <head> 和 <body> 末尾渲染对应的 <script> 标签即可，其余部分与普通 React 组件无异。
+ * 在 Ctr 方法中调用 _loadReactPage('view/react', { ...props })，
+ * 框架自动将 import map、props JSON、水合脚本注入 HTML，组件只写业务逻辑，无需任何框架样板代码。
  *
  * 【多页面 / 共用组件】
  * 将公共 UI（如 Label/Input/Checkbox）放在 stc/lib/ui/ 目录，各页面 import 进来。
@@ -16,7 +19,7 @@
  * 【编译方式】
  * 本文件 (.tsx) 已集成到 source/tsconfig.json 的 include 中，
  * 开启 `tsc: watch - source/tsconfig.json` 即可自动编译，无需额外命令。
- * 编译输出：stc/view/react-page.js（由 tsc 覆盖写入，勿手动编辑 .js 文件）
+ * 编译输出：stc/view/react.page.js（由 tsc 覆盖写入，勿手动编辑 .js 文件）
  *
  * 【运行时机】
  * - 服务端（Node.js）：_loadReactPage() 调用 renderToString()，产出完整 HTML 字符串。
@@ -51,9 +54,6 @@ interface IProps {
     '_urlStc': string;
     '_urlFull': string;
     '_staticVer': string;
-    '_importMapJson'?: string;
-    '_hydrateScript'?: string;
-    '_propsJson'?: string;
 }
 
 // ─── 页面内部组件（仅本页演示使用，无需提取到 lib/）────────────────────────────
@@ -351,7 +351,7 @@ function ShadcnDemo() {
 // ─── 页面主组件 ────────────────────────────────────────────────────────────────
 
 /** --- Kebab React 全页面演示 --- */
-export default function ReactPage({ title, serverTime, node, _urlBase, _urlStc, _staticVer, _importMapJson, _hydrateScript, _propsJson }: IProps) {
+export default function ReactPage({ title, serverTime, node, _urlBase, _urlStc, _staticVer }: IProps) {
 
     // --- useState 在 SSR 阶段使用初始值渲染，客户端水合后变为可交互状态 ---
     const [count, setCount] = useState(0);
@@ -392,20 +392,9 @@ export default function ReactPage({ title, serverTime, node, _urlBase, _urlStc, 
                 <meta charSet="UTF-8" />
                 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
                 <title>{title}</title>
-                {/* import map：框架自动注入，bare import 通过 esm.sh 解析 */}
-                {_importMapJson && (
-                    <script type="importmap" dangerouslySetInnerHTML={{ '__html': _importMapJson }} />
-                )}
-                {/*
-                  * dev mode (_importMapJson present): load Tailwind Play CDN — no build step needed.
-                  * bundle mode (_importMapJson absent): load the compiled react-page.css produced by
-                  *   `kebab build`, so the CDN never runs and never injects extra <style> nodes into
-                  *   <head> before React's hydrateRoot, which would cause hydration error #418.
-                  */}
-                {_importMapJson
-                    ? <script src="https://cdn.tailwindcss.com"></script>
-                    : <link rel="stylesheet" href={`${_urlStc}view/react-page.css?v=${_staticVer}`} />
-                }
+                {/* import map 由框架自动注入在此标签前，无需手动添加 */}
+                {/* dev: Tailwind Play CDN；prod: 将此行替换为 kebab build 编译的 CSS 文件 */}
+                <link href={`${_urlStc}view/react.page.css?v=${_staticVer}`} rel="stylesheet" />
             </head>
             <body className="bg-slate-50 min-h-screen font-sans">
                 <div className="max-w-3xl mx-auto px-4 py-10 space-y-6">
@@ -540,23 +529,23 @@ export default function ReactPage({ title, serverTime, node, _urlBase, _urlStc, 
                                     To let React Router manage the real URL (e.g. /app, /app/about),
                                     replace MemoryRouter with BrowserRouter and route all sub-paths to the same Ctr method on the server:
                                 </p>
-                                <pre className="bg-slate-50 border border-slate-200 rounded-lg p-4 text-xs overflow-auto leading-relaxed text-slate-700">{`// 1. route.json: route all sub-paths to the same Ctr method
+                                <pre className="bg-slate-50 border border-slate-200 rounded-lg p-4 text-xs overflow-auto leading-relaxed text-slate-700">{`// 1. route.json: 将所有子路径路由到同一 Ctr 方法
 {
   "app":   "ctr/app@reactPage",
   "app\\/.*": "ctr/app@reactPage"
 }
 
-// 2. Client (browser): BrowserRouter reads the current URL automatically
-import { BrowserRouter } from 'react-router-dom';
-hydrateRoot(document,
-  createElement(BrowserRouter, { basename: '/app' },
-    createElement(App, props)));
+// 2. Ctr 方法：传入 router: 'browser'，框架自动处理 SSR（StaticRouter）和客户端（BrowserRouter）
+await this._loadReactPage('view/my', { ...props }, {
+  router: 'browser',
+  routerBase: 'app',  // basename，相对于 urlBase
+});
 
-// 3. Server SSR: StaticRouter uses the request URL to avoid hydration mismatch
-import { StaticRouter } from 'react-router-dom/server';
-renderToString(
-  createElement(StaticRouter, { location: reqPath },
-    createElement(App, props)));`}
+// 3. 组件：直接使用 Routes/Route/Link，不需要包裹任何 Router 层
+<Routes>
+  <Route path="/" element={<Home />} />
+  <Route path="/user/:id" element={<User />} />
+</Routes>`}
                                 </pre>
                             </Card>
                         </MemoryRouter>
@@ -600,17 +589,7 @@ renderToString(
                     )}
 
                 </div>
-                {/* props JSON：供客户端水合脚本读取 */}
-                <script
-                    id="__kebab_props__"
-                    type="application/json"
-                    suppressHydrationWarning
-                    dangerouslySetInnerHTML={{ '__html': _propsJson ?? '' }}
-                />
-                {/* 水合脚本：hydrateRoot 接管 document */}
-                {_hydrateScript && (
-                    <script type="module" dangerouslySetInnerHTML={{ '__html': _hydrateScript }} />
-                )}
+                {/* props JSON 与水合脚本由框架自动注入在此标签前，无需手动添加 */}
             </body>
         </html>
     );

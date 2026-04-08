@@ -382,8 +382,9 @@ export class Ctr {
             'staticPath'?: string;
         } = {}
     ): Promise<string> {
+        // --- 约定：传入路径不含 .page 后缀，框架自动补全（对应 build 命令的 *.page.tsx 约定）---
         // --- 组件 JS 从 stc 目录读取，浏览器同样通过 staticPath（支持 CDN）下载 ---
-        const componentPath = this._config.const.rootPath + 'stc/' + path + '.js';
+        const componentPath = this._config.const.rootPath + 'stc/' + path + '.page.js';
         if (!await lFs.isFile(componentPath)) {
             return '';
         }
@@ -413,26 +414,32 @@ export class Ctr {
                 '_locale': this._locale,
                 '_localeData': localeData,
             };
+            // --- 框架自动注入的 HTML 片段，用户组件无需手动渲染 ---
+            let headInject = '';
+            let bodyInject = '';
             if (opt.hydrate !== false) {
                 const reactVer = opt.reactVer ?? '19';
                 const esm = 'https://esm.sh/';
                 // --- 检查是否有 npx kebab build 生成的自包含预构建包 ---
-                const bundlePath = this._config.const.rootPath + 'stc/' + path + '.bundle.js';
+                const bundlePath = this._config.const.rootPath + 'stc/' + path + '.page.bundle.js';
                 const hasBundle = await lFs.isFile(bundlePath);
                 if (opt.router === 'browser') {
-                    // --- BrowserRouter 模式：_routerBase 注入 props，bundle 读取此值决定是否包裹 BrowserRouter ---
+                    // --- BrowserRouter 模式：_routerBase 注入 props，供水合脚本读取 ---
                     const base = opt.routerBase ?? '';
                     const routerBase = this._config.const.urlBase + base.replace(/^\//, '');
                     fullProps['_routerBase'] = routerBase.replace(/\/$/, '');
                 }
+                // --- propsJson 在渲染前序列化，框架直接注入 HTML，组件无需手动渲染 ---
+                const propsJson = lText.stringifyJson(fullProps).replace(/<\/script>/gi, '<\\/script>');
+                let hydrateScript: string;
                 if (hasBundle) {
-                    // --- bundle 模式：bundle 自包含 React + 水合逻辑，无需 import map，一个 JS 文件搞定 ---
-                    const clientUrl = `${staticPath}${path}.bundle.js?v=${this._config.set.staticVer}`;
-                    fullProps['_hydrateScript'] = `import'${clientUrl}';`;
+                    // --- bundle 模式：bundle 自包含 React + 水合逻辑，无需 import map ---
+                    const clientUrl = `${staticPath}${path}.page.bundle.js?v=${this._config.set.staticVer}`;
+                    hydrateScript = `import'${clientUrl}';`;
                 }
                 else {
                     // --- 开发模式（tsc 编译 .js）：通过 esm.sh import map 解析 bare import ---
-                    const clientUrl = `${staticPath}${path}.js?v=${this._config.set.staticVer}`;
+                    const clientUrl = `${staticPath}${path}.page.js?v=${this._config.set.staticVer}`;
                     // --- 内置 import map 条目（React 生态核心包）---
                     const builtinImports: Record<string, string> = {
                         'react': `${esm}react@${reactVer}`,
@@ -444,60 +451,30 @@ export class Ctr {
                     // --- 自动扫描入口 JS 及其相对引用，收集所有第三方 bare specifier ---
                     const scannedFiles = new Set<string>();
                     const extraImports = new Set<string>();
-                    const scanImports = async (filePath: string): Promise<void> => {
-                        if (scannedFiles.has(filePath)) {
-                            return;
-                        }
-                        scannedFiles.add(filePath);
-                        const src = await lFs.getContent(filePath, 'utf8');
-                        if (!src) {
-                            return;
-                        }
-                        const re = /\bfrom\s*['"]([^'"]+)['"]/g;
-                        let m;
-                        while ((m = re.exec(src)) !== null) {
-                            const spec = m[1];
-                            if (spec.startsWith('./') || spec.startsWith('../')) {
-                                // --- 相对引用：解析为绝对路径后递归扫描 ---
-                                const dir = filePath.substring(0, filePath.lastIndexOf('/') + 1);
-                                const resolved = new URL(spec, 'file://' + dir).pathname;
-                                await scanImports(resolved);
-                            }
-                            else if (!spec.startsWith('/') && !spec.startsWith('http') && !(spec in builtinImports)) {
-                                // --- 第三方 bare specifier：加入 import map ---
-                                extraImports.add(spec);
-                            }
-                        }
-                    };
-                    await scanImports(componentPath);
+                    await this._scanImports(componentPath, scannedFiles, extraImports, builtinImports);
                     // --- 第三方包统一通过 esm.sh 解析，external react/react-dom 避免重复加载 ---
                     for (const pkg of extraImports) {
                         builtinImports[pkg] = `${esm}${pkg}?external=react,react-dom`;
                     }
-                    fullProps['_importMapJson'] = lText.stringifyJson({
-                        'imports': builtinImports,
-                    });
-                    if (opt.router === 'browser') {
-                        fullProps['_hydrateScript'] =
-                            `import{hydrateRoot}from'react-dom/client';` +
-                            `import{createElement}from'react';` +
-                            `import{BrowserRouter}from'react-router-dom';` +
-                            `import App from'${clientUrl}';` +
-                            `const p=JSON.parse(document.getElementById('__kebab_props__').textContent);` +
-                            `hydrateRoot(document,createElement(BrowserRouter,{basename:p._routerBase},createElement(App,p)));`;
-                    }
-                    else {
-                        fullProps['_hydrateScript'] =
-                            `import{hydrateRoot}from'react-dom/client';` +
-                            `import{createElement}from'react';` +
-                            `import App from'${clientUrl}';` +
-                            `const p=JSON.parse(document.getElementById('__kebab_props__').textContent);` +
-                            `hydrateRoot(document,createElement(App,p));`;
-                    }
+                    // --- import map 注入到 </head> 前 ---
+                    headInject = `<script type="importmap">${lText.stringifyJson({ 'imports': builtinImports })}</script>`;
+                    // --- BrowserRouter 模式多一段 Router 导入与包裹层 ---
+                    const routerImport = opt.router === 'browser' ? `import{BrowserRouter}from'react-router-dom';` : '';
+                    const routerCreate = opt.router === 'browser'
+                        ? `createElement(BrowserRouter,{basename:p._routerBase},createElement(App,p))`
+                        : `createElement(App,p)`;
+                    hydrateScript =
+                        `import{hydrateRoot}from'react-dom/client';` +
+                        `import{createElement}from'react';` +
+                        routerImport +
+                        `import App from'${clientUrl}';` +
+                        `const p=JSON.parse(document.getElementById('__kebab_props__').textContent);` +
+                        `hydrateRoot(document,${routerCreate});`;
                 }
-                // --- _propsJson 序列化当前 fullProps（不含 _propsJson 本身，避免循环引用）---
-                // --- 客户端水合时读取此 JSON，_propsJson 缺失，suppressHydrationWarning 处理差异 ---
-                fullProps['_propsJson'] = lText.stringifyJson(fullProps).replace(/<\/script>/gi, '<\\/script>');
+                // --- props JSON + 水合脚本注入到 </body> 前 ---
+                bodyInject =
+                    `<script id="__kebab_props__" type="application/json">${propsJson}</script>` +
+                    `<script type="module">${hydrateScript}</script>`;
             }
             // --- BrowserRouter 模式：服务端用 StaticRouter 渲染，与客户端的 BrowserRouter 等价 ---
             // --- component 来自动态 import，TypeScript 无法精确推断，需要明确限定 element 类型 ---
@@ -516,11 +493,55 @@ export class Ctr {
                     react.createElement(component as Parameters<typeof react.createElement>[0], fullProps)
                 );
             }
-            return '<!DOCTYPE html>' + reactDomServer.renderToString(element);
+            // --- 框架将 import map 注入 </head> 前，props JSON + 水合脚本注入 </body> 前 ---
+            let html = '<!DOCTYPE html>' + reactDomServer.renderToString(element);
+            if (opt.hydrate !== false) {
+                html = html.replace('</head>', headInject + '</head>');
+                html = html.replace('</body>', bodyInject + '</body>');
+            }
+            return html;
         }
         catch (e: kebab.Json) {
             lCore.debug(`[CTR][_loadReactPage] ${e.message ?? ''}`);
             return '';
+        }
+    }
+
+    /**
+     * --- 递归扫描 JS 文件中的 import 语句，收集第三方 bare specifier ---
+     * @param filePath 当前要扫描的文件绝对路径
+     * @param scannedFiles 已扫描文件集（去重用）
+     * @param extraImports 收集到的第三方包名集合
+     * @param builtinImports 内置 import map，已有条目不重复添加
+     */
+    private async _scanImports(
+        filePath: string,
+        scannedFiles: Set<string>,
+        extraImports: Set<string>,
+        builtinImports: Record<string, string>
+    ): Promise<void> {
+        if (scannedFiles.has(filePath)) {
+            return;
+        }
+        scannedFiles.add(filePath);
+        const src = await lFs.getContent(filePath, 'utf8');
+        if (!src) {
+            return;
+        }
+        const re = /\bfrom\s*['"]([^'"]+)['"]/g;
+        let m;
+        while ((m = re.exec(src)) !== null) {
+            const spec = m[1];
+            if (spec.startsWith('./') || spec.startsWith('../')) {
+                // --- 相对引用：解析为绝对路径后递归扫描 ---
+                const dir = filePath.substring(0, filePath.lastIndexOf('/') + 1);
+                const resolved = new URL(spec, 'file://' + dir).pathname;
+                await this._scanImports(resolved, scannedFiles, extraImports, builtinImports);
+            }
+            else if (!spec.startsWith('/') && !spec.startsWith('http') && !(spec in builtinImports)) {
+                // --- 第三方 bare specifier：加入 import map ---
+                extraImports.add(spec);
+            }
         }
     }
 

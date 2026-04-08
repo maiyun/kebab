@@ -1,7 +1,7 @@
 /**
  * --- Kebab React BrowserRouter 全页面示例组件 ---
  * 
- * node ./source/main build -d ./source/www/example/stc/view
+ * node ./source/main build -d source/www/example/stc
  *
  * 【特性】
  * 本组件演示 _loadReactPage 的 router: 'browser' 模式，实现地址栏与路由联动：

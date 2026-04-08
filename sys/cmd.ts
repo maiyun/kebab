@@ -369,10 +369,11 @@ async function run(): Promise<void> {
     }
 
     if (cmds[0] === 'build') {
-        // --- 构建命令：使用 esbuild 打包入口 .tsx 文件为自包含 bundle ---
-        // --- 只打包「直属于指定目录」的 .tsx，子目录内的组件文件不会被打包 ---
-        // --- 推荐目录结构：stc/view/app.tsx（入口）+ stc/view/pages/home.tsx（子组件）---
-        // --- 用法：node ./source/main build [-d www/myapp/stc/view] ---
+        // --- 构建命令：使用 esbuild 打包 *.page.tsx 文件为自包含 bundle ---
+        // --- 约定：文件名以 .page.tsx 结尾的为页面入口，会被打包；其余 .tsx 均视为组件，不参与打包 ---
+        // --- 与 Next.js 的 page.tsx 约定同理，开发者可自由组织目录结构，框架靠文件名区分入口与组件 ---
+        // --- 推荐目录结构：stc/view/home.page.tsx（入口）+ stc/view/components/header.tsx（组件）---
+        // --- 用法：node ./source/main build [-d www/myapp/stc] ---
         let targetDir = '';
         for (let i = 1; i < cmds.length; i++) {
             if ((cmds[i] === '-d' || cmds[i] === '--dir') && cmds[i + 1]) {
@@ -381,7 +382,7 @@ async function run(): Promise<void> {
             }
         }
 
-        /** --- 扫描目录下直属的 .tsx 文件（非递归），子目录内文件不作为打包入口 --- */
+        /** --- 递归扫描目录，收集所有 *.page.tsx 文件作为打包入口 --- */
         const entryPoints: string[] = [];
         const scanDir = async (dir: string): Promise<void> => {
             const items = await lFs.readDir(dir);
@@ -389,14 +390,17 @@ async function run(): Promise<void> {
                 if (item.name === '.' || item.name === '..') {
                     continue;
                 }
-                if (!item.isDirectory() && item.name.endsWith('.tsx')) {
+                if (item.isDirectory()) {
+                    await scanDir(`${dir}/${item.name}`);
+                }
+                else if (item.name.endsWith('.page.tsx')) {
                     entryPoints.push(`${dir}/${item.name}`);
                 }
             }
         };
 
         if (targetDir) {
-            // --- 指定了目录，只扫描该目录下的直属 .tsx ---
+            // --- 指定了目录：递归扫描该目录下所有 *.page.tsx ---
             const absTarget = targetDir.startsWith('/') || /^[A-Za-z]:/.test(targetDir)
                 ? targetDir
                 : kebab.ROOT_CWD + targetDir.replace(/^\//, '');
@@ -410,8 +414,7 @@ async function run(): Promise<void> {
             }
         }
         else {
-            // --- 未指定目录：扫描 www/*/stc/ 及其直接子目录下的 .tsx ---
-            // --- 即扫描 stc/*.tsx 和 stc/*/*.tsx（如 stc/view/app.tsx），不再深入 ---
+            // --- 未指定目录：递归扫描所有站点的 www/*/stc/ ---
             const wwwItems = await lFs.readDir(kebab.WWW_CWD);
             for (const wwwItem of wwwItems) {
                 if (wwwItem.name === '.' || wwwItem.name === '..' || !wwwItem.isDirectory()) {
@@ -421,16 +424,7 @@ async function run(): Promise<void> {
                 if (!await lFs.isDir(stcPath)) {
                     continue;
                 }
-                // --- 扫描 stc/ 直属文件 ---
                 await scanDir(stcPath);
-                // --- 扫描 stc/ 的直接子目录（如 view/），取其顶层 .tsx 作为入口 ---
-                const stcItems = await lFs.readDir(stcPath);
-                for (const stcItem of stcItems) {
-                    if (stcItem.name === '.' || stcItem.name === '..' || !stcItem.isDirectory()) {
-                        continue;
-                    }
-                    await scanDir(`${stcPath}/${stcItem.name}`);
-                }
             }
         }
 
@@ -442,17 +436,32 @@ async function run(): Promise<void> {
         lCore.display('KEBAB', 'BUILD', `Found ${entryPoints.length} file(s).`);
 
         const esbuild = await import('esbuild');
+        // --- 按 stc/ 根目录分组：同一站点内所有页面合并为一次 esbuild 构建 ---
+        // --- 不同站点（不同 stc/）相互隔离，同站点内跨子目录页面共享 chunk ---
+        // --- splitting: true 自动将任意共享 import（React/Header/utils 等）提取为独立 chunk ---
+        /**
+         * --- 查找路径中最后一段名为 stc 的祖先目录 ---
+         */
+        const getStcRoot = (filePath: string): string => {
+            const parts = filePath.split('/');
+            const idx = parts.lastIndexOf('stc');
+            return idx >= 0 ? parts.slice(0, idx + 1).join('/') : parts.slice(0, -1).join('/');
+        };
+        const byStc = new Map<string, string[]>();
         for (const entry of entryPoints) {
-            const outfile = entry.replace(/\.tsx$/, '.bundle.js');
-            lCore.display('KEBAB', 'BUILD', entry.replace(kebab.ROOT_CWD, ''), '→', outfile.replace(kebab.ROOT_CWD, ''));
-            try {
-                /** --- 组件文件名（不含扩展名），用于生成 stdin 入口的 import 语句 --- */
+            const stcRoot = getStcRoot(entry);
+            if (!byStc.has(stcRoot)) {
+                byStc.set(stcRoot, []);
+            }
+            byStc.get(stcRoot)!.push(entry);
+        }
+        for (const [stcRoot, entries] of byStc) {
+            // --- 为每个页面写入水合入口临时文件（实际文件，splitting 不支持 stdin 多入口）---
+            const tempFiles: string[] = [];
+            for (const entry of entries) {
                 const basename = entry.split('/').pop()!.replace(/\.tsx$/, '');
-                /** --- 组件所在目录，esbuild 以此为基准解析相对 import --- */
-                const resolveDir = entry.substring(0, entry.lastIndexOf('/'));
-                // --- stdin 入口：含水合逻辑，_routerBase 在 props 中时自动包裹 BrowserRouter ---
-                // --- React/react-dom/react-router-dom 全部打入 bundle，浏览器只加载一个 JS ---
-                const stdinContent = [
+                const entryDir = entry.substring(0, entry.lastIndexOf('/'));
+                const hydrateCode = [
                     `import{hydrateRoot}from'react-dom/client';`,
                     `import{createElement}from'react';`,
                     `import{BrowserRouter}from'react-router-dom';`,
@@ -467,31 +476,52 @@ async function run(): Promise<void> {
                     `}`,
                     `}`,
                 ].join('');
+                const tempFile = `${entryDir}/${basename}.hydrate.tsx`;
+                await lFs.putContent(tempFile, hydrateCode);
+                tempFiles.push(tempFile);
+                lCore.display('KEBAB', 'BUILD', entry.replace(kebab.ROOT_CWD, ''), '→', entry.replace(kebab.ROOT_CWD, '').replace(/\.tsx$/, '.bundle.js'));
+            }
+            // --- JS 构建：整站一次构建，splitting 按实际共享情况自动提取 chunk ---
+            // --- outbase = outdir = stcRoot，入口保留子目录结构，chunk 落在 stcRoot 根 ---
+            try {
                 await esbuild.build({
-                    'stdin': {
-                        'contents': stdinContent,
-                        'resolveDir': resolveDir,
-                        'sourcefile': basename + '.hydrate.tsx',
-                        'loader': 'tsx',
-                    },
+                    'entryPoints': tempFiles,
                     'bundle': true,
-                    // --- 无 external：React 全部打入 bundle，生成自包含文件，浏览器只加载一个 JS ---
+                    'splitting': true,
                     'format': 'esm',
                     'jsx': 'automatic',
                     'jsxImportSource': 'react',
                     'platform': 'browser',
                     'target': 'es2022',
                     'minify': true,
-                    'outfile': outfile,
+                    'outbase': stcRoot,
+                    'outdir': stcRoot,
+                    'entryNames': '[dir]/[name]',
+                    'chunkNames': 'chunk-[hash]',
                 });
-                lCore.display('KEBAB', 'BUILD', 'JS', outfile.replace(kebab.ROOT_CWD, ''));
-                // --- 构建 Tailwind CSS：生成同名 .css 文件 ---
+                // --- 将 *.hydrate.js 重命名为 *.bundle.js ---
+                for (const tempFile of tempFiles) {
+                    const hydrateJs = tempFile.replace(/\.tsx$/, '.js');
+                    const bundleJs = hydrateJs.replace(/\.hydrate\.js$/, '.bundle.js');
+                    await lFs.rename(hydrateJs, bundleJs);
+                    lCore.display('KEBAB', 'BUILD', 'JS', bundleJs.replace(kebab.ROOT_CWD, ''));
+                }
+            }
+            catch (e: kebab.Json) {
+                lCore.display('KEBAB', 'BUILD', 'JS FAILED', stcRoot.replace(kebab.ROOT_CWD, ''), e.message ?? '');
+            }
+            finally {
+                // --- 清理临时水合入口文件 ---
+                for (const tempFile of tempFiles) {
+                    await lFs.unlink(tempFile);
+                }
+            }
+            // --- CSS：每个入口单独构建 Tailwind ---
+            for (const entry of entries) {
                 const cssOut = entry.replace(/\.tsx$/, '.css');
-                /** --- 临时 CSS 输入文件，@source 扫描当前目录及子目录所有 tsx 文件 ---  */
                 const tmpCss = entry + '.__tw__.css';
                 await lFs.putContent(tmpCss, `@import "tailwindcss";\n@source "./**/*.tsx";\n`);
                 try {
-                    /** --- 直接用当前 Node.js 执行 CLI 的 JS 入口，跨平台无需 shell --- */
                     const twJs = fileURLToPath(new URL('../node_modules/@tailwindcss/cli/dist/index.mjs', import.meta.url));
                     await new Promise<void>((resolve, reject) => {
                         const proc = childProcess.spawn(
@@ -518,9 +548,6 @@ async function run(): Promise<void> {
                 finally {
                     await lFs.unlink(tmpCss);
                 }
-            }
-            catch (e: kebab.Json) {
-                lCore.display('KEBAB', 'BUILD', 'FAILED', entry.replace(kebab.ROOT_CWD, ''), e.message ?? '');
             }
         }
         lCore.display('DONE');

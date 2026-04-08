@@ -118,6 +118,7 @@ export default class extends sCtr.Ctr {
             `<br><a href="${this._config.const.urlBase}test/react-page">View "test/react-page" (SSR)</a>`,
             `<br><a href="${this._config.const.urlBase}test/react-router-page">View "test/react-router-page" (SSR + BrowserRouter)</a>`,
             `<br><a href="${this._config.const.urlBase}test/react-router-page-data?path=/user">View "test/react-router-page-data?path=/user" (Data API)</a>`,
+            `<br><a href="${this._config.const.urlBase}test/react-hello-page">View "test/react-hello-page" (React Hello Page)</a>`,
 
             '<br><br><b>Return json:</b>',
             `<br><br><a href="${this._config.const.urlBase}test/json?type=1">View "test/json?type=1"</a>`,
@@ -4400,11 +4401,20 @@ send.addEventListener('click', async () => {
     }
 
     /**
+     * --- React 最简页面示例：展示一个 React 页面最少需要写哪些内容 ---
+     */
+    public async reactHelloPage(): Promise<string> {
+        return this._loadReactPage('view/hello', {
+            'greeting': 'Hello, Kebab React!',
+        });
+    }
+
+    /**
      * --- React 全页模式测试：组件自主渲染完整 HTML 文档 + 客户端水合，无需 EJS ---
      */
     public async reactPage(): Promise<string> {
         // --- Ctr 方法负责数据准备（可以查数据库、调接口等），组件不包含任何服务端专属代码 ---
-        return this._loadReactPage('view/react-page', {
+        return this._loadReactPage('view/react', {
             'title': 'Kebab React Full Page',
             'serverTime': lTime.format(this, 'Y-m-d H:i:s'),
             'node': process.version,
@@ -4450,7 +4460,7 @@ send.addEventListener('click', async () => {
             ? (reqUrl.substring(basePrefix.length) || '/')
             : '/';
         const routeData = this._getRouteData(routePath);
-        return this._loadReactPage('view/react-router-page', {
+        return this._loadReactPage('view/react-router', {
             'title': 'Kebab React Router',
             'serverTime': lTime.format(this, 'Y-m-d H:i:s'),
             'node': process.version,
