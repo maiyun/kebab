@@ -433,14 +433,49 @@ export class Ctr {
                 else {
                     // --- 开发模式（tsc 编译 .js）：通过 esm.sh import map 解析 bare import ---
                     const clientUrl = `${staticPath}${path}.js?v=${this._config.set.staticVer}`;
+                    // --- 内置 import map 条目（React 生态核心包）---
+                    const builtinImports: Record<string, string> = {
+                        'react': `${esm}react@${reactVer}`,
+                        'react-dom': `${esm}react-dom@${reactVer}`,
+                        'react-dom/client': `${esm}react-dom@${reactVer}/client`,
+                        'react/jsx-runtime': `${esm}react@${reactVer}/jsx-runtime`,
+                        'react-router-dom': `${esm}react-router-dom@7?external=react,react-dom`,
+                    };
+                    // --- 自动扫描入口 JS 及其相对引用，收集所有第三方 bare specifier ---
+                    const scannedFiles = new Set<string>();
+                    const extraImports = new Set<string>();
+                    const scanImports = async (filePath: string): Promise<void> => {
+                        if (scannedFiles.has(filePath)) {
+                            return;
+                        }
+                        scannedFiles.add(filePath);
+                        const src = await lFs.getContent(filePath, 'utf8');
+                        if (!src) {
+                            return;
+                        }
+                        const re = /\bfrom\s*['"]([^'"]+)['"]/g;
+                        let m;
+                        while ((m = re.exec(src)) !== null) {
+                            const spec = m[1];
+                            if (spec.startsWith('./') || spec.startsWith('../')) {
+                                // --- 相对引用：解析为绝对路径后递归扫描 ---
+                                const dir = filePath.substring(0, filePath.lastIndexOf('/') + 1);
+                                const resolved = new URL(spec, 'file://' + dir).pathname;
+                                await scanImports(resolved);
+                            }
+                            else if (!spec.startsWith('/') && !spec.startsWith('http') && !(spec in builtinImports)) {
+                                // --- 第三方 bare specifier：加入 import map ---
+                                extraImports.add(spec);
+                            }
+                        }
+                    };
+                    await scanImports(componentPath);
+                    // --- 第三方包统一通过 esm.sh 解析，external react/react-dom 避免重复加载 ---
+                    for (const pkg of extraImports) {
+                        builtinImports[pkg] = `${esm}${pkg}?external=react,react-dom`;
+                    }
                     fullProps['_importMapJson'] = lText.stringifyJson({
-                        'imports': {
-                            'react': `${esm}react@${reactVer}`,
-                            'react-dom': `${esm}react-dom@${reactVer}`,
-                            'react-dom/client': `${esm}react-dom@${reactVer}/client`,
-                            'react/jsx-runtime': `${esm}react@${reactVer}/jsx-runtime`,
-                            'react-router-dom': `${esm}react-router-dom@7?external=react,react-dom`,
-                        },
+                        'imports': builtinImports,
                     });
                     if (opt.router === 'browser') {
                         fullProps['_hydrateScript'] =

@@ -1,13 +1,16 @@
 /**
  * --- Kebab React 全页面示例组件 ---
  *
+ * node ./source/main build -d source/www/example/stc/view
+ *
  * 【使用方式】
  * 在 Ctr 方法中调用 _loadReactPage('view/react-page', { ...props })，
  * 框架自动注入 _importMapJson / _hydrateScript / _propsJson 三个内部 props，
  * 组件在 <head> 和 <body> 末尾渲染对应的 <script> 标签即可，其余部分与普通 React 组件无异。
  *
  * 【多页面 / 共用组件】
- * 将公共 UI（如 Button/Card/Badge）放在 stc/lib/ 目录，各页面 import 进来。
+ * 将公共 UI（如 Label/Input/Checkbox）放在 stc/lib/ui/ 目录，各页面 import 进来。
+ * 这和 shadcn/ui 推荐的 components/ui/ 目录结构完全一致。
  * tsc watch 会自动将所有 .tsx 编译为同路径的 .js，无需打包工具。
  *
  * 【编译方式】
@@ -20,13 +23,24 @@
  * - 客户端（浏览器）：import map 将 bare import 解析到 esm.sh，hydrateRoot 接管 document。
  * - 两端使用同一份 JS 文件：服务端从磁盘读，浏览器从静态 URL 下载。
  *
+ * 【第三方包 import map 自动解析】
+ * 开发模式下，框架会自动扫描入口 JS 及其相对引用中的所有 bare specifier，
+ * 并通过 esm.sh CDN 自动生成 import map 条目，无需手动配置。
+ *
  * 【限制】
  * - 不能包含 Node.js 专属代码（fs/path/lDb 等），数据必须通过 props 传入。
  * - 等价于 Next.js 的 Client Component，而非 Server Component。
  */
 
-import { useState, useEffect, type ReactNode } from 'react';
+// --- React / React Router ---
+import { useState, useEffect, useId, type ReactNode } from 'react';
 import { MemoryRouter, Routes, Route, Link, useParams, useNavigate } from 'react-router-dom';
+
+// --- shadcn/ui 控件（从 stc/lib/ui/ 引入，与行业标准 components/ui/ 目录结构一致）---
+import { Label } from '../lib/ui/label.js';
+import { Input } from '../lib/ui/input.js';
+import { Checkbox } from '../lib/ui/checkbox.js';
+import { Switch } from '../lib/ui/switch.js';
 
 // --- 组件接收的 props 接口，_urlXxx/_staticVer 由框架自动注入 ---
 interface IProps {
@@ -37,24 +51,12 @@ interface IProps {
     '_urlStc': string;
     '_urlFull': string;
     '_staticVer': string;
-    /** --- 框架注入：import map JSON 字符串，<head> 中以 type="importmap" <script> 渲染 --- */
     '_importMapJson'?: string;
-    /**
-     * --- 框架注入：水合 JS 代码字符串，</body> 前以 type="module" <script> 渲染 ---
-     * --- 内容：import hydrateRoot + import App + hydrateRoot(document, createElement(App, p)) ---
-     */
     '_hydrateScript'?: string;
-    /**
-     * --- 框架注入：fullProps 的 JSON 序列化（不含 _propsJson 本身）---
-     * --- 客户端水合脚本读取此值重建 props，suppressHydrationWarning 处理服务端/客户端内容差异 ---
-     */
     '_propsJson'?: string;
 }
 
-// ─── shadcn/ui 风格基础控件 ───────────────────────────────────────────────────
-// 以下组件是 Tailwind + React 的轻量实现，与 shadcn/ui 源码结构完全一致。
-// 生产环境可直接替换为 shadcn/ui 官方组件，import map 会通过 esm.sh 自动
-// 解析 Radix UI 等所有依赖，无需本地 npm install 也无需打包工具。
+// ─── 页面内部组件（仅本页演示使用，无需提取到 lib/）────────────────────────────
 
 /** --- 卡片容器 --- */
 function Card({ children, className = '' }: { 'children': ReactNode; 'className'?: string }) {
@@ -110,7 +112,7 @@ function Btn({ children, onClick, disabled = false, outline = false }: {
 function RouterHome() {
     return (
         <div>
-            <p className="text-slate-700 text-sm font-medium mb-3">当前路由：<code className="bg-slate-100 px-1 rounded">/</code></p>
+            <p className="text-slate-700 text-sm font-medium mb-3">Current route: <code className="bg-slate-100 px-1 rounded">/</code></p>
             <div className="flex gap-2 flex-wrap">
                 <Link to="/about" className="inline-flex items-center px-3 py-1.5 rounded-lg bg-blue-500 hover:bg-blue-600 text-white text-xs font-medium">
                     → /about
@@ -131,14 +133,14 @@ function RouterAbout() {
     const navigate = useNavigate();
     return (
         <div>
-            <p className="text-slate-700 text-sm font-medium mb-3">当前路由：<code className="bg-slate-100 px-1 rounded">/about</code></p>
-            <p className="text-slate-500 text-xs mb-3">useNavigate() 演示编程导航（不使用 Link 组件）：</p>
+            <p className="text-slate-700 text-sm font-medium mb-3">Current route: <code className="bg-slate-100 px-1 rounded">/about</code></p>
+            <p className="text-slate-500 text-xs mb-3">useNavigate() programmatic navigation (without Link component):</p>
             <div className="flex gap-2">
                 <button
                     onClick={() => navigate('/')}
                     className="inline-flex items-center px-3 py-1.5 rounded-lg border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-medium cursor-pointer"
                 >
-                    ← 返回 /
+                    ← Back to /
                 </button>
                 <button
                     onClick={() => navigate('/user/99')}
@@ -158,17 +160,190 @@ function RouterUser() {
     return (
         <div>
             <p className="text-slate-700 text-sm font-medium mb-1">
-                当前路由：<code className="bg-slate-100 px-1 rounded">/user/:id</code>
+                Current route: <code className="bg-slate-100 px-1 rounded">/user/:id</code>
             </p>
             <p className="text-slate-500 text-xs mb-3">
-                useParams() 读取动态段：<code className="bg-slate-100 px-1 rounded">id = &quot;{id}&quot;</code>
+                useParams() dynamic segment: <code className="bg-slate-100 px-1 rounded">id = &quot;{id}&quot;</code>
             </p>
             <button
                 onClick={() => navigate('/')}
                 className="inline-flex items-center px-3 py-1.5 rounded-lg border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-medium cursor-pointer"
             >
-                ← 返回 /
+                ← Back to /
             </button>
+        </div>
+    );
+}
+
+// ─── shadcn/ui 演示区 ────────────────────────────────────────────────────────
+
+/**
+ * --- 展示 Label/Input/Checkbox/Switch 组合使用 ---
+ * 控件定义在 stc/lib/ui/ 目录，本组件只做 import + 组合。
+ */
+function ShadcnDemo() {
+    // --- 表单受控状态 ---
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
+    const [agree, setAgree] = useState<boolean | 'indeterminate'>(false);
+    const [newsletter, setNewsletter] = useState(false);
+    const [submitted, setSubmitted] = useState(false);
+
+    // --- useId 生成无障碍访问用的稳定 id（SSR + 水合均确保一致）---
+    const nameId = useId();
+    const emailId = useId();
+    const agreeId = useId();
+    const newsletterId = useId();
+
+    function handleSubmit(e: React.FormEvent<HTMLFormElement>): void {
+        e.preventDefault();
+        setSubmitted(true);
+    }
+
+    return (
+        <div className="space-y-4">
+
+            {/* ── 说明 ── */}
+            <Card>
+                <h2 className="font-semibold text-slate-900 mb-2">shadcn/ui Components</h2>
+                <p className="text-slate-500 text-xs leading-relaxed">
+                    All components below are imported from <code className="bg-slate-100 px-1 rounded">stc/lib/ui/</code>,
+                    following the same <code className="bg-slate-100 px-1 rounded">components/ui/</code> structure recommended by shadcn/ui.
+                    Built on Radix UI primitives, styled with Tailwind CSS.
+                    In dev mode, the framework auto-scans all bare imports and generates the import map automatically.
+                </p>
+            </Card>
+
+            {/* ── Label + Input 演示 ── */}
+            <Card>
+                <h2 className="font-semibold text-slate-900 mb-4">Label + Input</h2>
+                {/* Label 使用 @radix-ui/react-label，htmlFor 关联 Input 的 id，点击 Label 可聚焦 Input */}
+                <div className="grid gap-4">
+                    <div className="grid gap-1.5">
+                        <Label htmlFor={nameId}>Username</Label>
+                        <Input
+                            id={nameId}
+                            type="text"
+                            placeholder="Enter your username"
+                            value={name}
+                            onChange={e => setName(e.target.value)}
+                        />
+                    </div>
+                    <div className="grid gap-1.5">
+                        <Label htmlFor={emailId}>Email</Label>
+                        <Input
+                            id={emailId}
+                            type="email"
+                            placeholder="you@example.com"
+                            value={email}
+                            onChange={e => setEmail(e.target.value)}
+                        />
+                    </div>
+                </div>
+                <p className="text-xs text-slate-400 mt-3">Click the Label text to focus the corresponding input (Radix UI a11y semantics)</p>
+            </Card>
+
+            {/* ── Checkbox 演示 ── */}
+            <Card>
+                <h2 className="font-semibold text-slate-900 mb-4">Checkbox</h2>
+                {/* Checkbox 使用 @radix-ui/react-checkbox，支持 checked / indeterminate 三态 */}
+                <div className="flex items-center gap-2">
+                    <Checkbox
+                        id={agreeId}
+                        checked={agree}
+                        onCheckedChange={setAgree}
+                    />
+                    <Label htmlFor={agreeId}>I have read and agree to the Terms of Service</Label>
+                </div>
+                <p className="text-xs text-slate-400 mt-3">
+                    Value: <code className="bg-slate-100 px-1 rounded">{String(agree)}</code>
+                    &nbsp;(supports <code className="bg-slate-100 px-1 rounded">true | false | &apos;indeterminate&apos;</code> tri-state)
+                </p>
+            </Card>
+
+            {/* ── Switch 演示 ── */}
+            <Card>
+                <h2 className="font-semibold text-slate-900 mb-4">Switch</h2>
+                {/* Switch 使用 @radix-ui/react-switch，onCheckedChange 接收 boolean */}
+                <div className="flex items-center gap-2">
+                    <Switch
+                        id={newsletterId}
+                        checked={newsletter}
+                        onCheckedChange={setNewsletter}
+                    />
+                    <Label htmlFor={newsletterId}>Subscribe to product updates</Label>
+                </div>
+                <p className="text-xs text-slate-400 mt-3">
+                    Value: <code className="bg-slate-100 px-1 rounded">{newsletter ? 'true' : 'false'}</code>
+                </p>
+            </Card>
+
+            {/* ── 综合表单提交 ── */}
+            <Card>
+                <h2 className="font-semibold text-slate-900 mb-4">Combined Form (Submit Demo)</h2>
+                {submitted ? (
+                    <div className="space-y-2 text-sm">
+                        <p className="text-green-700 font-medium">✓ Submitted! Received data:</p>
+                        <pre className="bg-slate-50 border border-slate-200 rounded-lg p-3 text-xs text-slate-700 overflow-auto">{JSON.stringify(
+                            { name, email, agree: Boolean(agree), newsletter },
+                            null,
+                            2
+                        )}</pre>
+                        <button
+                            onClick={() => setSubmitted(false)}
+                            className="text-xs text-blue-500 hover:underline cursor-pointer"
+                        >Reset</button>
+                    </div>
+                ) : (
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                        <div className="grid gap-1.5">
+                            <Label htmlFor={`${nameId}-form`}>Username <span className="text-red-500">*</span></Label>
+                            <Input
+                                id={`${nameId}-form`}
+                                required
+                                placeholder="At least 2 characters"
+                                value={name}
+                                onChange={e => setName(e.target.value)}
+                            />
+                        </div>
+                        <div className="grid gap-1.5">
+                            <Label htmlFor={`${emailId}-form`}>Email <span className="text-red-500">*</span></Label>
+                            <Input
+                                id={`${emailId}-form`}
+                                type="email"
+                                required
+                                placeholder="you@example.com"
+                                value={email}
+                                onChange={e => setEmail(e.target.value)}
+                            />
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <Checkbox
+                                id={`${agreeId}-form`}
+                                checked={agree}
+                                onCheckedChange={setAgree}
+                                required
+                            />
+                            <Label htmlFor={`${agreeId}-form`}>Agree to terms</Label>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <Switch
+                                id={`${newsletterId}-form`}
+                                checked={newsletter}
+                                onCheckedChange={setNewsletter}
+                            />
+                            <Label htmlFor={`${newsletterId}-form`}>Subscribe</Label>
+                        </div>
+                        <button
+                            type="submit"
+                            className="inline-flex items-center px-4 py-2 rounded-lg bg-blue-500 hover:bg-blue-600 text-white text-sm font-medium cursor-pointer"
+                        >
+                            Submit
+                        </button>
+                    </form>
+                )}
+            </Card>
+
         </div>
     );
 }
@@ -176,11 +351,11 @@ function RouterUser() {
 // ─── 页面主组件 ────────────────────────────────────────────────────────────────
 
 /** --- Kebab React 全页面演示 --- */
-export default function ReactPage({ title, serverTime, node, _urlBase, _urlStc, _importMapJson, _hydrateScript, _propsJson }: IProps) {
+export default function ReactPage({ title, serverTime, node, _urlBase, _urlStc, _staticVer, _importMapJson, _hydrateScript, _propsJson }: IProps) {
 
     // --- useState 在 SSR 阶段使用初始值渲染，客户端水合后变为可交互状态 ---
     const [count, setCount] = useState(0);
-    const [tab, setTab] = useState<'overview' | 'routing' | 'fetch'>('overview');
+    const [tab, setTab] = useState<'overview' | 'routing' | 'fetch' | 'shadcn'>('overview');
     const [fetchResult, setFetchResult] = useState<string | null>(null);
     const [isFetching, setIsFetching] = useState(false);
     /** --- 仅客户端为 true，用于展示水合已完成 --- */
@@ -214,28 +389,23 @@ export default function ReactPage({ title, serverTime, node, _urlBase, _urlStc, 
         // --- 组件渲染完整 HTML 文档，无需外部 EJS 模板 ---
         <html lang="en">
             <head>
-                {/*
-                  meta/title 放在 <head> 最前，与 renderToString 实际输出顺序保持一致，
-                  避免客户端水合时虚拟 DOM 与浏览器 DOM 的顺序不匹配（#418）。
-                */}
                 <meta charSet="UTF-8" />
                 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
                 <title>{title}</title>
-                {/*
-                  import map 由 _loadReactPage 通过 props 传入，使 bare import 在浏览器端通过
-                  esm.sh 自动解析。必须在所有 <script type="module"> 之前出现。
-                  服务端：_importMapJson 有值 → 正常渲染。
-                  客户端：同一值读自 __kebab_props__ → 渲染相同 → 水合匹配。
-                */}
+                {/* import map：框架自动注入，bare import 通过 esm.sh 解析 */}
                 {_importMapJson && (
                     <script type="importmap" dangerouslySetInnerHTML={{ '__html': _importMapJson }} />
                 )}
                 {/*
-                  Tailwind CSS CDN：开发和演示可直接使用。
-                  生产环境建议用 `npx tailwindcss build` 输出 purged CSS，
-                  然后改为：<link rel="stylesheet" href="/stc/css/app.css" />
-                */}
-                <script src="https://cdn.tailwindcss.com"></script>
+                  * dev mode (_importMapJson present): load Tailwind Play CDN — no build step needed.
+                  * bundle mode (_importMapJson absent): load the compiled react-page.css produced by
+                  *   `kebab build`, so the CDN never runs and never injects extra <style> nodes into
+                  *   <head> before React's hydrateRoot, which would cause hydration error #418.
+                  */}
+                {_importMapJson
+                    ? <script src="https://cdn.tailwindcss.com"></script>
+                    : <link rel="stylesheet" href={`${_urlStc}view/react-page.css?v=${_staticVer}`} />
+                }
             </head>
             <body className="bg-slate-50 min-h-screen font-sans">
                 <div className="max-w-3xl mx-auto px-4 py-10 space-y-6">
@@ -255,7 +425,7 @@ export default function ReactPage({ title, serverTime, node, _urlBase, _urlStc, 
 
                     {/* ── Tab 导航（客户端状态路由，无页面刷新） ── */}
                     <div className="flex gap-1 bg-slate-100 p-1 rounded-lg w-fit">
-                        {(['overview', 'routing', 'fetch'] as const).map(t => (
+                        {(['overview', 'routing', 'fetch', 'shadcn'] as const).map(t => (
                             <button
                                 key={t}
                                 onClick={() => setTab(t)}
@@ -277,8 +447,8 @@ export default function ReactPage({ title, serverTime, node, _urlBase, _urlStc, 
                             <Card>
                                 <h2 className="font-semibold text-slate-900 mb-1">Counter（useState + hydration）</h2>
                                 <p className="text-slate-500 text-xs mb-4">
-                                    SSR 渲染初始值 0，props 序列化为内联 JSON。
-                                    水合完成后 state 变为可交互，点击按钮测试：
+                                    SSR renders with initial value 0; props are serialized as inline JSON.
+                                    After hydration the state becomes interactive — click the buttons to test:
                                 </p>
                                 <div className="flex items-center gap-4">
                                     <button
@@ -295,12 +465,12 @@ export default function ReactPage({ title, serverTime, node, _urlBase, _urlStc, 
 
                             {/* Server Props 展示 */}
                             <Card>
-                                <h2 className="font-semibold text-slate-900 mb-3">Server Props（来自 Ctr 方法）</h2>
+                                <h2 className="font-semibold text-slate-900 mb-3">Server Props (from Ctr method)</h2>
                                 <p className="text-slate-500 text-xs mb-3">
-                                    通过{' '}
-                                    <code className="bg-slate-100 px-1 rounded">_loadReactPage(path, props)</code>{' '}
-                                    传入，框架自动注入 _urlBase 等常量，
-                                    整体序列化为内联 JSON，客户端水合时直接复用，无需二次请求。
+                                    Passed via{' '}
+                                    <code className="bg-slate-100 px-1 rounded">_loadReactPage(path, props)</code>.
+                                    The framework auto-injects constants like _urlBase and serializes
+                                    all props as inline JSON, reused directly during client hydration — no extra request needed.
                                 </p>
                                 <div className="space-y-2">
                                     {([
@@ -317,20 +487,24 @@ export default function ReactPage({ title, serverTime, node, _urlBase, _urlStc, 
                                 </div>
                             </Card>
 
-                            {/* shadcn/ui 兼容说明 */}
+                            {/* 项目结构说明 */}
                             <Card>
-                                <h2 className="font-semibold text-slate-900 mb-2">shadcn/ui 兼容性</h2>
-                                <p className="text-slate-500 text-xs mb-3">
-                                    shadcn/ui = Tailwind + Radix UI。本页的 Card/Badge/Btn 是等效的轻量实现。
-                                    使用官方 shadcn/ui 组件时，其 Radix UI 依赖由 esm.sh 递归解析，
-                                    与打包工具的处理结果完全等价，无需本地 npm install。
+                                <h2 className="font-semibold text-slate-900 mb-2">Recommended Directory Structure</h2>
+                                <pre className="bg-slate-50 border border-slate-200 rounded-lg p-4 text-xs leading-relaxed text-slate-700">{`stc/
+  lib/
+    utils.ts            # cn() utility
+    ui/
+      label.tsx         # shadcn Label
+      input.tsx         # shadcn Input
+      checkbox.tsx      # shadcn Checkbox
+      switch.tsx        # shadcn Switch
+  view/
+    react-page.tsx      # Page component (import + compose)`}
+                                </pre>
+                                <p className="text-slate-500 text-xs mt-3">
+                                    Mirrors the shadcn/ui <code className="bg-slate-100 px-1 rounded">components/ui/</code> convention.
+                                    In dev mode, the framework auto-scans imports — no manual import map configuration needed.
                                 </p>
-                                <div className="flex flex-wrap gap-2">
-                                    <Badge variant="success">Card ✓</Badge>
-                                    <Badge variant="success">Badge ✓</Badge>
-                                    <Badge variant="success">Btn ✓</Badge>
-                                    <Badge>Radix UI Dialog 同样支持</Badge>
-                                </div>
                             </Card>
 
                         </div>
@@ -345,11 +519,11 @@ export default function ReactPage({ title, serverTime, node, _urlBase, _urlStc, 
                         */
                         <MemoryRouter>
                             <Card>
-                                <h2 className="font-semibold text-slate-900 mb-1">React Router 演示</h2>
+                                <h2 className="font-semibold text-slate-900 mb-1">React Router Demo</h2>
                                 <p className="text-slate-500 text-xs mb-4">
-                                    使用 <code className="bg-slate-100 px-1 rounded">MemoryRouter</code>
-                                    {' '}演示路由跳转、动态参数（useParams）和编程导航（useNavigate），
-                                    服务端 SSR 与客户端水合均可运行，无需额外服务端配置。
+                                    Uses <code className="bg-slate-100 px-1 rounded">MemoryRouter</code>
+                                    {' '}to demonstrate route navigation, dynamic params (useParams), and programmatic navigation (useNavigate).
+                                    Works on both server SSR and client hydration with no extra server configuration.
                                 </p>
                                 {/* ── 路由定义 ── */}
                                 <Routes>
@@ -361,24 +535,24 @@ export default function ReactPage({ title, serverTime, node, _urlBase, _urlStc, 
 
                             {/* 整页 BrowserRouter 配置说明 */}
                             <Card className="mt-4">
-                                <h2 className="font-semibold text-slate-900 mb-2">整页 BrowserRouter 配置</h2>
+                                <h2 className="font-semibold text-slate-900 mb-2">Full-Page BrowserRouter Setup</h2>
                                 <p className="text-slate-500 text-xs mb-3">
-                                    若要让 React Router 接管整个页面的真实 URL（如 /app、/app/about），
-                                    将 MemoryRouter 替换为 BrowserRouter，并在服务端将所有子路径路由到同一 Ctr 方法：
+                                    To let React Router manage the real URL (e.g. /app, /app/about),
+                                    replace MemoryRouter with BrowserRouter and route all sub-paths to the same Ctr method on the server:
                                 </p>
-                                <pre className="bg-slate-50 border border-slate-200 rounded-lg p-4 text-xs overflow-auto leading-relaxed text-slate-700">{`// 1. route.json：将所有子路径指向同一 Ctr 方法
+                                <pre className="bg-slate-50 border border-slate-200 rounded-lg p-4 text-xs overflow-auto leading-relaxed text-slate-700">{`// 1. route.json: route all sub-paths to the same Ctr method
 {
   "app":   "ctr/app@reactPage",
   "app\\/.*": "ctr/app@reactPage"
 }
 
-// 2. 客户端（浏览器）：BrowserRouter 自动读取当前 URL
+// 2. Client (browser): BrowserRouter reads the current URL automatically
 import { BrowserRouter } from 'react-router-dom';
 hydrateRoot(document,
   createElement(BrowserRouter, { basename: '/app' },
     createElement(App, props)));
 
-// 3. 服务端 SSR：StaticRouter 使用请求 URL，避免水合差异
+// 3. Server SSR: StaticRouter uses the request URL to avoid hydration mismatch
 import { StaticRouter } from 'react-router-dom/server';
 renderToString(
   createElement(StaticRouter, { location: reqPath },
@@ -388,12 +562,17 @@ renderToString(
                         </MemoryRouter>
                     )}
 
+                    {/* ══ shadcn/ui Tab ══ */}
+                    {tab === 'shadcn' && (
+                        <ShadcnDemo />
+                    )}
+
                     {/* ══ Fetch Tab ══ */}
                     {tab === 'fetch' && (
                         <Card>
                             <h2 className="font-semibold text-slate-900 mb-3">Client Fetch Demo</h2>
                             <p className="text-slate-500 text-xs mb-4">
-                                水合完成后，点击按钮发起 GET 请求。setState 触发局部重渲染，无页面刷新。
+                                After hydration, click a button to send a GET request. setState triggers a partial re-render — no page refresh.
                             </p>
                             <div className="flex gap-3 flex-wrap">
                                 <Btn
@@ -421,24 +600,14 @@ renderToString(
                     )}
 
                 </div>
-                {/*
-                  __kebab_props__：存储 fullProps JSON 供水合脚本读取。放在 <body> 末尾以确保
-                  JSX 树结构与 renderToString 输出、浏览器 DOM 三者一致，避免水合错误 #418。
-                  服务端：_propsJson 有值（fullProps 的完整 JSON）。
-                  客户端：_propsJson 为 undefined（本身不在 JSON 中），渲染空串。
-                  suppressHydrationWarning：跳过此元素的文本内容比对。
-                */}
+                {/* props JSON：供客户端水合脚本读取 */}
                 <script
                     id="__kebab_props__"
                     type="application/json"
                     suppressHydrationWarning
                     dangerouslySetInnerHTML={{ '__html': _propsJson ?? '' }}
                 />
-                {/*
-                  水合脚本：读取 __kebab_props__ → hydrateRoot(document, createElement(App, p))。
-                  服务端：_hydrateScript 有值 → 渲染此 script 元素。
-                  客户端：同一值读自 __kebab_props__ → 渲染相同 → 水合匹配。
-                */}
+                {/* 水合脚本：hydrateRoot 接管 document */}
                 {_hydrateScript && (
                     <script type="module" dangerouslySetInnerHTML={{ '__html': _hydrateScript }} />
                 )}

@@ -191,7 +191,7 @@ export default class extends sCtr.Ctr {
 
             '<br><br><b>Db:</b>',
             `<br><br><a href="${this._config.const.urlBase}test/db">View "test/db"</a> <a href="${this._config.const.urlBase}test/db?s=pgsql">pgsql</a>`,
-            `<br><br><a href="${this._config.const.urlBase}test/db-read">View "test/db-read"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/db-read">View "test/db-read"</a>`,
 
             `<br><br><b>Vector:</b>`,
             `<br><br><a href="${this._config.const.urlBase}test/vector">View "test/vector"</a>`,
