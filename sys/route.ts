@@ -266,8 +266,18 @@ export async function run(data: {
     if (data.req.headers['cookie']) {
         const hcookies: string[] = data.req.headers['cookie'].split(';');
         for (const cookie of hcookies) {
-            const co: string[] = cookie.split('=');
-            cookies[co[0].trim()] = decodeURIComponent(co[1]);
+            const eqIndex = cookie.indexOf('=');
+            if (eqIndex === -1) {
+                continue;
+            }
+            const key = cookie.slice(0, eqIndex).trim();
+            const rawVal = cookie.slice(eqIndex + 1);
+            try {
+                cookies[key] = decodeURIComponent(rawVal);
+            }
+            catch {
+                cookies[key] = rawVal;
+            }
         }
     }
     // --- 处理 headers ---
@@ -881,11 +891,30 @@ export function getPost(
             return;
         }
         // --- json 或普通 post ---
+        /** --- POST body 最大允许 50 MB，防止攻击者发送超大请求体耗尽内存 --- */
+        const maxPostSize = 50 * 1024 * 1024;
         let buffer: Buffer = Buffer.from('');
+        let overflow = false;
         req.on('data', function(chunk: Buffer) {
+            if (overflow) {
+                return;
+            }
+            if (buffer.length + chunk.length > maxPostSize) {
+                overflow = true;
+                buffer = Buffer.from('');
+                return;
+            }
             buffer = Buffer.concat([buffer, chunk], buffer.length + chunk.length);
         });
         req.on('end', function() {
+            if (overflow) {
+                resolve({
+                    'input': '',
+                    'raw': {},
+                    'post': {},
+                });
+                return;
+            }
             const s = buffer.toString();
             if (!s) {
                 resolve({

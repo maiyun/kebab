@@ -8,6 +8,7 @@ node_modules/
 *.d.ts
 !/types/*.d.ts
 package-lock.json
+.npmrc
 
 *.js
 !bin/kebab.js
