@@ -128,13 +128,13 @@ export class Ctr {
         'callback': () => void;
     };
 
-    /** --- 获取当前过期时间 --- */
+    /** --- 获取当前过期时间（毫秒） --- */
     public get timeout(): number {
         return this._timer?.timeout ?? 30_000;
     }
 
     /**
-     * --- 设置当前过期时间 ---
+     * --- 设置当前过期时间（毫秒） ---
      */
     public set timeout(num: number) {
         if (!this._timer) {
