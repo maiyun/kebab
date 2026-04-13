@@ -126,6 +126,28 @@ export async function postJsonResponseJson(
 }
 
 /**
+ * --- 发起 GET 请求并解析 JSON 响应 ---
+ * @param u 网址
+ * @param opt 选项
+ * @returns JSON 数据，失败时返回 null
+ */
+export async function getResponseJson(
+    u: string,
+    opt: IRequestOptions = {}
+): Promise<kebab.Json | null> {
+    const res = await request(u, undefined, opt);
+    const rtn = await res.getContent();
+    if (!rtn) {
+        return null;
+    }
+    const json = lText.parseJson(rtn.toString());
+    if (!json) {
+        return null;
+    }
+    return json;
+}
+
+/**
  * --- 发起一个完全兼容 fetch 的请求 ---
  * @param input 请求的 URL 或 Request 对象
  * @param init 增加 mproxy、hosts

@@ -218,6 +218,7 @@ export default class extends sCtr.Ctr {
             `<br><a href="${this._config.const.urlBase}test/net-mproxy">View "test/net-mproxy"</a>`,
             `<br><a href="${this._config.const.urlBase}test/net-filterheaders">View "test/net-filterheaders"</a>`,
             `<br><a href="${this._config.const.urlBase}test/net-fetch">View "test/net-fetch"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/net-get-response-json">View "test/net-get-response-json"</a>`,
 
             '<br><br><b>Scan:</b>',
             `<br><br><a href="${this._config.const.urlBase}test/scan?s=db">View "test/scan?s=db"</a>`,
@@ -2664,6 +2665,35 @@ error: <pre>${JSON.stringify(res.error, null, 4)}</pre>`);
     public netFetch1(): any[] {
         return [1, {
             'post': this._post,
+        }];
+    }
+
+    public async netGetResponseJson(): Promise<string> {
+        const echo = [];
+
+        const json = await lNet.getResponseJson(this._internalUrl + 'test/get-response-json1');
+        echo.push(`<pre>const json = await lNet.getResponseJson('${this._internalUrl}test/get-response-json1');</pre>
+result: <pre>${lText.htmlescape(JSON.stringify(json, null, 4))}</pre>`);
+
+        const json2 = await lNet.getResponseJson(this._internalUrl + 'test/get-response-json2');
+        echo.push(`<pre>const json2 = await lNet.getResponseJson('${this._internalUrl}test/get-response-json2');</pre>
+result: <pre>${lText.htmlescape(JSON.stringify(json2, null, 4))}</pre>`);
+
+        return echo.join('') + '<br><br>' + this._getEnd();
+    }
+
+    public getResponseJson1(): any[] {
+        return [1, {
+            'data': 'This is test data from getResponseJson1',
+            'timestamp': lTime.stamp()
+        }];
+    }
+
+    public getResponseJson2(): any[] {
+        return [1, {
+            'name': 'Kebab Framework',
+            'version': kebab.VER,
+            'features': ['GET request with JSON parsing', 'Automatic JSON parsing', 'Simple and clean API']
         }];
     }
 
