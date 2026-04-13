@@ -8,7 +8,7 @@
 
 > **getFormData**(): [`FormData`](../formdata/classes/FormData.md)
 
-Defined in: [lib/net.ts:701](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L701)
+Defined in: [lib/net.ts:723](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L723)
 
 创建 FormData 对象
 

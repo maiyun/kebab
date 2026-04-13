@@ -25,6 +25,7 @@
 - [get](functions/get.md)
 - [getCa](functions/getCa.md)
 - [getFormData](functions/getFormData.md)
+- [getResponseJson](functions/getResponseJson.md)
 - [mproxy](functions/mproxy.md)
 - [mproxyData](functions/mproxyData.md)
 - [open](functions/open.md)

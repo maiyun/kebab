@@ -6,7 +6,7 @@
 
 # Interface: ICookie
 
-Defined in: [lib/net.ts:954](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L954)
+Defined in: [lib/net.ts:976](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L976)
 
 Net Cookie 对象
 
@@ -16,7 +16,7 @@ Net Cookie 对象
 
 > **domain**: `string`
 
-Defined in: [lib/net.ts:960](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L960)
+Defined in: [lib/net.ts:982](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L982)
 
 ***
 
@@ -24,7 +24,7 @@ Defined in: [lib/net.ts:960](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **exp**: `number`
 
-Defined in: [lib/net.ts:958](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L958)
+Defined in: [lib/net.ts:980](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L980)
 
 有效期秒级时间戳
 
@@ -34,7 +34,7 @@ Defined in: [lib/net.ts:958](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **httponly**: `boolean`
 
-Defined in: [lib/net.ts:962](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L962)
+Defined in: [lib/net.ts:984](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L984)
 
 ***
 
@@ -42,7 +42,7 @@ Defined in: [lib/net.ts:962](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **name**: `string`
 
-Defined in: [lib/net.ts:955](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L955)
+Defined in: [lib/net.ts:977](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L977)
 
 ***
 
@@ -50,7 +50,7 @@ Defined in: [lib/net.ts:955](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **path**: `string`
 
-Defined in: [lib/net.ts:959](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L959)
+Defined in: [lib/net.ts:981](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L981)
 
 ***
 
@@ -58,7 +58,7 @@ Defined in: [lib/net.ts:959](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **secure**: `boolean`
 
-Defined in: [lib/net.ts:961](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L961)
+Defined in: [lib/net.ts:983](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L983)
 
 ***
 
@@ -66,4 +66,4 @@ Defined in: [lib/net.ts:961](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **value**: `string`
 
-Defined in: [lib/net.ts:956](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L956)
+Defined in: [lib/net.ts:978](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L978)
