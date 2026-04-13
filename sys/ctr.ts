@@ -800,13 +800,15 @@ export class Ctr {
         return 'unknown';
     }
 
-    /** --- auth 对象，user, pwd --- */
-    private _authorization: { 'user': string; 'pwd': string; } | null = null;
+    /** --- auth 对象 --- */
+    private _authorization: { 'type': 'basic'; 'user': string; 'pwd': string; } | { 'type': 'bearer'; 'token': string; } | null = null;
 
     /**
-     * --- 通过 header 或 _auth 获取 Basic Auth 鉴权信息 ---
+     * --- 通过 header 或 _auth 获取鉴权信息，支持 Basic Auth 和 Bearer Token ---
      */
-    public getAuthorization(): { 'user': string; 'pwd': string; } | false {
+    public getAuthorization():
+        { 'type': 'basic'; 'user': string; 'pwd': string; } |
+        { 'type': 'bearer'; 'token': string; } | false {
         if (this._authorization !== null) {
             return this._authorization;
         }
@@ -823,15 +825,28 @@ export class Ctr {
         if (typeof auth !== 'string') {
             return false;
         }
-        let authArr = auth.split(' ');
-        if (authArr[1] === undefined) {
+        const spaceIdx = auth.indexOf(' ');
+        if (spaceIdx === -1) {
             return false;
         }
-        if (!(auth = lCrypto.base64Decode(authArr[1]))) {
+        const scheme = auth.slice(0, spaceIdx).toLowerCase();
+        const credential = auth.slice(spaceIdx + 1).trim();
+        if (!credential) {
             return false;
         }
-        authArr = auth.split(':');
-        this._authorization = { 'user': authArr[0], 'pwd': authArr[1] ?? '' };
+        if (scheme === 'bearer') {
+            this._authorization = { 'type': 'bearer', 'token': credential };
+            return this._authorization;
+        }
+        // --- Basic Auth: base64(user:pwd) ---
+        const decoded = lCrypto.base64Decode(credential);
+        if (!decoded) {
+            return false;
+        }
+        const colonIdx = decoded.indexOf(':');
+        const user = colonIdx === -1 ? decoded : decoded.slice(0, colonIdx);
+        const pwd = colonIdx === -1 ? '' : decoded.slice(colonIdx + 1);
+        this._authorization = { 'type': 'basic', 'user': user, 'pwd': pwd };
         return this._authorization;
     }
 

@@ -82,7 +82,12 @@ export class Session {
         }
         else if (auth) {
             const a = ctr.getAuthorization();
-            if (a && typeof a !== 'string' && (a.user === 'token')) {
+            if (a && a.type === 'bearer') {
+                // --- Authorization: Bearer <token> ---
+                this._token = a.token;
+            }
+            else if (a && a.type === 'basic' && a.user === 'token') {
+                // --- Authorization: Basic base64(token:<token>)，兼容旧模式 ---
                 this._token = a.pwd;
             }
         }
