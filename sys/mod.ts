@@ -76,7 +76,7 @@ export default class Mod {
     /** --- 若使用 _$key 并且有多个 unique 索引，这里指定 _$key 的索引名 --- */
     protected static _$index: string = '';
 
-    /** --- 前缀，顺序：选项前缀 -> 本前缀 -> 配置文件前缀 --- */
+    /** --- 前缀，MySQL 时为表前缀（如 prefix_），PostgreSQL 时为 Schema 名。顺序：选项前缀 -> 本前缀 -> 配置文件前缀 --- */
     protected static _$pre?: string;
 
     /** --- 要 update 的内容 --- */
@@ -126,6 +126,7 @@ export default class Mod {
             'key': string;
             'list': string[];
         };
+        /** --- MySQL 表前缀或 PostgreSQL Schema 名，优先级：选项 > 类属性 > 配置 --- */
         'pre'?: string;
     }) {
         /** --- 导入 ctr 对象 --- */
@@ -189,7 +190,7 @@ export default class Mod {
      * @param db 数据库对象
      * @param cs 字段列表
      * @param vs 数据列表
-     * @param opt 选项
+     * @param opt 选项（opt.pre: MySQL 表前缀/PostgreSQL Schema 名）
      */
     public static async insert(
         db: lDb.Pool | lDb.Transaction,
@@ -249,7 +250,7 @@ export default class Mod {
      * @param db 数据库对象
      * @param cs 字段列表
      * @param vs 数据列表
-     * @param opt 选项
+     * @param opt 选项（opt.pre: MySQL 表前缀/PostgreSQL Schema 名）
      */
     public static insertSql(
         db: lDb.Pool | lDb.Transaction,
@@ -275,7 +276,7 @@ export default class Mod {
      * --- 根据条件移除条目 ---
      * @param db 数据库对象
      * @param where 筛选条件
-     * @param opt 选项
+     * @param opt 选项（opt.pre: MySQL 表前缀/PostgreSQL Schema 名）
      */
     public static async removeByWhere(
         db: lDb.Pool | lDb.Transaction,
@@ -319,7 +320,7 @@ export default class Mod {
      * --- 根据条件移除条目（仅获取 SQL 对象） ---
      * @param db 数据库对象
      * @param where 筛选条件
-     * @param opt 选项
+     * @param opt 选项（opt.pre: MySQL 表前缀/PostgreSQL Schema 名）
      */
     public static removeByWhereSql(
         db: lDb.Pool | lDb.Transaction,
@@ -352,7 +353,7 @@ export default class Mod {
      * @param db 数据库对象
      * @param data 要更新的数据
      * @param where 筛选条件
-     * @param opt 选项
+     * @param opt 选项（opt.pre: MySQL 表前缀/PostgreSQL Schema 名）
      */
     public static async updateByWhere(
         db: lDb.Pool | lDb.Transaction,
@@ -398,7 +399,7 @@ export default class Mod {
      * @param db 数据库对象
      * @param data 要更新的数据
      * @param where 筛选条件
-     * @param opt 选项
+     * @param opt 选项（opt.pre: MySQL 表前缀/PostgreSQL Schema 名）
      */
     public static updateByWhereSql(
         db: lDb.Pool | lDb.Transaction,
@@ -432,7 +433,7 @@ export default class Mod {
      * @param db 数据库对象
      * @param data 数据列表
      * @param key 用于定位的主键或唯一键字段名
-     * @param opt 选项
+     * @param opt 选项（opt.pre: MySQL 表前缀/PostgreSQL Schema 名）
      */
     public static async updateList(
         db: lDb.Pool | lDb.Transaction,
@@ -528,7 +529,7 @@ export default class Mod {
      * --- select 自定字段 ---
      * @param db 数据库对象
      * @param c 字段字符串或字段数组
-     * @param opt 选项
+     * @param opt 选项（opt.pre: MySQL 表前缀/PostgreSQL Schema 名）
      */
     public static select<T extends Mod>(
         db: lDb.Pool | lDb.Transaction,
@@ -558,7 +559,7 @@ export default class Mod {
      * --- 通过 where 条件获取模型 ---
      * @param db 数据库对象
      * @param s 筛选条件数组或字符串
-     * @param opt 选项
+     * @param opt 选项（opt.pre: MySQL 表前缀/PostgreSQL Schema 名）
      */
     public static where<T extends Mod>(
         db: lDb.Pool | lDb.Transaction,
@@ -587,7 +588,7 @@ export default class Mod {
     /**
      * --- 获取创建对象，通常用于新建数据库条目 ---
      * @param db 数据库对象
-     * @param opt 选项
+     * @param opt 选项（opt.pre: MySQL 表前缀/PostgreSQL Schema 名）
      */
     public static getCreate<T extends Mod>(
         db: lDb.Pool | lDb.Transaction,
@@ -605,7 +606,7 @@ export default class Mod {
      * --- 根据主键（或 key 字段）获取对象 ---
      * @param db 数据库对象
      * @param val 主键值
-     * @param opt 选项
+     * @param opt 选项（opt.pre: MySQL 表前缀/PostgreSQL Schema 名）
      */
     public static async find<T extends Mod>(
         db: lDb.Pool | lDb.Transaction,
@@ -664,7 +665,7 @@ export default class Mod {
      * --- 通过 where 条件筛选单条数据 ---
      * @param db 数据库对象
      * @param s 筛选条件数组或字符串
-     * @param opt 选项，lock 需确保 where 条件命中索引，否则可能退化为表锁
+     * @param opt 选项（opt.pre: MySQL 表前缀/PostgreSQL Schema 名；lock 需确保 where 条件命中索引，否则可能退化为表锁）
      */
     public static async one<T extends Mod>(
         db: lDb.Pool | lDb.Transaction,
@@ -722,7 +723,7 @@ export default class Mod {
      * --- 通过 where 条件筛选单条数据返回原生对象 ---
      * @param db 数据库对象
      * @param s 筛选条件数组或字符串
-     * @param opt 选项
+     * @param opt 选项（opt.pre: MySQL 表前缀/PostgreSQL Schema 名）
      */
     public static async oneArray(
         db: lDb.Pool | lDb.Transaction,
@@ -743,7 +744,7 @@ export default class Mod {
      * --- 根据 where 条件获取主键值列表 ---
      * @param db 数据库对象
      * @param where where 条件
-     * @param opt 选项
+     * @param opt 选项（opt.pre: MySQL 表前缀/PostgreSQL Schema 名）
      */
     public static async primarys(
         db: lDb.Pool | lDb.Transaction,

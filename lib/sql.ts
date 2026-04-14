@@ -41,7 +41,7 @@ export class Sql {
     /** --- ctr 对象 --- */
     private readonly _ctr?: ctr.Ctr;
 
-    /** --- 前置 --- */
+    /** --- 前置：MySQL 时为表前缀（如 prefix_），PostgreSQL 时为 Schema 名 --- */
     private readonly _pre: string = '';
 
     /** --- 服务商 --- */
@@ -66,6 +66,7 @@ export class Sql {
     public constructor(opt: {
         'service': ESERVICE;
         'ctr'?: ctr.Ctr;
+        /** --- 表前缀/Schema 名：MySQL 中作为表前缀（如 prefix_），PostgreSQL 中作为 Schema 名 --- */
         'pre'?: string;
         'data'?: kebab.DbValue[];
         'sql'?: string[];
@@ -352,7 +353,7 @@ export class Sql {
      * @param s ON 信息
      * @param type 类型
      * @param suf 表后缀
-     * @param pre 表前缀，仅在 join 非默认表前缀时填写
+     * @param pre MySQL 时为表前缀，PostgreSQL 时为 Schema 名，仅在 join 非默认前缀时填写
      */
     public join(f: string, s: kebab.Json = [], type: string = 'INNER', suf: string = '', pre: string = ''): this {
         let field = this.field(f, pre || this._pre, suf ? ('#' + suf) : '');
@@ -378,7 +379,7 @@ export class Sql {
      * @param f 表名
      * @param s ON 信息
      * @param suf 表后缀
-     * @param pre 表前缀，仅在 join 非默认表前缀时填写
+     * @param pre MySQL 时为表前缀，PostgreSQL 时为 Schema 名，仅在 join 非默认前缀时填写
      */
     public leftJoin(f: string, s: kebab.Json = [], suf: string = '', pre: string = ''): this {
         return this.join(f, s, 'LEFT', suf, pre);
@@ -389,7 +390,7 @@ export class Sql {
      * @param f 表名
      * @param s ON 信息
      * @param suf 表后缀
-     * @param pre 表前缀，仅在 join 非默认表前缀时填写
+     * @param pre MySQL 时为表前缀，PostgreSQL 时为 Schema 名，仅在 join 非默认前缀时填写
      */
     public rightJoin(f: string, s: kebab.Json = [], suf: string = '', pre: string = ''): this {
         return this.join(f, s, 'RIGHT', suf, pre);
@@ -400,7 +401,7 @@ export class Sql {
      * @param f 表名
      * @param s ON 信息
      * @param suf 表后缀
-     * @param pre 表前缀，仅在 join 非默认表前缀时填写
+     * @param pre MySQL 时为表前缀，PostgreSQL 时为 Schema 名，仅在 join 非默认前缀时填写
      */
     public innerJoin(f: string, s: kebab.Json = [], suf: string = '', pre: string = ''): this {
         return this.join(f, s, 'INNER', suf, pre);
@@ -411,7 +412,7 @@ export class Sql {
      * @param f 表名
      * @param s ON 信息
      * @param suf 表后缀
-     * @param pre 表前缀，仅在 join 非默认表前缀时填写
+     * @param pre MySQL 时为表前缀，PostgreSQL 时为 Schema 名，仅在 join 非默认前缀时填写
      */
     public fullJoin(f: string, s: kebab.Json = [], suf: string = '', pre: string = ''): this {
         return this.join(f, s, 'FULL', suf, pre);
@@ -422,7 +423,7 @@ export class Sql {
      * @param f 表名
      * @param s ON 信息
      * @param suf 表后缀
-     * @param pre 表前缀，仅在 join 非默认表前缀时填写
+     * @param pre MySQL 时为表前缀，PostgreSQL 时为 Schema 名，仅在 join 非默认前缀时填写
      */
     public crossJoin(f: string, s: kebab.Json = [], suf: string = '', pre: string = ''): this {
         return this.join(f, s, 'CROSS', suf, pre);
@@ -921,7 +922,7 @@ export class Sql {
     /**
      * --- 对字段进行包裹 ---
      * @param str
-     * @param pre 表前缀，仅请在 field 表名时倒入前缀
+     * @param pre MySQL 时为表前缀，PostgreSQL 时为 Schema 名，仅请在 field 表名时倒入前缀/Schema
      * @param suf 表后缀，仅请在 field 表名时倒入后缀，前面加 # 代表要强制 AS，可能是分表查询时用
      */
     public field(str: string | number | [string, string[]], pre: string = '', suf: string = ''): string {
@@ -1183,6 +1184,7 @@ export class Sql {
 /**
  * --- 创建 sql 对象 ---
  * @param opt 参数
+ * @param opt.pre MySQL 时作为表前缀（如 prefix_），PostgreSQL 时作为 Schema 名。MySQL 会自动补充末尾下划线
  */
 export function get(opt: {
     'service': ESERVICE;
