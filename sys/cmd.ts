@@ -528,7 +528,10 @@ async function run(): Promise<void> {
                 const tmpCss = entry + '.__tw__.css';
                 await lFs.putContent(tmpCss, `@import "tailwindcss";\n@source "./**/*.tsx";\n`);
                 try {
-                    const twJs = fileURLToPath(new URL('../node_modules/@tailwindcss/cli/dist/index.mjs', import.meta.url));
+                    // --- 优先从用户项目根目录查找，找不到则 fallback 到 kebab 包自身目录（用于 kebab 开发模式）---
+                    const twJsUser = kebab.ROOT_CWD + 'node_modules/@tailwindcss/cli/dist/index.mjs';
+                    const twJsSelf = fileURLToPath(new URL('../node_modules/@tailwindcss/cli/dist/index.mjs', import.meta.url));
+                    const twJs = await lFs.isFile(twJsUser) ? twJsUser : twJsSelf;
                     await new Promise<void>((resolve, reject) => {
                         const proc = childProcess.spawn(
                             process.execPath,
