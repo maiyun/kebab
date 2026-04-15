@@ -414,18 +414,24 @@ async function run(): Promise<void> {
             }
         }
         else {
-            // --- 未指定目录：递归扫描所有站点的 www/*/stc/ ---
-            const wwwItems = await lFs.readDir(kebab.WWW_CWD);
-            for (const wwwItem of wwwItems) {
-                if (wwwItem.name === '.' || wwwItem.name === '..' || !wwwItem.isDirectory()) {
-                    continue;
+            // --- 未指定目录：递归在 www/ 下找所有 stc/ 目录并扫描（支持任意深度，如 www/*/stc、www/*/*/stc）---
+            const findStcDirs = async (dir: string): Promise<void> => {
+                const items = await lFs.readDir(dir);
+                for (const item of items) {
+                    if (item.name === '.' || item.name === '..' || !item.isDirectory()) {
+                        continue;
+                    }
+                    const sub = `${dir}/${item.name}`;
+                    if (item.name === 'stc') {
+                        await scanDir(sub);
+                    }
+                    else {
+                        await findStcDirs(sub);
+                    }
                 }
-                const stcPath = `${kebab.WWW_CWD}${wwwItem.name}/stc`;
-                if (!await lFs.isDir(stcPath)) {
-                    continue;
-                }
-                await scanDir(stcPath);
-            }
+            };
+            // --- kebab.WWW_CWD 末尾含 /，去掉再传入保持路径格式统一 ---
+            await findStcDirs(kebab.WWW_CWD.replace(/\/$/, ''));
         }
 
         if (entryPoints.length === 0) {
