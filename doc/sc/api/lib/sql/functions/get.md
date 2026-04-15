@@ -8,7 +8,7 @@
 
 > **get**(`opt`): [`Sql`](../classes/Sql.md)
 
-Defined in: [lib/sql.ts:1187](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L1187)
+Defined in: [lib/sql.ts:1189](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L1189)
 
 创建 sql 对象
 
@@ -33,6 +33,8 @@ Defined in: [lib/sql.ts:1187](https://github.com/maiyunnet/kebab/blob/master/lib
 #### pre?
 
 `string`
+
+MySQL 时作为表前缀（如 prefix_），PostgreSQL 时作为 Schema 名。MySQL 会自动补充末尾下划线
 
 #### service
 
