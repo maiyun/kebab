@@ -2,13 +2,13 @@
 
 ***
 
-[Documents for @maiyunnet/kebab](../../../index.md) / [lib/net](../index.md) / setCookie
+[Documents for @maiyunnet/kebab](../../../index.md) / [lib/cookie](../index.md) / setCookie
 
 # Function: setCookie()
 
 > **setCookie**(`cookie`, `name`, `value`, `domain`, `opt?`): `void`
 
-Defined in: [lib/net.ts:499](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L499)
+Defined in: [lib/cookie.ts:13](https://github.com/maiyunnet/kebab/blob/master/lib/cookie.ts#L13)
 
 对 cookie 对象进行操作
 

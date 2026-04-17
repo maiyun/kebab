@@ -1100,6 +1100,7 @@ index.md
 - [lib/buffer](lib/buffer/index.md)
 - [lib/captcha](lib/captcha/index.md)
 - [lib/consistent](lib/consistent/index.md)
+- [lib/cookie](lib/cookie/index.md)
 - [lib/core](lib/core/index.md)
 - [lib/cron](lib/cron/index.md)
 - [lib/crypto](lib/crypto/index.md)
@@ -1128,6 +1129,10 @@ index.md
 - [lib/text](lib/text/index.md)
 - [lib/time](lib/time/index.md)
 - [lib/turnstile](lib/turnstile/index.md)
+- [lib/undici](lib/undici/index.md)
+- [lib/undici/formdata](lib/undici/formdata/index.md)
+- [lib/undici/request](lib/undici/request/index.md)
+- [lib/undici/response](lib/undici/response/index.md)
 - [lib/vector](lib/vector/index.md)
 - [lib/ws](lib/ws/index.md)
 - [lib/zip](lib/zip/index.md)
@@ -1355,7 +1360,7 @@ index/variables/VER.md
 
 # Variable: VER
 
-> `const` **VER**: `"9.1.4"` = `'9.1.4'`
+> `const` **VER**: `"9.2.0"` = `'9.2.0'`
 
 Defined in: [index.ts:10](https://github.com/maiyunnet/kebab/blob/master/index.ts#L10)
 
@@ -1943,7 +1948,7 @@ lib/buffer/classes/Reader.md
 
 # Class: Reader
 
-Defined in: [lib/buffer.ts:2](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L2)
+Defined in: [lib/buffer.ts:4](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L4)
 
 读对象
 
@@ -1953,7 +1958,7 @@ Defined in: [lib/buffer.ts:2](https://github.com/maiyunnet/kebab/blob/master/lib
 
 > **new Reader**(`buffer`): `Reader`
 
-Defined in: [lib/buffer.ts:9](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L9)
+Defined in: [lib/buffer.ts:11](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L11)
 
 #### Parameters
 
@@ -1971,7 +1976,7 @@ Defined in: [lib/buffer.ts:9](https://github.com/maiyunnet/kebab/blob/master/lib
 
 > **length**(): `number`
 
-Defined in: [lib/buffer.ts:76](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L76)
+Defined in: [lib/buffer.ts:78](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L78)
 
 获取完整的 buffer 长度
 
@@ -1985,7 +1990,7 @@ Defined in: [lib/buffer.ts:76](https://github.com/maiyunnet/kebab/blob/master/li
 
 > **readBCDString**(`length?`): `string`
 
-Defined in: [lib/buffer.ts:49](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L49)
+Defined in: [lib/buffer.ts:51](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L51)
 
 读取一个 BCD 编码的字符串（每个字节表示两个数字）
 
@@ -2005,7 +2010,7 @@ Defined in: [lib/buffer.ts:49](https://github.com/maiyunnet/kebab/blob/master/li
 
 > **readBuffer**(`length?`): `Buffer`
 
-Defined in: [lib/buffer.ts:70](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L70)
+Defined in: [lib/buffer.ts:72](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L72)
 
 读取 Buffer
 
@@ -2025,7 +2030,7 @@ Defined in: [lib/buffer.ts:70](https://github.com/maiyunnet/kebab/blob/master/li
 
 > **readString**(`length?`, `encoding?`): `string`
 
-Defined in: [lib/buffer.ts:62](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L62)
+Defined in: [lib/buffer.ts:64](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L64)
 
 读取普通 string
 
@@ -2049,7 +2054,7 @@ Defined in: [lib/buffer.ts:62](https://github.com/maiyunnet/kebab/blob/master/li
 
 > **readUInt16BE**(): `number`
 
-Defined in: [lib/buffer.ts:21](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L21)
+Defined in: [lib/buffer.ts:23](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L23)
 
 读取一个无符号 16 位整数（大端模式），WORD
 
@@ -2063,7 +2068,7 @@ Defined in: [lib/buffer.ts:21](https://github.com/maiyunnet/kebab/blob/master/li
 
 > **readUInt16LE**(): `number`
 
-Defined in: [lib/buffer.ts:28](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L28)
+Defined in: [lib/buffer.ts:30](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L30)
 
 读取一个无符号 16 位整数（小端模式）
 
@@ -2077,7 +2082,7 @@ Defined in: [lib/buffer.ts:28](https://github.com/maiyunnet/kebab/blob/master/li
 
 > **readUInt32BE**(): `number`
 
-Defined in: [lib/buffer.ts:35](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L35)
+Defined in: [lib/buffer.ts:37](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L37)
 
 读取一个无符号 32 位整数（大端模式）, DWORD
 
@@ -2091,7 +2096,7 @@ Defined in: [lib/buffer.ts:35](https://github.com/maiyunnet/kebab/blob/master/li
 
 > **readUInt32LE**(): `number`
 
-Defined in: [lib/buffer.ts:42](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L42)
+Defined in: [lib/buffer.ts:44](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L44)
 
 读取一个无符号 32 位整数（小端模式）
 
@@ -2105,7 +2110,7 @@ Defined in: [lib/buffer.ts:42](https://github.com/maiyunnet/kebab/blob/master/li
 
 > **readUInt8**(): `number`
 
-Defined in: [lib/buffer.ts:14](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L14)
+Defined in: [lib/buffer.ts:16](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L16)
 
 读取一个无符号 8 位整数, BYTE
 
@@ -2124,7 +2129,7 @@ lib/buffer/classes/Writer.md
 
 # Class: Writer
 
-Defined in: [lib/buffer.ts:83](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L83)
+Defined in: [lib/buffer.ts:85](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L85)
 
 写对象
 
@@ -2134,7 +2139,7 @@ Defined in: [lib/buffer.ts:83](https://github.com/maiyunnet/kebab/blob/master/li
 
 > **new Writer**(`size`): `Writer`
 
-Defined in: [lib/buffer.ts:90](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L90)
+Defined in: [lib/buffer.ts:92](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L92)
 
 #### Parameters
 
@@ -2152,7 +2157,7 @@ Defined in: [lib/buffer.ts:90](https://github.com/maiyunnet/kebab/blob/master/li
 
 > **get**(): `Buffer`
 
-Defined in: [lib/buffer.ts:133](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L133)
+Defined in: [lib/buffer.ts:135](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L135)
 
 返回 Buffer 对象
 
@@ -2166,7 +2171,7 @@ Defined in: [lib/buffer.ts:133](https://github.com/maiyunnet/kebab/blob/master/l
 
 > **writeBCDString**(`value`): `void`
 
-Defined in: [lib/buffer.ts:113](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L113)
+Defined in: [lib/buffer.ts:115](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L115)
 
 [每字节 2 数字] 写入一个 BCD 编码的字符串（仅支持数字）
 
@@ -2186,7 +2191,7 @@ Defined in: [lib/buffer.ts:113](https://github.com/maiyunnet/kebab/blob/master/l
 
 > **writeString**(`value`, `encoding?`): `number`
 
-Defined in: [lib/buffer.ts:126](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L126)
+Defined in: [lib/buffer.ts:128](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L128)
 
 写入普通字符串，返回写入的长度
 
@@ -2210,7 +2215,7 @@ Defined in: [lib/buffer.ts:126](https://github.com/maiyunnet/kebab/blob/master/l
 
 > **writeUInt16BE**(`value`): `void`
 
-Defined in: [lib/buffer.ts:101](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L101)
+Defined in: [lib/buffer.ts:103](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L103)
 
 [2 字节] 写入一个无符号 16 位整数（大端模式）
 
@@ -2230,7 +2235,7 @@ Defined in: [lib/buffer.ts:101](https://github.com/maiyunnet/kebab/blob/master/l
 
 > **writeUInt32BE**(`value`): `void`
 
-Defined in: [lib/buffer.ts:107](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L107)
+Defined in: [lib/buffer.ts:109](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L109)
 
 [4 字节] 写入一个无符号 32 位整数（大端模式）
 
@@ -2250,7 +2255,7 @@ Defined in: [lib/buffer.ts:107](https://github.com/maiyunnet/kebab/blob/master/l
 
 > **writeUInt8**(`value`): `void`
 
-Defined in: [lib/buffer.ts:95](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L95)
+Defined in: [lib/buffer.ts:97](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L97)
 
 [1 字节] 写入一个无符号 8 位整数
 
@@ -2263,6 +2268,35 @@ Defined in: [lib/buffer.ts:95](https://github.com/maiyunnet/kebab/blob/master/li
 #### Returns
 
 `void`
+
+lib/buffer/functions/getFull.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../index.md) / [lib/buffer](../index.md) / getFull
+
+# Function: getFull()
+
+> **getFull**(`stream`): `Promise`\<`Buffer`\<`ArrayBufferLike`\> \| `null`\>
+
+Defined in: [lib/buffer.ts:161](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L161)
+
+从可读流中获取完整的 Buffer
+
+## Parameters
+
+### stream
+
+`ReadableStream`
+
+可读流对象
+
+## Returns
+
+`Promise`\<`Buffer`\<`ArrayBufferLike`\> \| `null`\>
 
 lib/buffer/functions/getReader.md
 ---
@@ -2277,7 +2311,7 @@ lib/buffer/functions/getReader.md
 
 > **getReader**(`buffer`): [`Reader`](../classes/Reader.md)
 
-Defined in: [lib/buffer.ts:143](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L143)
+Defined in: [lib/buffer.ts:145](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L145)
 
 Buffer Reader 对象
 
@@ -2306,7 +2340,7 @@ lib/buffer/functions/getWriter.md
 
 > **getWriter**(`size`): [`Writer`](../classes/Writer.md)
 
-Defined in: [lib/buffer.ts:151](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L151)
+Defined in: [lib/buffer.ts:153](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L153)
 
 Buffer Writer 对象
 
@@ -2340,6 +2374,7 @@ lib/buffer/index.md
 
 ## Functions
 
+- [getFull](functions/getFull.md)
 - [getReader](functions/getReader.md)
 - [getWriter](functions/getWriter.md)
 
@@ -2867,6 +2902,273 @@ lib/consistent/index.md
 - [getRange](functions/getRange.md)
 - [hash](functions/hash.md)
 
+lib/cookie/functions/buildCookieObject.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../index.md) / [lib/cookie](../index.md) / buildCookieObject
+
+# Function: buildCookieObject()
+
+> **buildCookieObject**(`cookie`, `setCookies`, `uri`): `Promise`\<`void`\>
+
+Defined in: [lib/cookie.ts:46](https://github.com/maiyunnet/kebab/blob/master/lib/cookie.ts#L46)
+
+根据 Set-Cookie 头部转换到 cookie 对象
+
+## Parameters
+
+### cookie
+
+`Record`\<`string`, [`ICookie`](../interfaces/ICookie.md)\>
+
+cookie 对象
+
+### setCookies
+
+`string`[]
+
+头部的 set-cookie 数组
+
+### uri
+
+[`IUrlParse`](../../../index/interfaces/IUrlParse.md)
+
+请求的 URI 对象
+
+## Returns
+
+`Promise`\<`void`\>
+
+lib/cookie/functions/buildCookieQuery.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../index.md) / [lib/cookie](../index.md) / buildCookieQuery
+
+# Function: buildCookieQuery()
+
+> **buildCookieQuery**(`cookie`, `uri`): `string`
+
+Defined in: [lib/cookie.ts:175](https://github.com/maiyunnet/kebab/blob/master/lib/cookie.ts#L175)
+
+对象转换为 Cookie 拼接字符串（会自动筛掉不能发送的 cookie）
+
+## Parameters
+
+### cookie
+
+`Record`\<`string`, [`ICookie`](../interfaces/ICookie.md)\>
+
+cookie 对象
+
+### uri
+
+[`IUrlParse`](../../../index/interfaces/IUrlParse.md)
+
+请求的 URI 对象
+
+## Returns
+
+`string`
+
+lib/cookie/functions/resetCookieSession.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../index.md) / [lib/cookie](../index.md) / resetCookieSession
+
+# Function: resetCookieSession()
+
+> **resetCookieSession**(`cookie`): `void`
+
+Defined in: [lib/cookie.ts:225](https://github.com/maiyunnet/kebab/blob/master/lib/cookie.ts#L225)
+
+模拟重启浏览器后的状态
+
+## Parameters
+
+### cookie
+
+`Record`\<`string`, [`ICookie`](../interfaces/ICookie.md)\>
+
+cookie 对象
+
+## Returns
+
+`void`
+
+lib/cookie/functions/setCookie.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../index.md) / [lib/cookie](../index.md) / setCookie
+
+# Function: setCookie()
+
+> **setCookie**(`cookie`, `name`, `value`, `domain`, `opt?`): `void`
+
+Defined in: [lib/cookie.ts:13](https://github.com/maiyunnet/kebab/blob/master/lib/cookie.ts#L13)
+
+对 cookie 对象进行操作
+
+## Parameters
+
+### cookie
+
+`Record`\<`string`, [`ICookie`](../interfaces/ICookie.md)\>
+
+要操作的对象
+
+### name
+
+`string`
+
+名
+
+### value
+
+`string`
+
+值
+
+### domain
+
+`string`
+
+应用网址，如 .xxx.com
+
+### opt?
+
+选项 ttl, path, ssl, httponly
+
+#### httponly?
+
+`boolean`
+
+#### path?
+
+`string`
+
+#### ssl?
+
+`boolean`
+
+#### ttl?
+
+`number`
+
+## Returns
+
+`void`
+
+lib/cookie/index.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../index.md) / lib/cookie
+
+# lib/cookie
+
+## Interfaces
+
+- [ICookie](interfaces/ICookie.md)
+
+## Functions
+
+- [buildCookieObject](functions/buildCookieObject.md)
+- [buildCookieQuery](functions/buildCookieQuery.md)
+- [resetCookieSession](functions/resetCookieSession.md)
+- [setCookie](functions/setCookie.md)
+
+lib/cookie/interfaces/ICookie.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../index.md) / [lib/cookie](../index.md) / ICookie
+
+# Interface: ICookie
+
+Defined in: [lib/cookie.ts:237](https://github.com/maiyunnet/kebab/blob/master/lib/cookie.ts#L237)
+
+Cookie 对象
+
+## Properties
+
+### domain
+
+> **domain**: `string`
+
+Defined in: [lib/cookie.ts:243](https://github.com/maiyunnet/kebab/blob/master/lib/cookie.ts#L243)
+
+***
+
+### exp
+
+> **exp**: `number`
+
+Defined in: [lib/cookie.ts:241](https://github.com/maiyunnet/kebab/blob/master/lib/cookie.ts#L241)
+
+有效期秒级时间戳
+
+***
+
+### httponly
+
+> **httponly**: `boolean`
+
+Defined in: [lib/cookie.ts:245](https://github.com/maiyunnet/kebab/blob/master/lib/cookie.ts#L245)
+
+***
+
+### name
+
+> **name**: `string`
+
+Defined in: [lib/cookie.ts:238](https://github.com/maiyunnet/kebab/blob/master/lib/cookie.ts#L238)
+
+***
+
+### path
+
+> **path**: `string`
+
+Defined in: [lib/cookie.ts:242](https://github.com/maiyunnet/kebab/blob/master/lib/cookie.ts#L242)
+
+***
+
+### secure
+
+> **secure**: `boolean`
+
+Defined in: [lib/cookie.ts:244](https://github.com/maiyunnet/kebab/blob/master/lib/cookie.ts#L244)
+
+***
+
+### value
+
+> **value**: `string`
+
+Defined in: [lib/cookie.ts:239](https://github.com/maiyunnet/kebab/blob/master/lib/cookie.ts#L239)
+
 lib/core/functions/checkSchema.md
 ---
 
@@ -2880,7 +3182,7 @@ lib/core/functions/checkSchema.md
 
 > **checkSchema**(`val`, `schema`): `string`
 
-Defined in: [lib/core.ts:300](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L300)
+Defined in: [lib/core.ts:301](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L301)
 
 判断一个对象是否符合 JSON Schema
 
@@ -2915,7 +3217,7 @@ lib/core/functions/checkType.md
 
 > **checkType**(`val`, `type`, `tree?`): `string`
 
-Defined in: [lib/core.ts:212](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L212)
+Defined in: [lib/core.ts:213](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L213)
 
 判断一个对象是否符合示例组，返回空字符串代表校验通过，返回：应该的类型:位置:传入的类型
 
@@ -2956,7 +3258,7 @@ lib/core/functions/clone.md
 
 > **clone**\<`T`\>(`obj`): `T`
 
-Defined in: [lib/core.ts:1001](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1001)
+Defined in: [lib/core.ts:1006](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1006)
 
 完整的克隆一份数组/对象
 
@@ -2991,7 +3293,7 @@ lib/core/functions/convert62.md
 
 > **convert62**(`n`): `string`
 
-Defined in: [lib/core.ts:153](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L153)
+Defined in: [lib/core.ts:154](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L154)
 
 将 10 进制转换为 62 进制
 
@@ -3020,7 +3322,7 @@ lib/core/functions/debug.md
 
 > **debug**(`message?`, ...`optionalParams`): `void`
 
-Defined in: [lib/core.ts:1035](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1035)
+Defined in: [lib/core.ts:1040](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1040)
 
 打印调试信息，线上环境不会打印
 
@@ -3055,7 +3357,7 @@ lib/core/functions/display.md
 
 > **display**(`message?`, ...`optionalParams`): `void`
 
-Defined in: [lib/core.ts:1048](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1048)
+Defined in: [lib/core.ts:1053](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1053)
 
 向控制台直接显示内容，一般情况下禁止使用
 
@@ -3090,7 +3392,7 @@ lib/core/functions/emptyObject.md
 
 > **emptyObject**(`obj`, `deep?`): `void`
 
-Defined in: [lib/core.ts:438](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L438)
+Defined in: [lib/core.ts:439](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L439)
 
 将对象的所有属性清除包括键，不会破坏引用关系，对象变量依然保证是引用状态
 
@@ -3125,7 +3427,7 @@ lib/core/functions/exec.md
 
 > **exec**(`command`, `options?`): `Promise`\<`string` \| `false`\>
 
-Defined in: [lib/core.ts:496](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L496)
+Defined in: [lib/core.ts:501](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L501)
 
 执行命令行
 
@@ -3160,7 +3462,7 @@ lib/core/functions/getLog.md
 
 > **getLog**(`opt`): `Promise`\<`false` \| `string`[][] \| `null`\>
 
-Defined in: [lib/core.ts:908](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L908)
+Defined in: [lib/core.ts:913](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L913)
 
 获取日志内容为一个数组
 
@@ -3235,7 +3537,7 @@ lib/core/functions/ip.md
 
 > **ip**(`ctr`, `req?`): `string`
 
-Defined in: [lib/core.ts:357](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L357)
+Defined in: [lib/core.ts:358](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L358)
 
 获取 IP（非安全 IP）
 
@@ -3266,7 +3568,7 @@ lib/core/functions/loadEnv.md
 
 > **loadEnv**(`dir`): `Promise`\<`void`\>
 
-Defined in: [lib/core.ts:1100](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1100)
+Defined in: [lib/core.ts:1105](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1105)
 
 加载 .env 文件到 process.env，若文件不存在则跳过
 
@@ -3295,7 +3597,7 @@ lib/core/functions/log.md
 
 > **log**(`opt`, `msg`, `fend?`): `void`
 
-Defined in: [lib/core.ts:802](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L802)
+Defined in: [lib/core.ts:807](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L807)
 
 写入文件日志
 
@@ -3336,7 +3638,7 @@ lib/core/functions/ls.md
 
 > **ls**(`opt`): `Promise`\<`object`[]\>
 
-Defined in: [lib/core.ts:962](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L962)
+Defined in: [lib/core.ts:967](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L967)
 
 获取目录内文件/文件夹列表
 
@@ -3379,7 +3681,7 @@ lib/core/functions/muid.md
 
 > **muid**(`ctr`, `opt?`): `string`
 
-Defined in: [lib/core.ts:317](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L317)
+Defined in: [lib/core.ts:318](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L318)
 
 获取 MUID
 
@@ -3442,7 +3744,7 @@ lib/core/functions/objectSort.md
 
 > **objectSort**\<`T`\>(`o`): `T`
 
-Defined in: [lib/core.ts:419](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L419)
+Defined in: [lib/core.ts:420](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L420)
 
 将对象进行升序排列
 
@@ -3477,7 +3779,7 @@ lib/core/functions/passThroughAppend.md
 
 > **passThroughAppend**(`passThrough`, `data`, `end?`): `Promise`\<`void`\>
 
-Defined in: [lib/core.ts:457](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L457)
+Defined in: [lib/core.ts:458](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L458)
 
 调用前自行创建 passThrough，并且调用 pipe 绑定到应该绑定的对象，然后再调用本函数
 
@@ -3491,7 +3793,7 @@ passThrough 对象
 
 ### data
 
-(`string` \| `Buffer`\<`ArrayBufferLike`\> \| `Readable` \| [`Response`](../../net/response/classes/Response.md))[]
+(`string` \| `Buffer`\<`ArrayBufferLike`\> \| `Readable` \| [`Response`](../../undici/response/classes/Response.md) \| [`Response`](../../net/response/classes/Response.md))[]
 
 数组
 
@@ -3518,7 +3820,7 @@ lib/core/functions/purify.md
 
 > **purify**(`text`): `string`
 
-Defined in: [lib/core.ts:182](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L182)
+Defined in: [lib/core.ts:183](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L183)
 
 去除 html 的空白符、换行以及注释
 
@@ -3547,7 +3849,7 @@ lib/core/functions/rand.md
 
 > **rand**(`min`, `max`, `prec?`): `number`
 
-Defined in: [lib/core.ts:90](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L90)
+Defined in: [lib/core.ts:91](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L91)
 
 生成基础的范围随机数
 
@@ -3588,7 +3890,7 @@ lib/core/functions/random.md
 
 > **random**(`length?`, `source?`, `block?`): `string`
 
-Defined in: [lib/core.ts:128](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L128)
+Defined in: [lib/core.ts:129](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L129)
 
 生成随机字符串
 
@@ -3629,7 +3931,7 @@ lib/core/functions/realIP.md
 
 > **realIP**(`ctr`, `name?`): `string`
 
-Defined in: [lib/core.ts:391](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L391)
+Defined in: [lib/core.ts:392](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L392)
 
 获取直连 IP（安全 IP）
 
@@ -3662,7 +3964,7 @@ lib/core/functions/removeGlobal.md
 
 > **removeGlobal**(`key`, `hosts?`): `Promise`\<`string`[]\>
 
-Defined in: [lib/core.ts:725](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L725)
+Defined in: [lib/core.ts:730](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L730)
 
 移除某个跨线程/跨内网服务器全局变量
 
@@ -3697,7 +3999,7 @@ lib/core/functions/resolveEnvVars.md
 
 > **resolveEnvVars**(`obj`): `void`
 
-Defined in: [lib/core.ts:1130](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1130)
+Defined in: [lib/core.ts:1135](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1135)
 
 将配置对象中的 ${ENV_VAR} 占位符替换为 process.env 的值
 
@@ -3726,7 +4028,7 @@ lib/core/functions/sendNpm.md
 
 > **sendNpm**(`path`, `hosts?`): `Promise`\<`string`[]\>
 
-Defined in: [lib/core.ts:641](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L641)
+Defined in: [lib/core.ts:646](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L646)
 
 向本机或局域网 RPC 发送 npm install 操作
 
@@ -3761,7 +4063,7 @@ lib/core/functions/sendPm2.md
 
 > **sendPm2**(`name`, `action?`, `hosts?`): `Promise`\<`string`[]\>
 
-Defined in: [lib/core.ts:601](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L601)
+Defined in: [lib/core.ts:606](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L606)
 
 向本机或局域网 RPC 发送 PM2 操作
 
@@ -3802,7 +4104,7 @@ lib/core/functions/sendReload.md
 
 > **sendReload**(`hosts?`): `Promise`\<`string`[]\>
 
-Defined in: [lib/core.ts:516](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L516)
+Defined in: [lib/core.ts:521](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L521)
 
 向主进程（或局域网同代码机子）发送广播将进行 reload 操作，等待回传
 主要作用除代码热更新以外的其他情况
@@ -3830,7 +4132,7 @@ lib/core/functions/sendRestart.md
 
 > **sendRestart**(`hosts?`): `Promise`\<`string`[]\>
 
-Defined in: [lib/core.ts:556](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L556)
+Defined in: [lib/core.ts:561](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L561)
 
 向主进程（或局域网同代码机子）发送广播将进行 restart 操作，停止监听并启动新进程，老进程在连接全部断开后自行销毁
 主要用作不间断的代码热更新
@@ -3858,7 +4160,7 @@ lib/core/functions/setCookie.md
 
 > **setCookie**(`ctr`, `name`, `value`, `opt?`): `void`
 
-Defined in: [lib/core.ts:61](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L61)
+Defined in: [lib/core.ts:62](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L62)
 
 设置 cookie
 
@@ -3905,7 +4207,7 @@ lib/core/functions/setGlobal.md
 
 > **setGlobal**(`key`, `data`, `hosts?`): `Promise`\<`string`[]\>
 
-Defined in: [lib/core.ts:684](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L684)
+Defined in: [lib/core.ts:689](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L689)
 
 设置跨线程/指定的局域网主机的全局变量
 
@@ -3946,7 +4248,7 @@ lib/core/functions/sleep.md
 
 > **sleep**(`ms`): `Promise`\<`void`\>
 
-Defined in: [lib/core.ts:407](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L407)
+Defined in: [lib/core.ts:408](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L408)
 
 间隔一段时间
 
@@ -3975,7 +4277,7 @@ lib/core/functions/unconvert62.md
 
 > **unconvert62**(`n`): `bigint`
 
-Defined in: [lib/core.ts:169](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L169)
+Defined in: [lib/core.ts:170](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L170)
 
 将 62 进制转换为 10 进制
 
@@ -4004,7 +4306,7 @@ lib/core/functions/updateCode.md
 
 > **updateCode**(`sourcePath`, `path`, `hosts?`, `config?`, `strict?`): `Promise`\<`Record`\<`string`, \{ `result`: `boolean`; `return`: `string`; \}\>\>
 
-Defined in: [lib/core.ts:737](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L737)
+Defined in: [lib/core.ts:742](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L742)
 
 上传并覆盖代码文件，config.json、kebab.json、.js.map、.ts, .gitignore 不会被覆盖和新创建
 
@@ -4057,7 +4359,7 @@ lib/core/functions/writeEventStreamHead.md
 
 > **writeEventStreamHead**(`res`): `void`
 
-Defined in: [lib/core.ts:1070](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1070)
+Defined in: [lib/core.ts:1075](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1075)
 
 ## Parameters
 
@@ -4082,7 +4384,7 @@ lib/core/functions/writeHead.md
 
 > **writeHead**(`res`, `statusCode`, `headers?`): `void`
 
-Defined in: [lib/core.ts:1059](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1059)
+Defined in: [lib/core.ts:1064](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1064)
 
 让 res 发送头部（前提是头部没有被发送才能调用本方法
 
@@ -4123,7 +4425,7 @@ lib/core/functions/write.md
 
 > **write**(`res`, `data`): `void`
 
-Defined in: [lib/core.ts:1082](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1082)
+Defined in: [lib/core.ts:1087](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1087)
 
 向 res 发送数据
 
@@ -4229,7 +4531,7 @@ lib/core/interfaces/ICookieOptions.md
 
 # Interface: ICookieOptions
 
-Defined in: [lib/core.ts:45](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L45)
+Defined in: [lib/core.ts:46](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L46)
 
 Cookie 设置的选项
 
@@ -4239,7 +4541,7 @@ Cookie 设置的选项
 
 > `optional` **domain?**: `string`
 
-Defined in: [lib/core.ts:48](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L48)
+Defined in: [lib/core.ts:49](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L49)
 
 ***
 
@@ -4247,7 +4549,7 @@ Defined in: [lib/core.ts:48](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > `optional` **httponly?**: `boolean`
 
-Defined in: [lib/core.ts:50](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L50)
+Defined in: [lib/core.ts:51](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L51)
 
 ***
 
@@ -4255,7 +4557,7 @@ Defined in: [lib/core.ts:50](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > `optional` **path?**: `string`
 
-Defined in: [lib/core.ts:47](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L47)
+Defined in: [lib/core.ts:48](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L48)
 
 ***
 
@@ -4263,7 +4565,7 @@ Defined in: [lib/core.ts:47](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > `optional` **samesite?**: `"Strict"` \| `"Lax"` \| `"None"`
 
-Defined in: [lib/core.ts:51](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L51)
+Defined in: [lib/core.ts:52](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L52)
 
 ***
 
@@ -4271,7 +4573,7 @@ Defined in: [lib/core.ts:51](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > `optional` **ssl?**: `boolean`
 
-Defined in: [lib/core.ts:49](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L49)
+Defined in: [lib/core.ts:50](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L50)
 
 ***
 
@@ -4279,7 +4581,7 @@ Defined in: [lib/core.ts:49](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > `optional` **ttl?**: `number`
 
-Defined in: [lib/core.ts:46](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L46)
+Defined in: [lib/core.ts:47](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L47)
 
 lib/core/interfaces/ILogOptions.md
 ---
@@ -4292,7 +4594,7 @@ lib/core/interfaces/ILogOptions.md
 
 # Interface: ILogOptions
 
-Defined in: [lib/core.ts:785](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L785)
+Defined in: [lib/core.ts:790](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L790)
 
 log 设置的选项
 
@@ -4302,7 +4604,7 @@ log 设置的选项
 
 > `optional` **cookie?**: `Record`\<`string`, `string`\>
 
-Defined in: [lib/core.ts:791](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L791)
+Defined in: [lib/core.ts:796](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L796)
 
 ***
 
@@ -4310,7 +4612,7 @@ Defined in: [lib/core.ts:791](https://github.com/maiyunnet/kebab/blob/master/lib
 
 > `optional` **get?**: `Record`\<`string`, `any`\>
 
-Defined in: [lib/core.ts:790](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L790)
+Defined in: [lib/core.ts:795](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L795)
 
 ***
 
@@ -4318,7 +4620,7 @@ Defined in: [lib/core.ts:790](https://github.com/maiyunnet/kebab/blob/master/lib
 
 > `optional` **headers?**: `IncomingHttpHeaders`
 
-Defined in: [lib/core.ts:793](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L793)
+Defined in: [lib/core.ts:798](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L798)
 
 ***
 
@@ -4326,7 +4628,7 @@ Defined in: [lib/core.ts:793](https://github.com/maiyunnet/kebab/blob/master/lib
 
 > `optional` **hostname?**: `string`
 
-Defined in: [lib/core.ts:788](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L788)
+Defined in: [lib/core.ts:793](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L793)
 
 ***
 
@@ -4334,7 +4636,7 @@ Defined in: [lib/core.ts:788](https://github.com/maiyunnet/kebab/blob/master/lib
 
 > `optional` **path?**: `string`
 
-Defined in: [lib/core.ts:786](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L786)
+Defined in: [lib/core.ts:791](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L791)
 
 ***
 
@@ -4342,7 +4644,7 @@ Defined in: [lib/core.ts:786](https://github.com/maiyunnet/kebab/blob/master/lib
 
 > `optional` **req?**: `IncomingMessage` \| `Http2ServerRequest` \| `null`
 
-Defined in: [lib/core.ts:789](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L789)
+Defined in: [lib/core.ts:794](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L794)
 
 ***
 
@@ -4350,7 +4652,7 @@ Defined in: [lib/core.ts:789](https://github.com/maiyunnet/kebab/blob/master/lib
 
 > `optional` **session?**: `Record`\<`string`, `any`\>
 
-Defined in: [lib/core.ts:792](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L792)
+Defined in: [lib/core.ts:797](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L797)
 
 ***
 
@@ -4358,7 +4660,7 @@ Defined in: [lib/core.ts:792](https://github.com/maiyunnet/kebab/blob/master/lib
 
 > `optional` **urlFull?**: `string`
 
-Defined in: [lib/core.ts:787](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L787)
+Defined in: [lib/core.ts:792](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L792)
 
 lib/core/type-aliases/TPm2Action.md
 ---
@@ -4373,7 +4675,7 @@ lib/core/type-aliases/TPm2Action.md
 
 > **TPm2Action** = `"start"` \| `"stop"` \| `"restart"`
 
-Defined in: [lib/core.ts:593](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L593)
+Defined in: [lib/core.ts:598](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L598)
 
 PM2 操作类型
 
@@ -4390,7 +4692,7 @@ lib/core/variables/globalConfig.md
 
 > `const` **globalConfig**: [`IConfig`](../../../index/interfaces/IConfig.md) & `object`
 
-Defined in: [lib/core.ts:24](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L24)
+Defined in: [lib/core.ts:25](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L25)
 
 全局参数
 
@@ -4447,7 +4749,7 @@ lib/core/variables/global.md
 
 > `const` **global**: `Record`\<`string`, `any`\> = `{}`
 
-Defined in: [lib/core.ts:676](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L676)
+Defined in: [lib/core.ts:681](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L681)
 
 跨进程全局变量
 
@@ -4464,7 +4766,7 @@ lib/core/variables/RANDOM_L.md
 
 > `const` **RANDOM\_L**: `"abcdefghijklmnopqrstuvwxyz"` = `'abcdefghijklmnopqrstuvwxyz'`
 
-Defined in: [lib/core.ts:107](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L107)
+Defined in: [lib/core.ts:108](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L108)
 
 小写字母字符集
 
@@ -4481,7 +4783,7 @@ lib/core/variables/RANDOM_LN.md
 
 > `const` **RANDOM\_LN**: `string`
 
-Defined in: [lib/core.ts:112](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L112)
+Defined in: [lib/core.ts:113](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L113)
 
 小写字母 + 数字字符集
 
@@ -4498,7 +4800,7 @@ lib/core/variables/RANDOM_LU.md
 
 > `const` **RANDOM\_LU**: `string`
 
-Defined in: [lib/core.ts:114](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L114)
+Defined in: [lib/core.ts:115](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L115)
 
 小写字母 + 大写字母字符集
 
@@ -4515,7 +4817,7 @@ lib/core/variables/RANDOM_LUN.md
 
 > `const` **RANDOM\_LUN**: `string`
 
-Defined in: [lib/core.ts:116](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L116)
+Defined in: [lib/core.ts:117](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L117)
 
 小写字母 + 大写字母 + 数字字符集
 
@@ -4532,7 +4834,7 @@ lib/core/variables/RANDOM_LUNS.md
 
 > `const` **RANDOM\_LUNS**: `string`
 
-Defined in: [lib/core.ts:120](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L120)
+Defined in: [lib/core.ts:121](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L121)
 
 小写字母 + 大写字母 + 数字字符集 + 特殊字符字符集
 
@@ -4549,7 +4851,7 @@ lib/core/variables/RANDOM_N.md
 
 > `const` **RANDOM\_N**: `"0123456789"` = `'0123456789'`
 
-Defined in: [lib/core.ts:103](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L103)
+Defined in: [lib/core.ts:104](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L104)
 
 数字字符集
 
@@ -4566,7 +4868,7 @@ lib/core/variables/RANDOM_U.md
 
 > `const` **RANDOM\_U**: `"ABCDEFGHIJKLMNOPQRSTUVWXYZ"` = `'ABCDEFGHIJKLMNOPQRSTUVWXYZ'`
 
-Defined in: [lib/core.ts:105](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L105)
+Defined in: [lib/core.ts:106](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L106)
 
 大写字母字符集
 
@@ -4583,7 +4885,7 @@ lib/core/variables/RANDOM_UN.md
 
 > `const` **RANDOM\_UN**: `string`
 
-Defined in: [lib/core.ts:110](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L110)
+Defined in: [lib/core.ts:111](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L111)
 
 大写字母 + 数字字符集
 
@@ -4600,7 +4902,7 @@ lib/core/variables/RANDOM_V.md
 
 > `const` **RANDOM\_V**: `"ACEFGHJKLMNPRSTWXY34567"` = `'ACEFGHJKLMNPRSTWXY34567'`
 
-Defined in: [lib/core.ts:118](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L118)
+Defined in: [lib/core.ts:119](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L119)
 
 验证码字符集
 
@@ -4617,7 +4919,7 @@ lib/core/variables/REAL_IP_CF.md
 
 > `const` **REAL\_IP\_CF**: `"cf-connecting-ip"` = `'cf-connecting-ip'`
 
-Defined in: [lib/core.ts:384](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L384)
+Defined in: [lib/core.ts:385](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L385)
 
 使用的是 Cloudflare
 
@@ -4634,7 +4936,7 @@ lib/core/variables/REAL_IP_X.md
 
 > `const` **REAL\_IP\_X**: `"x-forwarded-for"` = `'x-forwarded-for'`
 
-Defined in: [lib/core.ts:382](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L382)
+Defined in: [lib/core.ts:383](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L383)
 
 使用 X-Forwarded-For 的 CDN 厂商
 
@@ -7417,7 +7719,7 @@ Defined in: [lib/dns.ts:106](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **addDomainRecord**(`opt`): `Promise`\<[`IAddDomainRecord`](../interfaces/IAddDomainRecord.md) \| `null`\>
 
-Defined in: [lib/dns.ts:224](https://github.com/maiyunnet/kebab/blob/master/lib/dns.ts#L224)
+Defined in: [lib/dns.ts:223](https://github.com/maiyunnet/kebab/blob/master/lib/dns.ts#L223)
 
 添加记录
 
@@ -7465,7 +7767,7 @@ Defined in: [lib/dns.ts:224](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **deleteDomainRecord**(`opt`): `Promise`\<\{ `success`: `boolean`; \} \| `null`\>
 
-Defined in: [lib/dns.ts:359](https://github.com/maiyunnet/kebab/blob/master/lib/dns.ts#L359)
+Defined in: [lib/dns.ts:358](https://github.com/maiyunnet/kebab/blob/master/lib/dns.ts#L358)
 
 删除记录
 
@@ -7493,7 +7795,7 @@ Defined in: [lib/dns.ts:359](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **getDomainList**(`opt`): `Promise`\<[`IDomainList`](../interfaces/IDomainList.md) \| `null`\>
 
-Defined in: [lib/dns.ts:158](https://github.com/maiyunnet/kebab/blob/master/lib/dns.ts#L158)
+Defined in: [lib/dns.ts:157](https://github.com/maiyunnet/kebab/blob/master/lib/dns.ts#L157)
 
 获取域名列表
 
@@ -7521,7 +7823,7 @@ Defined in: [lib/dns.ts:158](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **updateDomainRecord**(`opt`): `Promise`\<[`IAddDomainRecord`](../interfaces/IAddDomainRecord.md) \| `null`\>
 
-Defined in: [lib/dns.ts:290](https://github.com/maiyunnet/kebab/blob/master/lib/dns.ts#L290)
+Defined in: [lib/dns.ts:289](https://github.com/maiyunnet/kebab/blob/master/lib/dns.ts#L289)
 
 修改记录
 
@@ -7745,7 +8047,7 @@ lib/dns/functions/get.md
 
 > **get**(`ctr`, `opt`): [`Dns`](../classes/Dns.md)
 
-Defined in: [lib/dns.ts:404](https://github.com/maiyunnet/kebab/blob/master/lib/dns.ts#L404)
+Defined in: [lib/dns.ts:403](https://github.com/maiyunnet/kebab/blob/master/lib/dns.ts#L403)
 
 创建一个 Dns 对象
 
@@ -10502,41 +10804,6 @@ Buffer 数据
 
 文件名
 
-lib/net/functions/buildCookieQuery.md
----
-
-[**Documents for @maiyunnet/kebab**](../../../index.md)
-
-***
-
-[Documents for @maiyunnet/kebab](../../../index.md) / [lib/net](../index.md) / buildCookieQuery
-
-# Function: buildCookieQuery()
-
-> **buildCookieQuery**(`cookie`, `uri`): `string`
-
-Defined in: [lib/net.ts:661](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L661)
-
-对象转换为 Cookie 拼接字符串（会自动筛掉不能发送的 cookie）
-
-## Parameters
-
-### cookie
-
-`Record`\<`string`, [`ICookie`](../interfaces/ICookie.md)\>
-
-cookie 对象
-
-### uri
-
-[`IUrlParse`](../../../index/interfaces/IUrlParse.md)
-
-请求的 URI 对象
-
-## Returns
-
-`string`
-
 lib/net/functions/fetch.md
 ---
 
@@ -10585,7 +10852,7 @@ lib/net/functions/filterHeaders.md
 
 > **filterHeaders**(`headers`, `res?`, `filter?`): `Record`\<`string`, `string` \| `string`[]\>
 
-Defined in: [lib/net.ts:739](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L739)
+Defined in: [lib/net.ts:510](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L510)
 
 剔除不代理的 header，返回新的 header
 
@@ -10647,7 +10914,7 @@ lib/net/functions/getFormData.md
 
 > **getFormData**(): [`FormData`](../formdata/classes/FormData.md)
 
-Defined in: [lib/net.ts:723](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L723)
+Defined in: [lib/net.ts:494](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L494)
 
 创建 FormData 对象
 
@@ -10740,7 +11007,7 @@ lib/net/functions/mproxyData.md
 
 > **mproxyData**(`ctr`): `any`
 
-Defined in: [lib/net.ts:827](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L827)
+Defined in: [lib/net.ts:598](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L598)
 
 获取 mproxy 的附加数据
 
@@ -10769,7 +11036,7 @@ lib/net/functions/mproxy.md
 
 > **mproxy**(`ctr`, `auth`, `opt?`): `Promise`\<`number`\>
 
-Defined in: [lib/net.ts:775](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L775)
+Defined in: [lib/net.ts:546](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L546)
 
 正向 mproxy 代理，注意提前处理不要自动处理 post 数据，读取 get 的 url 为实际请求地址
 get: url, auth
@@ -10987,35 +11254,6 @@ Defined in: [lib/net.ts:305](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 `Promise`\<[`Response`](../response/classes/Response.md)\>
 
-lib/net/functions/resetCookieSession.md
----
-
-[**Documents for @maiyunnet/kebab**](../../../index.md)
-
-***
-
-[Documents for @maiyunnet/kebab](../../../index.md) / [lib/net](../index.md) / resetCookieSession
-
-# Function: resetCookieSession()
-
-> **resetCookieSession**(`cookie`): `void`
-
-Defined in: [lib/net.ts:711](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L711)
-
-模拟重启浏览器后的状态
-
-## Parameters
-
-### cookie
-
-`Record`\<`string`, [`ICookie`](../interfaces/ICookie.md)\>
-
-cookie 对象
-
-## Returns
-
-`void`
-
 lib/net/functions/rproxy.md
 ---
 
@@ -11029,7 +11267,7 @@ lib/net/functions/rproxy.md
 
 > **rproxy**(`ctr`, `route`, `opt?`): `Promise`\<`boolean`\>
 
-Defined in: [lib/net.ts:845](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L845)
+Defined in: [lib/net.ts:616](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L616)
 
 反向代理，注意提前处理不要自动处理 post 数据，将本服务器的某个路由反代到其他网址
 
@@ -11057,73 +11295,6 @@ Defined in: [lib/net.ts:845](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 `Promise`\<`boolean`\>
 
-lib/net/functions/setCookie.md
----
-
-[**Documents for @maiyunnet/kebab**](../../../index.md)
-
-***
-
-[Documents for @maiyunnet/kebab](../../../index.md) / [lib/net](../index.md) / setCookie
-
-# Function: setCookie()
-
-> **setCookie**(`cookie`, `name`, `value`, `domain`, `opt?`): `void`
-
-Defined in: [lib/net.ts:499](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L499)
-
-对 cookie 对象进行操作
-
-## Parameters
-
-### cookie
-
-`Record`\<`string`, [`ICookie`](../interfaces/ICookie.md)\>
-
-要操作的对象
-
-### name
-
-`string`
-
-名
-
-### value
-
-`string`
-
-值
-
-### domain
-
-`string`
-
-应用网址，如 .xxx.com
-
-### opt?
-
-选项 ttl, path, ssl, httponly
-
-#### httponly?
-
-`boolean`
-
-#### path?
-
-`string`
-
-#### ssl?
-
-`boolean`
-
-#### ttl?
-
-`number`
-
-## Returns
-
-`void`
-
 lib/net/index.md
 ---
 
@@ -11137,7 +11308,6 @@ lib/net/index.md
 
 ## Interfaces
 
-- [ICookie](interfaces/ICookie.md)
 - [IMproxyOptions](interfaces/IMproxyOptions.md)
 - [IRequestOptions](interfaces/IRequestOptions.md)
 - [IRproxyOptions](interfaces/IRproxyOptions.md)
@@ -11148,7 +11318,6 @@ lib/net/index.md
 
 ## Functions
 
-- [buildCookieQuery](functions/buildCookieQuery.md)
 - [fetch](functions/fetch.md)
 - [filterHeaders](functions/filterHeaders.md)
 - [get](functions/get.md)
@@ -11162,82 +11331,7 @@ lib/net/index.md
 - [postJson](functions/postJson.md)
 - [postJsonResponseJson](functions/postJsonResponseJson.md)
 - [request](functions/request.md)
-- [resetCookieSession](functions/resetCookieSession.md)
 - [rproxy](functions/rproxy.md)
-- [setCookie](functions/setCookie.md)
-
-lib/net/interfaces/ICookie.md
----
-
-[**Documents for @maiyunnet/kebab**](../../../index.md)
-
-***
-
-[Documents for @maiyunnet/kebab](../../../index.md) / [lib/net](../index.md) / ICookie
-
-# Interface: ICookie
-
-Defined in: [lib/net.ts:976](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L976)
-
-Net Cookie 对象
-
-## Properties
-
-### domain
-
-> **domain**: `string`
-
-Defined in: [lib/net.ts:982](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L982)
-
-***
-
-### exp
-
-> **exp**: `number`
-
-Defined in: [lib/net.ts:980](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L980)
-
-有效期秒级时间戳
-
-***
-
-### httponly
-
-> **httponly**: `boolean`
-
-Defined in: [lib/net.ts:984](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L984)
-
-***
-
-### name
-
-> **name**: `string`
-
-Defined in: [lib/net.ts:977](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L977)
-
-***
-
-### path
-
-> **path**: `string`
-
-Defined in: [lib/net.ts:981](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L981)
-
-***
-
-### secure
-
-> **secure**: `boolean`
-
-Defined in: [lib/net.ts:983](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L983)
-
-***
-
-### value
-
-> **value**: `string`
-
-Defined in: [lib/net.ts:978](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L978)
 
 lib/net/interfaces/IMproxyOptions.md
 ---
@@ -11250,7 +11344,7 @@ lib/net/interfaces/IMproxyOptions.md
 
 # Interface: IMproxyOptions
 
-Defined in: [lib/net.ts:929](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L929)
+Defined in: [lib/net.ts:700](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L700)
 
 正向代理请求的传入参数选项
 
@@ -11260,7 +11354,7 @@ Defined in: [lib/net.ts:929](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > `optional` **filter?**: (`h`) => `boolean`
 
-Defined in: [lib/net.ts:938](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L938)
+Defined in: [lib/net.ts:709](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L709)
 
 过滤 header，返回 true 则留下
 
@@ -11280,7 +11374,7 @@ Defined in: [lib/net.ts:938](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > `optional` **follow?**: `number`
 
-Defined in: [lib/net.ts:932](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L932)
+Defined in: [lib/net.ts:703](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L703)
 
 ***
 
@@ -11288,7 +11382,7 @@ Defined in: [lib/net.ts:932](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > `optional` **headers?**: [`THttpHeaders`](../type-aliases/THttpHeaders.md)
 
-Defined in: [lib/net.ts:936](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L936)
+Defined in: [lib/net.ts:707](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L707)
 
 ***
 
@@ -11296,7 +11390,7 @@ Defined in: [lib/net.ts:936](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > `optional` **hosts?**: `string` \| `Record`\<`string`, `string`\>
 
-Defined in: [lib/net.ts:934](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L934)
+Defined in: [lib/net.ts:705](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L705)
 
 自定义 host 映射，如 {'www.maiyun.net': '127.0.0.1'}，或全部映射到一个 host
 
@@ -11306,7 +11400,7 @@ Defined in: [lib/net.ts:934](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > `optional` **local?**: `string`
 
-Defined in: [lib/net.ts:935](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L935)
+Defined in: [lib/net.ts:706](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L706)
 
 ***
 
@@ -11314,7 +11408,7 @@ Defined in: [lib/net.ts:935](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > `optional` **reuse?**: `string`
 
-Defined in: [lib/net.ts:940](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L940)
+Defined in: [lib/net.ts:711](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L711)
 
 默认为 default
 
@@ -11324,7 +11418,7 @@ Defined in: [lib/net.ts:940](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > `optional` **timeout?**: `number`
 
-Defined in: [lib/net.ts:931](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L931)
+Defined in: [lib/net.ts:702](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L702)
 
 秒数
 
@@ -11339,7 +11433,7 @@ lib/net/interfaces/IRequestOptions.md
 
 # Interface: IRequestOptions
 
-Defined in: [lib/net.ts:898](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L898)
+Defined in: [lib/net.ts:669](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L669)
 
 请求的传入参数选项
 
@@ -11347,9 +11441,9 @@ Defined in: [lib/net.ts:898](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 ### cookie?
 
-> `optional` **cookie?**: `Record`\<`string`, [`ICookie`](ICookie.md)\>
+> `optional` **cookie?**: `Record`\<`string`, [`ICookie`](../../cookie/interfaces/ICookie.md)\>
 
-Defined in: [lib/net.ts:923](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L923)
+Defined in: [lib/net.ts:694](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L694)
 
 cookie 托管对象
 
@@ -11359,7 +11453,7 @@ cookie 托管对象
 
 > `optional` **follow?**: `number`
 
-Defined in: [lib/net.ts:904](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L904)
+Defined in: [lib/net.ts:675](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L675)
 
 追踪 location 次数，0 为不追踪，默认为 0
 
@@ -11369,7 +11463,7 @@ Defined in: [lib/net.ts:904](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > `optional` **headers?**: [`THttpHeaders`](../type-aliases/THttpHeaders.md)
 
-Defined in: [lib/net.ts:909](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L909)
+Defined in: [lib/net.ts:680](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L680)
 
 ***
 
@@ -11377,7 +11471,7 @@ Defined in: [lib/net.ts:909](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > `optional` **hosts?**: `string` \| `Record`\<`string`, `string`\>
 
-Defined in: [lib/net.ts:906](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L906)
+Defined in: [lib/net.ts:677](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L677)
 
 自定义 host 映射，如 {'www.maiyun.net': '127.0.0.1'}，或全部映射到一个 host
 
@@ -11387,7 +11481,7 @@ Defined in: [lib/net.ts:906](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > `optional` **keep?**: `boolean`
 
-Defined in: [lib/net.ts:919](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L919)
+Defined in: [lib/net.ts:690](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L690)
 
 连接是否保持长连接（即是否允许复用），默认为 true
 
@@ -11397,7 +11491,7 @@ Defined in: [lib/net.ts:919](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > `optional` **local?**: `string`
 
-Defined in: [lib/net.ts:908](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L908)
+Defined in: [lib/net.ts:679](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L679)
 
 ***
 
@@ -11405,7 +11499,7 @@ Defined in: [lib/net.ts:908](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > `optional` **log?**: `boolean`
 
-Defined in: [lib/net.ts:925](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L925)
+Defined in: [lib/net.ts:696](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L696)
 
 若有异常写入文件日志，默认为 true
 
@@ -11415,7 +11509,7 @@ Defined in: [lib/net.ts:925](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > `optional` **method?**: `"GET"` \| `"POST"` \| `"PUT"` \| `"DELETE"` \| `"OPTIONS"`
 
-Defined in: [lib/net.ts:899](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L899)
+Defined in: [lib/net.ts:670](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L670)
 
 ***
 
@@ -11423,7 +11517,7 @@ Defined in: [lib/net.ts:899](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > `optional` **mproxy?**: `object`
 
-Defined in: [lib/net.ts:911](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L911)
+Defined in: [lib/net.ts:682](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L682)
 
 正向 mproxy 代理，url 如 https://xxx/abc
 
@@ -11451,7 +11545,7 @@ Defined in: [lib/net.ts:911](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > `optional` **reuse?**: `string`
 
-Defined in: [lib/net.ts:921](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L921)
+Defined in: [lib/net.ts:692](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L692)
 
 复用池名，默认为 default
 
@@ -11461,7 +11555,7 @@ Defined in: [lib/net.ts:921](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > `optional` **save?**: `string`
 
-Defined in: [lib/net.ts:907](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L907)
+Defined in: [lib/net.ts:678](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L678)
 
 ***
 
@@ -11469,9 +11563,9 @@ Defined in: [lib/net.ts:907](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > `optional` **timeout?**: `number`
 
-Defined in: [lib/net.ts:902](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L902)
+Defined in: [lib/net.ts:673](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L673)
 
-秒数
+秒数，默认 10 秒
 
 ***
 
@@ -11479,7 +11573,7 @@ Defined in: [lib/net.ts:902](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > `optional` **type?**: `"form"` \| `"json"`
 
-Defined in: [lib/net.ts:900](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L900)
+Defined in: [lib/net.ts:671](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L671)
 
 lib/net/interfaces/IRproxyOptions.md
 ---
@@ -11492,7 +11586,7 @@ lib/net/interfaces/IRproxyOptions.md
 
 # Interface: IRproxyOptions
 
-Defined in: [lib/net.ts:944](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L944)
+Defined in: [lib/net.ts:715](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L715)
 
 反向代理请求的传入参数选项
 
@@ -11502,7 +11596,7 @@ Defined in: [lib/net.ts:944](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > `optional` **filter?**: (`h`) => `boolean`
 
-Defined in: [lib/net.ts:953](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L953)
+Defined in: [lib/net.ts:724](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L724)
 
 过滤 header，返回 true 则留下
 
@@ -11522,7 +11616,7 @@ Defined in: [lib/net.ts:953](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > `optional` **follow?**: `number`
 
-Defined in: [lib/net.ts:947](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L947)
+Defined in: [lib/net.ts:718](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L718)
 
 ***
 
@@ -11530,7 +11624,7 @@ Defined in: [lib/net.ts:947](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > `optional` **headers?**: [`THttpHeaders`](../type-aliases/THttpHeaders.md)
 
-Defined in: [lib/net.ts:951](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L951)
+Defined in: [lib/net.ts:722](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L722)
 
 ***
 
@@ -11538,7 +11632,7 @@ Defined in: [lib/net.ts:951](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > `optional` **hosts?**: `string` \| `Record`\<`string`, `string`\>
 
-Defined in: [lib/net.ts:949](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L949)
+Defined in: [lib/net.ts:720](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L720)
 
 自定义 host 映射，如 {'www.maiyun.net': '127.0.0.1'}，或全部映射到一个 host
 
@@ -11548,7 +11642,7 @@ Defined in: [lib/net.ts:949](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > `optional` **local?**: `string`
 
-Defined in: [lib/net.ts:950](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L950)
+Defined in: [lib/net.ts:721](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L721)
 
 ***
 
@@ -11556,7 +11650,7 @@ Defined in: [lib/net.ts:950](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > `optional` **mproxy?**: `object`
 
-Defined in: [lib/net.ts:955](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L955)
+Defined in: [lib/net.ts:726](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L726)
 
 正向 mproxy 代理，url 如 https://xxx/abc
 
@@ -11584,7 +11678,7 @@ Defined in: [lib/net.ts:955](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > `optional` **reuse?**: `string`
 
-Defined in: [lib/net.ts:963](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L963)
+Defined in: [lib/net.ts:734](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L734)
 
 默认为 default
 
@@ -11594,7 +11688,7 @@ Defined in: [lib/net.ts:963](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > `optional` **timeout?**: `number`
 
-Defined in: [lib/net.ts:946](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L946)
+Defined in: [lib/net.ts:717](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L717)
 
 秒数
 
@@ -11609,7 +11703,7 @@ lib/net/request/classes/Request.md
 
 # Class: Request
 
-Defined in: [lib/net/request.ts:10](https://github.com/maiyunnet/kebab/blob/master/lib/net/request.ts#L10)
+Defined in: [lib/net/request.ts:11](https://github.com/maiyunnet/kebab/blob/master/lib/net/request.ts#L11)
 
 ## Constructors
 
@@ -11617,7 +11711,7 @@ Defined in: [lib/net/request.ts:10](https://github.com/maiyunnet/kebab/blob/mast
 
 > **new Request**(`url`): `Request`
 
-Defined in: [lib/net/request.ts:21](https://github.com/maiyunnet/kebab/blob/master/lib/net/request.ts#L21)
+Defined in: [lib/net/request.ts:22](https://github.com/maiyunnet/kebab/blob/master/lib/net/request.ts#L22)
 
 #### Parameters
 
@@ -11635,7 +11729,7 @@ Defined in: [lib/net/request.ts:21](https://github.com/maiyunnet/kebab/blob/mast
 
 > **data**(`data`): `this`
 
-Defined in: [lib/net/request.ts:29](https://github.com/maiyunnet/kebab/blob/master/lib/net/request.ts#L29)
+Defined in: [lib/net/request.ts:30](https://github.com/maiyunnet/kebab/blob/master/lib/net/request.ts#L30)
 
 设置 get 或 post 的数据
 
@@ -11657,7 +11751,7 @@ Defined in: [lib/net/request.ts:29](https://github.com/maiyunnet/kebab/blob/mast
 
 > **follow**(`follow?`): `this`
 
-Defined in: [lib/net/request.ts:86](https://github.com/maiyunnet/kebab/blob/master/lib/net/request.ts#L86)
+Defined in: [lib/net/request.ts:87](https://github.com/maiyunnet/kebab/blob/master/lib/net/request.ts#L87)
 
 设置是否跟随请求方的 location，留空为跟随，不设置为不跟随
 
@@ -11677,7 +11771,7 @@ Defined in: [lib/net/request.ts:86](https://github.com/maiyunnet/kebab/blob/mast
 
 > **get**(): `this`
 
-Defined in: [lib/net/request.ts:46](https://github.com/maiyunnet/kebab/blob/master/lib/net/request.ts#L46)
+Defined in: [lib/net/request.ts:47](https://github.com/maiyunnet/kebab/blob/master/lib/net/request.ts#L47)
 
 method get 方法别名
 
@@ -11691,7 +11785,7 @@ method get 方法别名
 
 > **headers**(`headers`): `this`
 
-Defined in: [lib/net/request.ts:122](https://github.com/maiyunnet/kebab/blob/master/lib/net/request.ts#L122)
+Defined in: [lib/net/request.ts:123](https://github.com/maiyunnet/kebab/blob/master/lib/net/request.ts#L123)
 
 批量设置提交的 headers
 
@@ -11711,7 +11805,7 @@ Defined in: [lib/net/request.ts:122](https://github.com/maiyunnet/kebab/blob/mas
 
 > **hosts**(`hosts`): `this`
 
-Defined in: [lib/net/request.ts:95](https://github.com/maiyunnet/kebab/blob/master/lib/net/request.ts#L95)
+Defined in: [lib/net/request.ts:96](https://github.com/maiyunnet/kebab/blob/master/lib/net/request.ts#L96)
 
 设置域名 -> ip的对应键值，就像电脑里的 hosts 一样
 
@@ -11731,7 +11825,7 @@ Defined in: [lib/net/request.ts:95](https://github.com/maiyunnet/kebab/blob/mast
 
 > **json**(): `this`
 
-Defined in: [lib/net/request.ts:69](https://github.com/maiyunnet/kebab/blob/master/lib/net/request.ts#L69)
+Defined in: [lib/net/request.ts:70](https://github.com/maiyunnet/kebab/blob/master/lib/net/request.ts#L70)
 
 type json 方法别名
 
@@ -11745,7 +11839,7 @@ type json 方法别名
 
 > **local**(`addr`): `this`
 
-Defined in: [lib/net/request.ts:113](https://github.com/maiyunnet/kebab/blob/master/lib/net/request.ts#L113)
+Defined in: [lib/net/request.ts:114](https://github.com/maiyunnet/kebab/blob/master/lib/net/request.ts#L114)
 
 设置使用的本地网卡 IP
 
@@ -11765,7 +11859,7 @@ Defined in: [lib/net/request.ts:113](https://github.com/maiyunnet/kebab/blob/mas
 
 > **method**(`method`): `this`
 
-Defined in: [lib/net/request.ts:38](https://github.com/maiyunnet/kebab/blob/master/lib/net/request.ts#L38)
+Defined in: [lib/net/request.ts:39](https://github.com/maiyunnet/kebab/blob/master/lib/net/request.ts#L39)
 
 设置 get 或 post 请求
 
@@ -11785,7 +11879,7 @@ Defined in: [lib/net/request.ts:38](https://github.com/maiyunnet/kebab/blob/mast
 
 > **post**(): `this`
 
-Defined in: [lib/net/request.ts:53](https://github.com/maiyunnet/kebab/blob/master/lib/net/request.ts#L53)
+Defined in: [lib/net/request.ts:54](https://github.com/maiyunnet/kebab/blob/master/lib/net/request.ts#L54)
 
 method post 方法别名
 
@@ -11799,7 +11893,7 @@ method post 方法别名
 
 > **request**(`cookie?`): `Promise`\<[`Response`](../../response/classes/Response.md)\>
 
-Defined in: [lib/net/request.ts:142](https://github.com/maiyunnet/kebab/blob/master/lib/net/request.ts#L142)
+Defined in: [lib/net/request.ts:143](https://github.com/maiyunnet/kebab/blob/master/lib/net/request.ts#L143)
 
 发起请求
 
@@ -11807,7 +11901,7 @@ Defined in: [lib/net/request.ts:142](https://github.com/maiyunnet/kebab/blob/mas
 
 ##### cookie?
 
-`Record`\<`string`, [`ICookie`](../../interfaces/ICookie.md)\>
+`Record`\<`string`, [`ICookie`](../../../cookie/interfaces/ICookie.md)\>
 
 #### Returns
 
@@ -11819,7 +11913,7 @@ Defined in: [lib/net/request.ts:142](https://github.com/maiyunnet/kebab/blob/mas
 
 > **save**(`save`): `this`
 
-Defined in: [lib/net/request.ts:104](https://github.com/maiyunnet/kebab/blob/master/lib/net/request.ts#L104)
+Defined in: [lib/net/request.ts:105](https://github.com/maiyunnet/kebab/blob/master/lib/net/request.ts#L105)
 
 设置后将直接保存到本地文件，不会返回，save 为本地实体路径
 
@@ -11839,7 +11933,7 @@ Defined in: [lib/net/request.ts:104](https://github.com/maiyunnet/kebab/blob/mas
 
 > **setHeader**(`name`, `val`): `this`
 
-Defined in: [lib/net/request.ts:132](https://github.com/maiyunnet/kebab/blob/master/lib/net/request.ts#L132)
+Defined in: [lib/net/request.ts:133](https://github.com/maiyunnet/kebab/blob/master/lib/net/request.ts#L133)
 
 设置单条 header
 
@@ -11863,7 +11957,7 @@ Defined in: [lib/net/request.ts:132](https://github.com/maiyunnet/kebab/blob/mas
 
 > **timeout**(`timeout`): `this`
 
-Defined in: [lib/net/request.ts:77](https://github.com/maiyunnet/kebab/blob/master/lib/net/request.ts#L77)
+Defined in: [lib/net/request.ts:78](https://github.com/maiyunnet/kebab/blob/master/lib/net/request.ts#L78)
 
 设置请求有效期
 
@@ -11885,7 +11979,7 @@ Defined in: [lib/net/request.ts:77](https://github.com/maiyunnet/kebab/blob/mast
 
 > **type**(`type`): `this`
 
-Defined in: [lib/net/request.ts:61](https://github.com/maiyunnet/kebab/blob/master/lib/net/request.ts#L61)
+Defined in: [lib/net/request.ts:62](https://github.com/maiyunnet/kebab/blob/master/lib/net/request.ts#L62)
 
 设置提交模式，json 还是普通 form
 
@@ -12055,7 +12149,7 @@ lib/net/type-aliases/THttpHeaders.md
 
 > **THttpHeaders** = `http.IncomingHttpHeaders` & `object`
 
-Defined in: [lib/net.ts:968](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L968)
+Defined in: [lib/net.ts:739](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L739)
 
 http headers
 
@@ -13258,7 +13352,7 @@ lib/socket/functions/rwebsocket.md
 
 > **rwebsocket**(`port`, `url`, `opt?`): `Server`
 
-Defined in: [lib/socket.ts:37](https://github.com/maiyunnet/kebab/blob/master/lib/socket.ts#L37)
+Defined in: [lib/socket.ts:38](https://github.com/maiyunnet/kebab/blob/master/lib/socket.ts#L38)
 
 创建一个 Socket 服务器并反代到 WebSocket
 
@@ -13316,15 +13410,15 @@ lib/socket/interfaces/IRwebsocketOptions.md
 
 # Interface: IRwebsocketOptions
 
-Defined in: [lib/socket.ts:12](https://github.com/maiyunnet/kebab/blob/master/lib/socket.ts#L12)
+Defined in: [lib/socket.ts:13](https://github.com/maiyunnet/kebab/blob/master/lib/socket.ts#L13)
 
 ## Properties
 
 ### cookie?
 
-> `optional` **cookie?**: `Record`\<`string`, [`ICookie`](../../net/interfaces/ICookie.md)\>
+> `optional` **cookie?**: `Record`\<`string`, [`ICookie`](../../cookie/interfaces/ICookie.md)\>
 
-Defined in: [lib/socket.ts:19](https://github.com/maiyunnet/kebab/blob/master/lib/socket.ts#L19)
+Defined in: [lib/socket.ts:20](https://github.com/maiyunnet/kebab/blob/master/lib/socket.ts#L20)
 
 cookie 托管对象
 
@@ -13332,9 +13426,9 @@ cookie 托管对象
 
 ### headers?
 
-> `optional` **headers?**: [`THttpHeaders`](../../net/type-aliases/THttpHeaders.md)
+> `optional` **headers?**: [`THttpHeaders`](../../undici/type-aliases/THttpHeaders.md)
 
-Defined in: [lib/socket.ts:17](https://github.com/maiyunnet/kebab/blob/master/lib/socket.ts#L17)
+Defined in: [lib/socket.ts:18](https://github.com/maiyunnet/kebab/blob/master/lib/socket.ts#L18)
 
 ***
 
@@ -13342,7 +13436,7 @@ Defined in: [lib/socket.ts:17](https://github.com/maiyunnet/kebab/blob/master/li
 
 > `optional` **hosts?**: `Record`\<`string`, `string`\>
 
-Defined in: [lib/socket.ts:15](https://github.com/maiyunnet/kebab/blob/master/lib/socket.ts#L15)
+Defined in: [lib/socket.ts:16](https://github.com/maiyunnet/kebab/blob/master/lib/socket.ts#L16)
 
 ***
 
@@ -13350,7 +13444,7 @@ Defined in: [lib/socket.ts:15](https://github.com/maiyunnet/kebab/blob/master/li
 
 > `optional` **local?**: `string`
 
-Defined in: [lib/socket.ts:16](https://github.com/maiyunnet/kebab/blob/master/lib/socket.ts#L16)
+Defined in: [lib/socket.ts:17](https://github.com/maiyunnet/kebab/blob/master/lib/socket.ts#L17)
 
 ***
 
@@ -13358,7 +13452,7 @@ Defined in: [lib/socket.ts:16](https://github.com/maiyunnet/kebab/blob/master/li
 
 > `optional` **masking?**: `boolean`
 
-Defined in: [lib/socket.ts:23](https://github.com/maiyunnet/kebab/blob/master/lib/socket.ts#L23)
+Defined in: [lib/socket.ts:24](https://github.com/maiyunnet/kebab/blob/master/lib/socket.ts#L24)
 
 加密模式，默认 true
 
@@ -13368,7 +13462,7 @@ Defined in: [lib/socket.ts:23](https://github.com/maiyunnet/kebab/blob/master/li
 
 > `optional` **mode?**: [`EFrameReceiveMode`](../../ws/enumerations/EFrameReceiveMode.md)
 
-Defined in: [lib/socket.ts:21](https://github.com/maiyunnet/kebab/blob/master/lib/socket.ts#L21)
+Defined in: [lib/socket.ts:22](https://github.com/maiyunnet/kebab/blob/master/lib/socket.ts#L22)
 
 小帧模式，默认 false
 
@@ -13378,7 +13472,7 @@ Defined in: [lib/socket.ts:21](https://github.com/maiyunnet/kebab/blob/master/li
 
 > `optional` **mproxy?**: `object`
 
-Defined in: [lib/socket.ts:25](https://github.com/maiyunnet/kebab/blob/master/lib/socket.ts#L25)
+Defined in: [lib/socket.ts:26](https://github.com/maiyunnet/kebab/blob/master/lib/socket.ts#L26)
 
 正向 mproxy 代理，url 如 wss://xxx/abc
 
@@ -13396,7 +13490,7 @@ Defined in: [lib/socket.ts:25](https://github.com/maiyunnet/kebab/blob/master/li
 
 > `optional` **timeout?**: `number`
 
-Defined in: [lib/socket.ts:14](https://github.com/maiyunnet/kebab/blob/master/lib/socket.ts#L14)
+Defined in: [lib/socket.ts:15](https://github.com/maiyunnet/kebab/blob/master/lib/socket.ts#L15)
 
 秒数
 
@@ -17272,6 +17366,1712 @@ lib/turnstile/index.md
 
 - [verify](functions/verify.md)
 
+lib/undici/formdata/classes/FormData.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../../index.md) / [lib/undici/formdata](../index.md) / FormData
+
+# Class: FormData
+
+Defined in: [lib/undici/formdata.ts:37](https://github.com/maiyunnet/kebab/blob/master/lib/undici/formdata.ts#L37)
+
+## Extends
+
+- `Readable`
+
+## Constructors
+
+### Constructor
+
+> **new FormData**(`options?`): `FormData`
+
+Defined in: node\_modules/@types/node/stream.d.ts:99
+
+#### Parameters
+
+##### options?
+
+`ReadableOptions`\<`Readable`\>
+
+#### Returns
+
+`FormData`
+
+#### Inherited from
+
+`stream.Readable.constructor`
+
+## Methods
+
+### \_read()
+
+> **\_read**(): `void`
+
+Defined in: [lib/undici/formdata.ts:146](https://github.com/maiyunnet/kebab/blob/master/lib/undici/formdata.ts#L146)
+
+间隔读取（on data 或 pipe 触发）
+
+#### Returns
+
+`void`
+
+#### Overrides
+
+`stream.Readable._read`
+
+***
+
+### getBoundary()
+
+> **getBoundary**(): `string`
+
+Defined in: [lib/undici/formdata.ts:124](https://github.com/maiyunnet/kebab/blob/master/lib/undici/formdata.ts#L124)
+
+获取 boundary
+
+#### Returns
+
+`string`
+
+***
+
+### getLength()
+
+> **getLength**(): `number`
+
+Defined in: [lib/undici/formdata.ts:131](https://github.com/maiyunnet/kebab/blob/master/lib/undici/formdata.ts#L131)
+
+获取总字节长度
+
+#### Returns
+
+`number`
+
+***
+
+### getSent()
+
+> **getSent**(): `number`
+
+Defined in: [lib/undici/formdata.ts:138](https://github.com/maiyunnet/kebab/blob/master/lib/undici/formdata.ts#L138)
+
+获取已发送的字节长度
+
+#### Returns
+
+`number`
+
+***
+
+### putBuffer()
+
+> **putBuffer**(`key`, `buffer`, `fname`): `void`
+
+Defined in: [lib/undici/formdata.ts:109](https://github.com/maiyunnet/kebab/blob/master/lib/undici/formdata.ts#L109)
+
+添加 Buffer 数据
+
+#### Parameters
+
+##### key
+
+`string`
+
+键
+
+##### buffer
+
+`Buffer`
+
+Buffer 数据
+
+##### fname
+
+`string`
+
+文件名
+
+#### Returns
+
+`void`
+
+***
+
+### putFile()
+
+> **putFile**(`key`, `path`, `fname?`): `Promise`\<`boolean`\>
+
+Defined in: [lib/undici/formdata.ts:81](https://github.com/maiyunnet/kebab/blob/master/lib/undici/formdata.ts#L81)
+
+添加文件
+
+#### Parameters
+
+##### key
+
+`string`
+
+键
+
+##### path
+
+`string`
+
+路径
+
+##### fname?
+
+`string`
+
+可选，文件名
+
+#### Returns
+
+`Promise`\<`boolean`\>
+
+***
+
+### putString()
+
+> **putString**(`key`, `val`): `void`
+
+Defined in: [lib/undici/formdata.ts:65](https://github.com/maiyunnet/kebab/blob/master/lib/undici/formdata.ts#L65)
+
+添加字符串
+
+#### Parameters
+
+##### key
+
+`string`
+
+键
+
+##### val
+
+`string`
+
+值
+
+#### Returns
+
+`void`
+
+lib/undici/formdata/index.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../index.md) / lib/undici/formdata
+
+# lib/undici/formdata
+
+## Classes
+
+- [FormData](classes/FormData.md)
+
+## Type Aliases
+
+- [IItem](type-aliases/IItem.md)
+
+lib/undici/formdata/type-aliases/IItem.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../../index.md) / [lib/undici/formdata](../index.md) / IItem
+
+# Type Alias: IItem
+
+> **IItem** = \{ `key`: `string`; `path`: `""`; `type`: `"string"`; `value`: `string`; \} \| \{ `key`: `string`; `path`: `string`; `type`: `"file"`; `value`: `string`; \} \| \{ `key`: `string`; `path`: `Buffer`; `type`: `"buffer"`; `value`: `string`; \}
+
+Defined in: [lib/undici/formdata.ts:12](https://github.com/maiyunnet/kebab/blob/master/lib/undici/formdata.ts#L12)
+
+Item 对象
+
+## Union Members
+
+### Type Literal
+
+\{ `key`: `string`; `path`: `""`; `type`: `"string"`; `value`: `string`; \}
+
+#### key
+
+> **key**: `string`
+
+key 键
+
+#### path
+
+> **path**: `""`
+
+#### type
+
+> **type**: `"string"`
+
+#### value
+
+> **value**: `string`
+
+字符串值
+
+***
+
+### Type Literal
+
+\{ `key`: `string`; `path`: `string`; `type`: `"file"`; `value`: `string`; \}
+
+#### key
+
+> **key**: `string`
+
+key 键
+
+#### path
+
+> **path**: `string`
+
+文件路径
+
+#### type
+
+> **type**: `"file"`
+
+#### value
+
+> **value**: `string`
+
+文件名
+
+***
+
+### Type Literal
+
+\{ `key`: `string`; `path`: `Buffer`; `type`: `"buffer"`; `value`: `string`; \}
+
+#### key
+
+> **key**: `string`
+
+key 键
+
+#### path
+
+> **path**: `Buffer`
+
+Buffer 数据
+
+#### type
+
+> **type**: `"buffer"`
+
+#### value
+
+> **value**: `string`
+
+文件名
+
+lib/undici/functions/fetch.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../index.md) / [lib/undici](../index.md) / fetch
+
+# Function: fetch()
+
+> **fetch**(`input`, `init?`): `Promise`\<`Response`\>
+
+Defined in: [lib/undici.ts:158](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L158)
+
+发起一个完全兼容 fetch 的请求
+
+## Parameters
+
+### input
+
+`string` \| `Request` \| `URL`
+
+请求的 URL 或 Request 对象
+
+### init?
+
+`RequestInit` & `object` = `{}`
+
+增加 mproxy、hosts
+
+## Returns
+
+`Promise`\<`Response`\>
+
+lib/undici/functions/filterHeaders.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../index.md) / [lib/undici](../index.md) / filterHeaders
+
+# Function: filterHeaders()
+
+> **filterHeaders**(`headers`, `res?`, `filter?`): `Record`\<`string`, `string` \| `string`[]\>
+
+Defined in: [lib/undici.ts:513](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L513)
+
+剔除不代理的 header，返回新的 header
+
+## Parameters
+
+### headers
+
+`IncomingHttpHeaders` \| `IncomingHttpHeaders` \| [`THttpHeaders`](../type-aliases/THttpHeaders.md)
+
+剔除前的 header
+
+### res?
+
+`Http2ServerResponse`\<`Http2ServerRequest`\> \| `ServerResponse`\<`IncomingMessage`\>
+
+直接设置头部而不返回，可置空
+
+### filter?
+
+(`h`) => `boolean`
+
+返回 true 则留下
+
+## Returns
+
+`Record`\<`string`, `string` \| `string`[]\>
+
+lib/undici/functions/getFormData.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../index.md) / [lib/undici](../index.md) / getFormData
+
+# Function: getFormData()
+
+> **getFormData**(): [`FormData`](../formdata/classes/FormData.md)
+
+Defined in: [lib/undici.ts:497](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L497)
+
+创建 FormData 对象
+
+## Returns
+
+[`FormData`](../formdata/classes/FormData.md)
+
+lib/undici/functions/get.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../index.md) / [lib/undici](../index.md) / get
+
+# Function: get()
+
+> **get**(`u`, `opt?`): `Promise`\<[`Response`](../response/classes/Response.md)\>
+
+Defined in: [lib/undici.ts:72](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L72)
+
+发起一个 get 请求
+
+## Parameters
+
+### u
+
+`string`
+
+请求的 URL
+
+### opt?
+
+[`IRequestOptions`](../interfaces/IRequestOptions.md) = `{}`
+
+参数
+
+## Returns
+
+`Promise`\<[`Response`](../response/classes/Response.md)\>
+
+lib/undici/functions/getProxyAgent.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../index.md) / [lib/undici](../index.md) / getProxyAgent
+
+# Function: getProxyAgent()
+
+> **getProxyAgent**(`url`): `ProxyAgent`
+
+Defined in: [lib/undici.ts:19](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L19)
+
+获取代理 agent
+
+## Parameters
+
+### url
+
+`string`
+
+## Returns
+
+`ProxyAgent`
+
+lib/undici/functions/getResponseJson.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../index.md) / [lib/undici](../index.md) / getResponseJson
+
+# Function: getResponseJson()
+
+> **getResponseJson**(`u`, `opt?`): `Promise`\<`any`\>
+
+Defined in: [lib/undici.ts:137](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L137)
+
+发起 GET 请求并解析 JSON 响应
+
+## Parameters
+
+### u
+
+`string`
+
+网址
+
+### opt?
+
+[`IRequestOptions`](../interfaces/IRequestOptions.md) = `{}`
+
+选项
+
+## Returns
+
+`Promise`\<`any`\>
+
+JSON 数据，失败时返回 null
+
+lib/undici/functions/mproxyData.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../index.md) / [lib/undici](../index.md) / mproxyData
+
+# Function: mproxyData()
+
+> **mproxyData**(`ctr`): `any`
+
+Defined in: [lib/undici.ts:601](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L601)
+
+获取 mproxy 的附加数据
+
+## Parameters
+
+### ctr
+
+[`Ctr`](../../../sys/ctr/classes/Ctr.md)
+
+当前控制器
+
+## Returns
+
+`any`
+
+lib/undici/functions/mproxy.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../index.md) / [lib/undici](../index.md) / mproxy
+
+# Function: mproxy()
+
+> **mproxy**(`ctr`, `auth`, `opt?`): `Promise`\<`number`\>
+
+Defined in: [lib/undici.ts:549](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L549)
+
+正向 mproxy 代理，注意提前处理不要自动处理 post 数据，读取 get 的 url 为实际请求地址
+get: url, auth
+
+## Parameters
+
+### ctr
+
+[`Ctr`](../../../sys/ctr/classes/Ctr.md)
+
+当前控制器
+
+### auth
+
+`string`
+
+校验字符串，读取 get 的 auth 和本参数做比对
+
+### opt?
+
+[`IMproxyOptions`](../interfaces/IMproxyOptions.md) = `{}`
+
+参数
+
+## Returns
+
+`Promise`\<`number`\>
+
+lib/undici/functions/open.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../index.md) / [lib/undici](../index.md) / open
+
+# Function: open()
+
+> **open**(`u`): [`Request`](../request/classes/Request.md)
+
+Defined in: [lib/undici.ts:63](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L63)
+
+创建一个请求对象
+
+## Parameters
+
+### u
+
+`string`
+
+## Returns
+
+[`Request`](../request/classes/Request.md)
+
+lib/undici/functions/postJson.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../index.md) / [lib/undici](../index.md) / postJson
+
+# Function: postJson()
+
+> **postJson**(`u`, `data`, `opt?`): `Promise`\<[`Response`](../response/classes/Response.md)\>
+
+Defined in: [lib/undici.ts:97](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L97)
+
+发起 JSON 请求
+
+## Parameters
+
+### u
+
+`string`
+
+网址
+
+### data
+
+`any`[] \| `Record`\<`string`, `any`\>
+
+数据
+
+### opt?
+
+[`IRequestOptions`](../interfaces/IRequestOptions.md) = `{}`
+
+选项
+
+## Returns
+
+`Promise`\<[`Response`](../response/classes/Response.md)\>
+
+lib/undici/functions/postJsonResponseJson.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../index.md) / [lib/undici](../index.md) / postJsonResponseJson
+
+# Function: postJsonResponseJson()
+
+> **postJsonResponseJson**(`u`, `data`, `opt?`): `Promise`\<`any`\>
+
+Defined in: [lib/undici.ts:114](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L114)
+
+发起 JSON 请求并解析 JSON 响应
+
+## Parameters
+
+### u
+
+`string`
+
+网址
+
+### data
+
+`any`[] \| `Record`\<`string`, `any`\>
+
+数据
+
+### opt?
+
+[`IRequestOptions`](../interfaces/IRequestOptions.md) = `{}`
+
+选项
+
+## Returns
+
+`Promise`\<`any`\>
+
+JSON 数据，失败时返回 null
+
+lib/undici/functions/post.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../index.md) / [lib/undici](../index.md) / post
+
+# Function: post()
+
+> **post**(`u`, `data`, `opt?`): `Promise`\<[`Response`](../response/classes/Response.md)\>
+
+Defined in: [lib/undici.ts:82](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L82)
+
+发起一个 post 请求
+
+## Parameters
+
+### u
+
+`string`
+
+请求的 URL
+
+### data
+
+`string` \| `Record`\<`string`, `any`\> \| `Buffer`\<`ArrayBufferLike`\> \| `Readable`
+
+要发送的数据
+
+### opt?
+
+[`IRequestOptions`](../interfaces/IRequestOptions.md) = `{}`
+
+参数
+
+## Returns
+
+`Promise`\<[`Response`](../response/classes/Response.md)\>
+
+lib/undici/functions/request.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../index.md) / [lib/undici](../index.md) / request
+
+# Function: request()
+
+> **request**(`u`, `data?`, `opt?`): `Promise`\<[`Response`](../response/classes/Response.md)\>
+
+Defined in: [lib/undici.ts:327](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L327)
+
+发起一个请求
+
+## Parameters
+
+### u
+
+`string`
+
+### data?
+
+`string` \| `Record`\<`string`, `any`\> \| `Buffer`\<`ArrayBufferLike`\> \| `Readable`
+
+### opt?
+
+[`IRequestOptions`](../interfaces/IRequestOptions.md) = `{}`
+
+配置项
+
+## Returns
+
+`Promise`\<[`Response`](../response/classes/Response.md)\>
+
+lib/undici/functions/rproxy.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../index.md) / [lib/undici](../index.md) / rproxy
+
+# Function: rproxy()
+
+> **rproxy**(`ctr`, `route`, `opt?`): `Promise`\<`boolean`\>
+
+Defined in: [lib/undici.ts:619](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L619)
+
+反向代理，注意提前处理不要自动处理 post 数据，将本服务器的某个路由反代到其他网址
+
+## Parameters
+
+### ctr
+
+[`Ctr`](../../../sys/ctr/classes/Ctr.md)
+
+当前控制器
+
+### route
+
+`Record`\<`string`, `string`\>
+
+要反代的路由
+
+### opt?
+
+[`IRproxyOptions`](../interfaces/IRproxyOptions.md) = `{}`
+
+参数
+
+## Returns
+
+`Promise`\<`boolean`\>
+
+lib/undici/index.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../index.md) / lib/undici
+
+# lib/undici
+
+## Interfaces
+
+- [IMproxyOptions](interfaces/IMproxyOptions.md)
+- [IRequestOptions](interfaces/IRequestOptions.md)
+- [IRproxyOptions](interfaces/IRproxyOptions.md)
+
+## Type Aliases
+
+- [THttpHeaders](type-aliases/THttpHeaders.md)
+
+## Functions
+
+- [fetch](functions/fetch.md)
+- [filterHeaders](functions/filterHeaders.md)
+- [get](functions/get.md)
+- [getFormData](functions/getFormData.md)
+- [getProxyAgent](functions/getProxyAgent.md)
+- [getResponseJson](functions/getResponseJson.md)
+- [mproxy](functions/mproxy.md)
+- [mproxyData](functions/mproxyData.md)
+- [open](functions/open.md)
+- [post](functions/post.md)
+- [postJson](functions/postJson.md)
+- [postJsonResponseJson](functions/postJsonResponseJson.md)
+- [request](functions/request.md)
+- [rproxy](functions/rproxy.md)
+
+lib/undici/interfaces/IMproxyOptions.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../index.md) / [lib/undici](../index.md) / IMproxyOptions
+
+# Interface: IMproxyOptions
+
+Defined in: [lib/undici.ts:703](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L703)
+
+正向代理请求的传入参数选项
+
+## Properties
+
+### filter?
+
+> `optional` **filter?**: (`h`) => `boolean`
+
+Defined in: [lib/undici.ts:712](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L712)
+
+过滤 header，返回 true 则留下
+
+#### Parameters
+
+##### h
+
+`string`
+
+#### Returns
+
+`boolean`
+
+***
+
+### follow?
+
+> `optional` **follow?**: `number`
+
+Defined in: [lib/undici.ts:706](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L706)
+
+***
+
+### headers?
+
+> `optional` **headers?**: [`THttpHeaders`](../type-aliases/THttpHeaders.md)
+
+Defined in: [lib/undici.ts:710](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L710)
+
+***
+
+### hosts?
+
+> `optional` **hosts?**: `string` \| `Record`\<`string`, `string`\>
+
+Defined in: [lib/undici.ts:708](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L708)
+
+自定义 host 映射，如 {'www.maiyun.net': '127.0.0.1'}，或全部映射到一个 host
+
+***
+
+### local?
+
+> `optional` **local?**: `string`
+
+Defined in: [lib/undici.ts:709](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L709)
+
+***
+
+### reuse?
+
+> `optional` **reuse?**: `string` \| `Agent` \| `ProxyAgent`
+
+Defined in: [lib/undici.ts:714](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L714)
+
+默认为 default
+
+***
+
+### timeout?
+
+> `optional` **timeout?**: `number`
+
+Defined in: [lib/undici.ts:705](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L705)
+
+秒数
+
+lib/undici/interfaces/IRequestOptions.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../index.md) / [lib/undici](../index.md) / IRequestOptions
+
+# Interface: IRequestOptions
+
+Defined in: [lib/undici.ts:672](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L672)
+
+请求的传入参数选项
+
+## Properties
+
+### cookie?
+
+> `optional` **cookie?**: `Record`\<`string`, [`ICookie`](../../cookie/interfaces/ICookie.md)\>
+
+Defined in: [lib/undici.ts:697](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L697)
+
+cookie 托管对象
+
+***
+
+### follow?
+
+> `optional` **follow?**: `number`
+
+Defined in: [lib/undici.ts:678](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L678)
+
+追踪 location 次数，0 为不追踪，默认为 0
+
+***
+
+### headers?
+
+> `optional` **headers?**: [`THttpHeaders`](../type-aliases/THttpHeaders.md)
+
+Defined in: [lib/undici.ts:683](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L683)
+
+***
+
+### hosts?
+
+> `optional` **hosts?**: `string` \| `Record`\<`string`, `string`\>
+
+Defined in: [lib/undici.ts:680](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L680)
+
+自定义 host 映射，如 {'www.maiyun.net': '127.0.0.1'}，或全部映射到一个 host
+
+***
+
+### keep?
+
+> `optional` **keep?**: `boolean`
+
+Defined in: [lib/undici.ts:693](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L693)
+
+连接是否保持长连接（即是否允许复用），默认为 true
+
+***
+
+### local?
+
+> `optional` **local?**: `string`
+
+Defined in: [lib/undici.ts:682](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L682)
+
+***
+
+### log?
+
+> `optional` **log?**: `boolean`
+
+Defined in: [lib/undici.ts:699](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L699)
+
+若有异常写入文件日志，默认为 true
+
+***
+
+### method?
+
+> `optional` **method?**: `"GET"` \| `"POST"` \| `"PUT"` \| `"DELETE"` \| `"OPTIONS"`
+
+Defined in: [lib/undici.ts:673](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L673)
+
+***
+
+### mproxy?
+
+> `optional` **mproxy?**: `object`
+
+Defined in: [lib/undici.ts:685](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L685)
+
+正向 mproxy 代理，url 如 https://xxx/abc
+
+#### auth
+
+> **auth**: `string`
+
+#### data?
+
+> `optional` **data?**: `any`
+
+#### hosts?
+
+> `optional` **hosts?**: `string` \| `Record`\<`string`, `string`\>
+
+落地端自定义 host 映射，如 {'www.maiyun.net': '127.0.0.1'}，或全部映射到一个 host
+
+#### url
+
+> **url**: `string`
+
+***
+
+### reuse?
+
+> `optional` **reuse?**: `string` \| `Agent` \| `ProxyAgent`
+
+Defined in: [lib/undici.ts:695](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L695)
+
+复用池名/Agent，默认为 default
+
+***
+
+### save?
+
+> `optional` **save?**: `string`
+
+Defined in: [lib/undici.ts:681](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L681)
+
+***
+
+### timeout?
+
+> `optional` **timeout?**: `number`
+
+Defined in: [lib/undici.ts:676](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L676)
+
+秒数，默认 10 秒
+
+***
+
+### type?
+
+> `optional` **type?**: `"form"` \| `"json"`
+
+Defined in: [lib/undici.ts:674](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L674)
+
+lib/undici/interfaces/IRproxyOptions.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../index.md) / [lib/undici](../index.md) / IRproxyOptions
+
+# Interface: IRproxyOptions
+
+Defined in: [lib/undici.ts:718](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L718)
+
+反向代理请求的传入参数选项
+
+## Properties
+
+### filter?
+
+> `optional` **filter?**: (`h`) => `boolean`
+
+Defined in: [lib/undici.ts:727](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L727)
+
+过滤 header，返回 true 则留下
+
+#### Parameters
+
+##### h
+
+`string`
+
+#### Returns
+
+`boolean`
+
+***
+
+### follow?
+
+> `optional` **follow?**: `number`
+
+Defined in: [lib/undici.ts:721](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L721)
+
+***
+
+### headers?
+
+> `optional` **headers?**: [`THttpHeaders`](../type-aliases/THttpHeaders.md)
+
+Defined in: [lib/undici.ts:725](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L725)
+
+***
+
+### hosts?
+
+> `optional` **hosts?**: `string` \| `Record`\<`string`, `string`\>
+
+Defined in: [lib/undici.ts:723](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L723)
+
+自定义 host 映射，如 {'www.maiyun.net': '127.0.0.1'}，或全部映射到一个 host
+
+***
+
+### local?
+
+> `optional` **local?**: `string`
+
+Defined in: [lib/undici.ts:724](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L724)
+
+***
+
+### mproxy?
+
+> `optional` **mproxy?**: `object`
+
+Defined in: [lib/undici.ts:729](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L729)
+
+正向 mproxy 代理，url 如 https://xxx/abc
+
+#### auth
+
+> **auth**: `string`
+
+#### data?
+
+> `optional` **data?**: `any`
+
+#### hosts?
+
+> `optional` **hosts?**: `string` \| `Record`\<`string`, `string`\>
+
+落地端自定义 host 映射，如 {'www.maiyun.net': '127.0.0.1'}，或全部映射到一个 host
+
+#### url
+
+> **url**: `string`
+
+***
+
+### reuse?
+
+> `optional` **reuse?**: `string` \| `Agent` \| `ProxyAgent`
+
+Defined in: [lib/undici.ts:737](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L737)
+
+默认为 default
+
+***
+
+### timeout?
+
+> `optional` **timeout?**: `number`
+
+Defined in: [lib/undici.ts:720](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L720)
+
+秒数
+
+lib/undici/request/classes/Request.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../../index.md) / [lib/undici/request](../index.md) / Request
+
+# Class: Request
+
+Defined in: [lib/undici/request.ts:11](https://github.com/maiyunnet/kebab/blob/master/lib/undici/request.ts#L11)
+
+## Constructors
+
+### Constructor
+
+> **new Request**(`url`): `Request`
+
+Defined in: [lib/undici/request.ts:22](https://github.com/maiyunnet/kebab/blob/master/lib/undici/request.ts#L22)
+
+#### Parameters
+
+##### url
+
+`string`
+
+#### Returns
+
+`Request`
+
+## Methods
+
+### data()
+
+> **data**(`data`): `this`
+
+Defined in: [lib/undici/request.ts:30](https://github.com/maiyunnet/kebab/blob/master/lib/undici/request.ts#L30)
+
+设置 get 或 post 的数据
+
+#### Parameters
+
+##### data
+
+`string` \| `Record`\<`string`, `any`\> \| `Buffer`\<`ArrayBufferLike`\> \| `Readable`
+
+数据
+
+#### Returns
+
+`this`
+
+***
+
+### follow()
+
+> **follow**(`follow?`): `this`
+
+Defined in: [lib/undici/request.ts:87](https://github.com/maiyunnet/kebab/blob/master/lib/undici/request.ts#L87)
+
+设置是否跟随请求方的 location，留空为跟随，不设置为不跟随
+
+#### Parameters
+
+##### follow?
+
+`number` = `5`
+
+#### Returns
+
+`this`
+
+***
+
+### get()
+
+> **get**(): `this`
+
+Defined in: [lib/undici/request.ts:47](https://github.com/maiyunnet/kebab/blob/master/lib/undici/request.ts#L47)
+
+method get 方法别名
+
+#### Returns
+
+`this`
+
+***
+
+### headers()
+
+> **headers**(`headers`): `this`
+
+Defined in: [lib/undici/request.ts:123](https://github.com/maiyunnet/kebab/blob/master/lib/undici/request.ts#L123)
+
+批量设置提交的 headers
+
+#### Parameters
+
+##### headers
+
+[`THttpHeaders`](../../type-aliases/THttpHeaders.md)
+
+#### Returns
+
+`this`
+
+***
+
+### hosts()
+
+> **hosts**(`hosts`): `this`
+
+Defined in: [lib/undici/request.ts:96](https://github.com/maiyunnet/kebab/blob/master/lib/undici/request.ts#L96)
+
+设置域名 -> ip的对应键值，就像电脑里的 hosts 一样
+
+#### Parameters
+
+##### hosts
+
+`string` \| `Record`\<`string`, `string`\>
+
+#### Returns
+
+`this`
+
+***
+
+### json()
+
+> **json**(): `this`
+
+Defined in: [lib/undici/request.ts:70](https://github.com/maiyunnet/kebab/blob/master/lib/undici/request.ts#L70)
+
+type json 方法别名
+
+#### Returns
+
+`this`
+
+***
+
+### local()
+
+> **local**(`addr`): `this`
+
+Defined in: [lib/undici/request.ts:114](https://github.com/maiyunnet/kebab/blob/master/lib/undici/request.ts#L114)
+
+设置使用的本地网卡 IP
+
+#### Parameters
+
+##### addr
+
+`string`
+
+#### Returns
+
+`this`
+
+***
+
+### method()
+
+> **method**(`method`): `this`
+
+Defined in: [lib/undici/request.ts:39](https://github.com/maiyunnet/kebab/blob/master/lib/undici/request.ts#L39)
+
+设置 get 或 post 请求
+
+#### Parameters
+
+##### method
+
+`"GET"` \| `"POST"`
+
+#### Returns
+
+`this`
+
+***
+
+### post()
+
+> **post**(): `this`
+
+Defined in: [lib/undici/request.ts:54](https://github.com/maiyunnet/kebab/blob/master/lib/undici/request.ts#L54)
+
+method post 方法别名
+
+#### Returns
+
+`this`
+
+***
+
+### request()
+
+> **request**(`cookie?`): `Promise`\<[`Response`](../../response/classes/Response.md)\>
+
+Defined in: [lib/undici/request.ts:143](https://github.com/maiyunnet/kebab/blob/master/lib/undici/request.ts#L143)
+
+发起请求
+
+#### Parameters
+
+##### cookie?
+
+`Record`\<`string`, [`ICookie`](../../../cookie/interfaces/ICookie.md)\>
+
+#### Returns
+
+`Promise`\<[`Response`](../../response/classes/Response.md)\>
+
+***
+
+### save()
+
+> **save**(`save`): `this`
+
+Defined in: [lib/undici/request.ts:105](https://github.com/maiyunnet/kebab/blob/master/lib/undici/request.ts#L105)
+
+设置后将直接保存到本地文件，不会返回，save 为本地实体路径
+
+#### Parameters
+
+##### save
+
+`string`
+
+#### Returns
+
+`this`
+
+***
+
+### setHeader()
+
+> **setHeader**(`name`, `val`): `this`
+
+Defined in: [lib/undici/request.ts:133](https://github.com/maiyunnet/kebab/blob/master/lib/undici/request.ts#L133)
+
+设置单条 header
+
+#### Parameters
+
+##### name
+
+`string`
+
+##### val
+
+`string`
+
+#### Returns
+
+`this`
+
+***
+
+### timeout()
+
+> **timeout**(`timeout`): `this`
+
+Defined in: [lib/undici/request.ts:78](https://github.com/maiyunnet/kebab/blob/master/lib/undici/request.ts#L78)
+
+设置请求有效期
+
+#### Parameters
+
+##### timeout
+
+`number`
+
+秒
+
+#### Returns
+
+`this`
+
+***
+
+### type()
+
+> **type**(`type`): `this`
+
+Defined in: [lib/undici/request.ts:62](https://github.com/maiyunnet/kebab/blob/master/lib/undici/request.ts#L62)
+
+设置提交模式，json 还是普通 form
+
+#### Parameters
+
+##### type
+
+`"form"` \| `"json"`
+
+#### Returns
+
+`this`
+
+lib/undici/request/index.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../index.md) / lib/undici/request
+
+# lib/undici/request
+
+## Classes
+
+- [Request](classes/Request.md)
+
+lib/undici/response/classes/Response.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../../index.md) / [lib/undici/response](../index.md) / Response
+
+# Class: Response
+
+Defined in: [lib/undici/response.ts:12](https://github.com/maiyunnet/kebab/blob/master/lib/undici/response.ts#L12)
+
+## Constructors
+
+### Constructor
+
+> **new Response**(`req`): `Response`
+
+Defined in: [lib/undici/response.ts:25](https://github.com/maiyunnet/kebab/blob/master/lib/undici/response.ts#L25)
+
+#### Parameters
+
+##### req
+
+`ResponseData`\<`null`\> \| `null`
+
+#### Returns
+
+`Response`
+
+## Properties
+
+### error
+
+> **error**: `Error` \| `null` = `null`
+
+Defined in: [lib/undici/response.ts:20](https://github.com/maiyunnet/kebab/blob/master/lib/undici/response.ts#L20)
+
+***
+
+### headers
+
+> **headers**: [`THttpHeaders`](../../type-aliases/THttpHeaders.md) \| `null` = `null`
+
+Defined in: [lib/undici/response.ts:18](https://github.com/maiyunnet/kebab/blob/master/lib/undici/response.ts#L18)
+
+返回的 headers
+
+## Methods
+
+### getContent()
+
+> **getContent**(): `Promise`\<`Buffer`\<`ArrayBufferLike`\> \| `null`\>
+
+Defined in: [lib/undici/response.ts:32](https://github.com/maiyunnet/kebab/blob/master/lib/undici/response.ts#L32)
+
+读取所有内容到内存
+
+#### Returns
+
+`Promise`\<`Buffer`\<`ArrayBufferLike`\> \| `null`\>
+
+***
+
+### getJson()
+
+> **getJson**(): `Promise`\<`any`\>
+
+Defined in: [lib/undici/response.ts:63](https://github.com/maiyunnet/kebab/blob/master/lib/undici/response.ts#L63)
+
+读取所有内容为 JSON
+
+#### Returns
+
+`Promise`\<`any`\>
+
+***
+
+### getRawStream()
+
+> **getRawStream**(): `BodyReadable` & `BodyMixin` \| `null`
+
+Defined in: [lib/undici/response.ts:124](https://github.com/maiyunnet/kebab/blob/master/lib/undici/response.ts#L124)
+
+获取原生响应读取流对象
+
+#### Returns
+
+`BodyReadable` & `BodyMixin` \| `null`
+
+***
+
+### getStream()
+
+> **getStream**(): `BrotliDecompress` \| `Gunzip` \| `Inflate` \| `BodyReadable` & `BodyMixin` \| `null`
+
+Defined in: [lib/undici/response.ts:88](https://github.com/maiyunnet/kebab/blob/master/lib/undici/response.ts#L88)
+
+获取响应读取流对象
+
+#### Returns
+
+`BrotliDecompress` \| `Gunzip` \| `Inflate` \| `BodyReadable` & `BodyMixin` \| `null`
+
+***
+
+### getText()
+
+> **getText**(): `Promise`\<`string` \| `null`\>
+
+Defined in: [lib/undici/response.ts:49](https://github.com/maiyunnet/kebab/blob/master/lib/undici/response.ts#L49)
+
+读取所有内容为文本
+
+#### Returns
+
+`Promise`\<`string` \| `null`\>
+
+***
+
+### setContent()
+
+> **setContent**(`v`): `void`
+
+Defined in: [lib/undici/response.ts:80](https://github.com/maiyunnet/kebab/blob/master/lib/undici/response.ts#L80)
+
+用户自定义的 content 内容
+
+#### Parameters
+
+##### v
+
+`string` \| `Buffer`\<`ArrayBufferLike`\>
+
+内容值
+
+#### Returns
+
+`void`
+
+lib/undici/response/index.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../index.md) / lib/undici/response
+
+# lib/undici/response
+
+## Classes
+
+- [Response](classes/Response.md)
+
+lib/undici/type-aliases/THttpHeaders.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../index.md) / [lib/undici](../index.md) / THttpHeaders
+
+# Type Alias: THttpHeaders
+
+> **THttpHeaders** = `http.IncomingHttpHeaders` & `object`
+
+Defined in: [lib/undici.ts:742](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L742)
+
+http headers
+
+## Type Declaration
+
+### http-code?
+
+> `optional` **http-code?**: `number`
+
+### http-url?
+
+> `optional` **http-url?**: `string`
+
 lib/vector/classes/Vector.md
 ---
 
@@ -17545,7 +19345,7 @@ lib/ws/classes/Socket.md
 
 # Class: Socket
 
-Defined in: [lib/ws.ts:95](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L95)
+Defined in: [lib/ws.ts:96](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L96)
 
 ## Constructors
 
@@ -17553,7 +19353,7 @@ Defined in: [lib/ws.ts:95](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 > **new Socket**(`request?`, `socket?`, `head?`, `options?`): `Socket`
 
-Defined in: [lib/ws.ts:100](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L100)
+Defined in: [lib/ws.ts:101](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L101)
 
 #### Parameters
 
@@ -17653,7 +19453,7 @@ Defined in: [lib/ws.ts:361](https://github.com/maiyunnet/kebab/blob/master/lib/w
 
 > **connect**(`u`, `opt?`): `Promise`\<`Socket` \| `null`\>
 
-Defined in: [lib/ws.ts:123](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L123)
+Defined in: [lib/ws.ts:124](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L124)
 
 以客户端形式发起链接
 
@@ -17900,7 +19700,7 @@ lib/ws/enumerations/EFrameReceiveMode.md
 
 # Enumeration: EFrameReceiveMode
 
-Defined in: [lib/ws.ts:17](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L17)
+Defined in: [lib/ws.ts:18](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L18)
 
 一般用 SIMPLE
 
@@ -17910,7 +19710,7 @@ Defined in: [lib/ws.ts:17](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 > **LITE**: `1`
 
-Defined in: [lib/ws.ts:19](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L19)
+Defined in: [lib/ws.ts:20](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L20)
 
 ***
 
@@ -17918,7 +19718,7 @@ Defined in: [lib/ws.ts:19](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 > **SIMPLE**: `2`
 
-Defined in: [lib/ws.ts:20](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L20)
+Defined in: [lib/ws.ts:21](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L21)
 
 ***
 
@@ -17926,7 +19726,7 @@ Defined in: [lib/ws.ts:20](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 > **STANDARD**: `0`
 
-Defined in: [lib/ws.ts:18](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L18)
+Defined in: [lib/ws.ts:19](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L19)
 
 lib/ws/enumerations/EOpcode.md
 ---
@@ -17939,7 +19739,7 @@ lib/ws/enumerations/EOpcode.md
 
 # Enumeration: EOpcode
 
-Defined in: [lib/ws.ts:24](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L24)
+Defined in: [lib/ws.ts:25](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L25)
 
 OPCODE
 
@@ -17949,7 +19749,7 @@ OPCODE
 
 > **BINARY**: `2`
 
-Defined in: [lib/ws.ts:27](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L27)
+Defined in: [lib/ws.ts:28](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L28)
 
 ***
 
@@ -17957,7 +19757,7 @@ Defined in: [lib/ws.ts:27](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 > **CLOSE**: `8`
 
-Defined in: [lib/ws.ts:28](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L28)
+Defined in: [lib/ws.ts:29](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L29)
 
 ***
 
@@ -17965,7 +19765,7 @@ Defined in: [lib/ws.ts:28](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 > **CONTINUATION**: `0`
 
-Defined in: [lib/ws.ts:25](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L25)
+Defined in: [lib/ws.ts:26](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L26)
 
 ***
 
@@ -17973,7 +19773,7 @@ Defined in: [lib/ws.ts:25](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 > **PING**: `9`
 
-Defined in: [lib/ws.ts:29](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L29)
+Defined in: [lib/ws.ts:30](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L30)
 
 ***
 
@@ -17981,7 +19781,7 @@ Defined in: [lib/ws.ts:29](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 > **PONG**: `10`
 
-Defined in: [lib/ws.ts:30](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L30)
+Defined in: [lib/ws.ts:31](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L31)
 
 ***
 
@@ -17989,7 +19789,7 @@ Defined in: [lib/ws.ts:30](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 > **TEXT**: `1`
 
-Defined in: [lib/ws.ts:26](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L26)
+Defined in: [lib/ws.ts:27](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L27)
 
 lib/ws/functions/connect.md
 ---
@@ -18244,7 +20044,7 @@ lib/ws/interfaces/IConnectOptions.md
 
 # Interface: IConnectOptions
 
-Defined in: [lib/ws.ts:34](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L34)
+Defined in: [lib/ws.ts:35](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L35)
 
 请求的传入参数选项
 
@@ -18252,9 +20052,9 @@ Defined in: [lib/ws.ts:34](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 ### cookie?
 
-> `optional` **cookie?**: `Record`\<`string`, [`ICookie`](../../net/interfaces/ICookie.md)\>
+> `optional` **cookie?**: `Record`\<`string`, [`ICookie`](../../cookie/interfaces/ICookie.md)\>
 
-Defined in: [lib/ws.ts:42](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L42)
+Defined in: [lib/ws.ts:43](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L43)
 
 cookie 托管对象
 
@@ -18262,9 +20062,9 @@ cookie 托管对象
 
 ### headers?
 
-> `optional` **headers?**: [`THttpHeaders`](../../net/type-aliases/THttpHeaders.md)
+> `optional` **headers?**: [`THttpHeaders`](../../undici/type-aliases/THttpHeaders.md)
 
-Defined in: [lib/ws.ts:40](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L40)
+Defined in: [lib/ws.ts:41](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L41)
 
 ***
 
@@ -18272,7 +20072,7 @@ Defined in: [lib/ws.ts:40](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 > `optional` **hosts?**: `string` \| `Record`\<`string`, `string`\>
 
-Defined in: [lib/ws.ts:38](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L38)
+Defined in: [lib/ws.ts:39](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L39)
 
 自定义 host 映射，如 {'www.maiyun.net': '127.0.0.1'}，或全部映射到一个 host
 
@@ -18282,7 +20082,7 @@ Defined in: [lib/ws.ts:38](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 > `optional` **local?**: `string`
 
-Defined in: [lib/ws.ts:39](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L39)
+Defined in: [lib/ws.ts:40](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L40)
 
 ***
 
@@ -18290,7 +20090,7 @@ Defined in: [lib/ws.ts:39](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 > `optional` **masking?**: `boolean`
 
-Defined in: [lib/ws.ts:46](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L46)
+Defined in: [lib/ws.ts:47](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L47)
 
 加密模式，默认 true
 
@@ -18300,7 +20100,7 @@ Defined in: [lib/ws.ts:46](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 > `optional` **mode?**: [`EFrameReceiveMode`](../enumerations/EFrameReceiveMode.md)
 
-Defined in: [lib/ws.ts:44](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L44)
+Defined in: [lib/ws.ts:45](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L45)
 
 小帧模式，默认 false
 
@@ -18310,7 +20110,7 @@ Defined in: [lib/ws.ts:44](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 > `optional` **mproxy?**: `object`
 
-Defined in: [lib/ws.ts:48](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L48)
+Defined in: [lib/ws.ts:49](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L49)
 
 正向 mproxy 代理，url 如 wss://xxx/abc
 
@@ -18328,7 +20128,7 @@ Defined in: [lib/ws.ts:48](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 > `optional` **timeout?**: `number`
 
-Defined in: [lib/ws.ts:36](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L36)
+Defined in: [lib/ws.ts:37](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L37)
 
 秒数
 
@@ -18343,7 +20143,7 @@ lib/ws/interfaces/IMproxyOptions.md
 
 # Interface: IMproxyOptions
 
-Defined in: [lib/ws.ts:55](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L55)
+Defined in: [lib/ws.ts:56](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L56)
 
 正向代理请求的传入参数选项
 
@@ -18353,7 +20153,7 @@ Defined in: [lib/ws.ts:55](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 > `optional` **filter?**: (`h`) => `boolean`
 
-Defined in: [lib/ws.ts:63](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L63)
+Defined in: [lib/ws.ts:64](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L64)
 
 过滤 header，返回 true 则留下
 
@@ -18371,9 +20171,9 @@ Defined in: [lib/ws.ts:63](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 ### headers?
 
-> `optional` **headers?**: [`THttpHeaders`](../../net/type-aliases/THttpHeaders.md)
+> `optional` **headers?**: [`THttpHeaders`](../../undici/type-aliases/THttpHeaders.md)
 
-Defined in: [lib/ws.ts:61](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L61)
+Defined in: [lib/ws.ts:62](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L62)
 
 ***
 
@@ -18381,7 +20181,7 @@ Defined in: [lib/ws.ts:61](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 > `optional` **hosts?**: `string` \| `Record`\<`string`, `string`\>
 
-Defined in: [lib/ws.ts:59](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L59)
+Defined in: [lib/ws.ts:60](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L60)
 
 自定义 host 映射，如 {'www.maiyun.net': '127.0.0.1'}，或全部映射到一个 host
 
@@ -18391,7 +20191,7 @@ Defined in: [lib/ws.ts:59](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 > `optional` **local?**: `string`
 
-Defined in: [lib/ws.ts:60](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L60)
+Defined in: [lib/ws.ts:61](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L61)
 
 ***
 
@@ -18399,7 +20199,7 @@ Defined in: [lib/ws.ts:60](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 > `optional` **masking?**: `boolean`
 
-Defined in: [lib/ws.ts:67](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L67)
+Defined in: [lib/ws.ts:68](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L68)
 
 加密模式，默认 true
 
@@ -18409,7 +20209,7 @@ Defined in: [lib/ws.ts:67](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 > `optional` **mode?**: [`EFrameReceiveMode`](../enumerations/EFrameReceiveMode.md)
 
-Defined in: [lib/ws.ts:65](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L65)
+Defined in: [lib/ws.ts:66](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L66)
 
 小帧模式，默认 false
 
@@ -18419,7 +20219,7 @@ Defined in: [lib/ws.ts:65](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 > `optional` **timeout?**: `number`
 
-Defined in: [lib/ws.ts:57](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L57)
+Defined in: [lib/ws.ts:58](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L58)
 
 秒数
 
@@ -18434,7 +20234,7 @@ lib/ws/interfaces/IRproxyOptions.md
 
 # Interface: IRproxyOptions
 
-Defined in: [lib/ws.ts:71](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L71)
+Defined in: [lib/ws.ts:72](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L72)
 
 反向代理请求的传入参数选项
 
@@ -18444,7 +20244,7 @@ Defined in: [lib/ws.ts:71](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 > `optional` **filter?**: (`h`) => `boolean`
 
-Defined in: [lib/ws.ts:79](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L79)
+Defined in: [lib/ws.ts:80](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L80)
 
 过滤 header，返回 true 则留下
 
@@ -18462,9 +20262,9 @@ Defined in: [lib/ws.ts:79](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 ### headers?
 
-> `optional` **headers?**: [`THttpHeaders`](../../net/type-aliases/THttpHeaders.md)
+> `optional` **headers?**: [`THttpHeaders`](../../undici/type-aliases/THttpHeaders.md)
 
-Defined in: [lib/ws.ts:77](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L77)
+Defined in: [lib/ws.ts:78](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L78)
 
 ***
 
@@ -18472,7 +20272,7 @@ Defined in: [lib/ws.ts:77](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 > `optional` **hosts?**: `string` \| `Record`\<`string`, `string`\>
 
-Defined in: [lib/ws.ts:75](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L75)
+Defined in: [lib/ws.ts:76](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L76)
 
 自定义 host 映射，如 {'www.maiyun.net': '127.0.0.1'}，或全部映射到一个 host
 
@@ -18482,7 +20282,7 @@ Defined in: [lib/ws.ts:75](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 > `optional` **local?**: `string`
 
-Defined in: [lib/ws.ts:76](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L76)
+Defined in: [lib/ws.ts:77](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L77)
 
 ***
 
@@ -18490,7 +20290,7 @@ Defined in: [lib/ws.ts:76](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 > `optional` **masking?**: `boolean`
 
-Defined in: [lib/ws.ts:83](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L83)
+Defined in: [lib/ws.ts:84](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L84)
 
 加密模式，默认 true
 
@@ -18500,7 +20300,7 @@ Defined in: [lib/ws.ts:83](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 > `optional` **mode?**: [`EFrameReceiveMode`](../enumerations/EFrameReceiveMode.md)
 
-Defined in: [lib/ws.ts:81](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L81)
+Defined in: [lib/ws.ts:82](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L82)
 
 小帧模式，默认 false
 
@@ -18510,7 +20310,7 @@ Defined in: [lib/ws.ts:81](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 > `optional` **mproxy?**: `object`
 
-Defined in: [lib/ws.ts:85](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L85)
+Defined in: [lib/ws.ts:86](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L86)
 
 正向 mproxy 代理，url 如 wss://xxx/abc
 
@@ -18528,7 +20328,7 @@ Defined in: [lib/ws.ts:85](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 > `optional` **timeout?**: `number`
 
-Defined in: [lib/ws.ts:73](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L73)
+Defined in: [lib/ws.ts:74](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L74)
 
 秒数
 
@@ -23913,7 +25713,7 @@ sys/route/functions/clearKebabConfigs.md
 
 > **clearKebabConfigs**(): `void`
 
-Defined in: [sys/route.ts:30](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L30)
+Defined in: [sys/route.ts:31](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L31)
 
 清除已经加载的虚拟主机配置文件
 
@@ -23934,7 +25734,7 @@ sys/route/functions/getFormData.md
 
 > **getFormData**(`req`, `events?`, `limits?`): `Promise`\<`false` \| \{ `files`: `Record`\<`string`, [`IPostFile`](../../../index/interfaces/IPostFile.md) \| [`IPostFile`](../../../index/interfaces/IPostFile.md)[]\>; `post`: `Record`\<`string`, [`Json`](../../../index/type-aliases/Json.md)\>; \}\>
 
-Defined in: [sys/route.ts:962](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L962)
+Defined in: [sys/route.ts:967](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L967)
 
 获取 formdata 的 post
 
@@ -24001,7 +25801,7 @@ sys/route/functions/getPost.md
 
 > **getPost**(`req`): `Promise`\<\{ `input`: `string`; `post`: `Record`\<`string`, `any`\>; `raw`: `Record`\<`string`, `any`\>; \}\>
 
-Defined in: [sys/route.ts:876](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L876)
+Defined in: [sys/route.ts:881](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L881)
 
 获取 post 对象（通常已自动获取），如果是文件上传（formdata）的情况则不获取
 
@@ -24030,7 +25830,7 @@ sys/route/functions/run.md
 
 > **run**(`data`): `Promise`\<`boolean`\>
 
-Defined in: [sys/route.ts:76](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L76)
+Defined in: [sys/route.ts:77](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L77)
 
 若为动态路径则执行此函数，此函数不进行判断 kebab.json 是否存在
 
@@ -24117,7 +25917,7 @@ sys/route/functions/unlinkUploadFiles.md
 
 > **unlinkUploadFiles**(`cctr`): `Promise`\<`void`\>
 
-Defined in: [sys/route.ts:835](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L835)
+Defined in: [sys/route.ts:840](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L840)
 
 删除本次请求所有已上传的临时文件
 
@@ -24146,7 +25946,7 @@ sys/route/functions/waitCtr.md
 
 > **waitCtr**(`cctr`): `Promise`\<`void`\>
 
-Defined in: [sys/route.ts:855](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L855)
+Defined in: [sys/route.ts:860](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L860)
 
 等待异步任务结束，并删除临时文件，如果结束后还有事务没关闭，则会在本函数中打印控制台并且写入 log 文件
 此时其实已经给客户端返回了，此处等待不消耗客户端的等待时间

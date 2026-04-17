@@ -13,5 +13,6 @@
 
 ## Functions
 
+- [getFull](functions/getFull.md)
 - [getReader](functions/getReader.md)
 - [getWriter](functions/getWriter.md)

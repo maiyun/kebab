@@ -2,13 +2,13 @@
 
 ***
 
-[Documents for @maiyunnet/kebab](../../../index.md) / [lib/net](../index.md) / resetCookieSession
+[Documents for @maiyunnet/kebab](../../../index.md) / [lib/cookie](../index.md) / resetCookieSession
 
 # Function: resetCookieSession()
 
 > **resetCookieSession**(`cookie`): `void`
 
-Defined in: [lib/net.ts:711](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L711)
+Defined in: [lib/cookie.ts:225](https://github.com/maiyunnet/kebab/blob/master/lib/cookie.ts#L225)
 
 模拟重启浏览器后的状态
 

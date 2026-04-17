@@ -8,7 +8,7 @@
 
 > **getReader**(`buffer`): [`Reader`](../classes/Reader.md)
 
-Defined in: [lib/buffer.ts:143](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L143)
+Defined in: [lib/buffer.ts:145](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L145)
 
 Buffer Reader 对象
 

@@ -8,7 +8,7 @@
 
 > **filterHeaders**(`headers`, `res?`, `filter?`): `Record`\<`string`, `string` \| `string`[]\>
 
-Defined in: [lib/net.ts:739](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L739)
+Defined in: [lib/net.ts:510](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L510)
 
 剔除不代理的 header，返回新的 header
 

@@ -6,7 +6,7 @@
 
 # Class: Reader
 
-Defined in: [lib/buffer.ts:2](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L2)
+Defined in: [lib/buffer.ts:4](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L4)
 
 读对象
 
@@ -16,7 +16,7 @@ Defined in: [lib/buffer.ts:2](https://github.com/maiyunnet/kebab/blob/master/lib
 
 > **new Reader**(`buffer`): `Reader`
 
-Defined in: [lib/buffer.ts:9](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L9)
+Defined in: [lib/buffer.ts:11](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L11)
 
 #### Parameters
 
@@ -34,7 +34,7 @@ Defined in: [lib/buffer.ts:9](https://github.com/maiyunnet/kebab/blob/master/lib
 
 > **length**(): `number`
 
-Defined in: [lib/buffer.ts:76](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L76)
+Defined in: [lib/buffer.ts:78](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L78)
 
 获取完整的 buffer 长度
 
@@ -48,7 +48,7 @@ Defined in: [lib/buffer.ts:76](https://github.com/maiyunnet/kebab/blob/master/li
 
 > **readBCDString**(`length?`): `string`
 
-Defined in: [lib/buffer.ts:49](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L49)
+Defined in: [lib/buffer.ts:51](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L51)
 
 读取一个 BCD 编码的字符串（每个字节表示两个数字）
 
@@ -68,7 +68,7 @@ Defined in: [lib/buffer.ts:49](https://github.com/maiyunnet/kebab/blob/master/li
 
 > **readBuffer**(`length?`): `Buffer`
 
-Defined in: [lib/buffer.ts:70](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L70)
+Defined in: [lib/buffer.ts:72](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L72)
 
 读取 Buffer
 
@@ -88,7 +88,7 @@ Defined in: [lib/buffer.ts:70](https://github.com/maiyunnet/kebab/blob/master/li
 
 > **readString**(`length?`, `encoding?`): `string`
 
-Defined in: [lib/buffer.ts:62](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L62)
+Defined in: [lib/buffer.ts:64](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L64)
 
 读取普通 string
 
@@ -112,7 +112,7 @@ Defined in: [lib/buffer.ts:62](https://github.com/maiyunnet/kebab/blob/master/li
 
 > **readUInt16BE**(): `number`
 
-Defined in: [lib/buffer.ts:21](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L21)
+Defined in: [lib/buffer.ts:23](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L23)
 
 读取一个无符号 16 位整数（大端模式），WORD
 
@@ -126,7 +126,7 @@ Defined in: [lib/buffer.ts:21](https://github.com/maiyunnet/kebab/blob/master/li
 
 > **readUInt16LE**(): `number`
 
-Defined in: [lib/buffer.ts:28](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L28)
+Defined in: [lib/buffer.ts:30](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L30)
 
 读取一个无符号 16 位整数（小端模式）
 
@@ -140,7 +140,7 @@ Defined in: [lib/buffer.ts:28](https://github.com/maiyunnet/kebab/blob/master/li
 
 > **readUInt32BE**(): `number`
 
-Defined in: [lib/buffer.ts:35](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L35)
+Defined in: [lib/buffer.ts:37](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L37)
 
 读取一个无符号 32 位整数（大端模式）, DWORD
 
@@ -154,7 +154,7 @@ Defined in: [lib/buffer.ts:35](https://github.com/maiyunnet/kebab/blob/master/li
 
 > **readUInt32LE**(): `number`
 
-Defined in: [lib/buffer.ts:42](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L42)
+Defined in: [lib/buffer.ts:44](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L44)
 
 读取一个无符号 32 位整数（小端模式）
 
@@ -168,7 +168,7 @@ Defined in: [lib/buffer.ts:42](https://github.com/maiyunnet/kebab/blob/master/li
 
 > **readUInt8**(): `number`
 
-Defined in: [lib/buffer.ts:14](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L14)
+Defined in: [lib/buffer.ts:16](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L16)
 
 读取一个无符号 8 位整数, BYTE
 

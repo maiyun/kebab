@@ -8,6 +8,6 @@
 
 > `const` **RANDOM\_U**: `"ABCDEFGHIJKLMNOPQRSTUVWXYZ"` = `'ABCDEFGHIJKLMNOPQRSTUVWXYZ'`
 
-Defined in: [lib/core.ts:105](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L105)
+Defined in: [lib/core.ts:106](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L106)
 
 大写字母字符集

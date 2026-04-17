@@ -8,6 +8,6 @@
 
 > `const` **RANDOM\_LN**: `string`
 
-Defined in: [lib/core.ts:112](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L112)
+Defined in: [lib/core.ts:113](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L113)
 
 小写字母 + 数字字符集

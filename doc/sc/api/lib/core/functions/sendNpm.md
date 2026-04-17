@@ -8,7 +8,7 @@
 
 > **sendNpm**(`path`, `hosts?`): `Promise`\<`string`[]\>
 
-Defined in: [lib/core.ts:641](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L641)
+Defined in: [lib/core.ts:646](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L646)
 
 向本机或局域网 RPC 发送 npm install 操作
 

@@ -8,7 +8,6 @@
 
 ## Interfaces
 
-- [ICookie](interfaces/ICookie.md)
 - [IMproxyOptions](interfaces/IMproxyOptions.md)
 - [IRequestOptions](interfaces/IRequestOptions.md)
 - [IRproxyOptions](interfaces/IRproxyOptions.md)
@@ -19,7 +18,6 @@
 
 ## Functions
 
-- [buildCookieQuery](functions/buildCookieQuery.md)
 - [fetch](functions/fetch.md)
 - [filterHeaders](functions/filterHeaders.md)
 - [get](functions/get.md)
@@ -33,6 +31,4 @@
 - [postJson](functions/postJson.md)
 - [postJsonResponseJson](functions/postJsonResponseJson.md)
 - [request](functions/request.md)
-- [resetCookieSession](functions/resetCookieSession.md)
 - [rproxy](functions/rproxy.md)
-- [setCookie](functions/setCookie.md)

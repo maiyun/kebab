@@ -8,7 +8,7 @@
 
 > **purify**(`text`): `string`
 
-Defined in: [lib/core.ts:182](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L182)
+Defined in: [lib/core.ts:183](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L183)
 
 去除 html 的空白符、换行以及注释
 

@@ -6,7 +6,7 @@
 
 # Class: Request
 
-Defined in: [lib/net/request.ts:10](https://github.com/maiyunnet/kebab/blob/master/lib/net/request.ts#L10)
+Defined in: [lib/net/request.ts:11](https://github.com/maiyunnet/kebab/blob/master/lib/net/request.ts#L11)
 
 ## Constructors
 
@@ -14,7 +14,7 @@ Defined in: [lib/net/request.ts:10](https://github.com/maiyunnet/kebab/blob/mast
 
 > **new Request**(`url`): `Request`
 
-Defined in: [lib/net/request.ts:21](https://github.com/maiyunnet/kebab/blob/master/lib/net/request.ts#L21)
+Defined in: [lib/net/request.ts:22](https://github.com/maiyunnet/kebab/blob/master/lib/net/request.ts#L22)
 
 #### Parameters
 
@@ -32,7 +32,7 @@ Defined in: [lib/net/request.ts:21](https://github.com/maiyunnet/kebab/blob/mast
 
 > **data**(`data`): `this`
 
-Defined in: [lib/net/request.ts:29](https://github.com/maiyunnet/kebab/blob/master/lib/net/request.ts#L29)
+Defined in: [lib/net/request.ts:30](https://github.com/maiyunnet/kebab/blob/master/lib/net/request.ts#L30)
 
 设置 get 或 post 的数据
 
@@ -54,7 +54,7 @@ Defined in: [lib/net/request.ts:29](https://github.com/maiyunnet/kebab/blob/mast
 
 > **follow**(`follow?`): `this`
 
-Defined in: [lib/net/request.ts:86](https://github.com/maiyunnet/kebab/blob/master/lib/net/request.ts#L86)
+Defined in: [lib/net/request.ts:87](https://github.com/maiyunnet/kebab/blob/master/lib/net/request.ts#L87)
 
 设置是否跟随请求方的 location，留空为跟随，不设置为不跟随
 
@@ -74,7 +74,7 @@ Defined in: [lib/net/request.ts:86](https://github.com/maiyunnet/kebab/blob/mast
 
 > **get**(): `this`
 
-Defined in: [lib/net/request.ts:46](https://github.com/maiyunnet/kebab/blob/master/lib/net/request.ts#L46)
+Defined in: [lib/net/request.ts:47](https://github.com/maiyunnet/kebab/blob/master/lib/net/request.ts#L47)
 
 method get 方法别名
 
@@ -88,7 +88,7 @@ method get 方法别名
 
 > **headers**(`headers`): `this`
 
-Defined in: [lib/net/request.ts:122](https://github.com/maiyunnet/kebab/blob/master/lib/net/request.ts#L122)
+Defined in: [lib/net/request.ts:123](https://github.com/maiyunnet/kebab/blob/master/lib/net/request.ts#L123)
 
 批量设置提交的 headers
 
@@ -108,7 +108,7 @@ Defined in: [lib/net/request.ts:122](https://github.com/maiyunnet/kebab/blob/mas
 
 > **hosts**(`hosts`): `this`
 
-Defined in: [lib/net/request.ts:95](https://github.com/maiyunnet/kebab/blob/master/lib/net/request.ts#L95)
+Defined in: [lib/net/request.ts:96](https://github.com/maiyunnet/kebab/blob/master/lib/net/request.ts#L96)
 
 设置域名 -> ip的对应键值，就像电脑里的 hosts 一样
 
@@ -128,7 +128,7 @@ Defined in: [lib/net/request.ts:95](https://github.com/maiyunnet/kebab/blob/mast
 
 > **json**(): `this`
 
-Defined in: [lib/net/request.ts:69](https://github.com/maiyunnet/kebab/blob/master/lib/net/request.ts#L69)
+Defined in: [lib/net/request.ts:70](https://github.com/maiyunnet/kebab/blob/master/lib/net/request.ts#L70)
 
 type json 方法别名
 
@@ -142,7 +142,7 @@ type json 方法别名
 
 > **local**(`addr`): `this`
 
-Defined in: [lib/net/request.ts:113](https://github.com/maiyunnet/kebab/blob/master/lib/net/request.ts#L113)
+Defined in: [lib/net/request.ts:114](https://github.com/maiyunnet/kebab/blob/master/lib/net/request.ts#L114)
 
 设置使用的本地网卡 IP
 
@@ -162,7 +162,7 @@ Defined in: [lib/net/request.ts:113](https://github.com/maiyunnet/kebab/blob/mas
 
 > **method**(`method`): `this`
 
-Defined in: [lib/net/request.ts:38](https://github.com/maiyunnet/kebab/blob/master/lib/net/request.ts#L38)
+Defined in: [lib/net/request.ts:39](https://github.com/maiyunnet/kebab/blob/master/lib/net/request.ts#L39)
 
 设置 get 或 post 请求
 
@@ -182,7 +182,7 @@ Defined in: [lib/net/request.ts:38](https://github.com/maiyunnet/kebab/blob/mast
 
 > **post**(): `this`
 
-Defined in: [lib/net/request.ts:53](https://github.com/maiyunnet/kebab/blob/master/lib/net/request.ts#L53)
+Defined in: [lib/net/request.ts:54](https://github.com/maiyunnet/kebab/blob/master/lib/net/request.ts#L54)
 
 method post 方法别名
 
@@ -196,7 +196,7 @@ method post 方法别名
 
 > **request**(`cookie?`): `Promise`\<[`Response`](../../response/classes/Response.md)\>
 
-Defined in: [lib/net/request.ts:142](https://github.com/maiyunnet/kebab/blob/master/lib/net/request.ts#L142)
+Defined in: [lib/net/request.ts:143](https://github.com/maiyunnet/kebab/blob/master/lib/net/request.ts#L143)
 
 发起请求
 
@@ -204,7 +204,7 @@ Defined in: [lib/net/request.ts:142](https://github.com/maiyunnet/kebab/blob/mas
 
 ##### cookie?
 
-`Record`\<`string`, [`ICookie`](../../interfaces/ICookie.md)\>
+`Record`\<`string`, [`ICookie`](../../../cookie/interfaces/ICookie.md)\>
 
 #### Returns
 
@@ -216,7 +216,7 @@ Defined in: [lib/net/request.ts:142](https://github.com/maiyunnet/kebab/blob/mas
 
 > **save**(`save`): `this`
 
-Defined in: [lib/net/request.ts:104](https://github.com/maiyunnet/kebab/blob/master/lib/net/request.ts#L104)
+Defined in: [lib/net/request.ts:105](https://github.com/maiyunnet/kebab/blob/master/lib/net/request.ts#L105)
 
 设置后将直接保存到本地文件，不会返回，save 为本地实体路径
 
@@ -236,7 +236,7 @@ Defined in: [lib/net/request.ts:104](https://github.com/maiyunnet/kebab/blob/mas
 
 > **setHeader**(`name`, `val`): `this`
 
-Defined in: [lib/net/request.ts:132](https://github.com/maiyunnet/kebab/blob/master/lib/net/request.ts#L132)
+Defined in: [lib/net/request.ts:133](https://github.com/maiyunnet/kebab/blob/master/lib/net/request.ts#L133)
 
 设置单条 header
 
@@ -260,7 +260,7 @@ Defined in: [lib/net/request.ts:132](https://github.com/maiyunnet/kebab/blob/mas
 
 > **timeout**(`timeout`): `this`
 
-Defined in: [lib/net/request.ts:77](https://github.com/maiyunnet/kebab/blob/master/lib/net/request.ts#L77)
+Defined in: [lib/net/request.ts:78](https://github.com/maiyunnet/kebab/blob/master/lib/net/request.ts#L78)
 
 设置请求有效期
 
@@ -282,7 +282,7 @@ Defined in: [lib/net/request.ts:77](https://github.com/maiyunnet/kebab/blob/mast
 
 > **type**(`type`): `this`
 
-Defined in: [lib/net/request.ts:61](https://github.com/maiyunnet/kebab/blob/master/lib/net/request.ts#L61)
+Defined in: [lib/net/request.ts:62](https://github.com/maiyunnet/kebab/blob/master/lib/net/request.ts#L62)
 
 设置提交模式，json 还是普通 form
 

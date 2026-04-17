@@ -8,7 +8,7 @@
 
 > **get**(`ctr`, `opt`): [`Dns`](../classes/Dns.md)
 
-Defined in: [lib/dns.ts:404](https://github.com/maiyunnet/kebab/blob/master/lib/dns.ts#L404)
+Defined in: [lib/dns.ts:403](https://github.com/maiyunnet/kebab/blob/master/lib/dns.ts#L403)
 
 创建一个 Dns 对象
 

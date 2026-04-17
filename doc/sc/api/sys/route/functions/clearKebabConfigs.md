@@ -8,7 +8,7 @@
 
 > **clearKebabConfigs**(): `void`
 
-Defined in: [sys/route.ts:30](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L30)
+Defined in: [sys/route.ts:31](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L31)
 
 清除已经加载的虚拟主机配置文件
 

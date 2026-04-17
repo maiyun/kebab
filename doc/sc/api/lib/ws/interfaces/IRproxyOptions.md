@@ -6,7 +6,7 @@
 
 # Interface: IRproxyOptions
 
-Defined in: [lib/ws.ts:71](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L71)
+Defined in: [lib/ws.ts:72](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L72)
 
 反向代理请求的传入参数选项
 
@@ -16,7 +16,7 @@ Defined in: [lib/ws.ts:71](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 > `optional` **filter?**: (`h`) => `boolean`
 
-Defined in: [lib/ws.ts:79](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L79)
+Defined in: [lib/ws.ts:80](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L80)
 
 过滤 header，返回 true 则留下
 
@@ -34,9 +34,9 @@ Defined in: [lib/ws.ts:79](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 ### headers?
 
-> `optional` **headers?**: [`THttpHeaders`](../../net/type-aliases/THttpHeaders.md)
+> `optional` **headers?**: [`THttpHeaders`](../../undici/type-aliases/THttpHeaders.md)
 
-Defined in: [lib/ws.ts:77](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L77)
+Defined in: [lib/ws.ts:78](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L78)
 
 ***
 
@@ -44,7 +44,7 @@ Defined in: [lib/ws.ts:77](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 > `optional` **hosts?**: `string` \| `Record`\<`string`, `string`\>
 
-Defined in: [lib/ws.ts:75](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L75)
+Defined in: [lib/ws.ts:76](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L76)
 
 自定义 host 映射，如 {'www.maiyun.net': '127.0.0.1'}，或全部映射到一个 host
 
@@ -54,7 +54,7 @@ Defined in: [lib/ws.ts:75](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 > `optional` **local?**: `string`
 
-Defined in: [lib/ws.ts:76](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L76)
+Defined in: [lib/ws.ts:77](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L77)
 
 ***
 
@@ -62,7 +62,7 @@ Defined in: [lib/ws.ts:76](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 > `optional` **masking?**: `boolean`
 
-Defined in: [lib/ws.ts:83](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L83)
+Defined in: [lib/ws.ts:84](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L84)
 
 加密模式，默认 true
 
@@ -72,7 +72,7 @@ Defined in: [lib/ws.ts:83](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 > `optional` **mode?**: [`EFrameReceiveMode`](../enumerations/EFrameReceiveMode.md)
 
-Defined in: [lib/ws.ts:81](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L81)
+Defined in: [lib/ws.ts:82](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L82)
 
 小帧模式，默认 false
 
@@ -82,7 +82,7 @@ Defined in: [lib/ws.ts:81](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 > `optional` **mproxy?**: `object`
 
-Defined in: [lib/ws.ts:85](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L85)
+Defined in: [lib/ws.ts:86](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L86)
 
 正向 mproxy 代理，url 如 wss://xxx/abc
 
@@ -100,6 +100,6 @@ Defined in: [lib/ws.ts:85](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 > `optional` **timeout?**: `number`
 
-Defined in: [lib/ws.ts:73](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L73)
+Defined in: [lib/ws.ts:74](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L74)
 
 秒数

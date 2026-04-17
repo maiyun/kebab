@@ -1,0 +1,37 @@
+[**Documents for @maiyunnet/kebab**](../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../index.md) / [lib/undici](../index.md) / post
+
+# Function: post()
+
+> **post**(`u`, `data`, `opt?`): `Promise`\<[`Response`](../response/classes/Response.md)\>
+
+Defined in: [lib/undici.ts:82](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L82)
+
+发起一个 post 请求
+
+## Parameters
+
+### u
+
+`string`
+
+请求的 URL
+
+### data
+
+`string` \| `Record`\<`string`, `any`\> \| `Buffer`\<`ArrayBufferLike`\> \| `Readable`
+
+要发送的数据
+
+### opt?
+
+[`IRequestOptions`](../interfaces/IRequestOptions.md) = `{}`
+
+参数
+
+## Returns
+
+`Promise`\<[`Response`](../response/classes/Response.md)\>

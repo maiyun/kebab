@@ -6,7 +6,7 @@
 
 # Class: Writer
 
-Defined in: [lib/buffer.ts:83](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L83)
+Defined in: [lib/buffer.ts:85](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L85)
 
 写对象
 
@@ -16,7 +16,7 @@ Defined in: [lib/buffer.ts:83](https://github.com/maiyunnet/kebab/blob/master/li
 
 > **new Writer**(`size`): `Writer`
 
-Defined in: [lib/buffer.ts:90](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L90)
+Defined in: [lib/buffer.ts:92](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L92)
 
 #### Parameters
 
@@ -34,7 +34,7 @@ Defined in: [lib/buffer.ts:90](https://github.com/maiyunnet/kebab/blob/master/li
 
 > **get**(): `Buffer`
 
-Defined in: [lib/buffer.ts:133](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L133)
+Defined in: [lib/buffer.ts:135](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L135)
 
 返回 Buffer 对象
 
@@ -48,7 +48,7 @@ Defined in: [lib/buffer.ts:133](https://github.com/maiyunnet/kebab/blob/master/l
 
 > **writeBCDString**(`value`): `void`
 
-Defined in: [lib/buffer.ts:113](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L113)
+Defined in: [lib/buffer.ts:115](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L115)
 
 [每字节 2 数字] 写入一个 BCD 编码的字符串（仅支持数字）
 
@@ -68,7 +68,7 @@ Defined in: [lib/buffer.ts:113](https://github.com/maiyunnet/kebab/blob/master/l
 
 > **writeString**(`value`, `encoding?`): `number`
 
-Defined in: [lib/buffer.ts:126](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L126)
+Defined in: [lib/buffer.ts:128](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L128)
 
 写入普通字符串，返回写入的长度
 
@@ -92,7 +92,7 @@ Defined in: [lib/buffer.ts:126](https://github.com/maiyunnet/kebab/blob/master/l
 
 > **writeUInt16BE**(`value`): `void`
 
-Defined in: [lib/buffer.ts:101](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L101)
+Defined in: [lib/buffer.ts:103](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L103)
 
 [2 字节] 写入一个无符号 16 位整数（大端模式）
 
@@ -112,7 +112,7 @@ Defined in: [lib/buffer.ts:101](https://github.com/maiyunnet/kebab/blob/master/l
 
 > **writeUInt32BE**(`value`): `void`
 
-Defined in: [lib/buffer.ts:107](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L107)
+Defined in: [lib/buffer.ts:109](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L109)
 
 [4 字节] 写入一个无符号 32 位整数（大端模式）
 
@@ -132,7 +132,7 @@ Defined in: [lib/buffer.ts:107](https://github.com/maiyunnet/kebab/blob/master/l
 
 > **writeUInt8**(`value`): `void`
 
-Defined in: [lib/buffer.ts:95](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L95)
+Defined in: [lib/buffer.ts:97](https://github.com/maiyunnet/kebab/blob/master/lib/buffer.ts#L97)
 
 [1 字节] 写入一个无符号 8 位整数
 

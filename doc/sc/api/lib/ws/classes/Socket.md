@@ -6,7 +6,7 @@
 
 # Class: Socket
 
-Defined in: [lib/ws.ts:95](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L95)
+Defined in: [lib/ws.ts:96](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L96)
 
 ## Constructors
 
@@ -14,7 +14,7 @@ Defined in: [lib/ws.ts:95](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 > **new Socket**(`request?`, `socket?`, `head?`, `options?`): `Socket`
 
-Defined in: [lib/ws.ts:100](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L100)
+Defined in: [lib/ws.ts:101](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L101)
 
 #### Parameters
 
@@ -114,7 +114,7 @@ Defined in: [lib/ws.ts:361](https://github.com/maiyunnet/kebab/blob/master/lib/w
 
 > **connect**(`u`, `opt?`): `Promise`\<`Socket` \| `null`\>
 
-Defined in: [lib/ws.ts:123](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L123)
+Defined in: [lib/ws.ts:124](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L124)
 
 以客户端形式发起链接
 

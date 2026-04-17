@@ -36,7 +36,7 @@ Defined in: [lib/dns.ts:106](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **addDomainRecord**(`opt`): `Promise`\<[`IAddDomainRecord`](../interfaces/IAddDomainRecord.md) \| `null`\>
 
-Defined in: [lib/dns.ts:224](https://github.com/maiyunnet/kebab/blob/master/lib/dns.ts#L224)
+Defined in: [lib/dns.ts:223](https://github.com/maiyunnet/kebab/blob/master/lib/dns.ts#L223)
 
 添加记录
 
@@ -84,7 +84,7 @@ Defined in: [lib/dns.ts:224](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **deleteDomainRecord**(`opt`): `Promise`\<\{ `success`: `boolean`; \} \| `null`\>
 
-Defined in: [lib/dns.ts:359](https://github.com/maiyunnet/kebab/blob/master/lib/dns.ts#L359)
+Defined in: [lib/dns.ts:358](https://github.com/maiyunnet/kebab/blob/master/lib/dns.ts#L358)
 
 删除记录
 
@@ -112,7 +112,7 @@ Defined in: [lib/dns.ts:359](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **getDomainList**(`opt`): `Promise`\<[`IDomainList`](../interfaces/IDomainList.md) \| `null`\>
 
-Defined in: [lib/dns.ts:158](https://github.com/maiyunnet/kebab/blob/master/lib/dns.ts#L158)
+Defined in: [lib/dns.ts:157](https://github.com/maiyunnet/kebab/blob/master/lib/dns.ts#L157)
 
 获取域名列表
 
@@ -140,7 +140,7 @@ Defined in: [lib/dns.ts:158](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **updateDomainRecord**(`opt`): `Promise`\<[`IAddDomainRecord`](../interfaces/IAddDomainRecord.md) \| `null`\>
 
-Defined in: [lib/dns.ts:290](https://github.com/maiyunnet/kebab/blob/master/lib/dns.ts#L290)
+Defined in: [lib/dns.ts:289](https://github.com/maiyunnet/kebab/blob/master/lib/dns.ts#L289)
 
 修改记录
 

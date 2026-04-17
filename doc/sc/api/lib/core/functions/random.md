@@ -8,7 +8,7 @@
 
 > **random**(`length?`, `source?`, `block?`): `string`
 
-Defined in: [lib/core.ts:128](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L128)
+Defined in: [lib/core.ts:129](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L129)
 
 生成随机字符串
 

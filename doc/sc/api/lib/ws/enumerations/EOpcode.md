@@ -6,7 +6,7 @@
 
 # Enumeration: EOpcode
 
-Defined in: [lib/ws.ts:24](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L24)
+Defined in: [lib/ws.ts:25](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L25)
 
 OPCODE
 
@@ -16,7 +16,7 @@ OPCODE
 
 > **BINARY**: `2`
 
-Defined in: [lib/ws.ts:27](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L27)
+Defined in: [lib/ws.ts:28](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L28)
 
 ***
 
@@ -24,7 +24,7 @@ Defined in: [lib/ws.ts:27](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 > **CLOSE**: `8`
 
-Defined in: [lib/ws.ts:28](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L28)
+Defined in: [lib/ws.ts:29](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L29)
 
 ***
 
@@ -32,7 +32,7 @@ Defined in: [lib/ws.ts:28](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 > **CONTINUATION**: `0`
 
-Defined in: [lib/ws.ts:25](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L25)
+Defined in: [lib/ws.ts:26](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L26)
 
 ***
 
@@ -40,7 +40,7 @@ Defined in: [lib/ws.ts:25](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 > **PING**: `9`
 
-Defined in: [lib/ws.ts:29](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L29)
+Defined in: [lib/ws.ts:30](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L30)
 
 ***
 
@@ -48,7 +48,7 @@ Defined in: [lib/ws.ts:29](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 > **PONG**: `10`
 
-Defined in: [lib/ws.ts:30](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L30)
+Defined in: [lib/ws.ts:31](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L31)
 
 ***
 
@@ -56,4 +56,4 @@ Defined in: [lib/ws.ts:30](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 > **TEXT**: `1`
 
-Defined in: [lib/ws.ts:26](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L26)
+Defined in: [lib/ws.ts:27](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L27)

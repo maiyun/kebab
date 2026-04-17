@@ -8,7 +8,7 @@
 
 > **passThroughAppend**(`passThrough`, `data`, `end?`): `Promise`\<`void`\>
 
-Defined in: [lib/core.ts:457](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L457)
+Defined in: [lib/core.ts:458](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L458)
 
 调用前自行创建 passThrough，并且调用 pipe 绑定到应该绑定的对象，然后再调用本函数
 
@@ -22,7 +22,7 @@ passThrough 对象
 
 ### data
 
-(`string` \| `Buffer`\<`ArrayBufferLike`\> \| `Readable` \| [`Response`](../../net/response/classes/Response.md))[]
+(`string` \| `Buffer`\<`ArrayBufferLike`\> \| `Readable` \| [`Response`](../../undici/response/classes/Response.md) \| [`Response`](../../net/response/classes/Response.md))[]
 
 数组
 

@@ -6,7 +6,7 @@
 
 # Enumeration: EFrameReceiveMode
 
-Defined in: [lib/ws.ts:17](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L17)
+Defined in: [lib/ws.ts:18](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L18)
 
 一般用 SIMPLE
 
@@ -16,7 +16,7 @@ Defined in: [lib/ws.ts:17](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 > **LITE**: `1`
 
-Defined in: [lib/ws.ts:19](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L19)
+Defined in: [lib/ws.ts:20](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L20)
 
 ***
 
@@ -24,7 +24,7 @@ Defined in: [lib/ws.ts:19](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 > **SIMPLE**: `2`
 
-Defined in: [lib/ws.ts:20](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L20)
+Defined in: [lib/ws.ts:21](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L21)
 
 ***
 
@@ -32,4 +32,4 @@ Defined in: [lib/ws.ts:20](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 > **STANDARD**: `0`
 
-Defined in: [lib/ws.ts:18](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L18)
+Defined in: [lib/ws.ts:19](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L19)

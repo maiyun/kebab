@@ -8,7 +8,7 @@
 
 > **rwebsocket**(`port`, `url`, `opt?`): `Server`
 
-Defined in: [lib/socket.ts:37](https://github.com/maiyunnet/kebab/blob/master/lib/socket.ts#L37)
+Defined in: [lib/socket.ts:38](https://github.com/maiyunnet/kebab/blob/master/lib/socket.ts#L38)
 
 创建一个 Socket 服务器并反代到 WebSocket
 
