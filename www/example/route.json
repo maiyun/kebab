@@ -3,5 +3,6 @@
     "@": "main",
     "article\\/([0-9]+?)": "test/article",
     "test\\/net-rproxy\\/.+?": "test/netRproxy",
+    "test\\/undici-rproxy\\/.+?": "test/undiciRproxy",
     "test\\/react-router-page(\\/.+)?": "test/reactRouterPage"
 }

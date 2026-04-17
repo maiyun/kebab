@@ -4,19 +4,20 @@
  * Last: 2025-9-25 16:49:48
  */
 import net from 'net';
-import * as lNet from '#kebab/lib/net.js';
+import * as lUndici from '#kebab/lib/undici.js';
 import * as lTime from '#kebab/lib/time.js';
 import * as lWs from '#kebab/lib/ws.js';
 import * as lCore from '#kebab/lib/core.js';
+import * as lCokie from '#kebab/lib/cookie.js';
 
 export interface IRwebsocketOptions {
     /** --- 秒数 --- */
     'timeout'?: number;
     'hosts'?: Record<string, string>;
     'local'?: string;
-    'headers'?: lNet.THttpHeaders;
+    'headers'?: lUndici.THttpHeaders;
     /** --- cookie 托管对象 --- */
-    'cookie'?: Record<string, lNet.ICookie>;
+    'cookie'?: Record<string, lCokie.ICookie>;
     /** --- 小帧模式，默认 false --- */
     'mode'?: lWs.EFrameReceiveMode;
     /** --- 加密模式，默认 true --- */

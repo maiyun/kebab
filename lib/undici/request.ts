@@ -4,8 +4,8 @@
  * Last: 2020-4-9 20:47:58, 2022-09-10 01:35:34, 2025-9-23 12:41:58
  */
 import * as stream from 'stream';
-import * as lNet from '#kebab/lib/net.js';
 import * as lCookie from '#kebab/lib/cookie.js';
+import * as lUndici from '#kebab/lib/undici.js';
 import * as lResponse from './response.js';
 
 export class Request {
@@ -17,7 +17,7 @@ export class Request {
     private readonly _url: string = '';
 
     /** --- 要传递的参数 --- */
-    private _opt: lNet.IRequestOptions = {};
+    private _opt: lUndici.IRequestOptions = {};
 
     public constructor(url: string) {
         this._url = url;
@@ -120,7 +120,7 @@ export class Request {
      * --- 批量设置提交的 headers ---
      * @param headers
      */
-    public headers(headers: lNet.THttpHeaders): this {
+    public headers(headers: lUndici.THttpHeaders): this {
         this._opt['headers'] = headers;
         return this;
     }
@@ -142,7 +142,7 @@ export class Request {
      */
     public request(cookie?: Record<string, lCookie.ICookie>): Promise<lResponse.Response> {
         this._opt.cookie = cookie;
-        return lNet.request(this._url, this._data, this._opt);
+        return lUndici.request(this._url, this._data, this._opt);
     }
 
 }

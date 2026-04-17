@@ -6,11 +6,12 @@ export default class extends sCtr.Ctr {
 
     public async onReqStart(): Promise<number> {
         if (await lNet.rproxy(this, {
-            'test/net-rproxy/': 'https://cdn.jsdelivr.net/npm/deskrt@2.0.10/'
+            'test/net-rproxy/': 'https://cdn.jsdelivr.net/npm/deskrt@2.0.10/',
+            'test/undici-rproxy/': 'https://cdn.jsdelivr.net/npm/deskrt@2.0.10/'
         })) {
             return -1;
         }
-        if (this._config.const.path === 'test/net-mproxy1') {
+        if (this._config.const.path === 'test/net-mproxy1' || this._config.const.path === 'test/undici-mproxy1') {
             return 0;
         }
         return 1;

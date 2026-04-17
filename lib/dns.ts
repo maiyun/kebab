@@ -1,15 +1,15 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2019-6-19
- * Last: 2022-09-12 20:58:07, 2024-2-21 17:55:54, 2025-6-13 19:08:56, 2025-11-19 00:17:56
+ * Last: 2022-09-12 20:58:07, 2024-2-21 17:55:54, 2025-6-13 19:08:56, 2025-11-19 00:17:56, 2026-04-17 18:28:54
  */
 
 // --- 库和定义 ---
-import * as lNet from '#kebab/lib/net.js';
 import * as lCore from '#kebab/lib/core.js';
 import * as lText from '#kebab/lib/text.js';
 import * as lCrypto from '#kebab/lib/crypto.js';
-import * as lResponse from '#kebab/lib/net/response.js';
+import * as lUndici from '#kebab/lib/undici.js';
+import * as lUndiciResponse from '#kebab/lib/undici/response.js';
 import * as sCtr from '#kebab/sys/ctr.js';
 
 /**
@@ -114,7 +114,7 @@ export class Dns {
      * --- 最终发送 ---
      * @param obj 要发送的信息
      */
-    private async _send(obj: Record<string, string | number | undefined>): Promise<lResponse.Response> {
+    private async _send(obj: Record<string, string | number | undefined>): Promise<lUndiciResponse.Response> {
         for (const key in obj) {
             if (obj[key] === null || obj[key] === undefined) {
                 delete obj[key];
@@ -130,7 +130,7 @@ export class Dns {
                 const path = data['_path'] as string;
                 delete data['_path'];
                 // --- 境外服务器请求的话 api 会自动解析到香港服务器 ---
-                return lNet.post('https://dnsapi.cn/' + path, data);
+                return lUndici.post('https://dnsapi.cn/' + path, data);
             }
             // --- 阿里云 ---
             case ESERVICE.ALIBABA: {
@@ -145,10 +145,9 @@ export class Dns {
                 }, obj));
                 const urlRight = lText.queryStringify(getData);
                 const signature = lCrypto.hashHmac('sha1', `GET&${encodeURIComponent('/')}&${encodeURIComponent(urlRight)}`, (this._opt.secretKey ?? '') + '&', 'base64');
-                return lNet.get(`https://alidns.aliyuncs.com/?${urlRight}&Signature=${encodeURIComponent(signature)}`); // 境外 api 会自动调度到新加坡服务器
+                return lUndici.get(`https://alidns.aliyuncs.com/?${urlRight}&Signature=${encodeURIComponent(signature)}`); // 境外 api 会自动调度到新加坡服务器
             }
         }
-        return new lResponse.Response(null);
     }
 
     /**

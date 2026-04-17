@@ -52,7 +52,8 @@
     "ssh2": "^1.17.0",
     "svg-captcha": "^1.4.0",
     "tailwind-merge": "^3.5.0",
-    "tencentcloud-sdk-nodejs": "^4.1.199"
+    "tencentcloud-sdk-nodejs": "^4.1.199",
+    "undici": "^8.1.0"
   },
   "devDependencies": {
     "@litert/eslint-plugin-rules": "^0.3.1",

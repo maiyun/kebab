@@ -10,7 +10,8 @@ import * as liws from '@litert/websocket';
 // --- 库 ---
 import * as kebab from '#kebab/index.js';
 import * as lText from '#kebab/lib/text.js';
-import * as lNet from '#kebab/lib/net.js';
+import * as lUndici from '#kebab/lib/undici.js';
+import * as lCookie from '#kebab/lib/cookie.js';
 import * as sCtr from '#kebab/sys/ctr.js';
 
 /** --- 一般用 SIMPLE --- */
@@ -37,9 +38,9 @@ export interface IConnectOptions {
     /** --- 自定义 host 映射，如 {'www.maiyun.net': '127.0.0.1'}，或全部映射到一个 host --- */
     'hosts'?: Record<string, string> | string;
     'local'?: string;
-    'headers'?: lNet.THttpHeaders;
+    'headers'?: lUndici.THttpHeaders;
     /** --- cookie 托管对象 --- */
-    'cookie'?: Record<string, lNet.ICookie>;
+    'cookie'?: Record<string, lCookie.ICookie>;
     /** --- 小帧模式，默认 false --- */
     'mode'?: EFrameReceiveMode;
     /** --- 加密模式，默认 true --- */
@@ -58,7 +59,7 @@ export interface IMproxyOptions {
     /** --- 自定义 host 映射，如 {'www.maiyun.net': '127.0.0.1'}，或全部映射到一个 host --- */
     'hosts'?: Record<string, string> | string;
     'local'?: string;
-    'headers'?: lNet.THttpHeaders;
+    'headers'?: lUndici.THttpHeaders;
     /** --- 过滤 header，返回 true 则留下 --- */
     filter?: (h: string) => boolean;
     /** --- 小帧模式，默认 false --- */
@@ -74,7 +75,7 @@ export interface IRproxyOptions {
     /** --- 自定义 host 映射，如 {'www.maiyun.net': '127.0.0.1'}，或全部映射到一个 host --- */
     'hosts'?: Record<string, string> | string;
     'local'?: string;
-    'headers'?: lNet.THttpHeaders;
+    'headers'?: lUndici.THttpHeaders;
     /** --- 过滤 header，返回 true 则留下 --- */
     filter?: (h: string) => boolean;
     /** --- 小帧模式，默认 false --- */
@@ -141,12 +142,12 @@ export class Socket {
         headers['user-agent'] ??= 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36';
         // --- cookie 托管 ---
         if (opt.cookie) {
-            headers['cookie'] = lNet.buildCookieQuery(opt.cookie, uri);
+            headers['cookie'] = lCookie.buildCookieQuery(opt.cookie, uri);
         }
         // --- ssl ---
-        const ca: string | null = puri ?
-            puri.protocol === 'wss:' ? await lNet.getCa() : null :
-            uri.protocol === 'wss:' ? await lNet.getCa() : null;
+        const isSsl = puri ?
+            (puri.protocol === 'wss:' ? true : false) :
+            (uri.protocol === 'wss:' ? true : false);
         if (typeof hosts === 'string' ? hosts : hosts[uri.hostname]) {
             // --- 要设置额外的 host ---
             headers['host'] = uri.hostname;
@@ -167,7 +168,7 @@ export class Socket {
                 'url': u,
                 'auth': opt.mproxy?.auth ?? ''
             }) : uri.path;
-            const cli = ca ?
+            const cli = isSsl ?
                 liws.createSecureClient({
                     'hostname': rhost || host,
                     'port': port,
@@ -177,7 +178,6 @@ export class Socket {
                     'connectTimeout': timeout * 1000,
                     'frameReceiveMode': mode,
                     'localAddress': local,
-                    'ca': ca,
                 }) :
                 liws.createClient({
                     'hostname': rhost || host,
@@ -523,7 +523,7 @@ export async function mproxy(
         return -1;
     }
     opt.headers ??= {};
-    const headers = Object.assign(lNet.filterHeaders(req.headers, undefined, opt.filter), opt.headers);
+    const headers = Object.assign(lUndici.filterHeaders(req.headers, undefined, opt.filter), opt.headers);
     // --- 发起请求 ---
     /** --- 远程端的双向 socket --- */
     const rsocket = await connect(get['url'], {
@@ -552,7 +552,7 @@ export async function rproxy(
     /** --- 请求端产生的双向 socket --- */
     const socket = ctr.getPrototype('_socket');
     opt.headers ??= {};
-    const headers = Object.assign(lNet.filterHeaders(req.headers, undefined, opt.filter), opt.headers);
+    const headers = Object.assign(lUndici.filterHeaders(req.headers, undefined, opt.filter), opt.headers);
     // --- 发起请求 ---
     /** --- 远程端的双向 socket --- */
     const rsocket = await connect(url, {

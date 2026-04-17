@@ -3,6 +3,7 @@ import * as fs from 'fs';
 import * as kebab from '#kebab/index.js';
 import * as lCore from '#kebab/lib/core.js';
 import * as lNet from '#kebab/lib/net.js';
+import * as lUndici from '#kebab/lib/undici.js';
 import * as lDb from '#kebab/lib/db.js';
 import * as lVector from '#kebab/lib/vector.js';
 import * as lFs from '#kebab/lib/fs.js';
@@ -23,6 +24,7 @@ import * as lLan from '#kebab/lib/lan.js';
 import * as lCron from '#kebab/lib/cron.js';
 import * as lRateLimit from '#kebab/lib/ratelimit.js';
 import * as lAi from '#kebab/lib/ai.js';
+import * as lCookie from '#kebab/lib/cookie.js';
 import * as sMonitor from '#kebab/sys/monitor.js';
 import * as sCtr from '#kebab/sys/ctr.js';
 // --- mod ---
@@ -91,6 +93,7 @@ export default class extends sCtr.Ctr {
             '<br>MINIPROGRAM: ' + (this._config.const.miniprogram) + ' (' + typeof this._config.const.miniprogram + ')',
             '<br>Real IP: ' + lCore.ip(this),
             '<br>Client IP: ' + lCore.realIP(this),
+            '<br>--use-env-proxy: ' + (process.execArgv.includes('--use-env-proxy') ? 'true' : 'false'),
 
             '<br><br>URL_BASE: ' + this._config.const.urlBase,
             '<br>URL_STC: ' + this._config.const.urlStc,
@@ -219,6 +222,27 @@ export default class extends sCtr.Ctr {
             `<br><a href="${this._config.const.urlBase}test/net-filterheaders">View "test/net-filterheaders"</a>`,
             `<br><a href="${this._config.const.urlBase}test/net-fetch">View "test/net-fetch"</a>`,
             `<br><a href="${this._config.const.urlBase}test/net-get-response-json">View "test/net-get-response-json"</a>`,
+
+            '<br><br><b>Undici:</b>',
+            `<br><br><a href="${this._config.const.urlBase}test/undici">View "test/undici"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/undici-pipe">View "test/undici-pipe"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/undici-post">View "test/undici-post"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/undici-post-string">View "test/undici-post-string"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/undici-open">View "test/undici-open"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/undici-form-test">View "test/undici-form-test"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/undici-upload">View "test/undici-upload"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/undici-cookie">View "test/undici-cookie"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/undici-save">View "test/undici-save"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/undici-follow">View "test/undici-follow"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/undici-reuse">View "test/undici-reuse"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/undici-error">View "test/undici-error"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/undici-hosts">View "test/undici-hosts"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/undici-rproxy/dist/core.js">View "test/undici-rproxy/dist/core.js"</a> <a href="${this._config.const.urlBase}test/undici-rproxy/package.json">View "package.json"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/undici-mproxy">View "test/undici-mproxy"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/undici-filterheaders">View "test/undici-filterheaders"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/undici-fetch">View "test/undici-fetch"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/undici-get-response-json">View "test/undici-get-response-json"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/undici-proxy">View "test/undici-proxy"</a>`,
 
             '<br><br><b>Scan:</b>',
             `<br><br><a href="${this._config.const.urlBase}test/scan?s=db">View "test/scan?s=db"</a>`,
@@ -2297,13 +2321,13 @@ cookie: <pre>${JSON.stringify(cookie, null, 4)}</pre><hr>`);
 headers: <pre>${JSON.stringify(res.headers, null, 4)}</pre>
 content: <pre>${(await res.getContent())?.toString() ?? 'null'}</pre>`);
 
-        lNet.setCookie(cookie, 'custom1', 'abc1', this._config.const.host);
-        lNet.setCookie(cookie, 'custom2', 'abc2', '172.17.0.1');
+        lCookie.setCookie(cookie, 'custom1', 'abc1', this._config.const.host);
+        lCookie.setCookie(cookie, 'custom2', 'abc2', '172.17.0.1');
         res = await lNet.get(this._internalUrl + 'test/net-cookie2', {
             'cookie': cookie
         });
-        echo.push(`<pre>lNet.setCookie(cookie, 'custom1', 'abc1', ${this._config.const.host});
-lNet.setCookie(cookie, 'custom2', 'abc2', '172.17.0.1');
+        echo.push(`<pre>lCookie.setCookie(cookie, 'custom1', 'abc1', ${this._config.const.host});
+lCookie.setCookie(cookie, 'custom2', 'abc2', '172.17.0.1');
 lNet.get(this._internalUrl + 'test/net-cookie2', {
     'cookie': cookie
 });</pre>
@@ -2695,6 +2719,583 @@ result: <pre>${lText.htmlescape(JSON.stringify(json2, null, 4))}</pre>`);
             'version': kebab.VER,
             'features': ['GET request with JSON parsing', 'Automatic JSON parsing', 'Simple and clean API']
         }];
+    }
+
+    public async undici(): Promise<string> {
+        const echo = [];
+
+        const res = await lUndici.get('https://cdn.jsdelivr.net/npm/deskrt@2.0.10/package.json');
+        echo.push(`<pre>lUndici.get('https://cdn.jsdelivr.net/npm/deskrt@2.0.10/package.json');</pre>
+headers: <pre>${JSON.stringify(res.headers, null, 4)}</pre>
+content: <pre>${(await res.getContent())?.toString() ?? 'null'}</pre>
+error: ${JSON.stringify(res.error)}`);
+
+        const res2 = await lUndici.get(this._internalUrl + 'test?abc');
+        echo.push(`<pre>lUndici.get('${this._internalUrl}test?abc');</pre>
+headers: <pre>${JSON.stringify(res2.headers, null, 4)}</pre>
+content: <pre>${(await res2.getContent())?.toString().slice(0, 500) ?? 'null'}</pre>
+error: ${JSON.stringify(res2.error)}`);
+
+        return echo.join('') + '<br><br>' + this._getEnd();
+    }
+
+    public async undiciPipe(): Promise<kebab.Json> {
+        const echo = [];
+
+        const res = await lUndici.get('https://cdn.jsdelivr.net/npm/deskrt@2.0.10/package.json');
+        echo.push(
+            `<pre>lUndici.get('https://cdn.jsdelivr.net/npm/deskrt@2.0.10/package.json');</pre>
+headers: <pre>${JSON.stringify(res.headers, null, 4)}</pre>
+content: <pre>`,
+            res,
+            `</pre>
+error: ${JSON.stringify(res.error)}
+<br><br>` + this._getEnd()
+        );
+
+        return echo;
+    }
+
+    public async undiciPost(): Promise<kebab.Json> {
+        const echo = [];
+
+        const res = await lUndici.post(this._internalUrl + 'test/netPost1', { 'a': '1', 'b': '2', 'c': ['1', '2', '3'] });
+        echo.push(`<pre>lUndici.post('${this._internalUrl}test/netPost1', { 'a': '1', 'b': '2', 'c': ['1', '2', '3'] });</pre>
+headers: <pre>${JSON.stringify(res.headers, null, 4)}</pre>
+content: <pre>${(await res.getContent())?.toString() ?? 'null'}</pre>
+error: ${JSON.stringify(res.error)}`);
+
+        return echo.join('') + '<br><br>' + this._getEnd();
+    }
+
+    public undiciPost1(): string {
+        return `_post:\n\n${JSON.stringify(this._post)}\n\nRequest headers:\n\n${JSON.stringify(this._headers, null, 4)}\n\nIP: ${this._req.socket.remoteAddress ?? ''}`;
+    }
+
+    public async undiciPostString(): Promise<string> {
+        const echo = [];
+
+        const res = await lUndici.post(this._internalUrl + 'test/netPostString1', 'HeiHei');
+        echo.push(`<pre>lUndici.post('${this._internalUrl}test/netPostString1', 'HeiHei');</pre>
+headers: <pre>${JSON.stringify(res.headers, null, 4)}</pre>
+content: <pre>${(await res.getContent())?.toString() ?? 'null'}</pre>
+error: ${JSON.stringify(res.error)}`);
+
+        return echo.join('') + '<br><br>' + this._getEnd();
+    }
+
+    public undiciPostString1(): kebab.Json[] {
+        return [1, this._input];
+    }
+
+    public async undiciOpen(): Promise<kebab.Json> {
+        const echo = [];
+
+        const res = await lUndici.open(this._internalUrl + 'test/netPost1').post().data({ 'a': '2', 'b': '0', 'c': ['0', '1', '3'] }).request();
+        echo.push(`<pre>lUndici.open('${this._internalUrl}test/netPost1').post().data({ 'a': '2', 'b': '0', 'c': ['0', '1', '3'] }).request();</pre>
+headers: <pre>${JSON.stringify(res.headers, null, 4)}</pre>
+content: <pre>${(await res.getContent())?.toString() ?? 'null'}</pre>
+error: ${JSON.stringify(res.error)}`);
+
+        return echo.join('') + this._getEnd();
+    }
+
+    public async undiciFormTest(): Promise<string> {
+        if (!await this._handleFormData()) {
+            return '';
+        }
+        const echo = [
+            '<pre>',
+            JSON.stringify(this._post, null, 4),
+            '\n-----\n',
+            JSON.stringify(this._files, null, 4),
+            '</pre>'
+        ];
+        echo.push(`<form enctype="multipart/form-data" method="post">
+    text a: <input type="text" name="a" value="a1"> <input type="text" name="a" value="a2"><br>
+    file b: <input type="file" name="b"><br>
+    file c: <input type="file" name="c"><input type="file" name="c"><br>
+    fi d[]: <input type="file" name="d[]"><input type="file" name="d[]"><br>
+    <input type="submit" value="Upload">
+</form>
+<hr>
+<form method="post">
+    name a: <input type="text" name="a" value="a&1"> <input type="text" name="a" value="a&2"><br>
+    na b[]: <input type="text" name="b[]" value="b1"> <input type="text" name="b[]" value="b2"><br>
+    name d: <input type="text" name="d" value="d"><br>
+    <input type="submit" value="Default post">
+</form>`);
+
+        return echo.join('') + this._getEnd();
+    }
+
+    public async undiciUpload(): Promise<string> {
+        const echo = [];
+
+        const fd = lUndici.getFormData();
+        fd.putString('a', '1');
+        await fd.putFile('file', kebab.LIB_PATH + 'net/cacert.pem');
+        await fd.putFile('multiple', kebab.LIB_PATH + 'net/cacert.pem');
+        await fd.putFile('multiple', kebab.LIB_PATH + 'net/cacert.pem');
+        const res = await lUndici.post(this._internalUrl + 'test/undici-upload1', fd);
+        echo.push(`<pre>const fd = lUndici.getFormData();
+fd.putString('a', '1');
+await fd.putFile('file', kebab.LIB_PATH + 'net/cacert.pem');
+await fd.putFile('multiple', kebab.LIB_PATH + 'net/cacert.pem');
+await fd.putFile('multiple', kebab.LIB_PATH + 'net/cacert.pem');
+lUndici.post('${this._internalUrl}test/undici-upload1', fd);</pre>
+headers: <pre>${JSON.stringify(res.headers, null, 4)}</pre>
+content: <pre>${(await res.getContent())?.toString() ?? 'null'}</pre>
+error: ${JSON.stringify(res.error)}`);
+
+        return echo.join('') + '<br><br>' + this._getEnd();
+    }
+
+    public async undiciUpload1(): Promise<string> {
+        if (!await this._handleFormData()) {
+            return '{}';
+        }
+        return JSON.stringify(this._post, null, 4) + '\n\n' + JSON.stringify(this._files, null, 4);
+    }
+
+    public async undiciCookie(): Promise<string> {
+        const echo = [];
+
+        const cookie = {};
+        let res = await lUndici.get(this._internalUrl + 'test/undici-cookie1', {
+            'cookie': cookie
+        });
+        echo.push(`<pre>const cookie = {};
+lUndici.get(this._internalUrl + 'test/undici-cookie1', {
+    'cookie': cookie
+});</pre>
+headers: <pre>${lText.htmlescape(JSON.stringify(res.headers, null, 4))}</pre>
+content: <pre>${(await res.getContent())?.toString() ?? 'null'}</pre>
+cookie: <pre>${JSON.stringify(cookie, null, 4)}</pre><hr>`);
+
+        res = await lUndici.get(this._internalUrl + 'test/undici-cookie2', {
+            'cookie': cookie
+        });
+        echo.push(`<pre>lUndici.get(this._internalUrl + 'test/undici-cookie2', {
+    'cookie': cookie
+});</pre>
+headers: <pre>${JSON.stringify(res.headers, null, 4)}</pre>
+content: <pre>${(await res.getContent())?.toString() ?? 'null'}</pre>`);
+
+        lCookie.setCookie(cookie, 'custom1', 'abc1', this._config.const.host);
+        lCookie.setCookie(cookie, 'custom2', 'abc2', '172.17.0.1');
+        res = await lUndici.get(this._internalUrl + 'test/undici-cookie2', {
+            'cookie': cookie
+        });
+        echo.push(`<pre>lCookie.setCookie(cookie, 'custom1', 'abc1', ${this._config.const.host});
+lCookie.setCookie(cookie, 'custom2', 'abc2', '172.17.0.1');
+lUndici.get(this._internalUrl + 'test/undici-cookie2', {
+    'cookie': cookie
+});</pre>
+headers: <pre>${JSON.stringify(res.headers, null, 4)}</pre>
+content: <pre>${(await res.getContent())?.toString() ?? 'null'}</pre>`);
+
+        return echo.join('') + this._getEnd();
+    }
+
+    public undiciCookie1(): string {
+        lCore.setCookie(this, 'test0', 'session');
+        lCore.setCookie(this, 'test1', 'normal', {
+            'ttl': 10
+        });
+        lCore.setCookie(this, 'test2', 'baidu.com', {
+            'ttl': 20,
+            'path': '/',
+            'domain': 'baidu.com'
+        });
+        lCore.setCookie(this, 'test3', this._config.const.hostname, {
+            'ttl': 30,
+            'path': '/',
+            'domain': this._config.const.hostname
+        });
+        lCore.setCookie(this, 'test4', '/ok/', {
+            'ttl': 40,
+            'path': '/ok/'
+        });
+        lCore.setCookie(this, 'test5', 'secure', {
+            'ttl': 50,
+            'ssl': true
+        });
+        lCore.setCookie(this, 'test6', '0.1', {
+            'ttl': 40,
+            'path': '/',
+            'domain': '0.1'
+        });
+        lCore.setCookie(this, 'test7', 'localhost', {
+            'ttl': 30,
+            'path': '/',
+            'domain': 'localhost'
+        });
+        lCore.setCookie(this, 'test8', 'com', {
+            'ttl': 20,
+            'path': '/',
+            'domain': 'com'
+        });
+        lCore.setCookie(this, 'test9', 'com.cn', {
+            'ttl': 10,
+            'path': '/',
+            'domain': 'com.cn'
+        });
+        lCore.setCookie(this, 'test10', 'httponly', {
+            'ttl': 60,
+            'httponly': true
+        });
+
+        // --- 用于测试 BUG 的额外 Cookie ---
+        this._res.setHeader('Set-Cookie', [
+            ...(this._res.getHeader('Set-Cookie') as string[]),
+            'test-del=; Max-Age=0; Path=/',
+            'test-equals=val=with=equals; Path=/',
+            'test-expires=val; Expires=Wed, 21 Oct 2035 07:28:00 GMT; Path=/',
+            'test-invalid=%invalid; Path=/'
+        ]);
+
+        return `lCore.setCookie(this, 'test0', 'session');
+lCore.setCookie(this, 'test1', 'normal', {
+    'ttl': 10
+});
+lCore.setCookie(this, 'test2', 'baidu.com', {
+    'ttl': 20,
+    'path': '/',
+    'domain': 'baidu.com'
+});
+lCore.setCookie(this, 'test3', this._config.const.hostname, {
+    'ttl': 30,
+    'path': '/',
+    'domain': this._config.const.hostname
+});
+lCore.setCookie(this, 'test4', '/ok/', {
+    'ttl': 40,
+    'path': '/ok/'
+});
+lCore.setCookie(this, 'test5', 'secure', {
+    'ttl': 50,
+    'ssl': true
+});
+lCore.setCookie(this, 'test6', '0.1', {
+    'ttl': 40,
+    'path': '/',
+    'domain': '0.1'
+});
+lCore.setCookie(this, 'test7', 'localhost', {
+    'ttl': 30,
+    'path': '/',
+    'domain': 'localhost'
+});
+lCore.setCookie(this, 'test8', 'com', {
+    'ttl': 20,
+    'path': '/',
+    'domain': 'com'
+});
+lCore.setCookie(this, 'test9', 'com.cn', {
+    'ttl': 10,
+    'path': '/',
+    'domain': 'com.cn'
+});
+lCore.setCookie(this, 'test10', 'httponly', {
+    'ttl': 60,
+    'httponly': true
+});`;
+    }
+
+    public undiciCookie2(): string {
+        return 'this._cookie: \n\n' + JSON.stringify(this._cookie, null, 4);
+    }
+
+    public async undiciSave(): Promise<string> {
+        const echo = [];
+
+        const res = await lUndici.get('https://cdn.jsdelivr.net/npm/deskrt@2.0.10/package.json', {
+            'follow': 5,
+            'save': kebab.LOG_CWD + 'test-must-remove.json'
+        });
+        echo.push(`<pre>lUndici.get('https://cdn.jsdelivr.net/npm/deskrt@2.0.10/package.json', {
+    'follow': 5,
+    'save': kebab.LOG_CWD + 'test-must-remove.json'
+});</pre>
+headers: <pre>${JSON.stringify(res.headers, null, 4)}</pre>
+content: <pre>${(await res.getContent())?.toString() ?? 'null'}</pre>
+error: ${JSON.stringify(res.error)}`);
+
+        return echo.join('') + this._getEnd();
+    }
+
+    public async undiciFollow(): Promise<string> {
+        const echo = [];
+
+        const res = await lUndici.post(this._internalUrl + 'test/undici-follow1', {
+            'a': '1',
+            'b': '2'
+        }, {
+            'follow': 5
+        });
+        echo.push(`<pre>lUndici.post(this._internalUrl + 'test/undici-follow1', {
+    'a': '1',
+    'b': '2'
+}, {
+    'follow': 5
+});</pre>
+headers: <pre>${JSON.stringify(res.headers, null, 4)}</pre>
+content: <pre>${(await res.getContent())?.toString() ?? 'null'}</pre>
+error: ${JSON.stringify(res.error)}</pre>`);
+
+        return echo.join('') + this._getEnd();
+    }
+
+    public undiciFollow1(): void {
+        this._location('test/undici-follow2');
+    }
+
+    public undiciFollow2(): kebab.Json {
+        return [1, { 'post': (this._post['a'] as string) + ',' + (this._post['b'] as string) }];
+    }
+
+    public async undiciReuse(): Promise<string> {
+        const echo = [];
+
+        echo.push('<strong>Reuse:</strong>');
+
+        let time0 = Date.now();
+        await lUndici.get('https://cdn.jsdelivr.net/npm/deskrt@2.0.10/package.json');
+        let time1 = Date.now();
+        echo.push("<pre>lUndici.get('https://cdn.jsdelivr.net/npm/deskrt@2.0.10/package.json');</pre>" + Math.round(time1 - time0).toString() + 'ms.');
+
+        time0 = Date.now();
+        await lUndici.get('https://cdn.jsdelivr.net/npm/deskrt@2.0.10/README.md');
+        time1 = Date.now();
+        echo.push("<pre>lUndici.get('https://cdn.jsdelivr.net/npm/deskrt@2.0.10/README.md');</pre>" + Math.round(time1 - time0).toString() + 'ms.');
+
+        time0 = Date.now();
+        await lUndici.get('https://cdn.jsdelivr.net/npm/deskrt@2.0.10/LICENSE');
+        time1 = Date.now();
+        echo.push("<pre>lUndici.get('https://cdn.jsdelivr.net/npm/deskrt@2.0.10/LICENSE');</pre>" + Math.round(time1 - time0).toString() + 'ms.<hr>');
+
+        return echo.join('') + this._getEnd();
+    }
+
+    public async undiciError(): Promise<string> {
+        const echo = [];
+
+        const res = await lUndici.get('https://192.111.000.222/xxx.zzz');
+        echo.push(`<pre>lUndici.get('https://192.111.000.222/xxx.zzz');</pre>
+headers: <pre>${JSON.stringify(res.headers, null, 4)}</pre>
+content: <pre>${(await res.getContent())?.toString() ?? 'null'}</pre>
+error: <pre>${JSON.stringify(res.error, null, 4)}</pre>`);
+
+        return echo.join('') + this._getEnd();
+    }
+
+    public async undiciHosts(): Promise<string> {
+        const echo = [];
+
+        const res = await lUndici.get('http://nodejs.org:' + this._config.const.hostport.toString() + this._config.const.urlBase + 'test', {
+            'hosts': {
+                'nodejs.org': '127.0.0.1'
+            }
+        });
+        echo.push(`<pre>lUndici.get('http://nodejs.org:${this._config.const.hostport.toString() + this._config.const.urlBase}test', {
+    'hosts': {
+        'nodejs.org': '127.0.0.1'
+    }
+});</pre>
+headers: <pre>${JSON.stringify(res.headers, null, 4)}</pre>
+content: <pre>${lText.htmlescape((await res.getContent())?.toString() ?? '')}</pre>
+error: <pre>${JSON.stringify(res.error, null, 4)}</pre>`);
+
+        return echo.join('') + this._getEnd();
+    }
+
+    public async undiciMproxy(): Promise<string | boolean> {
+        const echo = [];
+        const res = await lUndici.postJson(this._internalUrl + 'test/undici-mproxy2', {
+            'abc': 'ok',
+        }, {
+            'mproxy': {
+                'url': this._internalUrl + 'test/undici-mproxy1',
+                'auth': '123456',
+                'data': { 'test': '123' },
+            }
+        });
+        echo.push(`<pre>lUndici.postJson('${this._internalUrl}test/undici-mproxy2', {
+    'mproxy': {
+        'url': '${this._internalUrl}test/undici-mproxy1',
+        'auth': '123456',
+        'data': { 'test': '123' },
+    }
+});</pre>
+        headers: <pre>${JSON.stringify(res.headers, null, 4)}</pre>
+        content: <pre>${(await res.getContent())?.toString() ?? 'null'}</pre>
+        error: ${JSON.stringify(res.error)}`);
+
+        return echo.join('') + '<br><br>' + this._getEnd();
+    }
+
+    public async undiciMproxy1(): Promise<string | boolean> {
+        const data = lUndici.mproxyData(this);
+        lCore.debug('Got data', data);
+        const rtn = await lUndici.mproxy(this, '123456');
+        if (rtn > 0) {
+            return false;
+        }
+        return 'Nothing(' + rtn + ')';
+    }
+
+    public undiciMproxy2(): any[] {
+        return [1, {
+            'data': this._post,
+        }];
+    }
+
+    public undiciFilterheaders(): string {
+        const echo = [];
+        const headers = {
+            'host': 'www.maiyun.net',
+            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/180.0.0.0 Safari/537.36',
+            'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+            'accept-encoding': 'gzip, deflate',
+            'accept-language': 'zh-CN,zh;q=0.9,en;q=0.8',
+            'cache-control': 'no-cache',
+            'cdn-loop': 'TencentEdgeOne; loops=2',
+            'eo-connecting-ip': 'xx:xx:xx:xx:xx',
+            'eo-log-uuid': '102780998859203995',
+            'pragma': 'no-cache',
+            'priority': 'u=0, i',
+            'sec-ch-ua': '"Chromium";v="140", "Not=A?Brand";v="24", "Google Chrome";v="180"',
+            'sec-ch-ua-mobile': '?0',
+            'sec-ch-ua-platform': '"Windows"',
+            'sec-fetch-dest': 'document',
+            'sec-fetch-mode': 'navigate',
+            'sec-fetch-site': 'none',
+            'sec-fetch-user': '?1',
+            'upgrade-insecure-requests': '1',
+            'x-forwarded-for': '127.1.2.3',
+            'x-forwarded-host': 'www.maiyun.net',
+            'x-forwarded-proto': 'http',
+            'authorization': ''
+        };
+        echo.push(`origin:<pre>${JSON.stringify(headers, null, 4)}</pre>`);
+        const filtered = lUndici.filterHeaders(headers, undefined, h => {
+            return !['x-', 'eo-'].some(i => h.startsWith(i));
+        });
+        echo.push(`const filtered = lUndici.filterHeaders(headers);<pre>${JSON.stringify(filtered, null, 4)}</pre>`);
+        return echo.join('') + this._getEnd();
+    }
+
+    public async undiciFetch(): Promise<string | boolean> {
+        const echo = [];
+        try {
+            const res = await lUndici.fetch(this._internalUrl + 'test/undici-fetch1', {
+                'method': 'POST',
+                'headers': {
+                    'content-type': 'application/json',
+                },
+                'body': JSON.stringify({ 'test': '123' }),
+            });
+            echo.push(`<pre>lUndici.fetch('${this._internalUrl}test/undici-fetch1', {
+    'method': 'POST',
+    'headers': {
+        'content-type': 'application/json',
+    },
+    'body': JSON.stringify({ 'test': '123' }),
+});</pre>
+            headers: <pre>${JSON.stringify(Object.fromEntries(res.headers.entries()), null, 4)}</pre>
+            content: <pre>${await res.text()}</pre>`);
+        }
+        catch (e) {
+            echo.push(`error: <pre>${JSON.stringify(e)}</pre>`);
+        }
+
+        echo.push(`mproxy:`);
+
+        try {
+            const res = await lUndici.fetch(this._internalUrl + 'test/undici-fetch1', {
+                'method': 'POST',
+                'headers': {
+                    'content-type': 'application/json',
+                },
+                'body': JSON.stringify({ 'test': '456' }),
+                'mproxy': {
+                    'url': this._internalUrl + 'test/undici-mproxy1',
+                    'auth': '123456',
+                    'data': { 'test': '789' },
+                },
+            });
+            echo.push(`<pre>lUndici.fetch('${this._internalUrl}test/undici-fetch1', {
+    'method': 'POST',
+    'headers': {
+        'content-type': 'application/json',
+    },
+    'body': JSON.stringify({ 'test': '123' }),
+    'mproxy': {
+        'url': this._internalUrl + 'test/undici-mproxy1',
+        'auth': '123456',
+        'data': { 'test': '789' },
+    },
+});</pre>
+            headers: <pre>${JSON.stringify(Object.fromEntries(res.headers.entries()), null, 4)}</pre>
+            content: <pre>${await res.text()}</pre>`);
+        }
+        catch (e) {
+            echo.push(`error: <pre>${JSON.stringify(e)}</pre>`);
+        }
+
+        return echo.join('') + '<br>' + this._getEnd();
+    }
+
+    public undiciFetch1(): any[] {
+        return [1, {
+            'post': this._post,
+        }];
+    }
+
+    public async undiciGetResponseJson(): Promise<string> {
+        const echo = [];
+
+        const json = await lUndici.getResponseJson(this._internalUrl + 'test/undici-get-response-json1');
+        echo.push(`<pre>const json = await lUndici.getResponseJson('${this._internalUrl}test/undici-get-response-json1');</pre>
+result: <pre>${lText.htmlescape(JSON.stringify(json, null, 4))}</pre>`);
+
+        const json2 = await lUndici.getResponseJson(this._internalUrl + 'test/undici-get-response-json2');
+        echo.push(`<pre>const json2 = await lUndici.getResponseJson('${this._internalUrl}test/undici-get-response-json2');</pre>
+result: <pre>${lText.htmlescape(JSON.stringify(json2, null, 4))}</pre>`);
+
+        return echo.join('') + '<br>' + this._getEnd();
+    }
+
+    public undiciGetResponseJson1(): any[] {
+        return [1, {
+            'data': 'This is test data from undiciGetResponseJson1',
+            'timestamp': lTime.stamp()
+        }];
+    }
+
+    public undiciGetResponseJson2(): any[] {
+        return [1, {
+            'name': 'Kebab Framework',
+            'version': kebab.VER,
+            'features': ['GET request with JSON parsing', 'Automatic JSON parsing', 'Simple and clean API']
+        }];
+    }
+
+    /** --- 测试 ProxyAgent --- */
+    private readonly _undiciProxyAgent = lUndici.getProxyAgent('http://192.168.0.10:20809');
+
+    public async undiciProxy(): Promise<string> {
+        const echo = [];
+
+        const res = await lUndici.get('https://www.google.com/', { 'reuse': this._undiciProxyAgent });
+        echo.push(`<pre>lUndici.get('https://www.google.com/', { 'reuse': this._undiciProxyAgent });</pre>
+headers: <pre>${JSON.stringify(res.headers, null, 4)}</pre>
+content: <pre>${lText.htmlescape((await res.getContent())?.toString().slice(0, 500) ?? 'null')}</pre>
+error: ${JSON.stringify(res.error)}`);
+
+        return echo.join('') + '<br><br>' + this._getEnd();
+
     }
 
     public async scan(): Promise<kebab.Json> {

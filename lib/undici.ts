@@ -1,14 +1,8 @@
-/**
- * Project: Kebab, User: JianSuoQiYue
- * Date: 2019-5-15 22:47
- * CA: https://curl.haxx.se/ca/cacert.pem
- * Last: 2020-4-9 20:11:02, 2022-09-22 14:30:13, 2024-1-1 21:32:26, 2024-1-12 13:01:54, 2025-6-13 13:20:52
- */
+import * as undici from 'undici';
 import * as stream from 'stream';
 import * as http from 'http';
 import * as http2 from 'http2';
-// --- 第三方 ---
-import * as hc from '@litert/http-client';
+import * as dns from 'dns';
 // --- 库和定义 ---
 import * as kebab from '#kebab/index.js';
 import * as lFs from '#kebab/lib/fs.js';
@@ -17,20 +11,13 @@ import * as lCore from '#kebab/lib/core.js';
 import * as lCookie from '#kebab/lib/cookie.js';
 import * as sCtr from '#kebab/sys/ctr.js';
 // --- 自己 ---
-import * as lFd from './net/formdata.js';
-import * as lRequest from './net/request.js';
-import * as lResponse from './net/response.js';
+import * as lFd from './undici/formdata.js';
+import * as lRequest from './undici/request.js';
+import * as lResponse from './undici/response.js';
 
-/** --- ca 根证书内容 --- */
-let ca: string = '';
-
-/** --- 获取 CA 证书 --- */
-export async function getCa(): Promise<string> {
-    if (ca) {
-        return ca;
-    }
-    ca = (await lFs.getContent(kebab.LIB_PATH + 'net/cacert.pem', 'utf8')) ?? '';
-    return ca;
+/** --- 获取代理 agent --- */
+export function getProxyAgent(url: string): undici.ProxyAgent {
+    return new undici.ProxyAgent(url);
 }
 
 /** --- 获取 mproxy 的 URL --- */
@@ -48,10 +35,26 @@ function getMproxyUrl(u: string, mproxy: {
     });
 }
 
-/** --- 复用的 hc 对象列表 --- */
-const reuses: Record<string, hc.IClient> = {
-    'default': hc.createHttpClient(),
-};
+/** --- 复用的 undici.agent 对象列表 --- */
+const agents = new Map<string, undici.Agent>();
+
+/** --- 获取或创建 undici.agent 对象 --- */
+function getAgent(opt: IRequestOptions = {}): undici.Agent | undici.ProxyAgent {
+    const k = opt.reuse ?? 'default';
+    if (typeof k !== 'string') {
+        return k;
+    }
+    if (!agents.has(k)) {
+        agents.set(k, new undici.Agent({
+            'connect': {
+                'localAddress': opt.local,
+                lookup: buildDnsLookup(opt.hosts),
+            },
+            'pipelining': opt.keep === false ? 0 : 1,
+        }));
+    }
+    return agents.get(k)!;
+}
 
 /**
  * --- 创建一个请求对象 ---
@@ -298,6 +301,25 @@ export async function fetch(
     });
 }
 
+/** --- 构建自定义 DNS 查询函数 --- */
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+function buildDnsLookup(hosts?: Record<string, string> | string) {
+    if (!hosts) {
+        return undefined;
+    }
+    return (hostname: string, opts: dns.LookupOptions, cb: (
+        err: NodeJS.ErrnoException | null, address: string | dns.LookupAddress[], family?: number) => void
+    ) => {
+        const override = typeof hosts === 'string' ? hosts : hosts[hostname];
+        if (override) {
+            cb(null, [{ 'address': override, 'family': lText.isIPv4(override) ? 4 : 6 }]);
+        }
+        else {
+            dns.lookup(hostname, opts, cb);
+        }
+    };
+}
+
 /**
  * --- 发起一个请求 ---
  * @param opt 配置项
@@ -316,9 +338,6 @@ export async function request(
     /** --- 追踪 location 次数，0 为不追踪，默认为 0 --- */
     const follow = opt.follow ?? 0;
     const hosts = opt.hosts ?? {};
-    const save = opt.save;
-    const local = opt.local;
-    const reuse = opt.reuse ?? 'default';
     const headers: Record<string, kebab.Json> = {};
     if (opt.headers) {
         for (const key in opt.headers) {
@@ -352,16 +371,12 @@ export async function request(
         }
     }
     headers['accept-encoding'] = 'gzip, deflate';
-    // --- ssl ---
-    if (uri.protocol === 'https:') {
-        await getCa();
-    }
     // --- cookie 托管 ---
     if (opt.cookie) {
         headers['cookie'] = lCookie.buildCookieQuery(opt.cookie, uri);
     }
     // --- 发起请求 ---
-    let req: hc.IResponse;
+    let req: undici.Dispatcher.ResponseData;
     try {
         /** --- 定义请求 host --- */
         const hostname = (puri ? puri.hostname : uri.hostname) ?? '';
@@ -390,19 +405,14 @@ export async function request(
             }
             return res;
         }
-        reuses[reuse] ??= hc.createHttpClient();
-        req = await reuses[reuse].request({
-            'url': opt.mproxy ? getMproxyUrl(u, opt.mproxy) : u,
+        const agent = getAgent(opt);
+        req = await undici.request(opt.mproxy ? getMproxyUrl(u, opt.mproxy) : u, {
             'method': method,
-            'data': data,
+            'body': data,
             'headers': headers,
-            'timeout': timeout * 1_000,
-            'localAddress': local,
-            'ca': ca,
-            'connectionOptions': {
-                'remoteHost': typeof hosts === 'string' ? hosts : hosts[hostname],
-            },
-            'keepAlive': opt.keep,
+            'headersTimeout': timeout * 1_000,
+            'bodyTimeout': timeout * 1_000,
+            'dispatcher': agent,
         });
     }
     catch (err: kebab.Json) {
@@ -419,45 +429,39 @@ export async function request(
         // --- 提取 cookie ---
         await lCookie.buildCookieObject(opt.cookie, (req.headers['set-cookie'] ?? []) as string[], uri);
     }
+    // --- 创建 Response 对象 ---
+    const res = new lResponse.Response(req);
+    res.headers = req.headers as THttpHeaders;
+    res.headers['http-code'] = req.statusCode;
+    res.headers['http-url'] = u;
     // --- 直接下载到文件 ---
     /** --- 已下载文件的 size --- */
     let total: number = 0;
-    if (save && (!req.headers['location'] || follow === 0)) {
-        await new Promise<void>(function(resolve) {
-            const ws = lFs.createWriteStream(save);
-            req.getStream().on('error', () => {
-                resolve();
-            }).pipe(ws);
-            ws.on('finish', () => {
-                lFs.stats(save).then((stat) => {
-                    total = stat?.size ?? 0;
+    if (opt.save && (!req.headers['location'] || follow === 0)) {
+        const save = opt.save;
+        const stream = res.getStream();
+        if (stream) {
+            await new Promise<void>(resolve => {
+                const ws = lFs.createWriteStream(save);
+                stream.on('error', () => {
                     resolve();
-                }).catch(() => {
+                }).pipe(ws);
+                ws.on('finish', () => {
+                    lFs.stats(save).then((stat) => {
+                        total = stat?.size ?? 0;
+                        resolve();
+                    }).catch(() => {
+                        resolve();
+                    });
+                }).on('error', () => {
                     resolve();
                 });
-            }).on('error', () => {
-                resolve();
             });
-        });
+        }
     }
-    // --- 创建 Response 对象 ---
-    const res = new lResponse.Response(req);
     if (total) {
         res.setContent(total.toString());
     }
-    res.headers = req.headers as THttpHeaders;
-    switch (req.protocol) {
-        case hc.EProtocol.HTTPS_2:
-        case hc.EProtocol.HTTP_2: {
-            res.headers['http-version'] = '2.0';
-            break;
-        }
-        default: {
-            res.headers['http-version'] = '1.1';
-        }
-    }
-    res.headers['http-code'] = req.statusCode;
-    res.headers['http-url'] = u;
     // --- 判断 follow 追踪 ---
     if (follow === 0) {
         return res;
@@ -475,16 +479,15 @@ export async function request(
         nextData = undefined;
     }
     return request(lText.urlResolve(u, req.headers['location'] as string), nextData, {
-        'method': nextMethod,
-        'type': type,
-        'timeout': timeout,
-        'follow': follow - 1,
-        'hosts': hosts,
-        'save': save,
-        'local': local,
-        'headers': headers,
-        'mproxy': opt.mproxy,
-        'reuse': reuse
+        ...opt,
+        ...{
+            'method': nextMethod,
+            'type': type,
+            'timeout': timeout,
+            'follow': follow - 1,
+            'hosts': hosts,
+            'headers': headers,
+        },
     });
 }
 
@@ -497,7 +500,7 @@ export function getFormData(): lFd.FormData {
 
 /** --- proxy 要剔除的基础头部 --- */
 const proxyContinueHeaders = [
-    'host', 'connection', 'http-version', 'http-code', 'http-url',
+    'host', 'connection', 'http-code', 'http-url',
     'transfer-encoding'
 ];
 
@@ -688,8 +691,8 @@ export interface IRequestOptions {
     };
     /** --- 连接是否保持长连接（即是否允许复用），默认为 true --- */
     'keep'?: boolean;
-    /** --- 复用池名，默认为 default --- */
-    'reuse'?: string;
+    /** --- 复用池名/Agent，默认为 default --- */
+    'reuse'?: string | undici.ProxyAgent | undici.Agent;
     /** --- cookie 托管对象 --- */
     'cookie'?: Record<string, lCookie.ICookie>;
     /** --- 若有异常写入文件日志，默认为 true --- */
@@ -708,7 +711,7 @@ export interface IMproxyOptions {
     /** --- 过滤 header，返回 true 则留下 --- */
     filter?: (h: string) => boolean;
     /** --- 默认为 default --- */
-    'reuse'?: string;
+    'reuse'?: string | undici.ProxyAgent | undici.Agent;
 }
 
 /** --- 反向代理请求的传入参数选项 --- */
@@ -731,13 +734,12 @@ export interface IRproxyOptions {
         'hosts'?: Record<string, string> | string;
     };
     /** --- 默认为 default --- */
-    'reuse'?: string;
+    'reuse'?: string | undici.ProxyAgent | undici.Agent;
 }
 
 /** --- http headers --- */
 /* eslint-disable @typescript-eslint/naming-convention */
 export type THttpHeaders = http.IncomingHttpHeaders & {
-    'http-version'?: '1.1' | '2.0';
     'http-code'?: number;
     'http-url'?: string;
 };

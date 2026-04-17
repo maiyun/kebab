@@ -15,7 +15,8 @@ import * as lFs from '#kebab/lib/fs.js';
 import * as lZlib from '#kebab/lib/zlib.js';
 import * as lCore from '#kebab/lib/core.js';
 import * as lText from '#kebab/lib/text.js';
-import * as lResponse from '#kebab/lib/net/response.js';
+import * as lNetResponse from '#kebab/lib/net/response.js';
+import * as lUndiciResponse from '#kebab/lib/undici/response.js';
 import * as lWs from '#kebab/lib/ws.js';
 import * as lLang from '#kebab/lib/lang.js';
 import * as sCtr from './ctr.js';
@@ -650,7 +651,11 @@ export async function run(data: {
             }
         }
     }
-    else if (rtn instanceof stream.Readable || rtn instanceof lResponse.Response) {
+    else if (
+        rtn instanceof stream.Readable ||
+        rtn instanceof lNetResponse.Response ||
+        rtn instanceof lUndiciResponse.Response
+    ) {
         // --- 返回的是流，那就以管道的形式输出 ---
         const stm = rtn instanceof stream.Readable ? rtn : rtn.getStream();
         if (!stm) {

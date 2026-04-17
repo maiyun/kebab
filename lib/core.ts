@@ -15,9 +15,10 @@ import * as kebab from '#kebab/index.js';
 import * as lTime from '#kebab/lib/time.js';
 import * as lFs from '#kebab/lib/fs.js';
 import * as lText from '#kebab/lib/text.js';
-import * as lNet from '#kebab/lib/net.js';
+import * as lUndici from '#kebab/lib/undici.js';
 import * as lCrypto from '#kebab/lib/crypto.js';
-import * as lResponse from '#kebab/lib/net/response.js';
+import * as lNetResponse from '#kebab/lib/net/response.js';
+import * as lUndiciResponse from '#kebab/lib/undici/response.js';
 import * as sCtr from '#kebab/sys/ctr.js';
 
 /** --- 全局参数 --- */
@@ -456,11 +457,15 @@ export function emptyObject(obj: Record<string, any>, deep: boolean = false): vo
  */
 export async function passThroughAppend(
     passThrough: stream.PassThrough,
-    data: Array<stream.Readable | lResponse.Response | string | Buffer>,
+    data: Array<stream.Readable | lNetResponse.Response | lUndiciResponse.Response | string | Buffer>,
     end: boolean = true
 ): Promise<void> {
     for (const item of data) {
-        if (item instanceof stream.Readable || item instanceof lResponse.Response) {
+        if (
+            item instanceof stream.Readable ||
+            item instanceof lNetResponse.Response ||
+            item instanceof lUndiciResponse.Response
+        ) {
             const stm = item instanceof stream.Readable ? item : item.getStream();
             if (!stm) {
                 continue;
@@ -531,7 +536,7 @@ export async function sendReload(hosts?: string[] | 'config'): Promise<string[]>
     /** --- 返回成功的 host --- */
     const rtn: string[] = [];
     for (const host of hosts) {
-        const res = await lNet.get('http://' + host + ':' + globalConfig.rpcPort.toString() + '/' + lCrypto.aesEncrypt(lText.stringifyJson({
+        const res = await lUndici.get('http://' + host + ':' + globalConfig.rpcPort.toString() + '/' + lCrypto.aesEncrypt(lText.stringifyJson({
             'action': 'reload',
             'time': time
         }), globalConfig.rpcSecret), {
@@ -571,7 +576,7 @@ export async function sendRestart(hosts?: string[] | 'config'): Promise<string[]
     /** --- 返回成功的 host --- */
     const rtn: string[] = [];
     for (const host of hosts) {
-        const res = await lNet.get('http://' + host + ':' + globalConfig.rpcPort.toString() + '/' + lCrypto.aesEncrypt(lText.stringifyJson({
+        const res = await lUndici.get('http://' + host + ':' + globalConfig.rpcPort.toString() + '/' + lCrypto.aesEncrypt(lText.stringifyJson({
             'action': 'restart',
             'time': time
         }), globalConfig.rpcSecret), {
@@ -610,7 +615,7 @@ export async function sendPm2(
     /** --- 返回成功的 host --- */
     const rtn: string[] = [];
     for (const host of hosts) {
-        const res = await lNet.get('http://' + host + ':' + globalConfig.rpcPort.toString() + '/' + lCrypto.aesEncrypt(lText.stringifyJson({
+        const res = await lUndici.get('http://' + host + ':' + globalConfig.rpcPort.toString() + '/' + lCrypto.aesEncrypt(lText.stringifyJson({
             'action': 'pm2',
             'time': time,
             'name': name,
@@ -650,7 +655,7 @@ export async function sendNpm(
     /** --- 返回成功的 host --- */
     const rtn: string[] = [];
     for (const host of hosts) {
-        const res = await lNet.get('http://' + host + ':' + globalConfig.rpcPort.toString() + '/' + lCrypto.aesEncrypt(lText.stringifyJson({
+        const res = await lUndici.get('http://' + host + ':' + globalConfig.rpcPort.toString() + '/' + lCrypto.aesEncrypt(lText.stringifyJson({
             'action': 'npm',
             'time': time,
             'path': path
@@ -699,7 +704,7 @@ export async function setGlobal(key: string, data: any, hosts?: string[] | 'conf
     /** --- 返回成功的 host --- */
     const rtn: string[] = [];
     for (const host of hosts) {
-        const res = await lNet.get('http://' + host + ':' + globalConfig.rpcPort.toString() + '/' + lCrypto.aesEncrypt(lText.stringifyJson({
+        const res = await lUndici.get('http://' + host + ':' + globalConfig.rpcPort.toString() + '/' + lCrypto.aesEncrypt(lText.stringifyJson({
             'action': 'global',
             'time': time
         }), globalConfig.rpcSecret), {
@@ -751,14 +756,14 @@ export async function updateCode(
         'return': string;
     }> = {};
     for (const host of hosts) {
-        const fd = lNet.getFormData();
+        const fd = lUndici.getFormData();
         if (!await fd.putFile('file', sourcePath)) {
             continue;
         }
         fd.putString('path', path);
         fd.putString('config', config ? '1' : '0');
         fd.putString('strict', strict ? '1' : '0');
-        const res = await lNet.post('http://' + host + ':' + globalConfig.rpcPort.toString() + '/' + lCrypto.aesEncrypt(lText.stringifyJson({
+        const res = await lUndici.post('http://' + host + ':' + globalConfig.rpcPort.toString() + '/' + lCrypto.aesEncrypt(lText.stringifyJson({
             'action': 'code',
             'time': lTime.stamp()
         }), globalConfig.rpcSecret), fd, {
@@ -926,7 +931,7 @@ export async function getLog(opt: {
     opt.host ??= '127.0.0.1';
     // --- 局域网模式 ---
     const time = lTime.stamp();
-    const res = await lNet.get('http://' + opt.host + ':' + globalConfig.rpcPort.toString() + '/' + lCrypto.aesEncrypt(lText.stringifyJson({
+    const res = await lUndici.get('http://' + opt.host + ':' + globalConfig.rpcPort.toString() + '/' + lCrypto.aesEncrypt(lText.stringifyJson({
         'action': 'log',
         'time': time,
         'hostname': opt.hostname,
@@ -974,7 +979,7 @@ export async function ls(opt: {
     opt.host ??= '127.0.0.1';
     // --- 局域网模式 ---
     const time = lTime.stamp();
-    const res = await lNet.get('http://' + opt.host + ':' + globalConfig.rpcPort.toString() + '/' + lCrypto.aesEncrypt(lText.stringifyJson({
+    const res = await lUndici.get('http://' + opt.host + ':' + globalConfig.rpcPort.toString() + '/' + lCrypto.aesEncrypt(lText.stringifyJson({
         'action': 'ls',
         'time': time,
         'path': opt.path,

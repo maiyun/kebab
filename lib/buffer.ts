@@ -1,3 +1,5 @@
+import * as streamConsumers from 'stream/consumers';
+
 /** --- 读对象 --- */
 export class Reader {
 
@@ -150,4 +152,17 @@ export function getReader(buffer: Buffer): Reader {
  */
 export function getWriter(size: number): Writer {
     return new Writer(size);
+}
+
+/**
+ * --- 从可读流中获取完整的 Buffer ---
+ * @param stream 可读流对象
+ */
+export async function getFull(stream: NodeJS.ReadableStream): Promise<Buffer | null> {
+    try {
+        return await streamConsumers.buffer(stream);
+    }
+    catch {
+        return null;
+    }
 }

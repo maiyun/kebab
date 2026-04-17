@@ -6,7 +6,7 @@
 import * as tc from 'tencentcloud-sdk-nodejs';
 
 // --- 库和定义 ---
-import * as lNet from '#kebab/lib/net.js';
+import * as lUndici from '#kebab/lib/undici.js';
 import * as lText from '#kebab/lib/text.js';
 import * as sCtr from '#kebab/sys/ctr.js';
 
@@ -30,7 +30,7 @@ export async function verify(ctr: sCtr.Ctr, opt: {
     switch (opt.factory) {
         case EFACTORY.CLOUDFLARE: {
             // --- CloudFlare 验证 ---
-            const res = await lNet.postJson('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+            const res = await lUndici.postJson('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
                 'secret': config.turnstile['CF'].skey,
                 'response': opt.token,
                 'remoteip': opt.ip,
