@@ -560,21 +560,30 @@ function startFileWatcher(): void {
      * --- 监听指定目录的文件变化 ---
      * @param dir 要监听的目录路径
      */
-    const watchDir = (dir: string): void => {
+    const watchDir = async (dir: string): Promise<void> => {
+        if (!await lFs.isDir(dir)) {
+            return;
+        }
         try {
-            fs.watch(dir, { 'recursive': true }, (eventType, filename) => {
+            const watcher = fs.watch(dir, { 'recursive': true }, (eventType, filename) => {
                 if (!filename) {
                     return;
                 }
+                const formatName = filename.replace(/\\/g, '/');
                 // --- 仅关注 .js 文件和 .json 配置文件的变更 ---
                 if (
-                    !filename.endsWith('.js') &&
-                    !filename.endsWith('.json')
+                    !formatName.endsWith('.js') &&
+                    !formatName.endsWith('.json')
                 ) {
                     return;
                 }
-                // --- 忽略日志目录和临时目录 ---
-                if (filename.includes('log/') || filename.includes('ftmp/') || filename.includes('node_modules/')) {
+                // --- 忽略日志目录、临时目录、git 目录和 node_modules ---
+                if (
+                    formatName.includes('log/') ||
+                    formatName.includes('ftmp/') ||
+                    formatName.includes('node_modules/') ||
+                    formatName.includes('.git/')
+                ) {
                     return;
                 }
                 // --- 防抖：500ms 内多次变化只触发一次 ---
@@ -587,7 +596,7 @@ function startFileWatcher(): void {
                         return;
                     }
                     restarting = true;
-                    lCore.display(`[HMR] File changed: ${filename}, reloading workers...`);
+                    lCore.display(`[HMR] File changed: ${formatName}, reloading workers...`);
                     (async () => {
                         // --- 为所有子进程发送 stop 信息并重启 ---
                         for (const pid in workerList) {
@@ -605,21 +614,24 @@ function startFileWatcher(): void {
                     });
                 }, 500);
             });
+            watcher.on('error', (err) => {
+                lCore.display(`[HMR] Watcher error on ${dir}:`, err);
+            });
             lCore.display(`[HMR] Watching directory: ${dir}`);
         }
-        catch {
-            lCore.display(`[HMR] Cannot watch directory: ${dir}`);
+        catch (err) {
+            lCore.display(`[HMR] Cannot watch directory: ${dir}`, err);
         }
     };
 
     // --- 监听 www/ 目录（用户项目代码）---
-    watchDir(kebab.WWW_CWD);
+    watchDir(kebab.WWW_CWD).catch(() => {});
     // --- 监听 ind/ 目录（独立任务代码）---
-    watchDir(kebab.IND_CWD);
+    watchDir(kebab.IND_CWD).catch(() => {});
     // --- 监听 lib/ 目录（用户自定义库）---
-    watchDir(kebab.LIB_CWD);
+    watchDir(kebab.LIB_CWD).catch(() => {});
     // --- 监听 mod/ 目录（用户模型）---
-    watchDir(kebab.MOD_CWD);
+    watchDir(kebab.MOD_CWD).catch(() => {});
 }
 
 run().catch(function(e): void {
