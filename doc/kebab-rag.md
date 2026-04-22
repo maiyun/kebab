@@ -1360,7 +1360,7 @@ index/variables/VER.md
 
 # Variable: VER
 
-> `const` **VER**: `"9.2.1"` = `'9.2.1'`
+> `const` **VER**: `"9.2.2"` = `'9.2.2'`
 
 Defined in: [index.ts:10](https://github.com/maiyunnet/kebab/blob/master/index.ts#L10)
 
@@ -10514,7 +10514,7 @@ Defined in: [lib/net/formdata.ts:37](https://github.com/maiyunnet/kebab/blob/mas
 
 > **new FormData**(`options?`): `FormData`
 
-Defined in: node\_modules/@types/node/stream.d.ts:99
+Defined in: node\_modules/@types/node/stream.d.ts:80
 
 #### Parameters
 
@@ -15691,6 +15691,72 @@ lib/ssh/shell/index.md
 
 - [Connection](classes/Connection.md)
 
+lib/text/functions/getFileExt.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../index.md) / [lib/text](../index.md) / getFileExt
+
+# Function: getFileExt()
+
+> **getFileExt**(`path`): `string`
+
+Defined in: [lib/text.ts:527](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L527)
+
+获取文件后缀
+
+## Parameters
+
+### path
+
+`string`
+
+文件路径
+
+## Returns
+
+`string`
+
+lib/text/functions/getFileNameExt.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../index.md) / [lib/text](../index.md) / getFileNameExt
+
+# Function: getFileNameExt()
+
+> **getFileNameExt**(`path`): `object`
+
+Defined in: [lib/text.ts:540](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L540)
+
+获取文件名和后缀
+
+## Parameters
+
+### path
+
+`string`
+
+文件路径
+
+## Returns
+
+`object`
+
+### ext
+
+> **ext**: `string`
+
+### name
+
+> **name**: `string`
+
 lib/text/functions/getFilename.md
 ---
 
@@ -15702,9 +15768,9 @@ lib/text/functions/getFilename.md
 
 # Function: getFilename()
 
-> **getFilename**(`path`): `string`
+> **getFilename**(`path`, `ext?`): `string`
 
-Defined in: [lib/text.ts:506](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L506)
+Defined in: [lib/text.ts:507](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L507)
 
 获取文件名
 
@@ -15715,6 +15781,12 @@ Defined in: [lib/text.ts:506](https://github.com/maiyunnet/kebab/blob/master/lib
 `string`
 
 文件路径
+
+### ext?
+
+`boolean` = `true`
+
+是否包含后缀，默认包含
 
 ## Returns
 
@@ -15762,7 +15834,7 @@ lib/text/functions/int2str.md
 
 > **int2str**(`int`, `digits?`, `decimal?`): `string`
 
-Defined in: [lib/text.ts:697](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L697)
+Defined in: [lib/text.ts:740](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L740)
 
 为解决精度问题，将整数转换为小数字符串
 以下几个示例都是当 digits 为 3、decimal 为 2 时
@@ -15895,7 +15967,7 @@ lib/text/functions/isFalsy.md
 
 > **isFalsy**(`val`): `val is TFalsy`
 
-Defined in: [lib/text.ts:648](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L648)
+Defined in: [lib/text.ts:691](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L691)
 
 判断一个值是否是虚假的（为 null/undefined/空字符串/false/0）
 
@@ -16065,7 +16137,7 @@ lib/text/functions/isTruthy.md
 
 > **isTruthy**\<`T`\>(`val`): `val is Exclude<T, TFalsy>`
 
-Defined in: [lib/text.ts:656](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L656)
+Defined in: [lib/text.ts:699](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L699)
 
 判断一个值是否是真实的（不为 null/undefined/空字符串/false/0）
 
@@ -16100,7 +16172,7 @@ lib/text/functions/logicalOr.md
 
 > **logicalOr**\<`T`, `T2`\>(`v1`, `v2`): `T` *extends* [`TFalsy`](../type-aliases/TFalsy.md) ? `T2` : `T`
 
-Defined in: [lib/text.ts:665](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L665)
+Defined in: [lib/text.ts:708](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L708)
 
 类似 || 运算符的效果
 
@@ -16285,7 +16357,7 @@ lib/text/functions/parseJson.md
 
 > **parseJson**\<`T`\>(`str`): `false` \| `T`
 
-Defined in: [lib/text.ts:559](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L559)
+Defined in: [lib/text.ts:602](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L602)
 
 将字符串解析为对象，返回 false 代表解析失败，支持 BigInt
 
@@ -16484,7 +16556,7 @@ lib/text/functions/str2int.md
 
 > **str2int**(`str`, `digits?`): `number`
 
-Defined in: [lib/text.ts:679](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L679)
+Defined in: [lib/text.ts:722](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L722)
 
 为解决精度问题，将字符串数字转换为整数显示
 以下几个示例都是当 digits 为 2 时
@@ -16524,7 +16596,7 @@ lib/text/functions/stringifyBuffer.md
 
 > **stringifyBuffer**(`buf`): `string`
 
-Defined in: [lib/text.ts:602](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L602)
+Defined in: [lib/text.ts:645](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L645)
 
 输出文本格式的 buffer
 
@@ -16553,7 +16625,7 @@ lib/text/functions/stringifyJson.md
 
 > **stringifyJson**(`obj`, `space?`): `string`
 
-Defined in: [lib/text.ts:589](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L589)
+Defined in: [lib/text.ts:632](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L632)
 
 将对象转换为 json 字符串，返回 false 代表解析失败，支持 BigInt
 
@@ -16588,7 +16660,7 @@ lib/text/functions/stringifyResult.md
 
 > **stringifyResult**(`rtn`): `string`
 
-Defined in: [lib/text.ts:519](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L519)
+Defined in: [lib/text.ts:562](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L562)
 
 将普通的返回 JSON 对象序列化为字符串
 
@@ -16617,7 +16689,7 @@ lib/text/functions/trimJson.md
 
 > **trimJson**(`json`): `any`
 
-Defined in: [lib/text.ts:610](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L610)
+Defined in: [lib/text.ts:653](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L653)
 
 递归删除 json 中的字符串首尾空格，会返回一个新的对象
 
@@ -16724,7 +16796,9 @@ lib/text/index.md
 
 ## Functions
 
+- [getFileExt](functions/getFileExt.md)
 - [getFilename](functions/getFilename.md)
+- [getFileNameExt](functions/getFileNameExt.md)
 - [htmlescape](functions/htmlescape.md)
 - [int2str](functions/int2str.md)
 - [isAscii](functions/isAscii.md)
@@ -16815,7 +16889,7 @@ lib/text/type-aliases/TFalsy.md
 
 > **TFalsy** = `false` \| `""` \| `0` \| `null` \| `undefined` \| *typeof* `NaN`
 
-Defined in: [lib/text.ts:642](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L642)
+Defined in: [lib/text.ts:685](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L685)
 
 虚假值类型
 
@@ -17389,7 +17463,7 @@ Defined in: [lib/undici/formdata.ts:37](https://github.com/maiyunnet/kebab/blob/
 
 > **new FormData**(`options?`): `FormData`
 
-Defined in: node\_modules/@types/node/stream.d.ts:99
+Defined in: node\_modules/@types/node/stream.d.ts:80
 
 #### Parameters
 

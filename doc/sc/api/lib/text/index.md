@@ -24,7 +24,9 @@
 
 ## Functions
 
+- [getFileExt](functions/getFileExt.md)
 - [getFilename](functions/getFilename.md)
+- [getFileNameExt](functions/getFileNameExt.md)
 - [htmlescape](functions/htmlescape.md)
 - [int2str](functions/int2str.md)
 - [isAscii](functions/isAscii.md)

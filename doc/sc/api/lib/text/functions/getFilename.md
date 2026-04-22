@@ -6,9 +6,9 @@
 
 # Function: getFilename()
 
-> **getFilename**(`path`): `string`
+> **getFilename**(`path`, `ext?`): `string`
 
-Defined in: [lib/text.ts:506](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L506)
+Defined in: [lib/text.ts:507](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L507)
 
 获取文件名
 
@@ -19,6 +19,12 @@ Defined in: [lib/text.ts:506](https://github.com/maiyunnet/kebab/blob/master/lib
 `string`
 
 文件路径
+
+### ext?
+
+`boolean` = `true`
+
+是否包含后缀，默认包含
 
 ## Returns
 

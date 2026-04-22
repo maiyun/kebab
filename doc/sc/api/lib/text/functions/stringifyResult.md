@@ -8,7 +8,7 @@
 
 > **stringifyResult**(`rtn`): `string`
 
-Defined in: [lib/text.ts:519](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L519)
+Defined in: [lib/text.ts:562](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L562)
 
 将普通的返回 JSON 对象序列化为字符串
 
