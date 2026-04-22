@@ -502,14 +502,57 @@ export function isRealPath(path: string): boolean {
 /**
  * --- 获取文件名 ---
  * @param path 文件路径
+ * @param ext 是否包含后缀，默认包含
  */
-export function getFilename(path: string): string {
+export function getFilename(path: string, ext: boolean = true): string {
     path = path.replace(/\\/g, '/');
     const lio = path.lastIndexOf('/');
-    if (lio === -1) {
+    if (lio !== -1) {
+        path = path.slice(lio + 1);
+    }
+    if (ext) {
         return path;
     }
-    return path.slice(lio + 1);
+    const dot = path.lastIndexOf('.');
+    if (dot === -1) {
+        return path;
+    }
+    return path.slice(0, dot);
+}
+
+/**
+ * --- 获取文件后缀 ---
+ * @param path 文件路径
+ */
+export function getFileExt(path: string): string {
+    const filename = getFilename(path);
+    const dot = filename.lastIndexOf('.');
+    if (dot === -1) {
+        return '';
+    }
+    return filename.slice(dot + 1).toLowerCase();
+}
+
+/**
+ * --- 获取文件名和后缀 ---
+ * @param path 文件路径
+ */
+export function getFileNameExt(path: string): {
+    name: string;
+    ext: string;
+} {
+    const filename = getFilename(path);
+    const dot = filename.lastIndexOf('.');
+    if (dot === -1) {
+        return {
+            'name': filename,
+            'ext': ''
+        };
+    }
+    return {
+        'name': filename.slice(0, dot),
+        'ext': filename.slice(dot + 1).toLowerCase()
+    };
 }
 
 /**
