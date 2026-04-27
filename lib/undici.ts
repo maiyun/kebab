@@ -556,7 +556,7 @@ export async function mproxy(
     /** --- 客户端请求中的 get 的数据 --- */
     const get = ctr.getPrototype('_get');
     if (req.readableEnded) {
-        return -3;
+        return -4;
     }
     if (get['auth'] !== auth) {
         return 0;
