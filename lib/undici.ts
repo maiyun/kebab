@@ -7,6 +7,7 @@ import * as dns from 'dns';
 import * as kebab from '#kebab/index.js';
 import * as lFs from '#kebab/lib/fs.js';
 import * as lText from '#kebab/lib/text.js';
+import * as lCrypto from '#kebab/lib/crypto.js';
 import * as lCore from '#kebab/lib/core.js';
 import * as lCookie from '#kebab/lib/cookie.js';
 import * as sCtr from '#kebab/sys/ctr.js';
@@ -40,9 +41,25 @@ const agents = new Map<string, undici.Agent>();
 
 /** --- 获取或创建 undici.agent 对象 --- */
 function getAgent(opt: IRequestOptions = {}): undici.Agent | undici.ProxyAgent {
-    const k = opt.reuse ?? 'default';
+    let k = opt.reuse ?? 'default';
     if (typeof k !== 'string') {
         return k;
+    }
+    if (k === 'default') {
+        // --- hosts/local/keep 均会影响 agent 行为，需生成独立的 key ---
+        const features: string[] = [];
+        if (opt.hosts) {
+            features.push(`h:${lCrypto.hashHmac('md5', lText.stringifyJson(opt.hosts))}`);
+        }
+        if (opt.local) {
+            features.push(`l:${opt.local}`);
+        }
+        if (opt.keep === false) {
+            features.push('k:0');
+        }
+        if (features.length > 0) {
+            k = features.join('|');
+        }
     }
     if (!agents.has(k)) {
         agents.set(k, new undici.Agent({
