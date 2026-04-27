@@ -387,7 +387,7 @@ export async function request(
                 'message': 'hostname not found',
             };
             if (opt.log === undefined || opt.log) {
-                lCore.log({}, `[NET][REQUEST] ${res.error.message}`, '-neterror');
+                lCore.log({}, `[UNDICI][REQUEST] ${res.error.message}`, '-neterror');
             }
             return res;
         }
@@ -401,7 +401,7 @@ export async function request(
                 'message': 'hosts param error',
             };
             if (opt.log === undefined || opt.log) {
-                lCore.log({}, `[NET][REQUEST] ${res.error.message}`, '-neterror');
+                lCore.log({}, `[UNDICI][REQUEST] ${res.error.message}`, '-neterror');
             }
             return res;
         }
@@ -419,7 +419,7 @@ export async function request(
         const res = new lResponse.Response(null);
         res.error = err;
         if (opt.log === undefined || opt.log) {
-            lCore.log({}, `[NET][REQUEST] ${err.message}`, '-neterror');
+            lCore.log({}, `[UNDICI][REQUEST] ${err.message}`, '-neterror');
         }
         return res;
     }
@@ -573,10 +573,11 @@ export async function mproxy(
     const rres = await request(get['url'], req, {
         ...opt,
         'hosts': lText.logicalOr(hosts, opt.hosts),
-        headers
+        headers,
     });
     const stream = rres.getRawStream();
     if (!stream) {
+        lCore.log({}, `[UNDICI][MPROXY] ${rres.error?.message ?? 'null'}, ${get['url']}`, '-neterror');
         return -3;
     }
     if (rres.error) {

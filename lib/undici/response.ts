@@ -122,12 +122,7 @@ export class Response {
      */
     // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
     public getRawStream() {
-        try {
-            return this._req ? this._req.body : null;
-        }
-        catch {
-            return null;
-        }
+        return this._req ? this._req.body : null;
     }
 
 }
