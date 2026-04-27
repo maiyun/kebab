@@ -8,7 +8,7 @@
 
 > **mproxyData**(`ctr`): `any`
 
-Defined in: [lib/undici.ts:601](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L601)
+Defined in: [lib/undici.ts:602](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L602)
 
 获取 mproxy 的附加数据
 
