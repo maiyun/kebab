@@ -8,7 +8,7 @@
 
 > **open**(`u`): [`Request`](../request/classes/Request.md)
 
-Defined in: [lib/undici.ts:63](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L63)
+Defined in: [lib/undici.ts:80](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L80)
 
 创建一个请求对象
 

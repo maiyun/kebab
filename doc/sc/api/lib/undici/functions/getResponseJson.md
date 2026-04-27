@@ -8,7 +8,7 @@
 
 > **getResponseJson**(`u`, `opt?`): `Promise`\<`any`\>
 
-Defined in: [lib/undici.ts:137](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L137)
+Defined in: [lib/undici.ts:154](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L154)
 
 发起 GET 请求并解析 JSON 响应
 
