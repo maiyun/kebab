@@ -489,6 +489,18 @@ async function run(): Promise<void> {
             }
             // --- JS 构建：整站一次构建，splitting 按实际共享情况自动提取 chunk ---
             // --- outbase = outdir = stcRoot，入口保留子目录结构，chunk 落在 stcRoot 根 ---
+            // --- 构建前清除旧 chunk，避免 hash 变化后废弃文件堆积 ---
+            try {
+                const staleChunks = await lFs.readDir(stcRoot);
+                for (const item of staleChunks) {
+                    if (!item.isDirectory() && /^chunk-[A-Z0-9]+\.js$/.test(item.name)) {
+                        await lFs.unlink(`${stcRoot}/${item.name}`);
+                    }
+                }
+            }
+            catch {
+                // --- 目录不可读时跳过 ---
+            }
             try {
                 await esbuild.build({
                     'entryPoints': tempFiles,
