@@ -1,7 +1,7 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2019-5-2 21:03:42
- * Last: 2020-3-7 10:33:17, 2022-07-22 13:40:10, 2022-09-06 22:40:58, 2024-2-7 01:44:59, 2024-7-2 15:17:09, 2025-6-13 13:06:43, 2025-12-5 13:15:03, 2026-3-22 00:00:00
+ * Last: 2020-3-7 10:33:17, 2022-07-22 13:40:10, 2022-09-06 22:40:58, 2024-2-7 01:44:59, 2024-7-2 15:17:09, 2025-6-13 13:06:43, 2025-12-5 13:15:03, 2026-3-22 00:00:00, 2026-4-30 13:49:44
  */
 import cluster from 'cluster';
 import * as os from 'os';
@@ -555,73 +555,103 @@ function startFileWatcher(): void {
     let debounceTimer: NodeJS.Timeout | null = null;
     /** --- 是否正在重启中 --- */
     let restarting = false;
+    /**
+     * --- 不需要监听的目录名集合，在 Linux 上 fs.watch recursive 会为每个子目录注册 inotify ---
+     * --- 这些目录若被监听会大量消耗系统 file watcher 配额（ENOSPC），必须跳过 ---
+     */
+    const SKIP_DIRS = new Set(['.git', '.svn', '.hg', 'node_modules', 'log', 'ftmp']);
+
+    /** --- 触发 worker 重载 --- */
+    const triggerReload = (formatName: string): void => {
+        if (debounceTimer) {
+            clearTimeout(debounceTimer);
+        }
+        // --- 防抖：500ms 内多次变化只触发一次 ---
+        debounceTimer = setTimeout(() => {
+            debounceTimer = null;
+            if (restarting) {
+                return;
+            }
+            restarting = true;
+            lCore.display(`[HMR] File changed: ${formatName}, reloading workers...`);
+            (async () => {
+                // --- 为所有子进程发送 stop 信息并重启 ---
+                for (const pid in workerList) {
+                    workerList[pid].worker.send({
+                        'action': 'stop'
+                    });
+                    await createChildProcess(workerList[pid].cpu);
+                    delete workerList[pid];
+                }
+                restarting = false;
+                lCore.display('[HMR] All workers reloaded.');
+            })().catch((e) => {
+                restarting = false;
+                lCore.display('[HMR] Reload error:', e);
+            });
+        }, 500);
+    };
 
     /**
-     * --- 监听指定目录的文件变化 ---
-     * @param dir 要监听的目录路径
+     * --- 递归收集指定根目录下所有需要监听的子目录（跳过 SKIP_DIRS 和隐藏目录）---
+     * @param dir 当前目录路径
+     * @param result 收集结果数组
+     */
+    const collectDirs = async (dir: string, result: string[]): Promise<void> => {
+        let entries: fs.Dirent[];
+        try {
+            entries = await fs.promises.readdir(dir, { 'withFileTypes': true });
+        }
+        catch {
+            return;
+        }
+        for (const entry of entries) {
+            if (!entry.isDirectory()) {
+                continue;
+            }
+            // --- 跳过隐藏目录（以 . 开头）及无需监听的目录 ---
+            if (entry.name.startsWith('.') || SKIP_DIRS.has(entry.name)) {
+                continue;
+            }
+            const subDir = `${dir}/${entry.name}`;
+            result.push(subDir);
+            await collectDirs(subDir, result);
+        }
+    };
+
+    /**
+     * --- 监听指定目录下所有需要监听的目录（非递归逐个注册，避免 OS 级别监听到 .git 等目录）---
+     * @param dir 要监听的根目录路径
      */
     const watchDir = async (dir: string): Promise<void> => {
         if (!await lFs.isDir(dir)) {
             return;
         }
-        try {
-            const watcher = fs.watch(dir, { 'recursive': true }, (eventType, filename) => {
-                if (!filename) {
-                    return;
-                }
-                const formatName = filename.replace(/\\/g, '/');
-                // --- 仅关注 .js 文件和 .json 配置文件的变更 ---
-                if (
-                    !formatName.endsWith('.js') &&
-                    !formatName.endsWith('.json')
-                ) {
-                    return;
-                }
-                // --- 忽略日志目录、临时目录、git 目录和 node_modules ---
-                if (
-                    formatName.includes('log/') ||
-                    formatName.includes('ftmp/') ||
-                    formatName.includes('node_modules/') ||
-                    formatName.includes('.git/')
-                ) {
-                    return;
-                }
-                // --- 防抖：500ms 内多次变化只触发一次 ---
-                if (debounceTimer) {
-                    clearTimeout(debounceTimer);
-                }
-                debounceTimer = setTimeout(() => {
-                    debounceTimer = null;
-                    if (restarting) {
+        // --- 收集所有需要监听的目录（含根目录本身）---
+        const dirs = [dir];
+        await collectDirs(dir, dirs);
+        for (const d of dirs) {
+            try {
+                const watcher = fs.watch(d, (eventType, filename) => {
+                    if (!filename) {
                         return;
                     }
-                    restarting = true;
-                    lCore.display(`[HMR] File changed: ${formatName}, reloading workers...`);
-                    (async () => {
-                        // --- 为所有子进程发送 stop 信息并重启 ---
-                        for (const pid in workerList) {
-                            workerList[pid].worker.send({
-                                'action': 'stop'
-                            });
-                            await createChildProcess(workerList[pid].cpu);
-                            delete workerList[pid];
-                        }
-                        restarting = false;
-                        lCore.display('[HMR] All workers reloaded.');
-                    })().catch((e) => {
-                        restarting = false;
-                        lCore.display('[HMR] Reload error:', e);
-                    });
-                }, 500);
-            });
-            watcher.on('error', (err) => {
-                lCore.display(`[HMR] Watcher error on ${dir}:`, err);
-            });
-            lCore.display(`[HMR] Watching directory: ${dir}`);
+                    const formatName = filename.replace(/\\/g, '/');
+                    // --- 仅关注 .js 文件和 .json 配置文件的变更 ---
+                    if (!formatName.endsWith('.js') && !formatName.endsWith('.json')) {
+                        return;
+                    }
+                    triggerReload(formatName);
+                });
+                watcher.on('error', (err) => {
+                    lCore.display(`[HMR] Watcher error on ${d}:`, err);
+                });
+            }
+            catch (err) {
+                lCore.display(`[HMR] Cannot watch directory: ${d}`, err);
+            }
         }
-        catch (err) {
-            lCore.display(`[HMR] Cannot watch directory: ${dir}`, err);
-        }
+        lCore.display(`[HMR] Watching directory: ${dir} (${dirs.length} dirs)`);
     };
 
     // --- 监听 www/ 目录（用户项目代码）---
