@@ -624,6 +624,8 @@ function startFileWatcher(): void {
      * @param dir 要监听的根目录路径
      */
     const watchDir = async (dir: string): Promise<void> => {
+        // --- 去除末尾的路径分隔符，防止拼接时产生双斜杠 ---
+        dir = dir.replace(/\/+$/, '');
         if (!await lFs.isDir(dir)) {
             return;
         }

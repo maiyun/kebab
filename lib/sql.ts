@@ -1,7 +1,7 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2019-5-27 20:18:50
- * Last: 2020-3-29 19:37:25, 2022-07-24 22:38:11, 2023-5-24 18:49:18, 2023-6-13 22:20:21, 2023-12-11 13:58:54, 2023-12-14 13:14:40, 2023-12-21 00:04:40, 2024-4-11 19:29:29, 2024-9-2 17:15:28, 2025-8-3 21:28:18, 2025-11-9 16:20:23
+ * Last: 2020-3-29 19:37:25, 2022-07-24 22:38:11, 2023-5-24 18:49:18, 2023-6-13 22:20:21, 2023-12-11 13:58:54, 2023-12-14 13:14:40, 2023-12-21 00:04:40, 2024-4-11 19:29:29, 2024-9-2 17:15:28, 2025-8-3 21:28:18, 2025-11-9 16:20:23, 2026-4-30 13:49:44
  */
 import * as kebab from '#kebab/index.js';
 import * as lText from '#kebab/lib/text.js';
@@ -35,6 +35,9 @@ export enum EJSON {
 
 /** --- field 用 token --- */
 let columnToken = '';
+
+/** --- value 用 token --- */
+let valueToken = '';
 
 export class Sql {
 
@@ -599,13 +602,19 @@ export class Sql {
                 else {
                     // --- 2, 6 ---
                     const nv = v[2];
+                    // --- v[0] 也可以是 value() 包裹的字面量值，而不一定是字段名 ---
+                    const isv0 = this._isValue(v[0]);
+                    const v0sql = isv0 ? this._placeholder() : this.field(v[0]);
+                    if (isv0) {
+                        data.push(v[0].value);
+                    }
                     const isf = this._isField(nv);
                     if (isf) {
                         // --- 6. field ---
-                        sql += this.field(v[0]) + ' ' + v[1] + ' ' + this.field(nv.value) + ' AND ';
+                        sql += v0sql + ' ' + v[1] + ' ' + this.field(nv.value) + ' AND ';
                     }
                     else {
-                        sql += this.field(v[0]) + ' ' + v[1] + ' ' + this._placeholder() + ' AND ';
+                        sql += v0sql + ' ' + v[1] + ' ' + this._placeholder() + ' AND ';
                         data.push(nv);
                     }
                 }
@@ -1052,6 +1061,21 @@ export class Sql {
         return true;
     }
 
+    /**
+     * --- 判断传入值是否是 value 对象（由 value() 函数创建） ---
+     * @param arg
+     */
+    private _isValue(arg: any): arg is {
+        'type': 'value';
+        'token': string;
+        'value': kebab.DbValue;
+    } {
+        if (arg === null || typeof arg !== 'object' || arg.type !== 'value' || arg.token !== valueToken || arg.value === undefined) {
+            return false;
+        }
+        return true;
+    }
+
     /** --- 获取占位符 --- */
     private _placeholder(): string {
         return this._service === ESERVICE.MYSQL ? '?' : `$${this._placeholderCounter++}`;
@@ -1285,6 +1309,25 @@ export function column(field: string): {
         'token': columnToken,
         'type': 'column',
         'value': field
+    };
+}
+
+/**
+ * --- 创建字面量值对象，用于 where 条件中 v[0] 需要是值而非字段名的场景 ---
+ * --- 例：[value('hello'), 'IN', column('tags')] ---
+ */
+export function value(val: kebab.DbValue): {
+    'type': 'value';
+    'token': string;
+    'value': kebab.DbValue;
+} {
+    if (!valueToken) {
+        valueToken = lCore.random(8, lCore.RANDOM_LUNS);
+    }
+    return {
+        'token': valueToken,
+        'type': 'value',
+        'value': val
     };
 }
 

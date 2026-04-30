@@ -3941,6 +3941,31 @@ Result:<pre id="result">Nothing.</pre>`);
 ]);</pre>
 <b>getSql() :</b> ${s}<br>
 <b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
+<b>format() :</b> ${sql.format(s, sd)}<hr>`);
+
+                // --- 正则匹配：MySQL 用 REGEXP，PostgreSQL 用 ~ ---
+                // --- value() 对比 column()：左侧为字面量值，右侧为字段 ---
+                s = sql.select('*', 'user').where([
+                    [lSql.value('info'), this._get['s'] === 'pgsql' ? '~' : 'REGEXP', lSql.column('pattern')]
+                ]).getSql();
+                sd = sql.getData();
+                echo.push(`<pre>sql.select('*', 'user').where([
+    [lSql.value('info'), '${this._get['s'] === 'pgsql' ? '~' : 'REGEXP'}', lSql.column('pattern')]
+]);</pre>
+<b>getSql() :</b> ${s}<br>
+<b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
+<b>format() :</b> ${sql.format(s, sd)}<hr>`);
+
+                // --- value() 与普通字段混用 ---
+                s = sql.select('*', 'user').where([
+                    [lSql.value(10), '<', lSql.column('age')]
+                ]).getSql();
+                sd = sql.getData();
+                echo.push(`<pre>sql.select('*', 'user').where([
+    [lSql.value(10), '&lt;', lSql.column('age')]
+]);</pre>
+<b>getSql() :</b> ${s}<br>
+<b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
 <b>format() :</b> ${sql.format(s, sd)}`);
                 break;
             }

@@ -180,6 +180,15 @@ export default class Mod {
         return lSql.column(field);
     }
 
+    /** --- 创建字面量值对象，用于 where 条件中 v[0] 需要是值而非字段名的场景 --- */
+    public static value(val: kebab.DbValue): {
+        'type': 'value';
+        'token': string;
+        'value': kebab.DbValue;
+    } {
+        return lSql.value(val);
+    }
+
     /** --- 创建 JSON 字符串对象，用于 PGSQL 的 jsonb 字段 --- */
     public static json(obj: kebab.Json): any {
         return lSql.json(obj);
