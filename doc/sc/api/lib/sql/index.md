@@ -22,3 +22,4 @@
 - [format](functions/format.md)
 - [get](functions/get.md)
 - [json](functions/json.md)
+- [value](functions/value.md)
