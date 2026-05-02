@@ -517,8 +517,8 @@ export function getFormData(): lFd.FormData {
 
 /** --- proxy 要剔除的基础头部 --- */
 const proxyContinueHeaders = [
-    'host', 'connection', 'http-code', 'http-url',
-    'transfer-encoding'
+    'host', 'connection', 'keep-alive', 'http-code', 'http-url',
+    'transfer-encoding', 'upgrade', 'proxy-connection'
 ];
 
 /**
