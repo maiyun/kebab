@@ -105,6 +105,7 @@ async function run(): Promise<void> {
     http2Server = http2.createSecureServer({
         // eslint-disable-next-line @typescript-eslint/naming-convention
         'SNICallback': (servername, cb) => {
+            // --- 每 24 小时自动重新加载一次证书，确保证书更新后能被及时加载到内存中 ---
             if (Date.now() - certLastLoad > 60_000 * 60 * 24) {
                 // --- 不能用异步，不要干扰 SNI 进程 ---
                 reloadCert().catch(e => {
