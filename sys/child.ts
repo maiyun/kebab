@@ -29,14 +29,17 @@ const hbTimer = setInterval(function() {
     });
 }, 10_000);
 
-/** --- 加载的证书列表（path: { sc, cert }） --- */
-let certList: Array<{
+/**
+ * --- 证书持久化 Map，key 为 keyPath|certPath ---
+ * --- 防止 reload 时证书文件处于更新空隙期（旧文件已删、新文件未写入）导致证书丢失 ---
+ */
+const certList: Map<string, {
     'sc': tls.SecureContext;
     'cert': crypto.X509Certificate;
-}> = [];
+}> = new Map();
 
-/** --- server: index --- */
-let certHostIndex: Record<string, number> = {};
+/** --- servername → certList mapKey 索引缓存 --- */
+let certHostIndex: Record<string, string> = {};
 
 /** --- 默认证书 --- */
 let defaultSc: tls.SecureContext | undefined;
@@ -112,19 +115,19 @@ async function run(): Promise<void> {
                     lCore.display('[CHILD][run] reloadCert error', e);
                 });
             }
-            const i = certHostIndex[servername];
-            if (i !== undefined) {
-                cb(null, certList[i].sc);
+            const cachedKey = certHostIndex[servername];
+            if (cachedKey !== undefined) {
+                cb(null, certList.get(cachedKey)!.sc);
                 return;
             }
             // --- 查找 servername ---
-            for (let i = 0; i < certList.length; ++i) {
-                if (!certList[i].cert.checkHost(servername)) {
+            for (const [mapKey, item] of certList) {
+                if (!item.cert.checkHost(servername)) {
                     continue;
                 }
                 // --- 找到 ---
-                cb(null, certList[i].sc);
-                certHostIndex[servername] = i;
+                cb(null, item.sc);
+                certHostIndex[servername] = mapKey;
                 return;
             }
             if (defaultSc) {
@@ -541,21 +544,28 @@ async function reload(): Promise<void> {
 
 /**
  * --- 重新加载证书对 ---
+ * --- 采用增量更新策略：新证书加载成功则覆盖旧值，加载失败（文件更新空隙期）则保留旧证书 ---
  */
 async function reloadCert(): Promise<void> {
     certLastLoad = Date.now();
-    const cl: Array<{
-        'sc': tls.SecureContext;
-        'cert': crypto.X509Certificate;
-    }> = [];
+    /** --- 本次配置中出现的 mapKey 集合，用于事后清理已下线的证书 --- */
+    const newKeys = new Set<string>();
+    /** --- 配置文件是否成功加载，未成功则不清理 Map，防止误删全部证书 --- */
+    let configLoaded = false;
     try {
         const certConfig = await lFs.getContent(kebab.CONF_CWD + 'cert.json', 'utf8');
         if (certConfig) {
             const certs = lText.parseJson<any>(certConfig);
+            configLoaded = true;
             for (const item of certs) {
-                const key = await lFs.getContent(lText.isRealPath(item.key) ? item.key : kebab.CERT_CWD + item.key, 'utf8');
-                const cert = await lFs.getContent(lText.isRealPath(item.cert) ? item.cert : kebab.CERT_CWD + item.cert, 'utf8');
+                const keyPath = lText.isRealPath(item.key) ? item.key : kebab.CERT_CWD + item.key;
+                const certPath = lText.isRealPath(item.cert) ? item.cert : kebab.CERT_CWD + item.cert;
+                const mapKey = keyPath + '|' + certPath;
+                newKeys.add(mapKey);
+                const key = await lFs.getContent(keyPath, 'utf8');
+                const cert = await lFs.getContent(certPath, 'utf8');
                 if (!cert || !key) {
+                    // --- 文件不存在（可能正在更新），保留旧证书（如果有） ---
                     continue;
                 }
                 const certo = new crypto.X509Certificate(cert);
@@ -563,18 +573,22 @@ async function reloadCert(): Promise<void> {
                     'key': key,
                     'cert': cert
                 });
-                cl.push({
-                    'cert': certo,
-                    'sc': sc
-                });
+                certList.set(mapKey, { 'cert': certo, 'sc': sc });
             }
         }
     }
     catch {
         // --- NOTHING ---
     }
-    certList = cl;
-    defaultSc = cl.length > 0 ? cl[0].sc : undefined;
+    // --- 仅在配置文件加载成功时，移除已从配置中下线的证书 ---
+    if (configLoaded) {
+        for (const key of certList.keys()) {
+            if (!newKeys.has(key)) {
+                certList.delete(key);
+            }
+        }
+    }
+    defaultSc = certList.size > 0 ? certList.values().next().value!.sc : undefined;
     certHostIndex = {};
 }
 
