@@ -386,6 +386,8 @@ export class Ctr {
         // --- 组件 JS 从 stc 目录读取，浏览器同样通过 staticPath（支持 CDN）下载 ---
         const componentPath = this._config.const.rootPath + 'stc/' + path + '.page.js';
         if (!await lFs.isFile(componentPath)) {
+            lCore.debug(`[CTR][_loadReactPage] componentPath ${componentPath} is not a file`);
+            lCore.log(this, `[CTR][_loadReactPage] componentPath ${componentPath} is not a file`, '-error');
             return '';
         }
         try {
@@ -503,6 +505,7 @@ export class Ctr {
         }
         catch (e: kebab.Json) {
             lCore.debug(`[CTR][_loadReactPage] ${e.message ?? ''}`);
+            lCore.log(this, '[CTR][_loadReactPage] ' + lText.stringifyJson(e.stack).slice(1, -1), '-error');
             return '';
         }
     }
