@@ -59,7 +59,7 @@ export class Response {
         }
     }
 
-    /** --- 读取所有内容为 JSON --- */
+    /** --- 读取所有内容为 JSON，失败返回 null --- */
     public async getJson(): Promise<any> {
         try {
             const text = await this.getText();
