@@ -76,7 +76,7 @@ export class Ctr {
     /** --- Session --- 对象 */
     protected _sess: lSession.Session | null = null;
 
-    /** --- 页面浏览器客户端缓存 --- */
+    /** --- 页面浏览器客户端缓存（单位：秒） --- */
     protected _cacheTTL!: number;
 
     /** --- XSRF TOKEN 值 --- */
