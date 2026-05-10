@@ -248,14 +248,39 @@ function createRpcListener(): void {
                         return;
                     }
                     const ls = await zip.getList();
+                    // --- 预扫描：收集 .cga 锁定目录和 kebab 子项目目录 ---
+                    /** --- .cga 锁定的目录集合，key 格式为"父路径/目录名/"（不含开头/，含尾部/），例如 "www/pika/" --- */
+                    const cgaLockedDirs = new Set<string>();
+                    /** --- 含有 kebab.json 的目录路径集合（不含开头/，含尾部/，根目录为空字符串） --- */
+                    const kebabProjectDirs = new Set<string>();
+                    for (const scanPath in ls) {
+                        /** --- 带 / 开头的 zip 中文件完整路径，例如 "/www/pika/stc/index.ts" --- */
+                        const scanFpath = scanPath.startsWith('/') ? scanPath : '/' + scanPath;
+                        /** --- 纯路径中最后一个 / 的位置索引 --- */
+                        const scanLio = scanFpath.lastIndexOf('/');
+                        /** --- 纯路径，不以 / 开头，以 / 结尾，若是根路径就是空字符串，例如 "www/pika/" --- */
+                        const scanPat = scanFpath.slice(1, scanLio + 1);
+                        /** --- 纯文件名，例如 "index.ts" 或 "pika.cga" --- */
+                        const scanFname = scanFpath.slice(scanLio + 1);
+                        if (scanFname.endsWith('.cga')) {
+                            // --- 记录 .cga 锁定的同级目录（去掉 .cga 后缀的名字即为被锁定的目录名）---
+                            cgaLockedDirs.add(scanPat + scanFname.slice(0, -4) + '/');
+                        }
+                        if (scanFname === 'kebab.json') {
+                            // --- 记录含有 kebab.json 的目录（即 kebab 子项目根目录）---
+                            kebabProjectDirs.add(scanPat);
+                        }
+                    }
+                    /** --- kebab 子项目中仅允许部署的子文件夹名集合 --- */
+                    const KEBAB_ALLOWED_DIRS = new Set(['ctr', 'data', 'stc', 'view', 'lib']);
                     for (const path in ls) {
-                        /** --- 带 / 开头的 zip 中文件完整路径 --- */
+                        /** --- 带 / 开头的 zip 中文件完整路径，例如 "/www/pika/ctr/api.js" --- */
                         const fpath = path.startsWith('/') ? path : '/' + path;
-                        /** --- 最后一个 / 的所在位置 --- */
+                        /** --- 纯路径中最后一个 / 的位置索引 --- */
                         const lio = fpath.lastIndexOf('/');
-                        /** --- 纯路径，不以 / 开头，以 / 结尾，若是根路径就是空字符串 --- */
+                        /** --- 纯路径，不以 / 开头，以 / 结尾，若是根路径就是空字符串，例如 "www/pika/ctr/" --- */
                         const pat = fpath.slice(1, lio + 1);
-                        /** --- 纯文件名 --- */
+                        /** --- 纯文件名，例如 "api.js" --- */
                         const fname = fpath.slice(lio + 1);
                         if ((pat === 'conf/' && fname === 'config.json') || fname === 'kebab.json') {
                             // --- 特殊文件不能覆盖 ---
@@ -264,6 +289,49 @@ function createRpcListener(): void {
                         if (fname.endsWith('.js.map') || fname.endsWith('.ts') || fname.endsWith('.gitignore') || fname.endsWith('.DS_Store')) {
                             // --- 测试或开发文件不覆盖 ---
                             continue;
+                        }
+                        // --- 规则 1：若同级目录存在 xxx.cga，则 xxx 目录下所有内容不部署 ---
+                        if (pat) {
+                            /** --- 是否被 .cga 文件锁定阻止 --- */
+                            let cgaBlocked = false;
+                            /** --- 累积路径，逐级拼接，用于逐级检查是否命中 cgaLockedDirs，例如 "a/" -> "a/b/" -> "a/b/c/" --- */
+                            let accumulated = '';
+                            for (const seg of pat.split('/').filter(Boolean)) {
+                                accumulated += seg + '/';
+                                if (cgaLockedDirs.has(accumulated)) {
+                                    cgaBlocked = true;
+                                    break;
+                                }
+                            }
+                            if (cgaBlocked) {
+                                continue;
+                            }
+                        }
+                        // --- 规则 2：kebab 子项目目录中，仅允许部署 ctr/data/stc/view/lib 子文件夹内的内容 ---
+                        // --- 快速跳过：zip 中没有 kebab.json 时整个规则无需执行 ---
+                        if (kebabProjectDirs.size > 0) {
+                            // --- 找最长（最精确）匹配的 kebab 项目目录，避免父子项目互相干扰 ---
+                            /** --- 当前文件所属的 kebab 子项目目录，例如 pat 为 "www/pika/ctr/" 时值为 "www/pika/"；无匹配则为 null --- */
+                            let longestMatch: string | null = null;
+                            for (const kdir of kebabProjectDirs) {
+                                /** --- 当前 kdir 是否比已有的 longestMatch 更精确（路径更深）--- */
+                                const isDeeper = longestMatch === null || kdir.length > longestMatch.length;
+                                if (pat.startsWith(kdir) && isDeeper) {
+                                    longestMatch = kdir;
+                                }
+                            }
+                            if (longestMatch !== null) {
+                                // --- 取相对于 kebab 项目目录的路径，检查第一级子目录 ---
+                                /** --- 相对路径，例如若 pat 为 "www/pika/ctr/" 且 longestMatch 为 "www/pika/"，则 relPath 为 "ctr/" --- */
+                                const relPath = pat.slice(longestMatch.length);
+                                if (relPath) {
+                                    /** --- 路径的第一级子目录名，例如 "ctr" 或 "data"，用于判断是否在允许列表中 --- */
+                                    const firstSeg = relPath.split('/')[0];
+                                    if (!KEBAB_ALLOWED_DIRS.has(firstSeg)) {
+                                        continue;
+                                    }
+                                }
+                            }
                         }
                         // --- 看文件夹是否存在 ---
                         if (pat && !await lFs.isDir(to + pat)) {
