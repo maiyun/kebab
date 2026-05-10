@@ -66,7 +66,7 @@ Defined in: [lib/undici/response.ts:32](https://github.com/maiyunnet/kebab/blob/
 
 Defined in: [lib/undici/response.ts:63](https://github.com/maiyunnet/kebab/blob/master/lib/undici/response.ts#L63)
 
-读取所有内容为 JSON
+读取所有内容为 JSON，失败返回 null
 
 #### Returns
 

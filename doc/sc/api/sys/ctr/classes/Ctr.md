@@ -52,7 +52,7 @@ Defined in: [sys/ctr.ts:50](https://github.com/maiyunnet/kebab/blob/master/sys/c
 
 Defined in: [sys/ctr.ts:80](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L80)
 
-页面浏览器客户端缓存
+页面浏览器客户端缓存（单位：秒）
 
 ***
 

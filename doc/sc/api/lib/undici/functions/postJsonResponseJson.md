@@ -8,9 +8,9 @@
 
 > **postJsonResponseJson**(`u`, `data`, `opt?`): `Promise`\<`any`\>
 
-Defined in: [lib/undici.ts:131](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L131)
+Defined in: [lib/undici.ts:130](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L130)
 
-发起 JSON 请求并解析 JSON 响应
+发起 JSON 请求并解析 JSON 响应，失败时返回 null
 
 ## Parameters
 
@@ -35,5 +35,3 @@ Defined in: [lib/undici.ts:131](https://github.com/maiyunnet/kebab/blob/master/l
 ## Returns
 
 `Promise`\<`any`\>
-
-JSON 数据，失败时返回 null
