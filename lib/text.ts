@@ -452,7 +452,13 @@ export function queryParse(query: string): Record<string, string | string[]> {
         }
         const pos = i.indexOf('=');
 
-        const key = decodeURIComponent(pos === -1 ? i : i.slice(0, pos));
+        let key: string;
+        try {
+            key = decodeURIComponent(pos === -1 ? i : i.slice(0, pos));
+        }
+        catch {
+            key = pos === -1 ? i : i.slice(0, pos);
+        }
         let value = '';
         try {
             value = pos === -1 ? '' : decodeURIComponent(i.slice(pos + 1));
