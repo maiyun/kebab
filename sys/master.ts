@@ -310,20 +310,23 @@ function createRpcListener(): void {
                         // --- 规则 2：kebab 子项目目录中，仅允许部署 ctr/data/stc/view/lib 子文件夹内的内容 ---
                         // --- 快速跳过：zip 中没有 kebab.json 时整个规则无需执行 ---
                         if (kebabProjectDirs.size > 0) {
-                            // --- 找最长（最精确）匹配的 kebab 项目目录，避免父子项目互相干扰 ---
-                            /** --- 当前文件所属的 kebab 子项目目录，例如 pat 为 "www/pika/ctr/" 时值为 "www/pika/"；无匹配则为 null --- */
-                            let longestMatch: string | null = null;
+                            // --- 找最浅（最外层）匹配的 kebab 项目目录 ---
+                            // --- 以最浅匹配为准，确保根层 kebab 规则优先于嵌套项目 ---
+                            // --- 例如 backup/ 自身也有 kebab.json，longestMatch 会选 backup/，使其根文件通过 ---
+                            // --- 改用 shortestMatch 则选根 ""，backup 的第一段不在白名单中，正确排除 ---
+                            /** --- 当前文件所属的最浅 kebab 子项目目录；无匹配则为 null --- */
+                            let shortestMatch: string | null = null;
                             for (const kdir of kebabProjectDirs) {
-                                /** --- 当前 kdir 是否比已有的 longestMatch 更精确（路径更深）--- */
-                                const isDeeper = longestMatch === null || kdir.length > longestMatch.length;
-                                if (pat.startsWith(kdir) && isDeeper) {
-                                    longestMatch = kdir;
+                                /** --- 当前 kdir 是否比已有的 shortestMatch 更浅（路径更短）--- */
+                                const isShallower = shortestMatch === null || kdir.length < shortestMatch.length;
+                                if (pat.startsWith(kdir) && isShallower) {
+                                    shortestMatch = kdir;
                                 }
                             }
-                            if (longestMatch !== null) {
+                            if (shortestMatch !== null) {
                                 // --- 取相对于 kebab 项目目录的路径，检查第一级子目录 ---
-                                /** --- 相对路径，例如若 pat 为 "www/pika/ctr/" 且 longestMatch 为 "www/pika/"，则 relPath 为 "ctr/" --- */
-                                const relPath = pat.slice(longestMatch.length);
+                                /** --- 相对路径，例如若 pat 为 "www/pika/ctr/" 且 shortestMatch 为 "www/pika/"，则 relPath 为 "ctr/" --- */
+                                const relPath = pat.slice(shortestMatch.length);
                                 if (relPath) {
                                     /** --- 路径的第一级子目录名，例如 "ctr" 或 "data"，用于判断是否在允许列表中 --- */
                                     const firstSeg = relPath.split('/')[0];
