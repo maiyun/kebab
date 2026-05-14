@@ -8,7 +8,7 @@
 
 > **getFilename**(`path`, `ext?`): `string`
 
-Defined in: [lib/text.ts:507](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L507)
+Defined in: [lib/text.ts:513](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L513)
 
 获取文件名
 

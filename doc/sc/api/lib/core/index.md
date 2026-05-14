@@ -57,6 +57,7 @@
 - [resolveEnvVars](functions/resolveEnvVars.md)
 - [sendNpm](functions/sendNpm.md)
 - [sendPm2](functions/sendPm2.md)
+- [sendProject](functions/sendProject.md)
 - [sendReload](functions/sendReload.md)
 - [sendRestart](functions/sendRestart.md)
 - [setCookie](functions/setCookie.md)
