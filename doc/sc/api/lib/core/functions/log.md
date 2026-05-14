@@ -8,7 +8,7 @@
 
 > **log**(`opt`, `msg`, `fend?`): `void`
 
-Defined in: [lib/core.ts:861](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L861)
+Defined in: [lib/core.ts:903](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L903)
 
 写入文件日志
 

@@ -1360,7 +1360,7 @@ index/variables/VER.md
 
 # Variable: VER
 
-> `const` **VER**: `"9.3.6"` = `'9.3.6'`
+> `const` **VER**: `"9.3.7"` = `'9.3.7'`
 
 Defined in: [index.ts:10](https://github.com/maiyunnet/kebab/blob/master/index.ts#L10)
 
@@ -3258,7 +3258,7 @@ lib/core/functions/clone.md
 
 > **clone**\<`T`\>(`obj`): `T`
 
-Defined in: [lib/core.ts:1060](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1060)
+Defined in: [lib/core.ts:1102](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1102)
 
 完整的克隆一份数组/对象
 
@@ -3322,7 +3322,7 @@ lib/core/functions/debug.md
 
 > **debug**(`message?`, ...`optionalParams`): `void`
 
-Defined in: [lib/core.ts:1094](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1094)
+Defined in: [lib/core.ts:1136](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1136)
 
 打印调试信息，线上环境不会打印
 
@@ -3357,7 +3357,7 @@ lib/core/functions/display.md
 
 > **display**(`message?`, ...`optionalParams`): `void`
 
-Defined in: [lib/core.ts:1107](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1107)
+Defined in: [lib/core.ts:1149](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1149)
 
 向控制台直接显示内容，一般情况下禁止使用
 
@@ -3462,7 +3462,7 @@ lib/core/functions/getLog.md
 
 > **getLog**(`opt`): `Promise`\<`false` \| `string`[][] \| `null`\>
 
-Defined in: [lib/core.ts:967](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L967)
+Defined in: [lib/core.ts:1009](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1009)
 
 获取日志内容为一个数组
 
@@ -3568,7 +3568,7 @@ lib/core/functions/loadEnv.md
 
 > **loadEnv**(`dir`): `Promise`\<`void`\>
 
-Defined in: [lib/core.ts:1159](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1159)
+Defined in: [lib/core.ts:1201](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1201)
 
 加载 .env 文件到 process.env，若文件不存在则跳过
 
@@ -3597,7 +3597,7 @@ lib/core/functions/log.md
 
 > **log**(`opt`, `msg`, `fend?`): `void`
 
-Defined in: [lib/core.ts:861](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L861)
+Defined in: [lib/core.ts:903](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L903)
 
 写入文件日志
 
@@ -3638,7 +3638,7 @@ lib/core/functions/ls.md
 
 > **ls**(`opt`): `Promise`\<`object`[]\>
 
-Defined in: [lib/core.ts:1021](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1021)
+Defined in: [lib/core.ts:1063](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1063)
 
 获取目录内文件/文件夹列表
 
@@ -3999,7 +3999,7 @@ lib/core/functions/resolveEnvVars.md
 
 > **resolveEnvVars**(`obj`): `void`
 
-Defined in: [lib/core.ts:1189](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1189)
+Defined in: [lib/core.ts:1231](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1231)
 
 将配置对象中的 ${ENV_VAR} 占位符替换为 process.env 的值
 
@@ -4039,6 +4039,41 @@ Defined in: [lib/core.ts:649](https://github.com/maiyunnet/kebab/blob/master/lib
 `string`
 
 路径，如 /home/kebab/
+
+### hosts?
+
+`string`[] \| `"config"`
+
+局域网列表
+
+## Returns
+
+`Promise`\<`string`[]\>
+
+lib/core/functions/sendPackage.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../index.md) / [lib/core](../index.md) / sendPackage
+
+# Function: sendPackage()
+
+> **sendPackage**(`content`, `hosts?`): `Promise`\<`string`[]\>
+
+Defined in: [lib/core.ts:848](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L848)
+
+向本机或局域网 RPC 发送 package.json 更新操作
+
+## Parameters
+
+### content
+
+`string`
+
+package.json 文件内容
 
 ### hosts?
 
@@ -4406,7 +4441,7 @@ lib/core/functions/writeEventStreamHead.md
 
 > **writeEventStreamHead**(`res`): `void`
 
-Defined in: [lib/core.ts:1129](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1129)
+Defined in: [lib/core.ts:1171](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1171)
 
 ## Parameters
 
@@ -4431,7 +4466,7 @@ lib/core/functions/writeHead.md
 
 > **writeHead**(`res`, `statusCode`, `headers?`): `void`
 
-Defined in: [lib/core.ts:1118](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1118)
+Defined in: [lib/core.ts:1160](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1160)
 
 让 res 发送头部（前提是头部没有被发送才能调用本方法
 
@@ -4472,7 +4507,7 @@ lib/core/functions/write.md
 
 > **write**(`res`, `data`): `void`
 
-Defined in: [lib/core.ts:1141](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1141)
+Defined in: [lib/core.ts:1183](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1183)
 
 向 res 发送数据
 
@@ -4555,6 +4590,7 @@ lib/core/index.md
 - [removeGlobal](functions/removeGlobal.md)
 - [resolveEnvVars](functions/resolveEnvVars.md)
 - [sendNpm](functions/sendNpm.md)
+- [sendPackage](functions/sendPackage.md)
 - [sendPm2](functions/sendPm2.md)
 - [sendProject](functions/sendProject.md)
 - [sendReload](functions/sendReload.md)
@@ -4642,7 +4678,7 @@ lib/core/interfaces/ILogOptions.md
 
 # Interface: ILogOptions
 
-Defined in: [lib/core.ts:844](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L844)
+Defined in: [lib/core.ts:886](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L886)
 
 log 设置的选项
 
@@ -4652,7 +4688,7 @@ log 设置的选项
 
 > `optional` **cookie?**: `Record`\<`string`, `string`\>
 
-Defined in: [lib/core.ts:850](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L850)
+Defined in: [lib/core.ts:892](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L892)
 
 ***
 
@@ -4660,7 +4696,7 @@ Defined in: [lib/core.ts:850](https://github.com/maiyunnet/kebab/blob/master/lib
 
 > `optional` **get?**: `Record`\<`string`, `any`\>
 
-Defined in: [lib/core.ts:849](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L849)
+Defined in: [lib/core.ts:891](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L891)
 
 ***
 
@@ -4668,7 +4704,7 @@ Defined in: [lib/core.ts:849](https://github.com/maiyunnet/kebab/blob/master/lib
 
 > `optional` **headers?**: `IncomingHttpHeaders`
 
-Defined in: [lib/core.ts:852](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L852)
+Defined in: [lib/core.ts:894](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L894)
 
 ***
 
@@ -4676,7 +4712,7 @@ Defined in: [lib/core.ts:852](https://github.com/maiyunnet/kebab/blob/master/lib
 
 > `optional` **hostname?**: `string`
 
-Defined in: [lib/core.ts:847](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L847)
+Defined in: [lib/core.ts:889](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L889)
 
 ***
 
@@ -4684,7 +4720,7 @@ Defined in: [lib/core.ts:847](https://github.com/maiyunnet/kebab/blob/master/lib
 
 > `optional` **path?**: `string`
 
-Defined in: [lib/core.ts:845](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L845)
+Defined in: [lib/core.ts:887](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L887)
 
 ***
 
@@ -4692,7 +4728,7 @@ Defined in: [lib/core.ts:845](https://github.com/maiyunnet/kebab/blob/master/lib
 
 > `optional` **req?**: `IncomingMessage` \| `Http2ServerRequest` \| `null`
 
-Defined in: [lib/core.ts:848](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L848)
+Defined in: [lib/core.ts:890](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L890)
 
 ***
 
@@ -4700,7 +4736,7 @@ Defined in: [lib/core.ts:848](https://github.com/maiyunnet/kebab/blob/master/lib
 
 > `optional` **session?**: `Record`\<`string`, `any`\>
 
-Defined in: [lib/core.ts:851](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L851)
+Defined in: [lib/core.ts:893](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L893)
 
 ***
 
@@ -4708,7 +4744,7 @@ Defined in: [lib/core.ts:851](https://github.com/maiyunnet/kebab/blob/master/lib
 
 > `optional` **urlFull?**: `string`
 
-Defined in: [lib/core.ts:846](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L846)
+Defined in: [lib/core.ts:888](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L888)
 
 lib/core/type-aliases/TPm2Action.md
 ---

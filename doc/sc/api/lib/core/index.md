@@ -56,6 +56,7 @@
 - [removeGlobal](functions/removeGlobal.md)
 - [resolveEnvVars](functions/resolveEnvVars.md)
 - [sendNpm](functions/sendNpm.md)
+- [sendPackage](functions/sendPackage.md)
 - [sendPm2](functions/sendPm2.md)
 - [sendProject](functions/sendProject.md)
 - [sendReload](functions/sendReload.md)
