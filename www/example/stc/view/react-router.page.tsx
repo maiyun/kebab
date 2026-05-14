@@ -19,9 +19,9 @@
  * 如需打包为 .bundle.js，执行：node ./source/main build
  *
  * 【Tailwind CSS 构建】
- * bundle 模式下不再加载 CDN，需提前构建 CSS 产物。
- * 执行 node ./source/main build 时会自动构建同名 .css，无需单独执行。
- * 框架通过 _urlStc 和 _staticVer 自动拼接正确的带版本号 URL。
+ * 需提前执行 node ./source/main build -d source/www/example/stc 生成 CSS 产物。
+ * 框架通过 _staticPath 和 _staticVer 自动拼接带版本号 URL；
+ * import map、props JSON、水合脚本均由框架自动注入 HTML，组件无需手动处理。
  */
 
 import { useState, useEffect } from 'react';
@@ -49,12 +49,6 @@ interface IProps {
     '_staticVer': string;
     /** --- 框架注入：BrowserRouter 的 basename，如 /test/react-router-page --- */
     '_routerBase'?: string;
-    /** --- 框架注入：import map JSON 字符串 --- */
-    '_importMapJson'?: string;
-    /** --- 框架注入：水合脚本 --- */
-    '_hydrateScript'?: string;
-    /** --- 框架注入：fullProps 序列化 JSON --- */
-    '_propsJson'?: string;
 }
 
 // --- 基础控件 ---
@@ -334,7 +328,7 @@ function PageNotFound() {
  * 组件内部只需使用 Routes/Route/Link 等，无需自行包裹 Router。
  */
 export default function ReactRouterPage({
-    title, serverTime, node, users, user, _urlBase, _urlStc, _staticVer, _importMapJson, _hydrateScript, _propsJson,
+    title, serverTime, node, users, user, _urlBase, _urlStc, _staticVer,
 }: IProps) {
     return (
         <html lang="en">
@@ -343,14 +337,9 @@ export default function ReactRouterPage({
                 <meta name="viewport" content="width=device-width, initial-scale=1" />
                 {/* eslint-disable-next-line @typescript-eslint/naming-convention */}
                 <title suppressHydrationWarning>{title}</title>
-                {/* --- CSS：dev 模式（无 bundle）用 Tailwind CDN；bundle 模式加载本地构建产物 --- */}
-                {_importMapJson
-                    ? <script src="https://cdn.tailwindcss.com" />
-                    : <link rel="stylesheet" href={`${_urlStc}view/react-router-page.css?v=${_staticVer}`} />}
-                {/* --- import map：让浏览器识别 bare import，esm.sh 自动解析依赖 --- */}
-                {_importMapJson && (
-                    <script type="importmap" dangerouslySetInnerHTML={{ '__html': _importMapJson }} />
-                )}
+                {/* --- import map 由框架自动注入在此标签前，无需手动添加 --- */}
+                {/* --- dev: 需先执行 node ./source/main build -d source/www/example/stc 生成 CSS --- */}
+                <link rel="stylesheet" href={`${_urlStc}view/react-router-page.css?v=${_staticVer}`} />
             </head>
             <body className="bg-slate-50 min-h-screen">
                 <div className="max-w-2xl mx-auto px-4 py-10 space-y-6">
@@ -403,23 +392,7 @@ export default function ReactRouterPage({
                     </Card>
                 </div>
 
-                {/* --- 框架注入：props JSON，供客户端水合读取 --- */}
-                {_propsJson && (
-                    <script
-                        id="__kebab_props__"
-                        type="application/json"
-                        suppressHydrationWarning
-                        dangerouslySetInnerHTML={{ '__html': _propsJson }}
-                    />
-                )}
-                {/* --- 框架注入：水合脚本 --- */}
-                {_hydrateScript && (
-                    <script
-                        type="module"
-                        suppressHydrationWarning
-                        dangerouslySetInnerHTML={{ '__html': _hydrateScript }}
-                    />
-                )}
+                {/* --- props JSON + 水合脚本由框架自动注入在此标签前，无需手动添加 --- */}
             </body>
         </html>
     );
