@@ -205,6 +205,63 @@ function createRpcListener(): void {
                     }
                     break;
                 }
+                case 'project': {
+                    // --- 更新项目 kebab.json ---
+                    if (!msg.path || typeof msg.path !== 'string') {
+                        res.end('Invalid path');
+                        return;
+                    }
+                    // --- 参数校验前置，避免无效 IO ---
+                    if (!msg.staticVer || typeof msg.staticVer !== 'string') {
+                        res.end('Invalid staticVer');
+                        return;
+                    }
+                    let path = msg.path;
+                    if (path.startsWith('/')) {
+                        path = path.slice(1);
+                    }
+                    if (path.endsWith('/')) {
+                        path = path.slice(0, -1);
+                    }
+                    // --- 拒绝路径穿越，防止跳出 ROOT_CWD ---
+                    if (path.includes('..')) {
+                        res.end('Invalid path');
+                        return;
+                    }
+                    /** --- 最终的项目根目录，以 / 结尾，但用户传入的无所谓 --- */
+                    let to = kebab.ROOT_CWD + path;
+                    if (!to.endsWith('/')) {
+                        to += '/';
+                    }
+                    if (!await lFs.isDir(to)) {
+                        res.end('Path not found: ' + to);
+                        return;
+                    }
+                    const projectFile = to + 'kebab.json';
+                    if (!await lFs.isFile(projectFile)) {
+                        res.end('kebab.json not found in project path');
+                        return;
+                    }
+                    const projectContent = await lFs.getContent(projectFile, 'utf8');
+                    if (!projectContent) {
+                        res.end('Failed to read kebab.json');
+                        return;
+                    }
+                    const projectJson = lText.parseJson<any>(projectContent);
+                    if (!projectJson) {
+                        res.end('Invalid kebab.json');
+                        return;
+                    }
+                    // --- 只允许更新 set.staticVer 字段 ---
+                    projectJson.set ??= {};
+                    projectJson.set.staticVer = msg.staticVer;
+                    const wrtn = await lFs.putContent(projectFile, lText.stringifyJson(projectJson, 4));
+                    if (!wrtn) {
+                        res.end('Failed to write kebab.json');
+                        return;
+                    }
+                    break;
+                }
                 case 'code': {
                     // --- 更新 code 代码包 ---
                     const rtn = await sRoute.getFormData(req);
@@ -231,9 +288,12 @@ function createRpcListener(): void {
                         to += '/';
                     }
                     if (!await lFs.isDir(to)) {
-                        res.end('Path not found: ' + to);
-                        await sRoute.unlinkUploadFiles(rtn.files);
-                        return;
+                        if (rtn.post['strict'] === '1') {
+                            res.end('Path not found: ' + to);
+                            await sRoute.unlinkUploadFiles(rtn.files);
+                            return;
+                        }
+                        await lFs.mkdir(to);
                     }
                     const buf = await lFs.getContent(file.path);
                     if (!buf) {

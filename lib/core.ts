@@ -786,6 +786,48 @@ export async function updateCode(
     return rtn;
 }
 
+/**
+ * --- 向本机或局域网 RPC 发送项目配置更新操作 ---
+ * @param path 项目路径，相对 Kebab 根
+ * @param key 要更新的键名（目前仅支持 staticVer）
+ * @param value 要更新的值
+ * @param hosts 局域网列表
+ */
+export async function sendProject(
+    path: string, key: string, value: string, hosts?: string[] | 'config'
+): Promise<string[]> {
+    if (hosts === 'config') {
+        hosts = globalConfig.hosts;
+    }
+    hosts ??= ['127.0.0.1'];
+    // --- 局域网模式 ---
+    const time = lTime.stamp();
+    /** --- 返回成功的 host --- */
+    const rtn: string[] = [];
+    for (const host of hosts) {
+        const res = await lUndici.get('http://' + host + ':' + globalConfig.rpcPort.toString() + '/' + lCrypto.aesEncrypt(lText.stringifyJson({
+            'action': 'project',
+            'time': time,
+            'path': path,
+            [key]: value
+        }), globalConfig.rpcSecret), {
+            'timeout': 2
+        });
+        const content = await res.getContent();
+        if (!content) {
+            continue;
+        }
+        const str = content.toString();
+        if (str === 'Done') {
+            rtn.push(host);
+        }
+        else {
+            debug('[CORE][sendProject] rpc server content error:', str);
+        }
+    }
+    return rtn;
+}
+
 /** --- log 设置的选项 --- */
 export interface ILogOptions {
     'path'?: string;
