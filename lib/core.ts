@@ -840,6 +840,48 @@ export async function sendProject(
     return rtn;
 }
 
+/**
+ * --- 向本机或局域网 RPC 发送 package.json 更新操作 ---
+ * @param content package.json 文件内容
+ * @param hosts 局域网列表
+ */
+export async function sendPackage(
+    content: string, hosts?: string[] | 'config'
+): Promise<string[]> {
+    if (hosts === 'config') {
+        hosts = globalConfig.hosts;
+    }
+    // --- 未传或 config 展开后为空数组，均回退到本机 ---
+    if (!hosts?.length) {
+        hosts = ['127.0.0.1'];
+    }
+    // --- 局域网模式 ---
+    const time = lTime.stamp();
+    /** --- 返回成功的 host --- */
+    const rtn: string[] = [];
+    for (const host of hosts) {
+        const res = await lUndici.get('http://' + host + ':' + globalConfig.rpcPort.toString() + '/' + lCrypto.aesEncrypt(lText.stringifyJson({
+            'action': 'package',
+            'time': time,
+            'content': content
+        }), globalConfig.rpcSecret), {
+            'timeout': 2
+        });
+        const resContent = await res.getContent();
+        if (!resContent) {
+            continue;
+        }
+        const str = resContent.toString();
+        if (str === 'Done') {
+            rtn.push(host);
+        }
+        else {
+            debug('[CORE][sendPackage] rpc server content error:', str);
+        }
+    }
+    return rtn;
+}
+
 /** --- log 设置的选项 --- */
 export interface ILogOptions {
     'path'?: string;

@@ -262,6 +262,24 @@ function createRpcListener(): void {
                     }
                     break;
                 }
+                case 'package': {
+                    // --- 将用户的 package.json 的内容替换掉项目根的 package.json ---
+                    if (!msg.content || typeof msg.content !== 'string') {
+                        res.end('Invalid content');
+                        return;
+                    }
+                    const packageFile = kebab.ROOT_CWD + 'package.json';
+                    if (!await lFs.isFile(packageFile)) {
+                        res.end('package.json not found');
+                        return;
+                    }
+                    const wrtn = await lFs.putContent(packageFile, msg.content);
+                    if (!wrtn) {
+                        res.end('Failed to write package.json');
+                        return;
+                    }
+                    break;
+                }
                 case 'code': {
                     // --- 更新 code 代码包 ---
                     const rtn = await sRoute.getFormData(req);
