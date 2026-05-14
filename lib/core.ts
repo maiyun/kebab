@@ -609,7 +609,10 @@ export async function sendPm2(
     if (hosts === 'config') {
         hosts = globalConfig.hosts;
     }
-    hosts ??= ['127.0.0.1'];
+    // --- 未传或 config 展开后为空数组，均回退到本机 ---
+    if (!hosts?.length) {
+        hosts = ['127.0.0.1'];
+    }
     // --- 局域网模式 ---
     const time = lTime.stamp();
     /** --- 返回成功的 host --- */
@@ -649,7 +652,10 @@ export async function sendNpm(
     if (hosts === 'config') {
         hosts = globalConfig.hosts;
     }
-    hosts ??= ['127.0.0.1'];
+    // --- 未传或 config 展开后为空数组，均回退到本机 ---
+    if (!hosts?.length) {
+        hosts = ['127.0.0.1'];
+    }
     // --- 局域网模式 ---
     const time = lTime.stamp();
     /** --- 返回成功的 host --- */
@@ -749,7 +755,10 @@ export async function updateCode(
     if (hosts === 'config') {
         hosts = globalConfig.hosts;
     }
-    hosts ??= ['127.0.0.1'];
+    // --- 未传或 config 展开后为空数组，均回退到本机 ---
+    if (!hosts?.length) {
+        hosts = ['127.0.0.1'];
+    }
     /** --- 返回成功的 host --- */
     const rtn: Record<string, {
         'result': boolean;
@@ -799,7 +808,10 @@ export async function sendProject(
     if (hosts === 'config') {
         hosts = globalConfig.hosts;
     }
-    hosts ??= ['127.0.0.1'];
+    // --- 未传或 config 展开后为空数组，均回退到本机 ---
+    if (!hosts?.length) {
+        hosts = ['127.0.0.1'];
+    }
     // --- 局域网模式 ---
     const time = lTime.stamp();
     /** --- 返回成功的 host --- */
