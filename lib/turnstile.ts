@@ -3,7 +3,7 @@
  * Date: 2025-6-11
  * Last: 2025-6-11 21:50:31
  */
-import * as tc from 'tencentcloud-sdk-nodejs';
+import * as tcc from 'tencentcloud-sdk-nodejs';
 
 // --- 库和定义 ---
 import * as lUndici from '#kebab/lib/undici.js';
@@ -48,7 +48,7 @@ export async function verify(ctr: sCtr.Ctr, opt: {
         }
         case EFACTORY.TENCENT: {
             // --- 腾讯云验证 ---
-            const client = new tc.captcha.v20190722.Client({
+            const client = new tcc.captcha.v20190722.Client({
                 'credential': {
                     'secretId': config.turnstile['TENCENT'].sid,
                     'secretKey': config.turnstile['TENCENT'].skey,
