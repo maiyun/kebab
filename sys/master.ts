@@ -351,6 +351,27 @@ function createRpcListener(): void {
                     }
                     /** --- kebab 子项目中仅允许部署的子文件夹名集合 --- */
                     const KEBAB_ALLOWED_DIRS = new Set(['ctr', 'data', 'stc', 'view', 'lib']);
+                    /** --- 常见开发、依赖、缓存、构建产物目录不参与部署 --- */
+                    const DEPLOY_EXCLUDE_DIRS = new Set([
+                        '.git',
+                        '.svn',
+                        '.hg',
+                        '.vscode',
+                        '.idea',
+                        '.history',
+                        'node_modules',
+                        'bower_components',
+                        '.cache',
+                        '.parcel-cache',
+                        '.turbo',
+                        '.next',
+                        '.nuxt',
+                        '.vite',
+                        'coverage',
+                        '.nyc_output',
+                        'tmp',
+                        'temp',
+                    ]);
                     for (const path in ls) {
                         /** --- 带 / 开头的 zip 中文件完整路径，例如 "/www/pika/ctr/api.js" --- */
                         const fpath = path.startsWith('/') ? path : '/' + path;
@@ -360,6 +381,10 @@ function createRpcListener(): void {
                         const pat = fpath.slice(1, lio + 1);
                         /** --- 纯文件名，例如 "api.js" --- */
                         const fname = fpath.slice(lio + 1);
+                        if (fpath.slice(1).split('/').slice(0, -1).some(seg => DEPLOY_EXCLUDE_DIRS.has(seg))) {
+                            // --- 开发、依赖、缓存、构建产物目录不覆盖 ---
+                            continue;
+                        }
                         if ((pat === 'conf/' && fname === 'config.json') || fname === 'kebab.json') {
                             // --- 特殊文件不能覆盖 ---
                             continue;
