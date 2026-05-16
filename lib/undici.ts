@@ -251,7 +251,7 @@ export async function fetch(
                     fd.putBuffer(key, Buffer.from(await value.arrayBuffer()), value.name);
                 }
             }
-            body = fd as unknown as stream.Readable;
+            body = fd;
             headers['content-type'] = 'multipart/form-data; boundary=' + fd.getBoundary();
             headers['content-length'] = fd.getLength().toString();
         }
@@ -447,7 +447,7 @@ export async function request(
     }
     // --- 创建 Response 对象 ---
     const res = new lResponse.Response(req);
-    res.headers = req.headers as THttpHeaders;
+    res.headers = req.headers;
     res.headers['http-code'] = req.statusCode;
     res.headers['http-url'] = u;
     // --- 直接下载到文件 ---
