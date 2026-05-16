@@ -337,6 +337,8 @@ function createRpcListener(): void {
                     const cgaLockedDirs = new Set<string>();
                     /** --- 含有 kebab.json 的目录路径集合（不含开头/，含尾部/，根目录为空字符串） --- */
                     const kebabProjectDirs = new Set<string>();
+                    /** --- 本次部署涉及到的目录路径集合（不含开头/，含尾部/，根目录为空字符串） --- */
+                    const touchedDirs = new Set<string>();
                     for (const scanPath in ls) {
                         /** --- 带 / 开头的 zip 中文件完整路径，例如 "/www/pika/stc/index.ts" --- */
                         const scanFpath = scanPath.startsWith('/') ? scanPath : '/' + scanPath;
@@ -346,6 +348,7 @@ function createRpcListener(): void {
                         const scanPat = scanFpath.slice(1, scanLio + 1);
                         /** --- 纯文件名，例如 "index.ts" 或 "pika.cga" --- */
                         const scanFname = scanFpath.slice(scanLio + 1);
+                        touchedDirs.add(scanPat);
                         if (scanFname.endsWith('.cga')) {
                             // --- 记录 .cga 锁定的同级目录（去掉 .cga 后缀的名字即为被锁定的目录名）---
                             cgaLockedDirs.add(scanPat + scanFname.slice(0, -4) + '/');
@@ -353,6 +356,22 @@ function createRpcListener(): void {
                         if (scanFname === 'kebab.json') {
                             // --- 记录含有 kebab.json 的目录（即 kebab 子项目根目录）---
                             kebabProjectDirs.add(scanPat);
+                        }
+                    }
+                    // --- 补充扫描目标目录中现存的 kebab.json，兼容压缩包未携带 kebab.json 的情况 ---
+                    for (const dir of touchedDirs) {
+                        /** --- 目录逐级向上回溯时的累积路径列表，优先检查当前目录，再检查父级目录 --- */
+                        const dirs = dir ? dir.split('/').filter(Boolean) : [];
+                        for (let i = dirs.length; i >= 0; --i) {
+                            /** --- 当前要检查的目录路径，不含开头/，含尾部/，根目录为空字符串 --- */
+                            const currentDir = i ? dirs.slice(0, i).join('/') + '/' : '';
+                            if (kebabProjectDirs.has(currentDir)) {
+                                break;
+                            }
+                            if (await lFs.isFile(`${to}${currentDir}kebab.json`)) {
+                                kebabProjectDirs.add(currentDir);
+                                break;
+                            }
                         }
                     }
                     /** --- kebab 子项目中仅允许部署的子文件夹名集合 --- */
