@@ -464,7 +464,31 @@ function createRpcListener(): void {
                     }
                     await sRoute.unlinkUploadFiles(rtn.files);
                     // --- 检查是否更新 config ---
-                    if (rtn.post['config'] === '1') {
+                    const configType = rtn.post['config'];
+                    if (configType === '1') {
+                        /** --- 本次部署要更新的静态版本号 --- */
+                        const staticVer = lTime.format(null, 'YmdHis');
+                        for (const kdir of kebabProjectDirs) {
+                            const projectFile = `${to}${kdir}kebab.json`;
+                            if (!await lFs.isFile(projectFile)) {
+                                continue;
+                            }
+                            const projectContent = await lFs.getContent(projectFile, 'utf8');
+                            if (!projectContent) {
+                                continue;
+                            }
+                            const projectJson = lText.parseJson<any>(projectContent);
+                            if (!projectJson) {
+                                continue;
+                            }
+                            projectJson.set ??= {};
+                            projectJson.set.staticVer = staticVer;
+                            await lFs.putContent(projectFile, lText.stringifyJson(projectJson, 4), {
+                                'encoding': 'utf8'
+                            });
+                        }
+                    }
+                    else if (configType === '2') {
                         const configContent = await lFs.getContent(kebab.CONF_CWD + 'config.json', 'utf8');
                         if (configContent) {
                             await lFs.putContent(kebab.CONF_CWD + 'config.json', configContent.replace(/"staticVer": ".+?"/, `"staticVer": "${lTime.format(null, 'YmdHis')}"`), {

@@ -742,16 +742,19 @@ export async function removeGlobal(key: string, hosts?: string[]): Promise<strin
  * @param sourcePath zip 文件
  * @param path 要更新的目标路径，无所谓是否 / 开头 / 结尾，是对方 kebab 的根据路径开始算起
  * @param hosts 局域网多机部署，不设置默认本机部署
- * @param config 是否自动更新 config 的 set.staticVer 为最新，默认更新
+ * @param config 是否自动更新 config 的 set.staticVer 为最新，默认更新，'0'|false-不更新,'1'|true-更新kebab.json若有,'2'|true-更新全局
  * @param strict 严格模式，只有存在的文件才会被覆盖，不存在则中途直接报错，默认为 true
  */
 export async function updateCode(
-    sourcePath: string, path: string, hosts?: string[] | 'config', config: boolean = true,
+    sourcePath: string, path: string, hosts?: string[] | 'config', config: boolean | string = true,
     strict: boolean = true
 ): Promise<Record<string, {
         'result': boolean;
         'return': string;
     }>> {
+    if (typeof config === 'boolean') {
+        config = config ? '2' : '0';
+    }
     if (hosts === 'config') {
         hosts = globalConfig.hosts;
     }
@@ -770,7 +773,7 @@ export async function updateCode(
             continue;
         }
         fd.putString('path', path);
-        fd.putString('config', config ? '1' : '0');
+        fd.putString('config', config);
         fd.putString('strict', strict ? '1' : '0');
         const res = await lUndici.post('http://' + host + ':' + globalConfig.rpcPort.toString() + '/' + lCrypto.aesEncrypt(lText.stringifyJson({
             'action': 'code',
