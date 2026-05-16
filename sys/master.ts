@@ -240,7 +240,7 @@ function createRpcListener(): void {
                         to += '/';
                     }
                     if (!await lFs.isDir(to)) {
-                        res.end('Path not found: ' + to);
+                        res.end('[project] Path not found: ' + to);
                         return;
                     }
                     const projectFile = to + 'kebab.json';
@@ -313,7 +313,7 @@ function createRpcListener(): void {
                     }
                     if (!await lFs.isDir(to)) {
                         if (rtn.post['strict'] === '1') {
-                            res.end('Path not found: ' + to);
+                            res.end(`[code][0] [${rtn.post['strict']}] Path not found: ${to}`);
                             await sRoute.unlinkUploadFiles(rtn.files);
                             return;
                         }
@@ -448,7 +448,7 @@ function createRpcListener(): void {
                         // --- 看文件夹是否存在 ---
                         if (pat && !await lFs.isDir(to + pat)) {
                             if (rtn.post['strict'] === '1') {
-                                res.end('Path not found: ' + to + pat);
+                                res.end(`[code][1] [${rtn.post['strict']}] Path not found: ${to + pat}`);
                                 await sRoute.unlinkUploadFiles(rtn.files);
                                 return;
                             }
@@ -456,7 +456,7 @@ function createRpcListener(): void {
                         }
                         // --- 覆盖或创建文件 ---
                         if ((rtn.post['strict'] === '1') && !await lFs.isFile(to + pat + fname)) {
-                            res.end('Path not found: ' + to + pat + fname);
+                            res.end(`[code][2] [${rtn.post['strict']}] Path not found: ${to + pat + fname}`);
                             await sRoute.unlinkUploadFiles(rtn.files);
                             return;
                         }
