@@ -6,7 +6,7 @@
 
 # Interface: IOptions
 
-Defined in: [lib/session.ts:30](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L30)
+Defined in: [lib/session.ts:42](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L42)
 
 ## Properties
 
@@ -14,7 +14,7 @@ Defined in: [lib/session.ts:30](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **domain?**: `string`
 
-Defined in: [lib/session.ts:34](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L34)
+Defined in: [lib/session.ts:46](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L46)
 
 ***
 
@@ -22,7 +22,7 @@ Defined in: [lib/session.ts:34](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **name?**: `string`
 
-Defined in: [lib/session.ts:31](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L31)
+Defined in: [lib/session.ts:43](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L43)
 
 ***
 
@@ -30,7 +30,7 @@ Defined in: [lib/session.ts:31](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **sqlPre?**: `string`
 
-Defined in: [lib/session.ts:35](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L35)
+Defined in: [lib/session.ts:47](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L47)
 
 ***
 
@@ -38,7 +38,7 @@ Defined in: [lib/session.ts:35](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **ssl?**: `boolean`
 
-Defined in: [lib/session.ts:33](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L33)
+Defined in: [lib/session.ts:45](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L45)
 
 ***
 
@@ -46,7 +46,7 @@ Defined in: [lib/session.ts:33](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **token?**: `string`
 
-Defined in: [lib/session.ts:36](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L36)
+Defined in: [lib/session.ts:48](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L48)
 
 ***
 
@@ -54,4 +54,4 @@ Defined in: [lib/session.ts:36](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **ttl?**: `number`
 
-Defined in: [lib/session.ts:32](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L32)
+Defined in: [lib/session.ts:44](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L44)

@@ -1360,7 +1360,7 @@ index/variables/VER.md
 
 # Variable: VER
 
-> `const` **VER**: `"9.3.11"` = `'9.3.11'`
+> `const` **VER**: `"9.3.12"` = `'9.3.12'`
 
 Defined in: [index.ts:10](https://github.com/maiyunnet/kebab/blob/master/index.ts#L10)
 
@@ -13247,7 +13247,7 @@ lib/session/classes/Session.md
 
 # Class: Session
 
-Defined in: [lib/session.ts:39](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L39)
+Defined in: [lib/session.ts:51](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L51)
 
 ## Constructors
 
@@ -13265,7 +13265,7 @@ Defined in: [lib/session.ts:39](https://github.com/maiyunnet/kebab/blob/master/l
 
 > **getName**(): `string`
 
-Defined in: [lib/session.ts:212](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L212)
+Defined in: [lib/session.ts:224](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L224)
 
 获取当前的 cookie 的 name 值
 
@@ -13279,7 +13279,7 @@ Defined in: [lib/session.ts:212](https://github.com/maiyunnet/kebab/blob/master/
 
 > **getToken**(): `string`
 
-Defined in: [lib/session.ts:205](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L205)
+Defined in: [lib/session.ts:217](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L217)
 
 获取当前的 token 值
 
@@ -13293,7 +13293,7 @@ Defined in: [lib/session.ts:205](https://github.com/maiyunnet/kebab/blob/master/
 
 > **init**(`ctr`, `link`, `auth?`, `opt?`): `Promise`\<`boolean`\>
 
-Defined in: [lib/session.ts:67](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L67)
+Defined in: [lib/session.ts:79](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L79)
 
 初始化函数，相当于 construct
 
@@ -13335,7 +13335,7 @@ false 表示系统错误
 
 > **update**(): `Promise`\<`void`\>
 
-Defined in: [lib/session.ts:219](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L219)
+Defined in: [lib/session.ts:231](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L231)
 
 页面整体结束时，要写入到 Kv 或 数据库
 
@@ -13373,7 +13373,7 @@ lib/session/interfaces/IOptions.md
 
 # Interface: IOptions
 
-Defined in: [lib/session.ts:30](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L30)
+Defined in: [lib/session.ts:42](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L42)
 
 ## Properties
 
@@ -13381,7 +13381,7 @@ Defined in: [lib/session.ts:30](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **domain?**: `string`
 
-Defined in: [lib/session.ts:34](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L34)
+Defined in: [lib/session.ts:46](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L46)
 
 ***
 
@@ -13389,7 +13389,7 @@ Defined in: [lib/session.ts:34](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **name?**: `string`
 
-Defined in: [lib/session.ts:31](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L31)
+Defined in: [lib/session.ts:43](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L43)
 
 ***
 
@@ -13397,7 +13397,7 @@ Defined in: [lib/session.ts:31](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **sqlPre?**: `string`
 
-Defined in: [lib/session.ts:35](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L35)
+Defined in: [lib/session.ts:47](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L47)
 
 ***
 
@@ -13405,7 +13405,7 @@ Defined in: [lib/session.ts:35](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **ssl?**: `boolean`
 
-Defined in: [lib/session.ts:33](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L33)
+Defined in: [lib/session.ts:45](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L45)
 
 ***
 
@@ -13413,7 +13413,7 @@ Defined in: [lib/session.ts:33](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **token?**: `string`
 
-Defined in: [lib/session.ts:36](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L36)
+Defined in: [lib/session.ts:48](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L48)
 
 ***
 
@@ -13421,7 +13421,7 @@ Defined in: [lib/session.ts:36](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **ttl?**: `number`
 
-Defined in: [lib/session.ts:32](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L32)
+Defined in: [lib/session.ts:44](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L44)
 
 lib/socket/functions/rwebsocket.md
 ---
