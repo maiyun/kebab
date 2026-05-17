@@ -8,7 +8,7 @@
  * --- Mysql ---
 CREATE TABLE `session` (
   `id` bigint NOT NULL AUTO_INCREMENT,
-  `token` char(16) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
+  `token` char(32) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
   `data` text NOT NULL,
   `time_update` bigint NOT NULL,
   `time_add` bigint NOT NULL,
@@ -16,6 +16,18 @@ CREATE TABLE `session` (
   UNIQUE KEY `token` (`token`),
   KEY `time_update` (`time_update`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
+
+--- Pgsql ---
+CREATE TABLE "session" (
+  "id" BIGINT NOT NULL GENERATED ALWAYS AS IDENTITY,
+  "token" char(32) NOT NULL,
+  "data" text NOT NULL,
+  "time_update" bigint NOT NULL,
+  "time_add" bigint NOT NULL,
+  PRIMARY KEY ("id")
+);
+CREATE UNIQUE INDEX "session_token" ON "session" ("token");
+CREATE INDEX "session_time_update" ON "session" ("time_update");
 */
 
 // --- 库和定义 ---
@@ -159,7 +171,7 @@ export class Session {
                     if (count === 5) {
                         return false;
                     }
-                    this._token = lCore.random(16, lCore.RANDOM_LUN);
+                    this._token = lCore.random(32, lCore.RANDOM_LUN);
                     ++count;
                 } while (!await this._link.set(this._name + '_' + this._token, {}, this._ttl, 'nx'));
             }
@@ -169,7 +181,7 @@ export class Session {
                     if (count === 5) {
                         return false;
                     }
-                    this._token = lCore.random(16, lCore.RANDOM_LUN);
+                    this._token = lCore.random(32, lCore.RANDOM_LUN);
                     this._sql.insert('session').values({
                         'token': this._token,
                         'data': '{}',
