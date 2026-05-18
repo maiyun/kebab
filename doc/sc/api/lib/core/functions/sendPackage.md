@@ -8,7 +8,7 @@
 
 > **sendPackage**(`content`, `hosts?`): `Promise`\<`string`[]\>
 
-Defined in: [lib/core.ts:851](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L851)
+Defined in: [lib/core.ts:865](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L865)
 
 向本机或局域网 RPC 发送 package.json 更新操作
 

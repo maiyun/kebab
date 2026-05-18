@@ -24,6 +24,7 @@
 
 ## Functions
 
+- [csvescape](functions/csvescape.md)
 - [getFileExt](functions/getFileExt.md)
 - [getFilename](functions/getFilename.md)
 - [getFileNameExt](functions/getFileNameExt.md)

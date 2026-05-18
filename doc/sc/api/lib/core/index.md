@@ -43,6 +43,7 @@
 - [exec](functions/exec.md)
 - [getLog](functions/getLog.md)
 - [ip](functions/ip.md)
+- [ips](functions/ips.md)
 - [loadEnv](functions/loadEnv.md)
 - [log](functions/log.md)
 - [ls](functions/ls.md)

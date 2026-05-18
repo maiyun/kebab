@@ -8,7 +8,7 @@
 
 > **sendProject**(`path`, `key`, `value`, `hosts?`): `Promise`\<`string`[]\>
 
-Defined in: [lib/core.ts:808](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L808)
+Defined in: [lib/core.ts:822](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L822)
 
 向本机或局域网 RPC 发送项目配置更新操作
 

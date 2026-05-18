@@ -8,7 +8,7 @@
 
 > **getLog**(`opt`): `Promise`\<`false` \| `string`[][] \| `null`\>
 
-Defined in: [lib/core.ts:1012](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1012)
+Defined in: [lib/core.ts:1031](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1031)
 
 获取日志内容为一个数组
 
