@@ -379,6 +379,20 @@ export function ip(
     }
 }
 
+/** --- 获取 CF 和 X 的 IP --- */
+export function ips(
+    ctr: sCtr.Ctr | http.IncomingHttpHeaders
+): {
+    'cf': string;
+    'x': string;
+} {
+    const headers: http.IncomingHttpHeaders = ctr instanceof sCtr.Ctr ? ctr.getPrototype('_headers') : ctr;
+    return {
+        'cf': typeof headers['cf-connecting-ip'] === 'string' ? headers['cf-connecting-ip'] : '',
+        'x': typeof headers['x-forwarded-for'] === 'string' ? headers['x-forwarded-for'] : ''
+    };
+}
+
 /** --- 使用 X-Forwarded-For 的 CDN 厂商 --- */
 export const REAL_IP_X = 'x-forwarded-for';
 /** --- 使用的是 Cloudflare --- */
@@ -941,7 +955,10 @@ export function log(opt: sCtr.Ctr | ILogOptions, msg: string, fend: string = '')
         hostname = hostname.replace(/:/g, '_');
 
         const realIp = req?.socket.remoteAddress ?? '';
-        const clientIp = req ? ip(headers, req) : '';
+        const ipss = req ? ips(headers) : {
+            'cf': '',
+            'x': ''
+        };
 
         const [y, m, d, h] = lTime.format(null, 'Y-m-d-H').split('-');
         let path = kebab.LOG_CWD + hostname + fend + '/' + y + '/' + m + '/' + d + '/';
@@ -961,7 +978,8 @@ export function log(opt: sCtr.Ctr | ILogOptions, msg: string, fend: string = '')
                 'session': session,
                 'userAgent': headers['user-agent'] ?? '',
                 'realIp': realIp,
-                'clientIp': clientIp,
+                'cfIp': ipss.cf,
+                'xIp': ipss.x,
                 'osMem': lText.sizeFormat(os.totalmem() - os.freemem(), ''),
                 'procMem': lText.sizeFormat(process.memoryUsage().rss, ''),
                 'message': msg,
@@ -976,7 +994,7 @@ export function log(opt: sCtr.Ctr | ILogOptions, msg: string, fend: string = '')
             // --- CSV 格式（默认） ---
             path += h + '.csv';
             if (!await lFs.isFile(path)) {
-                if (!await lFs.putContent(path, 'TIME,UNIX,URL,COOKIE,SESSION,USER_AGENT,REALIP,CLIENTIP,OS,PROCESS,MESSAGE\n', {
+                if (!await lFs.putContent(path, 'TIME,UNIX,URL,COOKIE,SESSION,USER_AGENT,REALIP,CFIP,XIP,OS,PROCESS,MESSAGE\n', {
                     'encoding': 'utf8',
                     'mode': 0o777
                 })) {
@@ -984,17 +1002,18 @@ export function log(opt: sCtr.Ctr | ILogOptions, msg: string, fend: string = '')
                 }
             }
             await lFs.putContent(path, '"' +
-                lTime.format(null, 'H:i:s') + '","' +
-                lTime.stamp().toString() + '","' +
-                urlFull + wpath + (Object.keys(get).length ? '?' + lText.queryStringify(get).replace(/"/g, '""') : '') + '","' +
-                lText.queryStringify(cookie).replace(/"/g, '""') + '","' +
-                lText.stringifyJson(session).replace(/"/g, '""') + '","' +
-                (headers['user-agent']?.replace(/"/g, '""') ?? 'No HTTP_USER_AGENT') + '","' +
-                realIp.replace(/"/g, '""') + '","' +
-                clientIp.replace(/"/g, '""') + '","' +
-                lText.sizeFormat(os.totalmem() - os.freemem(), '') + '","' +
-                lText.sizeFormat(process.memoryUsage().rss, '') + '","' +
-                JSON.stringify(msg).slice(1, -1).replace(/"/g, '""') + '"\n', {
+                lText.csvescape(lTime.format(null, 'H:i:s')) + '","' +
+                lText.csvescape(lTime.stamp().toString()) + '","' +
+                lText.csvescape(urlFull + wpath + (Object.keys(get).length ? '?' + lText.queryStringify(get) : '')) + '","' +
+                lText.csvescape(lText.queryStringify(cookie)) + '","' +
+                lText.csvescape(lText.stringifyJson(session)) + '","' +
+                lText.csvescape(headers['user-agent'] ?? 'No HTTP_USER_AGENT') + '","' +
+                lText.csvescape(realIp) + '","' +
+                lText.csvescape(ipss.cf) + '","' +
+                lText.csvescape(ipss.x) + '","' +
+                lText.csvescape(lText.sizeFormat(os.totalmem() - os.freemem(), '')) + '","' +
+                lText.csvescape(lText.sizeFormat(process.memoryUsage().rss, '')) + '","' +
+                lText.csvescape(msg) + '"\n', {
                 'encoding': 'utf8',
                 'mode': 0o777,
                 'flag': 'a'

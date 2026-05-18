@@ -493,6 +493,11 @@ export function htmlescape(html: string): string {
     return html.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/'/g, '&quot;');
 }
 
+/** --- CSV 特殊字符转换为实体字符 --- */
+export function csvescape(str: string): string {
+    return String(str ?? '').replace(/"/g, '""');
+}
+
 /**
  * --- 判断是否是绝对路径，是返回 true，相对路径返回 false ---
  * @param path 要判断的路径字符串
