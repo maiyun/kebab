@@ -414,7 +414,7 @@ function createRpcListener(): void {
                             // --- 特殊文件不能覆盖 ---
                             continue;
                         }
-                        if (fname.endsWith('.js.map') || fname.endsWith('.ts') || fname.endsWith('.scss') || fname.endsWith('.gitignore') || fname.endsWith('.DS_Store')) {
+                        if (fname.endsWith('.js.map') || fname.endsWith('.ts') || fname.endsWith('.tsx') || fname.endsWith('.scss') || fname.endsWith('.gitignore') || fname.endsWith('.DS_Store')) {
                             // --- 测试或开发文件不覆盖 ---
                             continue;
                         }
