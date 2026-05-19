@@ -440,8 +440,10 @@ export default class Mod {
     /**
      * --- 批量更新数据 ---
      * @param db 数据库对象
-     * @param data 数据列表
-     * @param key 用于定位的主键或唯一键字段名
+     * @param data 数据列表，每个元素必须包含 key 字段，其余字段为要更新的列；
+     *             支持稀疏数据（不同元素可以拥有不同的列集合），内部会自动按列集合分组批量执行
+     * @param key 用于定位记录的字段名（主键或唯一键），该字段仅用于 WHERE 条件匹配，不会被更新；
+     *            data 中每个元素都必须包含此字段，否则该元素会被跳过
      * @param opt 选项（opt.pre: MySQL 表前缀/PostgreSQL Schema 名）
      */
     public static async updateList(
