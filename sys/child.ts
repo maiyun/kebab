@@ -59,6 +59,9 @@ let http2Server: http2.Http2SecureServer;
 /** --- 当前使用中的连接 --- */
 const linkCount: Record<string, number> = {};
 
+/** --- 是否正在停止，停止时对 HTTP/1.1 响应追加 Connection: close，避免请求完成后连接回到保活池 --- */
+let stopping = false;
+
 /**
  * --- 包装请求处理函数，统一管理 linkCount 计数和错误处理 ---
  * @param key 连接标识
@@ -252,6 +255,10 @@ async function requestHandler(
     res.setHeader('Server', 'Kebab/' + kebab.VER);
     res.setHeader('expires', 'Mon, 26 Jul 1994 05:00:00 GMT');
     res.setHeader('cache-control', 'no-store');
+    // --- 停止中：通知 HTTP/1.1 客户端不要复用此连接（HTTP/2 由 GOAWAY 帧处理） ---
+    if (stopping && res instanceof http.ServerResponse) {
+        res.setHeader('connection', 'close');
+    }
     // --- 当前 uri ---
     let host = req.headers[':authority'];
     if (host === undefined || typeof host !== 'string') {
@@ -604,26 +611,31 @@ process.on('message', function(msg: kebab.Json) {
             }
             case 'stop': {
                 // --- 需要停止监听，等待已有连接全部断开，然后关闭线程 ---
+                stopping = true;
                 httpServer.close();
                 http2Server.close();
+                // --- 立即关闭空闲保活连接（无活跃请求的 keep-alive socket），避免进程长时间等待 ---
+                httpServer.closeIdleConnections();
                 clearInterval(hbTimer);
                 sMonitor.stop();
-                // --- 等待连接全部断开 ---
+                // --- 等待活跃请求全部完成 ---
                 /** --- 当前已等待时间，等待不超过 1 小时 --- */
                 let waiting = 0;
                 while (true) {
                     if (!Object.keys(linkCount).length) {
                         break;
                     }
-                    // --- 有长连接，等待中 ---
+                    // --- 有活跃连接，等待中 ---
                     const str: string[] = [];
                     for (const key in linkCount) {
                         str.push(key + ':' + linkCount[key].toString());
                     }
                     lCore.debug(`[CHILD] Worker ${process.pid} busy: ${str.join(',')}.`);
                     lCore.log({}, `[CHILD] Worker ${process.pid} busy: ${str.join(',')}.`, '-warning');
-                    await lCore.sleep(30_000);
-                    waiting += 30_000;
+                    await lCore.sleep(5_000);
+                    waiting += 5_000;
+                    // --- 再次清理已变为空闲的保活连接 ---
+                    httpServer.closeIdleConnections();
                     if (waiting > 3600_000) {
                         break;
                     }
