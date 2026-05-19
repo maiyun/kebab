@@ -203,6 +203,60 @@ export class Sql {
     }
 
     /**
+     * --- 批量 UPDATE，以子查询作为数据源，纯更新语义（不会插入新行）---
+     * --- MySQL: UPDATE t INNER JOIN (SELECT col AS alias ... UNION ALL SELECT ...) AS tmp ON t.key=tmp.key SET t.c=tmp.c ---
+     * --- PostgreSQL: UPDATE t SET c=tmp.c FROM (VALUES ($1,...)) AS tmp(cols) WHERE t.key=tmp.key ---
+     * @param table 表名
+     * @param key 用于定位的主键/唯一键字段名
+     * @param cols 要更新的列名数组（不含 key）
+     * @param rows 数据行数组，每行顺序为 [keyVal, col1Val, col2Val, ...]（与 [key, ...cols] 对应）
+     */
+    public updateByValues(table: string, key: string, cols: string[], rows: any[][]): this {
+        this._data = [];
+        this._placeholderCounter = 1;
+        const allCols = [key, ...cols];
+        const quotedTable = this.field(table, this._pre);
+        const quotedKey = this.field(key);
+        if (this._service === ESERVICE.MYSQL) {
+            // --- MySQL 8.0.19+ VALUES ROW() 派生表语法 ---
+            const valueParts: string[] = [];
+            for (const row of rows) {
+                const parts = row.map(v => {
+                    const result = this._processValue(v);
+                    if (result.data.length > 0) {
+                        this._data.push(...result.data);
+                    }
+                    return result.sql;
+                });
+                valueParts.push(`ROW(${parts.join(', ')})`);
+            }
+            const tmpCols = allCols.map(c => this.field(c)).join(', ');
+            const setClauses = cols.map(c => `t.${this.field(c)} = tmp.${this.field(c)}`).join(', ');
+            this._sql = [`UPDATE ${quotedTable} t INNER JOIN (VALUES ${valueParts.join(', ')}) AS tmp(${tmpCols}) ON t.${quotedKey} = tmp.${quotedKey} SET ${setClauses}`];
+        }
+        else {
+            // --- PostgreSQL 使用 UPDATE FROM (VALUES ...) ---
+            const valueParts: string[] = [];
+            for (let ri = 0; ri < rows.length; ri++) {
+                const row = rows[ri];
+                const parts = row.map(v => {
+                    const result = this._processValue(v);
+                    if (result.data.length > 0) {
+                        this._data.push(...result.data);
+                    }
+                    // --- 第一行加显式类型转换，帮助 PostgreSQL 推断 VALUES 派生表的列类型 ---
+                    return ri === 0 ? result.sql + this._pgCastSuffix(v) : result.sql;
+                });
+                valueParts.push(`(${parts.join(', ')})`);
+            }
+            const tmpCols = allCols.map(c => this.field(c)).join(', ');
+            const setClauses = cols.map(c => `${this.field(c)} = tmp.${this.field(c)}`).join(', ');
+            this._sql = [`UPDATE ${quotedTable} t SET ${setClauses} FROM (VALUES ${valueParts.join(', ')}) AS tmp(${tmpCols}) WHERE t.${quotedKey} = tmp.${quotedKey}`];
+        }
+        return this;
+    }
+
+    /**
      * --- '*', 'xx' ---
      * @param c 字段字符串或字段数组
      * @param f 表，允许多张表
@@ -1079,6 +1133,49 @@ export class Sql {
     /** --- 获取占位符 --- */
     private _placeholder(): string {
         return this._service === ESERVICE.MYSQL ? '?' : `$${this._placeholderCounter++}`;
+    }
+
+    /**
+     * --- 返回 PostgreSQL VALUES 第一行的显式类型转换后缀，用于帮助 PostgreSQL 推断 VALUES 派生表列类型 ---
+     * @param v 要处理的值
+     */
+    private _pgCastSuffix(v: any): string {
+        if (v === null || v === undefined) {
+            return '';
+        }
+        if (typeof v === 'number') {
+            return Number.isInteger(v) ? '::bigint' : '::float8';
+        }
+        if (typeof v === 'boolean') {
+            return '::boolean';
+        }
+        if (v instanceof Buffer) {
+            return '::bytea';
+        }
+        if (Array.isArray(v)) {
+            // --- 函数式语法 ['FUNC(?)', [...]]，不加转换 ---
+            if (typeof v[0] === 'string' && v[0].includes('(')) {
+                return '';
+            }
+            // --- POLYGON ---
+            if (v[0]?.y !== undefined) {
+                return '::polygon';
+            }
+            // --- JSON 数组或 PG 原生数组（text[]、int[] 等），
+            //     不加转换，由 pg 驱动与目标列类型决定 ---
+            return '';
+        }
+        if (typeof v === 'object') {
+            // --- POINT ---
+            if (v.y !== undefined) {
+                return '::point';
+            }
+            // --- JSON 对象（用户应通过 sql.json() 包裹为字符串后传入），不加转换 ---
+            return '';
+        }
+        // --- string：保持 unknown 类型，兼容 text/varchar/jsonb 等目标列类型；
+        //     使用 sql.json() 包裹的 jsonb 数据经此路径，unknown 可隐式 cast 到 jsonb ---
+        return '';
     }
 
     /**

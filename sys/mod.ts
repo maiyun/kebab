@@ -458,76 +458,44 @@ export default class Mod {
             return true;
         }
 
-        // --- 获取所有涉及的字段（除了 key） ---
-        const columns = new Set<string>();
+        // --- 按列集合分组（处理稀疏数据，保证每组内所有行的列完全一致）---
+        const groups = new Map<string, Array<Record<string, any>>>();
         for (const item of data) {
-            for (const k in item) {
-                if (k !== key) {
-                    columns.add(k);
-                }
-            }
-        }
-        if (columns.size === 0) {
-            return true;
-        }
-        const cols = Array.from(columns);
-
-        // --- 计算分批大小 ---
-        // --- 每个字段需要 2 个占位符 (WHEN ? THEN ?)，加上 WHERE IN (?) 的 1 个 ---
-        // --- Total params per row = cols.length * 2 + 1 ---
-        const paramCountPerRow = cols.length * 2 + 1;
-        const batchSize = Math.floor(60000 / paramCountPerRow);
-
-        const batches = [];
-        for (let i = 0; i < data.length; i += batchSize) {
-            batches.push(data.slice(i, i + batchSize));
-        }
-
-        for (const batch of batches) {
-            const sq = lSql.get({
-                'service': db.getService() ?? lDb.ESERVICE.PGSQL,
-                'ctr': opt.ctr,
-                'pre': opt.pre ?? this._$pre,
-            });
-
-            const updates: Record<string, any> = {};
-            const keys: any[] = [];
-
-            for (const col of cols) {
-                let caseSql = `(CASE ${sq.field(key)}`;
-                const params: any[] = [];
-                let hasUpdate = false;
-
-                for (const item of batch) {
-                    if (item[col] !== undefined) {
-                        caseSql += ` WHEN ? THEN ?`;
-                        params.push(item[key], item[col]);
-                        hasUpdate = true;
-                    }
-                }
-
-                if (hasUpdate) {
-                    caseSql += ` ELSE ${sq.field(col)} END)`;
-                    updates[col] = [caseSql, params];
-                }
-            }
-
-            // --- 收集 keys ---
-            for (const item of batch) {
-                keys.push(item[key]);
-            }
-
-            if (Object.keys(updates).length === 0) {
+            const itemCols = Object.keys(item).filter(k => k !== key).sort();
+            if (itemCols.length === 0) {
                 continue;
             }
+            const groupKey = itemCols.join('\0');
+            if (!groups.has(groupKey)) {
+                groups.set(groupKey, []);
+            }
+            groups.get(groupKey)!.push(item);
+        }
+        if (groups.size === 0) {
+            return true;
+        }
 
-            sq.update(((this as any)._$table as string) + (opt.index ? ('_' + opt.index) : ''), updates)
-                .where({ [key]: keys });
+        const tableName = (this._$table as string) + (opt.index ? ('_' + opt.index) : '');
 
-            const r = await db.execute(sq.getSql(), sq.getData());
-            if (r.packet === null) {
-                lCore.log(opt.ctr ?? {}, '[MOD][updateList] ' + (lText.stringifyJson(r.error?.message ?? '').slice(1, -1) + ' - ' + sq.format()).replaceAll('"', '""'), '-error');
-                return false;
+        for (const [, groupItems] of groups) {
+            const cols = Object.keys(groupItems[0]).filter(k => k !== key).sort();
+            const allCols = [key, ...cols];
+            // --- 每行占位符数量 = key + 所有列，分批避免超出数据库参数上限 ---
+            const batchSize = Math.floor(60000 / allCols.length);
+            for (let i = 0; i < groupItems.length; i += batchSize) {
+                const batch = groupItems.slice(i, i + batchSize);
+                const sq = lSql.get({
+                    'service': db.getService() ?? lDb.ESERVICE.PGSQL,
+                    'ctr': opt.ctr,
+                    'pre': opt.pre ?? this._$pre,
+                });
+                const rows: any[][] = batch.map(item => allCols.map(c => item[c] ?? null));
+                sq.updateByValues(tableName, key, cols, rows);
+                const r = await db.execute(sq.getSql(), sq.getData());
+                if (r.packet === null) {
+                    lCore.log(opt.ctr ?? {}, '[MOD][updateList] ' + (lText.stringifyJson(r.error?.message ?? '').slice(1, -1) + ' - ' + sq.format()).replaceAll('"', '""'), '-error');
+                    return false;
+                }
             }
         }
 
