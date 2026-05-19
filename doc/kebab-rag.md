@@ -1360,7 +1360,7 @@ index/variables/VER.md
 
 # Variable: VER
 
-> `const` **VER**: `"9.4.0"` = `'9.4.0'`
+> `const` **VER**: `"9.4.1"` = `'9.4.1'`
 
 Defined in: [index.ts:10](https://github.com/maiyunnet/kebab/blob/master/index.ts#L10)
 
@@ -3460,7 +3460,7 @@ lib/core/functions/getLog.md
 
 # Function: getLog()
 
-> **getLog**(`opt`): `Promise`\<`false` \| `string`[][] \| `null`\>
+> **getLog**(`opt`): `Promise`\<`false` \| `any`[] \| `string`[][] \| `null`\>
 
 Defined in: [lib/core.ts:1031](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1031)
 
@@ -3522,7 +3522,7 @@ Defined in: [lib/core.ts:1031](https://github.com/maiyunnet/kebab/blob/master/li
 
 ## Returns
 
-`Promise`\<`false` \| `string`[][] \| `null`\>
+`Promise`\<`false` \| `any`[] \| `string`[][] \| `null`\>
 
 lib/core/functions/ip.md
 ---

@@ -6,7 +6,7 @@
 
 # Function: getLog()
 
-> **getLog**(`opt`): `Promise`\<`false` \| `string`[][] \| `null`\>
+> **getLog**(`opt`): `Promise`\<`false` \| `any`[] \| `string`[][] \| `null`\>
 
 Defined in: [lib/core.ts:1031](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1031)
 
@@ -68,4 +68,4 @@ Defined in: [lib/core.ts:1031](https://github.com/maiyunnet/kebab/blob/master/li
 
 ## Returns
 
-`Promise`\<`false` \| `string`[][] \| `null`\>
+`Promise`\<`false` \| `any`[] \| `string`[][] \| `null`\>
