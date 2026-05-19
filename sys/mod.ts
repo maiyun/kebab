@@ -477,7 +477,7 @@ export default class Mod {
             return true;
         }
 
-        const tableName = (this._$table as string) + (opt.index ? ('_' + opt.index) : '');
+        const tableName = this._$table + (opt.index ? ('_' + opt.index) : '');
 
         for (const [, groupItems] of groups) {
             const cols = Object.keys(groupItems[0]).filter(k => k !== key).sort();
