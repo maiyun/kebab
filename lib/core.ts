@@ -1045,7 +1045,7 @@ export async function getLog(opt: {
     'limit'?: number;
     /** --- 获取局域网服务器的日志，为空代表获取本机的 --- */
     'host'?: string;
-}): Promise<string[][] | null | false> {
+}): Promise<string[][] | kebab.Json[] | null | false> {
     opt.host ??= '127.0.0.1';
     // --- 局域网模式 ---
     const time = lTime.stamp();

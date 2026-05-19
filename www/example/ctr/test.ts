@@ -1583,11 +1583,21 @@ for (let i = 0; i < 30000; ++i) {
         const echo: string[] = [];
         echo.push('<table style="width: 100%;">');
         if (list) {
-            echo.push('<tr><th>TIME</th><th>UNIX</th><th>URL</th><th>COOKIE</th><th>SESSION</th><th>USER_AGENT</th><th>REALIP</th><th>CLIENTIP</th><th>OS</th><th>PROCESS</th><th>MESSAGE</th></tr>');
+            echo.push('<tr><th>TIME</th><th>UNIX</th><th>URL</th><th>COOKIE</th><th>SESSION</th><th>USER_AGENT</th><th>REALIP</th><th>CFIP</th><th>XIP</th><th>OS</th><th>PROCESS</th><th>MESSAGE</th></tr>');
             for (const row of list) {
                 echo.push('<tr>');
-                for (const item of row) {
-                    echo.push('<td>' + lText.htmlescape(item) + '</td>');
+                if (Array.isArray(row)) {
+                    // --- csv 格式：string[] ---
+                    for (const item of row) {
+                        echo.push('<td>' + lText.htmlescape(item) + '</td>');
+                    }
+                }
+                else {
+                    // --- jsonl 格式：object ---
+                    const r = row as Record<string, any>;
+                    for (const val of [r.time, r.unix, r.url, r.cookie, r.session, r.userAgent, r.realIp, r.cfIp, r.xIp, r.osMem, r.procMem, r.message]) {
+                        echo.push('<td>' + lText.htmlescape(typeof val === 'string' ? val : lText.stringifyJson(val) ?? '') + '</td>');
+                    }
                 }
                 echo.push('</tr>');
             }

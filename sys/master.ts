@@ -533,9 +533,15 @@ function createRpcListener(): void {
                     let limit = msg.limit ?? 100;
                     /** --- 剩余 offset --- */
                     let offset = msg.offset ?? 0;
-                    const rtn = await new Promise<string[][] | null | false>(resolve => {
-                        const list: string[][] = [];
-                        /** --- 当前行号 --- */
+                    /**
+                     * --- csv 格式：string[][] 每行是字段数组，顺序与表头一致 ---
+                     * --- [['H:i:s', unix, url, cookie, session, userAgent, realIp, cfIp, xIp, osMem, procMem, message], ...] ---
+                     * --- jsonl 格式：object[] 每行是解析后的 JSON 对象 ---
+                     * --- [{ time, unix, url, cookie, session, userAgent, realIp, cfIp, xIp, osMem, procMem, message }, ...] ---
+                     */
+                    const rtn = await new Promise<string[][] | kebab.Json[] | null | false>(resolve => {
+                        const list: string[][] | kebab.Json[] = [];
+                        /** --- 当前行号（jsonl 无表头，csv 有表头，两者处理逻辑不同）--- */
                         let line = 0;
                         /** --- 当前行数据 --- */
                         let packet = '';
@@ -562,34 +568,44 @@ function createRpcListener(): void {
                                 buf = buf.slice(index + 1);
                                 ++line;
                                 // --- 先执行下本次完成的 ---
-                                if (line > 1) {
+                                // --- csv：line > 1 跳过表头行；jsonl：无表头，line >= 1 即可处理 ---
+                                if (format === 'jsonl' ? line >= 1 : line > 1) {
                                     if (offset === 0) {
                                         if (!msg.search || packet.includes(msg.search)) {
-                                            const result: string[] = [];
-                                            let currentField = '';
-                                            let inQuotes = false;
-                                            for (let i = 0; i < packet.length; ++i) {
-                                                const char = packet[i];
-                                                if (char === '"') {
-                                                    if (inQuotes && packet[i + 1] === '"') {
-                                                        currentField += '"';
-                                                        ++i;
-                                                    }
-                                                    else {
-                                                        inQuotes = !inQuotes;
-                                                    }
-                                                }
-                                                else if (char === ',' && !inQuotes) {
-                                                    result.push(currentField);
-                                                    currentField = '';
-                                                }
-                                                else {
-                                                    currentField += char;
+                                            if (format === 'jsonl') {
+                                                const obj = lText.parseJson<kebab.Json>(packet);
+                                                if (obj) {
+                                                    (list as kebab.Json[]).push(obj);
+                                                    --limit;
                                                 }
                                             }
-                                            result.push(currentField);
-                                            list.push(result);
-                                            --limit;
+                                            else {
+                                                const result: string[] = [];
+                                                let currentField = '';
+                                                let inQuotes = false;
+                                                for (let i = 0; i < packet.length; ++i) {
+                                                    const char = packet[i];
+                                                    if (char === '"') {
+                                                        if (inQuotes && packet[i + 1] === '"') {
+                                                            currentField += '"';
+                                                            ++i;
+                                                        }
+                                                        else {
+                                                            inQuotes = !inQuotes;
+                                                        }
+                                                    }
+                                                    else if (char === ',' && !inQuotes) {
+                                                        result.push(currentField);
+                                                        currentField = '';
+                                                    }
+                                                    else {
+                                                        currentField += char;
+                                                    }
+                                                }
+                                                result.push(currentField);
+                                                (list as string[][]).push(result);
+                                                --limit;
+                                            }
                                         }
                                     }
                                     else {
