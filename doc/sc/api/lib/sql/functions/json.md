@@ -8,7 +8,7 @@
 
 > **json**(`obj`): `any`
 
-Defined in: [lib/sql.ts:1338](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L1338)
+Defined in: [lib/sql.ts:1435](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L1435)
 
 将对象转换为 JSON 字符串并避开类型检查，用于适配 PostgreSQL 的 jsonb 字段
 
