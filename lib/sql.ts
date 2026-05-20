@@ -207,7 +207,8 @@ export class Sql {
      * --- MySQL: UPDATE t INNER JOIN (SELECT col AS alias ... UNION ALL SELECT ...) AS tmp ON t.key=tmp.key SET t.c=tmp.c ---
      * --- PostgreSQL: UPDATE t SET c=tmp.c FROM (VALUES ($1,...)) AS tmp(cols) WHERE t.key=tmp.key ---
      * @param table 表名
-     * @param key 用于定位的主键/唯一键字段名
+     * @param key 用于定位待更新记录的字段名，通常为主键或唯一键，至少必须建立索引；
+     *         该参数是字段名而不是索引名，仅参与 ON / WHERE 匹配，不会被更新
      * @param cols 要更新的列名数组（不含 key）
      * @param rows 数据行数组，每行顺序为 [keyVal, col1Val, col2Val, ...]（与 [key, ...cols] 对应）
      */
@@ -218,24 +219,25 @@ export class Sql {
         const quotedTable = this.field(table, this._pre);
         const quotedKey = this.field(key);
         if (this._service === ESERVICE.MYSQL) {
-            // --- MySQL 使用 UNION ALL SELECT 子查询，比 VALUES ROW() 更稳定 ---
-            // --- MySQL 8.0 优化器在行数较多时对 VALUES ROW() 派生表会走不同执行路径，
-            //     导致列名别名解析失败，JOIN 静默匹配 0 行；UNION ALL 无此问题 ---
-            const selectParts: string[] = [];
-            for (let ri = 0; ri < rows.length; ri++) {
-                const row = rows[ri];
-                const parts = row.map((v, ci) => {
+            // --- MySQL 8.0.19+ VALUES ROW() 派生表语法 ---
+            // --- 必须把 tmp 放在 UPDATE 的 table_references 最前面，并使用 STRAIGHT_JOIN：
+            //     1. tmp 是小数据集，作为驱动表逐行查找目标表
+            //     2. STRAIGHT_JOIN 强制目标表按 key 条件被查找，避免优化器反向全表扫描
+            //     3. 相比 CASE WHEN，key 只出现一次，SQL 和参数量都更小 ---
+            const valueParts: string[] = [];
+            for (const row of rows) {
+                const parts = row.map(v => {
                     const result = this._processValue(v);
                     if (result.data.length > 0) {
                         this._data.push(...result.data);
                     }
-                    // --- 第一行加列名别名，后续行省略 ---
-                    return ri === 0 ? `${result.sql} AS ${this.field(allCols[ci])}` : result.sql;
+                    return result.sql;
                 });
-                selectParts.push(`SELECT ${parts.join(', ')}`);
+                valueParts.push(`ROW(${parts.join(', ')})`);
             }
+            const tmpCols = allCols.map(c => this.field(c)).join(', ');
             const setClauses = cols.map(c => `t.${this.field(c)} = tmp.${this.field(c)}`).join(', ');
-            this._sql = [`UPDATE ${quotedTable} t INNER JOIN (${selectParts.join(' UNION ALL ')}) AS tmp ON t.${quotedKey} = tmp.${quotedKey} SET ${setClauses}`];
+            this._sql = [`UPDATE (VALUES ${valueParts.join(', ')}) AS tmp(${tmpCols}) STRAIGHT_JOIN ${quotedTable} t ON t.${quotedKey} = tmp.${quotedKey} SET ${setClauses}`];
         }
         else {
             // --- PostgreSQL 使用 UPDATE FROM (VALUES ...) ---
