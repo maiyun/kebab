@@ -3904,12 +3904,14 @@ Result:<pre id="result">Nothing.</pre>`);
                 s = sql.update('order', { 'state': '1' }).where({
                     'user_id': '2',
                     'state': ['1', '2', '3'],
+                    '(a, b, c)': [['1', '2', '3'], ['4', '5', '6']],
                     '$or': [{ 'type': '1', 'find': '0' }, { 'type': '2', 'find': '1' }, [['type', '<', '-1']]]
                 }).getSql();
                 sd = sql.getData();
                 echo.push(`<pre>sql.update('order', { 'state': '1' }).where({
     'user_id': '2',
     'state': ['1', '2', '3'],
+    '(a, b, c)': [['1', '2', '3'], ['4', '5', '6']],
     '$or': [{ 'type': '1', 'find': '0' }, { 'type': '2', 'find': '1' }, [['type', '<', '-1']]]
 });</pre>
 <b>getSql() :</b> ${s}<br>

@@ -218,21 +218,24 @@ export class Sql {
         const quotedTable = this.field(table, this._pre);
         const quotedKey = this.field(key);
         if (this._service === ESERVICE.MYSQL) {
-            // --- MySQL 8.0.19+ VALUES ROW() 派生表语法 ---
-            const valueParts: string[] = [];
-            for (const row of rows) {
-                const parts = row.map(v => {
+            // --- MySQL 使用 UNION ALL SELECT 子查询，比 VALUES ROW() 更稳定 ---
+            // --- MySQL 8.0 优化器在行数较多时对 VALUES ROW() 派生表会走不同执行路径，
+            //     导致列名别名解析失败，JOIN 静默匹配 0 行；UNION ALL 无此问题 ---
+            const selectParts: string[] = [];
+            for (let ri = 0; ri < rows.length; ri++) {
+                const row = rows[ri];
+                const parts = row.map((v, ci) => {
                     const result = this._processValue(v);
                     if (result.data.length > 0) {
                         this._data.push(...result.data);
                     }
-                    return result.sql;
+                    // --- 第一行加列名别名，后续行省略 ---
+                    return ri === 0 ? `${result.sql} AS ${this.field(allCols[ci])}` : result.sql;
                 });
-                valueParts.push(`ROW(${parts.join(', ')})`);
+                selectParts.push(`SELECT ${parts.join(', ')}`);
             }
-            const tmpCols = allCols.map(c => this.field(c)).join(', ');
             const setClauses = cols.map(c => `t.${this.field(c)} = tmp.${this.field(c)}`).join(', ');
-            this._sql = [`UPDATE ${quotedTable} t INNER JOIN (VALUES ${valueParts.join(', ')}) AS tmp(${tmpCols}) ON t.${quotedKey} = tmp.${quotedKey} SET ${setClauses}`];
+            this._sql = [`UPDATE ${quotedTable} t INNER JOIN (${selectParts.join(' UNION ALL ')}) AS tmp ON t.${quotedKey} = tmp.${quotedKey} SET ${setClauses}`];
         }
         else {
             // --- PostgreSQL 使用 UPDATE FROM (VALUES ...) ---
@@ -648,8 +651,18 @@ export class Sql {
                     // --- 3 ---
                     sql += this.field(v[0]) + ' ' + v[1].toUpperCase() + ' (';
                     for (const v1 of v[2]) {
-                        sql += this._placeholder() + ', ';
-                        data.push(v1);
+                        if (Array.isArray(v1)) {
+                            sql += '(';
+                            for (const v2 of v1) {
+                                sql += this._placeholder() + ', ';
+                                data.push(v2);
+                            }
+                            sql = sql.slice(0, -2) + '), ';
+                        }
+                        else {
+                            sql += this._placeholder() + ', ';
+                            data.push(v1);
+                        }
                     }
                     sql = sql.slice(0, -2) + ') AND ';
                 }
@@ -710,8 +723,18 @@ export class Sql {
                         if (v.length > 0) {
                             sql += this.field(k) + ' IN (';
                             for (const v1 of v) {
-                                sql += this._placeholder() + ', ';
-                                data.push(v1);
+                                if (Array.isArray(v1)) {
+                                    sql += '(';
+                                    for (const v2 of v1) {
+                                        sql += this._placeholder() + ', ';
+                                        data.push(v2);
+                                    }
+                                    sql = sql.slice(0, -2) + '), ';
+                                }
+                                else {
+                                    sql += this._placeholder() + ', ';
+                                    data.push(v1);
+                                }
                             }
                             sql = sql.slice(0, -2) + ') AND ';
                         }
