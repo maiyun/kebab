@@ -1595,7 +1595,10 @@ for (let i = 0; i < 30000; ++i) {
                 else {
                     // --- jsonl 格式：object ---
                     const r = row as Record<string, any>;
-                    for (const val of [r.time, r.unix, r.url, r.cookie, r.session, r.userAgent, r.realIp, r.cfIp, r.xIp, r.osMem, r.procMem, r.message]) {
+                    for (const val of [
+                        r.time, r.unix, r.url,
+                        r.cookie, r.session, r.userAgent, r.realIp, r.cfIp, r.xIp, r.osMem, r.procMem, r.message
+                    ]) {
                         echo.push('<td>' + lText.htmlescape(typeof val === 'string' ? val : lText.stringifyJson(val) ?? '') + '</td>');
                     }
                 }
@@ -1657,13 +1660,13 @@ to: ${to}`
     }
 
     public async coreReload(): Promise<string> {
-        await lCore.sendReload();
-        return 'The reload request has been sent, please review the console.<br><br>' + this._getEnd();
+        const list = await lCore.sendReload();
+        return `The reload request has been sent, please review the console.<br>Hosts: ${JSON.stringify(list)}<br><br>` + this._getEnd();
     }
 
     public async coreRestart(): Promise<string> {
-        await lCore.sendRestart();
-        return 'The restart request has been sent, please review the console.<br><br>' + this._getEnd();
+        const list = await lCore.sendRestart();
+        return `The restart request has been sent, please review the console.<br>Hosts: ${JSON.stringify(list)}<br><br>` + this._getEnd();
     }
 
     public async corePm2(): Promise<string> {
@@ -1676,7 +1679,7 @@ to: ${to}`
             return 'Invalid action. Must be: start, stop, restart<br><br>' + this._getEnd();
         }
         const list = await lCore.sendPm2(name, action);
-        return `PM2 ${action} request has been sent for "${name}".<br>Success hosts: ${JSON.stringify(list)}<br><br>` + this._getEnd();
+        return `PM2 ${action} request has been sent for "${name}".<br>Hosts: ${JSON.stringify(list)}<br><br>` + this._getEnd();
     }
 
     public async coreNpm(): Promise<any> {
@@ -1693,7 +1696,7 @@ to: ${to}`
         }));
 
         const list = await lCore.sendNpm(path);
-        return `NPM request has been sent.<br>Success hosts: ${JSON.stringify(list)}<br><br>` + this._getEnd();
+        return `NPM request has been sent.<br>Hosts: ${JSON.stringify(list)}<br><br>` + this._getEnd();
     }
 
     public async coreGlobal(): Promise<string> {

@@ -1,7 +1,7 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2019-5-3 23:54
- * Last: 2020-4-11 22:34:58, 2022-10-2 14:13:06, 2022-12-28 20:33:24, 2023-12-15 11:49:02, 2024-7-2 15:23:35, 2025-6-13 19:45:53
+ * Last: 2020-4-11 22:34:58, 2022-10-2 14:13:06, 2022-12-28 20:33:24, 2023-12-15 11:49:02, 2024-7-2 15:23:35, 2025-6-13 19:45:53, 2026-05-20 09:50:00
  */
 import * as cp from 'child_process';
 import * as http from 'http';
@@ -383,9 +383,9 @@ export function ip(
 export function ips(
     ctr: sCtr.Ctr | http.IncomingHttpHeaders
 ): {
-    'cf': string;
-    'x': string;
-} {
+        'cf': string;
+        'x': string;
+    } {
     const headers: http.IncomingHttpHeaders = ctr instanceof sCtr.Ctr ? ctr.getPrototype('_headers') : ctr;
     return {
         'cf': typeof headers['cf-connecting-ip'] === 'string' ? headers['cf-connecting-ip'] : '',
@@ -532,7 +532,10 @@ export function exec(command: string, options: {
  * --- 向主进程（或局域网同代码机子）发送广播将进行 reload 操作，等待回传 ---
  * --- 主要作用除代码热更新以外的其他情况 ---
  */
-export async function sendReload(hosts?: string[] | 'config'): Promise<string[]> {
+export async function sendReload(hosts?: string[] | 'config'): Promise<Record<string, {
+    'result': boolean;
+    'return': string;
+}>> {
     if (!hosts) {
         // --- 本地模式 ---
         // eslint-disable-next-line no-console
@@ -540,7 +543,9 @@ export async function sendReload(hosts?: string[] | 'config'): Promise<string[]>
         process.send!({
             'action': 'reload'
         });
-        return [];
+        return {
+            '127.0.0.1': { 'result': true, 'return': 'Done' }
+        };
     }
     if (hosts === 'config') {
         hosts = globalConfig.hosts;
@@ -548,7 +553,7 @@ export async function sendReload(hosts?: string[] | 'config'): Promise<string[]>
     // --- 局域网模式 ---
     const time = lTime.stamp();
     /** --- 返回成功的 host --- */
-    const rtn: string[] = [];
+    const rtn: Record<string, { 'result': boolean; 'return': string; }> = {};
     for (const host of hosts) {
         const res = await lUndici.get('http://' + host + ':' + globalConfig.rpcPort.toString() + '/' + lCrypto.aesEncrypt(lText.stringifyJson({
             'action': 'reload',
@@ -562,7 +567,10 @@ export async function sendReload(hosts?: string[] | 'config'): Promise<string[]>
         }
         const str = content.toString();
         if (str === 'Done') {
-            rtn.push(host);
+            rtn[host] = { 'result': true, 'return': 'Done' };
+        }
+        else {
+            rtn[host] = { 'result': false, 'return': str };
         }
     }
     return rtn;
@@ -572,7 +580,10 @@ export async function sendReload(hosts?: string[] | 'config'): Promise<string[]>
  * --- 向主进程（或局域网同代码机子）发送广播将进行 restart 操作，停止监听并启动新进程，老进程在连接全部断开后自行销毁 ---
  * --- 主要用作不间断的代码热更新 ---
  */
-export async function sendRestart(hosts?: string[] | 'config'): Promise<string[]> {
+export async function sendRestart(hosts?: string[] | 'config'): Promise<Record<string, {
+    'result': boolean;
+    'return': string;
+}>> {
     if (!hosts) {
         // --- 本地模式 ---
         // eslint-disable-next-line no-console
@@ -580,7 +591,9 @@ export async function sendRestart(hosts?: string[] | 'config'): Promise<string[]
         process.send!({
             'action': 'restart'
         });
-        return [];
+        return {
+            '127.0.0.1': { 'result': true, 'return': 'Done' }
+        };
     }
     if (hosts === 'config') {
         hosts = globalConfig.hosts;
@@ -588,7 +601,7 @@ export async function sendRestart(hosts?: string[] | 'config'): Promise<string[]
     // --- 局域网模式 ---
     const time = lTime.stamp();
     /** --- 返回成功的 host --- */
-    const rtn: string[] = [];
+    const rtn: Record<string, { 'result': boolean; 'return': string; }> = {};
     for (const host of hosts) {
         const res = await lUndici.get('http://' + host + ':' + globalConfig.rpcPort.toString() + '/' + lCrypto.aesEncrypt(lText.stringifyJson({
             'action': 'restart',
@@ -602,7 +615,10 @@ export async function sendRestart(hosts?: string[] | 'config'): Promise<string[]
         }
         const str = content.toString();
         if (str === 'Done') {
-            rtn.push(host);
+            rtn[host] = { 'result': true, 'return': 'Done' };
+        }
+        else {
+            rtn[host] = { 'result': false, 'return': str };
         }
     }
     return rtn;
@@ -619,7 +635,10 @@ export type TPm2Action = 'start' | 'stop' | 'restart';
  */
 export async function sendPm2(
     name: string, action: TPm2Action = 'restart', hosts?: string[] | 'config'
-): Promise<string[]> {
+): Promise<Record<string, {
+        'result': boolean;
+        'return': string;
+    }>> {
     if (hosts === 'config') {
         hosts = globalConfig.hosts;
     }
@@ -630,7 +649,7 @@ export async function sendPm2(
     // --- 局域网模式 ---
     const time = lTime.stamp();
     /** --- 返回成功的 host --- */
-    const rtn: string[] = [];
+    const rtn: Record<string, { 'result': boolean; 'return': string; }> = {};
     for (const host of hosts) {
         const res = await lUndici.get('http://' + host + ':' + globalConfig.rpcPort.toString() + '/' + lCrypto.aesEncrypt(lText.stringifyJson({
             'action': 'pm2',
@@ -646,9 +665,10 @@ export async function sendPm2(
         }
         const str = content.toString();
         if (str === 'Done') {
-            rtn.push(host);
+            rtn[host] = { 'result': true, 'return': 'Done' };
         }
         else {
+            rtn[host] = { 'result': false, 'return': str };
             debug('[CORE][sendPm2] rpc server content error:', str);
         }
     }
@@ -658,11 +678,14 @@ export async function sendPm2(
 /**
  * --- 向本机或局域网 RPC 发送 npm install 操作 ---
  * @param path 路径，如 /home/kebab/
- * @param hosts 局域网列表
+ * @param hosts 局域网列表，不填则代表本机
  */
 export async function sendNpm(
     path: string, hosts?: string[] | 'config'
-): Promise<string[]> {
+): Promise<Record<string, {
+        'result': boolean;
+        'return': string;
+    }>> {
     if (hosts === 'config') {
         hosts = globalConfig.hosts;
     }
@@ -673,7 +696,7 @@ export async function sendNpm(
     // --- 局域网模式 ---
     const time = lTime.stamp();
     /** --- 返回成功的 host --- */
-    const rtn: string[] = [];
+    const rtn: Record<string, { 'result': boolean; 'return': string; }> = {};
     for (const host of hosts) {
         const res = await lUndici.get('http://' + host + ':' + globalConfig.rpcPort.toString() + '/' + lCrypto.aesEncrypt(lText.stringifyJson({
             'action': 'npm',
@@ -688,9 +711,10 @@ export async function sendNpm(
         }
         const str = content.toString();
         if (str === 'Done') {
-            rtn.push(host);
+            rtn[host] = { 'result': true, 'return': 'Done' };
         }
         else {
+            rtn[host] = { 'result': false, 'return': str };
             debug('[CORE][sendNpmInstall] rpc server content error:', str);
         }
     }
@@ -706,7 +730,10 @@ export const global: Record<string, any> = {};
  * @param data 变量值
  * @param hosts 局域网列表
  */
-export async function setGlobal(key: string, data: any, hosts?: string[] | 'config'): Promise<string[]> {
+export async function setGlobal(key: string, data: any, hosts?: string[] | 'config'): Promise<Record<string, {
+    'result': boolean;
+    'return': string;
+}>> {
     if (!hosts) {
         // --- 本地模式 ---
         process.send!({
@@ -714,7 +741,9 @@ export async function setGlobal(key: string, data: any, hosts?: string[] | 'conf
             'key': key,
             'data': data
         });
-        return [];
+        return {
+            '127.0.0.1': { 'result': true, 'return': 'Done' }
+        };
     }
     if (hosts === 'config') {
         hosts = globalConfig.hosts;
@@ -722,7 +751,7 @@ export async function setGlobal(key: string, data: any, hosts?: string[] | 'conf
     // --- 局域网模式 ---
     const time = lTime.stamp();
     /** --- 返回成功的 host --- */
-    const rtn: string[] = [];
+    const rtn: Record<string, { 'result': boolean; 'return': string; }> = {};
     for (const host of hosts) {
         const res = await lUndici.get('http://' + host + ':' + globalConfig.rpcPort.toString() + '/' + lCrypto.aesEncrypt(lText.stringifyJson({
             'action': 'global',
@@ -736,7 +765,10 @@ export async function setGlobal(key: string, data: any, hosts?: string[] | 'conf
         }
         const str = content.toString();
         if (str === 'Done') {
-            rtn.push(host);
+            rtn[host] = { 'result': true, 'return': 'Done' };
+        }
+        else {
+            rtn[host] = { 'result': false, 'return': str };
         }
     }
     return rtn;
@@ -747,7 +779,10 @@ export async function setGlobal(key: string, data: any, hosts?: string[] | 'conf
  * @param key 变量名
  * @param hosts 局域网列表
  */
-export async function removeGlobal(key: string, hosts?: string[]): Promise<string[]> {
+export async function removeGlobal(key: string, hosts?: string[] | 'config'): Promise<Record<string, {
+    'result': boolean;
+    'return': string;
+}>> {
     return setGlobal(key, null, hosts);
 }
 
@@ -821,7 +856,10 @@ export async function updateCode(
  */
 export async function sendProject(
     path: string, key: string, value: string, hosts?: string[] | 'config'
-): Promise<string[]> {
+): Promise<Record<string, {
+        'result': boolean;
+        'return': string;
+    }>> {
     if (hosts === 'config') {
         hosts = globalConfig.hosts;
     }
@@ -832,7 +870,7 @@ export async function sendProject(
     // --- 局域网模式 ---
     const time = lTime.stamp();
     /** --- 返回成功的 host --- */
-    const rtn: string[] = [];
+    const rtn: Record<string, { 'result': boolean; 'return': string; }> = {};
     for (const host of hosts) {
         const res = await lUndici.get('http://' + host + ':' + globalConfig.rpcPort.toString() + '/' + lCrypto.aesEncrypt(lText.stringifyJson({
             'action': 'project',
@@ -848,9 +886,10 @@ export async function sendProject(
         }
         const str = content.toString();
         if (str === 'Done') {
-            rtn.push(host);
+            rtn[host] = { 'result': true, 'return': 'Done' };
         }
         else {
+            rtn[host] = { 'result': false, 'return': str };
             debug('[CORE][sendProject] rpc server content error:', str);
         }
     }
@@ -864,7 +903,10 @@ export async function sendProject(
  */
 export async function sendPackage(
     content: string, hosts?: string[] | 'config'
-): Promise<string[]> {
+): Promise<Record<string, {
+        'result': boolean;
+        'return': string;
+    }>> {
     if (hosts === 'config') {
         hosts = globalConfig.hosts;
     }
@@ -875,7 +917,7 @@ export async function sendPackage(
     // --- 局域网模式 ---
     const time = lTime.stamp();
     /** --- 返回成功的 host --- */
-    const rtn: string[] = [];
+    const rtn: Record<string, { 'result': boolean; 'return': string; }> = {};
     for (const host of hosts) {
         const res = await lUndici.get('http://' + host + ':' + globalConfig.rpcPort.toString() + '/' + lCrypto.aesEncrypt(lText.stringifyJson({
             'action': 'package',
@@ -890,9 +932,10 @@ export async function sendPackage(
         }
         const str = resContent.toString();
         if (str === 'Done') {
-            rtn.push(host);
+            rtn[host] = { 'result': true, 'return': 'Done' };
         }
         else {
+            rtn[host] = { 'result': false, 'return': str };
             debug('[CORE][sendPackage] rpc server content error:', str);
         }
     }
