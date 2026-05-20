@@ -51,10 +51,10 @@ let certLastLoad: number = 0;
 let vhosts: kebab.IVhost[] = [];
 
 /** --- http 服务器 --- */
-let httpServer: http.Server;
+let httpServer: http.Server | undefined;
 
 /** --- http2 服务器 --- */
-let http2Server: http2.Http2SecureServer;
+let http2Server: http2.Http2SecureServer | undefined;
 
 /** --- 当前使用中的连接 --- */
 const linkCount: Record<string, number> = {};
@@ -612,10 +612,10 @@ process.on('message', function(msg: kebab.Json) {
             case 'stop': {
                 // --- 需要停止监听，等待已有连接全部断开，然后关闭线程 ---
                 stopping = true;
-                httpServer.close();
-                http2Server.close();
+                httpServer?.close();
+                http2Server?.close();
                 // --- 立即关闭空闲保活连接（无活跃请求的 keep-alive socket），避免进程长时间等待 ---
-                httpServer.closeIdleConnections();
+                httpServer?.closeIdleConnections();
                 clearInterval(hbTimer);
                 sMonitor.stop();
                 // --- 等待活跃请求全部完成 ---
@@ -635,7 +635,7 @@ process.on('message', function(msg: kebab.Json) {
                     await lCore.sleep(5_000);
                     waiting += 5_000;
                     // --- 再次清理已变为空闲的保活连接 ---
-                    httpServer.closeIdleConnections();
+                    httpServer?.closeIdleConnections();
                     if (waiting > 3600_000) {
                         break;
                     }
