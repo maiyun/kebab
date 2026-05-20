@@ -8,7 +8,7 @@
 
 > **ls**(`opt`): `Promise`\<`object`[]\>
 
-Defined in: [lib/core.ts:1128](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1128)
+Defined in: [lib/core.ts:1123](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1123)
 
 获取目录内文件/文件夹列表
 

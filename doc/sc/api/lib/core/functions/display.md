@@ -8,7 +8,7 @@
 
 > **display**(`message?`, ...`optionalParams`): `void`
 
-Defined in: [lib/core.ts:1214](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1214)
+Defined in: [lib/core.ts:1209](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1209)
 
 向控制台直接显示内容，一般情况下禁止使用
 
