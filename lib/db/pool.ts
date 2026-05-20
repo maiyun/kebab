@@ -69,9 +69,9 @@ async function checkConnection(): Promise<void> {
             continue;
         }
         if (connection.isUsing()) {
-            // --- 连接正在被使用，看看是否空闲了超过 30 秒，超过则不是正常状态 ---
-            if (connection.getLast() <= now - 30) {
-                // --- 30 秒之前开始的 ---
+            // --- 连接正在被使用，看看是否超过 10 分钟，超过则不是正常状态 ---
+            if (connection.getLast() <= now - 600) {
+                // --- 10 分钟之前开始的 ---
                 const ls = connection.getLastSql();
                 const newarr = ls.map(item => {
                     if (!item.values) {
