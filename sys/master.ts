@@ -529,10 +529,52 @@ function createRpcListener(): void {
                         }));
                         return;
                     }
+                    // --- 用 wc -l 高效获取总行数 ---
+                    let total = 0;
+                    const wclRtn = await lCore.exec(`wc -l "${path}"`);
+                    if (wclRtn !== false) {
+                        const wclMatch = /^\s*(\d+)/.exec(wclRtn);
+                        if (wclMatch) {
+                            total = parseInt(wclMatch[1]);
+                            if (format === 'csv') {
+                                // --- csv 有表头，数据行数减 1 ---
+                                total = Math.max(0, total - 1);
+                            }
+                        }
+                    }
                     /** --- 剩余 limit --- */
                     let limit = msg.limit ?? 100;
-                    /** --- 剩余 offset --- */
-                    let offset = msg.offset ?? 0;
+                    /** --- offset --- */
+                    const offset: number = msg.offset ?? 0;
+                    /**
+                     * --- 用 grep -b '^' 获取目标行的字节偏移，直接传给 createReadStream start 跳过 offset ---
+                     * --- jsonl 无表头：跳过 offset 行，从第 offset+1 行开始读 ---
+                     * --- csv  有表头：跳过表头+offset 行，从第 offset+2 行开始读 ---
+                     */
+                    let startByte = 0;
+                    /** --- offset 定位是否成功（offset=0 直接成功；offset>0 需 grep 定位）--- */
+                    let offsetLocated = offset === 0;
+                    if (offset > 0) {
+                        const skipLines = format === 'jsonl' ? offset : offset + 1;
+                        // --- sed -n '${N}{p;q}' 找到第 N 行后立即退出，使 grep 收到 SIGPIPE 提前终止 ---
+                        const grepRtn = await lCore.exec(`grep -b '^' "${path}" | sed -n '${skipLines + 1}{p;q}'`);
+                        if (grepRtn !== false) {
+                            const grepMatch = /^(\d+):/.exec(grepRtn.trim());
+                            if (grepMatch) {
+                                startByte = parseInt(grepMatch[1]);
+                                offsetLocated = true;
+                            }
+                        }
+                    }
+                    if (!offsetLocated) {
+                        // --- offset 超出文件范围，返回空列表 ---
+                        res.end(lText.stringifyJson({
+                            'result': 1,
+                            'data': [],
+                            'total': total,
+                        }));
+                        return;
+                    }
                     /**
                      * --- csv 格式：string[][] 每行是字段数组，顺序与表头一致 ---
                      * --- [['H:i:s', unix, url, cookie, session, userAgent, realIp, cfIp, xIp, osMem, procMem, message], ...] ---
@@ -541,14 +583,14 @@ function createRpcListener(): void {
                      */
                     const rtn = await new Promise<string[][] | kebab.Json[] | null | false>(resolve => {
                         const list: string[][] | kebab.Json[] = [];
-                        /** --- 当前行号（jsonl 无表头，csv 有表头，两者处理逻辑不同）--- */
+                        /** --- 当前行号 --- */
                         let line = 0;
                         /** --- 当前行数据 --- */
                         let packet = '';
                         lFs.createReadStream(path, {
                             'encoding': 'utf8',
-                            'start': msg.start,
-                        }).on('data', (buf) => {
+                            'start': startByte,
+                        }).on('data', buf => {
                             if (typeof buf !== 'string') {
                                 return;
                             }
@@ -567,49 +609,44 @@ function createRpcListener(): void {
                                 packet += buf.slice(0, index);
                                 buf = buf.slice(index + 1);
                                 ++line;
-                                // --- 先执行下本次完成的 ---
-                                // --- csv：line > 1 跳过表头行；jsonl：无表头，line >= 1 即可处理 ---
-                                if (format === 'jsonl' ? line >= 1 : line > 1) {
-                                    if (offset === 0) {
-                                        if (!msg.search || packet.includes(msg.search)) {
-                                            if (format === 'jsonl') {
-                                                const obj = lText.parseJson<kebab.Json>(packet);
-                                                if (obj) {
-                                                    (list as kebab.Json[]).push(obj);
-                                                    --limit;
-                                                }
-                                            }
-                                            else {
-                                                const result: string[] = [];
-                                                let currentField = '';
-                                                let inQuotes = false;
-                                                for (let i = 0; i < packet.length; ++i) {
-                                                    const char = packet[i];
-                                                    if (char === '"') {
-                                                        if (inQuotes && packet[i + 1] === '"') {
-                                                            currentField += '"';
-                                                            ++i;
-                                                        }
-                                                        else {
-                                                            inQuotes = !inQuotes;
-                                                        }
-                                                    }
-                                                    else if (char === ',' && !inQuotes) {
-                                                        result.push(currentField);
-                                                        currentField = '';
-                                                    }
-                                                    else {
-                                                        currentField += char;
-                                                    }
-                                                }
-                                                result.push(currentField);
-                                                (list as string[][]).push(result);
+                                // --- startByte > 0 时已跳过 offset（及 csv 表头），从第一行起均为数据行 ---
+                                // --- startByte === 0 且 csv 时仍需跳过表头（line > 1）---
+                                if (format === 'csv' && startByte === 0 ? line > 1 : line >= 1) {
+                                    if (!msg.search || packet.includes(msg.search)) {
+                                        if (format === 'jsonl') {
+                                            const obj = lText.parseJson<kebab.Json>(packet);
+                                            if (obj) {
+                                                (list as kebab.Json[]).push(obj);
                                                 --limit;
                                             }
                                         }
-                                    }
-                                    else {
-                                        --offset;
+                                        else {
+                                            const result: string[] = [];
+                                            let currentField = '';
+                                            let inQuotes = false;
+                                            for (let i = 0; i < packet.length; ++i) {
+                                                const char = packet[i];
+                                                if (char === '"') {
+                                                    if (inQuotes && packet[i + 1] === '"') {
+                                                        currentField += '"';
+                                                        ++i;
+                                                    }
+                                                    else {
+                                                        inQuotes = !inQuotes;
+                                                    }
+                                                }
+                                                else if (char === ',' && !inQuotes) {
+                                                    result.push(currentField);
+                                                    currentField = '';
+                                                }
+                                                else {
+                                                    currentField += char;
+                                                }
+                                            }
+                                            result.push(currentField);
+                                            (list as string[][]).push(result);
+                                            --limit;
+                                        }
                                     }
                                 }
                                 // --- 处理结束 ---
@@ -629,7 +666,8 @@ function createRpcListener(): void {
                     });
                     res.end(lText.stringifyJson({
                         'result': 1,
-                        'data': rtn,
+                        'list': rtn,
+                        'total': total,
                     }));
                     return;
                 }

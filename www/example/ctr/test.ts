@@ -1575,16 +1575,16 @@ for (let i = 0; i < 30000; ++i) {
 
     public async coreGetlog(): Promise<string> {
         const path = lTime.format(null, 'Y/m/d/H');
-        const list = await lCore.getLog({
+        const log = await lCore.getLog({
             'hostname': this._config.const.hostname,
             'path': path,
             'fend': '-visit',
         });
         const echo: string[] = [];
-        echo.push('<table style="width: 100%;">');
-        if (list) {
+        echo.push(`total: ${log ? log.total : 0}<br><table style="width: 100%;">`);
+        if (log) {
             echo.push('<tr><th>TIME</th><th>UNIX</th><th>URL</th><th>COOKIE</th><th>SESSION</th><th>USER_AGENT</th><th>REALIP</th><th>CFIP</th><th>XIP</th><th>OS</th><th>PROCESS</th><th>MESSAGE</th></tr>');
-            for (const row of list) {
+            for (const row of log.list) {
                 echo.push('<tr>');
                 if (Array.isArray(row)) {
                     // --- csv 格式：string[] ---
@@ -1606,7 +1606,7 @@ for (let i = 0; i < 30000; ++i) {
             }
         }
         else {
-            echo.push('<tr><th>' + JSON.stringify(list) + '</th></tr>');
+            echo.push('<tr><th>' + JSON.stringify(log) + '</th></tr>');
         }
         echo.push('</table>');
         return echo.join('') + '<br>' + this._getEnd();

@@ -1080,45 +1080,40 @@ export async function getLog(opt: {
     'fend'?: string;
     /** --- 仅显示被搜索到的行 --- */
     'search'?: string;
-    /** --- 跳过的字节数，默认不跳过 --- */
-    'start'?: number;
     /** --- 跳过条数 --- */
     'offset'?: number;
     /** --- 最大限制，默认 100 --- */
     'limit'?: number;
     /** --- 获取局域网服务器的日志，为空代表获取本机的 --- */
     'host'?: string;
-}): Promise<string[][] | kebab.Json[] | null | false> {
+}): Promise<{
+    'list': string[][] | kebab.Json[];
+    'total': number;
+} | false> {
     opt.host ??= '127.0.0.1';
     // --- 局域网模式 ---
     const time = lTime.stamp();
-    const res = await lUndici.get('http://' + opt.host + ':' + globalConfig.rpcPort.toString() + '/' + lCrypto.aesEncrypt(lText.stringifyJson({
+    const res = await lUndici.getResponseJson('http://' + opt.host + ':' + globalConfig.rpcPort.toString() + '/' + lCrypto.aesEncrypt(lText.stringifyJson({
         'action': 'log',
         'time': time,
         'hostname': opt.hostname,
         'path': opt.path,
         'fend': opt.fend,
         'search': opt.search,
-        'start': opt.start,
         'offset': opt.offset,
         'limit': opt.limit,
     }), globalConfig.rpcSecret), {
         'timeout': 2
     });
-    const content = await res.getContent();
-    if (!content) {
-        // --- 连接失败，系统错误 ---
-        debug('[CORE][getLog] rpc server error');
-        return false;
-    }
-    const str = content.toString();
-    const j = lText.parseJson<any>(str);
-    if (!j) {
+    if (!res) {
         // --- 解析失败，系统错误 ---
         debug('[CORE][getLog] rpc server content error');
         return false;
     }
-    return j.data;
+    return {
+        'list': res.list,
+        'total': res.total,
+    };
 }
 
 /**
