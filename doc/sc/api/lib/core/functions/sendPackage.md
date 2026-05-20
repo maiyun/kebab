@@ -6,9 +6,9 @@
 
 # Function: sendPackage()
 
-> **sendPackage**(`content`, `hosts?`): `Promise`\<`string`[]\>
+> **sendPackage**(`content`, `hosts?`): `Promise`\<`Record`\<`string`, \{ `result`: `boolean`; `return`: `string`; \}\>\>
 
-Defined in: [lib/core.ts:865](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L865)
+Defined in: [lib/core.ts:904](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L904)
 
 向本机或局域网 RPC 发送 package.json 更新操作
 
@@ -28,4 +28,4 @@ package.json 文件内容
 
 ## Returns
 
-`Promise`\<`string`[]\>
+`Promise`\<`Record`\<`string`, \{ `result`: `boolean`; `return`: `string`; \}\>\>

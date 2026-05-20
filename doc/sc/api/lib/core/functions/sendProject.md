@@ -6,9 +6,9 @@
 
 # Function: sendProject()
 
-> **sendProject**(`path`, `key`, `value`, `hosts?`): `Promise`\<`string`[]\>
+> **sendProject**(`path`, `key`, `value`, `hosts?`): `Promise`\<`Record`\<`string`, \{ `result`: `boolean`; `return`: `string`; \}\>\>
 
-Defined in: [lib/core.ts:822](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L822)
+Defined in: [lib/core.ts:857](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L857)
 
 向本机或局域网 RPC 发送项目配置更新操作
 
@@ -40,4 +40,4 @@ Defined in: [lib/core.ts:822](https://github.com/maiyunnet/kebab/blob/master/lib
 
 ## Returns
 
-`Promise`\<`string`[]\>
+`Promise`\<`Record`\<`string`, \{ `result`: `boolean`; `return`: `string`; \}\>\>

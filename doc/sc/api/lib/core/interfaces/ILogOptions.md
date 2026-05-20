@@ -6,7 +6,7 @@
 
 # Interface: ILogOptions
 
-Defined in: [lib/core.ts:903](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L903)
+Defined in: [lib/core.ts:946](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L946)
 
 log 设置的选项
 
@@ -16,7 +16,7 @@ log 设置的选项
 
 > `optional` **cookie?**: `Record`\<`string`, `string`\>
 
-Defined in: [lib/core.ts:909](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L909)
+Defined in: [lib/core.ts:952](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L952)
 
 ***
 
@@ -24,7 +24,7 @@ Defined in: [lib/core.ts:909](https://github.com/maiyunnet/kebab/blob/master/lib
 
 > `optional` **get?**: `Record`\<`string`, `any`\>
 
-Defined in: [lib/core.ts:908](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L908)
+Defined in: [lib/core.ts:951](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L951)
 
 ***
 
@@ -32,7 +32,7 @@ Defined in: [lib/core.ts:908](https://github.com/maiyunnet/kebab/blob/master/lib
 
 > `optional` **headers?**: `IncomingHttpHeaders`
 
-Defined in: [lib/core.ts:911](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L911)
+Defined in: [lib/core.ts:954](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L954)
 
 ***
 
@@ -40,7 +40,7 @@ Defined in: [lib/core.ts:911](https://github.com/maiyunnet/kebab/blob/master/lib
 
 > `optional` **hostname?**: `string`
 
-Defined in: [lib/core.ts:906](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L906)
+Defined in: [lib/core.ts:949](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L949)
 
 ***
 
@@ -48,7 +48,7 @@ Defined in: [lib/core.ts:906](https://github.com/maiyunnet/kebab/blob/master/lib
 
 > `optional` **path?**: `string`
 
-Defined in: [lib/core.ts:904](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L904)
+Defined in: [lib/core.ts:947](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L947)
 
 ***
 
@@ -56,7 +56,7 @@ Defined in: [lib/core.ts:904](https://github.com/maiyunnet/kebab/blob/master/lib
 
 > `optional` **req?**: `IncomingMessage` \| `Http2ServerRequest` \| `null`
 
-Defined in: [lib/core.ts:907](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L907)
+Defined in: [lib/core.ts:950](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L950)
 
 ***
 
@@ -64,7 +64,7 @@ Defined in: [lib/core.ts:907](https://github.com/maiyunnet/kebab/blob/master/lib
 
 > `optional` **session?**: `Record`\<`string`, `any`\>
 
-Defined in: [lib/core.ts:910](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L910)
+Defined in: [lib/core.ts:953](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L953)
 
 ***
 
@@ -72,4 +72,4 @@ Defined in: [lib/core.ts:910](https://github.com/maiyunnet/kebab/blob/master/lib
 
 > `optional` **urlFull?**: `string`
 
-Defined in: [lib/core.ts:905](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L905)
+Defined in: [lib/core.ts:948](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L948)

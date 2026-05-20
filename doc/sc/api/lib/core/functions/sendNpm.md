@@ -6,9 +6,9 @@
 
 # Function: sendNpm()
 
-> **sendNpm**(`path`, `hosts?`): `Promise`\<`string`[]\>
+> **sendNpm**(`path`, `hosts?`): `Promise`\<`Record`\<`string`, \{ `result`: `boolean`; `return`: `string`; \}\>\>
 
-Defined in: [lib/core.ts:663](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L663)
+Defined in: [lib/core.ts:683](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L683)
 
 向本机或局域网 RPC 发送 npm install 操作
 
@@ -24,8 +24,8 @@ Defined in: [lib/core.ts:663](https://github.com/maiyunnet/kebab/blob/master/lib
 
 `string`[] \| `"config"`
 
-局域网列表
+局域网列表，不填则代表本机
 
 ## Returns
 
-`Promise`\<`string`[]\>
+`Promise`\<`Record`\<`string`, \{ `result`: `boolean`; `return`: `string`; \}\>\>

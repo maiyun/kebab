@@ -6,7 +6,7 @@
 
 # Function: sendReload()
 
-> **sendReload**(`hosts?`): `Promise`\<`string`[]\>
+> **sendReload**(`hosts?`): `Promise`\<`Record`\<`string`, \{ `result`: `boolean`; `return`: `string`; \}\>\>
 
 Defined in: [lib/core.ts:535](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L535)
 
@@ -21,4 +21,4 @@ Defined in: [lib/core.ts:535](https://github.com/maiyunnet/kebab/blob/master/lib
 
 ## Returns
 
-`Promise`\<`string`[]\>
+`Promise`\<`Record`\<`string`, \{ `result`: `boolean`; `return`: `string`; \}\>\>

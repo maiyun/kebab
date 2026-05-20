@@ -6,9 +6,9 @@
 
 # Function: sendPm2()
 
-> **sendPm2**(`name`, `action?`, `hosts?`): `Promise`\<`string`[]\>
+> **sendPm2**(`name`, `action?`, `hosts?`): `Promise`\<`Record`\<`string`, \{ `result`: `boolean`; `return`: `string`; \}\>\>
 
-Defined in: [lib/core.ts:620](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L620)
+Defined in: [lib/core.ts:636](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L636)
 
 向本机或局域网 RPC 发送 PM2 操作
 
@@ -34,4 +34,4 @@ PM2 操作类型
 
 ## Returns
 
-`Promise`\<`string`[]\>
+`Promise`\<`Record`\<`string`, \{ `result`: `boolean`; `return`: `string`; \}\>\>

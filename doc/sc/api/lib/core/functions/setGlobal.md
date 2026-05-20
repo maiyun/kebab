@@ -6,9 +6,9 @@
 
 # Function: setGlobal()
 
-> **setGlobal**(`key`, `data`, `hosts?`): `Promise`\<`string`[]\>
+> **setGlobal**(`key`, `data`, `hosts?`): `Promise`\<`Record`\<`string`, \{ `result`: `boolean`; `return`: `string`; \}\>\>
 
-Defined in: [lib/core.ts:709](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L709)
+Defined in: [lib/core.ts:733](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L733)
 
 设置跨线程/指定的局域网主机的全局变量
 
@@ -34,4 +34,4 @@ Defined in: [lib/core.ts:709](https://github.com/maiyunnet/kebab/blob/master/lib
 
 ## Returns
 
-`Promise`\<`string`[]\>
+`Promise`\<`Record`\<`string`, \{ `result`: `boolean`; `return`: `string`; \}\>\>

@@ -6,9 +6,9 @@
 
 # Function: removeGlobal()
 
-> **removeGlobal**(`key`, `hosts?`): `Promise`\<`string`[]\>
+> **removeGlobal**(`key`, `hosts?`): `Promise`\<`Record`\<`string`, \{ `result`: `boolean`; `return`: `string`; \}\>\>
 
-Defined in: [lib/core.ts:750](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L750)
+Defined in: [lib/core.ts:782](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L782)
 
 移除某个跨线程/跨内网服务器全局变量
 
@@ -22,10 +22,10 @@ Defined in: [lib/core.ts:750](https://github.com/maiyunnet/kebab/blob/master/lib
 
 ### hosts?
 
-`string`[]
+`string`[] \| `"config"`
 
 局域网列表
 
 ## Returns
 
-`Promise`\<`string`[]\>
+`Promise`\<`Record`\<`string`, \{ `result`: `boolean`; `return`: `string`; \}\>\>
