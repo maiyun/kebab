@@ -1360,7 +1360,7 @@ index/variables/VER.md
 
 # Variable: VER
 
-> `const` **VER**: `"9.8.0"` = `'9.8.0'`
+> `const` **VER**: `"9.9.0"` = `'9.9.0'`
 
 Defined in: [index.ts:10](https://github.com/maiyunnet/kebab/blob/master/index.ts#L10)
 
@@ -19381,7 +19381,7 @@ lib/vector/classes/Vector.md
 
 # Class: Vector
 
-Defined in: [lib/vector.ts:31](https://github.com/maiyunnet/kebab/blob/master/lib/vector.ts#L31)
+Defined in: [lib/vector.ts:25](https://github.com/maiyunnet/kebab/blob/master/lib/vector.ts#L25)
 
 ## Constructors
 
@@ -19389,7 +19389,7 @@ Defined in: [lib/vector.ts:31](https://github.com/maiyunnet/kebab/blob/master/li
 
 > **new Vector**(`etc`): `Vector`
 
-Defined in: [lib/vector.ts:36](https://github.com/maiyunnet/kebab/blob/master/lib/vector.ts#L36)
+Defined in: [lib/vector.ts:30](https://github.com/maiyunnet/kebab/blob/master/lib/vector.ts#L30)
 
 #### Parameters
 
@@ -19405,9 +19405,9 @@ Defined in: [lib/vector.ts:36](https://github.com/maiyunnet/kebab/blob/master/li
 
 ### delete()
 
-> **delete**(`data`): `Promise`\<`false` \| `MutationResult`\>
+> **delete**(`data`): `Promise`\<`false` \| \{ `deletedCount`: `number`; \}\>
 
-Defined in: [lib/vector.ts:104](https://github.com/maiyunnet/kebab/blob/master/lib/vector.ts#L104)
+Defined in: [lib/vector.ts:116](https://github.com/maiyunnet/kebab/blob/master/lib/vector.ts#L116)
 
 删除数据
 
@@ -19429,15 +19429,15 @@ Defined in: [lib/vector.ts:104](https://github.com/maiyunnet/kebab/blob/master/l
 
 #### Returns
 
-`Promise`\<`false` \| `MutationResult`\>
+`Promise`\<`false` \| \{ `deletedCount`: `number`; \}\>
 
 ***
 
 ### insert()
 
-> **insert**(`data`): `Promise`\<`false` \| `MutationResult`\>
+> **insert**(`data`): `Promise`\<`false` \| \{ `insertCount`: `number`; `insertIds`: (`string` \| `number`)[]; \}\>
 
-Defined in: [lib/vector.ts:79](https://github.com/maiyunnet/kebab/blob/master/lib/vector.ts#L79)
+Defined in: [lib/vector.ts:85](https://github.com/maiyunnet/kebab/blob/master/lib/vector.ts#L85)
 
 插入数据
 
@@ -19453,21 +19453,21 @@ Defined in: [lib/vector.ts:79](https://github.com/maiyunnet/kebab/blob/master/li
 
 ###### data
 
-`RowData`[]
+`Record`\<`string`, `any`\>[]
 
 要插入的数据
 
 #### Returns
 
-`Promise`\<`false` \| `MutationResult`\>
+`Promise`\<`false` \| \{ `insertCount`: `number`; `insertIds`: (`string` \| `number`)[]; \}\>
 
 ***
 
 ### seach()
 
-> **seach**(`data`): `Promise`\<`false` \| `SearchResults`\<\{ `collection_name`: `string`; `data`: `number`[]; `filter`: `string` \| `undefined`; `limit`: `number`; `metric_type`: `"L2"` \| `"IP"` \| `"COSINE"`; `output_fields`: `string`[] \| `undefined`; \}\>\>
+> **seach**(`data`): `Promise`\<`false` \| `object`[]\>
 
-Defined in: [lib/vector.ts:42](https://github.com/maiyunnet/kebab/blob/master/lib/vector.ts#L42)
+Defined in: [lib/vector.ts:35](https://github.com/maiyunnet/kebab/blob/master/lib/vector.ts#L35)
 
 搜索
 
@@ -19513,7 +19513,7 @@ Defined in: [lib/vector.ts:42](https://github.com/maiyunnet/kebab/blob/master/li
 
 #### Returns
 
-`Promise`\<`false` \| `SearchResults`\<\{ `collection_name`: `string`; `data`: `number`[]; `filter`: `string` \| `undefined`; `limit`: `number`; `metric_type`: `"L2"` \| `"IP"` \| `"COSINE"`; `output_fields`: `string`[] \| `undefined`; \}\>\>
+`Promise`\<`false` \| `object`[]\>
 
 lib/vector/functions/get.md
 ---
@@ -19528,7 +19528,7 @@ lib/vector/functions/get.md
 
 > **get**(`ctrEtc`): [`Vector`](../classes/Vector.md)
 
-Defined in: [lib/vector.ts:165](https://github.com/maiyunnet/kebab/blob/master/lib/vector.ts#L165)
+Defined in: [lib/vector.ts:152](https://github.com/maiyunnet/kebab/blob/master/lib/vector.ts#L152)
 
 创建一个 Vector 对象
 
@@ -19578,7 +19578,7 @@ lib/vector/interfaces/IOptions.md
 
 # Interface: IOptions
 
-Defined in: [lib/vector.ts:18](https://github.com/maiyunnet/kebab/blob/master/lib/vector.ts#L18)
+Defined in: [lib/vector.ts:12](https://github.com/maiyunnet/kebab/blob/master/lib/vector.ts#L12)
 
 选项
 
@@ -19588,7 +19588,7 @@ Defined in: [lib/vector.ts:18](https://github.com/maiyunnet/kebab/blob/master/li
 
 > `optional` **host?**: `string`
 
-Defined in: [lib/vector.ts:20](https://github.com/maiyunnet/kebab/blob/master/lib/vector.ts#L20)
+Defined in: [lib/vector.ts:14](https://github.com/maiyunnet/kebab/blob/master/lib/vector.ts#L14)
 
 主机地址
 
@@ -19598,7 +19598,7 @@ Defined in: [lib/vector.ts:20](https://github.com/maiyunnet/kebab/blob/master/li
 
 > `optional` **name?**: `string`
 
-Defined in: [lib/vector.ts:24](https://github.com/maiyunnet/kebab/blob/master/lib/vector.ts#L24)
+Defined in: [lib/vector.ts:18](https://github.com/maiyunnet/kebab/blob/master/lib/vector.ts#L18)
 
 数据库名称
 
@@ -19608,7 +19608,7 @@ Defined in: [lib/vector.ts:24](https://github.com/maiyunnet/kebab/blob/master/li
 
 > `optional` **port?**: `number`
 
-Defined in: [lib/vector.ts:22](https://github.com/maiyunnet/kebab/blob/master/lib/vector.ts#L22)
+Defined in: [lib/vector.ts:16](https://github.com/maiyunnet/kebab/blob/master/lib/vector.ts#L16)
 
 端口号
 
@@ -19618,7 +19618,7 @@ Defined in: [lib/vector.ts:22](https://github.com/maiyunnet/kebab/blob/master/li
 
 > `optional` **pwd?**: `string`
 
-Defined in: [lib/vector.ts:28](https://github.com/maiyunnet/kebab/blob/master/lib/vector.ts#L28)
+Defined in: [lib/vector.ts:22](https://github.com/maiyunnet/kebab/blob/master/lib/vector.ts#L22)
 
 密码
 
@@ -19628,7 +19628,7 @@ Defined in: [lib/vector.ts:28](https://github.com/maiyunnet/kebab/blob/master/li
 
 > `optional` **user?**: `string`
 
-Defined in: [lib/vector.ts:26](https://github.com/maiyunnet/kebab/blob/master/lib/vector.ts#L26)
+Defined in: [lib/vector.ts:20](https://github.com/maiyunnet/kebab/blob/master/lib/vector.ts#L20)
 
 用户名
 

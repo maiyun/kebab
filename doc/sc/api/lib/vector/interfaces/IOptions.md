@@ -6,7 +6,7 @@
 
 # Interface: IOptions
 
-Defined in: [lib/vector.ts:18](https://github.com/maiyunnet/kebab/blob/master/lib/vector.ts#L18)
+Defined in: [lib/vector.ts:12](https://github.com/maiyunnet/kebab/blob/master/lib/vector.ts#L12)
 
 选项
 
@@ -16,7 +16,7 @@ Defined in: [lib/vector.ts:18](https://github.com/maiyunnet/kebab/blob/master/li
 
 > `optional` **host?**: `string`
 
-Defined in: [lib/vector.ts:20](https://github.com/maiyunnet/kebab/blob/master/lib/vector.ts#L20)
+Defined in: [lib/vector.ts:14](https://github.com/maiyunnet/kebab/blob/master/lib/vector.ts#L14)
 
 主机地址
 
@@ -26,7 +26,7 @@ Defined in: [lib/vector.ts:20](https://github.com/maiyunnet/kebab/blob/master/li
 
 > `optional` **name?**: `string`
 
-Defined in: [lib/vector.ts:24](https://github.com/maiyunnet/kebab/blob/master/lib/vector.ts#L24)
+Defined in: [lib/vector.ts:18](https://github.com/maiyunnet/kebab/blob/master/lib/vector.ts#L18)
 
 数据库名称
 
@@ -36,7 +36,7 @@ Defined in: [lib/vector.ts:24](https://github.com/maiyunnet/kebab/blob/master/li
 
 > `optional` **port?**: `number`
 
-Defined in: [lib/vector.ts:22](https://github.com/maiyunnet/kebab/blob/master/lib/vector.ts#L22)
+Defined in: [lib/vector.ts:16](https://github.com/maiyunnet/kebab/blob/master/lib/vector.ts#L16)
 
 端口号
 
@@ -46,7 +46,7 @@ Defined in: [lib/vector.ts:22](https://github.com/maiyunnet/kebab/blob/master/li
 
 > `optional` **pwd?**: `string`
 
-Defined in: [lib/vector.ts:28](https://github.com/maiyunnet/kebab/blob/master/lib/vector.ts#L28)
+Defined in: [lib/vector.ts:22](https://github.com/maiyunnet/kebab/blob/master/lib/vector.ts#L22)
 
 密码
 
@@ -56,6 +56,6 @@ Defined in: [lib/vector.ts:28](https://github.com/maiyunnet/kebab/blob/master/li
 
 > `optional` **user?**: `string`
 
-Defined in: [lib/vector.ts:26](https://github.com/maiyunnet/kebab/blob/master/lib/vector.ts#L26)
+Defined in: [lib/vector.ts:20](https://github.com/maiyunnet/kebab/blob/master/lib/vector.ts#L20)
 
 用户名

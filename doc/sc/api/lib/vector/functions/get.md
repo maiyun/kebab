@@ -8,7 +8,7 @@
 
 > **get**(`ctrEtc`): [`Vector`](../classes/Vector.md)
 
-Defined in: [lib/vector.ts:165](https://github.com/maiyunnet/kebab/blob/master/lib/vector.ts#L165)
+Defined in: [lib/vector.ts:152](https://github.com/maiyunnet/kebab/blob/master/lib/vector.ts#L152)
 
 创建一个 Vector 对象
 
