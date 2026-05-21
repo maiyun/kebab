@@ -529,8 +529,88 @@ function createRpcListener(): void {
                         }));
                         return;
                     }
-                    // --- 用 wc -l 高效获取总行数 ---
+                    let limit: number = msg.limit ?? 100;
+                    const offset: number = msg.offset ?? 0;
                     let total = 0;
+                    if (msg.search) {
+                        // === 搜索模式：total 为匹配行数，offset/limit 均基于匹配行 ===
+                        // --- shell 单引号安全转义（防止特殊字符破坏命令）---
+                        const escaped: string = (msg.search as string).replace(/'/g, "'\\''");
+                        // --- 获取匹配行总数（grep -c 无匹配时退出码 1，|| echo 0 兜底）---
+                        const countCmd = format === 'csv'
+                            ? `tail -n +2 "${path}" | grep -F -c '${escaped}' || echo 0`
+                            : `grep -F -c '${escaped}' "${path}" || echo 0`;
+                        const countRtn = await lCore.exec(countCmd);
+                        if (countRtn !== false) {
+                            total = parseInt(countRtn.trim()) || 0;
+                        }
+                        // --- 获取分页数据：第 offset+1 到 offset+limit 条匹配行（1-indexed）---
+                        const from = offset + 1;
+                        const to = offset + limit;
+                        const dataCmd = format === 'csv'
+                            ? `tail -n +2 "${path}" | grep -F '${escaped}' | sed -n '${from},${to}p'`
+                            : `grep -F '${escaped}' "${path}" | sed -n '${from},${to}p'`;
+                        const dataRtn = await lCore.exec(dataCmd);
+                        if (dataRtn === false) {
+                            res.end(lText.stringifyJson({
+                                'result': 1,
+                                'list': [],
+                                'total': total,
+                            }));
+                            return;
+                        }
+                        /**
+                         * --- csv 格式：string[][] 每行是字段数组，顺序与表头一致 ---
+                         * --- [['H:i:s', unix, url, cookie, session, userAgent, realIp, cfIp, xIp, osMem, procMem, message], ...] ---
+                         * --- jsonl 格式：object[] 每行是解析后的 JSON 对象 ---
+                         * --- [{ time, unix, url, cookie, session, userAgent, realIp, cfIp, xIp, osMem, procMem, message }, ...] ---
+                         */
+                        const sList: string[][] | kebab.Json[] = [];
+                        for (const rawLine of dataRtn.split('\n')) {
+                            if (!rawLine) {
+                                continue;
+                            }
+                            if (format === 'jsonl') {
+                                const obj = lText.parseJson<kebab.Json>(rawLine);
+                                if (obj) {
+                                    (sList as kebab.Json[]).push(obj);
+                                }
+                            }
+                            else {
+                                const result: string[] = [];
+                                let currentField = '';
+                                let inQuotes = false;
+                                for (let i = 0; i < rawLine.length; ++i) {
+                                    const char = rawLine[i];
+                                    if (char === '"') {
+                                        if (inQuotes && rawLine[i + 1] === '"') {
+                                            currentField += '"';
+                                            ++i;
+                                        }
+                                        else {
+                                            inQuotes = !inQuotes;
+                                        }
+                                    }
+                                    else if (char === ',' && !inQuotes) {
+                                        result.push(currentField);
+                                        currentField = '';
+                                    }
+                                    else {
+                                        currentField += char;
+                                    }
+                                }
+                                result.push(currentField);
+                                (sList as string[][]).push(result);
+                            }
+                        }
+                        res.end(lText.stringifyJson({
+                            'result': 1,
+                            'list': sList,
+                            'total': total,
+                        }));
+                        return;
+                    }
+                    // === 无搜索模式：wc -l 获取总行数，grep -b '^' 定位字节偏移直接跳至 offset ===
                     const wclRtn = await lCore.exec(`wc -l "${path}"`);
                     if (wclRtn !== false) {
                         const wclMatch = /^\s*(\d+)/.exec(wclRtn);
@@ -542,10 +622,6 @@ function createRpcListener(): void {
                             }
                         }
                     }
-                    /** --- 剩余 limit --- */
-                    let limit = msg.limit ?? 100;
-                    /** --- offset --- */
-                    const offset: number = msg.offset ?? 0;
                     /**
                      * --- 用 grep -b '^' 获取目标行的字节偏移，直接传给 createReadStream start 跳过 offset ---
                      * --- jsonl 无表头：跳过 offset 行，从第 offset+1 行开始读 ---
@@ -570,7 +646,7 @@ function createRpcListener(): void {
                         // --- offset 超出文件范围，返回空列表 ---
                         res.end(lText.stringifyJson({
                             'result': 1,
-                            'data': [],
+                            'list': [],
                             'total': total,
                         }));
                         return;
@@ -612,41 +688,39 @@ function createRpcListener(): void {
                                 // --- startByte > 0 时已跳过 offset（及 csv 表头），从第一行起均为数据行 ---
                                 // --- startByte === 0 且 csv 时仍需跳过表头（line > 1）---
                                 if (format === 'csv' && startByte === 0 ? line > 1 : line >= 1) {
-                                    if (!msg.search || packet.includes(msg.search)) {
-                                        if (format === 'jsonl') {
-                                            const obj = lText.parseJson<kebab.Json>(packet);
-                                            if (obj) {
-                                                (list as kebab.Json[]).push(obj);
-                                                --limit;
-                                            }
-                                        }
-                                        else {
-                                            const result: string[] = [];
-                                            let currentField = '';
-                                            let inQuotes = false;
-                                            for (let i = 0; i < packet.length; ++i) {
-                                                const char = packet[i];
-                                                if (char === '"') {
-                                                    if (inQuotes && packet[i + 1] === '"') {
-                                                        currentField += '"';
-                                                        ++i;
-                                                    }
-                                                    else {
-                                                        inQuotes = !inQuotes;
-                                                    }
-                                                }
-                                                else if (char === ',' && !inQuotes) {
-                                                    result.push(currentField);
-                                                    currentField = '';
-                                                }
-                                                else {
-                                                    currentField += char;
-                                                }
-                                            }
-                                            result.push(currentField);
-                                            (list as string[][]).push(result);
+                                    if (format === 'jsonl') {
+                                        const obj = lText.parseJson<kebab.Json>(packet);
+                                        if (obj) {
+                                            (list as kebab.Json[]).push(obj);
                                             --limit;
                                         }
+                                    }
+                                    else {
+                                        const result: string[] = [];
+                                        let currentField = '';
+                                        let inQuotes = false;
+                                        for (let i = 0; i < packet.length; ++i) {
+                                            const char = packet[i];
+                                            if (char === '"') {
+                                                if (inQuotes && packet[i + 1] === '"') {
+                                                    currentField += '"';
+                                                    ++i;
+                                                }
+                                                else {
+                                                    inQuotes = !inQuotes;
+                                                }
+                                            }
+                                            else if (char === ',' && !inQuotes) {
+                                                result.push(currentField);
+                                                currentField = '';
+                                            }
+                                            else {
+                                                currentField += char;
+                                            }
+                                        }
+                                        result.push(currentField);
+                                        (list as string[][]).push(result);
+                                        --limit;
                                     }
                                 }
                                 // --- 处理结束 ---
