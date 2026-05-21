@@ -8,7 +8,7 @@
 
 > **csvescape**(`str`): `string`
 
-Defined in: [lib/text.ts:497](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L497)
+Defined in: [lib/text.ts:514](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L514)
 
 CSV 特殊字符转换为实体字符
 

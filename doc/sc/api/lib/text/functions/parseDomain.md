@@ -8,7 +8,7 @@
 
 > **parseDomain**(`domain`): `Promise`\<[`IDomain`](../interfaces/IDomain.md)\>
 
-Defined in: [lib/text.ts:288](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L288)
+Defined in: [lib/text.ts:305](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L305)
 
 解析域名并获取 tld/sld/domain/sub
 

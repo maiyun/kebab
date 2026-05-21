@@ -32,7 +32,7 @@ Defined in: [lib/core.ts:1123](https://github.com/maiyunnet/kebab/blob/master/li
 
 `string`
 
-如 2024/08/01/22，无所谓开头结尾
+如 2024/08/01/22，无所谓开头结尾是否有 /，不会逃逸出 cwd 路径
 
 ## Returns
 

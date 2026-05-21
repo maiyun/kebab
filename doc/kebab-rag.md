@@ -1360,7 +1360,7 @@ index/variables/VER.md
 
 # Variable: VER
 
-> `const` **VER**: `"9.10.0"` = `'9.10.0'`
+> `const` **VER**: `"9.10.1"` = `'9.10.1'`
 
 Defined in: [index.ts:10](https://github.com/maiyunnet/kebab/blob/master/index.ts#L10)
 
@@ -3691,7 +3691,7 @@ Defined in: [lib/core.ts:1123](https://github.com/maiyunnet/kebab/blob/master/li
 
 `string`
 
-如 2024/08/01/22，无所谓开头结尾
+如 2024/08/01/22，无所谓开头结尾是否有 /，不会逃逸出 cwd 路径
 
 ## Returns
 
@@ -15902,7 +15902,7 @@ lib/text/functions/csvescape.md
 
 > **csvescape**(`str`): `string`
 
-Defined in: [lib/text.ts:497](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L497)
+Defined in: [lib/text.ts:514](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L514)
 
 CSV 特殊字符转换为实体字符
 
@@ -15929,7 +15929,7 @@ lib/text/functions/getFileExt.md
 
 > **getFileExt**(`path`): `string`
 
-Defined in: [lib/text.ts:538](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L538)
+Defined in: [lib/text.ts:555](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L555)
 
 获取文件后缀
 
@@ -15958,7 +15958,7 @@ lib/text/functions/getFileNameExt.md
 
 > **getFileNameExt**(`path`): `object`
 
-Defined in: [lib/text.ts:551](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L551)
+Defined in: [lib/text.ts:568](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L568)
 
 获取文件名和后缀
 
@@ -15995,7 +15995,7 @@ lib/text/functions/getFilename.md
 
 > **getFilename**(`path`, `ext?`): `string`
 
-Defined in: [lib/text.ts:518](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L518)
+Defined in: [lib/text.ts:535](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L535)
 
 获取文件名
 
@@ -16030,7 +16030,7 @@ lib/text/functions/htmlescape.md
 
 > **htmlescape**(`html`): `string`
 
-Defined in: [lib/text.ts:488](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L488)
+Defined in: [lib/text.ts:505](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L505)
 
 HTML 特殊字符转换为实体字符
 
@@ -16059,7 +16059,7 @@ lib/text/functions/int2str.md
 
 > **int2str**(`int`, `digits?`, `decimal?`): `string`
 
-Defined in: [lib/text.ts:751](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L751)
+Defined in: [lib/text.ts:768](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L768)
 
 为解决精度问题，将整数转换为小数字符串
 以下几个示例都是当 digits 为 3、decimal 为 2 时
@@ -16105,7 +16105,7 @@ lib/text/functions/isAscii.md
 
 > **isAscii**(`text`): `boolean`
 
-Defined in: [lib/text.ts:256](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L256)
+Defined in: [lib/text.ts:273](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L273)
 
 判断是否在 ascii 字符集内，仅可输入部分
 
@@ -16134,7 +16134,7 @@ lib/text/functions/isDomain.md
 
 > **isDomain**(`domain`): `boolean`
 
-Defined in: [lib/text.ts:245](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L245)
+Defined in: [lib/text.ts:262](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L262)
 
 判断是否是域名
 
@@ -16165,7 +16165,7 @@ lib/text/functions/isEMail.md
 
 > **isEMail**(`email`): `boolean`
 
-Defined in: [lib/text.ts:214](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L214)
+Defined in: [lib/text.ts:231](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L231)
 
 是否是邮件地址
 
@@ -16192,7 +16192,7 @@ lib/text/functions/isFalsy.md
 
 > **isFalsy**(`val`): `val is TFalsy`
 
-Defined in: [lib/text.ts:702](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L702)
+Defined in: [lib/text.ts:719](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L719)
 
 判断一个值是否是虚假的（为 null/undefined/空字符串/false/0）
 
@@ -16221,7 +16221,7 @@ lib/text/functions/isIdCardCN.md
 
 > **isIdCardCN**(`idcard`): `boolean`
 
-Defined in: [lib/text.ts:368](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L368)
+Defined in: [lib/text.ts:385](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L385)
 
 是否是中国大陆身份证号码
 
@@ -16250,7 +16250,7 @@ lib/text/functions/isIPv4.md
 
 > **isIPv4**(`ip`): `boolean`
 
-Defined in: [lib/text.ts:224](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L224)
+Defined in: [lib/text.ts:241](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L241)
 
 是否是 IPv4
 
@@ -16277,7 +16277,7 @@ lib/text/functions/isIPv6.md
 
 > **isIPv6**(`ip`): `boolean`
 
-Defined in: [lib/text.ts:234](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L234)
+Defined in: [lib/text.ts:251](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L251)
 
 是否是 IPv6
 
@@ -16304,7 +16304,7 @@ lib/text/functions/isPhoneCN.md
 
 > **isPhoneCN**(`p`): `boolean`
 
-Defined in: [lib/text.ts:360](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L360)
+Defined in: [lib/text.ts:377](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L377)
 
 判断手机号是否是 11 位，不做真实性校验
 
@@ -16333,7 +16333,7 @@ lib/text/functions/isRealPath.md
 
 > **isRealPath**(`path`): `boolean`
 
-Defined in: [lib/text.ts:505](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L505)
+Defined in: [lib/text.ts:522](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L522)
 
 判断是否是绝对路径，是返回 true，相对路径返回 false
 
@@ -16362,7 +16362,7 @@ lib/text/functions/isTruthy.md
 
 > **isTruthy**\<`T`\>(`val`): `val is Exclude<T, TFalsy>`
 
-Defined in: [lib/text.ts:710](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L710)
+Defined in: [lib/text.ts:727](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L727)
 
 判断一个值是否是真实的（不为 null/undefined/空字符串/false/0）
 
@@ -16397,7 +16397,7 @@ lib/text/functions/logicalOr.md
 
 > **logicalOr**\<`T`, `T2`\>(`v1`, `v2`): `T` *extends* [`TFalsy`](../type-aliases/TFalsy.md) ? `T2` : `T`
 
-Defined in: [lib/text.ts:719](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L719)
+Defined in: [lib/text.ts:736](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L736)
 
 类似 || 运算符的效果
 
@@ -16442,7 +16442,7 @@ lib/text/functions/match.md
 
 > **match**(`str`, `regs`): `boolean`
 
-Defined in: [lib/text.ts:345](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L345)
+Defined in: [lib/text.ts:362](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L362)
 
 传入正则进行匹配 str 是否有一项满足
 
@@ -16477,7 +16477,7 @@ lib/text/functions/nlReplace.md
 
 > **nlReplace**(`str`, `to?`): `string`
 
-Defined in: [lib/text.ts:265](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L265)
+Defined in: [lib/text.ts:282](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L282)
 
 换行替换为别的
 
@@ -16512,7 +16512,7 @@ lib/text/functions/parseDomain.md
 
 > **parseDomain**(`domain`): `Promise`\<[`IDomain`](../interfaces/IDomain.md)\>
 
-Defined in: [lib/text.ts:288](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L288)
+Defined in: [lib/text.ts:305](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L305)
 
 解析域名并获取 tld/sld/domain/sub
 
@@ -16582,7 +16582,7 @@ lib/text/functions/parseJson.md
 
 > **parseJson**\<`T`\>(`str`): `false` \| `T`
 
-Defined in: [lib/text.ts:613](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L613)
+Defined in: [lib/text.ts:630](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L630)
 
 将字符串解析为对象，返回 false 代表解析失败，支持 BigInt
 
@@ -16644,7 +16644,7 @@ lib/text/functions/queryParse.md
 
 > **queryParse**(`query`): `Record`\<`string`, `string` \| `string`[]\>
 
-Defined in: [lib/text.ts:445](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L445)
+Defined in: [lib/text.ts:462](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L462)
 
 将 query string 转换为对象
 
@@ -16675,7 +16675,7 @@ lib/text/functions/queryStringify.md
 
 > **queryStringify**(`query`, `encode?`): `string`
 
-Defined in: [lib/text.ts:396](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L396)
+Defined in: [lib/text.ts:413](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L413)
 
 将对象转换为 query string
 
@@ -16701,7 +16701,7 @@ Defined in: [lib/text.ts:396](https://github.com/maiyunnet/kebab/blob/master/lib
 
 > **queryStringify**(`query`, `options`): `string`
 
-Defined in: [lib/text.ts:402](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L402)
+Defined in: [lib/text.ts:419](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L419)
 
 将对象转换为 query string
 
@@ -16781,7 +16781,7 @@ lib/text/functions/str2int.md
 
 > **str2int**(`str`, `digits?`): `number`
 
-Defined in: [lib/text.ts:733](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L733)
+Defined in: [lib/text.ts:750](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L750)
 
 为解决精度问题，将字符串数字转换为整数显示
 以下几个示例都是当 digits 为 2 时
@@ -16821,7 +16821,7 @@ lib/text/functions/stringifyBuffer.md
 
 > **stringifyBuffer**(`buf`): `string`
 
-Defined in: [lib/text.ts:656](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L656)
+Defined in: [lib/text.ts:673](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L673)
 
 输出文本格式的 buffer
 
@@ -16850,7 +16850,7 @@ lib/text/functions/stringifyJson.md
 
 > **stringifyJson**(`obj`, `space?`): `string`
 
-Defined in: [lib/text.ts:643](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L643)
+Defined in: [lib/text.ts:660](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L660)
 
 将对象转换为 json 字符串，返回 false 代表解析失败，支持 BigInt
 
@@ -16885,7 +16885,7 @@ lib/text/functions/stringifyResult.md
 
 > **stringifyResult**(`rtn`): `string`
 
-Defined in: [lib/text.ts:573](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L573)
+Defined in: [lib/text.ts:590](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L590)
 
 将普通的返回 JSON 对象序列化为字符串
 
@@ -16914,7 +16914,7 @@ lib/text/functions/trimJson.md
 
 > **trimJson**(`json`): `any`
 
-Defined in: [lib/text.ts:664](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L664)
+Defined in: [lib/text.ts:681](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L681)
 
 递归删除 json 中的字符串首尾空格，会返回一个新的对象
 
@@ -16941,7 +16941,7 @@ lib/text/functions/urlAtom.md
 
 > **urlAtom**(`url`): `string`
 
-Defined in: [lib/text.ts:195](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L195)
+Defined in: [lib/text.ts:212](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L212)
 
 将路径中的 ../ ./ 都按规范妥善处理
 
@@ -16968,9 +16968,9 @@ lib/text/functions/urlResolve.md
 
 # Function: urlResolve()
 
-> **urlResolve**(`from`, `to`): `string`
+> **urlResolve**(`from`, `to`, `limit?`): `string`
 
-Defined in: [lib/text.ts:133](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L133)
+Defined in: [lib/text.ts:146](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L146)
 
 将相对路径根据基准路径进行转换
 
@@ -16987,6 +16987,12 @@ Defined in: [lib/text.ts:133](https://github.com/maiyunnet/kebab/blob/master/lib
 `string`
 
 相对路径
+
+### limit?
+
+`boolean` = `false`
+
+是否限定结果不能逃逸出基准路径
 
 ## Returns
 
@@ -17066,7 +17072,7 @@ lib/text/interfaces/IDomain.md
 
 # Interface: IDomain
 
-Defined in: [lib/text.ts:277](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L277)
+Defined in: [lib/text.ts:294](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L294)
 
 解析后的 domain
 
@@ -17076,7 +17082,7 @@ Defined in: [lib/text.ts:277](https://github.com/maiyunnet/kebab/blob/master/lib
 
 > **domain**: `string` \| `null`
 
-Defined in: [lib/text.ts:280](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L280)
+Defined in: [lib/text.ts:297](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L297)
 
 ***
 
@@ -17084,7 +17090,7 @@ Defined in: [lib/text.ts:280](https://github.com/maiyunnet/kebab/blob/master/lib
 
 > **sld**: `string` \| `null`
 
-Defined in: [lib/text.ts:279](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L279)
+Defined in: [lib/text.ts:296](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L296)
 
 ***
 
@@ -17092,7 +17098,7 @@ Defined in: [lib/text.ts:279](https://github.com/maiyunnet/kebab/blob/master/lib
 
 > **sub**: `string` \| `null`
 
-Defined in: [lib/text.ts:281](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L281)
+Defined in: [lib/text.ts:298](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L298)
 
 ***
 
@@ -17100,7 +17106,7 @@ Defined in: [lib/text.ts:281](https://github.com/maiyunnet/kebab/blob/master/lib
 
 > **tld**: `string` \| `null`
 
-Defined in: [lib/text.ts:278](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L278)
+Defined in: [lib/text.ts:295](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L295)
 
 lib/text/type-aliases/TFalsy.md
 ---
@@ -17115,7 +17121,7 @@ lib/text/type-aliases/TFalsy.md
 
 > **TFalsy** = `false` \| `""` \| `0` \| `null` \| `undefined` \| *typeof* `NaN`
 
-Defined in: [lib/text.ts:696](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L696)
+Defined in: [lib/text.ts:713](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L713)
 
 虚假值类型
 
@@ -17132,7 +17138,7 @@ lib/text/variables/REGEXP_ASCII.md
 
 > `const` **REGEXP\_ASCII**: `RegExp`
 
-Defined in: [lib/text.ts:250](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L250)
+Defined in: [lib/text.ts:267](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L267)
 
 可打印的 ascii 字符集
 
@@ -17149,7 +17155,7 @@ lib/text/variables/REGEXP_DOMAIN.md
 
 > `const` **REGEXP\_DOMAIN**: `RegExp`
 
-Defined in: [lib/text.ts:238](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L238)
+Defined in: [lib/text.ts:255](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L255)
 
 lib/text/variables/REGEXP_EMAIL.md
 ---
@@ -17164,7 +17170,7 @@ lib/text/variables/REGEXP_EMAIL.md
 
 > `const` **REGEXP\_EMAIL**: `RegExp`
 
-Defined in: [lib/text.ts:208](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L208)
+Defined in: [lib/text.ts:225](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L225)
 
 lib/text/variables/REGEXP_IPV4.md
 ---
@@ -17179,7 +17185,7 @@ lib/text/variables/REGEXP_IPV4.md
 
 > `const` **REGEXP\_IPV4**: `RegExp`
 
-Defined in: [lib/text.ts:218](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L218)
+Defined in: [lib/text.ts:235](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L235)
 
 lib/text/variables/REGEXP_IPV6.md
 ---
@@ -17194,7 +17200,7 @@ lib/text/variables/REGEXP_IPV6.md
 
 > `const` **REGEXP\_IPV6**: `RegExp`
 
-Defined in: [lib/text.ts:228](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L228)
+Defined in: [lib/text.ts:245](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L245)
 
 lib/time/classes/Time.md
 ---

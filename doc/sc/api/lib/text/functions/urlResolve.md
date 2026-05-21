@@ -6,9 +6,9 @@
 
 # Function: urlResolve()
 
-> **urlResolve**(`from`, `to`): `string`
+> **urlResolve**(`from`, `to`, `limit?`): `string`
 
-Defined in: [lib/text.ts:133](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L133)
+Defined in: [lib/text.ts:146](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L146)
 
 将相对路径根据基准路径进行转换
 
@@ -25,6 +25,12 @@ Defined in: [lib/text.ts:133](https://github.com/maiyunnet/kebab/blob/master/lib
 `string`
 
 相对路径
+
+### limit?
+
+`boolean` = `false`
+
+是否限定结果不能逃逸出基准路径
 
 ## Returns
 

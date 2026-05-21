@@ -8,7 +8,7 @@
 
 > **stringifyJson**(`obj`, `space?`): `string`
 
-Defined in: [lib/text.ts:643](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L643)
+Defined in: [lib/text.ts:660](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L660)
 
 将对象转换为 json 字符串，返回 false 代表解析失败，支持 BigInt
 
