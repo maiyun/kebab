@@ -1,18 +1,12 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2025-10-28 15:18:41
- * Last: 2025-10-28 15:18:44
+ * Last: 2025-10-28 15:18:44, 2026-5-20 23:31:45
  */
-import * as milvus from '@zilliz/milvus2-sdk-node';
 import * as kebab from '#kebab/index.js';
 import * as lCore from '#kebab/lib/core.js';
+import * as lUndici from '#kebab/lib/undici.js';
 import * as sCtr from '#kebab/sys/ctr.js';
-
-/** --- milvus 的连接对象 --- */
-const links: Array<{
-    'token': string;
-    'link': milvus.MilvusClient;
-}> = [];
 
 /** --- 选项 --- */
 export interface IOptions {
@@ -38,7 +32,6 @@ export class Vector {
     }
 
     /** --- 搜索 --- */
-    // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
     public async seach(data: {
         /** --- 表名 --- */
         'collection': string;
@@ -52,24 +45,37 @@ export class Vector {
         'metric'?: 'L2' | 'IP' | 'COSINE';
         /** --- 输出的字段，如 ['book_id', 'word_count']，默认全部 --- */
         'fields'?: string[];
-    }) {
-        const link = await this._getConnection();
-        if (!link) {
-            return false;
+    }): Promise<Array<{ 'id': string | number; 'distance': number; 'entity': Record<string, kebab.Json>; }> | false> {
+        const body: Record<string, kebab.Json> = {
+            'dbName': this._etc.name,
+            'collectionName': data.collection,
+            'data': [data.data],
+            'limit': data.limit ?? 3,
+            'searchParams': {
+                'metricType': data.metric ?? 'L2',
+            },
+        };
+        if (data.filter) {
+            body['filter'] = data.filter;
+        }
+        if (data.fields) {
+            body['outputFields'] = data.fields;
         }
         try {
-            const res = await link.search({
-                'collection_name': data.collection,
-                'data': data.data,
-                'filter': data.filter,
-                'limit': data.limit ?? 3,
-                'metric_type': data.metric ?? 'L2',
-                'output_fields': data.fields,
-            });
-            return res;
+            const res = await lUndici.postJsonResponseJson(
+                `http://${this._etc.host}:${this._etc.port}/v2/vectordb/entities/search`,
+                body,
+                { 'headers': { 'Authorization': `Bearer ${this._etc.user}:${this._etc.pwd}` } }
+            );
+            if (res?.code !== 0) {
+                lCore.log({}, '[VECTOR][seach][error] ' + (res?.message ?? ''), '-error');
+                lCore.debug('[VECTOR][seach]', res);
+                return false;
+            }
+            return res.data;
         }
         catch (e: any) {
-            lCore.log({}, '[VECTOR][seach][error] ' + (e.status?.reason ?? ''), '-error');
+            lCore.log({}, '[VECTOR][seach][error] ' + e.message, '-error');
             lCore.debug('[VECTOR][seach]', e);
             return false;
         }
@@ -80,21 +86,27 @@ export class Vector {
         /** --- 表名 --- */
         'collection': string;
         /** --- 要插入的数据 --- */
-        'data': milvus.RowData[];
-    }): Promise<milvus.MutationResult | false> {
-        const link = await this._getConnection();
-        if (!link) {
-            return false;
-        }
+        'data': Array<Record<string, kebab.Json>>;
+    }): Promise<{ 'insertCount': number; 'insertIds': Array<string | number>; } | false> {
         try {
-            const res = await link.insert({
-                'collection_name': data.collection,
-                'data': data.data,
-            });
-            return res;
+            const res = await lUndici.postJsonResponseJson(
+                `http://${this._etc.host}:${this._etc.port}/v2/vectordb/entities/insert`,
+                {
+                    'dbName': this._etc.name,
+                    'collectionName': data.collection,
+                    'data': data.data,
+                },
+                { 'headers': { 'Authorization': `Bearer ${this._etc.user}:${this._etc.pwd}` } }
+            );
+            if (res?.code !== 0) {
+                lCore.log({}, '[VECTOR][insert][error] ' + (res?.message ?? ''), '-error');
+                lCore.debug('[VECTOR][insert]', res);
+                return false;
+            }
+            return res.data;
         }
         catch (e: any) {
-            lCore.log({}, '[VECTOR][insert][error] ' + (e.status?.reason ?? ''), '-error');
+            lCore.log({}, '[VECTOR][insert][error] ' + e.message, '-error');
             lCore.debug('[VECTOR][insert]', e);
             return false;
         }
@@ -106,53 +118,28 @@ export class Vector {
         'collection': string;
         /** --- 过滤器，如 word_count > 0 and book_id in [1, 2, 3] --- */
         'filter': string;
-    }): Promise<milvus.MutationResult | false> {
-        const link = await this._getConnection();
-        if (!link) {
-            return false;
-        }
+    }): Promise<{ 'deletedCount': number; } | false> {
         try {
-            const res = await link.delete({
-                'collection_name': data.collection,
-                'filter': data.filter,
-            });
-            return res;
+            const res = await lUndici.postJson(
+                `http://${this._etc.host}:${this._etc.port}/v2/vectordb/entities/delete`,
+                {
+                    'dbName': this._etc.name,
+                    'collectionName': data.collection,
+                    'filter': data.filter,
+                },
+                { 'headers': { 'Authorization': `Bearer ${this._etc.user}:${this._etc.pwd}` } }
+            );
+            const json = await res.getJson();
+            if (json?.code !== 0) {
+                lCore.log({}, '[VECTOR][delete][error] ' + (json?.message ?? ''), '-error');
+                return false;
+            }
+            return json.data;
         }
         catch (e: any) {
-            lCore.log({}, '[VECTOR][delete][error] ' + (e.status?.reason ?? ''), '-error');
+            lCore.log({}, '[VECTOR][delete][error] ' + e.message, '-error');
             lCore.debug('[VECTOR][delete]', e);
             return false;
-        }
-    }
-
-    /**
-     * --- 从连接池中获取一个符合要求的连接 ---
-     */
-    private async _getConnection(): Promise<milvus.MilvusClient | null> {
-        const token = `${this._etc.host}-${this._etc.port}-${this._etc.name}-${this._etc.user}`;
-        const item = links.find(item => item.token === token);
-        if (item) {
-            return item.link;
-        }
-        // --- 没有找到合适的连接，创建一个 ---
-        try {
-            const link = new milvus.MilvusClient({
-                'address': `${this._etc.host}:${this._etc.port}`,
-                'ssl': false,
-                'database': this._etc.name,
-                'username': this._etc.user,
-                'password': this._etc.pwd,
-            });
-            await link.connectPromise;
-            links.push({
-                'token': token,
-                link,
-            });
-            return link;
-        }
-        catch (e: any) {
-            lCore.debug('[VECTOR][_getConnection]', e.code, e.message);
-            return null;
         }
     }
 
