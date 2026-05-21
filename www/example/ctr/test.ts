@@ -4220,6 +4220,8 @@ ${lText.htmlescape(lText.urlResolve('C:\\Windows\\Misc', '/'))}
 ${lText.htmlescape(lText.urlResolve('C:\\Windows\\Misc', '/xxx/yyy'))}
 <pre>lText.urlResolve('/abc/def/', '');</pre>
 ${lText.htmlescape(lText.urlResolve('/abc/def/', ''))}
+<pre>lText.urlResolve('/abc/def/', '../1/2/3', true);</pre>
+${lText.htmlescape(lText.urlResolve('/abc/def/', '../1/2/3', true))}
 <pre>lText.isEMail('test@gmail.com');</pre>
 ${JSON.stringify(lText.isEMail('test@gmail.com'))}
 <pre>lText.isEMail('test@x');</pre>

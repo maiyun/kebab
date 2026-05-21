@@ -747,7 +747,11 @@ function createRpcListener(): void {
                 }
                 case 'ls': {
                     // --- 获取目录内文件/文件夹列表 ---
-                    const path = lText.urlResolve(kebab.ROOT_CWD, msg.path);
+                    if (typeof msg.path !== 'string') {
+                        res.end('Invalid path');
+                        return;
+                    }
+                    const path = lText.urlResolve(kebab.ROOT_CWD, msg.path, true);
                     res.end(lText.stringifyJson({
                         'result': 1,
                         'data': (await lFs.readDir(path, msg.encoding)).map(item => ({

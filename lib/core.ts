@@ -1121,7 +1121,7 @@ export async function getLog(opt: {
  * @param opt 参数
  */
 export async function ls(opt: {
-    /** --- 如 2024/08/01/22，无所谓开头结尾 --- */
+    /** --- 如 2024/08/01/22，无所谓开头结尾是否有 /，不会逃逸出 cwd 路径 --- */
     'path': string;
     'encoding'?: BufferEncoding;
     /** --- 获取局域网服务器的目录列表，为空代表获取本机的 --- */

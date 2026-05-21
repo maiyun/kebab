@@ -125,14 +125,31 @@ export function parseUrl(url: string): kebab.IUrlParse {
     return rtn;
 }
 
+/** --- 限定结果不能逃逸出基准路径 --- */
+function urlResolveLimit(from: string, limit: boolean, rtn: string): string {
+    if (!limit) {
+        return rtn;
+    }
+    const base = urlAtom(from).replace(/\/+$/, '') + '/';
+    if ((rtn === base.slice(0, -1)) || rtn.startsWith(base)) {
+        return rtn;
+    }
+    return base;
+}
+
 /**
  * --- 将相对路径根据基准路径进行转换 ---
  * @param from 基准路径
  * @param to 相对路径
+ * @param limit 是否限定结果不能逃逸出基准路径
  */
-export function urlResolve(from: string, to: string): string {
-    from = from.replace('\\', '/');
-    to = to.replace('\\', '/');
+export function urlResolve(from: string, to: string, limit = false): string {
+    from = from.replace(/\\/g, '/');
+    to = to.replace(/\\/g, '/');
+    if (limit) {
+        // --- 限定模式下，开头的 / 代表从 from 内部开始，而不是系统根目录 ---
+        to = to.replace(/^\/+/, '');
+    }
     // --- to 为空，直接返回 form ---
     if (to === '') {
         return urlAtom(from);
@@ -152,7 +169,7 @@ export function urlResolve(from: string, to: string): string {
     // --- 已经是绝对路径，直接返回 ---
     if (t.protocol) {
         // --- 获取小写的 protocol ---
-        return urlAtom(t.protocol + to.slice(t.protocol.length));
+        return urlResolveLimit(from, limit, urlAtom(t.protocol + to.slice(t.protocol.length)));
     }
     // --- # 或 ? 替换后返回 ---
     if (to.startsWith('#') || to.startsWith('?')) {
@@ -180,11 +197,11 @@ export function urlResolve(from: string, to: string): string {
     // --- 返回最终结果 ---
     if (f.protocol && (f.protocol !== 'file:') && !f.host) {
         // --- 类似 c:/ ---
-        return urlAtom(f.protocol + abs);
+        return urlResolveLimit(from, limit, urlAtom(f.protocol + abs));
     }
     else {
         // --- 类似 http:// ---
-        return urlAtom((f.protocol ? f.protocol + '//' : '') + abs);
+        return urlResolveLimit(from, limit, urlAtom((f.protocol ? f.protocol + '//' : '') + abs));
     }
 }
 
