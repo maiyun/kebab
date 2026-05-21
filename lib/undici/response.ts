@@ -7,6 +7,7 @@ import * as undici from 'undici';
 import * as zlib from 'zlib';
 import * as lUndici from '#kebab/lib/undici.js';
 import * as lBuffer from '#kebab/lib/buffer.js';
+import * as lCore from '#kebab/lib/core.js';
 import * as lText from '#kebab/lib/text.js';
 
 export class Response {
@@ -40,7 +41,8 @@ export class Response {
             }
             return this._req ? await lBuffer.getFull(stream) : null;
         }
-        catch {
+        catch (e: any) {
+            lCore.log({}, '[Undici][Response][getContent] ' + e.message, '-error');
             return null;
         }
     }
@@ -54,7 +56,8 @@ export class Response {
             }
             return buf.toString('utf-8');
         }
-        catch {
+        catch (e: any) {
+            lCore.log({}, '[Undici][Response][getText] ' + e.message, '-error');
             return null;
         }
     }
@@ -68,7 +71,8 @@ export class Response {
             }
             return lText.parseJson(text);
         }
-        catch {
+        catch (e: any) {
+            lCore.log({}, '[Undici][Response][getJson] ' + e.message, '-error');
             return null;
         }
     }
