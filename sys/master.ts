@@ -396,6 +396,7 @@ function createRpcListener(): void {
                         '.nyc_output',
                         'tmp',
                         'temp',
+                        'AGENTS.md',
                     ]);
                     for (const path in ls) {
                         /** --- 带 / 开头的 zip 中文件完整路径，例如 "/www/pika/ctr/api.js" --- */
