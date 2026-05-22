@@ -940,6 +940,10 @@ export default class Mod {
      */
     public async refresh(lock: boolean = false): Promise<boolean | null> {
         const cstr = this.constructor as any;
+        if (!this._data[cstr._$primary]) {
+            lCore.log(this._ctr ?? {}, '[MOD][refresh] primary key not found', '-error');
+            return false;
+        }
         this._sql.select('*', (cstr._$table as string) + (this._index ? ('_' + this._index[0]) : '')).where([{
             [cstr._$primary]: this._data[cstr._$primary]
         }]);
@@ -971,6 +975,10 @@ export default class Mod {
             return true;
         }
         const cstr = this.constructor as any;
+        if (!this._data[cstr._$primary]) {
+            lCore.log(this._ctr ?? {}, '[MOD][save] primary key not found', '-error');
+            return false;
+        }
         const updates: Record<string, any> = {};
         for (const k in this._updates) {
             updates[k] = this._data[k];
@@ -997,6 +1005,10 @@ export default class Mod {
      */
     public async remove(): Promise<boolean> {
         const cstr = this.constructor as any;
+        if (!this._data[cstr._$primary]) {
+            lCore.log(this._ctr ?? {}, '[MOD][remove] primary key not found', '-error');
+            return false;
+        }
         this._sql.delete((cstr._$table as string) + (this._index ? ('_' + this._index[0]) : '')).where([{
             [cstr._$primary]: this._data[cstr._$primary]
         }]);
