@@ -92,6 +92,26 @@ Grok
 
 ***
 
+### OFOX
+
+> **OFOX**: `11`
+
+Defined in: [lib/ai.ts:46](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L46)
+
+OfoxAI
+
+***
+
+### OPENROUTER
+
+> **OPENROUTER**: `10`
+
+Defined in: [lib/ai.ts:44](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L44)
+
+OpenRouter
+
+***
+
 ### VOLAS
 
 > **VOLAS**: `9`

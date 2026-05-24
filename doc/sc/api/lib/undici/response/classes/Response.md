@@ -6,7 +6,7 @@
 
 # Class: Response
 
-Defined in: [lib/undici/response.ts:12](https://github.com/maiyunnet/kebab/blob/master/lib/undici/response.ts#L12)
+Defined in: [lib/undici/response.ts:13](https://github.com/maiyunnet/kebab/blob/master/lib/undici/response.ts#L13)
 
 ## Constructors
 
@@ -14,7 +14,7 @@ Defined in: [lib/undici/response.ts:12](https://github.com/maiyunnet/kebab/blob/
 
 > **new Response**(`req`): `Response`
 
-Defined in: [lib/undici/response.ts:25](https://github.com/maiyunnet/kebab/blob/master/lib/undici/response.ts#L25)
+Defined in: [lib/undici/response.ts:26](https://github.com/maiyunnet/kebab/blob/master/lib/undici/response.ts#L26)
 
 #### Parameters
 
@@ -32,7 +32,7 @@ Defined in: [lib/undici/response.ts:25](https://github.com/maiyunnet/kebab/blob/
 
 > **error**: `Error` \| `null` = `null`
 
-Defined in: [lib/undici/response.ts:20](https://github.com/maiyunnet/kebab/blob/master/lib/undici/response.ts#L20)
+Defined in: [lib/undici/response.ts:21](https://github.com/maiyunnet/kebab/blob/master/lib/undici/response.ts#L21)
 
 ***
 
@@ -40,7 +40,7 @@ Defined in: [lib/undici/response.ts:20](https://github.com/maiyunnet/kebab/blob/
 
 > **headers**: [`THttpHeaders`](../../type-aliases/THttpHeaders.md) \| `null` = `null`
 
-Defined in: [lib/undici/response.ts:18](https://github.com/maiyunnet/kebab/blob/master/lib/undici/response.ts#L18)
+Defined in: [lib/undici/response.ts:19](https://github.com/maiyunnet/kebab/blob/master/lib/undici/response.ts#L19)
 
 返回的 headers
 
@@ -50,7 +50,7 @@ Defined in: [lib/undici/response.ts:18](https://github.com/maiyunnet/kebab/blob/
 
 > **getContent**(): `Promise`\<`Buffer`\<`ArrayBufferLike`\> \| `null`\>
 
-Defined in: [lib/undici/response.ts:32](https://github.com/maiyunnet/kebab/blob/master/lib/undici/response.ts#L32)
+Defined in: [lib/undici/response.ts:33](https://github.com/maiyunnet/kebab/blob/master/lib/undici/response.ts#L33)
 
 读取所有内容到内存
 
@@ -64,7 +64,7 @@ Defined in: [lib/undici/response.ts:32](https://github.com/maiyunnet/kebab/blob/
 
 > **getJson**(): `Promise`\<`any`\>
 
-Defined in: [lib/undici/response.ts:63](https://github.com/maiyunnet/kebab/blob/master/lib/undici/response.ts#L63)
+Defined in: [lib/undici/response.ts:66](https://github.com/maiyunnet/kebab/blob/master/lib/undici/response.ts#L66)
 
 读取所有内容为 JSON，失败返回 null
 
@@ -78,7 +78,7 @@ Defined in: [lib/undici/response.ts:63](https://github.com/maiyunnet/kebab/blob/
 
 > **getRawStream**(): `BodyReadable` & `BodyMixin` \| `null`
 
-Defined in: [lib/undici/response.ts:124](https://github.com/maiyunnet/kebab/blob/master/lib/undici/response.ts#L124)
+Defined in: [lib/undici/response.ts:128](https://github.com/maiyunnet/kebab/blob/master/lib/undici/response.ts#L128)
 
 获取原生响应读取流对象
 
@@ -92,7 +92,7 @@ Defined in: [lib/undici/response.ts:124](https://github.com/maiyunnet/kebab/blob
 
 > **getStream**(): `BrotliDecompress` \| `Gunzip` \| `Inflate` \| `BodyReadable` & `BodyMixin` \| `null`
 
-Defined in: [lib/undici/response.ts:88](https://github.com/maiyunnet/kebab/blob/master/lib/undici/response.ts#L88)
+Defined in: [lib/undici/response.ts:92](https://github.com/maiyunnet/kebab/blob/master/lib/undici/response.ts#L92)
 
 获取响应读取流对象
 
@@ -106,7 +106,7 @@ Defined in: [lib/undici/response.ts:88](https://github.com/maiyunnet/kebab/blob/
 
 > **getText**(): `Promise`\<`string` \| `null`\>
 
-Defined in: [lib/undici/response.ts:49](https://github.com/maiyunnet/kebab/blob/master/lib/undici/response.ts#L49)
+Defined in: [lib/undici/response.ts:51](https://github.com/maiyunnet/kebab/blob/master/lib/undici/response.ts#L51)
 
 读取所有内容为文本
 
@@ -120,7 +120,7 @@ Defined in: [lib/undici/response.ts:49](https://github.com/maiyunnet/kebab/blob/
 
 > **setContent**(`v`): `void`
 
-Defined in: [lib/undici/response.ts:80](https://github.com/maiyunnet/kebab/blob/master/lib/undici/response.ts#L80)
+Defined in: [lib/undici/response.ts:84](https://github.com/maiyunnet/kebab/blob/master/lib/undici/response.ts#L84)
 
 用户自定义的 content 内容
 
