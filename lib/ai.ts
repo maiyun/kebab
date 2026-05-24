@@ -37,6 +37,13 @@ export enum ESERVICE {
     'VOLCN',
     /** --- 火山引擎国际区 --- */
     'VOLAS',
+
+    // --- 以下为第三方服务商 ---
+
+    /** --- OpenRouter --- */
+    'OPENROUTER',
+    /** --- OfoxAI --- */
+    'OFOX',
 }
 
 /** --- 选项 --- */
@@ -120,6 +127,14 @@ export class Ai {
                 endpoint = opt.endpoint ?? `https://ark.ap-southeast.bytepluses.com/api/v3`;
                 break;
             }
+            case ESERVICE.OPENROUTER: {
+                endpoint = opt.endpoint ?? `https://openrouter.ai/api/v1`;
+                break;
+            }
+            case ESERVICE.OFOX: {
+                endpoint = opt.endpoint ?? `https://api.ofox.ai/v1`;
+                break;
+            }
             default: {
                 // --- ESERVICE.AZURE3 ---
                 endpoint = opt.endpoint ?? configAi.endpoint ?? '';
@@ -177,6 +192,32 @@ export class Ai {
         }
     }
 
+    /** --- 创建非流式 Response --- */
+    public async response(
+        body: openai.default.Responses.ResponseCreateParamsNonStreaming
+    ): Promise<openai.APIPromise<openai.default.Responses.Response> | false>;
+    /** --- 创建流式 Response --- */
+    public async response(
+        body: openai.default.Responses.ResponseCreateParamsStreaming
+    ): Promise<openai.APIPromise<streaming.Stream<openai.default.Responses.ResponseStreamEvent>> | false>;
+    /** --- 创建 Response --- */
+    public async response(
+        body: openai.default.Responses.ResponseCreateParams
+    ): Promise<openai.APIPromise<openai.default.Responses.Response> |
+        openai.APIPromise<streaming.Stream<openai.default.Responses.ResponseStreamEvent>> |
+        false> {
+        try {
+            return await this.link.responses.create(body as openai.default.Responses.ResponseCreateParamsNonStreaming);
+        }
+        catch (e: any) {
+            if (!e.message.includes('Input data may contain inappropriate content')) {
+                lCore.debug('[AI][RESPONSE]', e);
+                lCore.log(this._ctr ?? {}, `[AI][RESPONSE] ${e.message}`, '-error');
+            }
+            return false;
+        }
+    }
+
     /** --- 创建向量 --- */
     public async embedding(
         body: openai.default.EmbeddingCreateParams
@@ -222,6 +263,9 @@ export class Ai {
         /** --- 请求编号 --- */
         'request': string;
     } | false> {
+        if (!this.link.apiKey) {
+            return false;
+        }
         const seed = opt.seed ?? lCore.rand(0, 2147483647);
         switch (this._service) {
             case ESERVICE.ALICN:
@@ -293,7 +337,7 @@ export class Ai {
                     const json = await this.link.images.generate({
                         'model': opt.model,
                         'prompt': opt.prompt,
-                        'size': `${opt.size[0]}x${opt.size[1]}` as any,
+                        'size': `${opt.size[0]}x${opt.size[1]}`,
                         'n': opt.n ?? 1,
                     });
                     if (!json.data?.[0]) {
@@ -371,6 +415,12 @@ export class Ai {
                     return false;
                 }
             }
+            case ESERVICE.OPENROUTER: {
+                return false;
+            }
+            case ESERVICE.OFOX: {
+                return false;
+            }
         }
     }
 
@@ -406,6 +456,9 @@ export class Ai {
         'request': string;
     } | false> {
         if (this._service !== ESERVICE.ALICN && this._service !== ESERVICE.ALIAS && this._service !== ESERVICE.ALINE) {
+            return false;
+        }
+        if (!this.link.apiKey) {
             return false;
         }
         const mode = opt.mode ?? 'text';
@@ -561,6 +614,9 @@ export class Ai {
         'error'?: string;
     } | false> {
         if (this._service !== ESERVICE.ALICN && this._service !== ESERVICE.ALIAS && this._service !== ESERVICE.ALINE) {
+            return false;
+        }
+        if (!this.link.apiKey) {
             return false;
         }
         try {

@@ -168,6 +168,7 @@ export default class extends sCtr.Ctr {
             `<br><br><b>Ai:</b>`,
             `<br><a href="${this._config.const.urlBase}test/ai-stream">View "test/ai-stream"</a>`,
             `<br><a href="${this._config.const.urlBase}test/ai?action=chat">View "test/ai?action=chat"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/ai?action=response">View "test/ai?action=response"</a>`,
             `<br><a href="${this._config.const.urlBase}test/ai?action=text-to-image">View "test/ai?action=text-to-image"</a>`,
             `<br><a href="${this._config.const.urlBase}test/ai?action=image-to-image">View "test/ai?action=image-to-image"</a>`,
             `<br><a href="${this._config.const.urlBase}test/ai?action=text-to-video">View "test/ai?action=text-to-video"</a>`,
@@ -4653,12 +4654,15 @@ rtn.push(reader.readBCDString());</pre>${JSON.stringify(rtn)}`);
     }
 
     public async ai(): Promise<string> {
+        this.timeout = 60_000 * 10;
+
         const echo = [`<pre>const ai = lAi.get(this, {
     'service': lAi.ESERVICE.${lText.htmlescape(this._get['service']?.toUpperCase() ?? 'ALICN')},
 });</pre>`];
 
         const ai = lAi.get(this, {
             'service': (lAi.ESERVICE as any)[this._get['service']?.toUpperCase() ?? 'ALICN'] ?? lAi.ESERVICE.ALICN,
+            'endpoint': this._get['service'] === 'ofox' ? 'https://api.ofox.io/v1' : undefined,
         });
 
         switch (this._get['action']) {
@@ -4805,6 +4809,129 @@ rtn.push(reader.readBCDString());</pre>${JSON.stringify(rtn)}`);
                 else {
                     echo.push('Failed');
                 }
+                break;
+            }
+            case 'response': {
+                // --- Responses API：多轮对话 + Function Calling + 数据库存储方案 ---
+                let model = ai.service === lAi.ESERVICE.ALICN ? 'qwen3.5-flash' : 'openai/gpt-5-nano';
+                const responseInstructions = 'You are Kebab, a helpful assistant. Do not mention any model names or AI identity. Respond in Chinese.';
+                // --- 工具定义 ---
+                const responseTools: any[] = [
+                    {
+                        'type': 'function',
+                        'name': 'get_weather',
+                        'description': '获取指定城市的当前天气，返回 `false`: 调用失败, `null`: 无数据, 成功: 温度和天气',
+                        'parameters': {
+                            'type': 'object',
+                            'required': ['city'],
+                            'properties': {
+                                'city': { 'type': 'string', 'description': '城市名称，如"北京"' },
+                            },
+                        },
+                    },
+                ];
+                // --- 模拟本地工具执行 ---
+                const execTool = (name: string, argsJson: string): string => {
+                    const args = lText.parseJson<Record<string, string>>(argsJson);
+                    if (!args) {
+                        return 'false';
+                    }
+                    if (name === 'get_weather') {
+                        const table: Record<string, any> = {
+                            '北京': { 'temp': '22°C', 'condition': '晴' },
+                            '上海': { 'temp': '28°C', 'condition': '多云' },
+                        };
+                        return table[args['city']] ? lText.stringifyJson(table[args['city']]) : 'null';
+                    }
+                    return 'false';
+                };
+                // --- 完整对话历史（同时作为数据库存储内容） ---
+                const conversation: any[] = [];
+                // --- 运行一轮（自动处理 function_call 循环） ---
+                const runTurn = async (userMsg: string) => {
+                    conversation.push({ 'role': 'user', 'content': userMsg });
+                    let data = await ai.response({
+                        'model': model,
+                        'store': false,
+                        'reasoning': {
+                            'effort': 'minimal',
+                        },
+                        'instructions': responseInstructions,
+                        'input': conversation,
+                        'tools': responseTools,
+                    });
+                    while (data) {
+                        const calls = data.output.filter(item => item.type === 'function_call');
+                        if (!calls.length) {
+                            // --- 无工具调用，追加 assistant 回复，供下一轮使用 ---
+                            conversation.push({ 'role': 'assistant', 'content': data.output_text });
+                            return data;
+                        }
+                        // --- 将 function_call 追加到 conversation ---
+                        for (const call of calls) {
+                            conversation.push({
+                                'type': 'function_call',
+                                'name': call.name,
+                                'arguments': call.arguments,
+                                'call_id': call.call_id,
+                            });
+                        }
+                        // --- 全部追加完后再统一执行工具，将结果追加到 conversation，再次调用 ---
+                        for (const call of calls) {
+                            conversation.push({
+                                'type': 'function_call_output',
+                                'call_id': call.call_id,
+                                'output': execTool(call.name, call.arguments),
+                            });
+                        }
+                        data = await ai.response({
+                            'model': model,
+                            'store': false,
+                            'reasoning': {
+                                'effort': 'minimal',
+                            },
+                            'instructions': responseInstructions,
+                            'input': conversation,
+                            'tools': responseTools,
+                        });
+                    }
+                    return false;
+                };
+                // --- 第一轮：自我介绍 + 查北京天气（触发 Function Calling） ---
+                const d1str = '你是谁？今天北京天气怎么样？';
+                const d1 = await runTurn(d1str);
+                if (!d1) {
+                    echo.push('Turn 1 Failed');
+                    break;
+                }
+                echo.push(`<b>第一轮（触发 get_weather 工具）：</b><br>${d1str + '<br>' + lText.htmlescape(d1.output_text)}<br><br>`);
+                // --- 第二轮：续接上文，查上海天气 ---
+                const d2str = '那上海呢？';
+                const d2 = await runTurn(d2str);
+                if (!d2) {
+                    echo.push('Turn 2 Failed');
+                    break;
+                }
+                echo.push(`<b>第二轮（conversation 续接，自动触发工具）：</b><br>${d2str + '<br>' + lText.htmlescape(d2.output_text)}<br><br>`);
+                // --- 第三轮：基于前两轮结果直接推理，无需工具 ---
+                const d3str = '两个城市比较，今天哪个更适合出行？';
+                const d3 = await runTurn(d3str);
+                if (!d3) {
+                    echo.push('Turn 3 Failed');
+                    break;
+                }
+                echo.push(`<b>第三轮（直接推理）：</b><br>${d3str + '<br>' + lText.htmlescape(d3.output_text)}<br>`);
+                // --- 数据库存储格式 ---
+                // --- conversation 顺序：user → function_call → function_call_output → assistant → user → ... ---
+                echo.push(`<hr><b>数据库存储 input：</b><pre>${lText.htmlescape(lText.stringifyJson(conversation, 4))}</pre>`);
+                // --- 从头重建（直接将 dbRecord.input 发送即可） ---
+                echo.push(`<hr><b>从头重建：</b><pre>${lText.htmlescape(
+`const replay = await ai.response({
+    'model': model,
+    'instructions': instructions,
+    'input': conversation,
+    'tools': tools,
+});`)}</pre>`);
                 break;
             }
             default: {

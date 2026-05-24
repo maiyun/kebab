@@ -195,6 +195,10 @@ async function run(): Promise<void> {
         config.ai['VOLCN'].skey ??= '';
         config.ai['VOLAS'] ??= {};
         config.ai['VOLAS'].skey ??= '';
+        config.ai['OPENROUTER'] ??= {};
+        config.ai['OPENROUTER'].skey ??= '';
+        config.ai['OFOX'] ??= {};
+        config.ai['OFOX'].skey ??= '';
         // --- config - vector ---
         config.vector ??= {};
         config.vector.host ??= '127.0.0.1';

@@ -232,7 +232,7 @@ export async function fetch(
                     fd.putBuffer(key, Buffer.from(await value.arrayBuffer()), value.name);
                 }
             }
-            body = fd as unknown as stream.Readable;
+            body = fd;
             headers['content-type'] = 'multipart/form-data; boundary=' + fd.getBoundary();
             headers['content-length'] = fd.getLength().toString();
         }
