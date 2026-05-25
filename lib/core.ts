@@ -1003,7 +1003,9 @@ export function log(opt: sCtr.Ctr | ILogOptions, msg: string, fend: string = '')
             'x': ''
         };
 
-        const [y, m, d, h] = lTime.format(null, 'Y-m-d-H').split('-');
+        /** --- 文件和内容统一使用同一时间点 --- */
+        const now = new Date();
+        const [y, m, d, h] = lTime.format(null, 'Y-m-d-H', now).split('-');
         let path = kebab.LOG_CWD + hostname + fend + '/' + y + '/' + m + '/' + d + '/';
         const rtn = await lFs.mkdir(path, 0o777);
         if (!rtn) {
@@ -1014,8 +1016,8 @@ export function log(opt: sCtr.Ctr | ILogOptions, msg: string, fend: string = '')
             // --- JSON Lines 格式 ---
             path += h + '.jsonl';
             const entry = lText.stringifyJson({
-                'time': lTime.format(null, 'H:i:s'),
-                'unix': lTime.stamp(),
+                'time': lTime.format(null, 'H:i:s', now),
+                'unix': lTime.stamp(now),
                 'url': urlFull + wpath + (Object.keys(get).length ? '?' + lText.queryStringify(get) : ''),
                 'cookie': cookie,
                 'session': session,
@@ -1045,8 +1047,8 @@ export function log(opt: sCtr.Ctr | ILogOptions, msg: string, fend: string = '')
                 }
             }
             await lFs.putContent(path, '"' +
-                lText.csvescape(lTime.format(null, 'H:i:s')) + '","' +
-                lText.csvescape(lTime.stamp().toString()) + '","' +
+                lText.csvescape(lTime.format(null, 'H:i:s', now)) + '","' +
+                lText.csvescape(lTime.stamp(now).toString()) + '","' +
                 lText.csvescape(urlFull + wpath + (Object.keys(get).length ? '?' + lText.queryStringify(get) : '')) + '","' +
                 lText.csvescape(lText.queryStringify(cookie)) + '","' +
                 lText.csvescape(lText.stringifyJson(session)) + '","' +
