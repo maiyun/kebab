@@ -32,7 +32,7 @@ export class Vector {
     }
 
     /** --- 搜索 --- */
-    public async seach(data: {
+    public async search(data: {
         /** --- 表名 --- */
         'collection': string;
         /** --- 查询的向量 --- */
@@ -68,15 +68,15 @@ export class Vector {
                 { 'headers': { 'Authorization': `Bearer ${this._etc.user}:${this._etc.pwd}` } }
             );
             if (res?.code !== 0) {
-                lCore.log({}, '[VECTOR][seach][error] ' + (res?.message ?? ''), '-error');
-                lCore.debug('[VECTOR][seach]', res);
+                lCore.log({}, '[VECTOR][search][error] ' + (res?.message ?? ''), '-error');
+                lCore.debug('[VECTOR][search]', res);
                 return false;
             }
             return res.data;
         }
         catch (e: any) {
-            lCore.log({}, '[VECTOR][seach][error] ' + e.message, '-error');
-            lCore.debug('[VECTOR][seach]', e);
+            lCore.log({}, '[VECTOR][search][error] ' + e.message, '-error');
+            lCore.debug('[VECTOR][search]', e);
             return false;
         }
     }
