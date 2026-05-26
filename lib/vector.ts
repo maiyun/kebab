@@ -45,7 +45,11 @@ export class Vector {
         'metric'?: 'L2' | 'IP' | 'COSINE';
         /** --- 输出的字段，如 ['book_id', 'word_count']，默认全部 --- */
         'fields'?: string[];
-    }): Promise<Array<{ 'id': string | number; 'distance': number; 'entity': Record<string, kebab.Json>; }> | false> {
+    }): Promise<Array<{
+        'id': string | number;
+        'distance': number;
+        [key: string]: any;
+    }> | false> {
         const body: Record<string, kebab.Json> = {
             'dbName': this._etc.name,
             'collectionName': data.collection,
