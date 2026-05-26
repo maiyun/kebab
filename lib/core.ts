@@ -559,10 +559,11 @@ export async function sendReload(hosts?: string[] | 'config'): Promise<Record<st
             'action': 'reload',
             'time': time
         }), globalConfig.rpcSecret), {
-            'timeout': 2
+            'timeout': 5
         });
         const content = await res.getContent();
         if (!content) {
+            rtn[host] = { 'result': false, 'return': 'Timeout' };
             continue;
         }
         const str = content.toString();
@@ -607,10 +608,11 @@ export async function sendRestart(hosts?: string[] | 'config'): Promise<Record<s
             'action': 'restart',
             'time': time
         }), globalConfig.rpcSecret), {
-            'timeout': 2
+            'timeout': 5
         });
         const content = await res.getContent();
         if (!content) {
+            rtn[host] = { 'result': false, 'return': 'Timeout' };
             continue;
         }
         const str = content.toString();
@@ -657,10 +659,11 @@ export async function sendPm2(
             'name': name,
             'pm2Action': action
         }), globalConfig.rpcSecret), {
-            'timeout': 2
+            'timeout': 5
         });
         const content = await res.getContent();
         if (!content) {
+            rtn[host] = { 'result': false, 'return': 'Timeout' };
             continue;
         }
         const str = content.toString();
@@ -703,10 +706,11 @@ export async function sendNpm(
             'time': time,
             'path': path
         }), globalConfig.rpcSecret), {
-            'timeout': 2
+            'timeout': 30,
         });
         const content = await res.getContent();
         if (!content) {
+            rtn[host] = { 'result': false, 'return': 'Timeout' };
             continue;
         }
         const str = content.toString();
@@ -757,10 +761,11 @@ export async function setGlobal(key: string, data: any, hosts?: string[] | 'conf
             'action': 'global',
             'time': time
         }), globalConfig.rpcSecret), {
-            'timeout': 2
+            'timeout': 5
         });
         const content = await res.getContent();
         if (!content) {
+            rtn[host] = { 'result': false, 'return': 'Timeout' };
             continue;
         }
         const str = content.toString();
@@ -828,7 +833,7 @@ export async function updateCode(
             'action': 'code',
             'time': lTime.stamp()
         }), globalConfig.rpcSecret), fd, {
-            'timeout': 4
+            'timeout': 60,
         });
         const content = await res.getContent();
         if (!content) {
@@ -878,10 +883,11 @@ export async function sendProject(
             'path': path,
             [key]: value
         }), globalConfig.rpcSecret), {
-            'timeout': 2
+            'timeout': 5
         });
         const content = await res.getContent();
         if (!content) {
+            rtn[host] = { 'result': false, 'return': 'Timeout' };
             continue;
         }
         const str = content.toString();
@@ -924,10 +930,11 @@ export async function sendPackage(
             'time': time,
             'content': content
         }), globalConfig.rpcSecret), {
-            'timeout': 2
+            'timeout': 5
         });
         const resContent = await res.getContent();
         if (!resContent) {
+            rtn[host] = { 'result': false, 'return': 'Timeout' };
             continue;
         }
         const str = resContent.toString();
@@ -1105,7 +1112,7 @@ export async function getLog(opt: {
         'offset': opt.offset,
         'limit': opt.limit,
     }), globalConfig.rpcSecret), {
-        'timeout': 2
+        'timeout': 5
     });
     if (!res) {
         // --- 解析失败，系统错误 ---
@@ -1143,7 +1150,7 @@ export async function ls(opt: {
         'path': opt.path,
         'encoding': opt.encoding,
     }), globalConfig.rpcSecret), {
-        'timeout': 2
+        'timeout': 5
     });
     const content = await res.getContent();
     if (!content) {
