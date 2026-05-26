@@ -88,9 +88,9 @@ Defined in: [lib/vector.ts:85](https://github.com/maiyunnet/kebab/blob/master/li
 
 ***
 
-### seach()
+### search()
 
-> **seach**(`data`): `Promise`\<`false` \| `object`[]\>
+> **search**(`data`): `Promise`\<`false` \| `object`[]\>
 
 Defined in: [lib/vector.ts:35](https://github.com/maiyunnet/kebab/blob/master/lib/vector.ts#L35)
 

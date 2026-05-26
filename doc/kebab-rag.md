@@ -1360,7 +1360,7 @@ index/variables/VER.md
 
 # Variable: VER
 
-> `const` **VER**: `"9.11.0"` = `'9.11.0'`
+> `const` **VER**: `"9.11.1"` = `'9.11.1'`
 
 Defined in: [index.ts:10](https://github.com/maiyunnet/kebab/blob/master/index.ts#L10)
 
@@ -3320,7 +3320,7 @@ lib/core/functions/clone.md
 
 > **clone**\<`T`\>(`obj`): `T`
 
-Defined in: [lib/core.ts:1162](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1162)
+Defined in: [lib/core.ts:1164](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1164)
 
 完整的克隆一份数组/对象
 
@@ -3384,7 +3384,7 @@ lib/core/functions/debug.md
 
 > **debug**(`message?`, ...`optionalParams`): `void`
 
-Defined in: [lib/core.ts:1196](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1196)
+Defined in: [lib/core.ts:1198](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1198)
 
 打印调试信息，线上环境不会打印
 
@@ -3419,7 +3419,7 @@ lib/core/functions/display.md
 
 > **display**(`message?`, ...`optionalParams`): `void`
 
-Defined in: [lib/core.ts:1209](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1209)
+Defined in: [lib/core.ts:1211](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1211)
 
 向控制台直接显示内容，一般情况下禁止使用
 
@@ -3524,7 +3524,7 @@ lib/core/functions/getLog.md
 
 > **getLog**(`opt`): `Promise`\<`false` \| \{ `list`: `any`[] \| `string`[][]; `total`: `number`; \}\>
 
-Defined in: [lib/core.ts:1074](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1074)
+Defined in: [lib/core.ts:1076](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1076)
 
 获取日志内容为一个数组
 
@@ -3659,7 +3659,7 @@ lib/core/functions/loadEnv.md
 
 > **loadEnv**(`dir`): `Promise`\<`void`\>
 
-Defined in: [lib/core.ts:1261](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1261)
+Defined in: [lib/core.ts:1263](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1263)
 
 加载 .env 文件到 process.env，若文件不存在则跳过
 
@@ -3729,7 +3729,7 @@ lib/core/functions/ls.md
 
 > **ls**(`opt`): `Promise`\<`object`[]\>
 
-Defined in: [lib/core.ts:1123](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1123)
+Defined in: [lib/core.ts:1125](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1125)
 
 获取目录内文件/文件夹列表
 
@@ -4090,7 +4090,7 @@ lib/core/functions/resolveEnvVars.md
 
 > **resolveEnvVars**(`obj`): `void`
 
-Defined in: [lib/core.ts:1291](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1291)
+Defined in: [lib/core.ts:1293](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1293)
 
 将配置对象中的 ${ENV_VAR} 占位符替换为 process.env 的值
 
@@ -4532,7 +4532,7 @@ lib/core/functions/writeEventStreamHead.md
 
 > **writeEventStreamHead**(`res`): `void`
 
-Defined in: [lib/core.ts:1231](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1231)
+Defined in: [lib/core.ts:1233](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1233)
 
 ## Parameters
 
@@ -4557,7 +4557,7 @@ lib/core/functions/writeHead.md
 
 > **writeHead**(`res`, `statusCode`, `headers?`): `void`
 
-Defined in: [lib/core.ts:1220](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1220)
+Defined in: [lib/core.ts:1222](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1222)
 
 让 res 发送头部（前提是头部没有被发送才能调用本方法
 
@@ -4598,7 +4598,7 @@ lib/core/functions/write.md
 
 > **write**(`res`, `data`): `void`
 
-Defined in: [lib/core.ts:1243](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1243)
+Defined in: [lib/core.ts:1245](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1245)
 
 向 res 发送数据
 
@@ -19531,9 +19531,9 @@ Defined in: [lib/vector.ts:85](https://github.com/maiyunnet/kebab/blob/master/li
 
 ***
 
-### seach()
+### search()
 
-> **seach**(`data`): `Promise`\<`false` \| `object`[]\>
+> **search**(`data`): `Promise`\<`false` \| `object`[]\>
 
 Defined in: [lib/vector.ts:35](https://github.com/maiyunnet/kebab/blob/master/lib/vector.ts#L35)
 
