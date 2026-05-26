@@ -32,7 +32,7 @@ Defined in: [lib/vector.ts:30](https://github.com/maiyunnet/kebab/blob/master/li
 
 > **delete**(`data`): `Promise`\<`false` \| \{ `deletedCount`: `number`; \}\>
 
-Defined in: [lib/vector.ts:116](https://github.com/maiyunnet/kebab/blob/master/lib/vector.ts#L116)
+Defined in: [lib/vector.ts:120](https://github.com/maiyunnet/kebab/blob/master/lib/vector.ts#L120)
 
 删除数据
 
@@ -62,7 +62,7 @@ Defined in: [lib/vector.ts:116](https://github.com/maiyunnet/kebab/blob/master/l
 
 > **insert**(`data`): `Promise`\<`false` \| \{ `insertCount`: `number`; `insertIds`: (`string` \| `number`)[]; \}\>
 
-Defined in: [lib/vector.ts:85](https://github.com/maiyunnet/kebab/blob/master/lib/vector.ts#L85)
+Defined in: [lib/vector.ts:89](https://github.com/maiyunnet/kebab/blob/master/lib/vector.ts#L89)
 
 插入数据
 

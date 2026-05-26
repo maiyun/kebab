@@ -1360,7 +1360,7 @@ index/variables/VER.md
 
 # Variable: VER
 
-> `const` **VER**: `"9.11.1"` = `'9.11.1'`
+> `const` **VER**: `"9.11.2"` = `'9.11.2'`
 
 Defined in: [index.ts:10](https://github.com/maiyunnet/kebab/blob/master/index.ts#L10)
 
@@ -19475,7 +19475,7 @@ Defined in: [lib/vector.ts:30](https://github.com/maiyunnet/kebab/blob/master/li
 
 > **delete**(`data`): `Promise`\<`false` \| \{ `deletedCount`: `number`; \}\>
 
-Defined in: [lib/vector.ts:116](https://github.com/maiyunnet/kebab/blob/master/lib/vector.ts#L116)
+Defined in: [lib/vector.ts:120](https://github.com/maiyunnet/kebab/blob/master/lib/vector.ts#L120)
 
 删除数据
 
@@ -19505,7 +19505,7 @@ Defined in: [lib/vector.ts:116](https://github.com/maiyunnet/kebab/blob/master/l
 
 > **insert**(`data`): `Promise`\<`false` \| \{ `insertCount`: `number`; `insertIds`: (`string` \| `number`)[]; \}\>
 
-Defined in: [lib/vector.ts:85](https://github.com/maiyunnet/kebab/blob/master/lib/vector.ts#L85)
+Defined in: [lib/vector.ts:89](https://github.com/maiyunnet/kebab/blob/master/lib/vector.ts#L89)
 
 插入数据
 
@@ -19596,7 +19596,7 @@ lib/vector/functions/get.md
 
 > **get**(`ctrEtc`): [`Vector`](../classes/Vector.md)
 
-Defined in: [lib/vector.ts:152](https://github.com/maiyunnet/kebab/blob/master/lib/vector.ts#L152)
+Defined in: [lib/vector.ts:156](https://github.com/maiyunnet/kebab/blob/master/lib/vector.ts#L156)
 
 创建一个 Vector 对象
 
