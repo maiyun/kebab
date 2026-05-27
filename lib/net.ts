@@ -254,10 +254,7 @@ export async function fetch(
     };
     // --- 检查是否已中止（注意：请求发起后无法中止） ---
     if (init.signal?.aborted) {
-        return new Response(null, {
-            'status': 0,
-            'statusText': 'Aborted',
-        });
+        throw new DOMException('This operation was aborted', 'AbortError');
     }
     // --- 发起请求 ---
     const res = await request(u, body, opt);
@@ -283,11 +280,14 @@ export async function fetch(
             }
         }
     }
-    const status = res.headers?.['http-code'] ?? (res.error ? 0 : 200);
-    if (res.error || !resStream) {
+    if (res.error) {
+        throw new TypeError(res.error.message ?? 'fetch failed');
+    }
+    const status = res.headers?.['http-code'] ?? 200;
+    if (!resStream) {
         return new Response(null, {
             'status': status,
-            'statusText': res.error?.message ?? 'Unknown Error',
+            'statusText': 'Unknown Error',
             'headers': resHeaders,
         });
     }

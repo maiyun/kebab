@@ -56,6 +56,8 @@ export interface IOptions {
     'secretKey'?: string;
     /** --- 自定义 fetch 函数 --- */
     'fetch'?: (input: string | URL | Request, init?: RequestInit) => Promise<Response>;
+    /** --- 请求超时，毫秒 --- */
+    'timeout'?: number;
 }
 
 /** --- openai 的连接对象 --- */
@@ -153,6 +155,7 @@ export class Ai {
             'apiKey': secretKey,
             'baseURL': endpoint,
             'fetch': opt.fetch,
+            'timeout': opt.timeout,
         });
         links.push({
             'token': token,
