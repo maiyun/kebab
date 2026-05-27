@@ -63,3 +63,13 @@ Defined in: [lib/ai.ts:56](https://github.com/maiyunnet/kebab/blob/master/lib/ai
 Defined in: [lib/ai.ts:52](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L52)
 
 服务商 -
+
+***
+
+### timeout?
+
+> `optional` **timeout?**: `number`
+
+Defined in: [lib/ai.ts:60](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L60)
+
+请求超时，毫秒

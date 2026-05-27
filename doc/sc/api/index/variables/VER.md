@@ -6,7 +6,7 @@
 
 # Variable: VER
 
-> `const` **VER**: `"9.11.4"` = `'9.11.4'`
+> `const` **VER**: `"9.11.5"` = `'9.11.5'`
 
 Defined in: [index.ts:10](https://github.com/maiyunnet/kebab/blob/master/index.ts#L10)
 
