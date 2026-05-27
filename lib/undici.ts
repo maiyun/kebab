@@ -269,9 +269,10 @@ export async function fetch(
         'headers': headers,
         'hosts': init.hosts,
         'mproxy': init.mproxy,
+        'signal': init.signal ?? undefined,
         'follow': init.redirect === 'follow' ? 10 : 0,
     };
-    // --- 检查是否已中止（注意：请求发起后无法中止） ---
+    // --- 检查是否已中止 ---
     if (init.signal?.aborted) {
         throw new DOMException('This operation was aborted', 'AbortError');
     }
@@ -318,7 +319,6 @@ export async function fetch(
 }
 
 /** --- 构建自定义 DNS 查询函数 --- */
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 function buildDnsLookup(hosts?: Record<string, string> | string) {
     if (!hosts) {
         return undefined;
@@ -350,7 +350,7 @@ export async function request(
     const puri = opt.mproxy ? lText.parseUrl(opt.mproxy.url) : null;
     const method = opt.method ?? 'GET';
     const type = opt.type ?? 'form';
-    const timeout = opt.timeout ?? 10;
+    const timeout = opt.timeout ?? 300;
     /** --- 追踪 location 次数，0 为不追踪，默认为 0 --- */
     const follow = opt.follow ?? 0;
     const hosts = opt.hosts ?? {};
@@ -428,6 +428,7 @@ export async function request(
             'headers': headers,
             'headersTimeout': timeout * 1_000,
             'bodyTimeout': timeout * 1_000,
+            'signal': opt.signal,
             'dispatcher': agent,
         });
     }
@@ -689,7 +690,7 @@ export async function rproxy(
 export interface IRequestOptions {
     'method'?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'OPTIONS';
     'type'?: 'form' | 'json';
-    /** --- 秒数，默认 10 秒 --- */
+    /** --- 秒数，默认 300 秒 --- */
     'timeout'?: number;
     /** --- 追踪 location 次数，0 为不追踪，默认为 0 --- */
     'follow'?: number;
@@ -714,11 +715,13 @@ export interface IRequestOptions {
     'cookie'?: Record<string, lCookie.ICookie>;
     /** --- 若有异常写入文件日志，默认为 true --- */
     'log'?: boolean;
+    /** --- 请求中止信号 --- */
+    'signal'?: AbortSignal;
 }
 
 /** --- 正向代理请求的传入参数选项 --- */
 export interface IMproxyOptions {
-    /** --- 秒数 --- */
+    /** --- 秒数，默认 300 秒 --- */
     'timeout'?: number;
     'follow'?: number;
     /** --- 自定义 host 映射，如 {'www.maiyun.net': '127.0.0.1'}，或全部映射到一个 host --- */
@@ -733,7 +736,7 @@ export interface IMproxyOptions {
 
 /** --- 反向代理请求的传入参数选项 --- */
 export interface IRproxyOptions {
-    /** --- 秒数 --- */
+    /** --- 秒数，默认 300 秒 --- */
     'timeout'?: number;
     'follow'?: number;
     /** --- 自定义 host 映射，如 {'www.maiyun.net': '127.0.0.1'}，或全部映射到一个 host --- */
