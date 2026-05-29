@@ -196,12 +196,12 @@ function createRpcListener(): void {
                         res.end('Path not found');
                         return;
                     }
-                    let rtn = await lCore.exec('npm i --omit=dev --omit=optional', {
+                    let rtn = await lCore.exec('npm i --omit=dev', {
                         'cwd': msg.path,
                     });
                     if (rtn === false) {
                         // --- 部分项目可能存在 peerDependencies 冲突，失败后降级为 legacy-peer-deps 再试一次 ---
-                        rtn = await lCore.exec('npm i --omit=dev --omit=optional --legacy-peer-deps', {
+                        rtn = await lCore.exec('npm i --omit=dev --legacy-peer-deps', {
                             'cwd': msg.path,
                         });
                     }
