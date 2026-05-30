@@ -629,7 +629,19 @@ export function mproxyData(ctr: sCtr.Ctr): kebab.Json {
 }
 
 /**
- * --- 反向代理，注意提前处理不要自动处理 post 数据，将本服务器的某个路由反代到其他网址 ---
+ * --- 反向代理，将本服务器的某个路由反代到其他网址 ---
+ *
+ * ## 使用方式
+ *
+ * ### 方式 1：在 onReqStart 中调用（完全反代）
+ * 请求体未被消费，POST body 会完整转发到上游。
+ *
+ * ### 方式 2：在控制器方法中调用（按需反代）
+ * 此时可复用控制器的私有方法做前置处理：
+ * - 如果 req 流尚未消费，body 会自动转发。
+ * - 如果 req 流已消费，可通过 opt.body 手动传入请求体。
+ * - opt.body 优先级高于 req 流。
+ *
  * @param ctr 当前控制器
  * @param route 要反代的路由
  * @param opt 参数
@@ -643,9 +655,6 @@ export async function rproxy(
     const res = ctr.getPrototype('_res');
     const config = ctr.getPrototype('_config');
     const path = config.const.path + (config.const.qs ? '?' + config.const.qs : '');
-    if (req.readableEnded) {
-        return false;
-    }
     for (const key in route) {
         if (!path.startsWith(key)) {
             continue;
@@ -660,28 +669,17 @@ export async function rproxy(
         const headers = Object.assign(filterHeaders(req.headers, undefined, opt.filter), opt.headers);
         // --- 拼接代理目标 URL ---
         let proxyUrl = route[key] + lpath;
-        // --- 处理 GET 查询参数（剔除 + 追加） ---
-        if (opt.querysBlacklist || opt.querys) {
+        // --- 自定义 GET 查询参数（直接替换整个 query string） ---
+        if (opt.querys) {
             const parsed = lText.parseUrl(proxyUrl);
-            const queryObj = parsed.query ? lText.queryParse(parsed.query) : {};
-            // --- 剔除黑名单参数 ---
-            if (opt.querysBlacklist) {
-                for (const name of opt.querysBlacklist) {
-                    delete queryObj[name];
-                }
-            }
-            // --- 合并追加参数（同名覆盖） ---
-            if (opt.querys) {
-                Object.assign(queryObj, opt.querys);
-            }
-            const newQueryStr = lText.queryStringify(queryObj);
+            const newQueryStr = lText.queryStringify(opt.querys);
             const prefix = parsed.protocol
                 ? parsed.protocol + '//' + (parsed.host ?? '') + parsed.pathname
                 : parsed.pathname;
             proxyUrl = prefix + (newQueryStr ? '?' + newQueryStr : '') + (parsed.hash ? '#' + parsed.hash : '');
         }
-        // --- 发起请求 ---
-        const rres = await request(proxyUrl, req, {
+        // --- 发起请求（opt.body 优先于原始 req 流） ---
+        const rres = await request(proxyUrl, opt.body ?? req, {
             ...opt,
             headers,
         });
@@ -775,9 +773,9 @@ export interface IRproxyOptions {
         /** --- 落地端自定义 host 映射，如 {'www.maiyun.net': '127.0.0.1'}，或全部映射到一个 host --- */
         'hosts'?: Record<string, string> | string;
     };
-    /** --- 需要从原始 URL 中剔除的 GET 查询参数名列表（在合并 querys 之前执行） --- */
-    'querysBlacklist'?: string[];
-    /** --- 追加的 GET 查询参数，会与代理目标 URL 已有 query string 合并（同名参数覆盖） --- */
+    /** --- 手动传入请求体（优先于原始 req 流），用于 req 流已消费后仍需转发 body 的场景 --- */
+    'body'?: Buffer | string | stream.Readable;
+    /** --- 自定义 GET 查询参数，传入后直接替换代理目标 URL 的整个 query string --- */
     'querys'?: Record<string, any>;
     /** --- 默认为 default --- */
     'reuse'?: string | undici.ProxyAgent | undici.Agent;
