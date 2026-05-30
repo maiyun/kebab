@@ -658,8 +658,30 @@ export async function rproxy(
         (opt as kebab.Json).method = req.method ?? 'GET';
         opt.headers ??= {};
         const headers = Object.assign(filterHeaders(req.headers, undefined, opt.filter), opt.headers);
+        // --- 拼接代理目标 URL ---
+        let proxyUrl = route[key] + lpath;
+        // --- 处理 GET 查询参数（剔除 + 追加） ---
+        if (opt.querysBlacklist || opt.querys) {
+            const parsed = lText.parseUrl(proxyUrl);
+            const queryObj = parsed.query ? lText.queryParse(parsed.query) : {};
+            // --- 剔除黑名单参数 ---
+            if (opt.querysBlacklist) {
+                for (const name of opt.querysBlacklist) {
+                    delete queryObj[name];
+                }
+            }
+            // --- 合并追加参数（同名覆盖） ---
+            if (opt.querys) {
+                Object.assign(queryObj, opt.querys);
+            }
+            const newQueryStr = lText.queryStringify(queryObj);
+            const prefix = parsed.protocol
+                ? parsed.protocol + '//' + (parsed.host ?? '') + parsed.pathname
+                : parsed.pathname;
+            proxyUrl = prefix + (newQueryStr ? '?' + newQueryStr : '') + (parsed.hash ? '#' + parsed.hash : '');
+        }
         // --- 发起请求 ---
-        const rres = await request(route[key] + lpath, req, {
+        const rres = await request(proxyUrl, req, {
             ...opt,
             headers,
         });
@@ -753,6 +775,10 @@ export interface IRproxyOptions {
         /** --- 落地端自定义 host 映射，如 {'www.maiyun.net': '127.0.0.1'}，或全部映射到一个 host --- */
         'hosts'?: Record<string, string> | string;
     };
+    /** --- 需要从原始 URL 中剔除的 GET 查询参数名列表（在合并 querys 之前执行） --- */
+    'querysBlacklist'?: string[];
+    /** --- 追加的 GET 查询参数，会与代理目标 URL 已有 query string 合并（同名参数覆盖） --- */
+    'querys'?: Record<string, any>;
     /** --- 默认为 default --- */
     'reuse'?: string | undici.ProxyAgent | undici.Agent;
 }
