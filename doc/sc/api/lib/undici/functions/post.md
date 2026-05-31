@@ -8,7 +8,7 @@
 
 > **post**(`u`, `data`, `opt?`): `Promise`\<[`Response`](../response/classes/Response.md)\>
 
-Defined in: [lib/undici.ts:99](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L99)
+Defined in: [lib/undici.ts:100](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L100)
 
 发起一个 post 请求
 
