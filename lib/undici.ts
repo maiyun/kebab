@@ -10,6 +10,7 @@ import * as lText from '#kebab/lib/text.js';
 import * as lCrypto from '#kebab/lib/crypto.js';
 import * as lCore from '#kebab/lib/core.js';
 import * as lCookie from '#kebab/lib/cookie.js';
+import * as lZlib from '#kebab/lib/zlib.js';
 import * as sCtr from '#kebab/sys/ctr.js';
 // --- 自己 ---
 import * as lFd from './undici/formdata.js';
@@ -693,11 +694,23 @@ export async function rproxy(
         if (rres.headers) {
             filterHeaders(rres.headers, res, opt.filter);
         }
+        /** --- 当前的压缩对象 --- */
+        const compress = lZlib.createCompress(req.headers['accept-encoding'] ?? '');
+        if (compress) {
+            res.setHeader('content-encoding', compress.type);
+        }
         lCore.writeHead(res, rres.headers?.['http-code'] ?? 200);
         await new Promise<void>((resolve) => {
-            stream.pipe(res).on('finish', () => {
-                resolve();
-            });
+            if (compress) {
+                stream.pipe(compress.compress).pipe(res).on('finish', () => {
+                    resolve();
+                });
+            }
+            else {
+                stream.pipe(res).on('finish', () => {
+                    resolve();
+                });
+            }
         });
         return true;
     }
