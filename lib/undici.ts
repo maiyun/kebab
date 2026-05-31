@@ -694,8 +694,10 @@ export async function rproxy(
         if (rres.headers) {
             filterHeaders(rres.headers, res, opt.filter);
         }
+        /** --- 上游已压缩则不再压缩，避免双重压缩导致乱码 --- */
+        const upstreamEncoded = !!(rres.headers?.['content-encoding']);
         /** --- 当前的压缩对象 --- */
-        const compress = lZlib.createCompress(req.headers['accept-encoding'] ?? '');
+        const compress = upstreamEncoded ? null : lZlib.createCompress(req.headers['accept-encoding'] ?? '');
         if (compress) {
             res.setHeader('content-encoding', compress.type);
         }
