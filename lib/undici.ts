@@ -387,7 +387,7 @@ export async function request(
             headers['content-length'] = data.getLength();
         }
     }
-    headers['accept-encoding'] = 'gzip, deflate';
+    headers['accept-encoding'] ??= 'gzip, deflate';
     // --- cookie 托管 ---
     if (opt.cookie) {
         headers['cookie'] = lCookie.buildCookieQuery(opt.cookie, uri);
