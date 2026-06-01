@@ -1,7 +1,7 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2019-5-27 20:18:50
- * Last: 2020-3-29 19:37:25, 2022-07-24 22:38:11, 2023-5-24 18:49:18, 2023-6-13 22:20:21, 2023-12-11 13:58:54, 2023-12-14 13:14:40, 2023-12-21 00:04:40, 2024-4-11 19:29:29, 2024-9-2 17:15:28, 2025-8-3 21:28:18, 2025-11-9 16:20:23, 2026-4-30 13:49:44
+ * Last: 2020-3-29 19:37:25, 2022-07-24 22:38:11, 2023-5-24 18:49:18, 2023-6-13 22:20:21, 2023-12-11 13:58:54, 2023-12-14 13:14:40, 2023-12-21 00:04:40, 2024-4-11 19:29:29, 2024-9-2 17:15:28, 2025-8-3 21:28:18, 2025-11-9 16:20:23, 2026-4-30 13:49:44, 2026-6-1 11:30:00
  */
 import * as kebab from '#kebab/index.js';
 import * as lText from '#kebab/lib/text.js';
@@ -219,25 +219,26 @@ export class Sql {
         const quotedTable = this.field(table, this._pre);
         const quotedKey = this.field(key);
         if (this._service === ESERVICE.MYSQL) {
-            // --- MySQL 8.0.19+ VALUES ROW() 派生表语法 ---
+            // --- MySQL UNION ALL SELECT 派生表语法 ---
             // --- 必须把 tmp 放在 UPDATE 的 table_references 最前面，并使用 STRAIGHT_JOIN：
             //     1. tmp 是小数据集，作为驱动表逐行查找目标表
             //     2. STRAIGHT_JOIN 强制目标表按 key 条件被查找，避免优化器反向全表扫描
-            //     3. 相比 CASE WHEN，key 只出现一次，SQL 和参数量都更小 ---
-            const valueParts: string[] = [];
-            for (const row of rows) {
-                const parts = row.map(v => {
+            //     3. 相比 VALUES ROW()，UNION ALL SELECT 不会将派生表列强制转换为目标表类型，
+            //        避免 "Data too long for column" 错误 ---
+            const selectParts: string[] = [];
+            for (let ri = 0; ri < rows.length; ri++) {
+                const row = rows[ri];
+                const parts = row.map((v, ci) => {
                     const result = this._processValue(v);
                     if (result.data.length > 0) {
                         this._data.push(...result.data);
                     }
-                    return result.sql;
+                    return ri === 0 ? `${result.sql} AS ${this.field(allCols[ci])}` : result.sql;
                 });
-                valueParts.push(`ROW(${parts.join(', ')})`);
+                selectParts.push(`SELECT ${parts.join(', ')}`);
             }
-            const tmpCols = allCols.map(c => this.field(c)).join(', ');
             const setClauses = cols.map(c => `t.${this.field(c)} = tmp.${this.field(c)}`).join(', ');
-            this._sql = [`UPDATE (VALUES ${valueParts.join(', ')}) AS tmp(${tmpCols}) STRAIGHT_JOIN ${quotedTable} t ON t.${quotedKey} = tmp.${quotedKey} SET ${setClauses}`];
+            this._sql = [`UPDATE (${selectParts.join(' UNION ALL ')}) AS tmp STRAIGHT_JOIN ${quotedTable} t ON t.${quotedKey} = tmp.${quotedKey} SET ${setClauses}`];
         }
         else {
             // --- PostgreSQL 使用 UPDATE FROM (VALUES ...) ---

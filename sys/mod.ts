@@ -1489,7 +1489,7 @@ export default class Mod {
         sql = sql
             .replace(/ LIMIT [0-9 ,]+(OFFSET [0-9]+)?/ig, '')
             .replace(/ ORDER BY [\w`",. ]+(DESC|ASC)?/ig, '');
-        if (sql.includes(' GROUP BY ')) {
+        if (sql.includes(' GROUP BY ') || /\bUNION\b/i.test(sql)) {
             return `SELECT COUNT(0) AS ${q}count${q} FROM(` + sql + `) AS ${q}f${q}`;
         }
         return sql
