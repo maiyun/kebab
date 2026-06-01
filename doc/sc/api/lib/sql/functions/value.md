@@ -8,7 +8,7 @@
 
 > **value**(`val`): `object`
 
-Defined in: [lib/sql.ts:1441](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L1441)
+Defined in: [lib/sql.ts:1442](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L1442)
 
 创建字面量值对象，用于 where 条件中 v[0] 需要是值而非字段名的场景
 例：[value('hello'), 'IN', column('tags')]
