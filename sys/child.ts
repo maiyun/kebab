@@ -236,7 +236,7 @@ async function requestHandler(
         'timer': {} as NodeJS.Timeout,
         'timeout': 30_000,
         'callback': () => {
-            if (!req.socket.writable) {
+            if (!req.socket?.writable) {
                 // --- 用户连接已中断 ---
                 return;
             }
