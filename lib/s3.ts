@@ -21,7 +21,7 @@ export enum ESERVICE {
     'AMAZON',
     'TENCENT',
     'ALIBABA',
-    'CF'
+    'CF',
 }
 
 /** --- 选项 --- */
@@ -38,6 +38,42 @@ export interface IOptions {
     'region'?: string;
     /** --- 预定义 bucket --- */
     'bucket'?: string;
+}
+
+/** --- 批量上传单项 --- */
+export interface IPutObjectItem {
+    /** --- 对象路径 --- */
+    'key': string;
+    /** --- 内容 --- */
+    'content': string | Buffer | stream.Readable;
+    /** --- contentLength，流模式需要设置 --- */
+    'length'?: number;
+    /** --- content-type，如 application/javascript --- */
+    'type'?: string;
+    /** --- content-disposition --- */
+    'disposition'?: string;
+    /** --- bucket 名，优先级高于 options.bucket --- */
+    'bucket'?: string;
+}
+
+/** --- 批量上传选项 --- */
+export interface IPutObjectsOptions {
+    /** --- 并发数，默认 5 --- */
+    'concurrency'?: number;
+    /** --- bucket 名 --- */
+    'bucket'?: string;
+}
+
+/** --- 批量上传单项结果 --- */
+export interface IPutObjectsItemResult {
+    /** --- 对象路径 --- */
+    'key': string;
+    /** --- 是否成功 --- */
+    'success': boolean;
+    /** --- 对象访问地址，成功时返回 --- */
+    'location'?: string;
+    /** --- 错误信息，失败时返回 --- */
+    'error'?: string;
 }
 
 export class S3 {
@@ -141,11 +177,61 @@ export class S3 {
     }
 
     /**
+     * --- 批量上传对象，并发控制，单次失败不影响其他项 ---
+     * @param items 上传项列表
+     * @param options 批量上传选项
+     */
+    public async putObjects(
+        items: IPutObjectItem[], options?: IPutObjectsOptions
+    ): Promise<IPutObjectsItemResult[]> {
+        const concurrency = options?.concurrency ?? 5;
+        const sharedBucket = options?.bucket;
+        const results: IPutObjectsItemResult[] = new Array(items.length);
+        let cursor = 0;
+        const worker = async (): Promise<void> => {
+            while (cursor < items.length) {
+                const i = cursor++;
+                const item = items[i];
+                const bucket = item.bucket ?? sharedBucket;
+                const res = await this.putObject(
+                    item.key,
+                    item.content,
+                    {
+                        'length': item.length,
+                        'type': item.type,
+                        'disposition': item.disposition,
+                    },
+                    bucket
+                );
+                if (res) {
+                    results[i] = {
+                        'key': item.key,
+                        'success': true,
+                        'location': res.Location,
+                    };
+                }
+                else {
+                    results[i] = {
+                        'key': item.key,
+                        'success': false,
+                        'error': 'upload failed',
+                    };
+                }
+            }
+        };
+        const workers = Array.from(
+            { 'length': Math.min(concurrency, items.length) },
+            () => worker()
+        );
+        await Promise.all(workers);
+        return results;
+    }
+
+    /**
      * --- 获取对象流，可通过流获取 buffer 或 text ---
      * @param key 对象路径
      * @param bucket bucket 名
      */
-    // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
     public async getObject(key: string, bucket?: string) {
         try {
             const go = new s3.GetObjectCommand({
