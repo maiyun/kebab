@@ -17,6 +17,9 @@
 ## Interfaces
 
 - [IOptions](interfaces/IOptions.md)
+- [IPutObjectItem](interfaces/IPutObjectItem.md)
+- [IPutObjectsItemResult](interfaces/IPutObjectsItemResult.md)
+- [IPutObjectsOptions](interfaces/IPutObjectsOptions.md)
 
 ## Functions
 

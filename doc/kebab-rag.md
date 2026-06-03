@@ -12555,7 +12555,7 @@ lib/s3/classes/S3.md
 
 # Class: S3
 
-Defined in: [lib/s3.ts:43](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L43)
+Defined in: [lib/s3.ts:79](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L79)
 
 ## Constructors
 
@@ -12563,7 +12563,7 @@ Defined in: [lib/s3.ts:43](https://github.com/maiyunnet/kebab/blob/master/lib/s3
 
 > **new S3**(`ctr`, `opt`): `S3`
 
-Defined in: [lib/s3.ts:52](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L52)
+Defined in: [lib/s3.ts:88](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L88)
 
 #### Parameters
 
@@ -12585,7 +12585,7 @@ Defined in: [lib/s3.ts:52](https://github.com/maiyunnet/kebab/blob/master/lib/s3
 
 > **deleteObject**(`key`, `bucket?`): `Promise`\<`boolean`\>
 
-Defined in: [lib/s3.ts:169](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L169)
+Defined in: [lib/s3.ts:255](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L255)
 
 删除对象
 
@@ -12613,7 +12613,7 @@ bucket 名
 
 > **deleteObjects**(`keys`, `bucket?`): `Promise`\<`boolean`\>
 
-Defined in: [lib/s3.ts:189](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L189)
+Defined in: [lib/s3.ts:275](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L275)
 
 批量删除对象
 
@@ -12641,7 +12641,7 @@ bucket 名
 
 > **destroy**(): `void`
 
-Defined in: [lib/s3.ts:231](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L231)
+Defined in: [lib/s3.ts:317](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L317)
 
 销毁连接，释放资源
 一般会自动垃圾回收，但高频接口也可主动调用
@@ -12656,7 +12656,7 @@ Defined in: [lib/s3.ts:231](https://github.com/maiyunnet/kebab/blob/master/lib/s
 
 > **getObject**(`key`, `bucket?`): `Promise`\<`false` \| `Readable` & `SdkStreamMixin` \| `Blob` & `SdkStreamMixin` \| `ReadableStream`\<`any`\> & `SdkStreamMixin` \| `undefined`\>
 
-Defined in: [lib/s3.ts:149](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L149)
+Defined in: [lib/s3.ts:235](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L235)
 
 获取对象流，可通过流获取 buffer 或 text
 
@@ -12684,7 +12684,7 @@ bucket 名
 
 > **headObject**(`key`, `bucket?`): `Promise`\<`false` \| `HeadObjectCommandOutput`\>
 
-Defined in: [lib/s3.ts:211](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L211)
+Defined in: [lib/s3.ts:297](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L297)
 
 检测对象是否存在
 
@@ -12712,7 +12712,7 @@ bucket 名
 
 > **putObject**(`key`, `content`, `length?`, `bucket?`): `Promise`\<`false` \| `CompleteMultipartUploadCommandOutput`\>
 
-Defined in: [lib/s3.ts:103](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L103)
+Defined in: [lib/s3.ts:139](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L139)
 
 上传对象（可传流且也可无需设置 length） --
 
@@ -12776,11 +12776,39 @@ bucket 名
 
 ***
 
+### putObjects()
+
+> **putObjects**(`items`, `options?`): `Promise`\<[`IPutObjectsItemResult`](../interfaces/IPutObjectsItemResult.md)[]\>
+
+Defined in: [lib/s3.ts:184](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L184)
+
+批量上传对象，并发控制，单次失败不影响其他项
+
+#### Parameters
+
+##### items
+
+[`IPutObjectItem`](../interfaces/IPutObjectItem.md)[]
+
+上传项列表
+
+##### options?
+
+[`IPutObjectsOptions`](../interfaces/IPutObjectsOptions.md)
+
+批量上传选项
+
+#### Returns
+
+`Promise`\<[`IPutObjectsItemResult`](../interfaces/IPutObjectsItemResult.md)[]\>
+
+***
+
 ### setBucket()
 
 > **setBucket**(`bucket`): `void`
 
-Defined in: [lib/s3.ts:92](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L92)
+Defined in: [lib/s3.ts:128](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L128)
 
 修改预定义 bucket
 
@@ -12856,7 +12884,7 @@ lib/s3/functions/get.md
 
 > **get**(`ctr`, `opt`): [`S3`](../classes/S3.md)
 
-Defined in: [lib/s3.ts:241](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L241)
+Defined in: [lib/s3.ts:327](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L327)
 
 创建一个对象存储对象
 
@@ -12898,6 +12926,9 @@ lib/s3/index.md
 ## Interfaces
 
 - [IOptions](interfaces/IOptions.md)
+- [IPutObjectItem](interfaces/IPutObjectItem.md)
+- [IPutObjectsItemResult](interfaces/IPutObjectsItemResult.md)
+- [IPutObjectsOptions](interfaces/IPutObjectsOptions.md)
 
 ## Functions
 
@@ -12977,6 +13008,171 @@ Defined in: [lib/s3.ts:36](https://github.com/maiyunnet/kebab/blob/master/lib/s3
 Defined in: [lib/s3.ts:30](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L30)
 
 服务商 -
+
+lib/s3/interfaces/IPutObjectItem.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../index.md) / [lib/s3](../index.md) / IPutObjectItem
+
+# Interface: IPutObjectItem
+
+Defined in: [lib/s3.ts:44](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L44)
+
+批量上传单项
+
+## Properties
+
+### bucket?
+
+> `optional` **bucket?**: `string`
+
+Defined in: [lib/s3.ts:56](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L56)
+
+bucket 名，优先级高于 options.bucket
+
+***
+
+### content
+
+> **content**: `string` \| `Buffer`\<`ArrayBufferLike`\> \| `Readable`
+
+Defined in: [lib/s3.ts:48](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L48)
+
+内容
+
+***
+
+### disposition?
+
+> `optional` **disposition?**: `string`
+
+Defined in: [lib/s3.ts:54](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L54)
+
+content-disposition
+
+***
+
+### key
+
+> **key**: `string`
+
+Defined in: [lib/s3.ts:46](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L46)
+
+对象路径
+
+***
+
+### length?
+
+> `optional` **length?**: `number`
+
+Defined in: [lib/s3.ts:50](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L50)
+
+contentLength，流模式需要设置
+
+***
+
+### type?
+
+> `optional` **type?**: `string`
+
+Defined in: [lib/s3.ts:52](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L52)
+
+content-type，如 application/javascript
+
+lib/s3/interfaces/IPutObjectsItemResult.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../index.md) / [lib/s3](../index.md) / IPutObjectsItemResult
+
+# Interface: IPutObjectsItemResult
+
+Defined in: [lib/s3.ts:68](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L68)
+
+批量上传单项结果
+
+## Properties
+
+### error?
+
+> `optional` **error?**: `string`
+
+Defined in: [lib/s3.ts:76](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L76)
+
+错误信息，失败时返回
+
+***
+
+### key
+
+> **key**: `string`
+
+Defined in: [lib/s3.ts:70](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L70)
+
+对象路径
+
+***
+
+### location?
+
+> `optional` **location?**: `string`
+
+Defined in: [lib/s3.ts:74](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L74)
+
+对象访问地址，成功时返回
+
+***
+
+### success
+
+> **success**: `boolean`
+
+Defined in: [lib/s3.ts:72](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L72)
+
+是否成功
+
+lib/s3/interfaces/IPutObjectsOptions.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../index.md) / [lib/s3](../index.md) / IPutObjectsOptions
+
+# Interface: IPutObjectsOptions
+
+Defined in: [lib/s3.ts:60](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L60)
+
+批量上传选项
+
+## Properties
+
+### bucket?
+
+> `optional` **bucket?**: `string`
+
+Defined in: [lib/s3.ts:64](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L64)
+
+bucket 名
+
+***
+
+### concurrency?
+
+> `optional` **concurrency?**: `number`
+
+Defined in: [lib/s3.ts:62](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L62)
+
+并发数，默认 5
 
 lib/scan/classes/Scan.md
 ---
