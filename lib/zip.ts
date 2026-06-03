@@ -441,12 +441,14 @@ export async function get(data?: TZipInputFileFormat): Promise<Zip | null> {
 // --- 类型 ---
 
 export interface IZipItem {
+    /** --- 文件/目录名（不含路径，不含前后斜杠） --- */
     'name': string;
     'compressedSize': number;
     'uncompressedSize': number;
     'date': Date;
     'isFile': boolean;
     'isDirectory': boolean;
+    /** --- 父目录路径（以 / 开头和结尾，如 /stc/ 或根目录 /），完整路径 = path + name --- */
     'path': string;
 }
 
