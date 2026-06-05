@@ -976,11 +976,11 @@ export class Ctr {
      * 返回 true 接续执行，返回 false 需要中断用户本次访问（options 请求）
      */
     protected _cross(opt: {
-        /** --- 允许的来源列表，留空为 '*' --- */
+        /** --- 允许的来源列表，默认 '*' --- */
         'origins'?: string[];
-        /** --- 允许的请求头 --- */
+        /** --- 允许的请求头，默认 '*' --- */
         'headers'?: string;
-        /** --- 允许的方法 --- */
+        /** --- 允许的方法，默认 '*' --- */
         'methods'?: string;
         /** --- 是否允许发送凭据（cookie），默认 false --- */
         'credentials'?: boolean;
