@@ -396,7 +396,6 @@ function createRpcListener(): void {
                         '.nyc_output',
                         'tmp',
                         'temp',
-                        'AGENTS.md',
                     ]);
                     for (const path in ls) {
                         /** --- 带 / 开头的 zip 中文件完整路径，例如 "/www/pika/ctr/api.js" --- */
@@ -417,6 +416,10 @@ function createRpcListener(): void {
                         }
                         if (fname.endsWith('.js.map') || fname.endsWith('.ts') || fname.endsWith('.tsx') || fname.endsWith('.scss') || fname.endsWith('.gitignore') || fname.endsWith('.DS_Store')) {
                             // --- 测试或开发文件不覆盖 ---
+                            continue;
+                        }
+                        if (fname === 'AGENTS.md') {
+                            // --- 排除文件不部署 ---
                             continue;
                         }
                         // --- 规则 1：若同级目录存在 xxx.cga，则 xxx 目录下所有内容不部署 ---
