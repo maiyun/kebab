@@ -534,6 +534,8 @@ export function filterHeaders(
     filter?: (h: string) => boolean
 ): Record<string, string | string[]> {
     const heads: Record<string, string | string[]> = {};
+    // --- HTTP/2 下响应已发送则跳过 setHeader，避免 ERR_HTTP2_HEADERS_SENT ---
+    const sent = res ? res.headersSent : false;
     for (const h in headers) {
         if (proxyContinueHeaders.includes(h)) {
             continue;
@@ -549,7 +551,9 @@ export function filterHeaders(
             continue;
         }
         if (res) {
-            res.setHeader(h, v);
+            if (!sent) {
+                res.setHeader(h, v);
+            }
             continue;
         }
         heads[h] = v;
@@ -601,15 +605,24 @@ export async function mproxy(
     if (rres.error) {
         return -2;
     }
-    if (rres.headers) {
-        filterHeaders(rres.headers, res, opt.filter);
-    }
-    lCore.writeHead(res, rres.headers?.['http-code'] ?? 200);
-    await new Promise<void>((resolve) => {
-        stream.pipe(res).on('finish', () => {
-            resolve();
+    // --- HTTP/2 下响应可能已被客户端取消，跳过头部设置避免崩溃 ---
+    if (!res.headersSent) {
+        if (rres.headers) {
+            filterHeaders(rres.headers, res, opt.filter);
+        }
+        lCore.writeHead(res, rres.headers?.['http-code'] ?? 200);
+        await new Promise<void>(resolve => {
+            // --- 上游流出错时主动销毁响应流，避免连接挂起 ---
+            stream.on('error', (err: Error) => {
+                lCore.log({}, `[UNDICI][MPROXY] upstream stream error: ${err.message}`, '-neterror');
+                res.destroy();
+            });
+            // --- 同时监听 close 确保 promise 一定会 resolve（客户端断连等场景） ---
+            stream.pipe(res).on('close', () => {
+                resolve();
+            });
         });
-    });
+    }
     return 1;
 }
 
@@ -691,29 +704,38 @@ export async function rproxy(
         if (rres.error) {
             return false;
         }
-        if (rres.headers) {
-            filterHeaders(rres.headers, res, opt.filter);
-        }
-        /** --- 上游已压缩则不再压缩，避免双重压缩导致乱码 --- */
-        const upstreamEncoded = !!(rres.headers?.['content-encoding']);
-        /** --- 当前的压缩对象 --- */
-        const compress = upstreamEncoded ? null : lZlib.createCompress(req.headers['accept-encoding'] ?? '');
-        if (compress) {
-            res.setHeader('content-encoding', compress.type);
-        }
-        lCore.writeHead(res, rres.headers?.['http-code'] ?? 200);
-        await new Promise<void>((resolve) => {
+        // --- HTTP/2 下响应可能已被客户端取消，跳过头部设置避免崩溃 ---
+        if (!res.headersSent) {
+            if (rres.headers) {
+                filterHeaders(rres.headers, res, opt.filter);
+            }
+            /** --- 上游已压缩则不再压缩，避免双重压缩导致乱码 --- */
+            const upstreamEncoded = !!(rres.headers?.['content-encoding']);
+            /** --- 当前的压缩对象 --- */
+            const compress = upstreamEncoded ? null : lZlib.createCompress(req.headers['accept-encoding'] ?? '');
             if (compress) {
-                stream.pipe(compress.compress).pipe(res).on('finish', () => {
-                    resolve();
-                });
+                res.setHeader('content-encoding', compress.type);
             }
-            else {
-                stream.pipe(res).on('finish', () => {
-                    resolve();
+            lCore.writeHead(res, rres.headers?.['http-code'] ?? 200);
+            await new Promise<void>((resolve) => {
+                // --- 上游流出错时主动销毁响应流，避免连接挂起 ---
+                stream.on('error', (err: Error) => {
+                    lCore.log({}, `[UNDICI][RPROXY] upstream stream error: ${err.message}`, '-neterror');
+                    res.destroy();
                 });
-            }
-        });
+                // --- 同时监听 close 确保 promise 一定会 resolve（客户端断连等场景） ---
+                if (compress) {
+                    stream.pipe(compress.compress).pipe(res).on('close', () => {
+                        resolve();
+                    });
+                }
+                else {
+                    stream.pipe(res).on('close', () => {
+                        resolve();
+                    });
+                }
+            });
+        }
         return true;
     }
     return false;
