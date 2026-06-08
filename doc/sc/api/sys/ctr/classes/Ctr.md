@@ -431,19 +431,19 @@ Defined in: [sys/ctr.ts:978](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 `string`
 
-允许的请求头
+允许的请求头，默认 '*'
 
 ###### methods?
 
 `string`
 
-允许的方法
+允许的方法，默认 '*'
 
 ###### origins?
 
 `string`[]
 
-允许的来源列表，留空为 '*'
+允许的来源列表，默认 '*'
 
 #### Returns
 

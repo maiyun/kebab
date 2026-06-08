@@ -8,7 +8,7 @@
 
 > **rproxy**(`ctr`, `route`, `opt?`): `Promise`\<`boolean`\>
 
-Defined in: [lib/undici.ts:650](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L650)
+Defined in: [lib/undici.ts:663](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L663)
 
 反向代理，将本服务器的某个路由反代到其他网址
 

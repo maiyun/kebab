@@ -8,4 +8,4 @@
 
 > **TZipOutputType** = keyof [`IZipOutputByType`](../interfaces/IZipOutputByType.md)
 
-Defined in: [lib/zip.ts:473](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L473)
+Defined in: [lib/zip.ts:475](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L475)

@@ -6,7 +6,7 @@
 
 # Interface: IZipStats
 
-Defined in: [lib/zip.ts:453](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L453)
+Defined in: [lib/zip.ts:455](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L455)
 
 ## Properties
 
@@ -14,7 +14,7 @@ Defined in: [lib/zip.ts:453](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **compressedSize**: `number`
 
-Defined in: [lib/zip.ts:454](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L454)
+Defined in: [lib/zip.ts:456](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L456)
 
 ***
 
@@ -22,7 +22,7 @@ Defined in: [lib/zip.ts:454](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **date**: `Date`
 
-Defined in: [lib/zip.ts:456](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L456)
+Defined in: [lib/zip.ts:458](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L458)
 
 ***
 
@@ -30,7 +30,7 @@ Defined in: [lib/zip.ts:456](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **isDirectory**: `boolean`
 
-Defined in: [lib/zip.ts:458](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L458)
+Defined in: [lib/zip.ts:460](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L460)
 
 ***
 
@@ -38,7 +38,7 @@ Defined in: [lib/zip.ts:458](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **isFile**: `boolean`
 
-Defined in: [lib/zip.ts:457](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L457)
+Defined in: [lib/zip.ts:459](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L459)
 
 ***
 
@@ -46,4 +46,4 @@ Defined in: [lib/zip.ts:457](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **uncompressedSize**: `number`
 
-Defined in: [lib/zip.ts:455](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L455)
+Defined in: [lib/zip.ts:457](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L457)

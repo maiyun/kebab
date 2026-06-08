@@ -1360,7 +1360,7 @@ index/variables/VER.md
 
 # Variable: VER
 
-> `const` **VER**: `"9.13.0"` = `'9.13.0'`
+> `const` **VER**: `"9.13.1"` = `'9.13.1'`
 
 Defined in: [index.ts:10](https://github.com/maiyunnet/kebab/blob/master/index.ts#L10)
 
@@ -18462,7 +18462,7 @@ lib/undici/functions/mproxyData.md
 
 > **mproxyData**(`ctr`): `any`
 
-Defined in: [lib/undici.ts:620](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L620)
+Defined in: [lib/undici.ts:633](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L633)
 
 获取 mproxy 的附加数据
 
@@ -18491,7 +18491,7 @@ lib/undici/functions/mproxy.md
 
 > **mproxy**(`ctr`, `auth`, `opt?`): `Promise`\<`number`\>
 
-Defined in: [lib/undici.ts:567](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L567)
+Defined in: [lib/undici.ts:571](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L571)
 
 正向 mproxy 代理，注意提前处理不要自动处理 post 数据，读取 get 的 url 为实际请求地址
 get: url, auth
@@ -18720,7 +18720,7 @@ lib/undici/functions/rproxy.md
 
 > **rproxy**(`ctr`, `route`, `opt?`): `Promise`\<`boolean`\>
 
-Defined in: [lib/undici.ts:650](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L650)
+Defined in: [lib/undici.ts:663](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L663)
 
 反向代理，将本服务器的某个路由反代到其他网址
 
@@ -18808,7 +18808,7 @@ lib/undici/interfaces/IMproxyOptions.md
 
 # Interface: IMproxyOptions
 
-Defined in: [lib/undici.ts:758](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L758)
+Defined in: [lib/undici.ts:780](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L780)
 
 正向代理请求的传入参数选项
 
@@ -18818,7 +18818,7 @@ Defined in: [lib/undici.ts:758](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **filter?**: (`h`) => `boolean`
 
-Defined in: [lib/undici.ts:767](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L767)
+Defined in: [lib/undici.ts:789](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L789)
 
 过滤 header，返回 true 则留下
 
@@ -18838,7 +18838,7 @@ Defined in: [lib/undici.ts:767](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **follow?**: `number`
 
-Defined in: [lib/undici.ts:761](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L761)
+Defined in: [lib/undici.ts:783](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L783)
 
 ***
 
@@ -18846,7 +18846,7 @@ Defined in: [lib/undici.ts:761](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **headers?**: [`THttpHeaders`](../type-aliases/THttpHeaders.md)
 
-Defined in: [lib/undici.ts:765](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L765)
+Defined in: [lib/undici.ts:787](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L787)
 
 ***
 
@@ -18854,7 +18854,7 @@ Defined in: [lib/undici.ts:765](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **hosts?**: `string` \| `Record`\<`string`, `string`\>
 
-Defined in: [lib/undici.ts:763](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L763)
+Defined in: [lib/undici.ts:785](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L785)
 
 自定义 host 映射，如 {'www.maiyun.net': '127.0.0.1'}，或全部映射到一个 host
 
@@ -18864,7 +18864,7 @@ Defined in: [lib/undici.ts:763](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **local?**: `string`
 
-Defined in: [lib/undici.ts:764](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L764)
+Defined in: [lib/undici.ts:786](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L786)
 
 ***
 
@@ -18872,7 +18872,7 @@ Defined in: [lib/undici.ts:764](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **reuse?**: `string` \| `Agent` \| `ProxyAgent`
 
-Defined in: [lib/undici.ts:769](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L769)
+Defined in: [lib/undici.ts:791](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L791)
 
 默认为 default
 
@@ -18882,7 +18882,7 @@ Defined in: [lib/undici.ts:769](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **timeout?**: `number`
 
-Defined in: [lib/undici.ts:760](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L760)
+Defined in: [lib/undici.ts:782](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L782)
 
 秒数，默认 300 秒
 
@@ -18897,7 +18897,7 @@ lib/undici/interfaces/IRequestOptions.md
 
 # Interface: IRequestOptions
 
-Defined in: [lib/undici.ts:725](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L725)
+Defined in: [lib/undici.ts:747](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L747)
 
 请求的传入参数选项
 
@@ -18907,7 +18907,7 @@ Defined in: [lib/undici.ts:725](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **cookie?**: `Record`\<`string`, [`ICookie`](../../cookie/interfaces/ICookie.md)\>
 
-Defined in: [lib/undici.ts:750](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L750)
+Defined in: [lib/undici.ts:772](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L772)
 
 cookie 托管对象
 
@@ -18917,7 +18917,7 @@ cookie 托管对象
 
 > `optional` **follow?**: `number`
 
-Defined in: [lib/undici.ts:731](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L731)
+Defined in: [lib/undici.ts:753](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L753)
 
 追踪 location 次数，0 为不追踪，默认为 0
 
@@ -18927,7 +18927,7 @@ Defined in: [lib/undici.ts:731](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **headers?**: [`THttpHeaders`](../type-aliases/THttpHeaders.md)
 
-Defined in: [lib/undici.ts:736](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L736)
+Defined in: [lib/undici.ts:758](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L758)
 
 ***
 
@@ -18935,7 +18935,7 @@ Defined in: [lib/undici.ts:736](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **hosts?**: `string` \| `Record`\<`string`, `string`\>
 
-Defined in: [lib/undici.ts:733](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L733)
+Defined in: [lib/undici.ts:755](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L755)
 
 自定义 host 映射，如 {'www.maiyun.net': '127.0.0.1'}，或全部映射到一个 host
 
@@ -18945,7 +18945,7 @@ Defined in: [lib/undici.ts:733](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **keep?**: `boolean`
 
-Defined in: [lib/undici.ts:746](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L746)
+Defined in: [lib/undici.ts:768](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L768)
 
 连接是否保持长连接（即是否允许复用），默认为 true
 
@@ -18955,7 +18955,7 @@ Defined in: [lib/undici.ts:746](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **local?**: `string`
 
-Defined in: [lib/undici.ts:735](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L735)
+Defined in: [lib/undici.ts:757](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L757)
 
 ***
 
@@ -18963,7 +18963,7 @@ Defined in: [lib/undici.ts:735](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **log?**: `boolean`
 
-Defined in: [lib/undici.ts:752](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L752)
+Defined in: [lib/undici.ts:774](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L774)
 
 若有异常写入文件日志，默认为 true
 
@@ -18973,7 +18973,7 @@ Defined in: [lib/undici.ts:752](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **method?**: `"GET"` \| `"POST"` \| `"PUT"` \| `"DELETE"` \| `"OPTIONS"`
 
-Defined in: [lib/undici.ts:726](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L726)
+Defined in: [lib/undici.ts:748](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L748)
 
 ***
 
@@ -18981,7 +18981,7 @@ Defined in: [lib/undici.ts:726](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **mproxy?**: `object`
 
-Defined in: [lib/undici.ts:738](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L738)
+Defined in: [lib/undici.ts:760](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L760)
 
 正向 mproxy 代理，url 如 https://xxx/abc
 
@@ -19009,7 +19009,7 @@ Defined in: [lib/undici.ts:738](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **reuse?**: `string` \| `Agent` \| `ProxyAgent`
 
-Defined in: [lib/undici.ts:748](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L748)
+Defined in: [lib/undici.ts:770](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L770)
 
 复用池名/Agent，默认为 default
 
@@ -19019,7 +19019,7 @@ Defined in: [lib/undici.ts:748](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **save?**: `string`
 
-Defined in: [lib/undici.ts:734](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L734)
+Defined in: [lib/undici.ts:756](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L756)
 
 ***
 
@@ -19027,7 +19027,7 @@ Defined in: [lib/undici.ts:734](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **signal?**: `AbortSignal`
 
-Defined in: [lib/undici.ts:754](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L754)
+Defined in: [lib/undici.ts:776](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L776)
 
 请求中止信号
 
@@ -19037,7 +19037,7 @@ Defined in: [lib/undici.ts:754](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **timeout?**: `number`
 
-Defined in: [lib/undici.ts:729](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L729)
+Defined in: [lib/undici.ts:751](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L751)
 
 秒数，默认 300 秒
 
@@ -19047,7 +19047,7 @@ Defined in: [lib/undici.ts:729](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **type?**: `"form"` \| `"json"`
 
-Defined in: [lib/undici.ts:727](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L727)
+Defined in: [lib/undici.ts:749](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L749)
 
 lib/undici/interfaces/IRproxyOptions.md
 ---
@@ -19060,7 +19060,7 @@ lib/undici/interfaces/IRproxyOptions.md
 
 # Interface: IRproxyOptions
 
-Defined in: [lib/undici.ts:773](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L773)
+Defined in: [lib/undici.ts:795](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L795)
 
 反向代理请求的传入参数选项
 
@@ -19070,7 +19070,7 @@ Defined in: [lib/undici.ts:773](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **body?**: `string` \| `Buffer`\<`ArrayBufferLike`\> \| `Readable`
 
-Defined in: [lib/undici.ts:792](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L792)
+Defined in: [lib/undici.ts:814](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L814)
 
 手动传入请求体（优先于原始 req 流），用于 req 流已消费后仍需转发 body 的场景
 
@@ -19080,7 +19080,7 @@ Defined in: [lib/undici.ts:792](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **filter?**: (`h`) => `boolean`
 
-Defined in: [lib/undici.ts:782](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L782)
+Defined in: [lib/undici.ts:804](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L804)
 
 过滤 header，返回 true 则留下
 
@@ -19100,7 +19100,7 @@ Defined in: [lib/undici.ts:782](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **follow?**: `number`
 
-Defined in: [lib/undici.ts:776](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L776)
+Defined in: [lib/undici.ts:798](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L798)
 
 ***
 
@@ -19108,7 +19108,7 @@ Defined in: [lib/undici.ts:776](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **headers?**: [`THttpHeaders`](../type-aliases/THttpHeaders.md)
 
-Defined in: [lib/undici.ts:780](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L780)
+Defined in: [lib/undici.ts:802](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L802)
 
 ***
 
@@ -19116,7 +19116,7 @@ Defined in: [lib/undici.ts:780](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **hosts?**: `string` \| `Record`\<`string`, `string`\>
 
-Defined in: [lib/undici.ts:778](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L778)
+Defined in: [lib/undici.ts:800](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L800)
 
 自定义 host 映射，如 {'www.maiyun.net': '127.0.0.1'}，或全部映射到一个 host
 
@@ -19126,7 +19126,7 @@ Defined in: [lib/undici.ts:778](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **local?**: `string`
 
-Defined in: [lib/undici.ts:779](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L779)
+Defined in: [lib/undici.ts:801](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L801)
 
 ***
 
@@ -19134,7 +19134,7 @@ Defined in: [lib/undici.ts:779](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **mproxy?**: `object`
 
-Defined in: [lib/undici.ts:784](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L784)
+Defined in: [lib/undici.ts:806](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L806)
 
 正向 mproxy 代理，url 如 https://xxx/abc
 
@@ -19162,7 +19162,7 @@ Defined in: [lib/undici.ts:784](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **querys?**: `Record`\<`string`, `any`\>
 
-Defined in: [lib/undici.ts:794](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L794)
+Defined in: [lib/undici.ts:816](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L816)
 
 自定义 GET 查询参数，传入后直接替换代理目标 URL 的整个 query string
 
@@ -19172,7 +19172,7 @@ Defined in: [lib/undici.ts:794](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **reuse?**: `string` \| `Agent` \| `ProxyAgent`
 
-Defined in: [lib/undici.ts:796](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L796)
+Defined in: [lib/undici.ts:818](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L818)
 
 默认为 default
 
@@ -19182,7 +19182,7 @@ Defined in: [lib/undici.ts:796](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **timeout?**: `number`
 
-Defined in: [lib/undici.ts:775](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L775)
+Defined in: [lib/undici.ts:797](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L797)
 
 秒数，默认 300 秒
 
@@ -19671,7 +19671,7 @@ lib/undici/type-aliases/THttpHeaders.md
 
 > **THttpHeaders** = `http.IncomingHttpHeaders` & `object`
 
-Defined in: [lib/undici.ts:801](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L801)
+Defined in: [lib/undici.ts:823](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L823)
 
 http headers
 
@@ -21414,7 +21414,7 @@ lib/zip/interfaces/IZipInputByType.md
 
 # Interface: IZipInputByType
 
-Defined in: [lib/zip.ts:475](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L475)
+Defined in: [lib/zip.ts:477](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L477)
 
 ## Properties
 
@@ -21422,7 +21422,7 @@ Defined in: [lib/zip.ts:475](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **array**: `number`[]
 
-Defined in: [lib/zip.ts:480](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L480)
+Defined in: [lib/zip.ts:482](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L482)
 
 ***
 
@@ -21430,7 +21430,7 @@ Defined in: [lib/zip.ts:480](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **arraybuffer**: `ArrayBuffer`
 
-Defined in: [lib/zip.ts:482](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L482)
+Defined in: [lib/zip.ts:484](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L484)
 
 ***
 
@@ -21438,7 +21438,7 @@ Defined in: [lib/zip.ts:482](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **base64**: `string`
 
-Defined in: [lib/zip.ts:476](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L476)
+Defined in: [lib/zip.ts:478](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L478)
 
 ***
 
@@ -21446,7 +21446,7 @@ Defined in: [lib/zip.ts:476](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **binarystring**: `string`
 
-Defined in: [lib/zip.ts:479](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L479)
+Defined in: [lib/zip.ts:481](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L481)
 
 ***
 
@@ -21454,7 +21454,7 @@ Defined in: [lib/zip.ts:479](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **blob**: `Blob`
 
-Defined in: [lib/zip.ts:483](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L483)
+Defined in: [lib/zip.ts:485](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L485)
 
 ***
 
@@ -21462,7 +21462,7 @@ Defined in: [lib/zip.ts:483](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **nodebuffer**: `Buffer`
 
-Defined in: [lib/zip.ts:484](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L484)
+Defined in: [lib/zip.ts:486](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L486)
 
 ***
 
@@ -21470,7 +21470,7 @@ Defined in: [lib/zip.ts:484](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **string**: `string`
 
-Defined in: [lib/zip.ts:477](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L477)
+Defined in: [lib/zip.ts:479](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L479)
 
 ***
 
@@ -21478,7 +21478,7 @@ Defined in: [lib/zip.ts:477](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **text**: `string`
 
-Defined in: [lib/zip.ts:478](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L478)
+Defined in: [lib/zip.ts:480](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L480)
 
 ***
 
@@ -21486,7 +21486,7 @@ Defined in: [lib/zip.ts:478](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **uint8array**: `Uint8Array`
 
-Defined in: [lib/zip.ts:481](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L481)
+Defined in: [lib/zip.ts:483](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L483)
 
 lib/zip/interfaces/IZipItem.md
 ---
@@ -21507,7 +21507,7 @@ Defined in: [lib/zip.ts:443](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **compressedSize**: `number`
 
-Defined in: [lib/zip.ts:445](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L445)
+Defined in: [lib/zip.ts:446](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L446)
 
 ***
 
@@ -21515,7 +21515,7 @@ Defined in: [lib/zip.ts:445](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **date**: `Date`
 
-Defined in: [lib/zip.ts:447](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L447)
+Defined in: [lib/zip.ts:448](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L448)
 
 ***
 
@@ -21523,7 +21523,7 @@ Defined in: [lib/zip.ts:447](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **isDirectory**: `boolean`
 
-Defined in: [lib/zip.ts:449](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L449)
+Defined in: [lib/zip.ts:450](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L450)
 
 ***
 
@@ -21531,7 +21531,7 @@ Defined in: [lib/zip.ts:449](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **isFile**: `boolean`
 
-Defined in: [lib/zip.ts:448](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L448)
+Defined in: [lib/zip.ts:449](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L449)
 
 ***
 
@@ -21539,7 +21539,9 @@ Defined in: [lib/zip.ts:448](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **name**: `string`
 
-Defined in: [lib/zip.ts:444](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L444)
+Defined in: [lib/zip.ts:445](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L445)
+
+文件/目录名（不含路径，不含前后斜杠）
 
 ***
 
@@ -21547,7 +21549,9 @@ Defined in: [lib/zip.ts:444](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **path**: `string`
 
-Defined in: [lib/zip.ts:450](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L450)
+Defined in: [lib/zip.ts:452](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L452)
+
+父目录路径（以 / 开头和结尾，如 /stc/ 或根目录 /），完整路径 = path + name
 
 ***
 
@@ -21555,7 +21559,7 @@ Defined in: [lib/zip.ts:450](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **uncompressedSize**: `number`
 
-Defined in: [lib/zip.ts:446](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L446)
+Defined in: [lib/zip.ts:447](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L447)
 
 lib/zip/interfaces/IZipMetadata.md
 ---
@@ -21568,7 +21572,7 @@ lib/zip/interfaces/IZipMetadata.md
 
 # Interface: IZipMetadata
 
-Defined in: [lib/zip.ts:491](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L491)
+Defined in: [lib/zip.ts:493](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L493)
 
 ## Properties
 
@@ -21576,7 +21580,7 @@ Defined in: [lib/zip.ts:491](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **currentFile**: `string` \| `null`
 
-Defined in: [lib/zip.ts:493](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L493)
+Defined in: [lib/zip.ts:495](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L495)
 
 ***
 
@@ -21584,7 +21588,7 @@ Defined in: [lib/zip.ts:493](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **percent**: `number`
 
-Defined in: [lib/zip.ts:492](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L492)
+Defined in: [lib/zip.ts:494](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L494)
 
 lib/zip/interfaces/IZipOutputByType.md
 ---
@@ -21597,7 +21601,7 @@ lib/zip/interfaces/IZipOutputByType.md
 
 # Interface: IZipOutputByType
 
-Defined in: [lib/zip.ts:461](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L461)
+Defined in: [lib/zip.ts:463](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L463)
 
 ## Properties
 
@@ -21605,7 +21609,7 @@ Defined in: [lib/zip.ts:461](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **array**: `number`[]
 
-Defined in: [lib/zip.ts:466](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L466)
+Defined in: [lib/zip.ts:468](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L468)
 
 ***
 
@@ -21613,7 +21617,7 @@ Defined in: [lib/zip.ts:466](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **arraybuffer**: `ArrayBuffer`
 
-Defined in: [lib/zip.ts:468](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L468)
+Defined in: [lib/zip.ts:470](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L470)
 
 ***
 
@@ -21621,7 +21625,7 @@ Defined in: [lib/zip.ts:468](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **base64**: `string`
 
-Defined in: [lib/zip.ts:462](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L462)
+Defined in: [lib/zip.ts:464](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L464)
 
 ***
 
@@ -21629,7 +21633,7 @@ Defined in: [lib/zip.ts:462](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **binarystring**: `string`
 
-Defined in: [lib/zip.ts:465](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L465)
+Defined in: [lib/zip.ts:467](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L467)
 
 ***
 
@@ -21637,7 +21641,7 @@ Defined in: [lib/zip.ts:465](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **blob**: `Blob`
 
-Defined in: [lib/zip.ts:469](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L469)
+Defined in: [lib/zip.ts:471](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L471)
 
 ***
 
@@ -21645,7 +21649,7 @@ Defined in: [lib/zip.ts:469](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **nodebuffer**: `Buffer`
 
-Defined in: [lib/zip.ts:470](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L470)
+Defined in: [lib/zip.ts:472](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L472)
 
 ***
 
@@ -21653,7 +21657,7 @@ Defined in: [lib/zip.ts:470](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **string**: `string`
 
-Defined in: [lib/zip.ts:463](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L463)
+Defined in: [lib/zip.ts:465](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L465)
 
 ***
 
@@ -21661,7 +21665,7 @@ Defined in: [lib/zip.ts:463](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **text**: `string`
 
-Defined in: [lib/zip.ts:464](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L464)
+Defined in: [lib/zip.ts:466](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L466)
 
 ***
 
@@ -21669,7 +21673,7 @@ Defined in: [lib/zip.ts:464](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **uint8array**: `Uint8Array`
 
-Defined in: [lib/zip.ts:467](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L467)
+Defined in: [lib/zip.ts:469](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L469)
 
 lib/zip/interfaces/IZipStats.md
 ---
@@ -21682,7 +21686,7 @@ lib/zip/interfaces/IZipStats.md
 
 # Interface: IZipStats
 
-Defined in: [lib/zip.ts:453](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L453)
+Defined in: [lib/zip.ts:455](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L455)
 
 ## Properties
 
@@ -21690,7 +21694,7 @@ Defined in: [lib/zip.ts:453](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **compressedSize**: `number`
 
-Defined in: [lib/zip.ts:454](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L454)
+Defined in: [lib/zip.ts:456](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L456)
 
 ***
 
@@ -21698,7 +21702,7 @@ Defined in: [lib/zip.ts:454](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **date**: `Date`
 
-Defined in: [lib/zip.ts:456](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L456)
+Defined in: [lib/zip.ts:458](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L458)
 
 ***
 
@@ -21706,7 +21710,7 @@ Defined in: [lib/zip.ts:456](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **isDirectory**: `boolean`
 
-Defined in: [lib/zip.ts:458](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L458)
+Defined in: [lib/zip.ts:460](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L460)
 
 ***
 
@@ -21714,7 +21718,7 @@ Defined in: [lib/zip.ts:458](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **isFile**: `boolean`
 
-Defined in: [lib/zip.ts:457](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L457)
+Defined in: [lib/zip.ts:459](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L459)
 
 ***
 
@@ -21722,7 +21726,7 @@ Defined in: [lib/zip.ts:457](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **uncompressedSize**: `number`
 
-Defined in: [lib/zip.ts:455](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L455)
+Defined in: [lib/zip.ts:457](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L457)
 
 lib/zip/type-aliases/TZipInputFileFormat.md
 ---
@@ -21737,7 +21741,7 @@ lib/zip/type-aliases/TZipInputFileFormat.md
 
 > **TZipInputFileFormat** = [`IZipInputByType`](../interfaces/IZipInputByType.md)\[keyof [`IZipInputByType`](../interfaces/IZipInputByType.md)\]
 
-Defined in: [lib/zip.ts:489](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L489)
+Defined in: [lib/zip.ts:491](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L491)
 
 lib/zip/type-aliases/TZipInputType.md
 ---
@@ -21752,7 +21756,7 @@ lib/zip/type-aliases/TZipInputType.md
 
 > **TZipInputType** = keyof [`IZipInputByType`](../interfaces/IZipInputByType.md)
 
-Defined in: [lib/zip.ts:487](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L487)
+Defined in: [lib/zip.ts:489](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L489)
 
 lib/zip/type-aliases/TZipOutputType.md
 ---
@@ -21767,7 +21771,7 @@ lib/zip/type-aliases/TZipOutputType.md
 
 > **TZipOutputType** = keyof [`IZipOutputByType`](../interfaces/IZipOutputByType.md)
 
-Defined in: [lib/zip.ts:473](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L473)
+Defined in: [lib/zip.ts:475](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L475)
 
 lib/zlib/functions/brotliCompress.md
 ---
@@ -22795,19 +22799,19 @@ Defined in: [sys/ctr.ts:978](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 `string`
 
-允许的请求头
+允许的请求头，默认 '*'
 
 ###### methods?
 
 `string`
 
-允许的方法
+允许的方法，默认 '*'
 
 ###### origins?
 
 `string`[]
 
-允许的来源列表，留空为 '*'
+允许的来源列表，默认 '*'
 
 #### Returns
 

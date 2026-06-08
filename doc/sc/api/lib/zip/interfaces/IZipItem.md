@@ -14,7 +14,7 @@ Defined in: [lib/zip.ts:443](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **compressedSize**: `number`
 
-Defined in: [lib/zip.ts:445](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L445)
+Defined in: [lib/zip.ts:446](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L446)
 
 ***
 
@@ -22,7 +22,7 @@ Defined in: [lib/zip.ts:445](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **date**: `Date`
 
-Defined in: [lib/zip.ts:447](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L447)
+Defined in: [lib/zip.ts:448](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L448)
 
 ***
 
@@ -30,7 +30,7 @@ Defined in: [lib/zip.ts:447](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **isDirectory**: `boolean`
 
-Defined in: [lib/zip.ts:449](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L449)
+Defined in: [lib/zip.ts:450](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L450)
 
 ***
 
@@ -38,7 +38,7 @@ Defined in: [lib/zip.ts:449](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **isFile**: `boolean`
 
-Defined in: [lib/zip.ts:448](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L448)
+Defined in: [lib/zip.ts:449](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L449)
 
 ***
 
@@ -46,7 +46,9 @@ Defined in: [lib/zip.ts:448](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **name**: `string`
 
-Defined in: [lib/zip.ts:444](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L444)
+Defined in: [lib/zip.ts:445](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L445)
+
+文件/目录名（不含路径，不含前后斜杠）
 
 ***
 
@@ -54,7 +56,9 @@ Defined in: [lib/zip.ts:444](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **path**: `string`
 
-Defined in: [lib/zip.ts:450](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L450)
+Defined in: [lib/zip.ts:452](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L452)
+
+父目录路径（以 / 开头和结尾，如 /stc/ 或根目录 /），完整路径 = path + name
 
 ***
 
@@ -62,4 +66,4 @@ Defined in: [lib/zip.ts:450](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **uncompressedSize**: `number`
 
-Defined in: [lib/zip.ts:446](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L446)
+Defined in: [lib/zip.ts:447](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L447)
