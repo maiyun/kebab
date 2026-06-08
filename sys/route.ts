@@ -671,7 +671,10 @@ export async function run(data: {
             }
             compress = lZlib.createCompress(data.req.headers['accept-encoding'] ?? '');
             if (compress) {
+                // --- Node.js 自动设置 transfer-encoding: chunked ---
                 data.res.setHeader('content-encoding', compress.type);
+                // --- 压缩后大小变化，移除 content-length 避免与实际大小不匹配 ---
+                data.res.removeHeader('content-length');
             }
             lCore.writeHead(data.res, httpCode);
         }
