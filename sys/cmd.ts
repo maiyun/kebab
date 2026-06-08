@@ -195,6 +195,10 @@ async function run(): Promise<void> {
         config.ai['VOLCN'].skey ??= '';
         config.ai['VOLAS'] ??= {};
         config.ai['VOLAS'].skey ??= '';
+        config.ai['DEEPSEEK'] ??= {};
+        config.ai['DEEPSEEK'].skey ??= '';
+        config.ai['MIMO'] ??= {};
+        config.ai['MIMO'].skey ??= '';
         config.ai['OPENROUTER'] ??= {};
         config.ai['OPENROUTER'].skey ??= '';
         config.ai['OFOX'] ??= {};

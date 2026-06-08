@@ -37,6 +37,10 @@ export enum ESERVICE {
     'VOLCN',
     /** --- 火山引擎国际区 --- */
     'VOLAS',
+    /** --- Deepseek --- */
+    'DEEPSEEK',
+    /** --- 小米 MIMO --- */
+    'MIMO',
 
     // --- 以下为第三方服务商 ---
 
@@ -127,6 +131,14 @@ export class Ai {
             }
             case ESERVICE.VOLAS: {
                 endpoint = opt.endpoint ?? `https://ark.ap-southeast.bytepluses.com/api/v3`;
+                break;
+            }
+            case ESERVICE.DEEPSEEK: {
+                endpoint = opt.endpoint ?? `https://api.deepseek.com`;
+                break;
+            }
+            case ESERVICE.MIMO: {
+                endpoint = opt.endpoint ?? `https://api.xiaomimimo.com/v1`;
                 break;
             }
             case ESERVICE.OPENROUTER: {
@@ -418,9 +430,9 @@ export class Ai {
                     return false;
                 }
             }
-            case ESERVICE.OPENROUTER: {
-                return false;
-            }
+            case ESERVICE.DEEPSEEK:
+            case ESERVICE.MIMO:
+            case ESERVICE.OPENROUTER:
             case ESERVICE.OFOX: {
                 return false;
             }
