@@ -72,6 +72,16 @@ Defined in: [lib/ai.ts:31](https://github.com/maiyunnet/kebab/blob/master/lib/ai
 
 ***
 
+### DEEPSEEK
+
+> **DEEPSEEK**: `10`
+
+Defined in: [lib/ai.ts:41](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L41)
+
+Deepseek
+
+***
+
 ### GEMINI
 
 > **GEMINI**: `6`
@@ -92,11 +102,21 @@ Grok
 
 ***
 
+### MIMO
+
+> **MIMO**: `11`
+
+Defined in: [lib/ai.ts:43](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L43)
+
+小米 MIMO
+
+***
+
 ### OFOX
 
-> **OFOX**: `11`
+> **OFOX**: `13`
 
-Defined in: [lib/ai.ts:46](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L46)
+Defined in: [lib/ai.ts:50](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L50)
 
 OfoxAI
 
@@ -104,9 +124,9 @@ OfoxAI
 
 ### OPENROUTER
 
-> **OPENROUTER**: `10`
+> **OPENROUTER**: `12`
 
-Defined in: [lib/ai.ts:44](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L44)
+Defined in: [lib/ai.ts:48](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L48)
 
 OpenRouter
 
