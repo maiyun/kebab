@@ -1360,7 +1360,7 @@ index/variables/VER.md
 
 # Variable: VER
 
-> `const` **VER**: `"9.13.1"` = `'9.13.1'`
+> `const` **VER**: `"9.13.2"` = `'9.13.2'`
 
 Defined in: [index.ts:10](https://github.com/maiyunnet/kebab/blob/master/index.ts#L10)
 
@@ -26390,7 +26390,7 @@ sys/route/functions/getFormData.md
 
 > **getFormData**(`req`, `events?`, `limits?`): `Promise`\<`false` \| \{ `files`: `Record`\<`string`, [`IPostFile`](../../../index/interfaces/IPostFile.md) \| [`IPostFile`](../../../index/interfaces/IPostFile.md)[]\>; `post`: `Record`\<`string`, [`Json`](../../../index/type-aliases/Json.md)\>; \}\>
 
-Defined in: [sys/route.ts:967](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L967)
+Defined in: [sys/route.ts:970](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L970)
 
 获取 formdata 的 post
 
@@ -26457,7 +26457,7 @@ sys/route/functions/getPost.md
 
 > **getPost**(`req`): `Promise`\<\{ `input`: `string`; `post`: `Record`\<`string`, `any`\>; `raw`: `Record`\<`string`, `any`\>; \}\>
 
-Defined in: [sys/route.ts:881](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L881)
+Defined in: [sys/route.ts:884](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L884)
 
 获取 post 对象（通常已自动获取），如果是文件上传（formdata）的情况则不获取
 
@@ -26573,7 +26573,7 @@ sys/route/functions/unlinkUploadFiles.md
 
 > **unlinkUploadFiles**(`cctr`): `Promise`\<`void`\>
 
-Defined in: [sys/route.ts:840](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L840)
+Defined in: [sys/route.ts:843](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L843)
 
 删除本次请求所有已上传的临时文件
 
@@ -26602,7 +26602,7 @@ sys/route/functions/waitCtr.md
 
 > **waitCtr**(`cctr`): `Promise`\<`void`\>
 
-Defined in: [sys/route.ts:860](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L860)
+Defined in: [sys/route.ts:863](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L863)
 
 等待异步任务结束，并删除临时文件，如果结束后还有事务没关闭，则会在本函数中打印控制台并且写入 log 文件
 此时其实已经给客户端返回了，此处等待不消耗客户端的等待时间
