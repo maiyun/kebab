@@ -745,11 +745,15 @@ export class Ctr {
      * @param input 要校验的输入项
      * @param rule 规则, int, double, num(可字符串), array, bool, string, ascii
      * @param rtn 返回值
+     * @param ignore 忽略 xsrf 判断
      */
     protected _checkXInput(
-        input: Record<string, kebab.Json>, rule: Record<string, kebab.Json[]>, rtn: kebab.Json[]
+        input: Record<string, kebab.Json>,
+        rule: Record<string, kebab.Json[]>, rtn: kebab.Json[], ignore: boolean = false
     ): boolean {
-        rule['_xsrf'] ??= ['require', this._cookie['XSRF-TOKEN'], [0, 'Bad request, no permission.']];
+        if (!ignore) {
+            rule['_xsrf'] ??= ['require', this._cookie['XSRF-TOKEN'], [0, 'Bad request, no permission.']];
+        }
         return this._checkInput(input, rule, rtn);
     }
 
