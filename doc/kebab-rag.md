@@ -1360,7 +1360,7 @@ index/variables/VER.md
 
 # Variable: VER
 
-> `const` **VER**: `"9.13.3"` = `'9.13.3'`
+> `const` **VER**: `"9.13.4"` = `'9.13.4'`
 
 Defined in: [index.ts:10](https://github.com/maiyunnet/kebab/blob/master/index.ts#L10)
 
@@ -22762,9 +22762,9 @@ Defined in: [sys/ctr.ts:571](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 ### \_checkXInput()
 
-> `protected` **\_checkXInput**(`input`, `rule`, `rtn`): `boolean`
+> `protected` **\_checkXInput**(`input`, `rule`, `rtn`, `ignore?`): `boolean`
 
-Defined in: [sys/ctr.ts:749](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L749)
+Defined in: [sys/ctr.ts:750](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L750)
 
 检测提交的数据类型（会检测 XSRF）
 
@@ -22788,6 +22788,12 @@ Defined in: [sys/ctr.ts:749](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 返回值
 
+##### ignore?
+
+`boolean` = `false`
+
+忽略 xsrf 判断
+
 #### Returns
 
 `boolean`
@@ -22798,7 +22804,7 @@ Defined in: [sys/ctr.ts:749](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 > `protected` **\_cross**(`opt?`): `boolean`
 
-Defined in: [sys/ctr.ts:978](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L978)
+Defined in: [sys/ctr.ts:982](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L982)
 
 开启跨域请求
 
@@ -22843,7 +22849,7 @@ Defined in: [sys/ctr.ts:978](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 > `protected` **\_device**(): `"unknown"` \| `"android"` \| `"linux"` \| `"windows"` \| `"macintosh"` \| `"ipad"`
 
-Defined in: [sys/ctr.ts:791](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L791)
+Defined in: [sys/ctr.ts:795](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L795)
 
 根据用户 ua 获取当前用户的设备类型
 
@@ -22857,7 +22863,7 @@ Defined in: [sys/ctr.ts:791](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 > `protected` **\_enabledXsrf**(`opt?`): `void`
 
-Defined in: [sys/ctr.ts:760](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L760)
+Defined in: [sys/ctr.ts:764](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L764)
 
 当前页面开启 XSRF 支持（主要检测 cookie 是否存在）
 如果当前页面有 CDN，请不要使用
@@ -22880,7 +22886,7 @@ Defined in: [sys/ctr.ts:760](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 > `protected` **\_end**(): `void`
 
-Defined in: [sys/ctr.ts:1086](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1086)
+Defined in: [sys/ctr.ts:1090](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1090)
 
 主动关闭当前 socket 连接
 
@@ -22894,7 +22900,7 @@ Defined in: [sys/ctr.ts:1086](https://github.com/maiyunnet/kebab/blob/master/sys
 
 > `protected` **\_getBasicAuth**(`user`, `pwd`): `string`
 
-Defined in: [sys/ctr.ts:784](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L784)
+Defined in: [sys/ctr.ts:788](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L788)
 
 获取 Auth 字符串，用于客户端提交
 
@@ -22922,7 +22928,7 @@ Defined in: [sys/ctr.ts:784](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 > `protected` **\_getLocale**(): `string`
 
-Defined in: [sys/ctr.ts:969](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L969)
+Defined in: [sys/ctr.ts:973](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L973)
 
 获取当前语言名
 
@@ -22936,7 +22942,7 @@ Defined in: [sys/ctr.ts:969](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 > `protected` **\_getLocaleJsonString**(): `string`
 
-Defined in: [sys/ctr.ts:957](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L957)
+Defined in: [sys/ctr.ts:961](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L961)
 
 根据当前后台语言包设置情况获取 JSON 字符串传输到前台
 
@@ -22988,7 +22994,7 @@ Defined in: [sys/ctr.ts:315](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 > `protected` **\_handleFormData**(`events?`, `limits?`): `Promise`\<`boolean`\>
 
-Defined in: [sys/ctr.ts:1095](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1095)
+Defined in: [sys/ctr.ts:1099](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1099)
 
 获取 formdata 的信息
 
@@ -23036,7 +23042,7 @@ Defined in: [sys/ctr.ts:1095](https://github.com/maiyunnet/kebab/blob/master/sys
 
 > **\_l**(`key`, `data?`): `string`
 
-Defined in: [sys/ctr.ts:1021](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1021)
+Defined in: [sys/ctr.ts:1025](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1025)
 
 获取语言包值
 
@@ -23062,7 +23068,7 @@ Defined in: [sys/ctr.ts:1021](https://github.com/maiyunnet/kebab/blob/master/sys
 
 > `protected` **\_loadData**(`path`): `Promise`\<`Record`\<`string`, `string`\> \| `null`\>
 
-Defined in: [sys/ctr.ts:860](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L860)
+Defined in: [sys/ctr.ts:864](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L864)
 
 获取 data 数据
 
@@ -23084,7 +23090,7 @@ Defined in: [sys/ctr.ts:860](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 > `protected` **\_loadLocale**(`loc`, `pkg?`): `Promise`\<`boolean`\>
 
-Defined in: [sys/ctr.ts:908](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L908)
+Defined in: [sys/ctr.ts:912](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L912)
 
 设定语言并加载语言包
 
@@ -23205,7 +23211,7 @@ Defined in: [sys/ctr.ts:332](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 > `protected` **\_location**(`location`): `false`
 
-Defined in: [sys/ctr.ts:878](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L878)
+Defined in: [sys/ctr.ts:882](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L882)
 
 跳转（302临时跳转），支持相对本项目根路径的路径或绝对路径
 
@@ -23227,7 +23233,7 @@ Defined in: [sys/ctr.ts:878](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 > `protected` **\_ping**(`data?`): `boolean`
 
-Defined in: [sys/ctr.ts:1071](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1071)
+Defined in: [sys/ctr.ts:1075](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1075)
 
 发送 socket ping
 
@@ -23249,7 +23255,7 @@ Defined in: [sys/ctr.ts:1071](https://github.com/maiyunnet/kebab/blob/master/sys
 
 > `protected` **\_pong**(`data?`): `boolean`
 
-Defined in: [sys/ctr.ts:1079](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1079)
+Defined in: [sys/ctr.ts:1083](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1083)
 
 发送 socket pong
 
@@ -23271,7 +23277,7 @@ Defined in: [sys/ctr.ts:1079](https://github.com/maiyunnet/kebab/blob/master/sys
 
 > `protected` **\_startSession**(`link`, `auth?`, `opt?`): `Promise`\<`boolean`\>
 
-Defined in: [sys/ctr.ts:892](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L892)
+Defined in: [sys/ctr.ts:896](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L896)
 
 开启 Session
 
@@ -23305,7 +23311,7 @@ Kv 或 Db 实例
 
 > `protected` **\_writeBinary**(`data`): `boolean`
 
-Defined in: [sys/ctr.ts:1063](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1063)
+Defined in: [sys/ctr.ts:1067](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1067)
 
 发送 socket 二进制
 
@@ -23327,7 +23333,7 @@ Defined in: [sys/ctr.ts:1063](https://github.com/maiyunnet/kebab/blob/master/sys
 
 > `protected` **\_writeResult**(`data`): `boolean`
 
-Defined in: [sys/ctr.ts:1055](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1055)
+Defined in: [sys/ctr.ts:1059](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1059)
 
 发送结果对象文本
 
@@ -23349,7 +23355,7 @@ Defined in: [sys/ctr.ts:1055](https://github.com/maiyunnet/kebab/blob/master/sys
 
 > `protected` **\_writeText**(`data`): `boolean`
 
-Defined in: [sys/ctr.ts:1047](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1047)
+Defined in: [sys/ctr.ts:1051](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1051)
 
 发送 socket 文本
 
@@ -23371,7 +23377,7 @@ Defined in: [sys/ctr.ts:1047](https://github.com/maiyunnet/kebab/blob/master/sys
 
 > **getAuthorization**(): `false` \| \{ `pwd`: `string`; `type`: `"basic"`; `user`: `string`; \} \| \{ `token`: `string`; `type`: `"bearer"`; \}
 
-Defined in: [sys/ctr.ts:812](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L812)
+Defined in: [sys/ctr.ts:816](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L816)
 
 通过 header 或 _auth 获取鉴权信息，支持 Basic Auth 和 Bearer Token
 
