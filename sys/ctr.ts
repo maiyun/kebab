@@ -858,19 +858,22 @@ export class Ctr {
     }
 
     /**
-     * --- 获取 data 数据 ---
+     * --- 获取 data JSON 数据 ---
      * @param path 文件路径（不含扩展名）
      */
-    protected async _loadData(path: string): Promise<Record<string, string> | null> {
+    protected async _loadData<T>(path: string): Promise<T | false | null> {
         const realPath = this._config.const.dataPath + path + '.json';
         if (loadedData[realPath]) {
-            return loadedData[realPath];
+            return loadedData[realPath] as T;
         }
         const content = await lFs.getContent(realPath, 'utf8');
         if (!content) {
             return null;
         }
-        const json = lText.parseJson<any>(content);
+        const json = lText.parseJson<T>(content);
+        if (!json) {
+            return false;
+        }
         loadedData[realPath] = json;
         return json;
     }
@@ -917,8 +920,8 @@ export class Ctr {
             const lPath = this._config.const.dataPath + 'locale/' + lName;
             if (!localeFiles.includes(lPath)) {
                 // --- 全局缓存没有，先加载全局缓存 ---
-                const locData = await this._loadData('locale/' + lName);
-                if (locData === null) {
+                const locData = await this._loadData<Record<string, any>>('locale/' + lName);
+                if (!locData) {
                     return false;
                 }
                 this._locale = loc;
