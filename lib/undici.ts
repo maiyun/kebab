@@ -146,6 +146,29 @@ export async function postJsonResponseJson(
 }
 
 /**
+ * --- 发起 POST 请求并解析 JSON 响应 ---
+ * @param u 网址
+ * @param data 数据
+ * @param opt 选项
+ * @returns JSON 数据，失败时返回 null
+ */
+export async function postResponseJson(
+    u: string, data: Record<string, kebab.Json>, opt: IRequestOptions = {}
+): Promise<kebab.Json | null> {
+    opt.method = 'POST';
+    const res = await request(u, data, opt);
+    const rtn = await res.getContent();
+    if (!rtn) {
+        return null;
+    }
+    const json = lText.parseJson(rtn.toString());
+    if (!json) {
+        return null;
+    }
+    return json;
+}
+
+/**
  * --- 发起 GET 请求并解析 JSON 响应 ---
  * @param u 网址
  * @param opt 选项
