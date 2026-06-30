@@ -1,4 +1,3 @@
-/* eslint-disable max-lines */
 import * as fs from 'fs';
 // --- 库 ---
 import * as kebab from '#kebab/index.js';
