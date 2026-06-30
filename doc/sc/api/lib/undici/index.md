@@ -30,5 +30,6 @@
 - [post](functions/post.md)
 - [postJson](functions/postJson.md)
 - [postJsonResponseJson](functions/postJsonResponseJson.md)
+- [postResponseJson](functions/postResponseJson.md)
 - [request](functions/request.md)
 - [rproxy](functions/rproxy.md)

@@ -8,7 +8,7 @@
 
 > **request**(`u`, `data?`, `opt?`): `Promise`\<[`Response`](../response/classes/Response.md)\>
 
-Defined in: [lib/net.ts:305](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L305)
+Defined in: [lib/net.ts:328](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L328)
 
 发起一个请求
 

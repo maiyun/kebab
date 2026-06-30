@@ -8,7 +8,7 @@
 
 > **mproxyData**(`ctr`): `any`
 
-Defined in: [lib/net.ts:598](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L598)
+Defined in: [lib/net.ts:621](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L621)
 
 获取 mproxy 的附加数据
 

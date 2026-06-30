@@ -8,7 +8,7 @@
 
 > **rproxy**(`ctr`, `route`, `opt?`): `Promise`\<`boolean`\>
 
-Defined in: [lib/net.ts:616](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L616)
+Defined in: [lib/net.ts:639](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L639)
 
 反向代理，注意提前处理不要自动处理 post 数据，将本服务器的某个路由反代到其他网址
 

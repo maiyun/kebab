@@ -8,7 +8,7 @@
 
 > **getResponseJson**(`u`, `opt?`): `Promise`\<`any`\>
 
-Defined in: [lib/net.ts:134](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L134)
+Defined in: [lib/net.ts:157](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L157)
 
 发起 GET 请求并解析 JSON 响应
 
