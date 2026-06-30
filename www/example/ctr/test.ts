@@ -147,6 +147,7 @@ export default class extends sCtr.Ctr {
             `<br><a href="${this._config.const.urlBase}test/ctr-timeout-short">View "test/ctr-timeout-short"</a>`,
             `<br><a href="${this._config.const.urlBase}test/ctr-session-token">View "test/ctr-session-token"</a>`,
             `<br><a href="${this._config.const.urlBase}test/ctr-500">View "test/ctr-500"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/ctr-upload-limits">View "test/ctr-upload-limits" (File upload limits demo)</a>`,
 
             '<br><br><b>Middle:</b>',
             `<br><br><a href="${this._config.const.urlBase}test/middle">View "test/middle"</a>`,
@@ -4749,6 +4750,72 @@ send.addEventListener('click', async () => {
         }
         echo.push(`Response CORS Headers: <pre>${JSON.stringify(headers, null, 4)}</pre>`);
         return echo.join('') + '<br><br>' + this._getEnd();
+    }
+
+    /**
+     * --- 文件上传限制演示页面 ---
+     */
+    public ctrUploadLimits(): string {
+        const urlBase = this._config.const.urlBase;
+        return `
+<b>File Upload Limits Demo</b><br><br>
+<b>Rules:</b>
+<ul>
+<li>Allowed extensions: <code>.jpg</code>, <code>.png</code>, <code>.pdf</code></li>
+<li>Max file size: <code>100 KB</code></li>
+<li>If any file is rejected, the entire upload is rejected (returns <code>false</code>)</li>
+</ul>
+<b>Test cases:</b>
+<ol>
+<li>Upload a <code>.jpg</code> under 100KB → should succeed</li>
+<li>Upload a <code>.exe</code> → should be rejected (extension)</li>
+<li>Upload a <code>.jpg</code> over 100KB → should be rejected (size)</li>
+<li>Upload 2 files: one valid + one invalid → should reject entire upload</li>
+</ol>
+<form id="uploadForm" enctype="multipart/form-data">
+<input type="file" id="fileInput" multiple><br><br>
+<input type="button" value="Upload" onclick="doUpload()">
+</form>
+Result:<pre id="result">Nothing.</pre>
+<script>
+function doUpload() {
+    var fd = new FormData();
+    var files = document.getElementById('fileInput').files;
+    for (var i = 0; i < files.length; i++) {
+        fd.append('file' + i, files[i]);
+    }
+    document.getElementById('result').innerText = 'Uploading...';
+    fetch('${urlBase}test/ctr-upload-limits1', {
+        method: 'POST',
+        body: fd
+    }).then(function(r) { return r.text(); }).then(function(t) {
+        document.getElementById('result').innerText = t;
+    }).catch(function(e) {
+        document.getElementById('result').innerText = 'Error: ' + e.message;
+    });
+}
+</script>` + this._getEnd();
+    }
+
+    /**
+     * --- 文件上传限制演示接口 ---
+     */
+    public async ctrUploadLimits1(): Promise<kebab.Json[]> {
+        const rtn = await this._handleFormData({}, {
+            'maxFileSize': 100 * 1024,
+            'allowedExts': ['.jpg', '.png', '.pdf'],
+        });
+        if (!rtn) {
+            return [0, 'Upload rejected. File extension not allowed or size exceeds 100KB limit.'];
+        }
+        const fileSummary: Record<string, kebab.Json> = {};
+        for (const key in this._files) {
+            const f = this._files[key];
+            fileSummary[key] = Array.isArray(f)
+                ? f.map(item => ({ 'name': item.name, 'size': item.size }))
+                : { 'name': f.name, 'size': f.size };
+        }
+        return [1, { 'files': fileSummary, 'post': this._post }];
     }
 
     /**

@@ -1049,8 +1049,6 @@ export function getFormData(
         let readEnd: boolean = false;
         /** --- 是否有文件被限制拒绝（整体返回 false） --- */
         let rejected: boolean = false;
-        /** --- 是否是主动销毁 request（抑制误导性错误日志） --- */
-        let intentionalDestroy: boolean = false;
 
         /** --- 清理 rtn.files 中所有已写入的临时文件 --- */
         function cleanupFiles(): void {
@@ -1114,6 +1112,11 @@ export function getFormData(
                             ++writeFileLength;
                             state = EState.FILE;
                             fileName = match[1];
+                            // --- 已被拒绝则不创建文件流，仅丢弃数据 ---
+                            if (rejected) {
+                                ftmpName = '';
+                                break;
+                            }
                             // --- 检查文件扩展名限制 ---
                             if (limits.allowedExts?.length) {
                                 const extIo = fileName.lastIndexOf('.');
@@ -1135,6 +1138,7 @@ export function getFormData(
                                     date.getUTCHours().toString().padStart(2, '0') +
                                     date.getUTCMinutes().toString().padStart(2, '0') + '_' + lCore.random() + '.ftmp';
                                 ftmpStream = lFs.createWriteStream(kebab.FTMP_CWD + ftmpName);
+                                ftmpStream.on('error', () => {});
                                 ftmpSize = 0;
                             }
                             else {
@@ -1258,10 +1262,8 @@ export function getFormData(
                         break;
                     }
                 }
-                // --- 被拒绝则立即停止消费数据，不再等待剩余上传 ---
+                // --- 被拒绝则丢弃剩余数据，等待 'end' 事件后 resolve ---
                 if (rejected) {
-                    intentionalDestroy = true;
-                    req.destroy();
                     return;
                 }
             }
@@ -1270,15 +1272,18 @@ export function getFormData(
             if ((state === EState.FILE) && ftmpName) {
                 ftmpStream.destroy();
             }
-            if (!intentionalDestroy) {
-                lCore.debug('[ROUTE][GETFORMDATA] request error before getFormData: ' + e.message);
-                lCore.log({}, '[ROUTE][GETFORMDATA] request error before getFormData: ' + (e.stack ?? ''), '-error');
-            }
+            lCore.debug('[ROUTE][GETFORMDATA] request error before getFormData: ' + e.message);
+            lCore.log({}, '[ROUTE][GETFORMDATA] request error before getFormData: ' + (e.stack ?? ''), '-error');
             cleanupFiles();
             resolve(false);
         });
         req.on('end', function() {
             readEnd = true;
+            // --- 被拒绝则清理文件并 resolve(false) ---
+            if (rejected) {
+                finalize();
+                return;
+            }
             if (state === EState.FILE) {
                 if (ftmpName) {
                     ftmpStream.end(() => {
