@@ -989,7 +989,7 @@ export function getFormData(
     'post': Record<string, kebab.Json>;
     'files': Record<string, kebab.IPostFile | kebab.IPostFile[]>;
 } | false> {
-    return new Promise(function(resolve) {
+    return new Promise(resolve => {
         if (req.readableEnded) {
             resolve({ 'post': {}, 'files': {} });
             return;
@@ -1047,6 +1047,43 @@ export function getFormData(
         let writeFileLength: number = 0;
         /** --- 当前读取是否已经完全结束 --- */
         let readEnd: boolean = false;
+        /** --- 是否有文件被限制拒绝（整体返回 false） --- */
+        let rejected: boolean = false;
+        /** --- 是否是主动销毁 request（抑制误导性错误日志） --- */
+        let intentionalDestroy: boolean = false;
+
+        /** --- 清理 rtn.files 中所有已写入的临时文件 --- */
+        function cleanupFiles(): void {
+            for (const key in rtn.files) {
+                let files = rtn.files[key];
+                if (!Array.isArray(files)) {
+                    files = [files];
+                }
+                for (const file of files) {
+                    lFs.unlink(file.path).catch(() => {});
+                }
+            }
+        }
+
+        /** --- 拒绝当前文件：销毁流、删临时文件、标记 rejected --- */
+        function rejectFile(): void {
+            rejected = true;
+            ftmpStream.destroy();
+            lFs.unlink(kebab.FTMP_CWD + ftmpName).catch(() => {});
+            ftmpName = '';
+            --writeFileLength;
+        }
+
+        /** --- 最终输出 --- */
+        function finalize(): void {
+            if (rejected) {
+                cleanupFiles();
+                resolve(false);
+            }
+            else {
+                resolve(rtn);
+            }
+        }
 
         // --- 开始读取 ---
         req.on('data', function(chunk: Buffer) {
@@ -1082,7 +1119,8 @@ export function getFormData(
                                 const extIo = fileName.lastIndexOf('.');
                                 const ext = extIo !== -1 ? fileName.slice(extIo).toLowerCase() : '';
                                 if (!limits.allowedExts.includes(ext)) {
-                                    // --- 扩展名不允许，跳过该文件 ---
+                                    // --- 扩展名不允许，拒绝整体上传 ---
+                                    rejected = true;
                                     ftmpName = '';
                                     break;
                                 }
@@ -1136,24 +1174,25 @@ export function getFormData(
                             // --- 没找到结束标语，将预留 boundary 长度之前的写入到文件 ---
                             const writeBuffer = buffer.subarray(0, -boundary.length - 4);
                             if (ftmpName) {
-                                // --- 检查文件大小限制 ---
-                                if (
-                                    limits.maxFileSize &&
-                                    (ftmpSize + Buffer.byteLength(writeBuffer) > limits.maxFileSize)
-                                ) {
-                                    ftmpStream.destroy();
-                                    lFs.unlink(kebab.FTMP_CWD + ftmpName).catch(() => {});
-                                    ftmpName = '';
-                                    --writeFileLength;
-                                }
-                                else {
-                                    ftmpStream.write(writeBuffer);
-                                    ftmpSize += Buffer.byteLength(writeBuffer);
+                                if (writeBuffer.length > 0) {
+                                    // --- 检查文件大小限制 ---
+                                    if (
+                                        limits.maxFileSize &&
+                                        (ftmpSize + Buffer.byteLength(writeBuffer) > limits.maxFileSize)
+                                    ) {
+                                        rejectFile();
+                                    }
+                                    else {
+                                        ftmpStream.write(writeBuffer);
+                                        ftmpSize += Buffer.byteLength(writeBuffer);
+                                    }
                                 }
                             }
                             else {
                                 // --- 跳过该文件 ---
-                                events.onfiledata?.(writeBuffer);
+                                if (writeBuffer.length > 0) {
+                                    events.onfiledata?.(writeBuffer);
+                                }
                             }
                             buffer = buffer.subarray(-boundary.length - 4);
                             return;
@@ -1161,43 +1200,52 @@ export function getFormData(
                         // --- 找到结束标语，结束标语之前的写入文件，之后的重新放回 buffer ---
                         const writeBuffer = buffer.subarray(0, io);
                         if (ftmpName) {
-                            ftmpStream.write(writeBuffer);
-                            ftmpSize += Buffer.byteLength(writeBuffer);
-                            ftmpStream.end(() => {
-                                --writeFileLength;
-                                if (!readEnd) {
-                                    // --- request 没读完，不管 ---
-                                    return;
-                                }
-                                if (writeFileLength) {
-                                    // --- req 读完了但文件还没写完，不管 ---
-                                    return;
-                                }
-                                // --- 文件也写完了 ---
-                                resolve(rtn);
-                            });
-                            // --- POST 部分 ---
-                            let fname = fileName.replace(/\\/g, '/');
-                            const nlio = fname.lastIndexOf('/');
-                            if (nlio !== -1) {
-                                fname = fname.slice(nlio + 1);
-                            }
-                            const val: kebab.IPostFile = {
-                                'name': fname,
-                                'origin': fileName,
-                                'size': ftmpSize,
-                                'path': kebab.FTMP_CWD + ftmpName
-                            };
-                            if (rtn.files[name]) {
-                                if (Array.isArray(rtn.files[name])) {
-                                    (rtn.files[name] as kebab.IPostFile[]).push(val);
-                                }
-                                else {
-                                    rtn.files[name] = [rtn.files[name] as kebab.IPostFile, val];
-                                }
+                            // --- 检查文件大小限制（最后一个分片） ---
+                            if (
+                                limits.maxFileSize &&
+                                (ftmpSize + Buffer.byteLength(writeBuffer) > limits.maxFileSize)
+                            ) {
+                                rejectFile();
                             }
                             else {
-                                rtn.files[name] = val;
+                                ftmpStream.write(writeBuffer);
+                                ftmpSize += Buffer.byteLength(writeBuffer);
+                                ftmpStream.end(() => {
+                                    --writeFileLength;
+                                    if (!readEnd) {
+                                        // --- request 没读完，不管 ---
+                                        return;
+                                    }
+                                    if (writeFileLength) {
+                                        // --- req 读完了但文件还没写完，不管 ---
+                                        return;
+                                    }
+                                    // --- 文件也写完了 ---
+                                    finalize();
+                                });
+                                // --- POST 部分 ---
+                                let fname = fileName.replace(/\\/g, '/');
+                                const nlio = fname.lastIndexOf('/');
+                                if (nlio !== -1) {
+                                    fname = fname.slice(nlio + 1);
+                                }
+                                const val: kebab.IPostFile = {
+                                    'name': fname,
+                                    'origin': fileName,
+                                    'size': ftmpSize,
+                                    'path': kebab.FTMP_CWD + ftmpName
+                                };
+                                if (rtn.files[name]) {
+                                    if (Array.isArray(rtn.files[name])) {
+                                        (rtn.files[name] as kebab.IPostFile[]).push(val);
+                                    }
+                                    else {
+                                        rtn.files[name] = [rtn.files[name] as kebab.IPostFile, val];
+                                    }
+                                }
+                                else {
+                                    rtn.files[name] = val;
+                                }
                             }
                         }
                         else {
@@ -1210,14 +1258,23 @@ export function getFormData(
                         break;
                     }
                 }
+                // --- 被拒绝则立即停止消费数据，不再等待剩余上传 ---
+                if (rejected) {
+                    intentionalDestroy = true;
+                    req.destroy();
+                    return;
+                }
             }
         });
         req.on('error', function(e) {
             if ((state === EState.FILE) && ftmpName) {
                 ftmpStream.destroy();
             }
-            lCore.debug('[ROUTE][GETFORMDATA] request error before getFormData: ' + e.message);
-            lCore.log({}, '[ROUTE][GETFORMDATA] request error before getFormData: ' + (e.stack ?? ''), '-error');
+            if (!intentionalDestroy) {
+                lCore.debug('[ROUTE][GETFORMDATA] request error before getFormData: ' + e.message);
+                lCore.log({}, '[ROUTE][GETFORMDATA] request error before getFormData: ' + (e.stack ?? ''), '-error');
+            }
+            cleanupFiles();
             resolve(false);
         });
         req.on('end', function() {
@@ -1228,7 +1285,7 @@ export function getFormData(
                         --writeFileLength;
                         if (!writeFileLength) {
                             // --- 文件也写完了 ---
-                            resolve(rtn);
+                            finalize();
                         }
                     });
                     return;
@@ -1242,7 +1299,7 @@ export function getFormData(
                 return;
             }
             // --- 文件写完了 ----
-            resolve(rtn);
+            finalize();
         });
     });
 }
