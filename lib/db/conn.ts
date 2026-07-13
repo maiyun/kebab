@@ -6,6 +6,8 @@ import * as lDb from '#kebab/lib/db.js';
 import * as kebab from '#kebab/index.js';
 
 // --- 注册解析器 ---
+// --- pg 库对以下类型默认返回 string，为与 MySQL 行为保持一致，在此注册解析器转为 JS 原生类型 ---
+// --- POLYGON: 返回如 ((1,1),(2,2)) 的字符串，解析为 {x, y}[] ---
 pg.types.setTypeParser(pg.types.builtins.POLYGON, val => {
     if (val === null) {
         return null;
@@ -23,6 +25,7 @@ pg.types.setTypeParser(pg.types.builtins.POLYGON, val => {
     // --- 返回 [{x: 1, y: 1}, {x :2, y: 2}, ... ] ---
     return points;
 });
+// --- INT8 (bigint): JS Number 无法安全表示 64 位整数，pg 默认返回 string，parseInt 转为 number ---
 pg.types.setTypeParser(pg.types.builtins.INT8, val => {
     if (val === null) {
         return null;
