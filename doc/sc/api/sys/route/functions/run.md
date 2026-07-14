@@ -8,7 +8,7 @@
 
 > **run**(`data`): `Promise`\<`boolean`\>
 
-Defined in: [sys/route.ts:77](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L77)
+Defined in: [sys/route.ts:87](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L87)
 
 若为动态路径则执行此函数，此函数不进行判断 kebab.json 是否存在
 

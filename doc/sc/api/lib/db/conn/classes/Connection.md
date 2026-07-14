@@ -6,7 +6,7 @@
 
 # Class: Connection
 
-Defined in: [lib/db/conn.ts:34](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L34)
+Defined in: [lib/db/conn.ts:37](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L37)
 
 数据库连接对象
 
@@ -16,7 +16,7 @@ Defined in: [lib/db/conn.ts:34](https://github.com/maiyunnet/kebab/blob/master/l
 
 > **new Connection**(`etc`, `link`): `Connection`
 
-Defined in: [lib/db/conn.ts:59](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L59)
+Defined in: [lib/db/conn.ts:62](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L62)
 
 #### Parameters
 
@@ -38,7 +38,7 @@ Defined in: [lib/db/conn.ts:59](https://github.com/maiyunnet/kebab/blob/master/l
 
 > **beginTransaction**(): `Promise`\<`boolean`\>
 
-Defined in: [lib/db/conn.ts:319](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L319)
+Defined in: [lib/db/conn.ts:322](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L322)
 
 #### Returns
 
@@ -50,7 +50,7 @@ Defined in: [lib/db/conn.ts:319](https://github.com/maiyunnet/kebab/blob/master/
 
 > **commit**(): `Promise`\<`boolean`\>
 
-Defined in: [lib/db/conn.ts:340](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L340)
+Defined in: [lib/db/conn.ts:343](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L343)
 
 #### Returns
 
@@ -62,7 +62,7 @@ Defined in: [lib/db/conn.ts:340](https://github.com/maiyunnet/kebab/blob/master/
 
 > **end**(): `Promise`\<`boolean`\>
 
-Defined in: [lib/db/conn.ts:308](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L308)
+Defined in: [lib/db/conn.ts:311](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L311)
 
 关闭连接，一般情况下不使用
 
@@ -76,7 +76,7 @@ Defined in: [lib/db/conn.ts:308](https://github.com/maiyunnet/kebab/blob/master/
 
 > **execute**(`sql`, `values?`): `Promise`\<[`IPacket`](../../interfaces/IPacket.md)\>
 
-Defined in: [lib/db/conn.ts:235](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L235)
+Defined in: [lib/db/conn.ts:238](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L238)
 
 执行一条 SQL 并获得影响行数对象 packet
 
@@ -104,7 +104,7 @@ Defined in: [lib/db/conn.ts:235](https://github.com/maiyunnet/kebab/blob/master/
 
 > **getEtc**(): [`IConfigDb`](../../../../index/interfaces/IConfigDb.md)
 
-Defined in: [lib/db/conn.ts:68](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L68)
+Defined in: [lib/db/conn.ts:71](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L71)
 
 获取连接 etc 信息
 
@@ -118,7 +118,7 @@ Defined in: [lib/db/conn.ts:68](https://github.com/maiyunnet/kebab/blob/master/l
 
 > **getLast**(): `number`
 
-Defined in: [lib/db/conn.ts:80](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L80)
+Defined in: [lib/db/conn.ts:83](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L83)
 
 获取最后一次获取连接的时间
 
@@ -132,7 +132,7 @@ Defined in: [lib/db/conn.ts:80](https://github.com/maiyunnet/kebab/blob/master/l
 
 > **getLastSql**(): `object`[]
 
-Defined in: [lib/db/conn.ts:87](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L87)
+Defined in: [lib/db/conn.ts:90](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L90)
 
 获取最后两次执行的 sql 字符串
 
@@ -146,7 +146,7 @@ Defined in: [lib/db/conn.ts:87](https://github.com/maiyunnet/kebab/blob/master/l
 
 > **getService**(): [`ESERVICE`](../../enumerations/ESERVICE.md)
 
-Defined in: [lib/db/conn.ts:73](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L73)
+Defined in: [lib/db/conn.ts:76](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L76)
 
 获取数据库服务类型
 
@@ -160,7 +160,7 @@ Defined in: [lib/db/conn.ts:73](https://github.com/maiyunnet/kebab/blob/master/l
 
 > **isAvailable**(`last?`): `Promise`\<`boolean`\>
 
-Defined in: [lib/db/conn.ts:154](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L154)
+Defined in: [lib/db/conn.ts:157](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L157)
 
 通过执行一条语句判断当前连接是否可用
 
@@ -182,7 +182,7 @@ Defined in: [lib/db/conn.ts:154](https://github.com/maiyunnet/kebab/blob/master/
 
 > **isLost**(): `boolean`
 
-Defined in: [lib/db/conn.ts:104](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L104)
+Defined in: [lib/db/conn.ts:107](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L107)
 
 是否已经丢失
 
@@ -196,7 +196,7 @@ Defined in: [lib/db/conn.ts:104](https://github.com/maiyunnet/kebab/blob/master/
 
 > **isTransaction**(): `boolean`
 
-Defined in: [lib/db/conn.ts:111](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L111)
+Defined in: [lib/db/conn.ts:114](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L114)
 
 是否是开启事务状态
 
@@ -210,7 +210,7 @@ Defined in: [lib/db/conn.ts:111](https://github.com/maiyunnet/kebab/blob/master/
 
 > **isUsing**(): `boolean`
 
-Defined in: [lib/db/conn.ts:118](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L118)
+Defined in: [lib/db/conn.ts:121](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L121)
 
 获取当前状态是否正在被使用中
 
@@ -224,7 +224,7 @@ Defined in: [lib/db/conn.ts:118](https://github.com/maiyunnet/kebab/blob/master/
 
 > **query**(`sql`, `values?`): `Promise`\<[`IData`](../../interfaces/IData.md)\>
 
-Defined in: [lib/db/conn.ts:177](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L177)
+Defined in: [lib/db/conn.ts:180](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L180)
 
 执行一条 SQL 并获得返回数据
 
@@ -252,7 +252,7 @@ Defined in: [lib/db/conn.ts:177](https://github.com/maiyunnet/kebab/blob/master/
 
 > **refreshLast**(): `void`
 
-Defined in: [lib/db/conn.ts:146](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L146)
+Defined in: [lib/db/conn.ts:149](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L149)
 
 设定最后使用时间
 
@@ -266,7 +266,7 @@ Defined in: [lib/db/conn.ts:146](https://github.com/maiyunnet/kebab/blob/master/
 
 > **rollback**(): `Promise`\<`boolean`\>
 
-Defined in: [lib/db/conn.ts:358](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L358)
+Defined in: [lib/db/conn.ts:361](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L361)
 
 #### Returns
 
@@ -278,7 +278,7 @@ Defined in: [lib/db/conn.ts:358](https://github.com/maiyunnet/kebab/blob/master/
 
 > **setLost**(): `void`
 
-Defined in: [lib/db/conn.ts:97](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L97)
+Defined in: [lib/db/conn.ts:100](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L100)
 
 将本条连接设置为不可用
 
@@ -292,7 +292,7 @@ Defined in: [lib/db/conn.ts:97](https://github.com/maiyunnet/kebab/blob/master/l
 
 > **used**(): `void`
 
-Defined in: [lib/db/conn.ts:139](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L139)
+Defined in: [lib/db/conn.ts:142](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L142)
 
 取消占用
 
@@ -306,7 +306,7 @@ Defined in: [lib/db/conn.ts:139](https://github.com/maiyunnet/kebab/blob/master/
 
 > **using**(): `boolean`
 
-Defined in: [lib/db/conn.ts:125](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L125)
+Defined in: [lib/db/conn.ts:128](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L128)
 
 判断是否可用（丢失的也算不可用），返回 true 代表获取成功并自动刷新最后时间
 
