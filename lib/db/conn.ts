@@ -203,7 +203,7 @@ export class Connection {
                 }));
             }
             else {
-                const res = await this._link.execute(sql, values);
+                const res = await this._link.query(sql, values);
                 rtn.rows = res[0] as any[];
                 if (res[1]) {
                     rtn.fields = res[1].map(item => ({
@@ -270,7 +270,7 @@ export class Connection {
                 }));
             }
             else {
-                const res = await this._link.execute<mysql2.ResultSetHeader>(sql, values);
+                const res = await this._link.query<mysql2.ResultSetHeader>(sql, values);
                 rtn.packet = {
                     'affected': res[0].affectedRows,
                     'insert': res[0].insertId,
