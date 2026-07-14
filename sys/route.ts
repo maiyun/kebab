@@ -43,7 +43,9 @@ function respond500(res: http2.Http2ServerResponse | http.ServerResponse): void 
         res.setHeader('content-length', Buffer.byteLength(content));
         lCore.writeHead(res, 500);
     }
-    res.end(content);
+    if (!res.writableEnded) {
+        res.end(content);
+    }
 }
 
 /**
@@ -58,16 +60,24 @@ function respond404(
     path: string
 ): void {
     if (config?.route?.['#404']) {
-        res.setHeader('location', lText.urlResolve(config.const.urlBase, config.route['#404']));
-        lCore.writeHead(res, 302);
-        res.end('');
+        if (!res.headersSent) {
+            res.setHeader('location', lText.urlResolve(config.const.urlBase, config.route['#404']));
+            lCore.writeHead(res, 302);
+        }
+        if (!res.writableEnded) {
+            res.end('');
+        }
         return;
     }
     const content = '[Error] Controller not found, path: ' + path + '.';
-    res.setHeader('content-type', 'text/html; charset=utf-8');
-    res.setHeader('content-length', Buffer.byteLength(content));
-    lCore.writeHead(res, 404);
-    res.end(content);
+    if (!res.headersSent) {
+        res.setHeader('content-type', 'text/html; charset=utf-8');
+        res.setHeader('content-length', Buffer.byteLength(content));
+        lCore.writeHead(res, 404);
+    }
+    if (!res.writableEnded) {
+        res.end(content);
+    }
 }
 
 /**

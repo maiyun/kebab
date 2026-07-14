@@ -351,7 +351,9 @@ async function requestHandler(
                             res.setHeader('content-length', Buffer.byteLength(content));
                             lCore.writeHead(res, 500);
                         }
-                        res.end(content);
+                        if (!res.writableEnded) {
+                            res.end(content);
+                        }
                         return;
                     }
                 }
@@ -392,7 +394,9 @@ async function requestHandler(
                         res.setHeader('content-length', Buffer.byteLength(content));
                         lCore.writeHead(res, 500);
                     }
-                    res.end(content);
+                    if (!res.writableEnded) {
+                        res.end(content);
+                    }
                     return;
                 }
             }
