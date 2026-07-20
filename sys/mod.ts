@@ -190,7 +190,7 @@ export default class Mod {
     }
 
     /** --- 创建 JSON 字符串对象，用于 PGSQL 的 jsonb 字段 --- */
-    public static json(obj: kebab.Json): any {
+    public static json<T>(obj: T): T {
         return lSql.json(obj);
     }
 

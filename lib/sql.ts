@@ -1458,6 +1458,6 @@ export function value(val: kebab.DbValue): {
  * --- 将对象转换为 JSON 字符串并避开类型检查，用于适配 PostgreSQL 的 jsonb 字段 ---
  * @param obj 要转换的 JSON 对象
  */
-export function json(obj: kebab.Json): any {
-    return lText.stringifyJson(obj) as any;
+export function json<T>(obj: T): T {
+    return lText.stringifyJson(obj) as T;
 }
