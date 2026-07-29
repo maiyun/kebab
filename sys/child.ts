@@ -62,6 +62,9 @@ const linkCount: Record<string, number> = {};
 /** --- 是否正在停止，停止时对 HTTP/1.1 响应追加 Connection: close，避免请求完成后连接回到保活池 --- */
 let stopping = false;
 
+/** --- 当前活跃的 HTTP/2 会话集合，用于 graceful shutdown 时发送 GOAWAY 帧 --- */
+const http2Sessions = new Set<http2.Http2Session>();
+
 /**
  * --- 包装请求处理函数，统一管理 linkCount 计数和错误处理 ---
  * @param key 连接标识
@@ -177,6 +180,12 @@ async function run(): Promise<void> {
             'UPGRADE'
         );
     }).listen(lCore.globalConfig.httpsPort);
+    // --- 追踪 HTTP/2 会话，用于 graceful shutdown 时发送 GOAWAY 帧通知 CDN 切换连接 ---
+    http2Server.on('session', (session: http2.Http2Session) => {
+        http2Sessions.add(session);
+        session.on('close', () => { http2Sessions.delete(session); });
+        session.on('error', () => { http2Sessions.delete(session); });
+    });
     // --- 增大 HTTP/2 超时，防止 CDN 预建连接被 Node.js 过早关闭 ---
     http2Server.setTimeout(120_000);
     httpServer = http.createServer(function(req: http.IncomingMessage, res: http.ServerResponse): void {
@@ -616,6 +625,13 @@ process.on('message', function(msg: kebab.Json) {
             case 'stop': {
                 // --- 需要停止监听，等待已有连接全部断开，然后关闭线程 ---
                 stopping = true;
+                // --- 向所有 HTTP/2 会话发送 GOAWAY 帧，通知 CDN 客户端停止在该连接上发送新请求并切换到新连接 ---
+                for (const session of http2Sessions) {
+                    try {
+                        session.goaway(http2.constants.NGHTTP2_NO_ERROR);
+                    }
+                    catch {}
+                }
                 httpServer?.close();
                 http2Server?.close();
                 // --- 立即关闭空闲保活连接（无活跃请求的 keep-alive socket），避免进程长时间等待 ---

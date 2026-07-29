@@ -28,6 +28,30 @@ const workerList: Record<string, {
 }> = {};
 
 /**
+ * --- 等待指定 worker 开始监听端口就绪 ---
+ * @param worker 要等待的 worker 对象
+ * @param timeout 超时时间（毫秒），默认 30 秒
+ */
+function waitForWorkerListening(worker: cluster.Worker, timeout: number = 30_000): Promise<void> {
+    return new Promise((resolve) => {
+        let timer: NodeJS.Timeout;
+        const onListening = (w: cluster.Worker) => {
+            if (w.id === worker.id) {
+                clearTimeout(timer);
+                cluster.removeListener('listening', onListening);
+                resolve();
+            }
+        };
+        timer = setTimeout(() => {
+            lCore.display(`[master] Worker ${worker.process.pid ?? 'undefined'} timed out waiting for listening, proceeding anyway.`);
+            cluster.removeListener('listening', onListening);
+            resolve();
+        }, timeout);
+        cluster.on('listening', onListening);
+    });
+}
+
+/**
  * --- 最终调用执行的函数块 ---
  */
 async function run(): Promise<void> {
@@ -134,16 +158,7 @@ function createRpcListener(): void {
                     break;
                 }
                 case 'restart': {
-                    // --- 为所有子线程发送 stop 信息 ---
-                    for (const pid in workerList) {
-                        workerList[pid].worker.send({
-                            'action': 'stop'
-                        });
-                        // --- 开启新线程 ---
-                        await createChildProcess(workerList[pid].cpu);
-                        // --- 删除记录 ---
-                        delete workerList[pid];
-                    }
+                    await restartWorkers();
                     break;
                 }
                 case 'global': {
@@ -780,6 +795,39 @@ function createRpcListener(): void {
 }
 
 /**
+ * --- 零宕机重启所有 worker 进程：先创建新进程并等待监听就绪，再停止旧进程 ---
+ */
+async function restartWorkers(): Promise<void> {
+    // --- 收集旧进程信息（先快照，避免迭代过程中修改 workerList） ---
+    const oldEntries: Array<{
+        'pid': string;
+        'cpu': number;
+        'worker': cluster.Worker;
+    }> = [];
+    for (const pid in workerList) {
+        oldEntries.push({
+            'pid': pid,
+            'cpu': workerList[pid].cpu,
+            'worker': workerList[pid].worker
+        });
+    }
+    // --- 阶段 1：创建新进程并等待其监听端口就绪 ---
+    for (const entry of oldEntries) {
+        const newWorker = await createChildProcess(entry.cpu);
+        if (newWorker) {
+            await waitForWorkerListening(newWorker);
+        }
+    }
+    // --- 阶段 2：停止旧进程 ---
+    for (const entry of oldEntries) {
+        entry.worker.send({
+            'action': 'stop'
+        });
+        delete workerList[entry.pid];
+    }
+}
+
+/**
  * --- 检测是否有死掉丢失的子进程，复活之 ---
  */
 async function checkWorkerLost(): Promise<void> {
@@ -804,10 +852,10 @@ async function checkWorkerLost(): Promise<void> {
  * --- 创建一个新的子进程 ---
  * @param cpu CPU ID
  */
-async function createChildProcess(cpu: number): Promise<void> {
+async function createChildProcess(cpu: number): Promise<cluster.Worker | null> {
     const worker = cluster.fork();
     if (!worker.process.pid) {
-        return;
+        return null;
     }
     workerList[worker.process.pid] = {
         'worker': worker,
@@ -835,16 +883,7 @@ async function createChildProcess(cpu: number): Promise<void> {
                     break;
                 }
                 case 'restart': {
-                    // --- 为所有子进程发送 restart 信息 ---
-                    for (const pid in workerList) {
-                        workerList[pid].worker.send({
-                            'action': 'stop'
-                        });
-                        // --- 开启新线程 ---
-                        await createChildProcess(workerList[pid].cpu);
-                        // --- 删除记录 ---
-                        delete workerList[pid];
-                    }
+                    await restartWorkers();
                     break;
                 }
                 case 'global': {
@@ -901,6 +940,7 @@ async function createChildProcess(cpu: number): Promise<void> {
             'data': lCore.global
         });
     }
+    return worker;
 }
 
 /**
@@ -933,18 +973,10 @@ function startFileWatcher(): void {
             }
             restarting = true;
             lCore.display(`[HMR] File changed: ${formatName}, reloading workers...`);
-            (async () => {
-                // --- 为所有子进程发送 stop 信息并重启 ---
-                for (const pid in workerList) {
-                    workerList[pid].worker.send({
-                        'action': 'stop'
-                    });
-                    await createChildProcess(workerList[pid].cpu);
-                    delete workerList[pid];
-                }
+            restartWorkers().then(() => {
                 restarting = false;
                 lCore.display('[HMR] All workers reloaded.');
-            })().catch((e) => {
+            }).catch((e) => {
                 restarting = false;
                 lCore.display('[HMR] Reload error:', e);
             });
