@@ -24,7 +24,7 @@ AES GCM 托管加密
 
 #### key
 
-`CipherKey`
+`KeyLike`
 
 密钥尽量 32 个英文字母和数字，不是 32 个系统会自动处理
 
@@ -56,7 +56,7 @@ AES GCM 托管加密
 
 #### key
 
-`CipherKey`
+`KeyLike`
 
 密钥尽量 32 个英文字母和数字，不是 32 个系统会自动处理
 

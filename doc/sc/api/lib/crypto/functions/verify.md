@@ -16,7 +16,7 @@ Defined in: [lib/crypto.ts:90](https://github.com/maiyunnet/kebab/blob/master/li
 
 ### data
 
-`BinaryLike`
+`string` \| `ArrayBufferView`\<`ArrayBufferLike`\>
 
 数据
 

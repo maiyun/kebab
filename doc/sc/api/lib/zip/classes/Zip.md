@@ -97,9 +97,13 @@ Defined in: [lib/zip.ts:350](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 #### Param
 
+**path**
+
 文件路径
 
 #### Param
+
+**type**
 
 返回类型
 
@@ -277,9 +281,13 @@ string
 
 #### Param
 
+**path**
+
 文件夹路径
 
 #### Param
+
+**opt**
 
 选项
 

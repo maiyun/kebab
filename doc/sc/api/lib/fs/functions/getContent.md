@@ -10,9 +10,13 @@
 
 ## Param
 
+**path**
+
 文件路径
 
 ## Param
+
+**options**
 
 编码或选项
 

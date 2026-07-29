@@ -16,7 +16,7 @@ Defined in: [lib/crypto.ts:136](https://github.com/maiyunnet/kebab/blob/master/l
 
 ### key
 
-`KeyLike` \| `RsaPrivateKey`
+`KeyLike` \| `PrivateKeyInput`
 
 私钥
 

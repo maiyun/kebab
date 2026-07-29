@@ -191,9 +191,13 @@ Defined in: [lib/ssh/sftp.ts:442](https://github.com/maiyunnet/kebab/blob/master
 
 #### Param
 
+**path**
+
 文件路径
 
 #### Param
+
+**options**
 
 编码或选项
 

@@ -18,7 +18,7 @@ Defined in: [lib/undici/formdata.ts:37](https://github.com/maiyunnet/kebab/blob/
 
 > **new FormData**(`options?`): `FormData`
 
-Defined in: node\_modules/@types/node/stream.d.ts:80
+Defined in: node\_modules/@types/node/stream.d.ts:81
 
 #### Parameters
 

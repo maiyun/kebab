@@ -1360,7 +1360,7 @@ index/variables/VER.md
 
 # Variable: VER
 
-> `const` **VER**: `"9.13.8"` = `'9.13.8'`
+> `const` **VER**: `"9.14.0"` = `'9.14.0'`
 
 Defined in: [index.ts:10](https://github.com/maiyunnet/kebab/blob/master/index.ts#L10)
 
@@ -5420,7 +5420,7 @@ AES 解密
 
 #### key
 
-`CipherKey`
+`KeyLike`
 
 密钥 32 个英文字母和数字
 
@@ -5462,7 +5462,7 @@ AES 解密
 
 #### key
 
-`CipherKey`
+`KeyLike`
 
 密钥 32 个英文字母和数字
 
@@ -5515,7 +5515,7 @@ AES 加密
 
 #### key
 
-`CipherKey`
+`KeyLike`
 
 密钥尽量 32 个英文字母和数字，不是 32 个系统会自动处理
 
@@ -5559,7 +5559,7 @@ AES 加密
 
 #### key
 
-`CipherKey`
+`KeyLike`
 
 密钥尽量 32 个英文字母和数字，不是 32 个系统会自动处理
 
@@ -5704,7 +5704,7 @@ cipher 解密
 
 ### key
 
-`CipherKey`
+`KeyLike`
 
 密钥 32 个英文字母和数字
 
@@ -5757,7 +5757,7 @@ cipher 加密，强烈不建议使用 AES_256_ECB
 
 ### key
 
-`CipherKey`
+`KeyLike`
 
 密钥 32 个英文字母和数字
 
@@ -5812,7 +5812,7 @@ AES 解密
 
 #### key
 
-`CipherKey`
+`KeyLike`
 
 密钥 32 个英文字母和数字
 
@@ -5844,7 +5844,7 @@ AES 解密
 
 #### key
 
-`CipherKey`
+`KeyLike`
 
 密钥 32 个英文字母和数字
 
@@ -5887,7 +5887,7 @@ AES GCM 托管加密
 
 #### key
 
-`CipherKey`
+`KeyLike`
 
 密钥尽量 32 个英文字母和数字，不是 32 个系统会自动处理
 
@@ -5919,7 +5919,7 @@ AES GCM 托管加密
 
 #### key
 
-`CipherKey`
+`KeyLike`
 
 密钥尽量 32 个英文字母和数字，不是 32 个系统会自动处理
 
@@ -6033,7 +6033,7 @@ hash 或 hmac 加密文件
 
 #### key?
 
-`CipherKey`
+`KeyLike`
 
 设置则采用 hmac 加密
 
@@ -6069,7 +6069,7 @@ hash 或 hmac 加密文件
 
 #### key
 
-`CipherKey`
+`KeyLike`
 
 设置则采用 hmac 加密
 
@@ -6116,7 +6116,7 @@ hash 或 hmac 加密
 
 #### key?
 
-`CipherKey`
+`KeyLike`
 
 设置则采用 hmac 加密
 
@@ -6152,7 +6152,7 @@ hash 或 hmac 加密
 
 #### key
 
-`CipherKey` \| `undefined`
+`KeyLike` \| `undefined`
 
 设置则采用 hmac 加密
 
@@ -6185,7 +6185,7 @@ Defined in: [lib/crypto.ts:136](https://github.com/maiyunnet/kebab/blob/master/l
 
 ### key
 
-`KeyLike` \| `RsaPrivateKey`
+`KeyLike` \| `PrivateKeyInput`
 
 私钥
 
@@ -6220,7 +6220,7 @@ Defined in: [lib/crypto.ts:114](https://github.com/maiyunnet/kebab/blob/master/l
 
 ### key
 
-`KeyLike` \| `RsaPrivateKey`
+`KeyLike` \| `PrivateKeyInput`
 
 私钥
 
@@ -6255,7 +6255,7 @@ Defined in: [lib/crypto.ts:125](https://github.com/maiyunnet/kebab/blob/master/l
 
 ### key
 
-`KeyLike` \| `RsaPublicKey` \| `RsaPrivateKey`
+`KeyLike` \| `PrivateKeyInput` \| `PublicKeyInput`
 
 公钥
 
@@ -6290,7 +6290,7 @@ Defined in: [lib/crypto.ts:103](https://github.com/maiyunnet/kebab/blob/master/l
 
 ### key
 
-`KeyLike` \| `RsaPublicKey` \| `RsaPrivateKey`
+`KeyLike` \| `PrivateKeyInput` \| `PublicKeyInput`
 
 公钥
 
@@ -6327,7 +6327,7 @@ Defined in: [lib/crypto.ts:69](https://github.com/maiyunnet/kebab/blob/master/li
 
 #### data
 
-`BinaryLike`
+`string` \| `ArrayBufferView`\<`ArrayBufferLike`\>
 
 数据
 
@@ -6365,7 +6365,7 @@ Defined in: [lib/crypto.ts:72](https://github.com/maiyunnet/kebab/blob/master/li
 
 #### data
 
-`BinaryLike`
+`string` \| `ArrayBufferView`\<`ArrayBufferLike`\>
 
 数据
 
@@ -6420,7 +6420,7 @@ SM4 解密
 
 #### key
 
-`CipherKey`
+`KeyLike`
 
 密钥 32 个英文字母和数字
 
@@ -6462,7 +6462,7 @@ SM4 解密
 
 #### key
 
-`CipherKey`
+`KeyLike`
 
 密钥 32 个英文字母和数字
 
@@ -6515,7 +6515,7 @@ SM4 加密
 
 #### key
 
-`CipherKey`
+`KeyLike`
 
 密钥 32 个英文字母和数字
 
@@ -6557,7 +6557,7 @@ SM4 加密
 
 #### key
 
-`CipherKey`
+`KeyLike`
 
 密钥 32 个英文字母和数字
 
@@ -6631,7 +6631,7 @@ Defined in: [lib/crypto.ts:90](https://github.com/maiyunnet/kebab/blob/master/li
 
 ### data
 
-`BinaryLike`
+`string` \| `ArrayBufferView`\<`ArrayBufferLike`\>
 
 数据
 
@@ -8623,9 +8623,13 @@ lib/fs/functions/getContent.md
 
 ## Param
 
+**path**
+
 文件路径
 
 ## Param
+
+**options**
 
 编码或选项
 
@@ -10720,7 +10724,7 @@ Defined in: [lib/net/formdata.ts:37](https://github.com/maiyunnet/kebab/blob/mas
 
 > **new FormData**(`options?`): `FormData`
 
-Defined in: node\_modules/@types/node/stream.d.ts:80
+Defined in: node\_modules/@types/node/stream.d.ts:81
 
 #### Parameters
 
@@ -15063,23 +15067,29 @@ lib/sql/functions/json.md
 
 # Function: json()
 
-> **json**(`obj`): `any`
+> **json**\<`T`\>(`obj`): `T`
 
 Defined in: [lib/sql.ts:1461](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L1461)
 
 将对象转换为 JSON 字符串并避开类型检查，用于适配 PostgreSQL 的 jsonb 字段
 
+## Type Parameters
+
+### T
+
+`T`
+
 ## Parameters
 
 ### obj
 
-`any`
+`T`
 
 要转换的 JSON 对象
 
 ## Returns
 
-`any`
+`T`
 
 lib/sql/functions/value.md
 ---
@@ -15562,9 +15572,13 @@ Defined in: [lib/ssh/sftp.ts:442](https://github.com/maiyunnet/kebab/blob/master
 
 #### Param
 
+**path**
+
 文件路径
 
 #### Param
+
+**options**
 
 编码或选项
 
@@ -18027,7 +18041,7 @@ Defined in: [lib/undici/formdata.ts:37](https://github.com/maiyunnet/kebab/blob/
 
 > **new FormData**(`options?`): `FormData`
 
-Defined in: node\_modules/@types/node/stream.d.ts:80
+Defined in: node\_modules/@types/node/stream.d.ts:81
 
 #### Parameters
 
@@ -21155,9 +21169,13 @@ Defined in: [lib/zip.ts:350](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 #### Param
 
+**path**
+
 文件路径
 
 #### Param
+
+**type**
 
 返回类型
 
@@ -21335,9 +21353,13 @@ string
 
 #### Param
 
+**path**
+
 文件夹路径
 
 #### Param
+
+**opt**
 
 选项
 
@@ -24152,6 +24174,8 @@ Defined in: [sys/mod.ts:1797](https://github.com/maiyunnet/kebab/blob/master/sys
 
 #### Param
 
+**key**
+
 是否以某个字段为主键
 
 #### Call Signature
@@ -24187,6 +24211,8 @@ Defined in: [sys/mod.ts:1140](https://github.com/maiyunnet/kebab/blob/master/sys
 获取列表（得到的为原生对象或数组，不是模型）
 
 #### Param
+
+**key**
 
 是否以某个字段为主键
 
@@ -24384,6 +24410,8 @@ ON 信息
 
 #### Param
 
+**all**
+
 是否获取完全的情况，默认不获取，只返回扫描情况
 
 #### Call Signature
@@ -24448,9 +24476,13 @@ Defined in: [sys/mod.ts:1640](https://github.com/maiyunnet/kebab/blob/master/sys
 
 #### Param
 
+**lock**
+
 是否加锁
 
 #### Param
+
+**array**
 
 是否返回原生对象
 
@@ -24992,9 +25024,13 @@ Defined in: [sys/mod.ts:973](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 #### Param
 
+**n**
+
 字符串或键/值
 
 #### Param
+
+**v**
 
 可能是数字
 
@@ -25464,21 +25500,27 @@ Defined in: [sys/mod.ts:264](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 ### json()
 
-> `static` **json**(`obj`): `any`
+> `static` **json**\<`T`\>(`obj`): `T`
 
 Defined in: [sys/mod.ts:193](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L193)
 
 创建 JSON 字符串对象，用于 PGSQL 的 jsonb 字段
 
+#### Type Parameters
+
+##### T
+
+`T`
+
 #### Parameters
 
 ##### obj
 
-`any`
+`T`
 
 #### Returns
 
-`any`
+`T`
 
 ***
 
@@ -25488,13 +25530,19 @@ Defined in: [sys/mod.ts:193](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 #### Param
 
+**db**
+
 数据库对象
 
 #### Param
 
+**s**
+
 筛选条件数组或字符串
 
 #### Param
+
+**opt**
 
 选项（opt.pre: MySQL 表前缀/PostgreSQL Schema 名；lock 需确保 where 条件命中索引，否则可能退化为表锁）
 

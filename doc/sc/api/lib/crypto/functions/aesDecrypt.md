@@ -24,7 +24,7 @@ AES 解密
 
 #### key
 
-`CipherKey`
+`KeyLike`
 
 密钥 32 个英文字母和数字
 
@@ -66,7 +66,7 @@ AES 解密
 
 #### key
 
-`CipherKey`
+`KeyLike`
 
 密钥 32 个英文字母和数字
 

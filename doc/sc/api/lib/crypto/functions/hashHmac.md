@@ -30,7 +30,7 @@ hash 或 hmac 加密
 
 #### key?
 
-`CipherKey`
+`KeyLike`
 
 设置则采用 hmac 加密
 
@@ -66,7 +66,7 @@ hash 或 hmac 加密
 
 #### key
 
-`CipherKey` \| `undefined`
+`KeyLike` \| `undefined`
 
 设置则采用 hmac 加密
 

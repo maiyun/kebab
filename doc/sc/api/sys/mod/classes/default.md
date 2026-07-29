@@ -240,6 +240,8 @@ Defined in: [sys/mod.ts:1797](https://github.com/maiyunnet/kebab/blob/master/sys
 
 #### Param
 
+**key**
+
 是否以某个字段为主键
 
 #### Call Signature
@@ -275,6 +277,8 @@ Defined in: [sys/mod.ts:1140](https://github.com/maiyunnet/kebab/blob/master/sys
 获取列表（得到的为原生对象或数组，不是模型）
 
 #### Param
+
+**key**
 
 是否以某个字段为主键
 
@@ -472,6 +476,8 @@ ON 信息
 
 #### Param
 
+**all**
+
 是否获取完全的情况，默认不获取，只返回扫描情况
 
 #### Call Signature
@@ -536,9 +542,13 @@ Defined in: [sys/mod.ts:1640](https://github.com/maiyunnet/kebab/blob/master/sys
 
 #### Param
 
+**lock**
+
 是否加锁
 
 #### Param
+
+**array**
 
 是否返回原生对象
 
@@ -1080,9 +1090,13 @@ Defined in: [sys/mod.ts:973](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 #### Param
 
+**n**
+
 字符串或键/值
 
 #### Param
+
+**v**
 
 可能是数字
 
@@ -1552,21 +1566,27 @@ Defined in: [sys/mod.ts:264](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 ### json()
 
-> `static` **json**(`obj`): `any`
+> `static` **json**\<`T`\>(`obj`): `T`
 
 Defined in: [sys/mod.ts:193](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L193)
 
 创建 JSON 字符串对象，用于 PGSQL 的 jsonb 字段
 
+#### Type Parameters
+
+##### T
+
+`T`
+
 #### Parameters
 
 ##### obj
 
-`any`
+`T`
 
 #### Returns
 
-`any`
+`T`
 
 ***
 
@@ -1576,13 +1596,19 @@ Defined in: [sys/mod.ts:193](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 #### Param
 
+**db**
+
 数据库对象
 
 #### Param
 
+**s**
+
 筛选条件数组或字符串
 
 #### Param
+
+**opt**
 
 选项（opt.pre: MySQL 表前缀/PostgreSQL Schema 名；lock 需确保 where 条件命中索引，否则可能退化为表锁）
 

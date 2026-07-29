@@ -22,7 +22,7 @@ cipher 加密，强烈不建议使用 AES_256_ECB
 
 ### key
 
-`CipherKey`
+`KeyLike`
 
 密钥 32 个英文字母和数字
 
