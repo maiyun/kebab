@@ -339,7 +339,7 @@ export default function ReactRouterPage({
                 <title suppressHydrationWarning>{title}</title>
                 {/* --- import map 由框架自动注入在此标签前，无需手动添加 --- */}
                 {/* --- dev: 需先执行 node ./source/main build -d source/www/example/stc 生成 CSS --- */}
-                <link rel="stylesheet" href={`${_urlStc}view/react-router-page.css?v=${_staticVer}`} />
+                <link rel="stylesheet" href={`${_urlStc}view/react-router.page.css?v=${_staticVer}`} />
             </head>
             <body className="bg-slate-50 min-h-screen">
                 <div className="max-w-2xl mx-auto px-4 py-10 space-y-6">
