@@ -1110,6 +1110,10 @@ export class Ctr {
             'maxFileSize'?: number;
             /** --- 允许的文件扩展名（含点号），如 ['.jpg', '.png', '.pdf'] --- */
             'allowedExts'?: string[];
+            /** --- 单个字段（非文件）最大字节数，默认 1 MB --- */
+            'maxFieldSize'?: number;
+            /** --- 整体请求超时时间（毫秒），默认 5 分钟，设为 0 禁用超时 --- */
+            'timeout'?: number;
         } = {}
     ): Promise<boolean> {
         const rtn = await sRoute.getFormData(this._req, events, limits);

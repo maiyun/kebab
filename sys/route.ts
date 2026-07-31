@@ -994,6 +994,10 @@ export function getFormData(
         'maxFileSize'?: number;
         /** --- 允许的文件扩展名（含点号），如 ['.jpg', '.png', '.pdf'] --- */
         'allowedExts'?: string[];
+        /** --- 单个字段（非文件）最大字节数，默认 1 MB --- */
+        'maxFieldSize'?: number;
+        /** --- 整体请求超时时间（毫秒），默认 5 分钟，设为 0 禁用超时 --- */
+        'timeout'?: number;
     } = {}
 ): Promise<{
     'post': Record<string, kebab.Json>;
@@ -1025,6 +1029,20 @@ export function getFormData(
         };
         /** --- 获取的 boundary 文本 --- */
         const boundary = ct.slice(clio + 9);
+
+        // --- 超时护盾：防止网络静默断开时 Promise 永不 resolve ---
+
+        /** --- 超时定时器 --- */
+        let timer: NodeJS.Timeout | undefined;
+        /** --- 是否已经结束（防止重复 resolve） --- */
+        let finished: boolean = false;
+        /** --- 清理定时器 --- */
+        function clearTimer(): void {
+            if (timer) {
+                clearTimeout(timer);
+                timer = undefined;
+            }
+        }
 
         // 一下变量是相对于 data 事件的全局变量 ---
 
@@ -1073,6 +1091,24 @@ export function getFormData(
             }
         }
 
+        // --- 启动超时定时器（在所有变量声明之后，确保回调闭包可引用） ---
+        const timeoutMs = limits.timeout ?? 300_000;
+        if (timeoutMs > 0) {
+            timer = setTimeout(() => {
+                if (finished) {
+                    return;
+                }
+                finished = true;
+                if ((state === EState.FILE) && ftmpName && ftmpStream) {
+                    ftmpStream.destroy();
+                }
+                lCore.debug('[ROUTE][GETFORMDATA] formdata request timeout');
+                lCore.log({}, '[ROUTE][GETFORMDATA] formdata request timeout after ' + timeoutMs + 'ms', '-error');
+                cleanupFiles();
+                resolve(false);
+            }, timeoutMs);
+        }
+
         /** --- 拒绝当前文件：销毁流、删临时文件、标记 rejected --- */
         function rejectFile(): void {
             rejected = true;
@@ -1084,6 +1120,11 @@ export function getFormData(
 
         /** --- 最终输出 --- */
         function finalize(): void {
+            if (finished) {
+                return;
+            }
+            finished = true;
+            clearTimer();
             if (rejected) {
                 cleanupFiles();
                 resolve(false);
@@ -1161,6 +1202,12 @@ export function getFormData(
                         // --- POST 模式 ---
                         const io = buffer.indexOf('\r\n--' + boundary);
                         if (io === -1) {
+                            // --- 检查字段大小限制，防止畸形数据导致 buffer 无限增长 ---
+                            const maxField = limits.maxFieldSize ?? 1_048_576;
+                            if (buffer.length > maxField + boundary.length + 4) {
+                                rejected = true;
+                                return;
+                            }
                             return;
                         }
                         // --- 找到结束标语，写入 POST ---
@@ -1279,6 +1326,11 @@ export function getFormData(
             }
         });
         req.on('error', function(e) {
+            if (finished) {
+                return;
+            }
+            finished = true;
+            clearTimer();
             if ((state === EState.FILE) && ftmpName) {
                 ftmpStream.destroy();
             }
@@ -1287,8 +1339,26 @@ export function getFormData(
             cleanupFiles();
             resolve(false);
         });
+        // --- 监听连接关闭（HTTP/2 RST_STREAM、代理断连、或用户主动中断上传等场景） ---
+        req.on('close', function() {
+            if (finished) {
+                return;
+            }
+            // --- 若数据未读完且连接已关闭，视为传输中断（多数是用户主动取消，无需记录错误） ---
+            if (!readEnd && writeFileLength > 0) {
+                finished = true;
+                clearTimer();
+                if ((state === EState.FILE) && ftmpName && ftmpStream) {
+                    ftmpStream.destroy();
+                }
+                lCore.debug('[ROUTE][GETFORMDATA] connection closed before formdata complete');
+                cleanupFiles();
+                resolve(false);
+            }
+        });
         req.on('end', function() {
             readEnd = true;
+            clearTimer();
             // --- 被拒绝则清理文件并 resolve(false) ---
             if (rejected) {
                 finalize();
