@@ -8,7 +8,7 @@
 
 > **sendNpm**(`path`, `hosts?`): `Promise`\<`Record`\<`string`, \{ `result`: `boolean`; `return`: `string`; \}\>\>
 
-Defined in: [lib/core.ts:686](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L686)
+Defined in: [lib/core.ts:704](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L704)
 
 向本机或局域网 RPC 发送 npm install 操作
 

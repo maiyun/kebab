@@ -14,7 +14,7 @@ Defined in: [lib/sql.ts:42](https://github.com/maiyunnet/kebab/blob/master/lib/s
 
 > **new Sql**(`opt`): `Sql`
 
-Defined in: [lib/sql.ts:69](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L69)
+Defined in: [lib/sql.ts:72](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L72)
 
 #### Parameters
 
@@ -56,7 +56,7 @@ Defined in: [lib/sql.ts:69](https://github.com/maiyunnet/kebab/blob/master/lib/s
 
 > **append**(`sql`): `this`
 
-Defined in: [lib/sql.ts:1006](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L1006)
+Defined in: [lib/sql.ts:1041](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L1041)
 
 在 sql 最后追加字符串
 
@@ -76,7 +76,7 @@ Defined in: [lib/sql.ts:1006](https://github.com/maiyunnet/kebab/blob/master/lib
 
 > **by**(`c`, `d?`): `this`
 
-Defined in: [lib/sql.ts:762](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L762)
+Defined in: [lib/sql.ts:793](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L793)
 
 ORDER BY
 
@@ -104,7 +104,7 @@ ORDER BY
 
 > **copy**(`f?`, `opt?`): `Sql`
 
-Defined in: [lib/sql.ts:830](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L830)
+Defined in: [lib/sql.ts:861](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L861)
 
 创建一个本对象的一个新的 sql 对象拷贝
 
@@ -132,7 +132,7 @@ Defined in: [lib/sql.ts:830](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **crossJoin**(`f`, `s?`, `suf?`, `pre?`): `this`
 
-Defined in: [lib/sql.ts:491](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L491)
+Defined in: [lib/sql.ts:522](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L522)
 
 cross join 方法
 
@@ -172,7 +172,7 @@ MySQL 时为表前缀，PostgreSQL 时为 Schema 名，仅在 join 非默认前�
 
 > **delete**(`f`): `this`
 
-Defined in: [lib/sql.ts:379](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L379)
+Defined in: [lib/sql.ts:410](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L410)
 
 'xx'
 
@@ -194,7 +194,7 @@ Defined in: [lib/sql.ts:379](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **field**(`str`, `pre?`, `suf?`): `string`
 
-Defined in: [lib/sql.ts:1017](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L1017)
+Defined in: [lib/sql.ts:1052](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L1052)
 
 对字段进行包裹
 
@@ -226,7 +226,7 @@ MySQL 时为表前缀，PostgreSQL 时为 Schema 名，仅请在 field 表名时
 
 > **format**(`sql?`, `data?`): `string`
 
-Defined in: [lib/sql.ts:996](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L996)
+Defined in: [lib/sql.ts:1031](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L1031)
 
 获取带 data 的 sql 语句
 
@@ -250,7 +250,7 @@ Defined in: [lib/sql.ts:996](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **fullJoin**(`f`, `s?`, `suf?`, `pre?`): `this`
 
-Defined in: [lib/sql.ts:480](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L480)
+Defined in: [lib/sql.ts:511](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L511)
 
 full join 方法
 
@@ -290,7 +290,7 @@ MySQL 时为表前缀，PostgreSQL 时为 Schema 名，仅在 join 非默认前�
 
 > **getData**(): [`DbValue`](../../../index/type-aliases/DbValue.md)[]
 
-Defined in: [lib/sql.ts:980](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L980)
+Defined in: [lib/sql.ts:1015](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L1015)
 
 获取全部 data
 
@@ -304,7 +304,7 @@ Defined in: [lib/sql.ts:980](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **getPre**(): `string`
 
-Defined in: [lib/sql.ts:987](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L987)
+Defined in: [lib/sql.ts:1022](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L1022)
 
 获取定义的 pre
 
@@ -318,7 +318,7 @@ Defined in: [lib/sql.ts:987](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **getSql**(): `string`
 
-Defined in: [lib/sql.ts:964](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L964)
+Defined in: [lib/sql.ts:995](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L995)
 
 获取 sql 语句
 
@@ -332,7 +332,7 @@ Defined in: [lib/sql.ts:964](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **group**(`c`): `this`
 
-Defined in: [lib/sql.ts:786](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L786)
+Defined in: [lib/sql.ts:817](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L817)
 
 GROUP BY
 
@@ -354,7 +354,7 @@ GROUP BY
 
 > **having**(`s?`): `this`
 
-Defined in: [lib/sql.ts:498](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L498)
+Defined in: [lib/sql.ts:529](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L529)
 
 having 后置筛选器，用法类似 where
 
@@ -370,11 +370,56 @@ having 后置筛选器，用法类似 where
 
 ***
 
+### hint()
+
+> **hint**(`h`): `this`
+
+Defined in: [lib/sql.ts:118](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L118)
+
+设置 MySQL 优化器 Hint
+会以 Optimizer Hint 注释语法注入到 SELECT 关键字后
+传入 hint 内容即可，无需包裹注释符号
+
+#### Parameters
+
+##### h
+
+`string`
+
+Hint 内容
+
+#### Returns
+
+`this`
+
+#### Example
+
+```ts
+// --- 强制走指定索引（最常用）
+INDEX(`supply_date_0_0` `idx_supply_date_query`)
+
+// --- 指定某表不用某索引
+NO_INDEX(`supply_date_0_0` `idx_old`)
+
+// --- 指定 JOIN 顺序和索引
+JOIN_ORDER(`a` `b`) INDEX(`a` `idx_a`) INDEX(`b` `idx_b`)
+
+// --- 指定 JOIN 中某表使用的索引
+JOIN_INDEX(`supply_date_0_0` `idx_supply_date_query`)
+
+// --- 多表多索引组合
+INDEX(`t1` `idx_a`) JOIN_INDEX(`t2` `idx_b`)
+
+// --- 官方文档: https://dev.mysql.com/doc/refman/8.0/en/optimizer-hints.html
+```
+
+***
+
 ### innerJoin()
 
 > **innerJoin**(`f`, `s?`, `suf?`, `pre?`): `this`
 
-Defined in: [lib/sql.ts:469](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L469)
+Defined in: [lib/sql.ts:500](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L500)
 
 inner join 方法
 
@@ -414,7 +459,7 @@ MySQL 时为表前缀，PostgreSQL 时为 Schema 名，仅在 join 非默认前�
 
 > **insert**(`table`, `ignore?`): `this`
 
-Defined in: [lib/sql.ts:99](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L99)
+Defined in: [lib/sql.ts:130](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L130)
 
 插入数据前导
 
@@ -442,7 +487,7 @@ Defined in: [lib/sql.ts:99](https://github.com/maiyunnet/kebab/blob/master/lib/s
 
 > **join**(`f`, `s?`, `type?`, `suf?`, `pre?`): `this`
 
-Defined in: [lib/sql.ts:421](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L421)
+Defined in: [lib/sql.ts:452](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L452)
 
 join 方法
 
@@ -488,7 +533,7 @@ MySQL 时为表前缀，PostgreSQL 时为 Schema 名，仅在 join 非默认前�
 
 > **leftJoin**(`f`, `s?`, `suf?`, `pre?`): `this`
 
-Defined in: [lib/sql.ts:447](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L447)
+Defined in: [lib/sql.ts:478](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L478)
 
 left join 方法
 
@@ -528,7 +573,7 @@ MySQL 时为表前缀，PostgreSQL 时为 Schema 名，仅在 join 非默认前�
 
 > **limit**(`a`, `b?`): `this`
 
-Defined in: [lib/sql.ts:806](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L806)
+Defined in: [lib/sql.ts:837](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L837)
 
 LIMIT（limit、offset, limit）
 
@@ -556,7 +601,7 @@ LIMIT（limit、offset, limit）
 
 > **lock**(): `this`
 
-Defined in: [lib/sql.ts:821](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L821)
+Defined in: [lib/sql.ts:852](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L852)
 
 追加消极锁，通常不建议使用
 
@@ -570,7 +615,7 @@ Defined in: [lib/sql.ts:821](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **rightJoin**(`f`, `s?`, `suf?`, `pre?`): `this`
 
-Defined in: [lib/sql.ts:458](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L458)
+Defined in: [lib/sql.ts:489](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L489)
 
 right join 方法
 
@@ -610,7 +655,7 @@ MySQL 时为表前缀，PostgreSQL 时为 Schema 名，仅在 join 非默认前�
 
 > **select**(`c`, `f`): `this`
 
-Defined in: [lib/sql.ts:270](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L270)
+Defined in: [lib/sql.ts:301](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L301)
 
 '*', 'xx'
 
@@ -638,7 +683,7 @@ Defined in: [lib/sql.ts:270](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **union**(`lsql`, `type?`): `this`
 
-Defined in: [lib/sql.ts:391](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L391)
+Defined in: [lib/sql.ts:422](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L422)
 
 联查另一个 sql 对象
 
@@ -666,7 +711,7 @@ sql 对象
 
 > **unionAll**(`lsql`): `this`
 
-Defined in: [lib/sql.ts:409](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L409)
+Defined in: [lib/sql.ts:440](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L440)
 
 所有联查另一个 sql 对象
 
@@ -688,7 +733,7 @@ sql 对象
 
 > **update**(`f`, `s`): `this`
 
-Defined in: [lib/sql.ts:311](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L311)
+Defined in: [lib/sql.ts:342](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L342)
 
 UPDATE SQL 方法
 
@@ -716,7 +761,7 @@ UPDATE SQL 方法
 
 > **updateByValues**(`table`, `key`, `cols`, `rows`): `this`
 
-Defined in: [lib/sql.ts:215](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L215)
+Defined in: [lib/sql.ts:246](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L246)
 
 批量 UPDATE，以子查询作为数据源，纯更新语义（不会插入新行）
 MySQL: UPDATE t INNER JOIN (SELECT col AS alias ... UNION ALL SELECT ...) AS tmp ON t.key=tmp.key SET t.c=tmp.c
@@ -759,7 +804,7 @@ PostgreSQL: UPDATE t SET c=tmp.c FROM (VALUES ($1,...)) AS tmp(cols) WHERE t.key
 
 > **upsert**(`data`, `conflict?`): `this`
 
-Defined in: [lib/sql.ts:176](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L176)
+Defined in: [lib/sql.ts:207](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L207)
 
 如果存在则更新不存在则插入（UPSERT）
 
@@ -787,7 +832,7 @@ Defined in: [lib/sql.ts:176](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **values**(`cs`, `vs?`): `this`
 
-Defined in: [lib/sql.ts:118](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L118)
+Defined in: [lib/sql.ts:149](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L149)
 
 实际插入数据的数据
 
@@ -815,7 +860,7 @@ Defined in: [lib/sql.ts:118](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **where**(`s`): `this`
 
-Defined in: [lib/sql.ts:532](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L532)
+Defined in: [lib/sql.ts:563](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L563)
 
 筛选器
 1. 'city': 'bj', 'type': '2'

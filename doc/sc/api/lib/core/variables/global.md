@@ -8,6 +8,6 @@
 
 > `const` **global**: `Record`\<`string`, `any`\> = `{}`
 
-Defined in: [lib/core.ts:729](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L729)
+Defined in: [lib/core.ts:747](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L747)
 
 跨进程全局变量

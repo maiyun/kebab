@@ -8,7 +8,7 @@
 
 > **debug**(`message?`, ...`optionalParams`): `void`
 
-Defined in: [lib/core.ts:1205](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1205)
+Defined in: [lib/core.ts:1223](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1223)
 
 打印调试信息，线上环境不会打印
 

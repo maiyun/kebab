@@ -638,11 +638,23 @@ Defined in: [sys/ctr.ts:1102](https://github.com/maiyunnet/kebab/blob/master/sys
 
 允许的文件扩展名（含点号），如 ['.jpg', '.png', '.pdf']
 
+###### maxFieldSize?
+
+`number`
+
+单个字段（非文件）最大字节数，默认 1 MB
+
 ###### maxFileSize?
 
 `number`
 
 单个文件最大字节数
+
+###### timeout?
+
+`number`
+
+整体请求超时时间（毫秒），默认 5 分钟，设为 0 禁用超时
 
 #### Returns
 
