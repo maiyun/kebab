@@ -361,10 +361,11 @@ export function ip(
 ): string {
     const headers: http.IncomingHttpHeaders = ctr instanceof sCtr.Ctr ? ctr.getPrototype('_headers') : ctr;
     if (typeof headers['cf-connecting-ip'] === 'string') {
-        return headers['cf-connecting-ip'];
+        return normalizeIP(headers['cf-connecting-ip']);
     }
     else if (typeof headers['x-forwarded-for'] === 'string') {
-        return headers['x-forwarded-for'];
+        // --- X-Forwarded-For 可能为逗号分隔的多个 IP，取第一个即客户端 IP ---
+        return normalizeIP(headers['x-forwarded-for'].split(',')[0].trim());
     }
     else {
         if (!req) {
@@ -375,7 +376,7 @@ export function ip(
                 return '';
             }
         }
-        return req.socket.remoteAddress ?? '';
+        return normalizeIP(req.socket.remoteAddress ?? '');
     }
 }
 
@@ -388,8 +389,8 @@ export function ips(
     } {
     const headers: http.IncomingHttpHeaders = ctr instanceof sCtr.Ctr ? ctr.getPrototype('_headers') : ctr;
     return {
-        'cf': typeof headers['cf-connecting-ip'] === 'string' ? headers['cf-connecting-ip'] : '',
-        'x': typeof headers['x-forwarded-for'] === 'string' ? headers['x-forwarded-for'] : ''
+        'cf': typeof headers['cf-connecting-ip'] === 'string' ? normalizeIP(headers['cf-connecting-ip']) : '',
+        'x': typeof headers['x-forwarded-for'] === 'string' ? normalizeIP(headers['x-forwarded-for'].split(',')[0].trim()) : ''
     };
 }
 
@@ -397,6 +398,23 @@ export function ips(
 export const REAL_IP_X = 'x-forwarded-for';
 /** --- 使用的是 Cloudflare --- */
 export const REAL_IP_CF = 'cf-connecting-ip';
+
+/**
+ * --- 规范化 IP 地址 ---
+ * --- 将 IPv4-mapped IPv6（如 ::ffff:127.0.0.1）转换为纯 IPv4，原生 IPv6 保持不变 ---
+ * @param ip 原始 IP 地址
+ */
+function normalizeIP(ip: string): string {
+    if (!ip) {
+        return '';
+    }
+    const value = ip.trim();
+    const mapped = /^::ffff:(\d{1,3}(?:\.\d{1,3}){3})$/i.exec(value);
+    if (mapped) {
+        return mapped[1];
+    }
+    return value;
+}
 
 /**
  * --- 获取直连 IP（安全 IP） ---
@@ -408,11 +426,11 @@ export function realIP(ctr: sCtr.Ctr, name: string = ''): string {
     if (name !== '') {
         const value = headers[name];
         if (typeof value === 'string') {
-            return value;
+            return normalizeIP(value);
         }
     }
     const req: http2.Http2ServerRequest | http.IncomingMessage = ctr.getPrototype('_req');
-    return req.socket.remoteAddress ?? '';
+    return normalizeIP(req.socket.remoteAddress ?? '');
 }
 
 /**
