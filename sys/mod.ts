@@ -126,6 +126,8 @@ export default class Mod {
             'key': string;
             'list': string[];
         };
+        /** --- MySQL 优化器 Hint，如 `INDEX(\`t\` \`idx_xx\`)`，注入到 SELECT 后 --- */
+        'hint'?: string;
         /** --- MySQL 表前缀或 PostgreSQL Schema 名，优先级：选项 > 类属性 > 配置 --- */
         'pre'?: string;
     }) {
@@ -139,6 +141,10 @@ export default class Mod {
             'ctr': opt.ctr,
             'pre': opt.pre ?? (this.constructor as any)._$pre,
         });
+        /** --- 设置优化器 Hint --- */
+        if (opt.hint) {
+            this._sql.hint(opt.hint);
+        }
         if (opt.index) {
             this._index = typeof opt.index === 'string' ? [opt.index] : [...new Set(opt.index)];
         }
@@ -528,6 +534,7 @@ export default class Mod {
                 'key': string;
                 'list': string[];
             };
+            'hint'?: string;
         } = {}
     ): T & Record<string, any> {
         return new this({
@@ -537,7 +544,8 @@ export default class Mod {
             'select': c,
             'index': opt.index,
             'alias': opt.alias,
-            'contain': opt.contain
+            'contain': opt.contain,
+            'hint': opt.hint,
         }) as T & Record<string, any>;
     }
 
@@ -558,6 +566,7 @@ export default class Mod {
                 'key': string;
                 'list': string[];
             };
+            'hint'?: string;
         } = {}
     ): T & Record<string, any> {
         return new this({
@@ -568,6 +577,7 @@ export default class Mod {
             'index': opt.index,
             'contain': opt.contain,
             'alias': opt.alias,
+            'hint': opt.hint,
         }) as T & Record<string, any>;
     }
 
@@ -604,6 +614,7 @@ export default class Mod {
             'index'?: string | string[];
             /** --- 通过 key 字段获取，默认为 false，即从主键获取 --- */
             'key'?: boolean;
+            'hint'?: string;
         } = {}
     ): Promise<false | null | (T & Record<string, any>)> {
         if (opt.key && !this._$key) {
@@ -618,6 +629,7 @@ export default class Mod {
                 [opt.key ? this._$key : this._$primary]: val,
             }],
             'index': opt.index,
+            'hint': opt.hint,
         }) as T & Record<string, any>).first(opt.lock);
     }
 
@@ -631,6 +643,7 @@ export default class Mod {
             'index'?: string | string[];
             'select'?: string | string[];
             'by'?: [string | string[], 'DESC' | 'ASC'];
+            'hint'?: string;
             'array': true;
         }
     ): Promise<false | null | Record<string, any>>;
@@ -644,6 +657,7 @@ export default class Mod {
             'index'?: string | string[];
             'select'?: string | string[];
             'by'?: [string | string[], 'DESC' | 'ASC'];
+            'hint'?: string;
             'array'?: false;
         }
     ): Promise<false | null | (T & Record<string, any>)>;
@@ -663,6 +677,7 @@ export default class Mod {
             'index'?: string | string[];
             'select'?: string | string[];
             'by'?: [string | string[], 'DESC' | 'ASC'];
+            'hint'?: string;
             'array'?: boolean;
         } = {}
     ): Promise<false | null | (T & Record<string, any>) | Record<string, any>> {
@@ -674,6 +689,7 @@ export default class Mod {
                 'ctr': opt.ctr,
                 'pre': opt.pre,
                 'where': s,
+                'hint': opt.hint,
             }) as T;
             if (opt.by) {
                 o.by(opt.by[0], opt.by[1]);
@@ -689,6 +705,7 @@ export default class Mod {
                 'pre': opt.pre,
                 'where': s,
                 'index': item,
+                'hint': opt.hint,
             }) as T;
             if (opt.by) {
                 row.by(opt.by[0], opt.by[1]);
@@ -720,6 +737,7 @@ export default class Mod {
             'pre'?: string;
             'index'?: string | string[];
             'select'?: string | string[];
+            'hint'?: string;
         } = {}
     ): Promise<false | null | Record<string, any>> {
         (opt as kebab.Json).array = true;
@@ -1621,6 +1639,34 @@ export default class Mod {
      */
     public crossJoin(f: string, s: kebab.Json, index: string = '', pre: string = ''): this {
         this._sql.crossJoin(f, s, index ? '_' + index : '', pre);
+        return this;
+    }
+
+    /**
+     * --- 设置 MySQL 优化器 Hint ---
+     * --- 内容会以 Optimizer Hint 注释语法注入到 SELECT 关键字后 ---
+     * --- 必须在查询入口调用之后、执行方法之前链式调用 ---
+     * @param h Hint 内容
+     * @example
+     * // 强制走指定索引（最常用）
+     * .hint("INDEX(`supply_date_0_0` `idx_supply_date_query`)")
+     *
+     * // 指定某表不用某索引
+     * .hint("NO_INDEX(`supply_date_0_0` `idx_old`)")
+     *
+     * // 指定 JOIN 顺序和索引
+     * .hint("JOIN_ORDER(`a` `b`) INDEX(`a` `idx_a`) INDEX(`b` `idx_b`)")
+     *
+     * // 指定 JOIN 中某表使用的索引
+     * .hint("JOIN_INDEX(`supply_date_0_0` `idx_supply_date_query`)")
+     *
+     * // 多表多索引组合
+     * .hint("INDEX(`t1` `idx_a`) JOIN_INDEX(`t2` `idx_b`)")
+     *
+     * // 官方文档: https://dev.mysql.com/doc/refman/8.0/en/optimizer-hints.html
+     */
+    public hint(h: string): this {
+        this._sql.hint(h);
         return this;
     }
 

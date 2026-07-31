@@ -250,6 +250,7 @@ export default class extends sCtr.Ctr {
             `<br><a href="${this._config.const.urlBase}test/sql?type=having">View "test/sql?type=having"</a> <a href="${this._config.const.urlBase}test/sql?type=having&s=pgsql">pgsql</a>`,
             `<br><a href="${this._config.const.urlBase}test/sql?type=by">View "test/sql?type=by"</a> <a href="${this._config.const.urlBase}test/sql?type=by&s=pgsql">pgsql</a>`,
             `<br><a href="${this._config.const.urlBase}test/sql?type=field">View "test/sql?type=field"</a> <a href="${this._config.const.urlBase}test/sql?type=field&s=pgsql">pgsql</a>`,
+            `<br><a href="${this._config.const.urlBase}test/sql?type=hint">View "test/sql?type=hint"</a>`,
 
             '<br><br><b>Consistent:</b>',
             `<br><br><a href="${this._config.const.urlBase}test/consistent-hash">View "test/consistent-hash"</a>`,
@@ -3497,6 +3498,22 @@ Result:<pre id="result">Nothing.</pre>`);
                 echo.push(`<pre>sql.field('TEST(UTC_TIMESTAMP)');</pre>` + sql.field('TEST(UTC_TIMESTAMP)'));
                 echo.push(`<pre>sql.field('a + b + 10 + c');</pre>` + sql.field('a + b + 10 + c'));
                 echo.push(`<pre>sql.field('*');</pre>` + sql.field('*'));
+                break;
+            }
+            case 'hint': {
+                let s = sql.hint('INDEX(`supply_date_0_0` `idx_supply_date_query`)').select('*', 'supply_date_0_0').getSql();
+                let sd = sql.getData();
+                echo.push(`<pre>sql.hint('INDEX(\`supply_date_0_0\` \`idx_supply_date_query\`)').select('*', 'supply_date_0_0');</pre>
+<b>getSql() :</b> ${s}<br>
+<b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
+<b>format() :</b> ${sql.format(s, sd)}<hr>`);
+
+                s = sql.hint('INDEX(`supply_date_0_0` `idx_supply_date_query`) NO_INDEX(`supply_date_0_0` `idx_old`)').select('*', 'supply_date_0_0').getSql();
+                sd = sql.getData();
+                echo.push(`<pre>sql.hint('INDEX(\`supply_date_0_0\` \`idx_supply_date_query\`) NO_INDEX(\`supply_date_0_0\` \`idx_old\`)').select('*', 'supply_date_0_0');</pre>
+<b>getSql() :</b> ${s}<br>
+<b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
+<b>format() :</b> ${sql.format(s, sd)}`);
                 break;
             }
         }

@@ -65,6 +65,9 @@ export class Sql {
     /** --- 是否忽略错误 --- */
     private _ignore: boolean = false;
 
+    /** --- MySQL 优化器 Hint，如 INDEX(table idx) --- */
+    private _hint: string = '';
+
     // --- 实例化 ---
     public constructor(opt: {
         'service': ESERVICE;
@@ -87,6 +90,34 @@ export class Sql {
         if (opt.alias) {
             this._alias = opt.alias;
         }
+    }
+
+    /**
+     * --- 设置 MySQL 优化器 Hint ---
+     * --- 会以 Optimizer Hint 注释语法注入到 SELECT 关键字后 ---
+     * --- 传入 hint 内容即可，无需包裹注释符号 ---
+     * @param h Hint 内容
+     * @example
+     * // --- 强制走指定索引（最常用） ---
+     * INDEX(`supply_date_0_0` `idx_supply_date_query`)
+     *
+     * // --- 指定某表不用某索引 ---
+     * NO_INDEX(`supply_date_0_0` `idx_old`)
+     *
+     * // --- 指定 JOIN 顺序和索引 ---
+     * JOIN_ORDER(`a` `b`) INDEX(`a` `idx_a`) INDEX(`b` `idx_b`)
+     *
+     * // --- 指定 JOIN 中某表使用的索引 ---
+     * JOIN_INDEX(`supply_date_0_0` `idx_supply_date_query`)
+     *
+     * // --- 多表多索引组合 ---
+     * INDEX(`t1` `idx_a`) JOIN_INDEX(`t2` `idx_b`)
+     *
+     * // --- 官方文档: https://dev.mysql.com/doc/refman/8.0/en/optimizer-hints.html ---
+     */
+    public hint(h: string): this {
+        this._hint = h;
+        return this;
     }
 
     // --- 前导 ---
@@ -953,7 +984,7 @@ export class Sql {
             'data': data,
             'sql': sql,
             'alias': lCore.clone(this._alias),
-        });
+        }).hint(this._hint);
     }
 
     // --- 操作 ---
@@ -963,6 +994,10 @@ export class Sql {
      */
     public getSql(): string  {
         let sql = this._sql.join('');
+        // --- 注入优化器 Hint 到 SELECT 关键字后 ---
+        if (this._hint && !sql.includes('/*+')) {
+            sql = sql.replace(/^SELECT /i, `SELECT /*+ ${this._hint} */ `);
+        }
         if (this._pre) {
             return this._alias.reduce((result, item) => {
                 if (this._service === ESERVICE.MYSQL) {
