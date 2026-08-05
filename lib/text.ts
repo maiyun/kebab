@@ -3,6 +3,7 @@
  * Date: 2019-5-15 16:49:39
  * Last: 2020-04-06 20:51:06, 2022-9-29 15:18:16, 2022-12-29 00:01:30, 2024-3-6 17:53:14, 2024-5-31 17:29:52, 2025-6-13 15:47:02, 2025-9-23 12:51:49
  */
+import * as net from 'net';
 import * as kebab from '#kebab/index.js';
 import * as lFs from './fs.js';
 import * as lCore from './core.js';
@@ -232,24 +233,20 @@ export function isEMail(email: string): boolean {
     return REGEXP_EMAIL.test(email);
 }
 
-export const REGEXP_IPV4 = /^[0-9]{1,3}(\.[0-9]{1,3}){3}$/i;
-
 /**
- * --- 是否是 IPv4 ---
+ * --- 是否是 IPv4（基于 Node 原生 net.isIP，严格校验） ---
  * @param ip
  */
 export function isIPv4(ip: string): boolean {
-    return REGEXP_IPV4.test(ip);
+    return net.isIP(ip) === 4;
 }
 
-export const REGEXP_IPV6 = /^(\w*?:){2,7}[\w.]*$/i;
-
 /**
- * --- 是否是 IPv6 ---
+ * --- 是否是 IPv6（基于 Node 原生 net.isIP，严格校验） ---
  * @param ip
  */
 export function isIPv6(ip: string): boolean {
-    return REGEXP_IPV6.test(ip);
+    return net.isIP(ip) === 6;
 }
 
 export const REGEXP_DOMAIN = /^.+?\.((?![0-9]).)+$/i;

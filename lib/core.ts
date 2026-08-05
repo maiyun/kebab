@@ -434,6 +434,150 @@ export function realIP(ctr: sCtr.Ctr, name: string = ''): string {
 }
 
 /**
+ * --- 截取 IP 的限速段 ---
+ * --- IPv4 原样返回；IPv6 截取前 mask 位（默认 /64），防止同一人使用大量 IPv6 地址绕过限速 ---
+ * @param ip IP 地址
+ * @param mask IPv6 前缀长度，0-128 的整数，默认 64
+ * @returns 限速段，如 192.168.1.1、2001:db8:1234:5678::
+ */
+export function ipLimit(ip: string, mask: number = 64): string {
+    if (!ip) {
+        return '';
+    }
+    const value = ip.trim();
+    if (net.isIP(value) === 6) {
+        return ipv6Segment(value, mask);
+    }
+    // --- IPv4 或无法识别的字符串原样返回 ---
+    return value;
+}
+
+/**
+ * --- 获取安全 IP 的限速段（用于 ratelimit 库的 key） ---
+ * --- IPv4 原样返回；IPv6 截取前 mask 位（默认 /64） ---
+ * @param ctr Ctr 实例
+ * @param name 输入安全的 header
+ * @param mask IPv6 前缀长度，0-128 的整数，默认 64
+ * @returns 限速段，如 192.168.1.1、2001:db8:1234:5678::
+ */
+export function realIPLimit(ctr: sCtr.Ctr, name: string = '', mask: number = 64): string {
+    return ipLimit(realIP(ctr, name), mask);
+}
+
+/**
+ * --- 截取 IPv6 地址的前缀段 ---
+ * @param ip IPv6 地址
+ * @param mask 前缀长度，0-128
+ */
+function ipv6Segment(ip: string, mask: number): string {
+    if (mask >= 128) {
+        return ip;
+    }
+    if (mask <= 0) {
+        return '::';
+    }
+    // --- 展开为 8 组 16 进制字符串 ---
+    const groups = expandIPv6(ip);
+    if (!groups) {
+        return ip;
+    }
+    /** --- 完整保留的组数 --- */
+    const full = Math.floor(mask / 16);
+    /** --- 下一组需保留的位数 --- */
+    const bits = mask % 16;
+    const parts = groups.slice(0, full);
+    if (bits > 0) {
+        // --- 保留下一组的高 bits 位，其余位清零 ---
+        const next = parseInt(groups[full], 16);
+        parts.push((next & (0xFFFF << (16 - bits))).toString(16));
+    }
+    // --- 补零到 8 组后按标准压缩 ---
+    while (parts.length < 8) {
+        parts.push('0');
+    }
+    return compressIPv6(parts);
+}
+
+/**
+ * --- 将 8 组 IPv6 分组压缩为标准 RFC 5952 表示（最长连续零段压缩为 ::） ---
+ * @param groups 8 组 16 进制字符串
+ */
+function compressIPv6(groups: string[]): string {
+    /** --- 最长连续零组的起始位置与长度 --- */
+    let bestStart = -1;
+    let bestLen = 1;
+    let curStart = -1;
+    let curLen = 0;
+    for (let i = 0; i < groups.length; ++i) {
+        if (parseInt(groups[i], 16) === 0) {
+            if (curStart === -1) {
+                curStart = i;
+                curLen = 0;
+            }
+            ++curLen;
+            if (curLen > bestLen) {
+                bestLen = curLen;
+                bestStart = curStart;
+            }
+        }
+        else {
+            curStart = -1;
+            curLen = 0;
+        }
+    }
+    /** --- 统一为小写无前导零 --- */
+    const norm = (g: string): string => parseInt(g, 16).toString(16);
+    if (bestLen < 2) {
+        // --- 无连续零段，直接拼接 ---
+        return groups.map(norm).join(':');
+    }
+    const left = groups.slice(0, bestStart).map(norm);
+    const right = groups.slice(bestStart + bestLen).map(norm);
+    return (left.length ? left.join(':') : '') + '::' + (right.length ? right.join(':') : '');
+}
+
+/**
+ * --- 将 IPv6 地址展开为 8 组 16 进制字符串数组 ---
+ * @param ip IPv6 地址
+ * @returns 8 组字符串数组，解析失败返回 null
+ */
+function expandIPv6(ip: string): string[] | null {
+    // --- 处理内嵌 IPv4（如 ::ffff:1.2.3.4、1:2:3:4:5:6:1.2.3.4） ---
+    let value = ip;
+    const ipv4Match = /^(.*:)(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})$/.exec(value);
+    if (ipv4Match) {
+        const v4 = ipv4Match[2].split('.').map((n) => parseInt(n, 10).toString(16).padStart(2, '0'));
+        value = ipv4Match[1] + v4[0] + v4[1] + ':' + v4[2] + v4[3];
+    }
+    // --- 处理 :: 压缩 ---
+    const dc = value.indexOf('::');
+    let groups: string[];
+    if (dc !== -1) {
+        const left = value.slice(0, dc);
+        const right = value.slice(dc + 2);
+        const leftGroups = left ? left.split(':') : [];
+        const rightGroups = right ? right.split(':') : [];
+        const missing = 8 - leftGroups.length - rightGroups.length;
+        if (missing < 1) {
+            return null;
+        }
+        groups = leftGroups.concat(new Array<string>(missing).fill('0'), rightGroups);
+    }
+    else {
+        groups = value.split(':');
+    }
+    if (groups.length !== 8) {
+        return null;
+    }
+    for (const group of groups) {
+        if (!/^[\da-f]{1,4}$/i.test(group)) {
+            return null;
+        }
+    }
+    return groups;
+}
+
+/**
  * --- 间隔一段时间 ---
  * @param ms 间隔毫秒
  */

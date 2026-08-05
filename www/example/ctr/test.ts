@@ -181,6 +181,8 @@ export default class extends sCtr.Ctr {
             `<br><a href="${this._config.const.urlBase}test/core-checktype">View "test/core-checktype"</a>`,
             `<br><a href="${this._config.const.urlBase}test/core-checkschema">View "test/core-checkschema"</a>`,
             `<br><a href="${this._config.const.urlBase}test/core-muid">View "test/core-muid"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/core-iplimit">View "test/core-iplimit"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/core-realiplimit">View "test/core-realiplimit"</a>`,
             `<br><a href="${this._config.const.urlBase}test/core-getlog">View "test/core-getlog"</a>`,
             `<br><a href="${this._config.const.urlBase}test/core-ls">View "test/core-ls"</a>`,
             `<br><a href="${this._config.const.urlBase}test/core-reload">View "test/core-reload"</a>`,
@@ -1552,6 +1554,26 @@ for (let i = 0; i < 30000; ++i) {
         }
 
         return echo.join('') + this._getEnd();
+    }
+
+    public coreIplimit(): string {
+        const v6 = '2001:db8:85a3:8d3:1319:8a2e:370:7348';
+        return '<pre>lCore.ipLimit(\'192.168.1.100\');</pre>' + lCore.ipLimit('192.168.1.100') +
+            '<pre>lCore.ipLimit(\'2001:db8:85a3:8d3:1319:8a2e:370:7348\');</pre>' + lCore.ipLimit(v6) +
+            '<pre>lCore.ipLimit(\'2001:db8:85a3:8d3:1319:8a2e:370:7348\', 48);</pre>' + lCore.ipLimit(v6, 48) +
+            '<pre>lCore.ipLimit(\'2001:db8:85a3:8d3:1319:8a2e:370:7348\', 56);</pre>' + lCore.ipLimit(v6, 56) +
+            '<pre>lCore.ipLimit(\'2001:db8:85a3:8d3:1319:8a2e:370:7348\', 128);</pre>' + lCore.ipLimit(v6, 128) +
+            '<pre>lCore.ipLimit(\'::1\');</pre>' + lCore.ipLimit('::1') +
+            '<pre>lCore.ipLimit(\'\');</pre>' + JSON.stringify(lCore.ipLimit('')) +
+            '<br><br>' + this._getEnd();
+    }
+
+    public coreRealiplimit(): string {
+        return '<pre>lCore.realIP(this);</pre>' + lCore.realIP(this) +
+            '<pre>lCore.realIPLimit(this);</pre>' + lCore.realIPLimit(this) +
+            '<pre>lCore.realIPLimit(this, \'\', 48);</pre>' + lCore.realIPLimit(this, '', 48) +
+            '<pre>lCore.realIPLimit(this, \'\', 56);</pre>' + lCore.realIPLimit(this, '', 56) +
+            '<br><br>' + this._getEnd();
     }
 
     public async coreGetlog(): Promise<string> {

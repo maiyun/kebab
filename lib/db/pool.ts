@@ -105,11 +105,12 @@ async function checkConnection(): Promise<void> {
     }
     setTimeout(function() {
         checkConnection().catch(e => { lCore.display('[DB][checkConnection]', e); });
-    }, 10_000);
+    }, 10_000).unref();
 }
+// --- 模块级巡检定时器，unref 防止在一次性 CLI 进程中阻止退出（服务进程内有其他句柄保持存活，行为不变） ---
 setTimeout(function() {
     checkConnection().catch(e => { lCore.display('[DB][checkConnection]', e); });
-}, 10_000);
+}, 10_000).unref();
 
 /** --- 数据库连接池对象 --- */
 export class Pool {
