@@ -8,9 +8,9 @@
 
 > **isIPv4**(`ip`): `boolean`
 
-Defined in: [lib/text.ts:241](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L241)
+Defined in: [lib/text.ts:240](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L240)
 
-是否是 IPv4
+是否是 IPv4（基于 Node 原生 net.isIP，严格校验）
 
 ## Parameters
 

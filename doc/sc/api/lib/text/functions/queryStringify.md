@@ -10,7 +10,7 @@
 
 > **queryStringify**(`query`, `encode?`): `string`
 
-Defined in: [lib/text.ts:413](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L413)
+Defined in: [lib/text.ts:410](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L410)
 
 将对象转换为 query string
 
@@ -36,7 +36,7 @@ Defined in: [lib/text.ts:413](https://github.com/maiyunnet/kebab/blob/master/lib
 
 > **queryStringify**(`query`, `options`): `string`
 
-Defined in: [lib/text.ts:419](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L419)
+Defined in: [lib/text.ts:416](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L416)
 
 将对象转换为 query string
 

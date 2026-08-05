@@ -8,7 +8,7 @@
 
 > **parseUrl**(`url`): [`IUrlParse`](../../../index/interfaces/IUrlParse.md)
 
-Defined in: [lib/text.ts:55](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L55)
+Defined in: [lib/text.ts:56](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L56)
 
 格式化一段 URL
 

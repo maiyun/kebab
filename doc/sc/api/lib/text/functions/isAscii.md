@@ -8,7 +8,7 @@
 
 > **isAscii**(`text`): `boolean`
 
-Defined in: [lib/text.ts:273](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L273)
+Defined in: [lib/text.ts:270](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L270)
 
 判断是否在 ascii 字符集内，仅可输入部分
 

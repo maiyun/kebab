@@ -8,7 +8,7 @@
 
 > **nlReplace**(`str`, `to?`): `string`
 
-Defined in: [lib/text.ts:282](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L282)
+Defined in: [lib/text.ts:279](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L279)
 
 换行替换为别的
 

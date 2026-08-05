@@ -8,7 +8,7 @@
 
 > **urlResolve**(`from`, `to`, `limit?`): `string`
 
-Defined in: [lib/text.ts:146](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L146)
+Defined in: [lib/text.ts:147](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L147)
 
 将相对路径根据基准路径进行转换
 

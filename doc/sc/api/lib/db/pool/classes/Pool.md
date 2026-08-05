@@ -6,7 +6,7 @@
 
 # Class: Pool
 
-Defined in: [lib/db/pool.ts:115](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L115)
+Defined in: [lib/db/pool.ts:116](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L116)
 
 数据库连接池对象
 
@@ -16,7 +16,7 @@ Defined in: [lib/db/pool.ts:115](https://github.com/maiyunnet/kebab/blob/master/
 
 > **new Pool**(`etc`, `opt`): `Pool`
 
-Defined in: [lib/db/pool.ts:126](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L126)
+Defined in: [lib/db/pool.ts:127](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L127)
 
 #### Parameters
 
@@ -42,7 +42,7 @@ Defined in: [lib/db/pool.ts:126](https://github.com/maiyunnet/kebab/blob/master/
 
 > **beginTransaction**(`ctr`): `Promise`\<[`Transaction`](../../tran/classes/Transaction.md) \| `null`\>
 
-Defined in: [lib/db/pool.ts:194](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L194)
+Defined in: [lib/db/pool.ts:195](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L195)
 
 开启事务，返回事务对象并锁定连接，别人任何人不可用，有 ctr 的话必传 this，独立执行时可传 null
 
@@ -62,7 +62,7 @@ Defined in: [lib/db/pool.ts:194](https://github.com/maiyunnet/kebab/blob/master/
 
 > **execute**(`sql`, `values?`): `Promise`\<[`IPacket`](../../interfaces/IPacket.md)\>
 
-Defined in: [lib/db/pool.ts:174](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L174)
+Defined in: [lib/db/pool.ts:175](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L175)
 
 执行一条 SQL 并获得影响行数对象 packet，连接失败抛出错误
 
@@ -90,7 +90,7 @@ Defined in: [lib/db/pool.ts:174](https://github.com/maiyunnet/kebab/blob/master/
 
 > **getName**(): `string`
 
-Defined in: [lib/db/pool.ts:140](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L140)
+Defined in: [lib/db/pool.ts:141](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L141)
 
 获取当前连接的数据库名称
 
@@ -104,7 +104,7 @@ Defined in: [lib/db/pool.ts:140](https://github.com/maiyunnet/kebab/blob/master/
 
 > **getQueries**(): `number`
 
-Defined in: [lib/db/pool.ts:326](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L326)
+Defined in: [lib/db/pool.ts:327](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L327)
 
 获取 SQL 执行次数
 
@@ -118,7 +118,7 @@ Defined in: [lib/db/pool.ts:326](https://github.com/maiyunnet/kebab/blob/master/
 
 > **getService**(): [`ESERVICE`](../../enumerations/ESERVICE.md)
 
-Defined in: [lib/db/pool.ts:135](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L135)
+Defined in: [lib/db/pool.ts:136](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L136)
 
 获取当前连接的服务商
 
@@ -132,7 +132,7 @@ Defined in: [lib/db/pool.ts:135](https://github.com/maiyunnet/kebab/blob/master/
 
 > **query**(`sql`, `values?`): `Promise`\<[`IData`](../../interfaces/IData.md)\>
 
-Defined in: [lib/db/pool.ts:150](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L150)
+Defined in: [lib/db/pool.ts:151](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L151)
 
 执行一条 SQL，无视顺序和相同连接，随用随取
 

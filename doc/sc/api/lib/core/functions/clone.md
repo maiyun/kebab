@@ -8,7 +8,7 @@
 
 > **clone**\<`T`\>(`obj`): `T`
 
-Defined in: [lib/core.ts:1189](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1189)
+Defined in: [lib/core.ts:1333](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1333)
 
 完整的克隆一份数组/对象
 

@@ -8,7 +8,7 @@
 
 > **sendPackage**(`content`, `hosts?`): `Promise`\<`Record`\<`string`, \{ `result`: `boolean`; `return`: `string`; \}\>\>
 
-Defined in: [lib/core.ts:928](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L928)
+Defined in: [lib/core.ts:1072](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1072)
 
 向本机或局域网 RPC 发送 package.json 更新操作
 

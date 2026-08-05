@@ -1360,7 +1360,7 @@ index/variables/VER.md
 
 # Variable: VER
 
-> `const` **VER**: `"9.14.1"` = `'9.14.1'`
+> `const` **VER**: `"9.14.2"` = `'9.14.2'`
 
 Defined in: [index.ts:10](https://github.com/maiyunnet/kebab/blob/master/index.ts#L10)
 
@@ -3350,7 +3350,7 @@ lib/core/functions/clone.md
 
 > **clone**\<`T`\>(`obj`): `T`
 
-Defined in: [lib/core.ts:1189](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1189)
+Defined in: [lib/core.ts:1333](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1333)
 
 完整的克隆一份数组/对象
 
@@ -3414,7 +3414,7 @@ lib/core/functions/debug.md
 
 > **debug**(`message?`, ...`optionalParams`): `void`
 
-Defined in: [lib/core.ts:1223](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1223)
+Defined in: [lib/core.ts:1367](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1367)
 
 打印调试信息，线上环境不会打印
 
@@ -3449,7 +3449,7 @@ lib/core/functions/display.md
 
 > **display**(`message?`, ...`optionalParams`): `void`
 
-Defined in: [lib/core.ts:1236](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1236)
+Defined in: [lib/core.ts:1380](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1380)
 
 向控制台直接显示内容，一般情况下禁止使用
 
@@ -3484,7 +3484,7 @@ lib/core/functions/emptyObject.md
 
 > **emptyObject**(`obj`, `deep?`): `void`
 
-Defined in: [lib/core.ts:471](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L471)
+Defined in: [lib/core.ts:615](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L615)
 
 将对象的所有属性清除包括键，不会破坏引用关系，对象变量依然保证是引用状态
 
@@ -3519,7 +3519,7 @@ lib/core/functions/exec.md
 
 > **exec**(`command`, `options?`): `Promise`\<`string` \| `false`\>
 
-Defined in: [lib/core.ts:533](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L533)
+Defined in: [lib/core.ts:677](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L677)
 
 执行命令行
 
@@ -3554,7 +3554,7 @@ lib/core/functions/getLog.md
 
 > **getLog**(`opt`): `Promise`\<`false` \| \{ `list`: `any`[] \| `string`[][]; `total`: `number`; \}\>
 
-Defined in: [lib/core.ts:1101](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1101)
+Defined in: [lib/core.ts:1245](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1245)
 
 获取日志内容为一个数组
 
@@ -3609,6 +3609,44 @@ Defined in: [lib/core.ts:1101](https://github.com/maiyunnet/kebab/blob/master/li
 ## Returns
 
 `Promise`\<`false` \| \{ `list`: `any`[] \| `string`[][]; `total`: `number`; \}\>
+
+lib/core/functions/ipLimit.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../index.md) / [lib/core](../index.md) / ipLimit
+
+# Function: ipLimit()
+
+> **ipLimit**(`ip`, `mask?`): `string`
+
+Defined in: [lib/core.ts:443](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L443)
+
+截取 IP 的限速段
+IPv4 原样返回；IPv6 截取前 mask 位（默认 /64），防止同一人使用大量 IPv6 地址绕过限速
+
+## Parameters
+
+### ip
+
+`string`
+
+IP 地址
+
+### mask?
+
+`number` = `64`
+
+IPv6 前缀长度，0-128 的整数，默认 64
+
+## Returns
+
+`string`
+
+限速段，如 192.168.1.1、2001:db8:1234:5678::
 
 lib/core/functions/ip.md
 ---
@@ -3689,7 +3727,7 @@ lib/core/functions/loadEnv.md
 
 > **loadEnv**(`dir`): `Promise`\<`void`\>
 
-Defined in: [lib/core.ts:1288](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1288)
+Defined in: [lib/core.ts:1432](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1432)
 
 加载 .env 文件到 process.env，若文件不存在则跳过
 
@@ -3718,7 +3756,7 @@ lib/core/functions/log.md
 
 > **log**(`opt`, `msg`, `fend?`): `void`
 
-Defined in: [lib/core.ts:988](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L988)
+Defined in: [lib/core.ts:1132](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1132)
 
 写入文件日志
 
@@ -3759,7 +3797,7 @@ lib/core/functions/ls.md
 
 > **ls**(`opt`): `Promise`\<`object`[]\>
 
-Defined in: [lib/core.ts:1150](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1150)
+Defined in: [lib/core.ts:1294](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1294)
 
 获取目录内文件/文件夹列表
 
@@ -3865,7 +3903,7 @@ lib/core/functions/objectSort.md
 
 > **objectSort**\<`T`\>(`o`): `T`
 
-Defined in: [lib/core.ts:452](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L452)
+Defined in: [lib/core.ts:596](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L596)
 
 将对象进行升序排列
 
@@ -3900,7 +3938,7 @@ lib/core/functions/passThroughAppend.md
 
 > **passThroughAppend**(`passThrough`, `data`, `end?`): `Promise`\<`void`\>
 
-Defined in: [lib/core.ts:490](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L490)
+Defined in: [lib/core.ts:634](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L634)
 
 调用前自行创建 passThrough，并且调用 pipe 绑定到应该绑定的对象，然后再调用本函数
 
@@ -4039,6 +4077,50 @@ Defined in: [lib/core.ts:129](https://github.com/maiyunnet/kebab/blob/master/lib
 
 `string`
 
+lib/core/functions/realIPLimit.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../index.md) / [lib/core](../index.md) / realIPLimit
+
+# Function: realIPLimit()
+
+> **realIPLimit**(`ctr`, `name?`, `mask?`): `string`
+
+Defined in: [lib/core.ts:463](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L463)
+
+获取安全 IP 的限速段（用于 ratelimit 库的 key）
+IPv4 原样返回；IPv6 截取前 mask 位（默认 /64）
+
+## Parameters
+
+### ctr
+
+[`Ctr`](../../../sys/ctr/classes/Ctr.md)
+
+Ctr 实例
+
+### name?
+
+`string` = `''`
+
+输入安全的 header
+
+### mask?
+
+`number` = `64`
+
+IPv6 前缀长度，0-128 的整数，默认 64
+
+## Returns
+
+`string`
+
+限速段，如 192.168.1.1、2001:db8:1234:5678::
+
 lib/core/functions/realIP.md
 ---
 
@@ -4085,7 +4167,7 @@ lib/core/functions/removeGlobal.md
 
 > **removeGlobal**(`key`, `hosts?`): `Promise`\<`Record`\<`string`, \{ `result`: `boolean`; `return`: `string`; \}\>\>
 
-Defined in: [lib/core.ts:805](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L805)
+Defined in: [lib/core.ts:949](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L949)
 
 移除某个跨线程/跨内网服务器全局变量
 
@@ -4120,7 +4202,7 @@ lib/core/functions/resolveEnvVars.md
 
 > **resolveEnvVars**(`obj`): `void`
 
-Defined in: [lib/core.ts:1318](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1318)
+Defined in: [lib/core.ts:1462](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1462)
 
 将配置对象中的 ${ENV_VAR} 占位符替换为 process.env 的值
 
@@ -4149,7 +4231,7 @@ lib/core/functions/sendNpm.md
 
 > **sendNpm**(`path`, `hosts?`): `Promise`\<`Record`\<`string`, \{ `result`: `boolean`; `return`: `string`; \}\>\>
 
-Defined in: [lib/core.ts:704](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L704)
+Defined in: [lib/core.ts:848](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L848)
 
 向本机或局域网 RPC 发送 npm install 操作
 
@@ -4184,7 +4266,7 @@ lib/core/functions/sendPackage.md
 
 > **sendPackage**(`content`, `hosts?`): `Promise`\<`Record`\<`string`, \{ `result`: `boolean`; `return`: `string`; \}\>\>
 
-Defined in: [lib/core.ts:928](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L928)
+Defined in: [lib/core.ts:1072](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1072)
 
 向本机或局域网 RPC 发送 package.json 更新操作
 
@@ -4219,7 +4301,7 @@ lib/core/functions/sendPm2.md
 
 > **sendPm2**(`name`, `action?`, `hosts?`): `Promise`\<`Record`\<`string`, \{ `result`: `boolean`; `return`: `string`; \}\>\>
 
-Defined in: [lib/core.ts:656](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L656)
+Defined in: [lib/core.ts:800](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L800)
 
 向本机或局域网 RPC 发送 PM2 操作
 
@@ -4260,7 +4342,7 @@ lib/core/functions/sendProject.md
 
 > **sendProject**(`path`, `key`, `value`, `hosts?`): `Promise`\<`Record`\<`string`, \{ `result`: `boolean`; `return`: `string`; \}\>\>
 
-Defined in: [lib/core.ts:880](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L880)
+Defined in: [lib/core.ts:1024](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1024)
 
 向本机或局域网 RPC 发送项目配置更新操作
 
@@ -4307,7 +4389,7 @@ lib/core/functions/sendReload.md
 
 > **sendReload**(`hosts?`): `Promise`\<`Record`\<`string`, \{ `result`: `boolean`; `return`: `string`; \}\>\>
 
-Defined in: [lib/core.ts:553](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L553)
+Defined in: [lib/core.ts:697](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L697)
 
 向主进程（或局域网同代码机子）发送广播将进行 reload 操作，等待回传
 主要作用除代码热更新以外的其他情况
@@ -4335,7 +4417,7 @@ lib/core/functions/sendRestart.md
 
 > **sendRestart**(`hosts?`): `Promise`\<`Record`\<`string`, \{ `result`: `boolean`; `return`: `string`; \}\>\>
 
-Defined in: [lib/core.ts:602](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L602)
+Defined in: [lib/core.ts:746](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L746)
 
 向主进程（或局域网同代码机子）发送广播将进行 restart 操作，停止监听并启动新进程，老进程在连接全部断开后自行销毁
 主要用作不间断的代码热更新
@@ -4410,7 +4492,7 @@ lib/core/functions/setGlobal.md
 
 > **setGlobal**(`key`, `data`, `hosts?`): `Promise`\<`Record`\<`string`, \{ `result`: `boolean`; `return`: `string`; \}\>\>
 
-Defined in: [lib/core.ts:755](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L755)
+Defined in: [lib/core.ts:899](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L899)
 
 设置跨线程/指定的局域网主机的全局变量
 
@@ -4451,7 +4533,7 @@ lib/core/functions/sleep.md
 
 > **sleep**(`ms`): `Promise`\<`void`\>
 
-Defined in: [lib/core.ts:440](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L440)
+Defined in: [lib/core.ts:584](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L584)
 
 间隔一段时间
 
@@ -4509,7 +4591,7 @@ lib/core/functions/updateCode.md
 
 > **updateCode**(`sourcePath`, `path`, `hosts?`, `config?`, `strict?`): `Promise`\<`Record`\<`string`, \{ `result`: `boolean`; `return`: `string`; \}\>\>
 
-Defined in: [lib/core.ts:820](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L820)
+Defined in: [lib/core.ts:964](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L964)
 
 上传并覆盖代码文件，config.json、kebab.json、.js.map、.ts, .gitignore 不会被覆盖和新创建
 
@@ -4562,7 +4644,7 @@ lib/core/functions/writeEventStreamHead.md
 
 > **writeEventStreamHead**(`res`): `void`
 
-Defined in: [lib/core.ts:1258](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1258)
+Defined in: [lib/core.ts:1402](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1402)
 
 ## Parameters
 
@@ -4587,7 +4669,7 @@ lib/core/functions/writeHead.md
 
 > **writeHead**(`res`, `statusCode`, `headers?`): `void`
 
-Defined in: [lib/core.ts:1247](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1247)
+Defined in: [lib/core.ts:1391](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1391)
 
 让 res 发送头部（前提是头部没有被发送才能调用本方法
 
@@ -4628,7 +4710,7 @@ lib/core/functions/write.md
 
 > **write**(`res`, `data`): `void`
 
-Defined in: [lib/core.ts:1270](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1270)
+Defined in: [lib/core.ts:1414](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1414)
 
 向 res 发送数据
 
@@ -4698,6 +4780,7 @@ lib/core/index.md
 - [exec](functions/exec.md)
 - [getLog](functions/getLog.md)
 - [ip](functions/ip.md)
+- [ipLimit](functions/ipLimit.md)
 - [ips](functions/ips.md)
 - [loadEnv](functions/loadEnv.md)
 - [log](functions/log.md)
@@ -4709,6 +4792,7 @@ lib/core/index.md
 - [rand](functions/rand.md)
 - [random](functions/random.md)
 - [realIP](functions/realIP.md)
+- [realIPLimit](functions/realIPLimit.md)
 - [removeGlobal](functions/removeGlobal.md)
 - [resolveEnvVars](functions/resolveEnvVars.md)
 - [sendNpm](functions/sendNpm.md)
@@ -4800,7 +4884,7 @@ lib/core/interfaces/ILogOptions.md
 
 # Interface: ILogOptions
 
-Defined in: [lib/core.ts:971](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L971)
+Defined in: [lib/core.ts:1115](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1115)
 
 log 设置的选项
 
@@ -4810,7 +4894,7 @@ log 设置的选项
 
 > `optional` **cookie?**: `Record`\<`string`, `string`\>
 
-Defined in: [lib/core.ts:977](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L977)
+Defined in: [lib/core.ts:1121](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1121)
 
 ***
 
@@ -4818,7 +4902,7 @@ Defined in: [lib/core.ts:977](https://github.com/maiyunnet/kebab/blob/master/lib
 
 > `optional` **get?**: `Record`\<`string`, `any`\>
 
-Defined in: [lib/core.ts:976](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L976)
+Defined in: [lib/core.ts:1120](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1120)
 
 ***
 
@@ -4826,7 +4910,7 @@ Defined in: [lib/core.ts:976](https://github.com/maiyunnet/kebab/blob/master/lib
 
 > `optional` **headers?**: `IncomingHttpHeaders`
 
-Defined in: [lib/core.ts:979](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L979)
+Defined in: [lib/core.ts:1123](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1123)
 
 ***
 
@@ -4834,7 +4918,7 @@ Defined in: [lib/core.ts:979](https://github.com/maiyunnet/kebab/blob/master/lib
 
 > `optional` **hostname?**: `string`
 
-Defined in: [lib/core.ts:974](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L974)
+Defined in: [lib/core.ts:1118](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1118)
 
 ***
 
@@ -4842,7 +4926,7 @@ Defined in: [lib/core.ts:974](https://github.com/maiyunnet/kebab/blob/master/lib
 
 > `optional` **path?**: `string`
 
-Defined in: [lib/core.ts:972](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L972)
+Defined in: [lib/core.ts:1116](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1116)
 
 ***
 
@@ -4850,7 +4934,7 @@ Defined in: [lib/core.ts:972](https://github.com/maiyunnet/kebab/blob/master/lib
 
 > `optional` **req?**: `IncomingMessage` \| `Http2ServerRequest` \| `null`
 
-Defined in: [lib/core.ts:975](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L975)
+Defined in: [lib/core.ts:1119](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1119)
 
 ***
 
@@ -4858,7 +4942,7 @@ Defined in: [lib/core.ts:975](https://github.com/maiyunnet/kebab/blob/master/lib
 
 > `optional` **session?**: `Record`\<`string`, `any`\>
 
-Defined in: [lib/core.ts:978](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L978)
+Defined in: [lib/core.ts:1122](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1122)
 
 ***
 
@@ -4866,7 +4950,7 @@ Defined in: [lib/core.ts:978](https://github.com/maiyunnet/kebab/blob/master/lib
 
 > `optional` **urlFull?**: `string`
 
-Defined in: [lib/core.ts:973](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L973)
+Defined in: [lib/core.ts:1117](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1117)
 
 lib/core/type-aliases/TPm2Action.md
 ---
@@ -4881,7 +4965,7 @@ lib/core/type-aliases/TPm2Action.md
 
 > **TPm2Action** = `"start"` \| `"stop"` \| `"restart"`
 
-Defined in: [lib/core.ts:648](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L648)
+Defined in: [lib/core.ts:792](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L792)
 
 PM2 操作类型
 
@@ -4955,7 +5039,7 @@ lib/core/variables/global.md
 
 > `const` **global**: `Record`\<`string`, `any`\> = `{}`
 
-Defined in: [lib/core.ts:747](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L747)
+Defined in: [lib/core.ts:891](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L891)
 
 跨进程全局变量
 
@@ -7439,7 +7523,7 @@ lib/db/pool/classes/Pool.md
 
 # Class: Pool
 
-Defined in: [lib/db/pool.ts:115](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L115)
+Defined in: [lib/db/pool.ts:116](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L116)
 
 数据库连接池对象
 
@@ -7449,7 +7533,7 @@ Defined in: [lib/db/pool.ts:115](https://github.com/maiyunnet/kebab/blob/master/
 
 > **new Pool**(`etc`, `opt`): `Pool`
 
-Defined in: [lib/db/pool.ts:126](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L126)
+Defined in: [lib/db/pool.ts:127](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L127)
 
 #### Parameters
 
@@ -7475,7 +7559,7 @@ Defined in: [lib/db/pool.ts:126](https://github.com/maiyunnet/kebab/blob/master/
 
 > **beginTransaction**(`ctr`): `Promise`\<[`Transaction`](../../tran/classes/Transaction.md) \| `null`\>
 
-Defined in: [lib/db/pool.ts:194](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L194)
+Defined in: [lib/db/pool.ts:195](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L195)
 
 开启事务，返回事务对象并锁定连接，别人任何人不可用，有 ctr 的话必传 this，独立执行时可传 null
 
@@ -7495,7 +7579,7 @@ Defined in: [lib/db/pool.ts:194](https://github.com/maiyunnet/kebab/blob/master/
 
 > **execute**(`sql`, `values?`): `Promise`\<[`IPacket`](../../interfaces/IPacket.md)\>
 
-Defined in: [lib/db/pool.ts:174](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L174)
+Defined in: [lib/db/pool.ts:175](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L175)
 
 执行一条 SQL 并获得影响行数对象 packet，连接失败抛出错误
 
@@ -7523,7 +7607,7 @@ Defined in: [lib/db/pool.ts:174](https://github.com/maiyunnet/kebab/blob/master/
 
 > **getName**(): `string`
 
-Defined in: [lib/db/pool.ts:140](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L140)
+Defined in: [lib/db/pool.ts:141](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L141)
 
 获取当前连接的数据库名称
 
@@ -7537,7 +7621,7 @@ Defined in: [lib/db/pool.ts:140](https://github.com/maiyunnet/kebab/blob/master/
 
 > **getQueries**(): `number`
 
-Defined in: [lib/db/pool.ts:326](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L326)
+Defined in: [lib/db/pool.ts:327](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L327)
 
 获取 SQL 执行次数
 
@@ -7551,7 +7635,7 @@ Defined in: [lib/db/pool.ts:326](https://github.com/maiyunnet/kebab/blob/master/
 
 > **getService**(): [`ESERVICE`](../../enumerations/ESERVICE.md)
 
-Defined in: [lib/db/pool.ts:135](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L135)
+Defined in: [lib/db/pool.ts:136](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L136)
 
 获取当前连接的服务商
 
@@ -7565,7 +7649,7 @@ Defined in: [lib/db/pool.ts:135](https://github.com/maiyunnet/kebab/blob/master/
 
 > **query**(`sql`, `values?`): `Promise`\<[`IData`](../../interfaces/IData.md)\>
 
-Defined in: [lib/db/pool.ts:150](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L150)
+Defined in: [lib/db/pool.ts:151](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L151)
 
 执行一条 SQL，无视顺序和相同连接，随用随取
 
@@ -16293,7 +16377,7 @@ lib/text/functions/csvescape.md
 
 > **csvescape**(`str`): `string`
 
-Defined in: [lib/text.ts:514](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L514)
+Defined in: [lib/text.ts:511](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L511)
 
 CSV 特殊字符转换为实体字符
 
@@ -16320,7 +16404,7 @@ lib/text/functions/getFileExt.md
 
 > **getFileExt**(`path`): `string`
 
-Defined in: [lib/text.ts:555](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L555)
+Defined in: [lib/text.ts:552](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L552)
 
 获取文件后缀
 
@@ -16349,7 +16433,7 @@ lib/text/functions/getFileNameExt.md
 
 > **getFileNameExt**(`path`): `object`
 
-Defined in: [lib/text.ts:568](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L568)
+Defined in: [lib/text.ts:565](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L565)
 
 获取文件名和后缀
 
@@ -16386,7 +16470,7 @@ lib/text/functions/getFilename.md
 
 > **getFilename**(`path`, `ext?`): `string`
 
-Defined in: [lib/text.ts:535](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L535)
+Defined in: [lib/text.ts:532](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L532)
 
 获取文件名
 
@@ -16421,7 +16505,7 @@ lib/text/functions/htmlescape.md
 
 > **htmlescape**(`html`): `string`
 
-Defined in: [lib/text.ts:505](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L505)
+Defined in: [lib/text.ts:502](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L502)
 
 HTML 特殊字符转换为实体字符
 
@@ -16450,7 +16534,7 @@ lib/text/functions/int2str.md
 
 > **int2str**(`int`, `digits?`, `decimal?`): `string`
 
-Defined in: [lib/text.ts:768](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L768)
+Defined in: [lib/text.ts:765](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L765)
 
 为解决精度问题，将整数转换为小数字符串
 以下几个示例都是当 digits 为 3、decimal 为 2 时
@@ -16496,7 +16580,7 @@ lib/text/functions/isAscii.md
 
 > **isAscii**(`text`): `boolean`
 
-Defined in: [lib/text.ts:273](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L273)
+Defined in: [lib/text.ts:270](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L270)
 
 判断是否在 ascii 字符集内，仅可输入部分
 
@@ -16525,7 +16609,7 @@ lib/text/functions/isDomain.md
 
 > **isDomain**(`domain`): `boolean`
 
-Defined in: [lib/text.ts:262](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L262)
+Defined in: [lib/text.ts:259](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L259)
 
 判断是否是域名
 
@@ -16556,7 +16640,7 @@ lib/text/functions/isEMail.md
 
 > **isEMail**(`email`): `boolean`
 
-Defined in: [lib/text.ts:231](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L231)
+Defined in: [lib/text.ts:232](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L232)
 
 是否是邮件地址
 
@@ -16583,7 +16667,7 @@ lib/text/functions/isFalsy.md
 
 > **isFalsy**(`val`): `val is TFalsy`
 
-Defined in: [lib/text.ts:719](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L719)
+Defined in: [lib/text.ts:716](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L716)
 
 判断一个值是否是虚假的（为 null/undefined/空字符串/false/0）
 
@@ -16612,7 +16696,7 @@ lib/text/functions/isIdCardCN.md
 
 > **isIdCardCN**(`idcard`): `boolean`
 
-Defined in: [lib/text.ts:385](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L385)
+Defined in: [lib/text.ts:382](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L382)
 
 是否是中国大陆身份证号码
 
@@ -16641,9 +16725,9 @@ lib/text/functions/isIPv4.md
 
 > **isIPv4**(`ip`): `boolean`
 
-Defined in: [lib/text.ts:241](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L241)
+Defined in: [lib/text.ts:240](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L240)
 
-是否是 IPv4
+是否是 IPv4（基于 Node 原生 net.isIP，严格校验）
 
 ## Parameters
 
@@ -16668,9 +16752,9 @@ lib/text/functions/isIPv6.md
 
 > **isIPv6**(`ip`): `boolean`
 
-Defined in: [lib/text.ts:251](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L251)
+Defined in: [lib/text.ts:248](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L248)
 
-是否是 IPv6
+是否是 IPv6（基于 Node 原生 net.isIP，严格校验）
 
 ## Parameters
 
@@ -16695,7 +16779,7 @@ lib/text/functions/isPhoneCN.md
 
 > **isPhoneCN**(`p`): `boolean`
 
-Defined in: [lib/text.ts:377](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L377)
+Defined in: [lib/text.ts:374](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L374)
 
 判断手机号是否是 11 位，不做真实性校验
 
@@ -16724,7 +16808,7 @@ lib/text/functions/isRealPath.md
 
 > **isRealPath**(`path`): `boolean`
 
-Defined in: [lib/text.ts:522](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L522)
+Defined in: [lib/text.ts:519](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L519)
 
 判断是否是绝对路径，是返回 true，相对路径返回 false
 
@@ -16753,7 +16837,7 @@ lib/text/functions/isTruthy.md
 
 > **isTruthy**\<`T`\>(`val`): `val is Exclude<T, TFalsy>`
 
-Defined in: [lib/text.ts:727](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L727)
+Defined in: [lib/text.ts:724](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L724)
 
 判断一个值是否是真实的（不为 null/undefined/空字符串/false/0）
 
@@ -16788,7 +16872,7 @@ lib/text/functions/logicalOr.md
 
 > **logicalOr**\<`T`, `T2`\>(`v1`, `v2`): `T` *extends* [`TFalsy`](../type-aliases/TFalsy.md) ? `T2` : `T`
 
-Defined in: [lib/text.ts:736](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L736)
+Defined in: [lib/text.ts:733](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L733)
 
 类似 || 运算符的效果
 
@@ -16833,7 +16917,7 @@ lib/text/functions/match.md
 
 > **match**(`str`, `regs`): `boolean`
 
-Defined in: [lib/text.ts:362](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L362)
+Defined in: [lib/text.ts:359](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L359)
 
 传入正则进行匹配 str 是否有一项满足
 
@@ -16868,7 +16952,7 @@ lib/text/functions/nlReplace.md
 
 > **nlReplace**(`str`, `to?`): `string`
 
-Defined in: [lib/text.ts:282](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L282)
+Defined in: [lib/text.ts:279](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L279)
 
 换行替换为别的
 
@@ -16903,7 +16987,7 @@ lib/text/functions/parseDomain.md
 
 > **parseDomain**(`domain`): `Promise`\<[`IDomain`](../interfaces/IDomain.md)\>
 
-Defined in: [lib/text.ts:305](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L305)
+Defined in: [lib/text.ts:302](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L302)
 
 解析域名并获取 tld/sld/domain/sub
 
@@ -16932,7 +17016,7 @@ lib/text/functions/parseHost.md
 
 > **parseHost**(`host`): `object`
 
-Defined in: [lib/text.ts:29](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L29)
+Defined in: [lib/text.ts:30](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L30)
 
 解析主机名和端口号
 
@@ -16973,7 +17057,7 @@ lib/text/functions/parseJson.md
 
 > **parseJson**\<`T`\>(`str`): `false` \| `T`
 
-Defined in: [lib/text.ts:630](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L630)
+Defined in: [lib/text.ts:627](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L627)
 
 将字符串解析为对象，返回 false 代表解析失败，支持 BigInt
 
@@ -17008,7 +17092,7 @@ lib/text/functions/parseUrl.md
 
 > **parseUrl**(`url`): [`IUrlParse`](../../../index/interfaces/IUrlParse.md)
 
-Defined in: [lib/text.ts:55](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L55)
+Defined in: [lib/text.ts:56](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L56)
 
 格式化一段 URL
 
@@ -17035,7 +17119,7 @@ lib/text/functions/queryParse.md
 
 > **queryParse**(`query`): `Record`\<`string`, `string` \| `string`[]\>
 
-Defined in: [lib/text.ts:462](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L462)
+Defined in: [lib/text.ts:459](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L459)
 
 将 query string 转换为对象
 
@@ -17066,7 +17150,7 @@ lib/text/functions/queryStringify.md
 
 > **queryStringify**(`query`, `encode?`): `string`
 
-Defined in: [lib/text.ts:413](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L413)
+Defined in: [lib/text.ts:410](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L410)
 
 将对象转换为 query string
 
@@ -17092,7 +17176,7 @@ Defined in: [lib/text.ts:413](https://github.com/maiyunnet/kebab/blob/master/lib
 
 > **queryStringify**(`query`, `options`): `string`
 
-Defined in: [lib/text.ts:419](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L419)
+Defined in: [lib/text.ts:416](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L416)
 
 将对象转换为 query string
 
@@ -17137,7 +17221,7 @@ lib/text/functions/sizeFormat.md
 
 > **sizeFormat**(`size`, `spliter?`): `string`
 
-Defined in: [lib/text.ts:15](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L15)
+Defined in: [lib/text.ts:16](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L16)
 
 将文件大小格式化为带单位的字符串
 
@@ -17172,7 +17256,7 @@ lib/text/functions/str2int.md
 
 > **str2int**(`str`, `digits?`): `number`
 
-Defined in: [lib/text.ts:750](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L750)
+Defined in: [lib/text.ts:747](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L747)
 
 为解决精度问题，将字符串数字转换为整数显示
 以下几个示例都是当 digits 为 2 时
@@ -17212,7 +17296,7 @@ lib/text/functions/stringifyBuffer.md
 
 > **stringifyBuffer**(`buf`): `string`
 
-Defined in: [lib/text.ts:673](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L673)
+Defined in: [lib/text.ts:670](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L670)
 
 输出文本格式的 buffer
 
@@ -17241,7 +17325,7 @@ lib/text/functions/stringifyJson.md
 
 > **stringifyJson**(`obj`, `space?`): `string`
 
-Defined in: [lib/text.ts:660](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L660)
+Defined in: [lib/text.ts:657](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L657)
 
 将对象转换为 json 字符串，返回 false 代表解析失败，支持 BigInt
 
@@ -17276,7 +17360,7 @@ lib/text/functions/stringifyResult.md
 
 > **stringifyResult**(`rtn`): `string`
 
-Defined in: [lib/text.ts:590](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L590)
+Defined in: [lib/text.ts:587](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L587)
 
 将普通的返回 JSON 对象序列化为字符串
 
@@ -17305,7 +17389,7 @@ lib/text/functions/trimJson.md
 
 > **trimJson**(`json`): `any`
 
-Defined in: [lib/text.ts:681](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L681)
+Defined in: [lib/text.ts:678](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L678)
 
 递归删除 json 中的字符串首尾空格，会返回一个新的对象
 
@@ -17332,7 +17416,7 @@ lib/text/functions/urlAtom.md
 
 > **urlAtom**(`url`): `string`
 
-Defined in: [lib/text.ts:212](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L212)
+Defined in: [lib/text.ts:213](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L213)
 
 将路径中的 ../ ./ 都按规范妥善处理
 
@@ -17361,7 +17445,7 @@ lib/text/functions/urlResolve.md
 
 > **urlResolve**(`from`, `to`, `limit?`): `string`
 
-Defined in: [lib/text.ts:146](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L146)
+Defined in: [lib/text.ts:147](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L147)
 
 将相对路径根据基准路径进行转换
 
@@ -17413,8 +17497,6 @@ lib/text/index.md
 - [REGEXP\_ASCII](variables/REGEXP_ASCII.md)
 - [REGEXP\_DOMAIN](variables/REGEXP_DOMAIN.md)
 - [REGEXP\_EMAIL](variables/REGEXP_EMAIL.md)
-- [REGEXP\_IPV4](variables/REGEXP_IPV4.md)
-- [REGEXP\_IPV6](variables/REGEXP_IPV6.md)
 
 ## Functions
 
@@ -17463,7 +17545,7 @@ lib/text/interfaces/IDomain.md
 
 # Interface: IDomain
 
-Defined in: [lib/text.ts:294](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L294)
+Defined in: [lib/text.ts:291](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L291)
 
 解析后的 domain
 
@@ -17473,7 +17555,7 @@ Defined in: [lib/text.ts:294](https://github.com/maiyunnet/kebab/blob/master/lib
 
 > **domain**: `string` \| `null`
 
-Defined in: [lib/text.ts:297](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L297)
+Defined in: [lib/text.ts:294](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L294)
 
 ***
 
@@ -17481,7 +17563,7 @@ Defined in: [lib/text.ts:297](https://github.com/maiyunnet/kebab/blob/master/lib
 
 > **sld**: `string` \| `null`
 
-Defined in: [lib/text.ts:296](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L296)
+Defined in: [lib/text.ts:293](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L293)
 
 ***
 
@@ -17489,7 +17571,7 @@ Defined in: [lib/text.ts:296](https://github.com/maiyunnet/kebab/blob/master/lib
 
 > **sub**: `string` \| `null`
 
-Defined in: [lib/text.ts:298](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L298)
+Defined in: [lib/text.ts:295](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L295)
 
 ***
 
@@ -17497,7 +17579,7 @@ Defined in: [lib/text.ts:298](https://github.com/maiyunnet/kebab/blob/master/lib
 
 > **tld**: `string` \| `null`
 
-Defined in: [lib/text.ts:295](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L295)
+Defined in: [lib/text.ts:292](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L292)
 
 lib/text/type-aliases/TFalsy.md
 ---
@@ -17512,7 +17594,7 @@ lib/text/type-aliases/TFalsy.md
 
 > **TFalsy** = `false` \| `""` \| `0` \| `null` \| `undefined` \| *typeof* `NaN`
 
-Defined in: [lib/text.ts:713](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L713)
+Defined in: [lib/text.ts:710](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L710)
 
 虚假值类型
 
@@ -17529,7 +17611,7 @@ lib/text/variables/REGEXP_ASCII.md
 
 > `const` **REGEXP\_ASCII**: `RegExp`
 
-Defined in: [lib/text.ts:267](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L267)
+Defined in: [lib/text.ts:264](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L264)
 
 可打印的 ascii 字符集
 
@@ -17546,7 +17628,7 @@ lib/text/variables/REGEXP_DOMAIN.md
 
 > `const` **REGEXP\_DOMAIN**: `RegExp`
 
-Defined in: [lib/text.ts:255](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L255)
+Defined in: [lib/text.ts:252](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L252)
 
 lib/text/variables/REGEXP_EMAIL.md
 ---
@@ -17561,37 +17643,7 @@ lib/text/variables/REGEXP_EMAIL.md
 
 > `const` **REGEXP\_EMAIL**: `RegExp`
 
-Defined in: [lib/text.ts:225](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L225)
-
-lib/text/variables/REGEXP_IPV4.md
----
-
-[**Documents for @maiyunnet/kebab**](../../../index.md)
-
-***
-
-[Documents for @maiyunnet/kebab](../../../index.md) / [lib/text](../index.md) / REGEXP\_IPV4
-
-# Variable: REGEXP\_IPV4
-
-> `const` **REGEXP\_IPV4**: `RegExp`
-
-Defined in: [lib/text.ts:235](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L235)
-
-lib/text/variables/REGEXP_IPV6.md
----
-
-[**Documents for @maiyunnet/kebab**](../../../index.md)
-
-***
-
-[Documents for @maiyunnet/kebab](../../../index.md) / [lib/text](../index.md) / REGEXP\_IPV6
-
-# Variable: REGEXP\_IPV6
-
-> `const` **REGEXP\_IPV6**: `RegExp`
-
-Defined in: [lib/text.ts:245](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L245)
+Defined in: [lib/text.ts:226](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L226)
 
 lib/time/classes/Time.md
 ---

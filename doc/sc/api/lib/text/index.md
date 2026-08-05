@@ -19,8 +19,6 @@
 - [REGEXP\_ASCII](variables/REGEXP_ASCII.md)
 - [REGEXP\_DOMAIN](variables/REGEXP_DOMAIN.md)
 - [REGEXP\_EMAIL](variables/REGEXP_EMAIL.md)
-- [REGEXP\_IPV4](variables/REGEXP_IPV4.md)
-- [REGEXP\_IPV6](variables/REGEXP_IPV6.md)
 
 ## Functions
 

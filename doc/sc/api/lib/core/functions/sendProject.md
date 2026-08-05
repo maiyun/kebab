@@ -8,7 +8,7 @@
 
 > **sendProject**(`path`, `key`, `value`, `hosts?`): `Promise`\<`Record`\<`string`, \{ `result`: `boolean`; `return`: `string`; \}\>\>
 
-Defined in: [lib/core.ts:880](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L880)
+Defined in: [lib/core.ts:1024](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1024)
 
 向本机或局域网 RPC 发送项目配置更新操作
 

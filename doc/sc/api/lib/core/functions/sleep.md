@@ -8,7 +8,7 @@
 
 > **sleep**(`ms`): `Promise`\<`void`\>
 
-Defined in: [lib/core.ts:440](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L440)
+Defined in: [lib/core.ts:584](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L584)
 
 间隔一段时间
 
