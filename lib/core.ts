@@ -398,6 +398,8 @@ export function ips(
 export const REAL_IP_X = 'x-forwarded-for';
 /** --- 使用的是 Cloudflare --- */
 export const REAL_IP_CF = 'cf-connecting-ip';
+/** --- 使用的是 EO --- */
+export const REAL_IP_EO = 'eo-connecting-ip';
 
 /**
  * --- 规范化 IP 地址 ---
