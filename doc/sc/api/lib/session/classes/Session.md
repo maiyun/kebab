@@ -24,7 +24,7 @@ Defined in: [lib/session.ts:51](https://github.com/maiyunnet/kebab/blob/master/l
 
 > **getName**(): `string`
 
-Defined in: [lib/session.ts:224](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L224)
+Defined in: [lib/session.ts:226](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L226)
 
 获取当前的 cookie 的 name 值
 
@@ -38,7 +38,7 @@ Defined in: [lib/session.ts:224](https://github.com/maiyunnet/kebab/blob/master/
 
 > **getToken**(): `string`
 
-Defined in: [lib/session.ts:217](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L217)
+Defined in: [lib/session.ts:219](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L219)
 
 获取当前的 token 值
 
@@ -94,7 +94,7 @@ false 表示系统错误
 
 > **update**(): `Promise`\<`void`\>
 
-Defined in: [lib/session.ts:231](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L231)
+Defined in: [lib/session.ts:233](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L233)
 
 页面整体结束时，要写入到 Kv 或 数据库
 

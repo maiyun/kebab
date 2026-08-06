@@ -8,7 +8,7 @@
 
 > **getFormData**(`req`, `events?`, `limits?`): `Promise`\<`false` \| \{ `files`: `Record`\<`string`, [`IPostFile`](../../../index/interfaces/IPostFile.md) \| [`IPostFile`](../../../index/interfaces/IPostFile.md)[]\>; `post`: `Record`\<`string`, [`Json`](../../../index/type-aliases/Json.md)\>; \}\>
 
-Defined in: [sys/route.ts:980](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L980)
+Defined in: [sys/route.ts:995](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L995)
 
 获取 formdata 的 post
 
@@ -63,6 +63,24 @@ Defined in: [sys/route.ts:980](https://github.com/maiyunnet/kebab/blob/master/sy
 `number`
 
 单个文件最大字节数
+
+#### maxHeaderSize?
+
+`number`
+
+单个 multipart 段头部最大字节数，默认 16 KB
+
+#### maxParts?
+
+`number`
+
+multipart 字段与文件总数量，默认 1000
+
+#### maxTotalSize?
+
+`number`
+
+整体请求最大字节数，不设置或设为 0 则不限制
 
 #### timeout?
 

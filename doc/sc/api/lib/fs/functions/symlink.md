@@ -8,7 +8,7 @@
 
 > **symlink**(`filePath`, `linkPath`, `type?`): `Promise`\<`boolean`\>
 
-Defined in: [lib/fs.ts:132](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L132)
+Defined in: [lib/fs.ts:131](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L131)
 
 把源文件创建一个 link
 

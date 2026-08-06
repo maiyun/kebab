@@ -8,7 +8,7 @@
 
 > **rmdir**(`path`): `Promise`\<`boolean`\>
 
-Defined in: [lib/fs.ts:228](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L228)
+Defined in: [lib/fs.ts:227](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L227)
 
 删除空目录
 

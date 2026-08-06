@@ -8,7 +8,7 @@
 
 > **copyFolder**(`from`, `to`, `ignore?`): `Promise`\<`number`\>
 
-Defined in: [lib/fs.ts:341](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L341)
+Defined in: [lib/fs.ts:340](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L340)
 
 复制文件夹里的内容到另一个地方，失败不会回滚
 

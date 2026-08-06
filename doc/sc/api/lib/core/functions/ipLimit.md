@@ -8,7 +8,7 @@
 
 > **ipLimit**(`ip`, `mask?`): `string`
 
-Defined in: [lib/core.ts:445](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L445)
+Defined in: [lib/core.ts:446](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L446)
 
 截取 IP 的限速段
 IPv4 原样返回；IPv6 截取前 mask 位（默认 /64），防止同一人使用大量 IPv6 地址绕过限速

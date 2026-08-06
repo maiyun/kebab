@@ -37,6 +37,7 @@
 - [isIPv6](functions/isIPv6.md)
 - [isPhoneCN](functions/isPhoneCN.md)
 - [isRealPath](functions/isRealPath.md)
+- [isSameOrigin](functions/isSameOrigin.md)
 - [isTruthy](functions/isTruthy.md)
 - [logicalOr](functions/logicalOr.md)
 - [match](functions/match.md)

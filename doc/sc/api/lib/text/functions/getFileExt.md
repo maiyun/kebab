@@ -8,7 +8,7 @@
 
 > **getFileExt**(`path`): `string`
 
-Defined in: [lib/text.ts:552](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L552)
+Defined in: [lib/text.ts:588](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L588)
 
 获取文件后缀
 

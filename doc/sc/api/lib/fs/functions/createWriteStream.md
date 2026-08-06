@@ -8,7 +8,7 @@
 
 > **createWriteStream**(`path`, `options?`): `WriteStream`
 
-Defined in: [lib/fs.ts:448](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L448)
+Defined in: [lib/fs.ts:447](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L447)
 
 创建写入文件的流
 

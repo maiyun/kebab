@@ -650,6 +650,24 @@ Defined in: [sys/ctr.ts:1102](https://github.com/maiyunnet/kebab/blob/master/sys
 
 单个文件最大字节数
 
+###### maxHeaderSize?
+
+`number`
+
+单个 multipart 段头部最大字节数，默认 16 KB
+
+###### maxParts?
+
+`number`
+
+multipart 字段与文件总数量，默认 1000
+
+###### maxTotalSize?
+
+`number`
+
+整体请求最大字节数，不设置或设为 0 则不限制
+
 ###### timeout?
 
 `number`

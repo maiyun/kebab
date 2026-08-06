@@ -8,7 +8,7 @@
 
 > **get**(`link`, `token?`, `opt?`): `Promise`\<[`Scan`](../classes/Scan.md)\>
 
-Defined in: [lib/scan.ts:251](https://github.com/maiyunnet/kebab/blob/master/lib/scan.ts#L251)
+Defined in: [lib/scan.ts:266](https://github.com/maiyunnet/kebab/blob/master/lib/scan.ts#L266)
 
 -- 创建 Scan 对象
 

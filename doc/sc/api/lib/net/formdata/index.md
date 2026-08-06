@@ -6,10 +6,14 @@
 
 # lib/net/formdata
 
-## Classes
+## References
 
-- [FormData](classes/FormData.md)
+### FormData
 
-## Type Aliases
+Re-exports [FormData](../../undici/formdata/classes/FormData.md)
 
-- [IItem](type-aliases/IItem.md)
+***
+
+### IItem
+
+Re-exports [IItem](../../undici/formdata/type-aliases/IItem.md)

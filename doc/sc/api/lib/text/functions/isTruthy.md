@@ -8,7 +8,7 @@
 
 > **isTruthy**\<`T`\>(`val`): `val is Exclude<T, TFalsy>`
 
-Defined in: [lib/text.ts:724](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L724)
+Defined in: [lib/text.ts:760](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L760)
 
 判断一个值是否是真实的（不为 null/undefined/空字符串/false/0）
 

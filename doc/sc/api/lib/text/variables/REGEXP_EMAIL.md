@@ -8,4 +8,4 @@
 
 > `const` **REGEXP\_EMAIL**: `RegExp`
 
-Defined in: [lib/text.ts:226](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L226)
+Defined in: [lib/text.ts:247](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L247)

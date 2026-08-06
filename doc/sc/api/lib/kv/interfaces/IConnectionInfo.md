@@ -6,7 +6,7 @@
 
 # Interface: IConnectionInfo
 
-Defined in: [lib/kv.ts:972](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L972)
+Defined in: [lib/kv.ts:993](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L993)
 
 连接信息
 
@@ -16,7 +16,7 @@ Defined in: [lib/kv.ts:972](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **conn**: `ICommandClient`
 
-Defined in: [lib/kv.ts:976](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L976)
+Defined in: [lib/kv.ts:997](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L997)
 
 ***
 
@@ -24,7 +24,7 @@ Defined in: [lib/kv.ts:976](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **host**: `string`
 
-Defined in: [lib/kv.ts:973](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L973)
+Defined in: [lib/kv.ts:994](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L994)
 
 ***
 
@@ -32,7 +32,7 @@ Defined in: [lib/kv.ts:973](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **index**: `number`
 
-Defined in: [lib/kv.ts:975](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L975)
+Defined in: [lib/kv.ts:996](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L996)
 
 ***
 
@@ -40,4 +40,4 @@ Defined in: [lib/kv.ts:975](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **port**: `number`
 
-Defined in: [lib/kv.ts:974](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L974)
+Defined in: [lib/kv.ts:995](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L995)

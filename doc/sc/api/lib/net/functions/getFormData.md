@@ -6,12 +6,12 @@
 
 # Function: getFormData()
 
-> **getFormData**(): [`FormData`](../formdata/classes/FormData.md)
+> **getFormData**(): [`FormData`](../../undici/formdata/classes/FormData.md)
 
-Defined in: [lib/net.ts:517](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L517)
+Defined in: [lib/net.ts:531](https://github.com/maiyunnet/kebab/blob/master/lib/net.ts#L531)
 
 创建 FormData 对象
 
 ## Returns
 
-[`FormData`](../formdata/classes/FormData.md)
+[`FormData`](../../undici/formdata/classes/FormData.md)

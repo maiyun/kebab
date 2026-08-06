@@ -8,7 +8,7 @@
 
 > **readDir**(`path`, `encoding?`): `Promise`\<`Dirent`\<`string`\>[]\>
 
-Defined in: [lib/fs.ts:307](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L307)
+Defined in: [lib/fs.ts:306](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L306)
 
 获取文件夹下文件列表
 

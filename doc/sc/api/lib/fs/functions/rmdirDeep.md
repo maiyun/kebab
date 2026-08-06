@@ -8,7 +8,7 @@
 
 > **rmdirDeep**(`path`): `Promise`\<`boolean`\>
 
-Defined in: [lib/fs.ts:246](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L246)
+Defined in: [lib/fs.ts:245](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L245)
 
 Danger 危险：危险函数，尽量不要使用
 This is a danger function, please don't use it

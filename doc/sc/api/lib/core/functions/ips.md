@@ -8,7 +8,7 @@
 
 > **ips**(`ctr`): `object`
 
-Defined in: [lib/core.ts:384](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L384)
+Defined in: [lib/core.ts:385](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L385)
 
 获取 CF 和 X 的 IP
 

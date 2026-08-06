@@ -8,7 +8,7 @@
 
 > **THttpHeaders** = `http.IncomingHttpHeaders` & `object`
 
-Defined in: [lib/undici.ts:846](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L846)
+Defined in: [lib/undici.ts:861](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L861)
 
 http headers
 

@@ -8,7 +8,7 @@
 
 > **createReadStream**(`path`, `options?`): `ReadStream`
 
-Defined in: [lib/fs.ts:401](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L401)
+Defined in: [lib/fs.ts:400](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L400)
 
 创建读取文件的流
 

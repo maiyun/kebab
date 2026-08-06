@@ -8,7 +8,7 @@
 
 > **stats**(`path`): `Promise`\<`Stats` \| `null`\>
 
-Defined in: [lib/fs.ts:169](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L169)
+Defined in: [lib/fs.ts:168](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L168)
 
 获取对象是否存在，存在则返回 stats 对象，否则返回 null
 

@@ -78,7 +78,7 @@ Defined in: [lib/undici/response.ts:66](https://github.com/maiyunnet/kebab/blob/
 
 > **getRawStream**(): `BodyReadable` & `BodyMixin` \| `null`
 
-Defined in: [lib/undici/response.ts:128](https://github.com/maiyunnet/kebab/blob/master/lib/undici/response.ts#L128)
+Defined in: [lib/undici/response.ts:126](https://github.com/maiyunnet/kebab/blob/master/lib/undici/response.ts#L126)
 
 获取原生响应读取流对象
 
@@ -92,7 +92,7 @@ Defined in: [lib/undici/response.ts:128](https://github.com/maiyunnet/kebab/blob
 
 > **getStream**(): `BrotliDecompress` \| `Gunzip` \| `Inflate` \| `BodyReadable` & `BodyMixin` \| `null`
 
-Defined in: [lib/undici/response.ts:92](https://github.com/maiyunnet/kebab/blob/master/lib/undici/response.ts#L92)
+Defined in: [lib/undici/response.ts:91](https://github.com/maiyunnet/kebab/blob/master/lib/undici/response.ts#L91)
 
 获取响应读取流对象
 

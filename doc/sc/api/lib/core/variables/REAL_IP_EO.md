@@ -8,6 +8,6 @@
 
 > `const` **REAL\_IP\_EO**: `"eo-connecting-ip"` = `'eo-connecting-ip'`
 
-Defined in: [lib/core.ts:402](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L402)
+Defined in: [lib/core.ts:403](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L403)
 
 使用的是 EO

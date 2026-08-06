@@ -8,7 +8,7 @@
 
 > **isIPv6**(`ip`): `boolean`
 
-Defined in: [lib/text.ts:248](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L248)
+Defined in: [lib/text.ts:269](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L269)
 
 是否是 IPv6（基于 Node 原生 net.isIP，严格校验）
 

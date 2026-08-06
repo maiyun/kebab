@@ -8,7 +8,7 @@
 
 > **readToResponse**(`path`, `req`, `res`, `stat?`): `Promise`\<`void`\>
 
-Defined in: [lib/fs.ts:479](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L479)
+Defined in: [lib/fs.ts:478](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L478)
 
 读取文件并输出到 http 的 response
 

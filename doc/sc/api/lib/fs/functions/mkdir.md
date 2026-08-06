@@ -8,7 +8,7 @@
 
 > **mkdir**(`path`, `mode?`): `Promise`\<`boolean`\>
 
-Defined in: [lib/fs.ts:207](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L207)
+Defined in: [lib/fs.ts:206](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L206)
 
 深度创建目录，如果最末目录存在，则自动创建成功
 
