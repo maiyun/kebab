@@ -8,7 +8,7 @@
 
 > **realIP**(`ctr`, `name?`): `string`
 
-Defined in: [lib/core.ts:424](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L424)
+Defined in: [lib/core.ts:426](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L426)
 
 获取直连 IP（安全 IP）
 

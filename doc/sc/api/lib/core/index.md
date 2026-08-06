@@ -29,6 +29,7 @@
 - [RANDOM\_UN](variables/RANDOM_UN.md)
 - [RANDOM\_V](variables/RANDOM_V.md)
 - [REAL\_IP\_CF](variables/REAL_IP_CF.md)
+- [REAL\_IP\_EO](variables/REAL_IP_EO.md)
 - [REAL\_IP\_X](variables/REAL_IP_X.md)
 
 ## Functions

@@ -8,7 +8,7 @@
 
 > **realIPLimit**(`ctr`, `name?`, `mask?`): `string`
 
-Defined in: [lib/core.ts:463](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L463)
+Defined in: [lib/core.ts:465](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L465)
 
 获取安全 IP 的限速段（用于 ratelimit 库的 key）
 IPv4 原样返回；IPv6 截取前 mask 位（默认 /64）
