@@ -110,8 +110,15 @@ export class Scan {
                 this._sql!.delete(this._name).where({
                     'id': data['id']
                 });
-                const r = lText.parseJson(data['data']);
-                return r === false ? -3 : r;
+                const parsed = lText.parseJson(data['data']);
+                if (parsed === false) {
+                    return -3;
+                }
+                const deleted = await this._link.execute(this._sql!.getSql(), this._sql!.getData());
+                if (deleted.error || !deleted.packet?.affected) {
+                    return -3;
+                }
+                return parsed;
             }
             else if (data['time_update'] > 0) {
                 // --- 已被扫描 ---
@@ -135,9 +142,17 @@ export class Scan {
             }
             this._timeLeft = ttl;
             if (data['data'] !== null) {
-                // --- 已经写入数据了，删除数据库条目并返回写入的数据内容 ---
-                await this._link.del('scan-' + this._name + '_' + this._token);
-                return data;
+                // --- 原子获取并删除，确保并发轮询时结果只被消费一次 ---
+                const consumed = await this._link.getDelJson('scan-' + this._name + '_' + this._token);
+                if (
+                    (consumed === false) ||
+                    (consumed === null) ||
+                    (typeof consumed !== 'object') ||
+                    (consumed['data'] === null)
+                ) {
+                    return -3;
+                }
+                return consumed['data'];
             }
             else if (data['time_update'] > 0) {
                 // --- 已被扫描 ---

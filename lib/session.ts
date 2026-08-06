@@ -206,6 +206,8 @@ export class Session {
             'ttl': this._ttl,
             'domain': opt.domain,
             'ssl': ssl,
+            'httponly': true,
+            'samesite': 'Lax',
         });
 
         return true;

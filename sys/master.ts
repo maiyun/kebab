@@ -7,6 +7,7 @@ import cluster from 'cluster';
 import * as os from 'os';
 import * as fs from 'fs';
 import * as http from 'http';
+import * as path from 'path';
 // --- 库和定义 ---
 import * as kebab from '#kebab/index.js';
 import * as sRoute from '#kebab/sys/route.js';
@@ -26,6 +27,76 @@ const workerList: Record<string, {
     /** --- 此 worker 上次心跳时间 --- */
     'hbtime': number;
 }> = {};
+
+/**
+ * --- 判断候选路径是否位于指定根目录内 ---
+ * @param rootPath 已解析的真实根目录
+ * @param candidate 候选绝对路径
+ */
+function isPathInside(rootPath: string, candidate: string): boolean {
+    const relative = path.relative(rootPath, candidate);
+    return (relative === '') || (!relative.startsWith(`..${path.sep}`) && (relative !== '..') && !path.isAbsolute(relative));
+}
+
+/**
+ * --- 解析根目录内的路径，并阻止通过绝对路径、.. 或符号链接逃逸 ---
+ * @param rootPath 限定的根目录
+ * @param inputPath 用户输入的相对路径
+ */
+async function resolvePathInside(rootPath: string, inputPath: string): Promise<string | null> {
+    if ((typeof inputPath !== 'string') || inputPath.includes('\0')) {
+        return null;
+    }
+    const rootReal = await fs.promises.realpath(rootPath);
+    const normalizedInput = inputPath.replace(/\\/g, '/').replace(/^\/+/, '');
+    if (/^[a-zA-Z]:/.test(normalizedInput)) {
+        return null;
+    }
+    const candidate = path.resolve(rootReal, normalizedInput);
+    if (!isPathInside(rootReal, candidate)) {
+        return null;
+    }
+
+    /** --- 向上找到已存在的最近父路径，用 realpath 校验其中的符号链接 --- */
+    let existingPath = candidate;
+    const missingParts: string[] = [];
+    while (true) {
+        try {
+            const existingReal = await fs.promises.realpath(existingPath);
+            const resolved = path.resolve(existingReal, ...missingParts);
+            return isPathInside(rootReal, resolved) ? resolved : null;
+        }
+        catch {
+            const parent = path.dirname(existingPath);
+            if (parent === existingPath) {
+                return null;
+            }
+            missingParts.unshift(path.basename(existingPath));
+            existingPath = parent;
+        }
+    }
+}
+
+/**
+ * --- 规范化 ZIP 条目路径，返回带前导斜杠的安全相对路径 ---
+ * @param archivePath ZIP 内的原始路径
+ */
+function normalizeArchivePath(archivePath: string): string | null {
+    const normalizedSlashes = archivePath.replace(/\\/g, '/').replace(/^\/+/, '');
+    if (
+        !normalizedSlashes ||
+        normalizedSlashes.includes('\0') ||
+        /^[a-zA-Z]:/.test(normalizedSlashes) ||
+        normalizedSlashes.split('/').some(part => !part || (part === '.') || (part === '..'))
+    ) {
+        return null;
+    }
+    const normalized = path.posix.normalize(normalizedSlashes);
+    if (normalized.startsWith('../') || (normalized === '..') || path.posix.isAbsolute(normalized)) {
+        return null;
+    }
+    return `/${normalized}`;
+}
 
 /**
  * --- 等待指定 worker 开始监听端口就绪 ---
@@ -139,7 +210,7 @@ function createRpcListener(): void {
                 res.end('Failed');
                 return;
             }
-            if (msg.time < time - 5) {
+            if ((typeof msg.time !== 'number') || (Math.abs(msg.time - time) > 5)) {
                 res.end('Timeout');
                 return;
             }
@@ -237,28 +308,16 @@ function createRpcListener(): void {
                         res.end('Invalid staticVer');
                         return;
                     }
-                    let path = msg.path;
-                    if (path.startsWith('/')) {
-                        path = path.slice(1);
-                    }
-                    if (path.endsWith('/')) {
-                        path = path.slice(0, -1);
-                    }
-                    // --- 拒绝路径穿越，防止跳出 ROOT_CWD ---
-                    if (path.includes('..')) {
+                    const to = await resolvePathInside(kebab.ROOT_CWD, msg.path);
+                    if (!to) {
                         res.end('Invalid path');
                         return;
-                    }
-                    /** --- 最终的项目根目录，以 / 结尾，但用户传入的无所谓 --- */
-                    let to = kebab.ROOT_CWD + path;
-                    if (!to.endsWith('/')) {
-                        to += '/';
                     }
                     if (!await lFs.isDir(to)) {
                         res.end('[project] Path not found: ' + to);
                         return;
                     }
-                    const projectFile = to + 'kebab.json';
+                    const projectFile = path.join(to, 'kebab.json');
                     if (!await lFs.isFile(projectFile)) {
                         res.end('kebab.json not found in project path');
                         return;
@@ -314,18 +373,20 @@ function createRpcListener(): void {
                         await sRoute.unlinkUploadFiles(rtn.files);
                         return;
                     }
-                    let path = rtn.post['path'];
-                    if (path.startsWith('/')) {
-                        path = path.slice(1);
+                    const inputPath = rtn.post['path'];
+                    if (typeof inputPath !== 'string') {
+                        res.end('Invalid path');
+                        await sRoute.unlinkUploadFiles(rtn.files);
+                        return;
                     }
-                    if (path.endsWith('/')) {
-                        path = path.slice(0, -1);
+                    /** --- 最终更新的根目录 --- */
+                    const targetPath = await resolvePathInside(kebab.ROOT_CWD, inputPath);
+                    if (!targetPath) {
+                        res.end('Invalid path');
+                        await sRoute.unlinkUploadFiles(rtn.files);
+                        return;
                     }
-                    /** --- 最终更新的根目录，以 / 结尾，但用户传入的无所谓 --- */
-                    let to = kebab.ROOT_CWD + path;
-                    if (!to.endsWith('/')) {
-                        to += '/';
-                    }
+                    const to = targetPath + path.sep;
                     if (!await lFs.isDir(to)) {
                         if (rtn.post['strict'] === '1') {
                             res.end(`[code][0] [${rtn.post['strict']}] Path not found: ${to}`);
@@ -346,7 +407,28 @@ function createRpcListener(): void {
                         await sRoute.unlinkUploadFiles(rtn.files);
                         return;
                     }
-                    const ls = await zip.getList();
+                    const archiveEntries = zip.readDir('/', {
+                        'hasChildren': true,
+                        'hasDir': false,
+                    });
+                    const archiveSize = archiveEntries.reduce((total, item) => total + item.uncompressedSize, 0);
+                    if ((archiveEntries.length > 10_000) || (archiveSize > 512 * 1024 * 1024)) {
+                        res.end('Archive limit exceeded');
+                        await sRoute.unlinkUploadFiles(rtn.files);
+                        return;
+                    }
+                    const rawList = await zip.getList();
+                    /** --- 经过路径校验并统一为带前导斜杠的 ZIP 文件列表 --- */
+                    const ls: Record<string, Buffer | string> = {};
+                    for (const archivePath in rawList) {
+                        const normalizedPath = normalizeArchivePath(archivePath);
+                        if (!normalizedPath || (ls[normalizedPath] !== undefined)) {
+                            res.end('Invalid archive path');
+                            await sRoute.unlinkUploadFiles(rtn.files);
+                            return;
+                        }
+                        ls[normalizedPath] = rawList[archivePath];
+                    }
                     // --- 预扫描：收集 .cga 锁定目录和 kebab 子项目目录 ---
                     /** --- .cga 锁定的目录集合，key 格式为"父路径/目录名/"（不含开头/，含尾部/），例如 "www/pika/" --- */
                     const cgaLockedDirs = new Set<string>();
@@ -412,9 +494,9 @@ function createRpcListener(): void {
                         'tmp',
                         'temp',
                     ]);
-                    for (const path in ls) {
+                    for (const archivePath in ls) {
                         /** --- 带 / 开头的 zip 中文件完整路径，例如 "/www/pika/ctr/api.js" --- */
-                        const fpath = path.startsWith('/') ? path : '/' + path;
+                        const fpath = archivePath.startsWith('/') ? archivePath : '/' + archivePath;
                         /** --- 纯路径中最后一个 / 的位置索引 --- */
                         const lio = fpath.lastIndexOf('/');
                         /** --- 纯路径，不以 / 开头，以 / 结尾，若是根路径就是空字符串，例如 "www/pika/ctr/" --- */
@@ -484,21 +566,33 @@ function createRpcListener(): void {
                             }
                         }
                         // --- 看文件夹是否存在 ---
-                        if (pat && !await lFs.isDir(to + pat)) {
-                            if (rtn.post['strict'] === '1') {
-                                res.end(`[code][1] [${rtn.post['strict']}] Path not found: ${to + pat}`);
-                                await sRoute.unlinkUploadFiles(rtn.files);
-                                return;
-                            }
-                            await lFs.mkdir(to + pat);
-                        }
-                        // --- 覆盖或创建文件 ---
-                        if ((rtn.post['strict'] === '1') && !await lFs.isFile(to + pat + fname)) {
-                            res.end(`[code][2] [${rtn.post['strict']}] Path not found: ${to + pat + fname}`);
+                        const targetDir = await resolvePathInside(to, pat);
+                        if (!targetDir) {
+                            res.end('Invalid archive directory');
                             await sRoute.unlinkUploadFiles(rtn.files);
                             return;
                         }
-                        await lFs.putContent(to + pat + fname, ls[path]);
+                        if (pat && !await lFs.isDir(targetDir)) {
+                            if (rtn.post['strict'] === '1') {
+                                res.end(`[code][1] [${rtn.post['strict']}] Path not found: ${targetDir}`);
+                                await sRoute.unlinkUploadFiles(rtn.files);
+                                return;
+                            }
+                            await lFs.mkdir(targetDir);
+                        }
+                        const targetFile = await resolvePathInside(to, pat + fname);
+                        if (!targetFile) {
+                            res.end('Invalid archive file');
+                            await sRoute.unlinkUploadFiles(rtn.files);
+                            return;
+                        }
+                        // --- 覆盖或创建文件 ---
+                        if ((rtn.post['strict'] === '1') && !await lFs.isFile(targetFile)) {
+                            res.end(`[code][2] [${rtn.post['strict']}] Path not found: ${targetFile}`);
+                            await sRoute.unlinkUploadFiles(rtn.files);
+                            return;
+                        }
+                        await lFs.putContent(targetFile, ls[archivePath]);
                     }
                     await sRoute.unlinkUploadFiles(rtn.files);
                     // --- 检查是否更新 config ---
@@ -540,25 +634,52 @@ function createRpcListener(): void {
                     // --- 获取日志信息 ---
                     const format = lCore.globalConfig.logFormat ?? 'jsonl';
                     const ext = format === 'jsonl' ? '.jsonl' : '.csv';
-                    const path = kebab.LOG_CWD + msg.hostname + (msg.fend ?? '') + '/' + msg.path + ext;
-                    if (!await lFs.isFile(path)) {
+                    const fend = msg.fend ?? '';
+                    if (
+                        (typeof msg.hostname !== 'string') ||
+                        (typeof msg.path !== 'string') ||
+                        !/^[\w.-]+$/.test(msg.hostname) ||
+                        !/^(?:|-[\w-]+)$/.test(fend) ||
+                        !/^[\w./-]+$/.test(msg.path)
+                    ) {
+                        res.end('Invalid log path');
+                        return;
+                    }
+                    const logPath = await resolvePathInside(
+                        kebab.LOG_CWD,
+                        `${msg.hostname}${fend}/${msg.path}${ext}`
+                    );
+                    if (!logPath) {
+                        res.end('Invalid log path');
+                        return;
+                    }
+                    if (!await lFs.isFile(logPath)) {
                         res.end(lText.stringifyJson({
                             'result': 1,
                             'data': null,
                         }));
                         return;
                     }
-                    let limit: number = msg.limit ?? 100;
-                    const offset: number = msg.offset ?? 0;
+                    let limit = Number.isSafeInteger(msg.limit) ? msg.limit as number : 100;
+                    const offset = Number.isSafeInteger(msg.offset) ? msg.offset as number : 0;
+                    limit = Math.min(Math.max(limit, 1), 1000);
+                    if (offset < 0) {
+                        res.end('Invalid offset');
+                        return;
+                    }
                     let total = 0;
                     if (msg.search) {
+                        if ((typeof msg.search !== 'string') || (msg.search.length > 500) || msg.search.includes('\0')) {
+                            res.end('Invalid search');
+                            return;
+                        }
                         // === 搜索模式：total 为匹配行数，offset/limit 均基于匹配行 ===
                         // --- shell 单引号安全转义（防止特殊字符破坏命令）---
                         const escaped: string = (msg.search as string).replace(/'/g, "'\\''");
                         // --- 获取匹配行总数（grep -c 无匹配时退出码 1，|| echo 0 兜底）---
                         const countCmd = format === 'csv'
-                            ? `tail -n +2 "${path}" | grep -F -c '${escaped}' || echo 0`
-                            : `grep -F -c '${escaped}' "${path}" || echo 0`;
+                            ? `tail -n +2 "${logPath}" | grep -F -c '${escaped}' || echo 0`
+                            : `grep -F -c '${escaped}' "${logPath}" || echo 0`;
                         const countRtn = await lCore.exec(countCmd);
                         if (countRtn !== false) {
                             total = parseInt(countRtn.trim()) || 0;
@@ -567,8 +688,8 @@ function createRpcListener(): void {
                         const from = offset + 1;
                         const to = offset + limit;
                         const dataCmd = format === 'csv'
-                            ? `tail -n +2 "${path}" | grep -F '${escaped}' | sed -n '${from},${to}p'`
-                            : `grep -F '${escaped}' "${path}" | sed -n '${from},${to}p'`;
+                            ? `tail -n +2 "${logPath}" | grep -F '${escaped}' | sed -n '${from},${to}p'`
+                            : `grep -F '${escaped}' "${logPath}" | sed -n '${from},${to}p'`;
                         const dataRtn = await lCore.exec(dataCmd);
                         if (dataRtn === false) {
                             res.end(lText.stringifyJson({
@@ -630,7 +751,7 @@ function createRpcListener(): void {
                         return;
                     }
                     // === 无搜索模式：wc -l 获取总行数，grep -b '^' 定位字节偏移直接跳至 offset ===
-                    const wclRtn = await lCore.exec(`wc -l "${path}"`);
+                    const wclRtn = await lCore.exec(`wc -l "${logPath}"`);
                     if (wclRtn !== false) {
                         const wclMatch = /^\s*(\d+)/.exec(wclRtn);
                         if (wclMatch) {
@@ -652,7 +773,7 @@ function createRpcListener(): void {
                     if (offset > 0) {
                         const skipLines = format === 'jsonl' ? offset : offset + 1;
                         // --- sed -n '${N}{p;q}' 找到第 N 行后立即退出，使 grep 收到 SIGPIPE 提前终止 ---
-                        const grepRtn = await lCore.exec(`grep -b '^' "${path}" | sed -n '${skipLines + 1}{p;q}'`);
+                        const grepRtn = await lCore.exec(`grep -b '^' "${logPath}" | sed -n '${skipLines + 1}{p;q}'`);
                         if (grepRtn !== false) {
                             const grepMatch = /^(\d+):/.exec(grepRtn.trim());
                             if (grepMatch) {
@@ -682,7 +803,7 @@ function createRpcListener(): void {
                         let line = 0;
                         /** --- 当前行数据 --- */
                         let packet = '';
-                        lFs.createReadStream(path, {
+                        lFs.createReadStream(logPath, {
                             'encoding': 'utf8',
                             'start': startByte,
                         }).on('data', buf => {
@@ -770,10 +891,10 @@ function createRpcListener(): void {
                         res.end('Invalid path');
                         return;
                     }
-                    const path = lText.urlResolve(kebab.ROOT_CWD, msg.path, true);
+                    const targetPath = lText.urlResolve(kebab.ROOT_CWD, msg.path, true);
                     res.end(lText.stringifyJson({
                         'result': 1,
-                        'data': (await lFs.readDir(path, msg.encoding)).map(item => ({
+                        'data': (await lFs.readDir(targetPath, msg.encoding)).map(item => ({
                             'isFile': item.isFile(),
                             'isDirectory': item.isDirectory(),
                             'isSymbolicLink': item.isSymbolicLink(),

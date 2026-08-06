@@ -1112,6 +1112,12 @@ export class Ctr {
             'allowedExts'?: string[];
             /** --- 单个字段（非文件）最大字节数，默认 1 MB --- */
             'maxFieldSize'?: number;
+            /** --- 整体请求最大字节数，不设置或设为 0 则不限制 --- */
+            'maxTotalSize'?: number;
+            /** --- 单个 multipart 段头部最大字节数，默认 16 KB --- */
+            'maxHeaderSize'?: number;
+            /** --- multipart 字段与文件总数量，默认 1000 --- */
+            'maxParts'?: number;
             /** --- 整体请求超时时间（毫秒），默认 5 分钟，设为 0 禁用超时 --- */
             'timeout'?: number;
         } = {}

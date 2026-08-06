@@ -88,7 +88,6 @@ export class Response {
     /**
      * --- 获取响应读取流对象 ---
      */
-    // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
     public getStream() {
         try {
             // --- 要解压 ---
@@ -124,7 +123,6 @@ export class Response {
     /**
      * --- 获取原生响应读取流对象 ---
      */
-    // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
     public getRawStream() {
         return this._req ? this._req.body : null;
     }

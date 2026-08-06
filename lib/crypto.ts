@@ -30,7 +30,7 @@ export function generateKeyPair(type: string, options: {
         'public': string | Buffer;
         'private': string | Buffer;
     }> {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
         options.modulusLength ??= 2048;
         if (options.namedCurve !== undefined) {
             options.namedCurve = options.namedCurve.toUpperCase();

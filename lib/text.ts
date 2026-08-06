@@ -126,6 +126,27 @@ export function parseUrl(url: string): kebab.IUrlParse {
     return rtn;
 }
 
+/**
+ * --- 判断两个 URL 是否属于同源地址 ---
+ * @param from 来源 URL
+ * @param to 目标 URL
+ */
+export function isSameOrigin(from: string, to: string): boolean {
+    const fromUri = parseUrl(from);
+    const toUri = parseUrl(to);
+    const getPort = (uri: kebab.IUrlParse): string => {
+        if (uri.port) {
+            return uri.port;
+        }
+        return uri.protocol === 'https:' ? '443' : '80';
+    };
+    return (
+        (fromUri.protocol === toUri.protocol) &&
+        (fromUri.hostname === toUri.hostname) &&
+        (getPort(fromUri) === getPort(toUri))
+    );
+}
+
 /** --- 限定结果不能逃逸出基准路径 --- */
 function urlResolveLimit(from: string, limit: boolean, rtn: string): string {
     if (!limit) {
@@ -481,15 +502,25 @@ export function queryParse(query: string): Record<string, string | string[]> {
             value = pos === -1 ? '' : i.slice(pos + 1);
         }
 
-        if (arrayKeys[key]) {
+        if (Object.hasOwn(arrayKeys, key)) {
             (ret[key] as string[]).push(value);
         }
-        else if (undefined === ret[key]) {
-            ret[key] = value;
+        else if (!Object.hasOwn(ret, key)) {
+            Object.defineProperty(ret, key, {
+                'configurable': true,
+                'enumerable': true,
+                'value': value,
+                'writable': true,
+            });
         }
         else {
             ret[key] = [ret[key] as string, value];
-            arrayKeys[key] = true;
+            Object.defineProperty(arrayKeys, key, {
+                'configurable': true,
+                'enumerable': true,
+                'value': true,
+                'writable': true,
+            });
         }
     }
     return ret;
@@ -504,7 +535,12 @@ export function htmlescape(html: string): string {
     if (type !== 'string') {
         return '[' + type + ']';
     }
-    return html.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/'/g, '&quot;');
+    return html
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
 }
 
 /** --- CSV 特殊字符转换为实体字符 --- */
@@ -638,7 +674,7 @@ export function parseJson<T>(str: string): T | false {
             }
             const ints = v.slice(10);
             const int = parseInt(ints);
-            if (int <= Number.MAX_SAFE_INTEGER) {
+            if ((int >= Number.MIN_SAFE_INTEGER) && (int <= Number.MAX_SAFE_INTEGER)) {
                 return int;
             }
             return BigInt(ints);

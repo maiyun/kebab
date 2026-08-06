@@ -33,12 +33,12 @@ export default function HelloPage({ _urlStc, _staticVer, greeting }: IProps): Re
                     <p className="text-slate-500 mb-4">点击按钮测试客户端水合是否正常工作：</p>
                     <div className="flex items-center gap-4">
                         <button
-                            onClick={() => setCount(c => c - 1)}
+                            onClick={() => { setCount(c => c - 1); }}
                             className="w-10 h-10 rounded-lg bg-slate-200 hover:bg-slate-300 font-bold text-xl cursor-pointer"
                         >-</button>
                         <span className="w-10 text-center tabular-nums text-lg">{count}</span>
                         <button
-                            onClick={() => setCount(c => c + 1)}
+                            onClick={() => { setCount(c => c + 1); }}
                             className="w-10 h-10 rounded-lg bg-blue-500 hover:bg-blue-600 text-white font-bold text-xl cursor-pointer"
                         >+</button>
                     </div>

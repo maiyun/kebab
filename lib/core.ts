@@ -9,6 +9,7 @@ import * as http2 from 'http2';
 import * as stream from 'stream';
 import * as os from 'os';
 import * as net from 'net';
+import * as crypto from 'crypto';
 import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
 import * as kebab from '#kebab/index.js';
@@ -140,7 +141,7 @@ export function random(length: number = 8, source: string = RANDOM_LN, block: st
     }
     let temp = '';
     for (let i = 0; i < length; ++i) {
-        temp += source[rand(0, len - 1)];
+        temp += source[crypto.randomInt(len)];
     }
     return temp;
 }
@@ -1338,24 +1339,36 @@ export function clone<T>(obj: T): T {
     const keys = isArray ? (obj as any[]).keys() : Object.keys(obj as object);
     for (const key of keys) {
         const val = (obj as any)[key];
+        let clonedValue: any;
         if (val instanceof Date) {
-            newObj[key] = new Date(val.getTime());
+            clonedValue = new Date(val.getTime());
         }
         else if (val instanceof FormData) {
             const fd = new FormData();
             for (const item of val) {
                 fd.append(item[0], item[1]);
             }
-            newObj[key] = fd;
+            clonedValue = fd;
         }
         else if (val === null) {
-            newObj[key] = null;
+            clonedValue = null;
         }
         else if (typeof val === 'object') {
-            newObj[key] = clone(val);
+            clonedValue = clone(val);
         }
         else {
-            newObj[key] = val;
+            clonedValue = val;
+        }
+        if (!isArray && ((key === '__proto__') || (key === 'prototype') || (key === 'constructor'))) {
+            Object.defineProperty(newObj, key, {
+                'configurable': true,
+                'enumerable': true,
+                'value': clonedValue,
+                'writable': true,
+            });
+        }
+        else {
+            newObj[key] = clonedValue;
         }
     }
     return newObj;

@@ -59,7 +59,7 @@ interface IProps {
 // ─── 页面内部组件（仅本页演示使用，无需提取到 lib/）────────────────────────────
 
 /** --- 卡片容器 --- */
-function Card({ children, className = '' }: { 'children': ReactNode; 'className'?: string }) {
+function Card({ children, className = '' }: { 'children': ReactNode; 'className'?: string; }) {
     return (
         <div className={`bg-white rounded-xl shadow-sm border border-slate-200 p-6 ${className}`}>
             {children}
@@ -75,7 +75,7 @@ function Badge({ children, variant = 'default' }: {
     const styles = {
         'default': 'bg-blue-100 text-blue-700',
         'success': 'bg-green-100 text-green-700',
-        'warn':    'bg-amber-100 text-amber-700',
+        'warn': 'bg-amber-100 text-amber-700',
     };
     return (
         <span className={`inline-flex px-2.5 py-0.5 rounded-md text-xs font-semibold ${styles[variant]}`}>
@@ -137,13 +137,13 @@ function RouterAbout() {
             <p className="text-slate-500 text-xs mb-3">useNavigate() programmatic navigation (without Link component):</p>
             <div className="flex gap-2">
                 <button
-                    onClick={() => navigate('/')}
+                    onClick={() => { Promise.resolve(navigate('/')).catch(() => {}); }}
                     className="inline-flex items-center px-3 py-1.5 rounded-lg border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-medium cursor-pointer"
                 >
                     ← Back to /
                 </button>
                 <button
-                    onClick={() => navigate('/user/99')}
+                    onClick={() => { Promise.resolve(navigate('/user/99')).catch(() => {}); }}
                     className="inline-flex items-center px-3 py-1.5 rounded-lg bg-blue-500 hover:bg-blue-600 text-white text-xs font-medium cursor-pointer"
                 >
                     → /user/99
@@ -155,7 +155,7 @@ function RouterAbout() {
 
 /** --- 路由 User 动态参数页 --- */
 function RouterUser() {
-    const { id } = useParams<{ 'id': string }>();
+    const { id } = useParams<{ 'id': string; }>();
     const navigate = useNavigate();
     return (
         <div>
@@ -166,7 +166,7 @@ function RouterUser() {
                 useParams() dynamic segment: <code className="bg-slate-100 px-1 rounded">id = &quot;{id}&quot;</code>
             </p>
             <button
-                onClick={() => navigate('/')}
+                onClick={() => { Promise.resolve(navigate('/')).catch(() => {}); }}
                 className="inline-flex items-center px-3 py-1.5 rounded-lg border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-medium cursor-pointer"
             >
                 ← Back to /
@@ -195,7 +195,7 @@ function ShadcnDemo() {
     const agreeId = useId();
     const newsletterId = useId();
 
-    function handleSubmit(e: React.FormEvent<HTMLFormElement>): void {
+    function handleSubmit(e: React.SyntheticEvent<HTMLFormElement>): void {
         e.preventDefault();
         setSubmitted(true);
     }
@@ -226,7 +226,7 @@ function ShadcnDemo() {
                             type="text"
                             placeholder="Enter your username"
                             value={name}
-                            onChange={e => setName(e.target.value)}
+                            onChange={e => { setName(e.target.value); }}
                         />
                     </div>
                     <div className="grid gap-1.5">
@@ -236,7 +236,7 @@ function ShadcnDemo() {
                             type="email"
                             placeholder="you@example.com"
                             value={email}
-                            onChange={e => setEmail(e.target.value)}
+                            onChange={e => { setEmail(e.target.value); }}
                         />
                     </div>
                 </div>
@@ -290,7 +290,7 @@ function ShadcnDemo() {
                             2
                         )}</pre>
                         <button
-                            onClick={() => setSubmitted(false)}
+                            onClick={() => { setSubmitted(false); }}
                             className="text-xs text-blue-500 hover:underline cursor-pointer"
                         >Reset</button>
                     </div>
@@ -303,7 +303,7 @@ function ShadcnDemo() {
                                 required
                                 placeholder="At least 2 characters"
                                 value={name}
-                                onChange={e => setName(e.target.value)}
+                                onChange={e => { setName(e.target.value); }}
                             />
                         </div>
                         <div className="grid gap-1.5">
@@ -314,7 +314,7 @@ function ShadcnDemo() {
                                 required
                                 placeholder="you@example.com"
                                 value={email}
-                                onChange={e => setEmail(e.target.value)}
+                                onChange={e => { setEmail(e.target.value); }}
                             />
                         </div>
                         <div className="flex items-center gap-2">
@@ -417,7 +417,7 @@ export default function ReactPage({ title, serverTime, node, _urlBase, _urlStc, 
                         {(['overview', 'routing', 'fetch', 'shadcn'] as const).map(t => (
                             <button
                                 key={t}
-                                onClick={() => setTab(t)}
+                                onClick={() => { setTab(t); }}
                                 className={[
                                     'px-4 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer',
                                     tab === t ? 'bg-white shadow text-slate-900' : 'text-slate-500 hover:text-slate-900',
@@ -441,12 +441,12 @@ export default function ReactPage({ title, serverTime, node, _urlBase, _urlStc, 
                                 </p>
                                 <div className="flex items-center gap-4">
                                     <button
-                                        onClick={() => setCount(c => c - 1)}
+                                        onClick={() => { setCount(c => c - 1); }}
                                         className="w-10 h-10 rounded-lg border border-slate-300 hover:bg-slate-50 font-bold text-slate-700 text-xl cursor-pointer"
                                     >−</button>
                                     <span className="text-3xl font-bold text-slate-900 w-10 text-center tabular-nums">{count}</span>
                                     <button
-                                        onClick={() => setCount(c => c + 1)}
+                                        onClick={() => { setCount(c => c + 1); }}
                                         className="w-10 h-10 rounded-lg bg-blue-500 hover:bg-blue-600 text-white font-bold text-xl cursor-pointer"
                                     >+</button>
                                 </div>
@@ -459,7 +459,8 @@ export default function ReactPage({ title, serverTime, node, _urlBase, _urlStc, 
                                     Passed via{' '}
                                     <code className="bg-slate-100 px-1 rounded">_loadReactPage(path, props)</code>.
                                     The framework auto-injects constants like _urlBase and serializes
-                                    all props as inline JSON, reused directly during client hydration — no extra request needed.
+                                    all props as inline JSON, reused directly during client hydration —
+                                    no extra request needed.
                                 </p>
                                 <div className="space-y-2">
                                     {([
@@ -491,8 +492,10 @@ export default function ReactPage({ title, serverTime, node, _urlBase, _urlStc, 
     react-page.tsx      # Page component (import + compose)`}
                                 </pre>
                                 <p className="text-slate-500 text-xs mt-3">
-                                    Mirrors the shadcn/ui <code className="bg-slate-100 px-1 rounded">components/ui/</code> convention.
-                                    In dev mode, the framework auto-scans imports — no manual import map configuration needed.
+                                    Mirrors the shadcn/ui{' '}
+                                    <code className="bg-slate-100 px-1 rounded">components/ui/</code> convention.
+                                    In dev mode, the framework auto-scans imports —
+                                    no manual import map configuration needed.
                                 </p>
                             </Card>
 
@@ -527,7 +530,8 @@ export default function ReactPage({ title, serverTime, node, _urlBase, _urlStc, 
                                 <h2 className="font-semibold text-slate-900 mb-2">Full-Page BrowserRouter Setup</h2>
                                 <p className="text-slate-500 text-xs mb-3">
                                     To let React Router manage the real URL (e.g. /app, /app/about),
-                                    replace MemoryRouter with BrowserRouter and route all sub-paths to the same Ctr method on the server:
+                                    replace MemoryRouter with BrowserRouter and route all sub-paths
+                                    to the same Ctr method on the server:
                                 </p>
                                 <pre className="bg-slate-50 border border-slate-200 rounded-lg p-4 text-xs overflow-auto leading-relaxed text-slate-700">{`// 1. route.json: 将所有子路径路由到同一 Ctr 方法
 {
@@ -561,18 +565,19 @@ await this._loadReactPage('view/my', { ...props }, {
                         <Card>
                             <h2 className="font-semibold text-slate-900 mb-3">Client Fetch Demo</h2>
                             <p className="text-slate-500 text-xs mb-4">
-                                After hydration, click a button to send a GET request. setState triggers a partial re-render — no page refresh.
+                                After hydration, click a button to send a GET request.
+                                setState triggers a partial re-render — no page refresh.
                             </p>
                             <div className="flex gap-3 flex-wrap">
                                 <Btn
-                                    onClick={() => doFetch(`${_urlBase}test/json?type=4`)}
+                                    onClick={() => { doFetch(`${_urlBase}test/json?type=4`); }}
                                     disabled={isFetching}
                                 >
                                     {isFetching ? 'Fetching...' : 'GET /test/json?type=4'}
                                 </Btn>
                                 <Btn
                                     outline
-                                    onClick={() => doFetch(`${_urlBase}test/json?type=2`)}
+                                    onClick={() => { doFetch(`${_urlBase}test/json?type=2`); }}
                                     disabled={isFetching}
                                 >
                                     GET type=2 (error resp)

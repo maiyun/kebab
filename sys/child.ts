@@ -292,14 +292,6 @@ async function requestHandler(
         // --- 不能用 req.socket.destroy() 可能会导致底层复用（如 CDN） 的连接被直接断开 ---
         res.end('403 Forbidden');
         return;
-        /*
-        const text = '<h1>Kebab: No permissions</h1>host: ' + (req.headers[':authority'] as string | undefined ?? req.headers['host'] ?? '') + '<br>url: ' + (lText.htmlescape(req.url ?? ''));
-        res.setHeader('content-type', 'text/html; charset=utf-8');
-        res.setHeader('content-length', Buffer.byteLength(text));
-        res.writeHead(403);
-        res.end(text);
-        return;
-        */
     }
     /** --- 请求的路径部分，前导带 / 末尾不一定，用户怎么请求就是什么 --- */
     let path = uri.pathname ?? '/';

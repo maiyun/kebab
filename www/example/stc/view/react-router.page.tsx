@@ -1,6 +1,6 @@
 /**
  * --- Kebab React BrowserRouter 全页面示例组件 ---
- * 
+ *
  * node ./source/main build -d source/www/example/stc
  *
  * 【特性】
@@ -54,7 +54,7 @@ interface IProps {
 // --- 基础控件 ---
 
 /** --- 卡片容器 --- */
-function Card({ children, className = '' }: { 'children': React.ReactNode; 'className'?: string }) {
+function Card({ children, className = '' }: { 'children': React.ReactNode; 'className'?: string; }) {
     return (
         <div className={`bg-white rounded-xl shadow-sm border border-slate-200 p-6 ${className}`}>
             {children}
@@ -84,7 +84,7 @@ function Badge({ children, variant = 'default' }: {
 /** --- 顶部导航栏，NavLink 自动高亮当前路由 --- */
 function NavBar() {
     /** --- NavLink className 回调：激活时高亮 --- */
-    const cls = ({ isActive }: { 'isActive': boolean }): string =>
+    const cls = ({ isActive }: { 'isActive': boolean; }): string =>
         isActive
             ? 'px-3 py-1.5 rounded-lg bg-blue-500 text-white text-sm font-medium transition-colors'
             : 'px-3 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 text-sm font-medium transition-colors';
@@ -100,7 +100,7 @@ function NavBar() {
 // --- 路由页面 ---
 
 /** --- 首页 --- */
-function PageHome({ serverTime, node }: { 'serverTime': string; 'node': string }) {
+function PageHome({ serverTime, node }: { 'serverTime': string; 'node': string; }) {
     const location = useLocation();
     const [hydrated, setHydrated] = useState(false);
     useEffect(() => {
@@ -162,13 +162,13 @@ function PageAbout() {
             </div>
             <div className="flex gap-2 flex-wrap">
                 <button
-                    onClick={() => navigate('/')}
+                    onClick={() => { Promise.resolve(navigate('/')).catch(() => {}); }}
                     className="inline-flex items-center px-3 py-1.5 rounded-lg border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-medium cursor-pointer transition-colors"
                 >
                     Back to Home
                 </button>
                 <button
-                    onClick={() => navigate('/user/42')}
+                    onClick={() => { Promise.resolve(navigate('/user/42')).catch(() => {}); }}
                     className="inline-flex items-center px-3 py-1.5 rounded-lg bg-blue-500 hover:bg-blue-600 text-white text-xs font-medium cursor-pointer transition-colors"
                 >
                     Go to User #42
@@ -179,7 +179,7 @@ function PageAbout() {
 }
 
 /** --- 用户列表页 --- */
-function PageUsers({ users: initialUsers, urlBase }: { 'users'?: IUser[]; 'urlBase': string }) {
+function PageUsers({ users: initialUsers, urlBase }: { 'users'?: IUser[]; 'urlBase': string; }) {
     const location = useLocation();
     const [users, setUsers] = useState(initialUsers);
     const [loading, setLoading] = useState(false);
@@ -197,7 +197,7 @@ function PageUsers({ users: initialUsers, urlBase }: { 'users'?: IUser[]; 'urlBa
                 }
                 setLoading(false);
             })
-            .catch(() => setLoading(false));
+            .catch(() => { setLoading(false); });
     }, []);
     return (
         <div className="space-y-4">
@@ -229,8 +229,8 @@ function PageUsers({ users: initialUsers, urlBase }: { 'users'?: IUser[]; 'urlBa
  * --- 用户详情页（含嵌套路由 Outlet） ---
  * 子路由 /profile 通过 <Outlet /> 渲染在此处
  */
-function PageUserDetail({ user: initialUser, urlBase }: { 'user'?: IUser; 'urlBase': string }) {
-    const { id } = useParams<{ 'id': string }>();
+function PageUserDetail({ user: initialUser, urlBase }: { 'user'?: IUser; 'urlBase': string; }) {
+    const { id } = useParams<{ 'id': string; }>();
     const navigate = useNavigate();
     const location = useLocation();
     const [user, setUser] = useState<IUser | undefined>(
@@ -251,7 +251,7 @@ function PageUserDetail({ user: initialUser, urlBase }: { 'user'?: IUser; 'urlBa
                 }
                 setLoading(false);
             })
-            .catch(() => setLoading(false));
+            .catch(() => { setLoading(false); });
     }, [id]);
     return (
         <div className="space-y-4">
@@ -272,9 +272,9 @@ function PageUserDetail({ user: initialUser, urlBase }: { 'user'?: IUser; 'urlBa
                     Nested route <code className="bg-slate-100 px-1 rounded">/user/:id/profile</code> (rendered via Outlet):
                 </p>
                 <Outlet />
-                {location.pathname === `/user/${id}` && (
+                {location.pathname === `/user/${id ?? ''}` && (
                     <Link
-                        to={`/user/${id}/profile`}
+                        to={`/user/${id ?? ''}/profile`}
                         className="inline-flex items-center px-3 py-1.5 rounded-lg bg-blue-500 hover:bg-blue-600 text-white text-xs font-medium transition-colors"
                     >
                         View Profile
@@ -282,7 +282,7 @@ function PageUserDetail({ user: initialUser, urlBase }: { 'user'?: IUser; 'urlBa
                 )}
             </div>
             <button
-                onClick={() => navigate('/user')}
+                onClick={() => { Promise.resolve(navigate('/user')).catch(() => {}); }}
                 className="inline-flex items-center px-3 py-1.5 rounded-lg border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-medium cursor-pointer transition-colors"
             >
                 Back to Users
@@ -293,7 +293,7 @@ function PageUserDetail({ user: initialUser, urlBase }: { 'user'?: IUser; 'urlBa
 
 /** --- 嵌套子路由：用户 Profile --- */
 function PageUserProfile() {
-    const { id } = useParams<{ 'id': string }>();
+    const { id } = useParams<{ 'id': string; }>();
     const location = useLocation();
     return (
         <div className="bg-blue-50 rounded-lg p-3 mb-3 space-y-2 text-sm">
@@ -335,7 +335,6 @@ export default function ReactRouterPage({
             <head>
                 <meta charSet="UTF-8" />
                 <meta name="viewport" content="width=device-width, initial-scale=1" />
-                {/* eslint-disable-next-line @typescript-eslint/naming-convention */}
                 <title suppressHydrationWarning>{title}</title>
                 {/* --- import map 由框架自动注入在此标签前，无需手动添加 --- */}
                 {/* --- dev: 需先执行 node ./source/main build -d source/www/example/stc 生成 CSS --- */}

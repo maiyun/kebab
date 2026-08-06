@@ -23,8 +23,8 @@ export async function check(kv: lKv.Kv, key: string, opt: {
     /** --- key 前缀，默认 rl: --- */
     'pre'?: string;
 } = {}): Promise<ICheckResult> {
-    const window = opt.window ?? 60;
-    const max = opt.max ?? 60;
+    const window = Math.max(Math.floor(opt.window ?? 60), 1);
+    const max = Math.max(Math.floor(opt.max ?? 60), 1);
     const pre = opt.pre ?? 'rl:';
     const now = lTime.stamp();
     /** --- 将窗口分为 6 个子段 --- */
@@ -35,7 +35,7 @@ export async function check(kv: lKv.Kv, key: string, opt: {
     const segCount = Math.ceil(window / segSize);
     /** --- 统计各段请求数总和 --- */
     let total = 0;
-    for (let i = 0; i < segCount; ++i) {
+    for (let i = 1; i < segCount; ++i) {
         const segKey = `${pre}${key}:${segId - i}`;
         const val = await kv.get(segKey);
         if (val) {
@@ -58,7 +58,7 @@ export async function check(kv: lKv.Kv, key: string, opt: {
     if (count === 1) {
         await kv.expire(currentSegKey, window + segSize);
     }
-    total += 1;
+    total += count;
     const allowed = total <= max;
     return {
         'allowed': allowed,
@@ -82,8 +82,8 @@ export async function checkFixed(kv: lKv.Kv, key: string, opt: {
     /** --- key 前缀，默认 rl: --- */
     'pre'?: string;
 } = {}): Promise<ICheckResult> {
-    const window = opt.window ?? 60;
-    const max = opt.max ?? 60;
+    const window = Math.max(Math.floor(opt.window ?? 60), 1);
+    const max = Math.max(Math.floor(opt.max ?? 60), 1);
     const pre = opt.pre ?? 'rl:';
     const now = lTime.stamp();
     const rkey = pre + key;

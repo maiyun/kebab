@@ -70,7 +70,7 @@ export class Kv {
         if (!conn) {
             return false;
         }
-        return conn.pipeline();
+        return conn.createPipelineClient();
     }
 
     /**
@@ -326,6 +326,27 @@ end`;
         }
         const r = lText.parseJson(v);
         return r;
+    }
+
+    /**
+     * --- 原子获取并删除 JSON 对象 ---
+     * @param key 键
+     */
+    public async getDelJson(key: string): Promise<any | false | null> {
+        const conn = await this._getConnection();
+        if (!conn) {
+            return false;
+        }
+        try {
+            const value = await conn.getAndDel(this._etc.pre + key);
+            if (value === null) {
+                return null;
+            }
+            return lText.parseJson(value);
+        }
+        catch {
+            return false;
+        }
     }
 
     /**

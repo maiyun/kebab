@@ -489,7 +489,17 @@ export async function request(
         return res;
     }
     // --- 哦，要追踪 ---
-    headers['referer'] = u;
+    const nextUrl = lText.urlResolve(u, req.headers['location'] as string);
+    if (lText.isSameOrigin(u, nextUrl)) {
+        headers['referer'] = u;
+    }
+    else {
+        // --- 跨域跳转不得携带来源站点凭据 ---
+        delete headers['authorization'];
+        delete headers['proxy-authorization'];
+        delete headers['cookie'];
+        delete headers['referer'];
+    }
     let nextMethod = method;
     let nextData = data;
     const status = res.headers['http-code'];
@@ -497,7 +507,11 @@ export async function request(
         nextMethod = 'GET';
         nextData = undefined;
     }
-    return request(lText.urlResolve(u, req.headers['location'] as string), nextData, {
+    if (nextData instanceof stream.Readable) {
+        return res;
+    }
+    req.getStream().resume();
+    return request(nextUrl, nextData, {
         'method': nextMethod,
         'type': type,
         'timeout': timeout,

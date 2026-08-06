@@ -6,6 +6,7 @@ module.exports = [
     {
         files: [
             '**/*.ts', // don't add `./` before the path
+            '**/*.tsx',
         ],
         languageOptions: {
             parserOptions: {
@@ -21,6 +22,15 @@ module.exports = [
             '@typescript-eslint/unbound-method': 'off',
             '@typescript-eslint/explicit-function-return-type': 'off',
             'max-lines': ['warn', 5000],
+        }
+    },
+    {
+        files: [
+            '**/*.tsx',
+        ],
+        rules: {
+            // --- React 组件使用 PascalCase，框架注入属性允许使用 _ 前缀 ---
+            '@typescript-eslint/naming-convention': 'off',
         }
     }
 ];

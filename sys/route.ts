@@ -49,6 +49,21 @@ function respond500(res: http2.Http2ServerResponse | http.ServerResponse): void 
 }
 
 /**
+ * --- 安全写入外部输入键，避免 __proto__ 等特殊键改变对象原型 ---
+ * @param target 目标对象
+ * @param key 键
+ * @param value 值
+ */
+function setInputValue<T>(target: Record<string, T>, key: string, value: T): void {
+    Object.defineProperty(target, key, {
+        'configurable': true,
+        'enumerable': true,
+        'value': value,
+        'writable': true,
+    });
+}
+
+/**
  * --- 输出 404 错误响应 ---
  * @param res 响应对象
  * @param config 配置对象（用于检查 #404 路由）
@@ -69,7 +84,7 @@ function respond404(
         }
         return;
     }
-    const content = '[Error] Controller not found, path: ' + path + '.';
+    const content = '[Error] Controller not found, path: ' + lText.htmlescape(path) + '.';
     if (!res.headersSent) {
         res.setHeader('content-type', 'text/html; charset=utf-8');
         res.setHeader('content-length', Buffer.byteLength(content));
@@ -284,17 +299,17 @@ export async function run(data: {
             const key = cookie.slice(0, eqIndex).trim();
             const rawVal = cookie.slice(eqIndex + 1);
             try {
-                cookies[key] = decodeURIComponent(rawVal);
+                setInputValue(cookies, key, decodeURIComponent(rawVal));
             }
             catch {
-                cookies[key] = rawVal;
+                setInputValue(cookies, key, rawVal);
             }
         }
     }
     // --- 处理 headers ---
     const headers: http.IncomingHttpHeaders = {};
     for (const key in data.req.headers) {
-        headers[key.toLowerCase()] = data.req.headers[key];
+        setInputValue(headers, key.toLowerCase(), data.req.headers[key]);
     }
     headers['authorization'] ??= '';
     /** --- 开发者返回值 --- */
@@ -996,6 +1011,12 @@ export function getFormData(
         'allowedExts'?: string[];
         /** --- 单个字段（非文件）最大字节数，默认 1 MB --- */
         'maxFieldSize'?: number;
+        /** --- 整体请求最大字节数，不设置或设为 0 则不限制 --- */
+        'maxTotalSize'?: number;
+        /** --- 单个 multipart 段头部最大字节数，默认 16 KB --- */
+        'maxHeaderSize'?: number;
+        /** --- multipart 字段与文件总数量，默认 1000 --- */
+        'maxParts'?: number;
         /** --- 整体请求超时时间（毫秒），默认 5 分钟，设为 0 禁用超时 --- */
         'timeout'?: number;
     } = {}
@@ -1013,9 +1034,9 @@ export function getFormData(
             resolve({ 'post': {}, 'files': {} });
             return;
         }
-        /** --- boundary 位置 --- */
-        const clio = ct.lastIndexOf('boundary=');
-        if (clio === -1) {
+        /** --- 获取 boundary，兼容带引号及后续参数的标准写法 --- */
+        const boundaryMatch = /(?:^|;)\s*boundary\s*=\s*(?:"([^"]+)"|([^;\s]+))/i.exec(ct);
+        if (!boundaryMatch) {
             resolve({ 'post': {}, 'files': {} });
             return;
         }
@@ -1028,7 +1049,11 @@ export function getFormData(
             'files': {}
         };
         /** --- 获取的 boundary 文本 --- */
-        const boundary = ct.slice(clio + 9);
+        const boundary = boundaryMatch[1] ?? boundaryMatch[2];
+        if (!boundary || (boundary.length > 200) || /[\r\n]/.test(boundary)) {
+            resolve(false);
+            return;
+        }
 
         // --- 超时护盾：防止网络静默断开时 Promise 永不 resolve ---
 
@@ -1077,6 +1102,10 @@ export function getFormData(
         let readEnd: boolean = false;
         /** --- 是否有文件被限制拒绝（整体返回 false） --- */
         let rejected: boolean = false;
+        /** --- 已接收的请求体字节数 --- */
+        let totalSize: number = 0;
+        /** --- 已解析的字段与文件数量 --- */
+        let partCount: number = 0;
 
         /** --- 清理 rtn.files 中所有已写入的临时文件 --- */
         function cleanupFiles(): void {
@@ -1091,6 +1120,17 @@ export function getFormData(
             }
         }
 
+        /** --- 清理仍在写入、尚未加入 rtn.files 的临时文件 --- */
+        function cleanupActiveFile(): void {
+            if ((state !== EState.FILE) || !ftmpName) {
+                return;
+            }
+            ftmpStream.destroy();
+            lFs.unlink(kebab.FTMP_CWD + ftmpName).catch(() => {});
+            ftmpName = '';
+            --writeFileLength;
+        }
+
         // --- 启动超时定时器（在所有变量声明之后，确保回调闭包可引用） ---
         const timeoutMs = limits.timeout ?? 300_000;
         if (timeoutMs > 0) {
@@ -1099,9 +1139,7 @@ export function getFormData(
                     return;
                 }
                 finished = true;
-                if ((state === EState.FILE) && ftmpName && ftmpStream) {
-                    ftmpStream.destroy();
-                }
+                cleanupActiveFile();
                 lCore.debug('[ROUTE][GETFORMDATA] formdata request timeout');
                 lCore.log({}, '[ROUTE][GETFORMDATA] formdata request timeout after ' + timeoutMs + 'ms', '-error');
                 cleanupFiles();
@@ -1136,6 +1174,16 @@ export function getFormData(
 
         // --- 开始读取 ---
         req.on('data', function(chunk: Buffer) {
+            if (finished || rejected) {
+                return;
+            }
+            totalSize += chunk.length;
+            if ((limits.maxTotalSize !== undefined) && (limits.maxTotalSize > 0) && (totalSize > limits.maxTotalSize)) {
+                rejected = true;
+                cleanupActiveFile();
+                buffer = Buffer.from('');
+                return;
+            }
             buffer = Buffer.concat([buffer, chunk], buffer.length + chunk.length);
             while (true) {
                 switch (state) {
@@ -1143,9 +1191,19 @@ export function getFormData(
                         /** --- 中断符位置 --- */
                         const io = buffer.indexOf('\r\n\r\n');
                         if (io === -1) {
+                            if (buffer.length > (limits.maxHeaderSize ?? 16 * 1024)) {
+                                rejected = true;
+                                buffer = Buffer.from('');
+                            }
                             return;
                         }
                         // --- 头部已经读取完毕 ---
+                        ++partCount;
+                        if (partCount > (limits.maxParts ?? 1000)) {
+                            rejected = true;
+                            buffer = Buffer.from('');
+                            return;
+                        }
                         const head: string = buffer.subarray(0, io).toString();
                         // --- 除头部外剩下的 buffer ---
                         buffer = buffer.subarray(io + 4);
@@ -1188,8 +1246,20 @@ export function getFormData(
                                     date.getUTCDate().toString().padStart(2, '0') +
                                     date.getUTCHours().toString().padStart(2, '0') +
                                     date.getUTCMinutes().toString().padStart(2, '0') + '_' + lCore.random() + '.ftmp';
-                                ftmpStream = lFs.createWriteStream(kebab.FTMP_CWD + ftmpName);
-                                ftmpStream.on('error', () => {});
+                                const activeName = ftmpName;
+                                const activePath = kebab.FTMP_CWD + activeName;
+                                const activeStream = lFs.createWriteStream(activePath);
+                                ftmpStream = activeStream;
+                                activeStream.on('error', (error) => {
+                                    rejected = true;
+                                    lFs.unlink(activePath).catch(() => {});
+                                    if (ftmpStream === activeStream) {
+                                        ftmpName = '';
+                                    }
+                                    --writeFileLength;
+                                    req.resume();
+                                    lCore.log({}, `[ROUTE][GETFORMDATA] temporary file error: ${error.message}`, '-error');
+                                });
                                 ftmpSize = 0;
                             }
                             else {
@@ -1206,13 +1276,14 @@ export function getFormData(
                             const maxField = limits.maxFieldSize ?? 1_048_576;
                             if (buffer.length > maxField + boundary.length + 4) {
                                 rejected = true;
+                                buffer = Buffer.from('');
                                 return;
                             }
                             return;
                         }
                         // --- 找到结束标语，写入 POST ---
                         const val = buffer.subarray(0, io).toString();
-                        if (rtn.post[name]) {
+                        if (Object.hasOwn(rtn.post, name)) {
                             if (Array.isArray(rtn.post[name])) {
                                 (rtn.post[name] as string[]).push(val);
                             }
@@ -1221,7 +1292,7 @@ export function getFormData(
                             }
                         }
                         else {
-                            rtn.post[name] = val;
+                            setInputValue(rtn.post, name, val);
                         }
                         // --- 重置状态机 ---
                         state = EState.WAIT;
@@ -1244,7 +1315,10 @@ export function getFormData(
                                         rejectFile();
                                     }
                                     else {
-                                        ftmpStream.write(writeBuffer);
+                                        if (!ftmpStream.write(writeBuffer)) {
+                                            req.pause();
+                                            ftmpStream.once('drain', () => { req.resume(); });
+                                        }
                                         ftmpSize += Buffer.byteLength(writeBuffer);
                                     }
                                 }
@@ -1296,7 +1370,7 @@ export function getFormData(
                                     'size': ftmpSize,
                                     'path': kebab.FTMP_CWD + ftmpName
                                 };
-                                if (rtn.files[name]) {
+                                if (Object.hasOwn(rtn.files, name)) {
                                     if (Array.isArray(rtn.files[name])) {
                                         (rtn.files[name] as kebab.IPostFile[]).push(val);
                                     }
@@ -1305,7 +1379,7 @@ export function getFormData(
                                     }
                                 }
                                 else {
-                                    rtn.files[name] = val;
+                                    setInputValue(rtn.files, name, val);
                                 }
                             }
                         }
@@ -1331,9 +1405,7 @@ export function getFormData(
             }
             finished = true;
             clearTimer();
-            if ((state === EState.FILE) && ftmpName) {
-                ftmpStream.destroy();
-            }
+            cleanupActiveFile();
             lCore.debug('[ROUTE][GETFORMDATA] request error before getFormData: ' + e.message);
             lCore.log({}, '[ROUTE][GETFORMDATA] request error before getFormData: ' + (e.stack ?? ''), '-error');
             cleanupFiles();
@@ -1345,12 +1417,10 @@ export function getFormData(
                 return;
             }
             // --- 若数据未读完且连接已关闭，视为传输中断（多数是用户主动取消，无需记录错误） ---
-            if (!readEnd && writeFileLength > 0) {
+            if (!readEnd) {
                 finished = true;
                 clearTimer();
-                if ((state === EState.FILE) && ftmpName && ftmpStream) {
-                    ftmpStream.destroy();
-                }
+                cleanupActiveFile();
                 lCore.debug('[ROUTE][GETFORMDATA] connection closed before formdata complete');
                 cleanupFiles();
                 resolve(false);

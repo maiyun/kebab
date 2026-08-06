@@ -2757,7 +2757,7 @@ result: <pre>${lText.htmlescape(JSON.stringify(json2, null, 4))}</pre>`);
     }
 
     /** --- 测试 ProxyAgent --- */
-    private readonly _undiciProxyAgent = lUndici.getProxyAgent('http://192.168.0.10:20809');
+    private readonly _undiciProxyAgent = lUndici.getProxyAgent('http://192.168.31.10:20809');
 
     public async undiciProxy(): Promise<string> {
         const echo = [];
@@ -4178,7 +4178,8 @@ rtn.push(reader.readBCDString());</pre>${JSON.stringify(rtn)}`);
 });</pre>`);
                 if (imgResult && imgResult.list?.length) {
                     for (const img of imgResult.list) {
-                        echo.push(`<div><img src="${img.url.startsWith('http') ? img.url : 'data:image/png;base64,' + img.url}" style="max-width: 512px;" /></div>${lText.htmlescape(img.text)}`);
+                        const url = img.url.startsWith('http') ? img.url : 'data:image/png;base64,' + img.url;
+                        echo.push(`<div><img src="${lText.htmlescape(url)}" style="max-width: 512px;" /></div>${lText.htmlescape(img.text)}`);
                     }
                     echo.push('<br>request: ' + imgResult.request, ', seed: ' + imgResult.seed);
                 }
@@ -4231,7 +4232,8 @@ rtn.push(reader.readBCDString());</pre>${JSON.stringify(rtn)}`);
     <img src="https://img.alicdn.com/imgextra/i3/O1CN01SfG4J41UYn9WNt4X1_!!6000000002530-49-tps-1696-960.webp" style="max-width: 256px;" />
 </div>`);
                     for (const img of imgResult.list) {
-                        echo.push(`<div><img src="${img.url.startsWith('http') ? img.url : 'data:image/png;base64,' + img.url}" style="max-width: 512px;" /></div>${lText.htmlescape(img.text || prompt)}`);
+                        const url = img.url.startsWith('http') ? img.url : 'data:image/png;base64,' + img.url;
+                        echo.push(`<div><img src="${lText.htmlescape(url)}" style="max-width: 512px;" /></div>${lText.htmlescape(img.text || prompt)}`);
                     }
                     echo.push('<br>request: ' + imgResult.request, ', seed: ' + imgResult.seed);
                 }

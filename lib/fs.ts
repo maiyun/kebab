@@ -41,10 +41,9 @@ export async function getContent(path: string, options?: BufferEncoding | {
     const encoding = options.encoding;
     const start = options.start;
     const end = options.end;
-    if (start ?? end) {
+    if ((start !== undefined) || (end !== undefined)) {
         return new Promise(function(resolve) {
             const rs = createReadStream(path, {
-                'encoding': encoding,
                 'start': start,
                 'end': end
             });
