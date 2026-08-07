@@ -491,9 +491,12 @@ export async function readToResponse(path: string,
     // --- 判断缓存以及 MIME 和编码 ---
     let charset = '';
     const mimeData = mime.getData(path);
-    if (['htm', 'html', 'css', 'js', 'mjs', 'xml', 'jpg', 'jpeg', 'svg', 'gif', 'png', 'json'].includes(mimeData.extension)) {
+    // --- 文本类文件统一附加 charset，避免浏览器按本地默认编码解析导致乱码 ---
+    if (mimeData.mime.startsWith('text/') || ['json', 'xml', 'svg', 'js', 'mjs', 'map', 'webmanifest'].includes(mimeData.extension)) {
         charset = '; charset=utf-8';
-        // --- 这些文件可能需要缓存 ---
+    }
+    // --- 这些文件可能需要缓存 ---
+    if (['htm', 'html', 'css', 'js', 'mjs', 'xml', 'jpg', 'jpeg', 'svg', 'gif', 'png', 'json'].includes(mimeData.extension)) {
         const hash = `W/"${stat.size.toString(16)}-${stat.mtime.getTime().toString(16)}"`;
         const lastModified = stat.mtime.toUTCString();
         res.setHeader('etag', hash);
