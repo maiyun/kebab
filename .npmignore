@@ -4,6 +4,7 @@
 .vs/
 .git/
 node_modules/
+test/
 eslint.config.cjs
 .gitignore
 .npmignore

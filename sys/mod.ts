@@ -5,6 +5,7 @@
  */
 import * as lSql from '#kebab/lib/sql.js';
 import * as lDb from '#kebab/lib/db.js';
+import * as lSqlValue from '#kebab/lib/sql/value.js';
 import * as lCore from '#kebab/lib/core.js';
 import * as lText from '#kebab/lib/text.js';
 import * as sCtr from '#kebab/sys/ctr.js';
@@ -81,6 +82,9 @@ export default class Mod {
 
     /** --- 要 update 的内容 --- */
     protected _updates: Record<string, boolean> = {};
+
+    /** --- 要在数据库边界序列化的 JSON 字段 --- */
+    protected _jsonUpdates: Record<string, boolean> = {};
 
     /** --- 模型获取的属性 --- */
     protected _data: Record<string, any> = {};
@@ -195,7 +199,7 @@ export default class Mod {
         return lSql.value(val);
     }
 
-    /** --- 创建 JSON 字符串对象，用于 PGSQL 的 jsonb 字段 --- */
+    /** --- 标记 JSON 字段；模型内保持原始对象，写入数据库时再序列化 --- */
     public static json<T>(obj: T): T {
         return lSql.json(obj);
     }
@@ -789,6 +793,25 @@ export default class Mod {
 
     // --- 动态方法 ---
 
+    /**
+     * --- 设置单个模型属性，并记录是否需要在数据库边界序列化 ---
+     * @param key 字段名
+     * @param value 字段值
+     */
+    private _setProperty(key: string, value: any): void {
+        const isJson = lSqlValue.isJson(value);
+        const rawValue = isJson ? lSqlValue.unwrapJson(value) : value;
+        this._updates[key] = true;
+        if (isJson) {
+            this._jsonUpdates[key] = true;
+        }
+        else {
+            delete this._jsonUpdates[key];
+        }
+        this._data[key] = rawValue;
+        (this as kebab.Json)[key] = rawValue;
+    }
+
     public set<T extends this, TK extends keyof T>(n: Record<TK, T[TK] | undefined>): void;
     public set<T extends this, TK extends keyof T>(n: TK, v: T[TK]): void;
     /**
@@ -805,9 +828,7 @@ export default class Mod {
                     continue;
                 }
                 // --- 强制更新，因为有的可能就是要强制更新既然设置了 ---
-                this._updates[k] = true;
-                this._data[k] = v;
-                (this as kebab.Json)[k] = v;
+                this._setProperty(k, v);
             }
         }
         else {
@@ -818,9 +839,7 @@ export default class Mod {
             if (typeof n !== 'string') {
                 return;
             }
-            this._updates[n] = true;
-            this._data[n] = v;
-            (this as kebab.Json)[n] = v;
+            this._setProperty(n, v);
         }
     }
 
@@ -840,7 +859,7 @@ export default class Mod {
         const cstr = this.constructor as any;
         const updates: Record<string, any> = {};
         for (const k in this._updates) {
-            updates[k] = this._data[k];
+            updates[k] = this._jsonUpdates[k] ? lSql.json(this._data[k]) : this._data[k];
         }
 
         let r: lDb.IPacket | null = null;
@@ -913,6 +932,7 @@ export default class Mod {
         }
         if (r.packet?.affected) {
             this._updates = {};
+            this._jsonUpdates = {};
             this._data[cstr._$primary] = r.packet.insert;
             (this as kebab.Json)[cstr._$primary] = this._data[cstr._$primary];
             return true;
@@ -948,6 +968,7 @@ export default class Mod {
             }
             where[field] = this._data[field];
             delete this._updates[field];
+            delete this._jsonUpdates[field];
         }
         return this.save(where);
     }
@@ -999,7 +1020,7 @@ export default class Mod {
         }
         const updates: Record<string, any> = {};
         for (const k in this._updates) {
-            updates[k] = this._data[k];
+            updates[k] = this._jsonUpdates[k] ? lSql.json(this._data[k]) : this._data[k];
         }
         this._sql.update((cstr._$table as string) + (this._index ? ('_' + this._index[0]) : ''), [updates]).where(where ?? {
             [cstr._$primary]: this._data[cstr._$primary]
@@ -1011,6 +1032,7 @@ export default class Mod {
         }
         if (r.packet.affected) {
             this._updates = {};
+            this._jsonUpdates = {};
             return true;
         }
         else {

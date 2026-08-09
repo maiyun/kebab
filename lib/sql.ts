@@ -6,6 +6,7 @@
 import * as kebab from '#kebab/index.js';
 import * as lText from '#kebab/lib/text.js';
 import * as lCore from '#kebab/lib/core.js';
+import * as lSqlValue from '#kebab/lib/sql/value.js';
 // --- 第三方 ---
 import * as mysql2 from 'mysql2/promise';
 // --- 库和定义 ---
@@ -350,16 +351,15 @@ export class Sql {
     private _updateSub(s: kebab.Json): string {
         /*
         [
-            ['total', '+', '1'],    // 1, '1' 可能也是 1 数字类型
+            ['total', '+', '1'],
             {
-                'type': '6',        // 2
-                'type': column('type2'),   // 3
-                // 'type': ['type3'],  // 4 - 此写法已被禁止，请用 (3) 代替
-                'type': ['(CASE `id` WHEN 1 THEN ? WHEN 2 THEN ? END)', ['val1', 'val2']],     // 5
-                'point': { 'x': 0, 'y': 0 },  // 6
-                'polygon': [ [ { 'x': 0, 'y': 0 }, { ... } ], [ ... ] ],          // 7
-                'json': { 'a': 1, 'b': { 'c': 2 }, 'c': [ { 'c': 2 } ] },         // 8 - 对象类 json，可能为空对象
-                'json2': ['abc']    // 9 - 数组类 json，可能为空数组
+                'type': '6',
+                'type': column('type2'),
+                'type': ['(CASE `id` WHEN 1 THEN ? WHEN 2 THEN ? END)', ['val1', 'val2']],
+                'point': { 'x': 0, 'y': 0 },
+                'polygon': [ [ { 'x': 0, 'y': 0 }, { ... } ], [ ... ] ],
+                'json': json({ 'a': 1, 'b': { 'c': 2 }, 'c': [ { 'c': 2 } ] }),
+                'json2': json(['abc'])
             }
         ]
         */
@@ -368,7 +368,7 @@ export class Sql {
         for (const k in s) {
             const v = s[k];
             if (/^[0-9]+$/.test(k)) {
-                // --- 1 ---
+                // --- 数组运算式：[字段, 运算符, 值] ---
                 const nv = v[2];
                 const isf = this._isField(nv);
                 if (isf) {
@@ -380,17 +380,22 @@ export class Sql {
                     }
                 }
                 else {
+                    /** --- JSON 标记值需要生成 ::jsonb；普通运算值保持原占位符行为 --- */
+                    const result = lSqlValue.isJson(nv) ? this._processValue(nv) : {
+                        'sql': this._placeholder(),
+                        'data': [nv],
+                    };
                     if (v[1] === '=') {
-                        sql += this.field(v[0]) + ' = ' + this._placeholder() + ', ';
+                        sql += this.field(v[0]) + ' = ' + result.sql + ', ';
                     }
                     else {
-                        sql += this.field(v[0]) + ' = ' + this.field(v[0]) + ' ' + v[1] + ' ' + this._placeholder() + ', ';
+                        sql += this.field(v[0]) + ' = ' + this.field(v[0]) + ' ' + v[1] + ' ' + result.sql + ', ';
                     }
-                    this._data.push(nv);
+                    this._data.push(...result.data);
                 }
             }
             else {
-                // --- 2, 3, 4, 5, 6, 7, 8 ---
+                // --- 对象赋值式：{字段: 值} ---
                 sql += this.field(k) + ' = ';
                 const result = this._processValue(v);
                 sql += result.sql + ', ';
@@ -550,14 +555,13 @@ export class Sql {
 
     /**
      * --- 筛选器 ---
-     * --- 1. 'city': 'bj', 'type': '2' ---
-     * --- 2. ['type', '>', '1'] ---
-     * --- 3. ['type', 'in', ['1', '2']] ---
-     * --- 4. 'type': ['1', '2'] ---
-     * --- 5. '$or': [{'city': 'bj'}, {'city': 'sh'}, [['age', '>', '10']]], 'type': '2' ---
-     * --- 6. 'city_in': column('city_out') ---
-     * --- 7. ['JSON_CONTAINS(`uid`, ?)', ['hello']] ---
-     * --- 8. ['info', 'json', {'a': 1}] ---
+     * --- 标量相等：'city': 'bj', 'type': '2' ---
+     * --- 运算符条件：['type', '>', '1'] ---
+     * --- 集合条件：['type', 'in', ['1', '2']] 或 'type': ['1', '2'] ---
+     * --- 逻辑分组：'$or': [{'city': 'bj'}, {'city': 'sh'}, [['age', '>', '10']]] ---
+     * --- 字段比较：'city_in': column('city_out') ---
+     * --- 原始条件：['JSON_CONTAINS(`uid`, ?)', ['hello']] ---
+     * --- JSON 条件：['info', 'json', {'a': 1}] ---
      * @param s 筛选数据
      */
     public where(s: string | kebab.Json): this {
@@ -600,18 +604,18 @@ export class Sql {
         for (const k in s) {
             const v = s[k];
             if (/^[0-9]+$/.test(k)) {
-                // --- 2, 3, 7 ---
+                // --- 数组条件或原始 SQL 条件 ---
                 if (v[2] === undefined) {
-                    // --- 7 ---
+                    // --- 原始 SQL 条件及参数 ---
                     sql += this.field(v[0]) + ' AND ';
                     if (v[1] !== undefined) {
                         data.push(...v[1]);
                     }
                 }
                 else if (typeof v[1] === 'string' && ['json', 'json_in', 'json_key', 'json_any', 'json_all', 'json_overlaps'].includes(v[1].toLowerCase())) {
-                    // --- json ---
+                    // --- JSON 操作符条件 ---
                     const op = v[1].toLowerCase();
-                    const nv = v[2];
+                    const nv = lSqlValue.unwrapJson(v[2]);
                     if (op === 'json') {
                         if (this._service === ESERVICE.MYSQL) {
                             sql += `JSON_CONTAINS(${this.field(v[0])}, ${this._placeholder()}) AND `;
@@ -668,7 +672,7 @@ export class Sql {
                     }
                 }
                 else if (v[2] === null) {
-                    // --- 3: null ---
+                    // --- NULL 比较 ---
                     let opera = v[1];
                     if (opera === '!=' || opera === '!==' || opera === '<>') {
                         opera = 'IS NOT';
@@ -682,7 +686,7 @@ export class Sql {
                     sql += this.field(v[0]) + ' ' + opera + ' NULL AND ';
                 }
                 else if (Array.isArray(v[2])) {
-                    // --- 3 ---
+                    // --- IN 等集合比较 ---
                     sql += this.field(v[0]) + ' ' + v[1].toUpperCase() + ' (';
                     for (const v1 of v[2]) {
                         if (Array.isArray(v1)) {
@@ -701,7 +705,7 @@ export class Sql {
                     sql = sql.slice(0, -2) + ') AND ';
                 }
                 else {
-                    // --- 2, 6 ---
+                    // --- 普通运算符或字段比较 ---
                     const nv = v[2];
                     // --- v[0] 也可以是 value() 包裹的字面量值，而不一定是字段名 ---
                     const isv0 = this._isValue(v[0]);
@@ -711,19 +715,23 @@ export class Sql {
                     }
                     const isf = this._isField(nv);
                     if (isf) {
-                        // --- 6. field ---
+                        // --- 字段比较 ---
                         sql += v0sql + ' ' + v[1] + ' ' + this.field(nv.value) + ' AND ';
                     }
                     else {
-                        sql += v0sql + ' ' + v[1] + ' ' + this._placeholder() + ' AND ';
-                        data.push(nv);
+                        const result = lSqlValue.isJson(nv) ? this._processValue(nv) : {
+                            'sql': this._placeholder(),
+                            'data': [nv],
+                        };
+                        sql += v0sql + ' ' + v[1] + ' ' + result.sql + ' AND ';
+                        data.push(...result.data);
                     }
                 }
             }
             else {
-                // --- 1, 4, 5, 6 ---
+                // --- 字段映射、逻辑分组与 IN 查询 ---
                 if (k.startsWith('$')) {
-                    // --- 5 - '$or': [{'city': 'bj'}, {'city': 'sh'}] ---
+                    // --- 逻辑条件分组，如 $or ---
                     const sp = ' ' + k.slice(1).split('-')[0].toUpperCase() + ' ';
                     sql += '(';
                     for (let v1 of v) {
@@ -739,21 +747,28 @@ export class Sql {
                     sql = sql.slice(0, -sp.length) + ') AND ';
                 }
                 else {
-                    // --- 1, 4, 6 ---
+                    // --- 单字段条件 ---
                     if (v === null) {
+                        // --- NULL 判断 ---
                         sql += this.field(k) + ' IS NULL AND ';
                     }
                     else if (typeof v === 'string' || typeof v === 'number') {
-                        // --- 1 ---
+                        // --- 标量相等 ---
                         sql += this.field(k) + ' = ' + this._placeholder() + ' AND ';
                         data.push(v);
                     }
+                    else if (lSqlValue.isJson(v)) {
+                        // --- JSON 相等 ---
+                        const result = this._processValue(v);
+                        sql += this.field(k) + ' = ' + result.sql + ' AND ';
+                        data.push(...result.data);
+                    }
                     else if (this._isField(v)) {
-                        // --- 6 ---
+                        // --- 字段相等 ---
                         sql += this.field(k) + ' = ' + this.field(v.value) + ' AND ';
                     }
                     else {
-                        // --- 4 - 'type': ['1', '2'] ---
+                        // --- IN 查询，如 'type': ['1', '2'] ---
                         if (v.length > 0) {
                             sql += this.field(k) + ' IN (';
                             for (const v1 of v) {
@@ -1013,7 +1028,7 @@ export class Sql {
      * --- 获取全部 data ---
      */
     public getData(): kebab.DbValue[] {
-        return this._data;
+        return lSqlValue.serializeList(this._data) ?? [];
     }
 
     /**
@@ -1204,6 +1219,10 @@ export class Sql {
         if (v === null || v === undefined) {
             return '';
         }
+        if (lSqlValue.isJson(v)) {
+            // --- _processValue 已经为 PostgreSQL JSON 参数添加 ::jsonb ---
+            return '';
+        }
         if (typeof v === 'number') {
             return Number.isInteger(v) ? '::bigint' : '::float8';
         }
@@ -1231,11 +1250,10 @@ export class Sql {
             if (v.y !== undefined) {
                 return '::point';
             }
-            // --- JSON 对象（用户应通过 sql.json() 包裹为字符串后传入），不加转换 ---
+            // --- 普通对象由数据库驱动按原有规则处理；显式 JSON 由 json() 标记 ---
             return '';
         }
-        // --- string：保持 unknown 类型，兼容 text/varchar/jsonb 等目标列类型；
-        //     使用 sql.json() 包裹的 jsonb 数据经此路径，unknown 可隐式 cast 到 jsonb ---
+        // --- string：保持 unknown 类型，兼容 text/varchar 等目标列类型 ---
         return '';
     }
 
@@ -1254,6 +1272,12 @@ export class Sql {
         }
         else if (v === null) {
             return { 'sql': 'NULL', 'data': [] };
+        }
+        else if (lSqlValue.isJson(v)) {
+            return {
+                'sql': this._placeholder() + (this._service === ESERVICE.PGSQL ? '::jsonb' : ''),
+                'data': [lSqlValue.serialize(v)]
+            };
         }
         else if (typeof v === 'string' || typeof v === 'number') {
             return { 'sql': this._placeholder(), 'data': [v] };
@@ -1397,6 +1421,7 @@ export function get(opt: {
  * @param service 服务商，默认 MySQL
  */
 export function format(sql: string, data: kebab.DbValue[], service: ESERVICE = ESERVICE.MYSQL): string {
+    data = lSqlValue.serializeList(data) ?? [];
     if (service === ESERVICE.MYSQL) {
         return mysql2.format(sql, data);
     }
@@ -1490,9 +1515,10 @@ export function value(val: kebab.DbValue): {
 }
 
 /**
- * --- 将对象转换为 JSON 字符串并避开类型检查，用于适配 PostgreSQL 的 jsonb 字段 ---
- * @param obj 要转换的 JSON 对象
+ * --- 标记需要写入 JSON/jsonb 字段的值；实际序列化延迟到数据库边界 ---
+ * @param obj 原始 JSON 值
+ * @returns 类型保持不变的 JSON 包装值
  */
 export function json<T>(obj: T): T {
-    return lText.stringifyJson(obj) as T;
+    return lSqlValue.json(obj) as T;
 }

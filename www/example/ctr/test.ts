@@ -775,7 +775,7 @@ Result:<pre id="result">Nothing.</pre>` + this._getEnd();
                     { 'x': 3, 'y': 3 },
                     { 'x': 1, 'y': 1 },
                 ],
-                'json': { 'x': { 'y': 'abc' } },
+                'json': mTest.json({ 'x': { 'y': 'abc' } }),
                 'time_add': time,
             });
             const result = await test.create();
@@ -793,7 +793,7 @@ test.set({
         { 'x': 3, 'y': 3 },
         { 'x': 1, 'y': 1 },
     ],
-    'json': { 'x': { 'y': 'abc' } },
+    'json': mTest.json({ 'x': { 'y': 'abc' } }),
     'time_add': time,
 });
 const result = await test.create();
@@ -907,7 +907,7 @@ await ft.save();</pre>`);
                         { 'x': 7, 'y': 3 },
                         { 'x': 5, 'y': 1 }
                     ],
-                    'json': { 'x': { 'y': 'def' } }
+                    'json': mTest.json({ 'x': { 'y': 'def' } })
                 });
                 await ft.save();
                 await ft.refresh();
@@ -922,7 +922,7 @@ await ft.save();</pre>`);
         { 'x': 7, 'y': 3 },
         { 'x': 5, 'y': 1 }
     ],
-    'json': { 'x': { 'y': 'def' } }
+    'json': mTest.json({ 'x': { 'y': 'def' } })
 });
 await ft.save();
 await ft.refresh();</pre>`);
@@ -3071,7 +3071,7 @@ Result:<pre id="result">Nothing.</pre>`);
                             { 'x': 3, 'y': 3 },
                             { 'x': 1, 'y': 1 }
                         ],
-                        { 'x': { 'y': 'ghi' } }
+                        lSql.json({ 'x': { 'y': 'ghi' } })
                     ],
                     [
                         'POINT B', ['ST_POINTFROMTEXT(?)', ['POINT(123.147775 30.625016)']], { 'x': 1, 'y': 1 }, null, null
@@ -3086,7 +3086,7 @@ Result:<pre id="result">Nothing.</pre>`);
             { 'x': 3, 'y': 3 },
             { 'x': 1, 'y': 1 }
         ],
-        { 'x': { 'y': 'ghi' } }
+        lSql.json({ 'x': { 'y': 'ghi' } })
     ],
     [
         'POINT B', ['ST_POINTFROMTEXT(?)', ['POINT(123.147775 30.625016)']], { 'x': 1, 'y': 1 }, null, null
@@ -3210,11 +3210,23 @@ Result:<pre id="result">Nothing.</pre>`);
 <b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
 <b>format() :</b> ${sql.format(s, sd)}`);
 
-                // --- json ---
+                // --- JSON/jsonb 字段使用 json() 显式标记 ---
 
-                s = sql.update('json', { 'json1': { 'key': 'val', 'key2': 'val2' }, 'json2': [ { 'k1': 'v1' }, { 'k2': 'v2' } ], 'json3': { 'x': 1, 'y': 2 }, 'json4': [], 'json5': {} }).where({ 'id': 1 }).getSql();
+                s = sql.update('json', {
+                    'json1': lSql.json({ 'key': 'val', 'key2': 'val2' }),
+                    'json2': lSql.json([ { 'k1': 'v1' }, { 'k2': 'v2' } ]),
+                    'json3': lSql.json({ 'x': 1, 'y': 2 }),
+                    'json4': lSql.json([]),
+                    'json5': lSql.json({})
+                }).where({ 'id': 1 }).getSql();
                 sd = sql.getData();
-                echo.push(`<pre>sql.update('json', { 'json1': { 'key': 'val', 'key2': 'val2' }, 'json2': [ { 'k1': 'v1' }, { 'k2': 'v2' } ], 'json3': { 'x': 1, 'y': 2 }, 'json4': [], 'json5': {} }).where({ 'id': 1 });</pre>
+                echo.push(`<pre>sql.update('json', {
+    'json1': lSql.json({ 'key': 'val', 'key2': 'val2' }),
+    'json2': lSql.json([ { 'k1': 'v1' }, { 'k2': 'v2' } ]),
+    'json3': lSql.json({ 'x': 1, 'y': 2 }),
+    'json4': lSql.json([]),
+    'json5': lSql.json({})
+}).where({ 'id': 1 });</pre>
 <b>getSql() :</b> ${s}<br>
 <b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
 <b>format() :</b> ${sql.format(s, sd)}`);

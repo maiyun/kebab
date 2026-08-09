@@ -3,6 +3,7 @@ import * as pg from 'pg';
 import * as lCore from '#kebab/lib/core.js';
 import * as lTime from '#kebab/lib/time.js';
 import * as lDb from '#kebab/lib/db.js';
+import * as lSqlValue from '#kebab/lib/sql/value.js';
 import * as kebab from '#kebab/index.js';
 
 // --- 注册解析器 ---
@@ -185,6 +186,7 @@ export class Connection {
             'result': 1,
         };
         try {
+            values = lSqlValue.serializeList(values);
             this.refreshLast();
             if (this._lastSql.length === 2) {
                 this._lastSql.splice(0, 1);
@@ -243,6 +245,7 @@ export class Connection {
             'result': 1,
         };
         try {
+            values = lSqlValue.serializeList(values);
             this.refreshLast();
             if (this._lastSql.length === 2) {
                 this._lastSql.splice(0, 1);
