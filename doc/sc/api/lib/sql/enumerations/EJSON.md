@@ -6,7 +6,7 @@
 
 # Enumeration: EJSON
 
-Defined in: [lib/sql.ts:21](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L21)
+Defined in: [lib/sql.ts:22](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L22)
 
 JSON 查询操作符
 
@@ -16,7 +16,7 @@ JSON 查询操作符
 
 > **CONTAINED\_BY**: `"json_in"`
 
-Defined in: [lib/sql.ts:25](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L25)
+Defined in: [lib/sql.ts:26](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L26)
 
 被包含值 (MySQL: JSON_CONTAINS, PG: <@)
 
@@ -26,7 +26,7 @@ Defined in: [lib/sql.ts:25](https://github.com/maiyunnet/kebab/blob/master/lib/s
 
 > **CONTAINS**: `"json"`
 
-Defined in: [lib/sql.ts:23](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L23)
+Defined in: [lib/sql.ts:24](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L24)
 
 包含值 (MySQL: JSON_CONTAINS, PG: @>)
 
@@ -36,7 +36,7 @@ Defined in: [lib/sql.ts:23](https://github.com/maiyunnet/kebab/blob/master/lib/s
 
 > **HAS\_ALL\_KEYS**: `"json_all"`
 
-Defined in: [lib/sql.ts:31](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L31)
+Defined in: [lib/sql.ts:32](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L32)
 
 存在所有 Key 不含值 (MySQL: JSON_CONTAINS_PATH all, PG: ?&)
 
@@ -46,7 +46,7 @@ Defined in: [lib/sql.ts:31](https://github.com/maiyunnet/kebab/blob/master/lib/s
 
 > **HAS\_ANY\_KEYS**: `"json_any"`
 
-Defined in: [lib/sql.ts:29](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L29)
+Defined in: [lib/sql.ts:30](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L30)
 
 存在任意 Key 不含值 (MySQL: JSON_CONTAINS_PATH one, PG: ?|)
 
@@ -56,7 +56,7 @@ Defined in: [lib/sql.ts:29](https://github.com/maiyunnet/kebab/blob/master/lib/s
 
 > **HAS\_KEY**: `"json_key"`
 
-Defined in: [lib/sql.ts:27](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L27)
+Defined in: [lib/sql.ts:28](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L28)
 
 存在 Key 不含值 (MySQL: JSON_CONTAINS_PATH one, PG: ?)
 
@@ -66,6 +66,6 @@ Defined in: [lib/sql.ts:27](https://github.com/maiyunnet/kebab/blob/master/lib/s
 
 > **OVERLAPS**: `"json_overlaps"`
 
-Defined in: [lib/sql.ts:33](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L33)
+Defined in: [lib/sql.ts:34](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L34)
 
 简单数组重叠 (MySQL: JSON_OVERLAPS, PG: &&)

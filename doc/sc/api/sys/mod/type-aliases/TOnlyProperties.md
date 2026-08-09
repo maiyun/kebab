@@ -8,7 +8,7 @@
 
 > **TOnlyProperties**\<`T`\> = `{ [K in keyof T as T[K] extends (args: any[]) => any ? never : K]: T[K] }`
 
-Defined in: [sys/mod.ts:14](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L14)
+Defined in: [sys/mod.ts:15](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L15)
 
 只获取变量
 

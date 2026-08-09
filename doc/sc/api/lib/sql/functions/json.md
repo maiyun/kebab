@@ -8,9 +8,9 @@
 
 > **json**\<`T`\>(`obj`): `T`
 
-Defined in: [lib/sql.ts:1496](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L1496)
+Defined in: [lib/sql.ts:1477](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L1477)
 
-将对象转换为 JSON 字符串并避开类型检查，用于适配 PostgreSQL 的 jsonb 字段
+标记需要写入 JSON/jsonb 字段的值；实际序列化延迟到数据库边界
 
 ## Type Parameters
 
@@ -24,8 +24,10 @@ Defined in: [lib/sql.ts:1496](https://github.com/maiyunnet/kebab/blob/master/lib
 
 `T`
 
-要转换的 JSON 对象
+原始 JSON 值
 
 ## Returns
 
 `T`
+
+类型保持不变的 JSON 包装值

@@ -6,7 +6,7 @@
 
 # Enumeration: ESERVICE
 
-Defined in: [lib/sql.ts:15](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L15)
+Defined in: [lib/sql.ts:16](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L16)
 
 服务商定义
 
@@ -16,7 +16,7 @@ Defined in: [lib/sql.ts:15](https://github.com/maiyunnet/kebab/blob/master/lib/s
 
 > **MYSQL**: `0`
 
-Defined in: [lib/sql.ts:16](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L16)
+Defined in: [lib/sql.ts:17](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L17)
 
 ***
 
@@ -24,4 +24,4 @@ Defined in: [lib/sql.ts:16](https://github.com/maiyunnet/kebab/blob/master/lib/s
 
 > **PGSQL**: `1`
 
-Defined in: [lib/sql.ts:17](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L17)
+Defined in: [lib/sql.ts:18](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L18)

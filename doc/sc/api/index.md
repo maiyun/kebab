@@ -34,6 +34,7 @@
 - [lib/session](lib/session/index.md)
 - [lib/socket](lib/socket/index.md)
 - [lib/sql](lib/sql/index.md)
+- [lib/sql/value](lib/sql/value/index.md)
 - [lib/ssh](lib/ssh/index.md)
 - [lib/ssh/sftp](lib/ssh/sftp/index.md)
 - [lib/ssh/shell](lib/ssh/shell/index.md)
