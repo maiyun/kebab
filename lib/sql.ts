@@ -237,7 +237,7 @@ export class Sql {
     /**
      * --- 批量 UPDATE，以子查询作为数据源，纯更新语义（不会插入新行）---
      * --- MySQL: UPDATE t INNER JOIN (SELECT col AS alias ... UNION ALL SELECT ...) AS tmp ON t.key=tmp.key SET t.c=tmp.c ---
-     * --- PostgreSQL: UPDATE t SET c=tmp.c FROM (VALUES ($1,...)) AS tmp(cols) WHERE t.key=tmp.key ---
+     * --- PostgreSQL: UPDATE t SET c=tmp.c FROM (VALUES (typed nulls), ($1,...)) AS tmp(cols) WHERE t.key=tmp.key ---
      * @param table 表名
      * @param key 用于定位待更新记录的字段名，通常为主键或唯一键，至少必须建立索引；
      *         该参数是字段名而不是索引名，仅参与 ON / WHERE 匹配，不会被更新
@@ -273,17 +273,18 @@ export class Sql {
             this._sql = [`UPDATE (${selectParts.join(' UNION ALL ')}) AS tmp STRAIGHT_JOIN ${quotedTable} t ON t.${quotedKey} = tmp.${quotedKey} SET ${setClauses}`];
         }
         else {
-            // --- PostgreSQL 使用 UPDATE FROM (VALUES ...) ---
+            // --- PostgreSQL 使用 UPDATE FROM (VALUES ...)；首行从目标表复合类型取得真实列类型，
+            //     避免按 JS 值猜测类型时 uuid、日期、枚举、数组或 NULL 列无法匹配 ---
             const valueParts: string[] = [];
-            for (let ri = 0; ri < rows.length; ri++) {
-                const row = rows[ri];
+            const typeParts = allCols.map(c => `(NULL::${quotedTable}).${this.field(c)}`);
+            valueParts.push(`(${typeParts.join(', ')})`);
+            for (const row of rows) {
                 const parts = row.map(v => {
                     const result = this._processValue(v);
                     if (result.data.length > 0) {
                         this._data.push(...result.data);
                     }
-                    // --- 第一行加显式类型转换，帮助 PostgreSQL 推断 VALUES 派生表的列类型 ---
-                    return ri === 0 ? result.sql + this._pgCastSuffix(v) : result.sql;
+                    return result.sql;
                 });
                 valueParts.push(`(${parts.join(', ')})`);
             }
@@ -1209,52 +1210,6 @@ export class Sql {
     /** --- 获取占位符 --- */
     private _placeholder(): string {
         return this._service === ESERVICE.MYSQL ? '?' : `$${this._placeholderCounter++}`;
-    }
-
-    /**
-     * --- 返回 PostgreSQL VALUES 第一行的显式类型转换后缀，用于帮助 PostgreSQL 推断 VALUES 派生表列类型 ---
-     * @param v 要处理的值
-     */
-    private _pgCastSuffix(v: any): string {
-        if (v === null || v === undefined) {
-            return '';
-        }
-        if (lSqlValue.isJson(v)) {
-            // --- _processValue 已经为 PostgreSQL JSON 参数添加 ::jsonb ---
-            return '';
-        }
-        if (typeof v === 'number') {
-            return Number.isInteger(v) ? '::bigint' : '::float8';
-        }
-        if (typeof v === 'boolean') {
-            return '::boolean';
-        }
-        if (v instanceof Buffer) {
-            return '::bytea';
-        }
-        if (Array.isArray(v)) {
-            // --- 函数式语法 ['FUNC(?)', [...]]，不加转换 ---
-            if (typeof v[0] === 'string' && v[0].includes('(')) {
-                return '';
-            }
-            // --- POLYGON ---
-            if (v[0]?.y !== undefined) {
-                return '::polygon';
-            }
-            // --- JSON 数组或 PG 原生数组（text[]、int[] 等），
-            //     不加转换，由 pg 驱动与目标列类型决定 ---
-            return '';
-        }
-        if (typeof v === 'object') {
-            // --- POINT ---
-            if (v.y !== undefined) {
-                return '::point';
-            }
-            // --- 普通对象由数据库驱动按原有规则处理；显式 JSON 由 json() 标记 ---
-            return '';
-        }
-        // --- string：保持 unknown 类型，兼容 text/varchar 等目标列类型 ---
-        return '';
     }
 
     /**

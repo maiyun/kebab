@@ -449,9 +449,10 @@ export default class Mod {
 
     /**
      * --- 批量更新数据 ---
-     * @param db 数据库对象
+     * @param db 数据库对象；多批次需要整体原子性时应传入 Transaction
      * @param data 数据列表，每个元素必须包含 key 字段，其余字段为要更新的列；
-     *             支持稀疏数据（不同元素可以拥有不同的列集合），内部会自动按列集合分组批量执行
+     *             支持稀疏数据（不同元素可以拥有不同的列集合），内部会自动按列集合分组批量执行；
+     *             相同 key 会按输入顺序合并，后出现的同名字段覆盖先出现的值
      * @param key 用于定位待更新记录的字段名，通常为主键或唯一键，至少必须建立索引；
      *            该参数是字段名而不是索引名，仅参与 ON / WHERE 条件匹配，不会被更新；
      *            data 中每个元素都必须包含此字段，否则该元素会被跳过
@@ -472,9 +473,24 @@ export default class Mod {
             return true;
         }
 
+        // --- 先按 key 合并，避免 UPDATE JOIN / UPDATE FROM 一对多匹配时结果不确定 ---
+        const items = new Map<unknown, Record<string, any>>();
+        for (const item of data) {
+            if (!Object.hasOwn(item, key) || item[key] === undefined || item[key] === null) {
+                continue;
+            }
+            const current = items.get(item[key]);
+            if (current) {
+                Object.assign(current, item);
+            }
+            else {
+                items.set(item[key], { ...item });
+            }
+        }
+
         // --- 按列集合分组（处理稀疏数据，保证每组内所有行的列完全一致）---
         const groups = new Map<string, Array<Record<string, any>>>();
-        for (const item of data) {
+        for (const item of items.values()) {
             const itemCols = Object.keys(item).filter(k => k !== key).sort();
             if (itemCols.length === 0) {
                 continue;
@@ -497,10 +513,17 @@ export default class Mod {
             const service = db.getService() ?? lDb.ESERVICE.PGSQL;
             /** --- 每行占位符数量 = key + 所有列，分批避免超出数据库参数上限 --- */
             const maxBatchSize = Math.floor(65000 / allCols.length);
-            // --- MySQL 单条 UPDATE 太大时解析、物化、锁持有都会变慢，默认小批量多次执行更稳定；
-            //     PostgreSQL 的 VALUES UPDATE 执行计划较稳定，默认尽量吃满参数上限减少网络往返 ---
-            const defaultBatchSize = service === lDb.ESERVICE.MYSQL ? 200 : maxBatchSize;
-            const batchSize = Math.max(1, Math.min(opt.batchSize ?? defaultBatchSize, maxBatchSize));
+            // --- 控制单条 SQL 的解析、临时数据和持锁规模；PostgreSQL 不应默认吃满协议参数上限 ---
+            const defaultBatchSize = service === lDb.ESERVICE.MYSQL ? 200 : 1_000;
+            const requestedBatchSize = opt.batchSize;
+            const normalizedBatchSize =
+                (
+                    requestedBatchSize !== undefined &&
+                    Number.isSafeInteger(requestedBatchSize) &&
+                    requestedBatchSize > 0
+                ) ?
+                    requestedBatchSize : defaultBatchSize;
+            const batchSize = Math.max(1, Math.min(normalizedBatchSize, maxBatchSize));
             for (let i = 0; i < groupItems.length; i += batchSize) {
                 const batch = groupItems.slice(i, i + batchSize);
                 const sq = lSql.get({
