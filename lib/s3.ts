@@ -248,6 +248,30 @@ export class S3 {
     }
 
     /**
+     * --- 获取对象 Buffer ---
+     * @param key 对象路径
+     * @param bucket bucket 名
+     * @returns 对象内容，获取失败或对象无内容时返回 false
+     */
+    public async getObjectBuffer(key: string, bucket?: string): Promise<Buffer | false> {
+        try {
+            const go = new s3.GetObjectCommand({
+                'Bucket': bucket ?? this._bucket,
+                'Key': key
+            });
+            const r = await this._link.send(go);
+            if (!r.Body) {
+                return false;
+            }
+            return Buffer.from(await r.Body.transformToByteArray());
+        }
+        catch (e: any) {
+            lCore.log(this._ctr, '[LIB][S3][getObjectBuffer] ' + lText.stringifyJson(e.message ?? '').slice(1, -1).replace(/"/g, '""'), '-error');
+            return false;
+        }
+    }
+
+    /**
      * --- 删除对象 ---
      * @param key 对象路径
      * @param bucket bucket 名
