@@ -1361,7 +1361,7 @@ index/variables/VER.md
 
 # Variable: VER
 
-> `const` **VER**: `"9.15.2"` = `'9.15.2'`
+> `const` **VER**: `"9.15.3"` = `'9.15.3'`
 
 Defined in: [index.ts:10](https://github.com/maiyunnet/kebab/blob/master/index.ts#L10)
 
@@ -12488,7 +12488,7 @@ Defined in: [lib/s3.ts:88](https://github.com/maiyunnet/kebab/blob/master/lib/s3
 
 > **deleteObject**(`key`, `bucket?`): `Promise`\<`boolean`\>
 
-Defined in: [lib/s3.ts:255](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L255)
+Defined in: [lib/s3.ts:279](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L279)
 
 删除对象
 
@@ -12516,7 +12516,7 @@ bucket 名
 
 > **deleteObjects**(`keys`, `bucket?`): `Promise`\<`boolean`\>
 
-Defined in: [lib/s3.ts:275](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L275)
+Defined in: [lib/s3.ts:299](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L299)
 
 批量删除对象
 
@@ -12544,7 +12544,7 @@ bucket 名
 
 > **destroy**(): `void`
 
-Defined in: [lib/s3.ts:317](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L317)
+Defined in: [lib/s3.ts:341](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L341)
 
 销毁连接，释放资源
 一般会自动垃圾回收，但高频接口也可主动调用
@@ -12583,11 +12583,41 @@ bucket 名
 
 ***
 
+### getObjectBuffer()
+
+> **getObjectBuffer**(`key`, `bucket?`): `Promise`\<`false` \| `Buffer`\<`ArrayBufferLike`\>\>
+
+Defined in: [lib/s3.ts:256](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L256)
+
+获取对象 Buffer
+
+#### Parameters
+
+##### key
+
+`string`
+
+对象路径
+
+##### bucket?
+
+`string`
+
+bucket 名
+
+#### Returns
+
+`Promise`\<`false` \| `Buffer`\<`ArrayBufferLike`\>\>
+
+对象内容，获取失败或对象无内容时返回 false
+
+***
+
 ### headObject()
 
 > **headObject**(`key`, `bucket?`): `Promise`\<`false` \| `HeadObjectCommandOutput`\>
 
-Defined in: [lib/s3.ts:297](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L297)
+Defined in: [lib/s3.ts:321](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L321)
 
 检测对象是否存在
 
@@ -12787,7 +12817,7 @@ lib/s3/functions/get.md
 
 > **get**(`ctr`, `opt`): [`S3`](../classes/S3.md)
 
-Defined in: [lib/s3.ts:327](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L327)
+Defined in: [lib/s3.ts:351](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L351)
 
 创建一个对象存储对象
 
