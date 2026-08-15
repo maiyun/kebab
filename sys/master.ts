@@ -282,13 +282,17 @@ function createRpcListener(): void {
                         res.end('Path not found');
                         return;
                     }
+                    // --- npm install 上限与 sendNpm 客户端超时一致，超时后终止，避免无限期运行 ---
+                    const npmTimeout = 300_000;
                     let rtn = await lCore.exec('npm i --omit=dev', {
                         'cwd': msg.path,
+                        'timeout': npmTimeout,
                     });
                     if (rtn === false) {
                         // --- 部分项目可能存在 peerDependencies 冲突，失败后降级为 legacy-peer-deps 再试一次 ---
                         rtn = await lCore.exec('npm i --omit=dev --legacy-peer-deps', {
                             'cwd': msg.path,
+                            'timeout': npmTimeout,
                         });
                     }
                     if (rtn === false) {

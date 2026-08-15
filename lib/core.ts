@@ -679,10 +679,16 @@ export async function passThroughAppend(
  */
 export function exec(command: string, options: {
     'cwd'?: string;
+    /**
+     * --- 命令超时毫秒数，超时后终止命令并以失败返回 ---
+     * --- 默认无超时限制：不传时命令可一直运行直至完成，与 cp.exec 默认行为一致 ---
+     */
+    'timeout'?: number;
 } = {}): Promise<string | false> {
     return new Promise(function(resolve) {
         cp.exec(command, {
             'cwd': options.cwd,
+            'timeout': options.timeout,
         }, function(err, stdout) {
             if (err) {
                 resolve(false);
@@ -714,6 +720,10 @@ export async function sendReload(hosts?: string[] | 'config'): Promise<Record<st
     }
     if (hosts === 'config') {
         hosts = globalConfig.hosts;
+    }
+    // --- 未传或 config 展开后为空数组，均回退到本机 ---
+    if (!hosts?.length) {
+        hosts = ['127.0.0.1'];
     }
     // --- 局域网模式 ---
     const time = lTime.stamp();
@@ -763,6 +773,10 @@ export async function sendRestart(hosts?: string[] | 'config'): Promise<Record<s
     }
     if (hosts === 'config') {
         hosts = globalConfig.hosts;
+    }
+    // --- 未传或 config 展开后为空数组，均回退到本机 ---
+    if (!hosts?.length) {
+        hosts = ['127.0.0.1'];
     }
     // --- 局域网模式 ---
     const time = lTime.stamp();
