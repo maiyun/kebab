@@ -871,7 +871,7 @@ export async function sendNpm(
             'time': time,
             'path': path
         }), globalConfig.rpcSecret), {
-            'timeout': 30,
+            'timeout': 300,
         });
         const content = await res.getContent();
         if (!content) {
