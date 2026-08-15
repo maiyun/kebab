@@ -753,6 +753,8 @@ export async function rproxy(
             const compress = upstreamEncoded ? null : lZlib.createCompress(req.headers['accept-encoding'] ?? '');
             if (compress) {
                 res.setHeader('content-encoding', compress.type);
+                // --- 本层压缩后响应大小会变化，不能沿用上游的 content-length ---
+                res.removeHeader('content-length');
             }
             lCore.writeHead(res, rres.headers?.['http-code'] ?? 200);
             await new Promise<void>((resolve) => {
