@@ -99,6 +99,39 @@ function normalizeArchivePath(archivePath: string): string | null {
 }
 
 /**
+ * --- 递归判断 JSON 内容中是否包含受保护的配置参数 ---
+ * @param value 待检查的 JSON 值
+ * @returns 是否包含 pwd 或 skey 参数
+ */
+function hasSensitiveConfigKey(value: unknown): boolean {
+    if (Array.isArray(value)) {
+        return value.some(item => hasSensitiveConfigKey(item));
+    }
+    if ((value === null) || (typeof value !== 'object')) {
+        return false;
+    }
+    for (const key of Object.keys(value)) {
+        if ((key === 'pwd') || (key === 'skey')) {
+            return true;
+        }
+        if (hasSensitiveConfigKey((value as Record<string, unknown>)[key])) {
+            return true;
+        }
+    }
+    return false;
+}
+
+/**
+ * --- 判断 ZIP 内的 kebab.json 是否包含受保护的配置参数 ---
+ * @param content ZIP 文件内容
+ * @returns 是否包含 pwd 或 skey 参数
+ */
+function hasSensitiveConfig(content: Buffer | string): boolean {
+    const json = lText.parseJson<unknown>(typeof content === 'string' ? content : content.toString('utf8'));
+    return (json !== false) && hasSensitiveConfigKey(json);
+}
+
+/**
  * --- 等待指定 worker 开始监听端口就绪 ---
  * @param worker 要等待的 worker 对象
  * @param timeout 超时时间（毫秒），默认 30 秒
@@ -511,8 +544,12 @@ function createRpcListener(): void {
                             // --- 开发、依赖、缓存、构建产物目录不覆盖 ---
                             continue;
                         }
-                        if ((pat === 'conf/' && fname === 'config.json') || fname === 'kebab.json') {
-                            // --- 特殊文件不能覆盖 ---
+                        if (fname === 'kebab.json' && hasSensitiveConfig(ls[archivePath])) {
+                            // --- 包含密码或密钥的 kebab.json 不覆盖，避免部署包覆盖现有敏感配置 ---
+                            continue;
+                        }
+                        if (pat === 'conf/' && fname === 'config.json') {
+                            // --- 全局配置文件不能覆盖 ---
                             continue;
                         }
                         if (fname.endsWith('.js.map') || fname.endsWith('.ts') || fname.endsWith('.tsx') || fname.endsWith('.scss') || fname.endsWith('.gitignore') || fname.endsWith('.DS_Store')) {
