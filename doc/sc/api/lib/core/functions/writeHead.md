@@ -8,7 +8,7 @@
 
 > **writeHead**(`res`, `statusCode`, `headers?`): `void`
 
-Defined in: [lib/core.ts:1406](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1406)
+Defined in: [lib/core.ts:1420](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1420)
 
 让 res 发送头部（前提是头部没有被发送才能调用本方法
 

@@ -8,7 +8,7 @@
 
 > **write**(`res`, `data`): `void`
 
-Defined in: [lib/core.ts:1429](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1429)
+Defined in: [lib/core.ts:1443](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1443)
 
 向 res 发送数据
 

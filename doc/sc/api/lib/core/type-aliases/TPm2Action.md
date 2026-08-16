@@ -8,6 +8,6 @@
 
 > **TPm2Action** = `"start"` \| `"stop"` \| `"restart"`
 
-Defined in: [lib/core.ts:795](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L795)
+Defined in: [lib/core.ts:809](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L809)
 
 PM2 操作类型
