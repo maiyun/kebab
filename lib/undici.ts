@@ -138,8 +138,12 @@ export async function postJsonResponseJson(
     if (!rtn) {
         return null;
     }
-    const json = lText.parseJson(rtn.toString());
+    const rtnStr = rtn.toString();
+    const json = lText.parseJson(rtnStr);
     if (!json) {
+        if (opt.log === undefined || opt.log) {
+            lCore.log({}, `[UNDICI][POSTJSONRESPONSEJSON] parse json failed, url: ${u}, data: ${lText.stringifyJson(data)}, content: ${rtnStr}`, '-neterror');
+        }
         return null;
     }
     return json;
@@ -161,8 +165,12 @@ export async function postResponseJson(
     if (!rtn) {
         return null;
     }
-    const json = lText.parseJson(rtn.toString());
+    const rtnStr = rtn.toString();
+    const json = lText.parseJson(rtnStr);
     if (!json) {
+        if (opt.log === undefined || opt.log) {
+            lCore.log({}, `[UNDICI][POSTRESPONSEJSON] parse json failed, url: ${u}, data: ${lText.stringifyJson(data)}, content: ${rtnStr}`, '-neterror');
+        }
         return null;
     }
     return json;
@@ -183,8 +191,12 @@ export async function getResponseJson(
     if (!rtn) {
         return null;
     }
-    const json = lText.parseJson(rtn.toString());
+    const rtnStr = rtn.toString();
+    const json = lText.parseJson(rtnStr);
     if (!json) {
+        if (opt.log === undefined || opt.log) {
+            lCore.log({}, `[UNDICI][GETRESPONSEJSON] parse json failed, url: ${u}, content: ${rtnStr}`, '-neterror');
+        }
         return null;
     }
     return json;
