@@ -130,7 +130,7 @@ export async function postJson(
  */
 export async function postJsonResponseJson(
     u: string, data: kebab.Json[] | Record<string, kebab.Json>, opt: IRequestOptions = {}
-): Promise<kebab.Json | null> {
+): Promise<kebab.Json | null | false> {
     opt.method = 'POST';
     opt.type = 'json';
     const res = await request(u, data, opt);
@@ -144,7 +144,7 @@ export async function postJsonResponseJson(
         if (opt.log === undefined || opt.log) {
             lCore.log({}, `[UNDICI][POSTJSONRESPONSEJSON] parse json failed, url: ${u}, data: ${lText.stringifyJson(data)}, content: ${rtnStr}`, '-neterror');
         }
-        return null;
+        return false;
     }
     return json;
 }
@@ -158,7 +158,7 @@ export async function postJsonResponseJson(
  */
 export async function postResponseJson(
     u: string, data: Record<string, kebab.Json>, opt: IRequestOptions = {}
-): Promise<kebab.Json | null> {
+): Promise<kebab.Json | null | false> {
     opt.method = 'POST';
     const res = await request(u, data, opt);
     const rtn = await res.getContent();
@@ -171,7 +171,7 @@ export async function postResponseJson(
         if (opt.log === undefined || opt.log) {
             lCore.log({}, `[UNDICI][POSTRESPONSEJSON] parse json failed, url: ${u}, data: ${lText.stringifyJson(data)}, content: ${rtnStr}`, '-neterror');
         }
-        return null;
+        return false;
     }
     return json;
 }
@@ -185,7 +185,7 @@ export async function postResponseJson(
 export async function getResponseJson(
     u: string,
     opt: IRequestOptions = {}
-): Promise<kebab.Json | null> {
+): Promise<kebab.Json | null | false> {
     const res = await request(u, undefined, opt);
     const rtn = await res.getContent();
     if (!rtn) {
@@ -197,7 +197,7 @@ export async function getResponseJson(
         if (opt.log === undefined || opt.log) {
             lCore.log({}, `[UNDICI][GETRESPONSEJSON] parse json failed, url: ${u}, content: ${rtnStr}`, '-neterror');
         }
-        return null;
+        return false;
     }
     return json;
 }
