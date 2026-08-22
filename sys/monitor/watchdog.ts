@@ -1,6 +1,7 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2026-02-08
+ * Last: 2026-08-22
  * --- 看门狗 Worker 线程，独立事件循环监控主线程心跳 ---
  * --- 阻塞时通过 inspector.connectToMainThread() 远程抓取主线程 JS 调用栈和 CPU Profile ---
  * --- 看门狗必须最小依赖、最大自治，不引入项目库，确保主线程异常时仍能可靠运行 ---
@@ -22,7 +23,7 @@ interface IWatchdogData {
 }
 
 const data = workerThreads.workerData as IWatchdogData;
-const view = new Int32Array(data.buffer);
+const view = new Uint32Array(data.buffer);
 
 /** --- 上次告警时间（秒级时间戳） --- */
 let lastAlertTime: number = 0;
@@ -94,10 +95,11 @@ function captureDiag(blockSec: number): void {
         return;
     }
     capturing = true;
-    const diagDir = path.join(
-        data.logDir, 'monitor', String(data.pid),
-    );
     const ts = fmtTs();
+    const diagDir = path.join(
+        data.logDir, 'monitor', ts.slice(0, 4), ts.slice(4, 6),
+        ts.slice(6, 8), `${ts.slice(8)}-pid-${data.pid}`,
+    );
     const session = new inspector.Session();
     try {
         session.connectToMainThread();
@@ -182,8 +184,9 @@ function captureDiag(blockSec: number): void {
                 // --- 写入堆栈文件 ---
                 try {
                     fs.mkdirSync(diagDir, {
-                        'recursive': true, 'mode': 0o777,
+                        'recursive': true, 'mode': 0o700,
                     });
+                    fs.chmodSync(diagDir, 0o700);
                     const content =
                         `Event Loop Blocked: ${blockSec}s\n` +
                         `Captured: ${new Date().toISOString()}\n` +
@@ -195,7 +198,11 @@ function captureDiag(blockSec: number): void {
                             `blocked-stack-${ts}.txt`,
                         ),
                         content,
-                        { 'mode': 0o777 },
+                        { 'mode': 0o600 },
+                    );
+                    fs.chmodSync(
+                        path.join(diagDir, `blocked-stack-${ts}.txt`),
+                        0o600,
                     );
                 }
                 catch {
@@ -277,7 +284,14 @@ function collectProfile(
                                     `blocked-cpu-${ts}.cpuprofile`,
                                 ),
                                 JSON.stringify(r.profile),
-                                { 'mode': 0o777 },
+                                { 'mode': 0o600 },
+                            );
+                            fs.chmodSync(
+                                path.join(
+                                    diagDir,
+                                    `blocked-cpu-${ts}.cpuprofile`,
+                                ),
+                                0o600,
                             );
                         }
                         catch {

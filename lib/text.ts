@@ -1,7 +1,7 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2019-5-15 16:49:39
- * Last: 2020-04-06 20:51:06, 2022-9-29 15:18:16, 2022-12-29 00:01:30, 2024-3-6 17:53:14, 2024-5-31 17:29:52, 2025-6-13 15:47:02, 2025-9-23 12:51:49
+ * Last: 2020-04-06 20:51:06, 2022-9-29 15:18:16, 2022-12-29 00:01:30, 2024-3-6 17:53:14, 2024-5-31 17:29:52, 2025-6-13 15:47:02, 2025-9-23 12:51:49, 2026-8-22
  */
 import * as net from 'net';
 import * as kebab from '#kebab/index.js';
@@ -697,6 +697,30 @@ export function stringifyJson(obj: kebab.Json, space?: string | number): string 
         }
         return v;
     }, space).replace(/"-mybigint-([-+0-9]+?)"/g, '$1');
+}
+
+/**
+ * --- 将未知异常转换为适合单行日志的文本，Error 优先返回完整堆栈 ---
+ * @param error 异常对象
+ * @returns 已转义的单行错误文本
+ */
+export function stringifyError(error: unknown): string {
+    let message: string;
+    if (error instanceof Error) {
+        message = error.stack ?? error.message;
+    }
+    else if (typeof error === 'string') {
+        message = error;
+    }
+    else {
+        try {
+            message = stringifyJson(error);
+        }
+        catch {
+            message = String(error);
+        }
+    }
+    return stringifyJson(message).slice(1, -1);
 }
 
 /**

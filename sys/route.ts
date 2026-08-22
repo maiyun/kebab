@@ -1,7 +1,7 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2019-4-15 13:40
- * Last: 2020-4-14 13:52:00, 2022-09-07 01:43:31, 2023-12-29 17:24:03, 2024-2-7 00:28:50, 2024-6-6 15:15:54, 2025-6-13 19:23:53, 2025-9-22 15:48:53, 2025-9-23 11:26:50, 2025-10-30 17:44:41
+ * Last: 2020-4-14 13:52:00, 2022-09-07 01:43:31, 2023-12-29 17:24:03, 2024-2-7 00:28:50, 2024-6-6 15:15:54, 2025-6-13 19:23:53, 2025-9-22 15:48:53, 2025-9-23 11:26:50, 2025-10-30 17:44:41, 2026-8-22
  */
 import * as http from 'http';
 import * as http2 from 'http2';
@@ -340,8 +340,8 @@ export async function run(data: {
             wsSocket = lWs.createServer(data.req, data.socket, data.head, options);
             cctr.setPrototype('_socket', wsSocket);
         }
-        catch (e: kebab.Json) {
-            lCore.log(cctr, lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
+        catch (e: unknown) {
+            lCore.log(cctr, lText.stringifyError(e), '-error');
             data.socket?.destroy();
             return true;
         }
@@ -356,8 +356,8 @@ export async function run(data: {
         try {
             rtn = await (cctr as kebab.Json).onLoad();
         }
-        catch (e: kebab.Json) {
-            lCore.log(cctr, lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
+        catch (e: unknown) {
+            lCore.log(cctr, lText.stringifyError(e), '-error');
             data.socket?.destroy();
             return true;
         }
@@ -365,8 +365,8 @@ export async function run(data: {
             try {
                 rtn = await (cctr as kebab.Json).onReady();
             }
-            catch (e: kebab.Json) {
-                lCore.log(cctr, lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
+            catch (e: unknown) {
+                lCore.log(cctr, lText.stringifyError(e), '-error');
                 data.socket?.destroy();
                 return true;
             }
@@ -422,8 +422,8 @@ export async function run(data: {
                                         return;
                                     }
                                 }
-                                catch (e: any) {
-                                    lCore.log(cctr, lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
+                                catch (e: unknown) {
+                                    lCore.log(cctr, lText.stringifyError(e), '-error');
                                 }
                                 break;
                             }
@@ -435,24 +435,24 @@ export async function run(data: {
                         try {
                             await (cctr as kebab.Json)['onDrain']();
                         }
-                        catch (e: any) {
-                            lCore.log(cctr, lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
+                        catch (e: unknown) {
+                            lCore.log(cctr, lText.stringifyError(e), '-error');
                         }
-                    }).on('error', (e: any) => {
-                        lCore.log(cctr, lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
+                    }).on('error', (e: unknown) => {
+                        lCore.log(cctr, lText.stringifyError(e), '-error');
                     }).on('end', async () => {
                         try {
                             await (cctr as kebab.Json)['onEnd']();
                         }
-                        catch (e: any) {
-                            lCore.log(cctr, lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
+                        catch (e: unknown) {
+                            lCore.log(cctr, lText.stringifyError(e), '-error');
                         }
                     }).on('close', async () => {
                         try {
                             await (cctr as kebab.Json)['onClose']();
                         }
-                        catch (e: any) {
-                            lCore.log(cctr, lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
+                        catch (e: unknown) {
+                            lCore.log(cctr, lText.stringifyError(e), '-error');
                         }
                         resolve();
                     });
@@ -512,8 +512,8 @@ export async function run(data: {
     try {
         rtn = await (middle.onLoad() as kebab.Json);
     }
-    catch (e: kebab.Json) {
-        lCore.log(middle, '(E03)' + lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
+    catch (e: unknown) {
+        lCore.log(middle, '(E03)' + lText.stringifyError(e), '-error');
         respond500(data.res);
         return true;
     }
@@ -524,8 +524,8 @@ export async function run(data: {
         try {
             rtn = await (middle.onReady() as kebab.Json);
         }
-        catch (e: kebab.Json) {
-            lCore.log(middle, '(E05)' + lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
+        catch (e: unknown) {
+            lCore.log(middle, '(E05)' + lText.stringifyError(e), '-error');
             respond500(data.res);
             return true;
         }
@@ -606,8 +606,8 @@ export async function run(data: {
                             }
                         }
                     }
-                    catch (e: kebab.Json) {
-                        lCore.log(cctr, '(E05)' + lText.stringifyJson(e.stack).slice(1, -1), '-error');
+                    catch (e: unknown) {
+                        lCore.log(cctr, '(E05)' + lText.stringifyError(e), '-error');
                         respond500(data.res);
                         await waitCtr(cctr);
                         return true;
@@ -617,8 +617,8 @@ export async function run(data: {
                 cacheTTL = cctr.getPrototype('_cacheTTL');
                 httpCode = cctr.getPrototype('_httpCode');
             }
-            catch (e: kebab.Json) {
-                lCore.log(cctr, '(E04)' + lText.stringifyJson(e.stack).slice(1, -1), '-error');
+            catch (e: unknown) {
+                lCore.log(cctr, '(E04)' + lText.stringifyError(e), '-error');
                 respond500(data.res);
                 await waitCtr(cctr);
                 return true;
@@ -1407,7 +1407,7 @@ export function getFormData(
             clearTimer();
             cleanupActiveFile();
             lCore.debug('[ROUTE][GETFORMDATA] request error before getFormData: ' + e.message);
-            lCore.log({}, '[ROUTE][GETFORMDATA] request error before getFormData: ' + (e.stack ?? ''), '-error');
+            lCore.log({}, '[ROUTE][GETFORMDATA] request error before getFormData: ' + lText.stringifyError(e), '-error');
             cleanupFiles();
             resolve(false);
         });

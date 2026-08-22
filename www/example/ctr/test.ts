@@ -4586,7 +4586,7 @@ send.addEventListener('click', async () => {
             '<b>Monitor Snapshot</b>',
             '<hr>',
             `<b>PID:</b> ${snapshot.pid}`,
-            `<br><b>Process CPU (single core):</b> ${snapshot.cpuProcess}%`,
+            `<br><b>Process CPU (100% per core):</b> ${snapshot.cpuProcess}%`,
             `<br><b>System CPU (total):</b> ${snapshot.cpuOs}%`,
             `<br><b>Event Loop Lag:</b> ${snapshot.eloopLag}ms`,
             '<br><br><b>Memory:</b>',
@@ -4605,7 +4605,7 @@ send.addEventListener('click', async () => {
             `<br><br><b>Active Requests:</b> ${snapshot.activeCount}`,
         ];
         for (const req of snapshot.activeRequests) {
-            echo.push(`<br>[${req.method}] ${lText.htmlescape(req.url)} - ${req.duration}ms, CPU: ${req.cpuUser + req.cpuSystem}us, MEM_DELTA: ${lText.sizeFormat(req.memDelta)}`);
+            echo.push(`<br>[${req.method}] ${lText.htmlescape(req.url)} - ${req.duration}ms, PROCESS_CPU_DELTA: ${req.cpuUser + req.cpuSystem}us, PROCESS_MEM_DELTA: ${lText.sizeFormat(req.memDelta)}`);
         }
         echo.push('<br><br>' + this._getEnd());
         return echo.join('');
@@ -4665,7 +4665,7 @@ send.addEventListener('click', async () => {
             `Iterations: ${count}`,
         );
         echo.push(
-            '<br><br>Check <code>log/monitor/{pid}/</code> for' +
+            '<br><br>Check <code>log/monitor/YYYY/MM/DD/HHmmss-pid-{pid}/</code> for' +
             ' diagnostic files.',
         );
         echo.push('<br><br>' + this._getEnd());

@@ -1,7 +1,7 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2019-5-3 23:54
- * Last: 2020-3-31 15:01:07, 2020-4-9 22:28:50, 2022-07-22 14:19:46, 2022-9-29 22:11:07, 2023-5-1 18:26:57, 2024-1-12 13:32:00, 2024-3-4 16:49:19, 2026-3-8 16:21:40
+ * Last: 2020-3-31 15:01:07, 2020-4-9 22:28:50, 2022-07-22 14:19:46, 2022-9-29 22:11:07, 2023-5-1 18:26:57, 2024-1-12 13:32:00, 2024-3-4 16:49:19, 2026-3-8 16:21:40, 2026-8-22
  */
 import * as http2 from 'http2';
 import * as tls from 'tls';
@@ -78,15 +78,18 @@ function wrapWithLinkCount(
     errorPrefix: string,
     method: string = 'GET'
 ): void {
-    linkCount[key] = (linkCount[key] ?? 0) + 1;
-    const trackId = sMonitor.track(key, method);
-    handler().catch((e: any) => {
-        lCore.log({}, `${errorPrefix} ${lText.stringifyJson((e.stack as string)).slice(1, -1)}`, '-error');
+    const queryIndex = key.search(/[?#]/u);
+    /** --- 查询参数可能含敏感信息，请求计数与诊断仅保留路径 --- */
+    const requestKey = queryIndex === -1 ? key : key.slice(0, queryIndex);
+    linkCount[requestKey] = (linkCount[requestKey] ?? 0) + 1;
+    const trackId = sMonitor.track(requestKey, method);
+    Promise.resolve().then(handler).catch((e: unknown) => {
+        lCore.log({}, `${errorPrefix} ${lText.stringifyError(e)}`, '-error');
     }).finally(() => {
         sMonitor.untrack(trackId);
-        --linkCount[key];
-        if (!linkCount[key]) {
-            delete linkCount[key];
+        --linkCount[requestKey];
+        if (!linkCount[requestKey]) {
+            delete linkCount[requestKey];
         }
     });
 }
@@ -336,7 +339,7 @@ async function requestHandler(
                             return;
                         }
                     }
-                    catch (e: any) {
+                    catch (e: unknown) {
                         lCore.log({
                             'path': path.slice(('/' + pathList.slice(0, i).join('/')).length + 1),
                             'urlFull': (uri.protocol ?? '') + '//' + (uri.host ?? '') + '/' + now,
@@ -344,8 +347,8 @@ async function requestHandler(
                             'req': req,
                             'get': uri.query ? lText.queryParse(uri.query) : {},
                             'cookie': {},
-                            'headers': {}
-                        }, '[CHILD][requestHandler][E0]' + lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
+                            'headers': {},
+                        }, '[CHILD][requestHandler][E0]' + lText.stringifyError(e), '-error');
                         const content = '<h1>500 Server Error</h1><hr>Kebab';
                         if (!res.headersSent) {
                             res.setHeader('content-type', 'text/html; charset=utf-8');
@@ -387,8 +390,8 @@ async function requestHandler(
                         return;
                     }
                 }
-                catch (e: any) {
-                    lCore.log({}, '[CHILD][requestHandler][E1]' + lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
+                catch (e: unknown) {
+                    lCore.log({}, '[CHILD][requestHandler][E1]' + lText.stringifyError(e), '-error');
                     const content = '<h1>500 Server Error</h1><hr>Kebab';
                     if (!res.headersSent) {
                         res.setHeader('content-type', 'text/html; charset=utf-8');
@@ -672,8 +675,8 @@ process.on('message', function(msg: kebab.Json) {
                 break;
             }
         }
-    })().catch(function(e) {
-        lCore.log({}, '[CHILD][process][message] ' + lText.stringifyJson((e.stack as string)).slice(1, -1), '-error');
+    })().catch(function(e: unknown) {
+        lCore.log({}, '[CHILD][process][message] ' + lText.stringifyError(e), '-error');
     });
 });
 

@@ -1,7 +1,7 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2026-02-07
- * Last: 2026-02-08
+ * Last: 2026-08-22
  * --- 性能监控库，用于检测 CPU/内存骤升并记录可疑请求、堆栈、CPU Profile、堆快照 ---
  * --- 包含 Worker 看门狗线程，用于在事件循环完全阻塞时实时检测并记录 ---
  */
@@ -18,7 +18,7 @@ import * as lFs from '#kebab/lib/fs.js';
 
 // --- 阈值配置 ---
 
-/** --- CPU 使用率阈值，0-100 --- */
+/** --- CPU 使用率阈值，100 代表占满一个逻辑核心 --- */
 let cpuThreshold: number = 80;
 
 /** --- 内存使用率阈值，单位 MB --- */
@@ -26,6 +26,9 @@ let memThreshold: number = 0;
 
 /** --- 事件循环延迟阈值，单位 ms --- */
 let eloopThreshold: number = 500;
+
+/** --- 是否在内存超阈值时自动采集堆快照 --- */
+let heapSnapshotEnabled: boolean = false;
 
 /** --- 监控间隔，单位 ms --- */
 const INTERVAL: number = 5_000;
@@ -39,19 +42,31 @@ const PROFILE_DURATION: number = 5_000;
 /** --- 两次诊断采集的最小间隔，防止频繁写磁盘，单位 ms --- */
 const DIAGNOSTIC_COOLDOWN: number = 60_000;
 
+/** --- 单次快照或日志最多输出的活跃请求详情数 --- */
+const MAX_ACTIVE_REQUEST_DETAILS: number = 100;
+
 // --- 内部状态 ---
 
 /** --- 定时器 --- */
 let timer: NodeJS.Timeout | null = null;
 
-/** --- 上次 CPU 累计用量 --- */
-let lastCpuUsage: NodeJS.CpuUsage | null = null;
+/** --- 周期检查的上次 CPU 累计用量 --- */
+let lastCheckCpuUsage: NodeJS.CpuUsage | null = null;
 
-/** --- 上次 CPU 采样的时间戳 --- */
-let lastCpuTime: number = 0;
+/** --- 周期检查的上次 CPU 采样时间戳 --- */
+let lastCheckCpuTime: number = 0;
 
-/** --- 上次系统各核 CPU 时间快照 --- */
-let lastOsCpus: os.CpuInfo[] | null = null;
+/** --- 周期检查的上次系统各核 CPU 时间快照 --- */
+let lastCheckOsCpus: os.CpuInfo[] | null = null;
+
+/** --- 对外快照的上次 CPU 累计用量 --- */
+let lastSnapshotCpuUsage: NodeJS.CpuUsage | null = null;
+
+/** --- 对外快照的上次 CPU 采样时间戳 --- */
+let lastSnapshotCpuTime: number = 0;
+
+/** --- 对外快照的上次系统各核 CPU 时间快照 --- */
+let lastSnapshotOsCpus: os.CpuInfo[] | null = null;
 
 /** --- 事件循环延迟直方图 --- */
 let eloopHistogram: perfHooks.IntervalHistogram | null = null;
@@ -64,6 +79,9 @@ let requestCounter: number = 0;
 
 /** --- 上次诊断采集时间 --- */
 let lastDiagnosticTime: number = 0;
+
+/** --- 是否正在采集诊断数据 --- */
+let diagnosing: boolean = false;
 
 /** --- 是否正在进行 CPU Profile 采集 --- */
 let profiling: boolean = false;
@@ -80,11 +98,11 @@ function isDebugMode(): boolean {
 /** --- 看门狗 Worker 实例 --- */
 let watchdog: workerThreads.Worker | null = null;
 
-/** --- 心跳共享内存（Int32: 秒级时间戳） --- */
+/** --- 心跳共享内存（Uint32: 秒级时间戳） --- */
 let heartbeatBuffer: SharedArrayBuffer | null = null;
 
 /** --- 心跳共享内存视图 --- */
-let heartbeatView: Int32Array | null = null;
+let heartbeatView: Uint32Array | null = null;
 
 /** --- 看门狗检测阈值，主线程超过此秒数未更新心跳则认为阻塞，单位秒 --- */
 const WATCHDOG_THRESHOLD: number = 15;
@@ -94,6 +112,12 @@ const WATCHDOG_INTERVAL: number = 5_000;
 
 /** --- 看门狗告警冷却时间，持续阻塞时不会每次都写日志，单位秒 --- */
 const WATCHDOG_COOLDOWN: number = 30;
+
+/** --- 看门狗异常退出后的重启延迟，单位 ms --- */
+const WATCHDOG_RESTART_DELAY: number = 5_000;
+
+/** --- 看门狗重启定时器 --- */
+let watchdogRestartTimer: NodeJS.Timeout | null = null;
 
 // --- 活跃请求追踪 ---
 
@@ -105,7 +129,7 @@ interface IActiveRequest {
     'start': number;
     /** --- 请求开始时的 CPU 累计用量基准 --- */
     'startCpu': NodeJS.CpuUsage;
-    /** --- 请求开始时的内存 RSS 基准（bytes） --- */
+    /** --- 请求开始时的进程整体内存 RSS 基准（bytes） --- */
     'startMem': number;
 }
 
@@ -119,16 +143,32 @@ interface ISnapshotRequest {
     'url': string;
     'method': string;
     'duration': number;
+    /** --- 请求存续期间的进程整体用户态 CPU 增量（微秒），不代表请求独占 --- */
     'cpuUser': number;
+    /** --- 请求存续期间的进程整体系统态 CPU 增量（微秒），不代表请求独占 --- */
     'cpuSystem': number;
+    /** --- 请求存续期间的进程整体 RSS 增量（bytes），不代表请求独占 --- */
     'memDelta': number;
+}
+
+/** --- 经脱敏后写入磁盘的 Node.js 诊断报告 --- */
+interface IDiagnosticReport {
+    'header'?: {
+        'commandLine'?: string[];
+        'networkInterfaces'?: unknown;
+    };
+    'environmentVariables'?: unknown;
+    'libuv'?: Array<{
+        'localEndpoint'?: unknown;
+        'remoteEndpoint'?: unknown;
+    }>;
 }
 
 /** --- 整体资源快照 --- */
 export interface ISnapshot {
     'pid': number;
     'time': number;
-    /** --- 本进程 CPU 占用（单核基准，0-100） --- */
+    /** --- 本进程 CPU 占用，100 代表占满一个逻辑核心，多线程时可超过 100 --- */
     'cpuProcess': number;
     /** --- 系统总 CPU 占用（所有核心合计，0-100，与任务管理器一致） --- */
     'cpuOs': number;
@@ -149,7 +189,9 @@ export interface ISnapshot {
         'free': number;
     };
     'eloopLag': number;
+    /** --- 最早开始的活跃请求，最多 100 条 --- */
     'activeRequests': ISnapshotRequest[];
+    /** --- 全部活跃请求数量，可能大于 activeRequests.length --- */
     'activeCount': number;
 }
 
@@ -164,25 +206,53 @@ export function start(opt?: {
     'mem'?: number;
     /** --- 事件循环延迟阈值 ms，默认 500 --- */
     'eloop'?: number;
+    /** --- 内存超阈值时是否采集堆快照，默认 false --- */
+    'heapSnapshot'?: boolean;
 }): void {
     if (timer) {
         return;
     }
-    cpuThreshold = opt?.cpu ?? 80;
-    memThreshold = opt?.mem ?? 0;
-    eloopThreshold = opt?.eloop ?? 500;
-    if (memThreshold === 0) {
-        // --- 自动计算：系统总内存的 80% ---
-        memThreshold = Math.floor((os.totalmem() * 0.8) / 1024 / 1024);
+    const nextCpuThreshold = opt?.cpu ?? 80;
+    const nextMemThreshold = opt?.mem ?? 0;
+    const nextEloopThreshold = opt?.eloop ?? 500;
+    if (!Number.isFinite(nextCpuThreshold) || nextCpuThreshold <= 0) {
+        throw new RangeError('Monitor CPU threshold must be greater than 0.');
     }
-    lastCpuUsage = process.cpuUsage();
-    lastCpuTime = Date.now();
-    lastOsCpus = os.cpus();
+    if (!Number.isFinite(nextMemThreshold) || nextMemThreshold < 0) {
+        throw new RangeError('Monitor memory threshold cannot be negative.');
+    }
+    if (!Number.isFinite(nextEloopThreshold) || nextEloopThreshold <= 0) {
+        throw new RangeError('Monitor event loop threshold must be greater than 0.');
+    }
+    cpuThreshold = nextCpuThreshold;
+    memThreshold = nextMemThreshold;
+    eloopThreshold = nextEloopThreshold;
+    heapSnapshotEnabled = opt?.heapSnapshot ?? false;
+    if (memThreshold === 0) {
+        // --- 同时考虑容器/系统约束和 V8 堆上限，避免默认阈值高于进程实际可用范围 ---
+        const constrainedMemory = process.constrainedMemory();
+        const systemLimit = constrainedMemory > 0
+            ? Math.min(constrainedMemory, os.totalmem())
+            : os.totalmem();
+        const heapLimit = v8.getHeapStatistics().heap_size_limit;
+        memThreshold = Math.floor(
+            Math.min(systemLimit * 0.8, heapLimit * 0.9) / 1024 / 1024,
+        );
+    }
+    const cpuUsage = process.cpuUsage();
+    const cpuTime = Date.now();
+    const osCpus = os.cpus();
+    lastCheckCpuUsage = cpuUsage;
+    lastCheckCpuTime = cpuTime;
+    lastCheckOsCpus = osCpus;
+    lastSnapshotCpuUsage = cpuUsage;
+    lastSnapshotCpuTime = cpuTime;
+    lastSnapshotOsCpus = osCpus;
     spikeCounter = 0;
     lastDiagnosticTime = 0;
     // --- 初始化心跳共享内存（索引 0: 秒级时间戳, 索引 1: 调试模式标志） ---
     heartbeatBuffer = new SharedArrayBuffer(8);
-    heartbeatView = new Int32Array(heartbeatBuffer);
+    heartbeatView = new Uint32Array(heartbeatBuffer);
     Atomics.store(heartbeatView, 0, Math.floor(Date.now() / 1000));
     Atomics.store(heartbeatView, 1, isDebugMode() ? 1 : 0);
     // --- 启用事件循环延迟直方图 ---
@@ -212,7 +282,18 @@ export function stop(): void {
         });
         watchdog = null;
     }
+    if (watchdogRestartTimer) {
+        clearTimeout(watchdogRestartTimer);
+        watchdogRestartTimer = null;
+    }
     activeRequests.clear();
+    lastCheckCpuUsage = null;
+    lastCheckCpuTime = 0;
+    lastCheckOsCpus = null;
+    lastSnapshotCpuUsage = null;
+    lastSnapshotCpuTime = 0;
+    lastSnapshotOsCpus = null;
+    spikeCounter = 0;
     heartbeatBuffer = null;
     heartbeatView = null;
 }
@@ -256,12 +337,28 @@ function startWatchdog(): void {
             if (watchdog === worker) {
                 watchdog = null;
             }
+            scheduleWatchdogRestart();
         });
         lCore.debug(`[MONITOR] [THREAD] [${process.pid}] Watchdog started`);
     }
     catch (e) {
         lCore.debug('[MONITOR] Failed to start watchdog', e);
+        scheduleWatchdogRestart();
     }
+}
+
+/**
+ * --- 看门狗异常退出后延迟重启，避免失去阻塞检测能力 ---
+ */
+function scheduleWatchdogRestart(): void {
+    if (!timer || watchdog || watchdogRestartTimer) {
+        return;
+    }
+    watchdogRestartTimer = setTimeout(() => {
+        watchdogRestartTimer = null;
+        startWatchdog();
+    }, WATCHDOG_RESTART_DELAY);
+    watchdogRestartTimer.unref();
 }
 
 /**
@@ -272,12 +369,14 @@ function startWatchdog(): void {
 export function track(url: string, method: string): string {
     const now = Date.now();
     const id = `${++requestCounter}-${now}`;
+    const queryIndex = url.search(/[?#]/u);
     activeRequests.set(id, {
-        'url': url,
+        // --- 查询参数可能含凭据或个人信息，诊断中只保留请求路径 ---
+        'url': queryIndex === -1 ? url : url.slice(0, queryIndex),
         'method': method,
         'start': now,
         'startCpu': process.cpuUsage(),
-        'startMem': process.memoryUsage().rss,
+        'startMem': process.memoryUsage.rss(),
     });
     return id;
 }
@@ -300,15 +399,21 @@ export function getSnapshot(): ISnapshot {
     const now = Date.now();
     // --- 计算进程 CPU 使用率（单核基准） ---
     let cpuProcess = 0;
-    if (lastCpuUsage && lastCpuTime) {
+    if (lastSnapshotCpuUsage && lastSnapshotCpuTime) {
         /** --- 经过的时间（微秒） --- */
-        const elapsed = (now - lastCpuTime) * 1_000;
-        const userDiff = cpuUsage.user - lastCpuUsage.user;
-        const sysDiff = cpuUsage.system - lastCpuUsage.system;
-        cpuProcess = Math.min(100, ((userDiff + sysDiff) / elapsed) * 100);
+        const elapsed = (now - lastSnapshotCpuTime) * 1_000;
+        const userDiff = cpuUsage.user - lastSnapshotCpuUsage.user;
+        const sysDiff = cpuUsage.system - lastSnapshotCpuUsage.system;
+        if (elapsed > 0) {
+            cpuProcess = ((userDiff + sysDiff) / elapsed) * 100;
+        }
     }
+    lastSnapshotCpuUsage = cpuUsage;
+    lastSnapshotCpuTime = now;
     // --- 计算系统总 CPU 使用率 ---
-    const cpuOs = getOsCpuPercent();
+    const osCpus = os.cpus();
+    const cpuOs = getOsCpuPercent(lastSnapshotOsCpus, osCpus);
+    lastSnapshotOsCpus = osCpus;
     // --- 计算事件循环延迟（P99，纳秒转毫秒） ---
     let eloopLag = 0;
     if (eloopHistogram) {
@@ -317,6 +422,9 @@ export function getSnapshot(): ISnapshot {
     // --- 收集活跃请求 ---
     const requests: ISnapshotRequest[] = [];
     for (const [, req] of activeRequests) {
+        if (requests.length >= MAX_ACTIVE_REQUEST_DETAILS) {
+            break;
+        }
         const reqCpu = process.cpuUsage(req.startCpu);
         requests.push({
             'url': req.url,
@@ -327,8 +435,6 @@ export function getSnapshot(): ISnapshot {
             'memDelta': mem.rss - req.startMem,
         });
     }
-    // --- 按持续时间降序排序 ---
-    requests.sort((a, b) => b.duration - a.duration);
     return {
         'pid': process.pid,
         'time': now,
@@ -372,18 +478,22 @@ function check(): void {
     let cpuPercent = 0;
     /** --- 实际经过的时间（ms），用于检测事件循环阻塞 --- */
     let actualElapsed = INTERVAL;
-    if (lastCpuUsage && lastCpuTime) {
-        actualElapsed = now - lastCpuTime;
+    if (lastCheckCpuUsage && lastCheckCpuTime) {
+        actualElapsed = now - lastCheckCpuTime;
         const elapsedUs = actualElapsed * 1_000;
-        const userDiff = cpuUsage.user - lastCpuUsage.user;
-        const sysDiff = cpuUsage.system - lastCpuUsage.system;
-        cpuPercent = Math.min(100, ((userDiff + sysDiff) / elapsedUs) * 100);
+        const userDiff = cpuUsage.user - lastCheckCpuUsage.user;
+        const sysDiff = cpuUsage.system - lastCheckCpuUsage.system;
+        if (elapsedUs > 0) {
+            cpuPercent = ((userDiff + sysDiff) / elapsedUs) * 100;
+        }
     }
-    lastCpuUsage = cpuUsage;
-    lastCpuTime = now;
+    lastCheckCpuUsage = cpuUsage;
+    lastCheckCpuTime = now;
     // --- 计算系统总 CPU 使用率 ---
-    const cpuOs = getOsCpuPercent();
-    const memMB = process.memoryUsage().rss / 1024 / 1024;
+    const osCpus = os.cpus();
+    const cpuOs = getOsCpuPercent(lastCheckOsCpus, osCpus);
+    lastCheckOsCpus = osCpus;
+    const memMB = process.memoryUsage.rss() / 1024 / 1024;
     let eloopLag = 0;
     if (eloopHistogram) {
         eloopLag = Math.round(eloopHistogram.percentile(99) / 1_000_000);
@@ -449,52 +559,38 @@ function logSpike(
     const now = Date.now();
     const requestDetails: string[] = [];
     for (const [, req] of activeRequests) {
+        if (requestDetails.length >= MAX_ACTIVE_REQUEST_DETAILS) {
+            break;
+        }
         const reqCpu = process.cpuUsage(req.startCpu);
         const duration = now - req.start;
         const cpuTotal = reqCpu.user + reqCpu.system;
         const memDelta = mem.rss - req.startMem;
         requestDetails.push(
-            `[${req.method}] ${req.url} (${duration}ms, CPU: ${cpuTotal}us, MEM_DELTA: ${memDelta >= 0 ? '+' : '-'}${lText.sizeFormat(Math.abs(memDelta), '')})`
+            `[${req.method}] ${req.url} (${duration}ms, PROC_CPU_DELTA: ${cpuTotal}us, PROC_RSS_DELTA: ${memDelta >= 0 ? '+' : '-'}${lText.sizeFormat(Math.abs(memDelta), '')})`
         );
+    }
+    const omittedRequests = activeRequests.size - requestDetails.length;
+    if (omittedRequests > 0) {
+        requestDetails.push(`... ${omittedRequests} more`);
     }
     // --- 诊断采集策略 ---
     // --- blocked=true：阻塞期间 watchdog 已通过 connectToMainThread() 远程采集了精确堆栈和 Profile ---
     // --- blocked=false：持续性骤升，此处由主线程自行采集 Report/Profile/HeapSnapshot ---
-    if (!blocked && now - lastDiagnosticTime >= DIAGNOSTIC_COOLDOWN) {
+    if (!blocked && !diagnosing && now - lastDiagnosticTime >= DIAGNOSTIC_COOLDOWN) {
         lastDiagnosticTime = now;
+        diagnosing = true;
         const hasCpuSpike = cpuPercent >= cpuThreshold;
         const hasMemSpike = (mem.rss / 1024 / 1024) >= memThreshold;
-        const ts = lTime.format(null, 'YmdHis');
-        const diagDir = `${kebab.LOG_CWD}monitor/${process.pid}/`;
-        lFs.mkdir(diagDir, 0o777).then(() => {
-            // --- 1. Diagnostic Report（包含 JS 堆栈、libuv handles、系统信息） ---
-            try {
-                process.report.directory = diagDir;
-                const reportName = `report-${ts}.json`;
-                process.report.writeReport(reportName);
-                lCore.display(`[MONITOR] Diagnostic report: ${diagDir}${reportName}`);
-            }
-            catch (e) {
-                lCore.debug('[MONITOR] Diagnostic report failed', e);
-            }
-            // --- 2. CPU Profile（精确到函数+行号的 CPU 消耗定位） ---
-            if (hasCpuSpike) {
-                collectCpuProfile(diagDir, ts).catch((e) => {
-                    lCore.debug('[MONITOR] CPU profile failed', e);
-                });
-            }
-            // --- 3. Heap Snapshot（内存泄漏定位到对象分配源） ---
-            if (hasMemSpike) {
-                try {
-                    const heapFile = v8.writeHeapSnapshot(`${diagDir}heap-${ts}.heapsnapshot`);
-                    lCore.display(`[MONITOR] Heap snapshot: ${heapFile}`);
-                }
-                catch (e) {
-                    lCore.debug('[MONITOR] Heap snapshot failed', e);
-                }
-            }
-        }).catch((e) => {
-            lCore.debug('[MONITOR] Failed to create diagnostic directory', e);
+        const diagnosticTime = new Date();
+        const ts = lTime.format(null, 'YmdHis', diagnosticTime);
+        const diagDir = `${kebab.LOG_CWD}monitor/${lTime.format(null, 'Y/m/d/His', diagnosticTime)}-pid-${process.pid}/`;
+        collectDiagnostics(
+            diagDir, ts, hasCpuSpike, hasMemSpike && heapSnapshotEnabled,
+        ).catch((e) => {
+            lCore.debug('[MONITOR] Diagnostic collection failed', e);
+        }).finally(() => {
+            diagnosing = false;
         });
     }
     const msg = `SPIKE [${alerts.join(', ')}] ` +
@@ -514,19 +610,19 @@ function logSpike(
 
 /**
  * --- 通过 os.cpus() 两次采样的 Delta 计算系统总 CPU 使用率 ---
+ * @param previous 上次系统各核 CPU 时间快照
+ * @param current 当前系统各核 CPU 时间快照
  * @returns 0-100 的百分比值，和任务管理器/top 命令一致
  */
-function getOsCpuPercent(): number {
-    const cpus = os.cpus();
-    if (lastOsCpus?.length !== cpus.length) {
-        lastOsCpus = cpus;
+function getOsCpuPercent(previous: os.CpuInfo[] | null, current: os.CpuInfo[]): number {
+    if (previous?.length !== current.length) {
         return 0;
     }
     let totalIdle = 0;
     let totalTick = 0;
-    for (let i = 0; i < cpus.length; ++i) {
-        const cur = cpus[i].times;
-        const prev = lastOsCpus[i].times;
+    for (let i = 0; i < current.length; ++i) {
+        const cur = current[i].times;
+        const prev = previous[i].times;
         const idleDiff = cur.idle - prev.idle;
         const totalDiff = (cur.user - prev.user) +
             (cur.nice - prev.nice) +
@@ -536,11 +632,64 @@ function getOsCpuPercent(): number {
         totalIdle += idleDiff;
         totalTick += totalDiff;
     }
-    lastOsCpus = cpus;
-    if (totalTick === 0) {
+    if (totalTick <= 0) {
         return 0;
     }
-    return Math.round((1 - totalIdle / totalTick) * 10000) / 100;
+    const percent = (1 - totalIdle / totalTick) * 100;
+    return Math.round(Math.max(0, Math.min(100, percent)) * 100) / 100;
+}
+
+/**
+ * --- 采集诊断报告及按需 Profile，避免并行采集互相污染数据 ---
+ * @param dir 诊断文件输出目录
+ * @param ts 时间戳字符串
+ * @param hasCpuSpike 是否发生 CPU 骤升
+ * @param collectHeapSnapshot 是否采集堆快照
+ */
+async function collectDiagnostics(
+    dir: string, ts: string, hasCpuSpike: boolean, collectHeapSnapshot: boolean,
+): Promise<void> {
+    if (!await lFs.mkdir(dir, 0o700)) {
+        throw new Error(`Failed to create diagnostic directory: ${dir}`);
+    }
+    if (!await lFs.chmod(dir, 0o700)) {
+        throw new Error(`Failed to secure diagnostic directory: ${dir}`);
+    }
+    // --- Diagnostic Report 默认会包含命令行、环境变量和网络端点，落盘前显式脱敏 ---
+    const reportName = `report-${ts}.json`;
+    const report = process.report.getReport() as IDiagnosticReport;
+    if (report.header) {
+        report.header.commandLine = [];
+        delete report.header.networkInterfaces;
+    }
+    delete report.environmentVariables;
+    for (const handle of report.libuv ?? []) {
+        delete handle.localEndpoint;
+        delete handle.remoteEndpoint;
+    }
+    const reportPath = `${dir}${reportName}`;
+    const written = await lFs.putContent(
+        reportPath, lText.stringifyJson(report, 2),
+        { 'encoding': 'utf8', 'mode': 0o600 },
+    );
+    if (!written) {
+        throw new Error(`Failed to write diagnostic report: ${reportPath}`);
+    }
+    if (!await lFs.chmod(reportPath, 0o600)) {
+        throw new Error(`Failed to secure diagnostic report: ${reportPath}`);
+    }
+    lCore.display(`[MONITOR] Diagnostic report: ${reportPath}`);
+    if (hasCpuSpike) {
+        await collectCpuProfile(dir, ts);
+    }
+    // --- 堆快照会同步阻塞并额外占用大量内存，仅在调用方明确开启时采集 ---
+    if (collectHeapSnapshot) {
+        const heapFile = v8.writeHeapSnapshot(`${dir}heap-${ts}.heapsnapshot`);
+        if (!await lFs.chmod(heapFile, 0o600)) {
+            throw new Error(`Failed to secure heap snapshot: ${heapFile}`);
+        }
+        lCore.display(`[MONITOR] Heap snapshot: ${heapFile}`);
+    }
 }
 
 /**
@@ -586,9 +735,16 @@ async function collectCpuProfile(dir: string, ts: string): Promise<void> {
             });
         });
         const filePath = `${dir}cpu-${ts}.cpuprofile`;
-        await lFs.putContent(filePath, lText.stringifyJson(profile), {
+        const written = await lFs.putContent(filePath, lText.stringifyJson(profile), {
             'encoding': 'utf8',
+            'mode': 0o600,
         });
+        if (!written) {
+            throw new Error(`Failed to write CPU profile: ${filePath}`);
+        }
+        if (!await lFs.chmod(filePath, 0o600)) {
+            throw new Error(`Failed to secure CPU profile: ${filePath}`);
+        }
         lCore.display(`[MONITOR] CPU profile: ${filePath}`);
     }
     finally {
