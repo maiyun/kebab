@@ -54,7 +54,7 @@ Defined in: [lib/undici/request.ts:30](https://github.com/maiyunnet/kebab/blob/m
 
 > **follow**(`follow?`): `this`
 
-Defined in: [lib/undici/request.ts:87](https://github.com/maiyunnet/kebab/blob/master/lib/undici/request.ts#L87)
+Defined in: [lib/undici/request.ts:96](https://github.com/maiyunnet/kebab/blob/master/lib/undici/request.ts#L96)
 
 设置是否跟随请求方的 location，留空为跟随，不设置为不跟随
 
@@ -88,7 +88,7 @@ method get 方法别名
 
 > **headers**(`headers`): `this`
 
-Defined in: [lib/undici/request.ts:123](https://github.com/maiyunnet/kebab/blob/master/lib/undici/request.ts#L123)
+Defined in: [lib/undici/request.ts:132](https://github.com/maiyunnet/kebab/blob/master/lib/undici/request.ts#L132)
 
 批量设置提交的 headers
 
@@ -108,7 +108,7 @@ Defined in: [lib/undici/request.ts:123](https://github.com/maiyunnet/kebab/blob/
 
 > **hosts**(`hosts`): `this`
 
-Defined in: [lib/undici/request.ts:96](https://github.com/maiyunnet/kebab/blob/master/lib/undici/request.ts#L96)
+Defined in: [lib/undici/request.ts:105](https://github.com/maiyunnet/kebab/blob/master/lib/undici/request.ts#L105)
 
 设置域名 -> ip的对应键值，就像电脑里的 hosts 一样
 
@@ -142,7 +142,7 @@ type json 方法别名
 
 > **local**(`addr`): `this`
 
-Defined in: [lib/undici/request.ts:114](https://github.com/maiyunnet/kebab/blob/master/lib/undici/request.ts#L114)
+Defined in: [lib/undici/request.ts:123](https://github.com/maiyunnet/kebab/blob/master/lib/undici/request.ts#L123)
 
 设置使用的本地网卡 IP
 
@@ -196,7 +196,7 @@ method post 方法别名
 
 > **request**(`cookie?`): `Promise`\<[`Response`](../../response/classes/Response.md)\>
 
-Defined in: [lib/undici/request.ts:143](https://github.com/maiyunnet/kebab/blob/master/lib/undici/request.ts#L143)
+Defined in: [lib/undici/request.ts:152](https://github.com/maiyunnet/kebab/blob/master/lib/undici/request.ts#L152)
 
 发起请求
 
@@ -212,11 +212,33 @@ Defined in: [lib/undici/request.ts:143](https://github.com/maiyunnet/kebab/blob/
 
 ***
 
+### retry()
+
+> **retry**(`retry?`): `this`
+
+Defined in: [lib/undici/request.ts:87](https://github.com/maiyunnet/kebab/blob/master/lib/undici/request.ts#L87)
+
+设置网络异常后的重试次数
+
+#### Parameters
+
+##### retry?
+
+`number` = `1`
+
+重试次数，默认为 1；非幂等请求需由调用方保证安全
+
+#### Returns
+
+`this`
+
+***
+
 ### save()
 
 > **save**(`save`): `this`
 
-Defined in: [lib/undici/request.ts:105](https://github.com/maiyunnet/kebab/blob/master/lib/undici/request.ts#L105)
+Defined in: [lib/undici/request.ts:114](https://github.com/maiyunnet/kebab/blob/master/lib/undici/request.ts#L114)
 
 设置后将直接保存到本地文件，不会返回，save 为本地实体路径
 
@@ -236,7 +258,7 @@ Defined in: [lib/undici/request.ts:105](https://github.com/maiyunnet/kebab/blob/
 
 > **setHeader**(`name`, `val`): `this`
 
-Defined in: [lib/undici/request.ts:133](https://github.com/maiyunnet/kebab/blob/master/lib/undici/request.ts#L133)
+Defined in: [lib/undici/request.ts:142](https://github.com/maiyunnet/kebab/blob/master/lib/undici/request.ts#L142)
 
 设置单条 header
 

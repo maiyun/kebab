@@ -8,7 +8,7 @@
 
 > **request**(`u`, `data?`, `opt?`): `Promise`\<[`Response`](../response/classes/Response.md)\>
 
-Defined in: [lib/undici.ts:367](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L367)
+Defined in: [lib/undici.ts:415](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L415)
 
 发起一个请求
 

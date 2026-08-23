@@ -51,6 +51,7 @@
 - [sizeFormat](functions/sizeFormat.md)
 - [str2int](functions/str2int.md)
 - [stringifyBuffer](functions/stringifyBuffer.md)
+- [stringifyError](functions/stringifyError.md)
 - [stringifyJson](functions/stringifyJson.md)
 - [stringifyResult](functions/stringifyResult.md)
 - [trimJson](functions/trimJson.md)

@@ -8,7 +8,7 @@
 
 > **stringifyBuffer**(`buf`): `string`
 
-Defined in: [lib/text.ts:706](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L706)
+Defined in: [lib/text.ts:730](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L730)
 
 输出文本格式的 buffer
 

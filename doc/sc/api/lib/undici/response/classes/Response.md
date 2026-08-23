@@ -64,7 +64,7 @@ Defined in: [lib/undici/response.ts:33](https://github.com/maiyunnet/kebab/blob/
 
 > **getJson**(): `Promise`\<`any`\>
 
-Defined in: [lib/undici/response.ts:66](https://github.com/maiyunnet/kebab/blob/master/lib/undici/response.ts#L66)
+Defined in: [lib/undici/response.ts:67](https://github.com/maiyunnet/kebab/blob/master/lib/undici/response.ts#L67)
 
 读取所有内容为 JSON，失败返回 null
 
@@ -78,7 +78,7 @@ Defined in: [lib/undici/response.ts:66](https://github.com/maiyunnet/kebab/blob/
 
 > **getRawStream**(): `BodyReadable` & `BodyMixin` \| `null`
 
-Defined in: [lib/undici/response.ts:126](https://github.com/maiyunnet/kebab/blob/master/lib/undici/response.ts#L126)
+Defined in: [lib/undici/response.ts:127](https://github.com/maiyunnet/kebab/blob/master/lib/undici/response.ts#L127)
 
 获取原生响应读取流对象
 
@@ -92,7 +92,7 @@ Defined in: [lib/undici/response.ts:126](https://github.com/maiyunnet/kebab/blob
 
 > **getStream**(): `BrotliDecompress` \| `Gunzip` \| `Inflate` \| `BodyReadable` & `BodyMixin` \| `null`
 
-Defined in: [lib/undici/response.ts:91](https://github.com/maiyunnet/kebab/blob/master/lib/undici/response.ts#L91)
+Defined in: [lib/undici/response.ts:92](https://github.com/maiyunnet/kebab/blob/master/lib/undici/response.ts#L92)
 
 获取响应读取流对象
 
@@ -106,7 +106,7 @@ Defined in: [lib/undici/response.ts:91](https://github.com/maiyunnet/kebab/blob/
 
 > **getText**(): `Promise`\<`string` \| `null`\>
 
-Defined in: [lib/undici/response.ts:51](https://github.com/maiyunnet/kebab/blob/master/lib/undici/response.ts#L51)
+Defined in: [lib/undici/response.ts:52](https://github.com/maiyunnet/kebab/blob/master/lib/undici/response.ts#L52)
 
 读取所有内容为文本
 
@@ -120,7 +120,7 @@ Defined in: [lib/undici/response.ts:51](https://github.com/maiyunnet/kebab/blob/
 
 > **setContent**(`v`): `void`
 
-Defined in: [lib/undici/response.ts:84](https://github.com/maiyunnet/kebab/blob/master/lib/undici/response.ts#L84)
+Defined in: [lib/undici/response.ts:85](https://github.com/maiyunnet/kebab/blob/master/lib/undici/response.ts#L85)
 
 用户自定义的 content 内容
 
