@@ -1,7 +1,7 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2020-4-9 20:02:39
- * Last: 2020-4-9 20:47:58, 2022-09-10 01:35:34, 2025-9-23 12:41:58
+ * Last: 2020-4-9 20:47:58, 2022-09-10 01:35:34, 2025-9-23 12:41:58, 2026-8-22
  */
 import * as stream from 'stream';
 import * as lCookie from '#kebab/lib/cookie.js';
@@ -77,6 +77,15 @@ export class Request {
      */
     public timeout(timeout: number): this {
         this._opt['timeout'] = timeout;
+        return this;
+    }
+
+    /**
+     * --- 设置网络异常后的重试次数 ---
+     * @param retry 重试次数，默认为 1；非幂等请求需由调用方保证安全
+     */
+    public retry(retry: number = 1): this {
+        this._opt['retry'] = retry;
         return this;
     }
 

@@ -1,7 +1,7 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2020-4-9 15:33:06
- * Last: 2020-4-12 11:12:03, 2022-09-10 12:43:23, 2022-12-25 15:12:57, 2023-9-26 14:20:41
+ * Last: 2020-4-12 11:12:03, 2022-09-10 12:43:23, 2022-12-25 15:12:57, 2023-9-26 14:20:41, 2026-8-22
  */
 import * as undici from 'undici';
 import * as zlib from 'zlib';
@@ -41,8 +41,9 @@ export class Response {
             }
             return this._req ? await lBuffer.getFull(stream) : null;
         }
-        catch (e: any) {
-            lCore.log({}, '[Undici][Response][getContent] ' + e.message, '-error');
+        catch (e: unknown) {
+            this.error = e instanceof Error ? e : new Error(String(e));
+            lCore.log({}, '[Undici][Response][getContent] ' + lText.stringifyError(e), '-error');
             return null;
         }
     }

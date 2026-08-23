@@ -219,6 +219,7 @@ export default class extends sCtr.Ctr {
             `<br><a href="${this._config.const.urlBase}test/undici-follow">View "test/undici-follow"</a>`,
             `<br><a href="${this._config.const.urlBase}test/undici-reuse">View "test/undici-reuse"</a>`,
             `<br><a href="${this._config.const.urlBase}test/undici-error">View "test/undici-error"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/undici-retry">View "test/undici-retry"</a>`,
             `<br><a href="${this._config.const.urlBase}test/undici-hosts">View "test/undici-hosts"</a>`,
             `<br><a href="${this._config.const.urlBase}test/undici-rproxy/dist/core.js">View "test/undici-rproxy/dist/core.js"</a> <a href="${this._config.const.urlBase}test/undici-rproxy/package.json">View "package.json"</a>`,
             `<br><a href="${this._config.const.urlBase}test/undici-mproxy">View "test/undici-mproxy"</a>`,
@@ -2562,6 +2563,48 @@ content: <pre>${(await res.getContent())?.toString() ?? 'null'}</pre>
 error: <pre>${JSON.stringify(res.error, null, 4)}</pre>`);
 
         return echo.join('') + this._getEnd();
+    }
+
+    public async undiciRetry(): Promise<string> {
+        const url = `${this._internalUrl}test/undici-retry-source`;
+        const time = Date.now();
+        const res = await lUndici.get(url, {
+            'retry': 1,
+            'log': false,
+        });
+        const content = await res.getContent();
+        return `<pre>const res = await lUndici.get('${url}', {
+    'retry': 1,
+    'log': false,
+});
+const content = await res.getContent();</pre>
+time: ${Date.now() - time}ms
+headers: <pre>${lText.htmlescape(lText.stringifyJson(res.headers))}</pre>
+content: <pre>${lText.htmlescape(content?.toString() ?? 'null')}</pre>
+error: <pre>${lText.htmlescape(res.error ? lText.stringifyError(res.error) : 'null')}</pre>` + this._getEnd();
+    }
+
+    public async undiciRetrySource(): Promise<string | boolean> {
+        const etag = '"undici-retry"';
+        if ((this._headers['range'] === 'bytes=1-1') && (this._headers['if-match'] === etag)) {
+            this._httpCode = 206;
+            this._res.setHeader('content-length', '1');
+            this._res.setHeader('content-range', 'bytes 1-1/2');
+            this._res.setHeader('etag', etag);
+            return 'K';
+        }
+        lCore.writeHead(this._res, 200, {
+            'content-length': '2',
+            etag,
+        });
+        lCore.write(this._res, 'O');
+        await new Promise<void>(resolve => {
+            setImmediate(() => {
+                this._res.destroy();
+                resolve();
+            });
+        });
+        return false;
     }
 
     public async undiciHosts(): Promise<string> {

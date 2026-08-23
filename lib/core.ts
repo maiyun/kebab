@@ -1,7 +1,7 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2019-5-3 23:54
- * Last: 2020-4-11 22:34:58, 2022-10-2 14:13:06, 2022-12-28 20:33:24, 2023-12-15 11:49:02, 2024-7-2 15:23:35, 2025-6-13 19:45:53, 2026-05-20 09:50:00
+ * Last: 2020-4-11 22:34:58, 2022-10-2 14:13:06, 2022-12-28 20:33:24, 2023-12-15 11:49:02, 2024-7-2 15:23:35, 2025-6-13 19:45:53, 2026-05-20 09:50:00, 2026-8-22
  */
 import * as cp from 'child_process';
 import * as http from 'http';
@@ -1412,10 +1412,19 @@ export function display(message?: any, ...optionalParams: any[]): void {
 }
 
 /**
- * --- 让 res 发送头部（前提是头部没有被发送才能调用本方法 ---
+ * --- 提交 HTTP 响应状态和头部，兼容 HTTP/1.1 与 HTTP/2 ---
+ *
+ * `setHeader()` 只暂存或修改单个头部，不会发送响应头，也不能提交状态码；在响应头提交前可反复调用。
+ * 本方法会立即提交状态码和此前设置的全部头部，必须在所有 `setHeader()` 调用之后、首次
+ * `write()`、`end()` 或 `pipe()` 之前调用。提交后再调用 `setHeader()` 会抛出 `ERR_HTTP_HEADERS_SENT`。
+ *
+ * 普通控制器应设置 `_httpCode`、调用 `_res.setHeader()` 并直接返回内容，由路由层统一提交响应头。
+ * 仅框架内部或手动接管响应（错误、重定向、代理、流式输出等）时才应直接调用本方法。
+ *
  * @param res 响应对象
- * @param statusCode 状态码
- * @param headers 头部
+ * @param statusCode HTTP 状态码
+ * @param headers 随本次提交附加的头部；通常优先在提交前使用 `setHeader()`
+ * @returns 无返回值
  */
 export function writeHead(
     res: http2.Http2ServerResponse | http.ServerResponse, statusCode: number, headers?: http.OutgoingHttpHeaders
@@ -1428,6 +1437,16 @@ export function writeHead(
     }
 }
 
+/**
+ * --- 提交服务器发送事件（SSE）响应头 ---
+ *
+ * 在发送第一条事件前调用一次，固定提交状态码 200、事件流内容类型和禁止缓存头部。
+ * SSE 的内容长度和结束时间未知，因此不设置 `content-length`；调用后响应头已经提交，
+ * 不能再调用 `setHeader()`，后续应使用 `write()` 持续发送事件，并由调用方在结束时关闭响应。
+ *
+ * @param res 响应对象
+ * @returns 无返回值
+ */
 export function writeEventStreamHead(res: http2.Http2ServerResponse | http.ServerResponse): void {
     writeHead(res, 200, {
         'content-type': 'text/event-stream; charset=utf-8',

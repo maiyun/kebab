@@ -40,6 +40,13 @@ function getMproxyUrl(u: string, mproxy: {
 /** --- 复用的 undici.agent 对象列表 --- */
 const agents = new Map<string, undici.Agent>();
 
+/** --- 可重试的网络异常代码 --- */
+const retryErrorCodes = [
+    'ECONNRESET', 'ECONNREFUSED', 'ENOTFOUND', 'EAI_AGAIN', 'ENETDOWN', 'ENETUNREACH',
+    'EHOSTDOWN', 'EHOSTUNREACH', 'EPIPE', 'ETIMEDOUT', 'UND_ERR_SOCKET',
+    'UND_ERR_CONNECT_TIMEOUT', 'UND_ERR_HEADERS_TIMEOUT', 'UND_ERR_BODY_TIMEOUT'
+];
+
 /** --- 获取或创建 undici.agent 对象 --- */
 function getAgent(opt: IRequestOptions = {}): undici.Agent | undici.ProxyAgent {
     let k = opt.reuse ?? 'default';
@@ -72,6 +79,32 @@ function getAgent(opt: IRequestOptions = {}): undici.Agent | undici.ProxyAgent {
         }));
     }
     return agents.get(k)!;
+}
+
+/**
+ * --- 获取请求使用的 dispatcher ---
+ * @param opt 请求选项
+ * @param method 请求方法
+ * @param data 请求数据
+ * @returns 普通或带网络异常重试能力的 dispatcher
+ */
+function getDispatcher(
+    opt: IRequestOptions,
+    method: NonNullable<IRequestOptions['method']>,
+    data?: Record<string, kebab.Json> | Buffer | string | stream.Readable
+): undici.Dispatcher {
+    const agent = getAgent(opt);
+    const retry = (typeof opt.retry === 'number') && Number.isFinite(opt.retry) ?
+        Math.max(0, Math.floor(opt.retry)) : 0;
+    if ((retry === 0) || (data instanceof stream.Readable)) {
+        return agent;
+    }
+    return new undici.RetryAgent(agent, {
+        'maxRetries': retry,
+        'methods': [method],
+        'statusCodes': [],
+        'errorCodes': retryErrorCodes,
+    });
 }
 
 /**
@@ -218,6 +251,8 @@ export async function fetch(
         };
         /** --- 自定义 host 映射，如 {'www.maiyun.net': '127.0.0.1'}，或全部映射到一个 host --- */
         'hosts'?: Record<string, string> | string;
+        /** --- 网络异常后的重试次数，默认 0；流式请求体不可重试，非幂等请求需由调用方保证安全 --- */
+        'retry'?: number;
     } = {},
 ): Promise<Response> {
     // --- 解析 URL ---
@@ -305,6 +340,7 @@ export async function fetch(
         'headers': headers,
         'hosts': init.hosts,
         'mproxy': init.mproxy,
+        'retry': init.retry,
         'signal': init.signal ?? undefined,
         'follow': init.redirect === 'follow' ? 10 : 0,
     };
@@ -457,7 +493,7 @@ export async function request(
             }
             return res;
         }
-        const agent = getAgent(opt);
+        const dispatcher = getDispatcher(opt, method, data);
         req = await undici.request(opt.mproxy ? getMproxyUrl(u, opt.mproxy) : u, {
             'method': method,
             'body': data,
@@ -465,7 +501,7 @@ export async function request(
             'headersTimeout': timeout * 1_000,
             'bodyTimeout': timeout * 1_000,
             'signal': opt.signal,
-            'dispatcher': agent,
+            'dispatcher': dispatcher,
         });
     }
     catch (err: kebab.Json) {
@@ -801,6 +837,8 @@ export interface IRequestOptions {
     'type'?: 'form' | 'json';
     /** --- 秒数，默认 300 秒 --- */
     'timeout'?: number;
+    /** --- 网络异常后的重试次数，默认 0；流式请求体不可重试，非幂等请求需由调用方保证安全 --- */
+    'retry'?: number;
     /** --- 追踪 location 次数，0 为不追踪，默认为 0 --- */
     'follow'?: number;
     /** --- 自定义 host 映射，如 {'www.maiyun.net': '127.0.0.1'}，或全部映射到一个 host --- */
