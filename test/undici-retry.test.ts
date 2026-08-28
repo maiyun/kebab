@@ -141,3 +141,35 @@ await nodeTest.test('Undici does not retry HTTP error statuses', async () => {
         await close(server);
     }
 });
+
+await nodeTest.test('ResponseJson does not retry JSON parse errors by default', async () => {
+    let count = 0;
+    const { server, url } = await listen((_req, res) => {
+        ++count;
+        res.end(count === 1 ? 'invalid json' : '{"result":1}');
+    });
+    try {
+        const json = await lUndici.getResponseJson(url, { 'log': false });
+        assert.strictEqual(json, false);
+        assert.strictEqual(count, 1);
+    }
+    finally {
+        await close(server);
+    }
+});
+
+await nodeTest.test('ResponseJson retries configured JSON parse errors', async () => {
+    let count = 0;
+    const { server, url } = await listen((_req, res) => {
+        ++count;
+        res.end(count === 1 ? 'invalid json' : '{"result":1}');
+    });
+    try {
+        const json = await lUndici.getResponseJson(url, { 'log': false, 'retryJson': 1 });
+        assert.deepStrictEqual(json, { 'result': 1 });
+        assert.strictEqual(count, 2);
+    }
+    finally {
+        await close(server);
+    }
+});

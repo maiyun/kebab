@@ -47,6 +47,22 @@ const retryErrorCodes = [
     'UND_ERR_CONNECT_TIMEOUT', 'UND_ERR_HEADERS_TIMEOUT', 'UND_ERR_BODY_TIMEOUT'
 ];
 
+/** --- JSON 解析重试的初始等待时间，单位毫秒 --- */
+const RETRY_JSON_MIN_TIMEOUT = 500;
+
+/** --- JSON 解析重试的最大等待时间，单位毫秒 --- */
+const RETRY_JSON_MAX_TIMEOUT = 30_000;
+
+/**
+ * --- 将重试次数规范为非负整数 ---
+ * @param retry 重试次数
+ * @returns 可执行的重试次数
+ */
+function normalizeRetry(retry?: number): number {
+    return (typeof retry === 'number') && Number.isFinite(retry) ?
+        Math.max(0, Math.floor(retry)) : 0;
+}
+
 /** --- 获取或创建 undici.agent 对象 --- */
 function getAgent(opt: IRequestOptions = {}): undici.Agent | undici.ProxyAgent {
     let k = opt.reuse ?? 'default';
@@ -94,8 +110,7 @@ function getDispatcher(
     data?: Record<string, kebab.Json> | Buffer | string | stream.Readable
 ): undici.Dispatcher {
     const agent = getAgent(opt);
-    const retry = (typeof opt.retry === 'number') && Number.isFinite(opt.retry) ?
-        Math.max(0, Math.floor(opt.retry)) : 0;
+    const retry = normalizeRetry(opt.retry);
     if ((retry === 0) || (data instanceof stream.Readable)) {
         return agent;
     }
@@ -156,30 +171,58 @@ export async function postJson(
 }
 
 /**
- * --- 发起 JSON 请求并解析 JSON 响应，失败时返回 null ---
+ * --- 发起请求并解析 JSON 响应，可在解析失败时重新请求 ---
+ * @param u 网址
+ * @param data 请求数据
+ * @param opt 请求选项
+ * @param action 日志动作名
+ * @returns JSON 数据；请求失败返回 null；JSON 解析失败返回 false
+ */
+async function requestResponseJson(
+    u: string,
+    data: kebab.Json[] | Record<string, kebab.Json> | undefined,
+    opt: IRequestOptions,
+    action: 'POSTJSONRESPONSEJSON' | 'POSTRESPONSEJSON' | 'GETRESPONSEJSON'
+): Promise<kebab.Json | null | false> {
+    const retryJson = normalizeRetry(opt.retryJson);
+    for (let i = 0; i <= retryJson; ++i) {
+        const res = await request(u, data, opt);
+        const rtn = await res.getContent();
+        if (!rtn) {
+            return null;
+        }
+        const rtnStr = rtn.toString();
+        const json = lText.parseJson(rtnStr);
+        if (json) {
+            return json;
+        }
+        if (i < retryJson) {
+            const timeout = Math.min(RETRY_JSON_MIN_TIMEOUT * (2 ** i), RETRY_JSON_MAX_TIMEOUT);
+            await lCore.sleep(timeout);
+            continue;
+        }
+        if (opt.log === undefined || opt.log) {
+            const requestData = data === undefined ? '' : `, data: ${lText.stringifyJson(data)}`;
+            lCore.log({}, `[UNDICI][${action}] parse json failed, url: ${u}${requestData}, content: ${rtnStr}`, '-neterror');
+        }
+        return false;
+    }
+    return false;
+}
+
+/**
+ * --- 发起 JSON 请求并解析 JSON 响应 ---
  * @param u 网址
  * @param data 数据
  * @param opt 选项
+ * @returns JSON 数据；请求失败返回 null；JSON 解析失败返回 false
  */
 export async function postJsonResponseJson(
     u: string, data: kebab.Json[] | Record<string, kebab.Json>, opt: IRequestOptions = {}
 ): Promise<kebab.Json | null | false> {
     opt.method = 'POST';
     opt.type = 'json';
-    const res = await request(u, data, opt);
-    const rtn = await res.getContent();
-    if (!rtn) {
-        return null;
-    }
-    const rtnStr = rtn.toString();
-    const json = lText.parseJson(rtnStr);
-    if (!json) {
-        if (opt.log === undefined || opt.log) {
-            lCore.log({}, `[UNDICI][POSTJSONRESPONSEJSON] parse json failed, url: ${u}, data: ${lText.stringifyJson(data)}, content: ${rtnStr}`, '-neterror');
-        }
-        return false;
-    }
-    return json;
+    return requestResponseJson(u, data, opt, 'POSTJSONRESPONSEJSON');
 }
 
 /**
@@ -187,52 +230,26 @@ export async function postJsonResponseJson(
  * @param u 网址
  * @param data 数据
  * @param opt 选项
- * @returns JSON 数据，失败时返回 null
+ * @returns JSON 数据；请求失败返回 null；JSON 解析失败返回 false
  */
 export async function postResponseJson(
     u: string, data: Record<string, kebab.Json>, opt: IRequestOptions = {}
 ): Promise<kebab.Json | null | false> {
     opt.method = 'POST';
-    const res = await request(u, data, opt);
-    const rtn = await res.getContent();
-    if (!rtn) {
-        return null;
-    }
-    const rtnStr = rtn.toString();
-    const json = lText.parseJson(rtnStr);
-    if (!json) {
-        if (opt.log === undefined || opt.log) {
-            lCore.log({}, `[UNDICI][POSTRESPONSEJSON] parse json failed, url: ${u}, data: ${lText.stringifyJson(data)}, content: ${rtnStr}`, '-neterror');
-        }
-        return false;
-    }
-    return json;
+    return requestResponseJson(u, data, opt, 'POSTRESPONSEJSON');
 }
 
 /**
  * --- 发起 GET 请求并解析 JSON 响应 ---
  * @param u 网址
  * @param opt 选项
- * @returns JSON 数据，失败时返回 null
+ * @returns JSON 数据；请求失败返回 null；JSON 解析失败返回 false
  */
 export async function getResponseJson(
     u: string,
     opt: IRequestOptions = {}
 ): Promise<kebab.Json | null | false> {
-    const res = await request(u, undefined, opt);
-    const rtn = await res.getContent();
-    if (!rtn) {
-        return null;
-    }
-    const rtnStr = rtn.toString();
-    const json = lText.parseJson(rtnStr);
-    if (!json) {
-        if (opt.log === undefined || opt.log) {
-            lCore.log({}, `[UNDICI][GETRESPONSEJSON] parse json failed, url: ${u}, content: ${rtnStr}`, '-neterror');
-        }
-        return false;
-    }
-    return json;
+    return requestResponseJson(u, undefined, opt, 'GETRESPONSEJSON');
 }
 
 /**
@@ -839,6 +856,8 @@ export interface IRequestOptions {
     'timeout'?: number;
     /** --- 网络异常后的重试次数，默认 0；流式请求体不可重试，非幂等请求需由调用方保证安全 --- */
     'retry'?: number;
+    /** --- JSON 解析失败后的重试次数，默认 0；仅适用于 ResponseJson 快捷方法，非幂等请求需由调用方保证安全 --- */
+    'retryJson'?: number;
     /** --- 追踪 location 次数，0 为不追踪，默认为 0 --- */
     'follow'?: number;
     /** --- 自定义 host 映射，如 {'www.maiyun.net': '127.0.0.1'}，或全部映射到一个 host --- */
