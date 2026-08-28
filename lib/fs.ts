@@ -497,10 +497,13 @@ export async function readToResponse(path: string,
     }
     // --- 这些文件可能需要缓存 ---
     if (['htm', 'html', 'css', 'js', 'mjs', 'xml', 'jpg', 'jpeg', 'svg', 'gif', 'png', 'json'].includes(mimeData.extension)) {
+        /** --- 静态文件默认缓存秒数 --- */
+        const cacheTTL = 600;
         const hash = `W/"${stat.size.toString(16)}-${stat.mtime.getTime().toString(16)}"`;
         const lastModified = stat.mtime.toUTCString();
         res.setHeader('etag', hash);
-        res.setHeader('cache-control', 'public, max-age=600');
+        res.setHeader('expires', new Date(Date.now() + cacheTTL * 1_000).toUTCString());
+        res.setHeader('cache-control', 'public, max-age=' + cacheTTL.toString());
         // --- 判断返回 304 吗 ---
         const noneMatch = req.headers['if-none-match'];
         const modifiedSince = req.headers['if-modified-since'];
