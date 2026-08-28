@@ -6,7 +6,7 @@
 
 # Interface: IConnectionInfo
 
-Defined in: [lib/db/pool.ts:18](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L18)
+Defined in: [lib/db/pool.ts:24](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L24)
 
 连接信息
 
@@ -16,7 +16,7 @@ Defined in: [lib/db/pool.ts:18](https://github.com/maiyunnet/kebab/blob/master/l
 
 > **host**: `string`
 
-Defined in: [lib/db/pool.ts:22](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L22)
+Defined in: [lib/db/pool.ts:28](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L28)
 
 ***
 
@@ -24,7 +24,7 @@ Defined in: [lib/db/pool.ts:22](https://github.com/maiyunnet/kebab/blob/master/l
 
 > **id**: `number`
 
-Defined in: [lib/db/pool.ts:19](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L19)
+Defined in: [lib/db/pool.ts:25](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L25)
 
 ***
 
@@ -32,7 +32,7 @@ Defined in: [lib/db/pool.ts:19](https://github.com/maiyunnet/kebab/blob/master/l
 
 > **last**: `number`
 
-Defined in: [lib/db/pool.ts:21](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L21)
+Defined in: [lib/db/pool.ts:27](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L27)
 
 ***
 
@@ -40,7 +40,7 @@ Defined in: [lib/db/pool.ts:21](https://github.com/maiyunnet/kebab/blob/master/l
 
 > **lost**: `boolean`
 
-Defined in: [lib/db/pool.ts:27](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L27)
+Defined in: [lib/db/pool.ts:33](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L33)
 
 ***
 
@@ -48,7 +48,7 @@ Defined in: [lib/db/pool.ts:27](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **name?**: `string`
 
-Defined in: [lib/db/pool.ts:24](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L24)
+Defined in: [lib/db/pool.ts:30](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L30)
 
 ***
 
@@ -56,7 +56,7 @@ Defined in: [lib/db/pool.ts:24](https://github.com/maiyunnet/kebab/blob/master/l
 
 > **port**: `number`
 
-Defined in: [lib/db/pool.ts:23](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L23)
+Defined in: [lib/db/pool.ts:29](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L29)
 
 ***
 
@@ -64,7 +64,7 @@ Defined in: [lib/db/pool.ts:23](https://github.com/maiyunnet/kebab/blob/master/l
 
 > **service**: [`ESERVICE`](../../enumerations/ESERVICE.md)
 
-Defined in: [lib/db/pool.ts:20](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L20)
+Defined in: [lib/db/pool.ts:26](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L26)
 
 ***
 
@@ -72,7 +72,7 @@ Defined in: [lib/db/pool.ts:20](https://github.com/maiyunnet/kebab/blob/master/l
 
 > **transaction**: `boolean`
 
-Defined in: [lib/db/pool.ts:29](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L29)
+Defined in: [lib/db/pool.ts:35](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L35)
 
 ***
 
@@ -80,7 +80,7 @@ Defined in: [lib/db/pool.ts:29](https://github.com/maiyunnet/kebab/blob/master/l
 
 > **user**: `string`
 
-Defined in: [lib/db/pool.ts:25](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L25)
+Defined in: [lib/db/pool.ts:31](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L31)
 
 ***
 
@@ -88,4 +88,4 @@ Defined in: [lib/db/pool.ts:25](https://github.com/maiyunnet/kebab/blob/master/l
 
 > **using**: `boolean`
 
-Defined in: [lib/db/pool.ts:28](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L28)
+Defined in: [lib/db/pool.ts:34](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L34)

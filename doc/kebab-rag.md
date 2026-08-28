@@ -1361,7 +1361,7 @@ index/variables/VER.md
 
 # Variable: VER
 
-> `const` **VER**: `"9.16.0"` = `'9.16.0'`
+> `const` **VER**: `"9.16.1"` = `'9.16.1'`
 
 Defined in: [index.ts:10](https://github.com/maiyunnet/kebab/blob/master/index.ts#L10)
 
@@ -6958,7 +6958,7 @@ lib/db/conn/classes/Connection.md
 
 # Class: Connection
 
-Defined in: [lib/db/conn.ts:38](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L38)
+Defined in: [lib/db/conn.ts:39](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L39)
 
 数据库连接对象
 
@@ -6968,7 +6968,7 @@ Defined in: [lib/db/conn.ts:38](https://github.com/maiyunnet/kebab/blob/master/l
 
 > **new Connection**(`etc`, `link`): `Connection`
 
-Defined in: [lib/db/conn.ts:63](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L63)
+Defined in: [lib/db/conn.ts:64](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L64)
 
 #### Parameters
 
@@ -6990,7 +6990,7 @@ Defined in: [lib/db/conn.ts:63](https://github.com/maiyunnet/kebab/blob/master/l
 
 > **beginTransaction**(): `Promise`\<`boolean`\>
 
-Defined in: [lib/db/conn.ts:325](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L325)
+Defined in: [lib/db/conn.ts:326](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L326)
 
 #### Returns
 
@@ -7002,7 +7002,7 @@ Defined in: [lib/db/conn.ts:325](https://github.com/maiyunnet/kebab/blob/master/
 
 > **commit**(): `Promise`\<`boolean`\>
 
-Defined in: [lib/db/conn.ts:346](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L346)
+Defined in: [lib/db/conn.ts:352](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L352)
 
 #### Returns
 
@@ -7014,7 +7014,7 @@ Defined in: [lib/db/conn.ts:346](https://github.com/maiyunnet/kebab/blob/master/
 
 > **end**(): `Promise`\<`boolean`\>
 
-Defined in: [lib/db/conn.ts:314](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L314)
+Defined in: [lib/db/conn.ts:315](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L315)
 
 关闭连接，一般情况下不使用
 
@@ -7028,7 +7028,7 @@ Defined in: [lib/db/conn.ts:314](https://github.com/maiyunnet/kebab/blob/master/
 
 > **execute**(`sql`, `values?`): `Promise`\<[`IPacket`](../../interfaces/IPacket.md)\>
 
-Defined in: [lib/db/conn.ts:240](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L240)
+Defined in: [lib/db/conn.ts:241](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L241)
 
 执行一条 SQL 并获得影响行数对象 packet
 
@@ -7056,7 +7056,7 @@ Defined in: [lib/db/conn.ts:240](https://github.com/maiyunnet/kebab/blob/master/
 
 > **getEtc**(): [`IConfigDb`](../../../../index/interfaces/IConfigDb.md)
 
-Defined in: [lib/db/conn.ts:72](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L72)
+Defined in: [lib/db/conn.ts:73](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L73)
 
 获取连接 etc 信息
 
@@ -7070,7 +7070,7 @@ Defined in: [lib/db/conn.ts:72](https://github.com/maiyunnet/kebab/blob/master/l
 
 > **getLast**(): `number`
 
-Defined in: [lib/db/conn.ts:84](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L84)
+Defined in: [lib/db/conn.ts:85](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L85)
 
 获取最后一次获取连接的时间
 
@@ -7084,7 +7084,7 @@ Defined in: [lib/db/conn.ts:84](https://github.com/maiyunnet/kebab/blob/master/l
 
 > **getLastSql**(): `object`[]
 
-Defined in: [lib/db/conn.ts:91](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L91)
+Defined in: [lib/db/conn.ts:92](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L92)
 
 获取最后两次执行的 sql 字符串
 
@@ -7098,7 +7098,7 @@ Defined in: [lib/db/conn.ts:91](https://github.com/maiyunnet/kebab/blob/master/l
 
 > **getService**(): [`ESERVICE`](../../enumerations/ESERVICE.md)
 
-Defined in: [lib/db/conn.ts:77](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L77)
+Defined in: [lib/db/conn.ts:78](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L78)
 
 获取数据库服务类型
 
@@ -7112,7 +7112,7 @@ Defined in: [lib/db/conn.ts:77](https://github.com/maiyunnet/kebab/blob/master/l
 
 > **isAvailable**(`last?`): `Promise`\<`boolean`\>
 
-Defined in: [lib/db/conn.ts:158](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L158)
+Defined in: [lib/db/conn.ts:159](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L159)
 
 通过执行一条语句判断当前连接是否可用
 
@@ -7134,7 +7134,7 @@ Defined in: [lib/db/conn.ts:158](https://github.com/maiyunnet/kebab/blob/master/
 
 > **isLost**(): `boolean`
 
-Defined in: [lib/db/conn.ts:108](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L108)
+Defined in: [lib/db/conn.ts:109](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L109)
 
 是否已经丢失
 
@@ -7148,7 +7148,7 @@ Defined in: [lib/db/conn.ts:108](https://github.com/maiyunnet/kebab/blob/master/
 
 > **isTransaction**(): `boolean`
 
-Defined in: [lib/db/conn.ts:115](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L115)
+Defined in: [lib/db/conn.ts:116](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L116)
 
 是否是开启事务状态
 
@@ -7162,7 +7162,7 @@ Defined in: [lib/db/conn.ts:115](https://github.com/maiyunnet/kebab/blob/master/
 
 > **isUsing**(): `boolean`
 
-Defined in: [lib/db/conn.ts:122](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L122)
+Defined in: [lib/db/conn.ts:123](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L123)
 
 获取当前状态是否正在被使用中
 
@@ -7176,7 +7176,7 @@ Defined in: [lib/db/conn.ts:122](https://github.com/maiyunnet/kebab/blob/master/
 
 > **query**(`sql`, `values?`): `Promise`\<[`IData`](../../interfaces/IData.md)\>
 
-Defined in: [lib/db/conn.ts:181](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L181)
+Defined in: [lib/db/conn.ts:182](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L182)
 
 执行一条 SQL 并获得返回数据
 
@@ -7204,7 +7204,7 @@ Defined in: [lib/db/conn.ts:181](https://github.com/maiyunnet/kebab/blob/master/
 
 > **refreshLast**(): `void`
 
-Defined in: [lib/db/conn.ts:150](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L150)
+Defined in: [lib/db/conn.ts:151](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L151)
 
 设定最后使用时间
 
@@ -7218,7 +7218,7 @@ Defined in: [lib/db/conn.ts:150](https://github.com/maiyunnet/kebab/blob/master/
 
 > **rollback**(): `Promise`\<`boolean`\>
 
-Defined in: [lib/db/conn.ts:364](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L364)
+Defined in: [lib/db/conn.ts:372](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L372)
 
 #### Returns
 
@@ -7230,7 +7230,7 @@ Defined in: [lib/db/conn.ts:364](https://github.com/maiyunnet/kebab/blob/master/
 
 > **setLost**(): `void`
 
-Defined in: [lib/db/conn.ts:101](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L101)
+Defined in: [lib/db/conn.ts:102](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L102)
 
 将本条连接设置为不可用
 
@@ -7244,7 +7244,7 @@ Defined in: [lib/db/conn.ts:101](https://github.com/maiyunnet/kebab/blob/master/
 
 > **used**(): `void`
 
-Defined in: [lib/db/conn.ts:143](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L143)
+Defined in: [lib/db/conn.ts:144](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L144)
 
 取消占用
 
@@ -7258,7 +7258,7 @@ Defined in: [lib/db/conn.ts:143](https://github.com/maiyunnet/kebab/blob/master/
 
 > **using**(): `boolean`
 
-Defined in: [lib/db/conn.ts:129](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L129)
+Defined in: [lib/db/conn.ts:130](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L130)
 
 判断是否可用（丢失的也算不可用），返回 true 代表获取成功并自动刷新最后时间
 
@@ -7568,7 +7568,7 @@ lib/db/pool/classes/Pool.md
 
 # Class: Pool
 
-Defined in: [lib/db/pool.ts:116](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L116)
+Defined in: [lib/db/pool.ts:122](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L122)
 
 数据库连接池对象
 
@@ -7578,7 +7578,7 @@ Defined in: [lib/db/pool.ts:116](https://github.com/maiyunnet/kebab/blob/master/
 
 > **new Pool**(`etc`, `opt`): `Pool`
 
-Defined in: [lib/db/pool.ts:127](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L127)
+Defined in: [lib/db/pool.ts:133](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L133)
 
 #### Parameters
 
@@ -7604,7 +7604,7 @@ Defined in: [lib/db/pool.ts:127](https://github.com/maiyunnet/kebab/blob/master/
 
 > **beginTransaction**(`ctr`): `Promise`\<[`Transaction`](../../tran/classes/Transaction.md) \| `null`\>
 
-Defined in: [lib/db/pool.ts:195](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L195)
+Defined in: [lib/db/pool.ts:201](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L201)
 
 开启事务，返回事务对象并锁定连接，别人任何人不可用，有 ctr 的话必传 this，独立执行时可传 null
 
@@ -7624,7 +7624,7 @@ Defined in: [lib/db/pool.ts:195](https://github.com/maiyunnet/kebab/blob/master/
 
 > **execute**(`sql`, `values?`): `Promise`\<[`IPacket`](../../interfaces/IPacket.md)\>
 
-Defined in: [lib/db/pool.ts:175](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L175)
+Defined in: [lib/db/pool.ts:181](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L181)
 
 执行一条 SQL 并获得影响行数对象 packet，连接失败抛出错误
 
@@ -7652,7 +7652,7 @@ Defined in: [lib/db/pool.ts:175](https://github.com/maiyunnet/kebab/blob/master/
 
 > **getName**(): `string`
 
-Defined in: [lib/db/pool.ts:141](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L141)
+Defined in: [lib/db/pool.ts:147](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L147)
 
 获取当前连接的数据库名称
 
@@ -7666,7 +7666,7 @@ Defined in: [lib/db/pool.ts:141](https://github.com/maiyunnet/kebab/blob/master/
 
 > **getQueries**(): `number`
 
-Defined in: [lib/db/pool.ts:327](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L327)
+Defined in: [lib/db/pool.ts:339](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L339)
 
 获取 SQL 执行次数
 
@@ -7680,7 +7680,7 @@ Defined in: [lib/db/pool.ts:327](https://github.com/maiyunnet/kebab/blob/master/
 
 > **getService**(): [`ESERVICE`](../../enumerations/ESERVICE.md)
 
-Defined in: [lib/db/pool.ts:136](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L136)
+Defined in: [lib/db/pool.ts:142](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L142)
 
 获取当前连接的服务商
 
@@ -7694,7 +7694,7 @@ Defined in: [lib/db/pool.ts:136](https://github.com/maiyunnet/kebab/blob/master/
 
 > **query**(`sql`, `values?`): `Promise`\<[`IData`](../../interfaces/IData.md)\>
 
-Defined in: [lib/db/pool.ts:151](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L151)
+Defined in: [lib/db/pool.ts:157](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L157)
 
 执行一条 SQL，无视顺序和相同连接，随用随取
 
@@ -7731,7 +7731,7 @@ lib/db/pool/functions/getConnectionList.md
 
 > **getConnectionList**(): [`IConnectionInfo`](../interfaces/IConnectionInfo.md)[]
 
-Defined in: [lib/db/pool.ts:35](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L35)
+Defined in: [lib/db/pool.ts:41](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L41)
 
 获取当前连接池中所有连接的信息
 
@@ -7773,7 +7773,7 @@ lib/db/pool/interfaces/IConnectionInfo.md
 
 # Interface: IConnectionInfo
 
-Defined in: [lib/db/pool.ts:18](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L18)
+Defined in: [lib/db/pool.ts:24](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L24)
 
 连接信息
 
@@ -7783,7 +7783,7 @@ Defined in: [lib/db/pool.ts:18](https://github.com/maiyunnet/kebab/blob/master/l
 
 > **host**: `string`
 
-Defined in: [lib/db/pool.ts:22](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L22)
+Defined in: [lib/db/pool.ts:28](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L28)
 
 ***
 
@@ -7791,7 +7791,7 @@ Defined in: [lib/db/pool.ts:22](https://github.com/maiyunnet/kebab/blob/master/l
 
 > **id**: `number`
 
-Defined in: [lib/db/pool.ts:19](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L19)
+Defined in: [lib/db/pool.ts:25](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L25)
 
 ***
 
@@ -7799,7 +7799,7 @@ Defined in: [lib/db/pool.ts:19](https://github.com/maiyunnet/kebab/blob/master/l
 
 > **last**: `number`
 
-Defined in: [lib/db/pool.ts:21](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L21)
+Defined in: [lib/db/pool.ts:27](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L27)
 
 ***
 
@@ -7807,7 +7807,7 @@ Defined in: [lib/db/pool.ts:21](https://github.com/maiyunnet/kebab/blob/master/l
 
 > **lost**: `boolean`
 
-Defined in: [lib/db/pool.ts:27](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L27)
+Defined in: [lib/db/pool.ts:33](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L33)
 
 ***
 
@@ -7815,7 +7815,7 @@ Defined in: [lib/db/pool.ts:27](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **name?**: `string`
 
-Defined in: [lib/db/pool.ts:24](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L24)
+Defined in: [lib/db/pool.ts:30](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L30)
 
 ***
 
@@ -7823,7 +7823,7 @@ Defined in: [lib/db/pool.ts:24](https://github.com/maiyunnet/kebab/blob/master/l
 
 > **port**: `number`
 
-Defined in: [lib/db/pool.ts:23](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L23)
+Defined in: [lib/db/pool.ts:29](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L29)
 
 ***
 
@@ -7831,7 +7831,7 @@ Defined in: [lib/db/pool.ts:23](https://github.com/maiyunnet/kebab/blob/master/l
 
 > **service**: [`ESERVICE`](../../enumerations/ESERVICE.md)
 
-Defined in: [lib/db/pool.ts:20](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L20)
+Defined in: [lib/db/pool.ts:26](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L26)
 
 ***
 
@@ -7839,7 +7839,7 @@ Defined in: [lib/db/pool.ts:20](https://github.com/maiyunnet/kebab/blob/master/l
 
 > **transaction**: `boolean`
 
-Defined in: [lib/db/pool.ts:29](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L29)
+Defined in: [lib/db/pool.ts:35](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L35)
 
 ***
 
@@ -7847,7 +7847,7 @@ Defined in: [lib/db/pool.ts:29](https://github.com/maiyunnet/kebab/blob/master/l
 
 > **user**: `string`
 
-Defined in: [lib/db/pool.ts:25](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L25)
+Defined in: [lib/db/pool.ts:31](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L31)
 
 ***
 
@@ -7855,7 +7855,7 @@ Defined in: [lib/db/pool.ts:25](https://github.com/maiyunnet/kebab/blob/master/l
 
 > **using**: `boolean`
 
-Defined in: [lib/db/pool.ts:28](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L28)
+Defined in: [lib/db/pool.ts:34](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L34)
 
 lib/db/tran/classes/Transaction.md
 ---
@@ -18544,7 +18544,7 @@ lib/undici/functions/fetch.md
 
 > **fetch**(`input`, `init?`): `Promise`\<`Response`\>
 
-Defined in: [lib/undici.ts:243](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L243)
+Defined in: [lib/undici.ts:260](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L260)
 
 发起一个完全兼容 fetch 的请求
 
@@ -18579,7 +18579,7 @@ lib/undici/functions/filterHeaders.md
 
 > **filterHeaders**(`headers`, `res?`, `filter?`): `Record`\<`string`, `string` \| `string`[]\>
 
-Defined in: [lib/undici.ts:617](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L617)
+Defined in: [lib/undici.ts:634](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L634)
 
 剔除不代理的 header，返回新的 header
 
@@ -18620,7 +18620,7 @@ lib/undici/functions/getFormData.md
 
 > **getFormData**(): [`FormData`](../formdata/classes/FormData.md)
 
-Defined in: [lib/undici.ts:601](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L601)
+Defined in: [lib/undici.ts:618](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L618)
 
 创建 FormData 对象
 
@@ -18641,7 +18641,7 @@ lib/undici/functions/get.md
 
 > **get**(`u`, `opt?`): `Promise`\<[`Response`](../response/classes/Response.md)\>
 
-Defined in: [lib/undici.ts:123](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L123)
+Defined in: [lib/undici.ts:138](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L138)
 
 发起一个 get 请求
 
@@ -18703,7 +18703,7 @@ lib/undici/functions/getResponseJson.md
 
 > **getResponseJson**(`u`, `opt?`): `Promise`\<`any`\>
 
-Defined in: [lib/undici.ts:218](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L218)
+Defined in: [lib/undici.ts:248](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L248)
 
 发起 GET 请求并解析 JSON 响应
 
@@ -18725,7 +18725,7 @@ Defined in: [lib/undici.ts:218](https://github.com/maiyunnet/kebab/blob/master/l
 
 `Promise`\<`any`\>
 
-JSON 数据，失败时返回 null
+JSON 数据；请求失败返回 null；JSON 解析失败返回 false
 
 lib/undici/functions/mproxyData.md
 ---
@@ -18740,7 +18740,7 @@ lib/undici/functions/mproxyData.md
 
 > **mproxyData**(`ctr`): `any`
 
-Defined in: [lib/undici.ts:719](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L719)
+Defined in: [lib/undici.ts:736](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L736)
 
 获取 mproxy 的附加数据
 
@@ -18769,7 +18769,7 @@ lib/undici/functions/mproxy.md
 
 > **mproxy**(`ctr`, `auth`, `opt?`): `Promise`\<`number`\>
 
-Defined in: [lib/undici.ts:657](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L657)
+Defined in: [lib/undici.ts:674](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L674)
 
 正向 mproxy 代理，注意提前处理不要自动处理 post 数据，读取 get 的 url 为实际请求地址
 get: url, auth
@@ -18811,7 +18811,7 @@ lib/undici/functions/open.md
 
 > **open**(`u`): [`Request`](../request/classes/Request.md)
 
-Defined in: [lib/undici.ts:114](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L114)
+Defined in: [lib/undici.ts:129](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L129)
 
 创建一个请求对象
 
@@ -18838,7 +18838,7 @@ lib/undici/functions/postJson.md
 
 > **postJson**(`u`, `data`, `opt?`): `Promise`\<[`Response`](../response/classes/Response.md)\>
 
-Defined in: [lib/undici.ts:148](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L148)
+Defined in: [lib/undici.ts:163](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L163)
 
 发起 JSON 请求
 
@@ -18879,9 +18879,9 @@ lib/undici/functions/postJsonResponseJson.md
 
 > **postJsonResponseJson**(`u`, `data`, `opt?`): `Promise`\<`any`\>
 
-Defined in: [lib/undici.ts:164](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L164)
+Defined in: [lib/undici.ts:220](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L220)
 
-发起 JSON 请求并解析 JSON 响应，失败时返回 null
+发起 JSON 请求并解析 JSON 响应
 
 ## Parameters
 
@@ -18907,6 +18907,8 @@ Defined in: [lib/undici.ts:164](https://github.com/maiyunnet/kebab/blob/master/l
 
 `Promise`\<`any`\>
 
+JSON 数据；请求失败返回 null；JSON 解析失败返回 false
+
 lib/undici/functions/post.md
 ---
 
@@ -18920,7 +18922,7 @@ lib/undici/functions/post.md
 
 > **post**(`u`, `data`, `opt?`): `Promise`\<[`Response`](../response/classes/Response.md)\>
 
-Defined in: [lib/undici.ts:133](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L133)
+Defined in: [lib/undici.ts:148](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L148)
 
 发起一个 post 请求
 
@@ -18961,7 +18963,7 @@ lib/undici/functions/postResponseJson.md
 
 > **postResponseJson**(`u`, `data`, `opt?`): `Promise`\<`any`\>
 
-Defined in: [lib/undici.ts:192](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L192)
+Defined in: [lib/undici.ts:235](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L235)
 
 发起 POST 请求并解析 JSON 响应
 
@@ -18989,7 +18991,7 @@ Defined in: [lib/undici.ts:192](https://github.com/maiyunnet/kebab/blob/master/l
 
 `Promise`\<`any`\>
 
-JSON 数据，失败时返回 null
+JSON 数据；请求失败返回 null；JSON 解析失败返回 false
 
 lib/undici/functions/request.md
 ---
@@ -19004,7 +19006,7 @@ lib/undici/functions/request.md
 
 > **request**(`u`, `data?`, `opt?`): `Promise`\<[`Response`](../response/classes/Response.md)\>
 
-Defined in: [lib/undici.ts:415](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L415)
+Defined in: [lib/undici.ts:432](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L432)
 
 发起一个请求
 
@@ -19041,7 +19043,7 @@ lib/undici/functions/rproxy.md
 
 > **rproxy**(`ctr`, `route`, `opt?`): `Promise`\<`boolean`\>
 
-Defined in: [lib/undici.ts:749](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L749)
+Defined in: [lib/undici.ts:766](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L766)
 
 反向代理，将本服务器的某个路由反代到其他网址
 
@@ -19130,7 +19132,7 @@ lib/undici/interfaces/IMproxyOptions.md
 
 # Interface: IMproxyOptions
 
-Defined in: [lib/undici.ts:870](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L870)
+Defined in: [lib/undici.ts:889](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L889)
 
 正向代理请求的传入参数选项
 
@@ -19140,7 +19142,7 @@ Defined in: [lib/undici.ts:870](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **filter?**: (`h`) => `boolean`
 
-Defined in: [lib/undici.ts:879](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L879)
+Defined in: [lib/undici.ts:898](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L898)
 
 过滤 header，返回 true 则留下
 
@@ -19160,7 +19162,7 @@ Defined in: [lib/undici.ts:879](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **follow?**: `number`
 
-Defined in: [lib/undici.ts:873](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L873)
+Defined in: [lib/undici.ts:892](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L892)
 
 ***
 
@@ -19168,7 +19170,7 @@ Defined in: [lib/undici.ts:873](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **headers?**: [`THttpHeaders`](../type-aliases/THttpHeaders.md)
 
-Defined in: [lib/undici.ts:877](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L877)
+Defined in: [lib/undici.ts:896](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L896)
 
 ***
 
@@ -19176,7 +19178,7 @@ Defined in: [lib/undici.ts:877](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **hosts?**: `string` \| `Record`\<`string`, `string`\>
 
-Defined in: [lib/undici.ts:875](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L875)
+Defined in: [lib/undici.ts:894](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L894)
 
 自定义 host 映射，如 {'www.maiyun.net': '127.0.0.1'}，或全部映射到一个 host
 
@@ -19186,7 +19188,7 @@ Defined in: [lib/undici.ts:875](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **local?**: `string`
 
-Defined in: [lib/undici.ts:876](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L876)
+Defined in: [lib/undici.ts:895](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L895)
 
 ***
 
@@ -19194,7 +19196,7 @@ Defined in: [lib/undici.ts:876](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **reuse?**: `string` \| `Agent` \| `ProxyAgent`
 
-Defined in: [lib/undici.ts:881](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L881)
+Defined in: [lib/undici.ts:900](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L900)
 
 默认为 default
 
@@ -19204,7 +19206,7 @@ Defined in: [lib/undici.ts:881](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **timeout?**: `number`
 
-Defined in: [lib/undici.ts:872](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L872)
+Defined in: [lib/undici.ts:891](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L891)
 
 秒数，默认 300 秒
 
@@ -19219,7 +19221,7 @@ lib/undici/interfaces/IRequestOptions.md
 
 # Interface: IRequestOptions
 
-Defined in: [lib/undici.ts:835](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L835)
+Defined in: [lib/undici.ts:852](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L852)
 
 请求的传入参数选项
 
@@ -19229,7 +19231,7 @@ Defined in: [lib/undici.ts:835](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **cookie?**: `Record`\<`string`, [`ICookie`](../../cookie/interfaces/ICookie.md)\>
 
-Defined in: [lib/undici.ts:862](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L862)
+Defined in: [lib/undici.ts:881](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L881)
 
 cookie 托管对象
 
@@ -19239,7 +19241,7 @@ cookie 托管对象
 
 > `optional` **follow?**: `number`
 
-Defined in: [lib/undici.ts:843](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L843)
+Defined in: [lib/undici.ts:862](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L862)
 
 追踪 location 次数，0 为不追踪，默认为 0
 
@@ -19249,7 +19251,7 @@ Defined in: [lib/undici.ts:843](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **headers?**: [`THttpHeaders`](../type-aliases/THttpHeaders.md)
 
-Defined in: [lib/undici.ts:848](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L848)
+Defined in: [lib/undici.ts:867](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L867)
 
 ***
 
@@ -19257,7 +19259,7 @@ Defined in: [lib/undici.ts:848](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **hosts?**: `string` \| `Record`\<`string`, `string`\>
 
-Defined in: [lib/undici.ts:845](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L845)
+Defined in: [lib/undici.ts:864](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L864)
 
 自定义 host 映射，如 {'www.maiyun.net': '127.0.0.1'}，或全部映射到一个 host
 
@@ -19267,7 +19269,7 @@ Defined in: [lib/undici.ts:845](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **keep?**: `boolean`
 
-Defined in: [lib/undici.ts:858](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L858)
+Defined in: [lib/undici.ts:877](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L877)
 
 连接是否保持长连接（即是否允许复用），默认为 true
 
@@ -19277,7 +19279,7 @@ Defined in: [lib/undici.ts:858](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **local?**: `string`
 
-Defined in: [lib/undici.ts:847](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L847)
+Defined in: [lib/undici.ts:866](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L866)
 
 ***
 
@@ -19285,7 +19287,7 @@ Defined in: [lib/undici.ts:847](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **log?**: `boolean`
 
-Defined in: [lib/undici.ts:864](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L864)
+Defined in: [lib/undici.ts:883](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L883)
 
 若有异常写入文件日志，默认为 true
 
@@ -19295,7 +19297,7 @@ Defined in: [lib/undici.ts:864](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **method?**: `"GET"` \| `"POST"` \| `"PUT"` \| `"DELETE"` \| `"OPTIONS"`
 
-Defined in: [lib/undici.ts:836](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L836)
+Defined in: [lib/undici.ts:853](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L853)
 
 ***
 
@@ -19303,7 +19305,7 @@ Defined in: [lib/undici.ts:836](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **mproxy?**: `object`
 
-Defined in: [lib/undici.ts:850](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L850)
+Defined in: [lib/undici.ts:869](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L869)
 
 正向 mproxy 代理，url 如 https://xxx/abc
 
@@ -19331,9 +19333,19 @@ Defined in: [lib/undici.ts:850](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **retry?**: `number`
 
-Defined in: [lib/undici.ts:841](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L841)
+Defined in: [lib/undici.ts:858](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L858)
 
 网络异常后的重试次数，默认 0；流式请求体不可重试，非幂等请求需由调用方保证安全
+
+***
+
+### retryJson?
+
+> `optional` **retryJson?**: `number`
+
+Defined in: [lib/undici.ts:860](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L860)
+
+JSON 解析失败后的重试次数，默认 0；仅适用于 ResponseJson 快捷方法，非幂等请求需由调用方保证安全
 
 ***
 
@@ -19341,7 +19353,7 @@ Defined in: [lib/undici.ts:841](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **reuse?**: `string` \| `Agent` \| `ProxyAgent`
 
-Defined in: [lib/undici.ts:860](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L860)
+Defined in: [lib/undici.ts:879](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L879)
 
 复用池名/Agent，默认为 default
 
@@ -19351,7 +19363,7 @@ Defined in: [lib/undici.ts:860](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **save?**: `string`
 
-Defined in: [lib/undici.ts:846](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L846)
+Defined in: [lib/undici.ts:865](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L865)
 
 ***
 
@@ -19359,7 +19371,7 @@ Defined in: [lib/undici.ts:846](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **signal?**: `AbortSignal`
 
-Defined in: [lib/undici.ts:866](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L866)
+Defined in: [lib/undici.ts:885](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L885)
 
 请求中止信号
 
@@ -19369,7 +19381,7 @@ Defined in: [lib/undici.ts:866](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **timeout?**: `number`
 
-Defined in: [lib/undici.ts:839](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L839)
+Defined in: [lib/undici.ts:856](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L856)
 
 秒数，默认 300 秒
 
@@ -19379,7 +19391,7 @@ Defined in: [lib/undici.ts:839](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **type?**: `"form"` \| `"json"`
 
-Defined in: [lib/undici.ts:837](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L837)
+Defined in: [lib/undici.ts:854](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L854)
 
 lib/undici/interfaces/IRproxyOptions.md
 ---
@@ -19392,7 +19404,7 @@ lib/undici/interfaces/IRproxyOptions.md
 
 # Interface: IRproxyOptions
 
-Defined in: [lib/undici.ts:885](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L885)
+Defined in: [lib/undici.ts:904](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L904)
 
 反向代理请求的传入参数选项
 
@@ -19402,7 +19414,7 @@ Defined in: [lib/undici.ts:885](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **body?**: `string` \| `Buffer`\<`ArrayBufferLike`\> \| `Readable`
 
-Defined in: [lib/undici.ts:904](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L904)
+Defined in: [lib/undici.ts:923](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L923)
 
 手动传入请求体（优先于原始 req 流），用于 req 流已消费后仍需转发 body 的场景
 
@@ -19412,7 +19424,7 @@ Defined in: [lib/undici.ts:904](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **filter?**: (`h`) => `boolean`
 
-Defined in: [lib/undici.ts:894](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L894)
+Defined in: [lib/undici.ts:913](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L913)
 
 过滤 header，返回 true 则留下
 
@@ -19432,7 +19444,7 @@ Defined in: [lib/undici.ts:894](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **follow?**: `number`
 
-Defined in: [lib/undici.ts:888](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L888)
+Defined in: [lib/undici.ts:907](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L907)
 
 ***
 
@@ -19440,7 +19452,7 @@ Defined in: [lib/undici.ts:888](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **headers?**: [`THttpHeaders`](../type-aliases/THttpHeaders.md)
 
-Defined in: [lib/undici.ts:892](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L892)
+Defined in: [lib/undici.ts:911](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L911)
 
 ***
 
@@ -19448,7 +19460,7 @@ Defined in: [lib/undici.ts:892](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **hosts?**: `string` \| `Record`\<`string`, `string`\>
 
-Defined in: [lib/undici.ts:890](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L890)
+Defined in: [lib/undici.ts:909](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L909)
 
 自定义 host 映射，如 {'www.maiyun.net': '127.0.0.1'}，或全部映射到一个 host
 
@@ -19458,7 +19470,7 @@ Defined in: [lib/undici.ts:890](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **local?**: `string`
 
-Defined in: [lib/undici.ts:891](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L891)
+Defined in: [lib/undici.ts:910](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L910)
 
 ***
 
@@ -19466,7 +19478,7 @@ Defined in: [lib/undici.ts:891](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **mproxy?**: `object`
 
-Defined in: [lib/undici.ts:896](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L896)
+Defined in: [lib/undici.ts:915](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L915)
 
 正向 mproxy 代理，url 如 https://xxx/abc
 
@@ -19494,7 +19506,7 @@ Defined in: [lib/undici.ts:896](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **querys?**: `Record`\<`string`, `any`\>
 
-Defined in: [lib/undici.ts:906](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L906)
+Defined in: [lib/undici.ts:925](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L925)
 
 自定义 GET 查询参数，传入后直接替换代理目标 URL 的整个 query string
 
@@ -19504,7 +19516,7 @@ Defined in: [lib/undici.ts:906](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **reuse?**: `string` \| `Agent` \| `ProxyAgent`
 
-Defined in: [lib/undici.ts:908](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L908)
+Defined in: [lib/undici.ts:927](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L927)
 
 默认为 default
 
@@ -19514,7 +19526,7 @@ Defined in: [lib/undici.ts:908](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **timeout?**: `number`
 
-Defined in: [lib/undici.ts:887](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L887)
+Defined in: [lib/undici.ts:906](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L906)
 
 秒数，默认 300 秒
 
@@ -20025,7 +20037,7 @@ lib/undici/type-aliases/THttpHeaders.md
 
 > **THttpHeaders** = `http.IncomingHttpHeaders` & `object`
 
-Defined in: [lib/undici.ts:913](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L913)
+Defined in: [lib/undici.ts:932](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L932)
 
 http headers
 
