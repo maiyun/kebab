@@ -4,5 +4,22 @@
     "test": "The ? test ?.",
     "test2": {
         "test3": "test4"
+    },
+    "validation": {
+        "strict_object": "The submitted data must be an object and contain only supported fields.",
+        "_xsrf": {
+            "xsrf": "Bad request, no permission."
+        },
+        "title": {
+            "strict_object": "The title is required.",
+            "string": "The title must be a string.",
+            "non_empty": "Please enter a title."
+        },
+        "count": {
+            "strict_object": "The count is required.",
+            "string": "The count must be a string.",
+            "to_number": "The count must be a number.",
+            "integer": "The count must be an integer."
+        }
     }
 }

@@ -3,9 +3,10 @@
  * Date: 2020-3-14 17:24:38
  * Last: 2020-3-30 15:31:40, 2022-07-22 16:59:00, 2022-09-12 23:51:56, 2022-09-23 15:53:58, 2022-12-29 01:18:08, 2023-2-28 20:07:57, 2023-12-27 18:39:35, 2024-3-1 19:38:53, 2024-4-9 16:03:58, 2025-2-12 18:55:44, 2025-6-12 16:56:08, 2026-8-22
  */
-import ejs from 'ejs';
 import * as http from 'http';
 import * as http2 from 'http2';
+import ejs from 'ejs';
+import type * as v from 'valibot';
 import * as kebab from '#kebab/index.js';
 import * as lCore from '#kebab/lib/core.js';
 import * as lFs from '#kebab/lib/fs.js';
@@ -40,6 +41,59 @@ export function clearLocaleData(): void {
     localeFiles = [];
     localeData = {};
 }
+
+/** --- Valibot 校验失败时可直接返回给客户端的内容或生成函数 --- */
+export type TValibotResponse<TIssue extends v.BaseIssue<unknown>> = kebab.Json[] |
+((issues: [TIssue, ...TIssue[]]) => kebab.Json[]);
+
+/** --- 在 issue 路径完整后，根据 Kebab 生成的语言键翻译消息 --- */
+export type TValibotTranslate = (key: string, issue: v.BaseIssue<unknown>) => string;
+
+/** --- Valibot 同步校验选项 --- */
+export interface IValibotOptions<TIssue extends v.BaseIssue<unknown>> {
+    /** --- 传给 Valibot 的校验配置 --- */
+    'config'?: v.Config<TIssue>;
+    /** --- 校验失败时返回给客户端的内容，默认使用首个 issue 的消息 --- */
+    'response'?: TValibotResponse<TIssue>;
+    /** --- 使用完整 issue 路径翻译消息 --- */
+    'translate'?: TValibotTranslate;
+}
+
+/** --- XSRF 校验失败的问题描述 --- */
+export interface IValibotXsrfIssue extends v.BaseIssue<unknown> {
+    readonly kind: 'validation';
+    readonly type: 'xsrf';
+}
+
+/** --- 带 XSRF 检测的 Valibot 同步校验选项 --- */
+export interface IValibotXOptions<TIssue extends v.BaseIssue<unknown>> {
+    /** --- 传给 Valibot 的校验配置 --- */
+    'config'?: v.Config<TIssue>;
+    /** --- 校验失败时返回给客户端的内容，回调同时可能收到 XSRF issue --- */
+    'response'?: TValibotResponse<TIssue | IValibotXsrfIssue>;
+    /** --- 使用完整 issue 路径翻译消息，包括 XSRF issue --- */
+    'translate'?: TValibotTranslate;
+    /** --- 是否忽略 XSRF 检测 --- */
+    'ignoreXsrf'?: boolean;
+}
+
+/** --- Valibot 校验结果：仅成功分支提供 schema 推导后的 output --- */
+export type TValibotResult<
+    TSchema extends v.GenericSchema,
+    TIssue extends v.BaseIssue<unknown> = v.InferIssue<TSchema>
+> = {
+    readonly typed: true;
+    readonly success: true;
+    readonly output: v.InferOutput<TSchema>;
+    readonly issues: undefined;
+    readonly response: undefined;
+} | {
+    readonly typed: boolean;
+    readonly success: false;
+    readonly output: undefined;
+    readonly issues: [TIssue, ...TIssue[]];
+    readonly response: kebab.Json[];
+};
 
 export class Ctr {
 
@@ -560,6 +614,149 @@ export class Ctr {
         if (lastVal[2]) {
             rtn[2] = lastVal[2];
         }
+    }
+
+    /**
+     * --- 生成 Valibot 校验失败结果 ---
+     * @param issues Valibot 问题列表
+     * @param response 自定义客户端返回值或生成函数
+     * @returns 校验失败结果
+     */
+    private _getValibotFailure<TSchema extends v.GenericSchema, TIssue extends v.BaseIssue<unknown>>(
+        issues: [TIssue, ...TIssue[]],
+        response?: TValibotResponse<TIssue>,
+        translate?: TValibotTranslate
+    ): TValibotResult<TSchema, TIssue> {
+        /** --- 路径已完整且消息已翻译的问题列表 --- */
+        const translatedIssues = this._translateValibotIssues(issues, translate);
+        const clientResponse = typeof response === 'function' ? response(translatedIssues) : response;
+        return {
+            'typed': false,
+            'success': false,
+            'output': undefined,
+            'issues': translatedIssues,
+            'response': clientResponse ?? [0, translatedIssues[0].message],
+        };
+    }
+
+    /**
+     * --- 根据完整 issue 路径生成 Kebab 语言包键 ---
+     * @param issue Valibot 校验问题
+     * @returns 语言包键
+     */
+    private _getValibotLocaleKey(issue: v.BaseIssue<unknown>): string {
+        if ((issue.type === 'strict_object') && (issue.expected === 'never')) {
+            return 'validation.strict_object';
+        }
+        const path = lCore.v.getDotPath(issue);
+        return path ? `validation.${path}.${issue.type}` : `validation.${issue.type}`;
+    }
+
+    /**
+     * --- 在 Valibot 完成父级路径组装后翻译问题消息 ---
+     * @param issues Valibot 问题列表
+     * @param translate 消息翻译函数
+     * @returns 翻译后的问题列表
+     */
+    private _translateValibotIssues<TIssue extends v.BaseIssue<unknown>>(
+        issues: [TIssue, ...TIssue[]],
+        translate?: TValibotTranslate
+    ): [TIssue, ...TIssue[]] {
+        if (!translate) {
+            return issues;
+        }
+        const translateIssue = (issue: TIssue): TIssue => {
+            const key = this._getValibotLocaleKey(issue);
+            const message = translate(key, issue);
+            return {
+                ...issue,
+                /** --- 语言包缺失时保留键名，并回退到 Valibot 原始英文原因 --- */
+                'message': message === `[LocaleError]${key}` ? `[${key}] ${issue.message}` : message,
+            };
+        };
+        return [translateIssue(issues[0]), ...issues.slice(1).map(translateIssue)];
+    }
+
+    /**
+     * --- 使用 Valibot schema 校验并解析输入，成功后 output 会自动推导类型 ---
+     * @param schema Valibot 同步 schema
+     * @param input 待校验的输入
+     * @param options Valibot 配置和自定义客户端返回值
+     * @returns 可判别的校验结果
+     */
+    protected _valibot<const TSchema extends v.GenericSchema>(
+        schema: TSchema,
+        input: unknown,
+        options?: IValibotOptions<v.InferIssue<TSchema>>
+    ): TValibotResult<TSchema> {
+        const result = lCore.v.safeParse(schema, input, options?.config);
+        if (!result.success) {
+            return this._getValibotFailure<TSchema, v.InferIssue<TSchema>>(
+                result.issues, options?.response, options?.translate
+            );
+        }
+        return {
+            ...result,
+            'response': undefined,
+        };
+    }
+
+    /**
+     * --- 使用 Valibot schema 校验并解析输入，同时检测 XSRF ---
+     * @param schema Valibot 同步 schema
+     * @param input 待校验的输入
+     * @param options Valibot 配置、自定义客户端返回值和 XSRF 选项
+     * @returns 可判别的校验结果
+     */
+    protected _valibotx<const TSchema extends v.GenericSchema>(
+        schema: TSchema,
+        input: unknown,
+        options?: IValibotXOptions<v.InferIssue<TSchema>>
+    ): TValibotResult<TSchema, v.InferIssue<TSchema> | IValibotXsrfIssue> {
+        /** --- 用户提交的 XSRF token --- */
+        let submittedXsrf: unknown;
+        /** --- 移除 XSRF 传输字段后交给业务 schema 的输入 --- */
+        let schemaInput = input;
+        if ((typeof input === 'object') && (input !== null) && !Array.isArray(input)) {
+            const inputRecord = input as Record<string, unknown>;
+            submittedXsrf = inputRecord['_xsrf'];
+            schemaInput = { ...inputRecord };
+            delete (schemaInput as Record<string, unknown>)['_xsrf'];
+        }
+        if (!options?.ignoreXsrf) {
+            /** --- Cookie 中应匹配的 XSRF token --- */
+            const expectedXsrf = this._cookie['XSRF-TOKEN'];
+            if (!expectedXsrf || (submittedXsrf !== expectedXsrf)) {
+                const issue: IValibotXsrfIssue = {
+                    'kind': 'validation',
+                    'type': 'xsrf',
+                    'input': undefined,
+                    'expected': 'valid XSRF token',
+                    'received': submittedXsrf === undefined ? 'undefined' : typeof submittedXsrf,
+                    'message': 'Bad request, no permission.',
+                    'path': [{
+                        'type': 'unknown',
+                        'origin': 'value',
+                        'input': undefined,
+                        'key': '_xsrf',
+                        'value': undefined,
+                    }],
+                };
+                return this._getValibotFailure<TSchema, v.InferIssue<TSchema> | IValibotXsrfIssue>(
+                    [issue], options?.response, options?.translate
+                );
+            }
+        }
+        const result = lCore.v.safeParse(schema, schemaInput, options?.config);
+        if (!result.success) {
+            return this._getValibotFailure<TSchema, v.InferIssue<TSchema> | IValibotXsrfIssue>(
+                result.issues, options?.response, options?.translate
+            );
+        }
+        return {
+            ...result,
+            'response': undefined,
+        };
     }
 
     /**

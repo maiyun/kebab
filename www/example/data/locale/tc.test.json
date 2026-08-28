@@ -4,5 +4,22 @@
     "test": "這個 ? 測試 ?.",
     "test2": {
         "test3": "測試4"
+    },
+    "validation": {
+        "strict_object": "提交內容格式不正確或包含不支援的欄位。",
+        "_xsrf": {
+            "xsrf": "請求無效或沒有權限。"
+        },
+        "title": {
+            "strict_object": "缺少標題。",
+            "string": "標題必須是字串。",
+            "non_empty": "請輸入標題。"
+        },
+        "count": {
+            "strict_object": "缺少數量。",
+            "string": "數量必須是字串。",
+            "to_number": "數量必須是數字。",
+            "integer": "數量必須是整數。"
+        }
     }
 }

@@ -12,6 +12,7 @@ import * as net from 'net';
 import * as crypto from 'crypto';
 import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
+import * as valibot from 'valibot';
 import * as kebab from '#kebab/index.js';
 import * as lTime from '#kebab/lib/time.js';
 import * as lFs from '#kebab/lib/fs.js';
@@ -21,6 +22,9 @@ import * as lCrypto from '#kebab/lib/crypto.js';
 import * as lNetResponse from '#kebab/lib/net/response.js';
 import * as lUndiciResponse from '#kebab/lib/undici/response.js';
 import * as sCtr from '#kebab/sys/ctr.js';
+
+/** --- Valibot 数据校验工具，业务侧可通过 lCore.v 使用 --- */
+export { valibot as v };
 
 /** --- 全局参数 --- */
 export const globalConfig: kebab.IConfig & {

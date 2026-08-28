@@ -4,5 +4,22 @@
     "test": "这个 ? 测试 ?。",
     "test2": {
         "test3": "测试4"
+    },
+    "validation": {
+        "strict_object": "提交内容格式不正确或包含不支持的字段。",
+        "_xsrf": {
+            "xsrf": "请求无效或无权限。"
+        },
+        "title": {
+            "strict_object": "缺少标题。",
+            "string": "标题必须是字符串。",
+            "non_empty": "请输入标题。"
+        },
+        "count": {
+            "strict_object": "缺少数量。",
+            "string": "数量必须是字符串。",
+            "to_number": "数量必须是数字。",
+            "integer": "数量必须是整数。"
+        }
     }
 }

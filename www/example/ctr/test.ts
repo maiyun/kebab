@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import * as fs from 'fs';
 // --- 库 ---
 import * as kebab from '#kebab/index.js';
@@ -29,6 +30,18 @@ import * as sCtr from '#kebab/sys/ctr.js';
 // --- mod ---
 import mTest from '../mod/test.js';
 import mTestData from '../mod/testdata.js';
+
+/** --- Kebab 核心库提供的 Valibot 对象 --- */
+const v = lCore.v;
+
+/** --- Valibot 示例支持的语言 --- */
+const valibotLocaleSchema = v.picklist(['en', 'sc', 'tc', 'ja']);
+
+/** --- 模块级复用的 Valibot 输入规则，不绑定任何请求或语言 --- */
+const valibotInputSchema = v.strictObject({
+    'title': v.pipe(v.string(), v.nonEmpty()),
+    'count': v.pipe(v.string(), v.toNumber(), v.integer()),
+});
 
 export default class extends sCtr.Ctr {
 
@@ -136,6 +149,7 @@ export default class extends sCtr.Ctr {
             '<br><br><b>Ctr:</b>',
             `<br><br><a href="${this._config.const.urlBase}test/ctr-xsrf">View "test/ctr-xsrf"</a>`,
             `<br><a href="${this._config.const.urlBase}test/ctr-checkinput">View "test/ctr-checkinput"</a> <a href="${this._config.const.urlBase}test/ctr-checkinput-schema">schema</a>`,
+            `<br><a href="${this._config.const.urlBase}test/ctr-valibot">View "test/ctr-valibot"</a>`,
             `<br><a href="${this._config.const.urlBase}test/ctr-locale">View "test/ctr-locale"</a>`,
             `<br><a href="${this._config.const.urlBase}test/ctr-cachettl">View "test/ctr-cachettl"</a>`,
             `<br><a href="${this._config.const.urlBase}test/ctr-httpcode">View "test/ctr-httpcode"</a>`,
@@ -611,6 +625,95 @@ function post(p) {
             return retur;
         }
         return [1, { 'post': this._post }];
+    }
+
+    public async ctrValibot(): Promise<kebab.Json[] | string> {
+        const locale = this._valibot(valibotLocaleSchema, this._get['lang'] ?? 'en', {
+            'response': [0, 'Wrong language.'],
+        });
+        if (!locale.success) {
+            return locale.response;
+        }
+        if (!await this._loadLocale(locale.output, 'test')) {
+            return [0, 'Could not load locale.'];
+        }
+        this._enabledXsrf();
+
+        const echo: string[] = [
+            '<b>Test _valibotx with inferred output and request locale</b><br><br>',
+            `<a href="${this._config.const.urlBase}test/ctr-valibot?lang=en">English</a> | ` +
+            `<a href="${this._config.const.urlBase}test/ctr-valibot?lang=sc">简体中文</a> | ` +
+            `<a href="${this._config.const.urlBase}test/ctr-valibot?lang=tc">繁體中文</a> | ` +
+            `<a href="${this._config.const.urlBase}test/ctr-valibot?lang=ja">日本語</a><br><br>`,
+            `<b>Current locale:</b> ${locale.output}<br><br>`,
+            `<pre>const v = lCore.v;
+const valibotInputSchema = v.strictObject({
+    'title': v.pipe(v.string(), v.nonEmpty()),
+    'count': v.pipe(v.string(), v.toNumber(), v.integer()),
+});</pre>`,
+        ];
+
+        const posts = [
+            { 'title': 'Kebab', 'count': '2' },
+            { 'title': '', 'count': '2' },
+            { 'title': 'Kebab', 'count': 'abc' },
+            { 'title': 'Kebab', 'count': '1.5' },
+            { 'title': 'Kebab', 'count': '2', 'extra': true },
+        ];
+        for (const item of posts) {
+            const str = lText.stringifyJson(item).replace(/"/g, '&quot;');
+            echo.push(`<input type="button" value="Post '${str}'" onclick="post('${str}')"><br>`);
+        }
+
+        echo.push(`<script>
+function post(p) {
+    const data = JSON.parse(p);
+    data._xsrf = '${this._xsrf}';
+    document.getElementById('result').innerText = 'Waiting...';
+    fetch('${this._config.const.urlBase}test/ctr-valibot1?lang=${locale.output}', {
+        method: 'POST',
+        headers: {
+            'content-type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    }).then(function(r) {
+        return r.text();
+    }).then(function(t) {
+        document.getElementById('result').innerText = t;
+    });
+}
+</script>
+<br>Result:<pre id="result">Nothing.</pre>`);
+        return echo.join('') + this._getEnd();
+    }
+
+    public async ctrValibot1(): Promise<kebab.Json[]> {
+        if (!await this._handleFormData()) {
+            return [0];
+        }
+        const locale = this._valibot(valibotLocaleSchema, this._get['lang'] ?? 'en', {
+            'response': [0, 'Wrong language.'],
+        });
+        if (!locale.success) {
+            return locale.response;
+        }
+        if (!await this._loadLocale(locale.output, 'test')) {
+            return [0, 'Could not load locale.'];
+        }
+
+        const parsed = this._valibotx(valibotInputSchema, this._post, {
+            'translate': key => this._l(key),
+            'response': issues => [0, issues[0].message, {
+                'issues': v.flatten(issues),
+            }],
+        });
+        if (!parsed.success) {
+            return parsed.response;
+        }
+
+        return [1, {
+            'post': parsed.output,
+        }];
     }
 
     public async ctrLocale(): Promise<kebab.Json[] | string> {
