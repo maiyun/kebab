@@ -214,7 +214,7 @@ export async function run(data: {
         path = '@';
     }
     /** --- 不做语言跳转、不进入动态处理流程的路径 --- */
-    const stcPaths = /^(stc\/.*|favicon.\w+?\??.*|apple[\w-]+?\.png\??.*|[\w-]+?\.txt\??.*|[\w-]+?\.html\??.*)/;
+    const stcPaths = /^(stc\/.*|favicon.\w+?\??.*|apple[\w-]+?\.png\??.*|[\w-]+?\.(?:txt|html|xml)\??.*)/;
     // --- 检测是否托管语言页面 ---
     const param: string[] = [];
     if (config.lang && data.res && !stcPaths.test(path)) {
