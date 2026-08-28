@@ -14,6 +14,12 @@ import { Transaction } from './tran.js';
 /** --- 连接列表池 --- */
 const connections: Connection[] = [];
 
+/** --- 开启事务最大尝试次数：首次尝试加一次换连接重试 --- */
+const BEGIN_TRANSACTION_MAX_ATTEMPTS = 2;
+
+/** --- 创建连接最大尝试次数：首次尝试加两次瞬时故障重试 --- */
+const CREATE_CONNECTION_MAX_ATTEMPTS = 3;
+
 /** --- 连接信息 --- */
 export interface IConnectionInfo {
     'id': number;
@@ -193,14 +199,19 @@ export class Pool {
      * --- 开启事务，返回事务对象并锁定连接，别人任何人不可用，有 ctr 的话必传 this，独立执行时可传 null ---
      */
     public async beginTransaction(ctr: sCtr.Ctr | null): Promise<Transaction | null> {
-        const conn = await this._getConnection();
-        if (!conn) {
-            return null;
+        for (let i = 0; i < BEGIN_TRANSACTION_MAX_ATTEMPTS; ++i) {
+            const conn = await this._getConnection();
+            if (!conn) {
+                lCore.log(ctr ?? {}, `[DB][Pool][beginTransaction] failed to get connection, service: ${lDb.ESERVICE[this._service]}, database: ${this._etc.name ?? ''}`, '-error');
+                return null;
+            }
+            if (!await conn.beginTransaction()) {
+                continue;
+            }
+            return new Transaction(ctr, conn);
         }
-        if (!await conn.beginTransaction()) {
-            return null;
-        }
-        return new Transaction(ctr, conn);
+        lCore.log(ctr ?? {}, `[DB][Pool][beginTransaction] failed after retry, service: ${lDb.ESERVICE[this._service]}, database: ${this._etc.name ?? ''}`, '-error');
+        return null;
     }
 
     /**
@@ -231,7 +242,7 @@ export class Pool {
         }
         if (!conn) {
             // --- 没有找到合适的连接，创建一个 ---
-            loop: for (let i = 0; i < 3; ++i) {
+            loop: for (let i = 0; i < CREATE_CONNECTION_MAX_ATTEMPTS; ++i) {
                 try {
                     switch (this._service) {
                         case lDb.ESERVICE.MYSQL: {
@@ -305,13 +316,14 @@ export class Pool {
                         }
                     }
                 }
-                catch (err: any) {
-                    if (err.message.includes('ETIMEOUT') || err.message.includes('EHOSTUNREACH') || err.message.includes('ECONNREFUSED')) {
-                        // lCore.debug(`[DB][_getConnection][${lDb.ESERVICE[this._service]}]`, err);
+                catch (err: unknown) {
+                    const message = err instanceof Error ? err.message : String(err);
+                    const transient = ['ETIMEOUT', 'EHOSTUNREACH', 'ECONNREFUSED'].some(code => message.includes(code));
+                    if (transient && i < CREATE_CONNECTION_MAX_ATTEMPTS - 1) {
                         await lCore.sleep(300);
                         continue;
                     }
-                    const msg = `[DB][_getConnection][${lDb.ESERVICE[this._service]}] ${err.message}(${this._etc.host}:${this._etc.port})`;
+                    const msg = `[DB][_getConnection][${lDb.ESERVICE[this._service]}] ${message}(${this._etc.host}:${this._etc.port})`;
                     lCore.debug(msg);
                     lCore.log({}, msg, '-error');
                     break;

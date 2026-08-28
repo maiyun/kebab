@@ -4,6 +4,7 @@ import * as lCore from '#kebab/lib/core.js';
 import * as lTime from '#kebab/lib/time.js';
 import * as lDb from '#kebab/lib/db.js';
 import * as lSqlValue from '#kebab/lib/sql/value.js';
+import * as lText from '#kebab/lib/text.js';
 import * as kebab from '#kebab/index.js';
 
 // --- 注册解析器 ---
@@ -334,11 +335,16 @@ export class Connection {
                 }
                 return true;
             }
-            catch {
+            catch (e: unknown) {
+                this._transaction = false;
+                this._using = false;
+                this._lost = true;
+                lCore.log({}, '[DB][Connection][beginTransaction] ' + lText.stringifyError(e), '-error');
                 return false;
             }
         }
         else {
+            lCore.log({}, '[DB][Connection][beginTransaction] connection is not in use', '-error');
             return false;
         }
     }
@@ -356,7 +362,9 @@ export class Connection {
             this._using = false;
             return true;
         }
-        catch {
+        catch (e: unknown) {
+            this._lost = true;
+            lCore.log({}, '[DB][Connection][commit] ' + lText.stringifyError(e), '-error');
             return false;
         }
     }
@@ -374,7 +382,9 @@ export class Connection {
             this._using = false;
             return true;
         }
-        catch {
+        catch (e: unknown) {
+            this._lost = true;
+            lCore.log({}, '[DB][Connection][rollback] ' + lText.stringifyError(e), '-error');
             return false;
         }
     }
