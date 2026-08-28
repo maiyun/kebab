@@ -36,7 +36,7 @@ hash 或 hmac 加密
 
 #### format?
 
-`"hex"` \| `"base64"`
+`"base64"` \| `"hex"`
 
 ### Returns
 

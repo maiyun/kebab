@@ -8,7 +8,7 @@
 
 > **muid**(`ctr`, `opt?`): `string`
 
-Defined in: [lib/core.ts:319](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L319)
+Defined in: [lib/core.ts:323](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L323)
 
 获取 MUID
 

@@ -6,7 +6,7 @@
 
 # Interface: ICookieOptions
 
-Defined in: [lib/core.ts:47](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L47)
+Defined in: [lib/core.ts:51](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L51)
 
 Cookie 设置的选项
 
@@ -16,7 +16,7 @@ Cookie 设置的选项
 
 > `optional` **domain?**: `string`
 
-Defined in: [lib/core.ts:50](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L50)
+Defined in: [lib/core.ts:54](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L54)
 
 ***
 
@@ -24,7 +24,7 @@ Defined in: [lib/core.ts:50](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > `optional` **httponly?**: `boolean`
 
-Defined in: [lib/core.ts:52](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L52)
+Defined in: [lib/core.ts:56](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L56)
 
 ***
 
@@ -32,7 +32,7 @@ Defined in: [lib/core.ts:52](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > `optional` **path?**: `string`
 
-Defined in: [lib/core.ts:49](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L49)
+Defined in: [lib/core.ts:53](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L53)
 
 ***
 
@@ -40,7 +40,7 @@ Defined in: [lib/core.ts:49](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > `optional` **samesite?**: `"Strict"` \| `"Lax"` \| `"None"`
 
-Defined in: [lib/core.ts:53](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L53)
+Defined in: [lib/core.ts:57](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L57)
 
 ***
 
@@ -48,7 +48,7 @@ Defined in: [lib/core.ts:53](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > `optional` **ssl?**: `boolean`
 
-Defined in: [lib/core.ts:51](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L51)
+Defined in: [lib/core.ts:55](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L55)
 
 ***
 
@@ -56,4 +56,4 @@ Defined in: [lib/core.ts:51](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > `optional` **ttl?**: `number`
 
-Defined in: [lib/core.ts:48](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L48)
+Defined in: [lib/core.ts:52](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L52)

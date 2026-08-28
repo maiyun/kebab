@@ -30,7 +30,7 @@ Defined in: [lib/crypto.ts:69](https://github.com/maiyunnet/kebab/blob/master/li
 
 #### format
 
-`"binary"` \| `"hex"` \| `"base64"`
+`"binary"` \| `"base64"` \| `"hex"`
 
 输出格式
 

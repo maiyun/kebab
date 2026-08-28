@@ -6,6 +6,10 @@
 
 # lib/core
 
+## Namespaces
+
+- [v](namespaces/v/index.md)
+
 ## Interfaces
 
 - [ICookieOptions](interfaces/ICookieOptions.md)
