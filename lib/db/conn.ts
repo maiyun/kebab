@@ -313,6 +313,8 @@ export class Connection {
      * --- 关闭连接，一般情况下不使用 ---
      */
     public async end(): Promise<boolean> {
+        // --- 驱动的 end 事件可能在异步关闭完成后才触发，提前标记避免连接池在关闭期间重新取到本连接 ---
+        this._lost = true;
         try {
             await this._link.end();
             return true;
@@ -322,8 +324,12 @@ export class Connection {
         }
     }
 
-    // --- 事务，只能在独占连接中使用，pool 创建事务返回独占连接，commit 或 rollback 释放连接回连接池 ---
-    public async beginTransaction(): Promise<boolean> {
+    /**
+     * --- 开启事务，只能在独占连接中使用 ---
+     * @param logError 失败时是否记录错误，连接池在非最后一次重试时传 false
+     * @returns 是否开启成功
+     */
+    public async beginTransaction(logError = true): Promise<boolean> {
         if (this._using) {
             try {
                 this._transaction = true;
@@ -339,12 +345,16 @@ export class Connection {
                 this._transaction = false;
                 this._using = false;
                 this._lost = true;
-                lCore.log({}, '[DB][Connection][beginTransaction] ' + lText.stringifyError(e), '-error');
+                if (logError) {
+                    lCore.log({}, '[DB][Connection][beginTransaction] ' + lText.stringifyError(e), '-error');
+                }
                 return false;
             }
         }
         else {
-            lCore.log({}, '[DB][Connection][beginTransaction] connection is not in use', '-error');
+            if (logError) {
+                lCore.log({}, '[DB][Connection][beginTransaction] connection is not in use', '-error');
+            }
             return false;
         }
     }

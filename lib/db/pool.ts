@@ -205,7 +205,9 @@ export class Pool {
                 lCore.log(ctr ?? {}, `[DB][Pool][beginTransaction] failed to get connection, service: ${lDb.ESERVICE[this._service]}, database: ${this._etc.name ?? ''}`, '-error');
                 return null;
             }
-            if (!await conn.beginTransaction()) {
+            /** --- 只有最后一次尝试仍失败时才记录原始错误，避免已恢复的重试被误判为业务失败 --- */
+            const logError = i === BEGIN_TRANSACTION_MAX_ATTEMPTS - 1;
+            if (!await conn.beginTransaction(logError)) {
                 continue;
             }
             return new Transaction(ctr, conn);
