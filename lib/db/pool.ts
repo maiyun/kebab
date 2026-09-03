@@ -92,6 +92,10 @@ async function checkConnection(): Promise<void> {
             }
             continue;
         }
+        // --- 巡检探活或关闭前先独占连接，避免业务在异步操作期间取到同一连接 ---
+        if (!connection.using({ 'refreshLast': false })) {
+            continue;
+        }
         if (connection.getLast() <= now - 30) {
             // --- 超 30 秒未被使用，则关闭 ---
             await connection.end();
@@ -100,8 +104,9 @@ async function checkConnection(): Promise<void> {
             continue;
         }
         // --- 30 秒内使用过，看看连接是否正常 ---
-        if (await connection.isAvailable(false)) {
+        if (await connection.isAvailable(false) && !connection.isLost()) {
             // --- 正常 ---
+            connection.used();
             continue;
         }
         // --- 连接有问题，直接关闭 ---
@@ -156,7 +161,7 @@ export class Pool {
      */
     public async query(sql: string, values?: kebab.DbValue[]): Promise<lDb.IData> {
         ++this._queries;
-        // --- 获取并自动 using  ---
+        // --- 获取并自动 using ---
         const conn = await this._getConnection();
         if (!conn) {
             return {

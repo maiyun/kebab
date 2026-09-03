@@ -125,14 +125,19 @@ export class Connection {
     }
 
     /**
-     * --- 判断是否可用（丢失的也算不可用），返回 true 代表获取成功并自动刷新最后时间 ---
+     * --- 判断是否可用（丢失的也算不可用），返回 true 代表获取成功 ---
+     * @param opt 获取选项，连接巡检独占时不刷新最后使用时间
      */
-    public using(): boolean {
+    public using(opt: {
+        'refreshLast'?: boolean;
+    } = {}): boolean {
         if (this._lost || this._using) {
             return false;
         }
         else {
-            this.refreshLast();
+            if (opt.refreshLast !== false) {
+                this.refreshLast();
+            }
             this._using = true;
             return true;
         }

@@ -14,6 +14,25 @@ interface ITestPool {
     _getConnection(): Promise<IFakeConnection | null>;
 }
 
+interface ITestConnection {
+    '_last': number;
+}
+
+await nodeTest.test('Connection can be reserved for maintenance without refreshing its last use time', () => {
+    const connection = new Connection({
+        'host': 'test',
+        'port': 5432,
+        'name': 'test',
+        'user': 'test',
+        'pwd': 'test',
+    }, {} as ConstructorParameters<typeof Connection>[1]);
+    (connection as unknown as ITestConnection)._last = 1;
+
+    assert.strictEqual(connection.using({ 'refreshLast': false }), true);
+    assert.strictEqual(connection.getLast(), 1);
+    assert.strictEqual(connection.using(), false);
+});
+
 await nodeTest.test('Connection cannot be acquired while it is closing', async () => {
     let finishEnd: (() => void) | undefined;
     const link = {
