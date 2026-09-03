@@ -36,13 +36,25 @@ Defined in: [lib/db/conn.ts:64](https://github.com/maiyunnet/kebab/blob/master/l
 
 ### beginTransaction()
 
-> **beginTransaction**(): `Promise`\<`boolean`\>
+> **beginTransaction**(`logError?`): `Promise`\<`boolean`\>
 
-Defined in: [lib/db/conn.ts:326](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L326)
+Defined in: [lib/db/conn.ts:337](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L337)
+
+开启事务，只能在独占连接中使用
+
+#### Parameters
+
+##### logError?
+
+`boolean` = `true`
+
+失败时是否记录错误，连接池在非最后一次重试时传 false
 
 #### Returns
 
 `Promise`\<`boolean`\>
+
+是否开启成功
 
 ***
 
@@ -50,7 +62,7 @@ Defined in: [lib/db/conn.ts:326](https://github.com/maiyunnet/kebab/blob/master/
 
 > **commit**(): `Promise`\<`boolean`\>
 
-Defined in: [lib/db/conn.ts:352](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L352)
+Defined in: [lib/db/conn.ts:367](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L367)
 
 #### Returns
 
@@ -62,7 +74,7 @@ Defined in: [lib/db/conn.ts:352](https://github.com/maiyunnet/kebab/blob/master/
 
 > **end**(): `Promise`\<`boolean`\>
 
-Defined in: [lib/db/conn.ts:315](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L315)
+Defined in: [lib/db/conn.ts:320](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L320)
 
 关闭连接，一般情况下不使用
 
@@ -76,7 +88,7 @@ Defined in: [lib/db/conn.ts:315](https://github.com/maiyunnet/kebab/blob/master/
 
 > **execute**(`sql`, `values?`): `Promise`\<[`IPacket`](../../interfaces/IPacket.md)\>
 
-Defined in: [lib/db/conn.ts:241](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L241)
+Defined in: [lib/db/conn.ts:246](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L246)
 
 执行一条 SQL 并获得影响行数对象 packet
 
@@ -160,7 +172,7 @@ Defined in: [lib/db/conn.ts:78](https://github.com/maiyunnet/kebab/blob/master/l
 
 > **isAvailable**(`last?`): `Promise`\<`boolean`\>
 
-Defined in: [lib/db/conn.ts:159](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L159)
+Defined in: [lib/db/conn.ts:164](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L164)
 
 通过执行一条语句判断当前连接是否可用
 
@@ -224,7 +236,7 @@ Defined in: [lib/db/conn.ts:123](https://github.com/maiyunnet/kebab/blob/master/
 
 > **query**(`sql`, `values?`): `Promise`\<[`IData`](../../interfaces/IData.md)\>
 
-Defined in: [lib/db/conn.ts:182](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L182)
+Defined in: [lib/db/conn.ts:187](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L187)
 
 执行一条 SQL 并获得返回数据
 
@@ -252,7 +264,7 @@ Defined in: [lib/db/conn.ts:182](https://github.com/maiyunnet/kebab/blob/master/
 
 > **refreshLast**(): `void`
 
-Defined in: [lib/db/conn.ts:151](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L151)
+Defined in: [lib/db/conn.ts:156](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L156)
 
 设定最后使用时间
 
@@ -266,7 +278,7 @@ Defined in: [lib/db/conn.ts:151](https://github.com/maiyunnet/kebab/blob/master/
 
 > **rollback**(): `Promise`\<`boolean`\>
 
-Defined in: [lib/db/conn.ts:372](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L372)
+Defined in: [lib/db/conn.ts:387](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L387)
 
 #### Returns
 
@@ -292,7 +304,7 @@ Defined in: [lib/db/conn.ts:102](https://github.com/maiyunnet/kebab/blob/master/
 
 > **used**(): `void`
 
-Defined in: [lib/db/conn.ts:144](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L144)
+Defined in: [lib/db/conn.ts:149](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L149)
 
 取消占用
 
@@ -304,11 +316,21 @@ Defined in: [lib/db/conn.ts:144](https://github.com/maiyunnet/kebab/blob/master/
 
 ### using()
 
-> **using**(): `boolean`
+> **using**(`opt?`): `boolean`
 
-Defined in: [lib/db/conn.ts:130](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L130)
+Defined in: [lib/db/conn.ts:131](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L131)
 
-判断是否可用（丢失的也算不可用），返回 true 代表获取成功并自动刷新最后时间
+判断是否可用（丢失的也算不可用），返回 true 代表获取成功
+
+#### Parameters
+
+##### opt?
+
+获取选项，连接巡检独占时不刷新最后使用时间
+
+###### refreshLast?
+
+`boolean`
 
 #### Returns
 
