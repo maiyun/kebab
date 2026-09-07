@@ -69,6 +69,7 @@
 - [sendProject](functions/sendProject.md)
 - [sendReload](functions/sendReload.md)
 - [sendRestart](functions/sendRestart.md)
+- [sendStop](functions/sendStop.md)
 - [setCookie](functions/setCookie.md)
 - [setGlobal](functions/setGlobal.md)
 - [sleep](functions/sleep.md)

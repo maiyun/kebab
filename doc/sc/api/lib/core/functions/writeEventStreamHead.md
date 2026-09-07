@@ -8,7 +8,7 @@
 
 > **writeEventStreamHead**(`res`): `void`
 
-Defined in: [lib/core.ts:1454](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1454)
+Defined in: [lib/core.ts:1509](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1509)
 
 提交服务器发送事件（SSE）响应头
 
