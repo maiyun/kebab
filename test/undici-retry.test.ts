@@ -173,3 +173,23 @@ await nodeTest.test('ResponseJson retries configured JSON parse errors', async (
         await close(server);
     }
 });
+
+await nodeTest.test('ResponseJson retries when the retryJson handler returns false', async () => {
+    let count = 0;
+    const { server, url } = await listen((_req, res) => {
+        ++count;
+        res.end(`{"result":${count}}`);
+    });
+    try {
+        const json = await lUndici.getResponseJson(url, {
+            'log': false,
+            'retryJson': 1,
+            'retryJsonHandler': (value) => value.result === 2,
+        });
+        assert.deepStrictEqual(json, { 'result': 2 });
+        assert.strictEqual(count, 2);
+    }
+    finally {
+        await close(server);
+    }
+});

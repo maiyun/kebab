@@ -193,7 +193,7 @@ async function requestResponseJson(
         }
         const rtnStr = rtn.toString();
         const json = lText.parseJson(rtnStr);
-        if (json) {
+        if (json && (opt.retryJsonHandler?.(json) ?? true)) {
             return json;
         }
         if (i < retryJson) {
@@ -203,7 +203,8 @@ async function requestResponseJson(
         }
         if (opt.log === undefined || opt.log) {
             const requestData = data === undefined ? '' : `, data: ${lText.stringifyJson(data)}`;
-            lCore.log({}, `[UNDICI][${action}] parse json failed, url: ${u}${requestData}, content: ${rtnStr}`, '-neterror');
+            const reason = json ? 'retry json handler returned false' : 'parse json failed';
+            lCore.log({}, `[UNDICI][${action}] ${reason}, url: ${u}${requestData}, content: ${rtnStr}`, '-neterror');
         }
         return false;
     }
@@ -858,6 +859,8 @@ export interface IRequestOptions {
     'retry'?: number;
     /** --- JSON 解析失败后的重试次数，默认 0；仅适用于 ResponseJson 快捷方法，非幂等请求需由调用方保证安全 --- */
     'retryJson'?: number;
+    /** --- JSON 重试验证方法；返回 false 时按 retryJson 的设置重试，仅适用于 ResponseJson 快捷方法 --- */
+    'retryJsonHandler'?: (json: kebab.Json) => boolean;
     /** --- 追踪 location 次数，0 为不追踪，默认为 0 --- */
     'follow'?: number;
     /** --- 自定义 host 映射，如 {'www.maiyun.net': '127.0.0.1'}，或全部映射到一个 host --- */

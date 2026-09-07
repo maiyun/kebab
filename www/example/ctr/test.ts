@@ -2884,11 +2884,31 @@ error: <pre>${JSON.stringify(res.error, null, 4)}</pre>`);
 
         const json = await lUndici.getResponseJson(this._internalUrl + 'test/undici-get-response-json1');
         echo.push(`<pre>const json = await lUndici.getResponseJson('${this._internalUrl}test/undici-get-response-json1');</pre>
-result: <pre>${lText.htmlescape(JSON.stringify(json, null, 4))}</pre>`);
+result: <pre>${lText.htmlescape(JSON.stringify(json, null, 4))}</pre><hr>`);
 
         const json2 = await lUndici.getResponseJson(this._internalUrl + 'test/undici-get-response-json2');
         echo.push(`<pre>const json2 = await lUndici.getResponseJson('${this._internalUrl}test/undici-get-response-json2');</pre>
-result: <pre>${lText.htmlescape(JSON.stringify(json2, null, 4))}</pre>`);
+result: <pre>${lText.htmlescape(JSON.stringify(json2, null, 4))}</pre><hr>`);
+
+        /** --- JSON 重试验证方法的执行次数 --- */
+        let retryJsonHandlerCount = 0;
+        const json3 = await lUndici.getResponseJson(this._internalUrl + 'test/undici-get-response-json1', {
+            'retryJson': 1,
+            'retryJsonHandler': (value) => {
+                ++retryJsonHandlerCount;
+                return (retryJsonHandlerCount > 1) && (value.result === 1);
+            },
+        });
+        echo.push(`<pre>let retryJsonHandlerCount = 0;
+const json3 = await lUndici.getResponseJson('${this._internalUrl}test/undici-get-response-json1', {
+    'retryJson': 1,
+    'retryJsonHandler': (value) => {
+        ++retryJsonHandlerCount;
+        return (retryJsonHandlerCount > 1) && (value.result === 1);
+    },
+});</pre>
+handler count: ${retryJsonHandlerCount}
+result: <pre>${lText.htmlescape(JSON.stringify(json3, null, 4))}</pre>`);
 
         return echo.join('') + '<br>' + this._getEnd();
     }
