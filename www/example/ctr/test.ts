@@ -201,6 +201,7 @@ export default class extends sCtr.Ctr {
             `<br><a href="${this._config.const.urlBase}test/core-ls">View "test/core-ls"</a>`,
             `<br><a href="${this._config.const.urlBase}test/core-reload">View "test/core-reload"</a>`,
             `<br><a href="${this._config.const.urlBase}test/core-restart">View "test/core-restart"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/core-stop">View "test/core-stop"</a>`,
             `<br><a href="${this._config.const.urlBase}test/core-pm2?name=cron&action=restart">View "test/core-pm2"</a>`,
             `<br><a href="${this._config.const.urlBase}test/core-npm">View "test/core-npm"</a>`,
             `<br><a href="${this._config.const.urlBase}test/core-global">View "test/core-global"</a>`,
@@ -1774,6 +1775,11 @@ to: ${to}`
     public async coreRestart(): Promise<string> {
         const list = await lCore.sendRestart();
         return `The restart request has been sent, please review the console.<br>Hosts: ${JSON.stringify(list)}<br><br>` + this._getEnd();
+    }
+
+    public async coreStop(): Promise<string> {
+        const list = await lCore.sendStop();
+        return `The stop request has been sent, please review the console.<br>Hosts: ${lText.stringifyJson(list)}<br><br>` + this._getEnd();
     }
 
     public async corePm2(): Promise<string> {

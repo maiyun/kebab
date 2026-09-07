@@ -809,6 +809,60 @@ export async function sendRestart(hosts?: string[] | 'config'): Promise<Record<s
     return rtn;
 }
 
+/**
+ * --- 向主进程（或局域网同代码机子）发送 stop 操作，停止接收新连接并在现有连接全部结束后退出 ---
+ * @param hosts 局域网主机列表，config 表示使用全局配置；不传时通知当前 master
+ * @returns 各主机发送结果
+ */
+export async function sendStop(hosts?: string[] | 'config'): Promise<Record<string, {
+    'result': boolean;
+    'return': string;
+}>> {
+    if (!hosts) {
+        // --- 本地模式 ---
+        // eslint-disable-next-line no-console
+        console.log('[ Child] Sending stop request...');
+        process.send!({
+            'action': 'stop'
+        });
+        return {
+            '127.0.0.1': { 'result': true, 'return': 'Done' }
+        };
+    }
+    if (hosts === 'config') {
+        hosts = globalConfig.hosts;
+    }
+    // --- 未传或 config 展开后为空数组，均回退到本机 ---
+    if (!hosts?.length) {
+        hosts = ['127.0.0.1'];
+    }
+    // --- 局域网模式 ---
+    const time = lTime.stamp();
+    /** --- 返回成功的 host --- */
+    const rtn: Record<string, { 'result': boolean; 'return': string; }> = {};
+    for (const host of hosts) {
+        const res = await lUndici.get('http://' + host + ':' + globalConfig.rpcPort.toString() + '/' + lCrypto.aesEncrypt(lText.stringifyJson({
+            'action': 'stop',
+            'time': time
+        }), globalConfig.rpcSecret), {
+            'timeout': 5
+        });
+        const content = await res.getContent();
+        if (!content) {
+            rtn[host] = { 'result': false, 'return': 'Timeout' };
+            continue;
+        }
+        const str = content.toString();
+        if (str === 'Done') {
+            rtn[host] = { 'result': true, 'return': 'Done' };
+        }
+        else {
+            rtn[host] = { 'result': false, 'return': str };
+        }
+    }
+    return rtn;
+}
+
 /** --- PM2 操作类型 --- */
 export type TPm2Action = 'start' | 'stop' | 'restart';
 

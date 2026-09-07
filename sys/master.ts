@@ -28,6 +28,12 @@ const workerList: Record<string, {
     'hbtime': number;
 }> = {};
 
+/** --- master 是否正在缓动停止 --- */
+let stopping = false;
+
+/** --- 当前缓动停止任务，避免重复 stop 命令触发 --- */
+let stopPromise: Promise<void> | null = null;
+
 /**
  * --- 判断候选路径是否位于指定根目录内 ---
  * @param rootPath 已解析的真实根目录
@@ -263,6 +269,12 @@ function createRpcListener(): void {
                 }
                 case 'restart': {
                     await restartWorkers();
+                    break;
+                }
+                case 'stop': {
+                    gracefulStop().catch((e: unknown) => {
+                        lCore.display('[master] [gracefulStop]', e);
+                    });
                     break;
                 }
                 case 'global': {
@@ -957,9 +969,62 @@ function createRpcListener(): void {
 }
 
 /**
+ * --- 通知 worker 停止，并等待其现有连接全部结束后退出 ---
+ * @param worker 要停止的 worker
+ * @returns worker 退出后完成
+ */
+function stopWorker(worker: cluster.Worker): Promise<void> {
+    if (worker.isDead()) {
+        return Promise.resolve();
+    }
+    return new Promise((resolve) => {
+        worker.once('exit', () => { resolve(); });
+        try {
+            if (worker.isConnected()) {
+                worker.send({
+                    'action': 'stop',
+                    'waitForever': true,
+                });
+                return;
+            }
+            worker.process.kill('SIGTERM');
+        }
+        catch (e: unknown) {
+            lCore.display(`[master] Failed to notify worker ${worker.process.pid ?? 'undefined'} to stop, using SIGTERM.`, e);
+            worker.process.kill('SIGTERM');
+        }
+    });
+}
+
+/**
+ * --- 停止命令入口和所有 worker，等待整套 Kebab 进程排空后退出 master ---
+ * @returns 全部 worker 退出后完成
+ */
+async function gracefulStop(): Promise<void> {
+    if (stopPromise) {
+        return stopPromise;
+    }
+    stopping = true;
+    stopPromise = (async (): Promise<void> => {
+        lCore.display('[master] Graceful stop started.');
+        // --- 包括 restart 时已从 workerList 移除、但仍在排空的旧 worker ---
+        const workers = Object.values(cluster.workers ?? {}).filter(
+            (worker): worker is cluster.Worker => worker !== undefined
+        );
+        await Promise.all(workers.map(worker => stopWorker(worker)));
+        lCore.display('[master] Graceful stop completed.');
+        process.exit(0);
+    })();
+    return stopPromise;
+}
+
+/**
  * --- 零宕机重启所有 worker 进程：先创建新进程并等待监听就绪，再停止旧进程 ---
  */
 async function restartWorkers(): Promise<void> {
+    if (stopping) {
+        return;
+    }
     // --- 收集旧进程信息（先快照，避免迭代过程中修改 workerList） ---
     const oldEntries: Array<{
         'pid': string;
@@ -975,6 +1040,9 @@ async function restartWorkers(): Promise<void> {
     }
     // --- 阶段 1：创建新进程并等待其监听端口就绪 ---
     for (const entry of oldEntries) {
+        if (stopping) {
+            return;
+        }
         const newWorker = await createChildProcess(entry.cpu);
         if (newWorker) {
             await waitForWorkerListening(newWorker);
@@ -982,6 +1050,9 @@ async function restartWorkers(): Promise<void> {
     }
     // --- 阶段 2：停止旧进程 ---
     for (const entry of oldEntries) {
+        if (stopping) {
+            return;
+        }
         entry.worker.send({
             'action': 'stop'
         });
@@ -993,6 +1064,9 @@ async function restartWorkers(): Promise<void> {
  * --- 检测是否有死掉丢失的子进程，复活之 ---
  */
 async function checkWorkerLost(): Promise<void> {
+    if (stopping) {
+        return;
+    }
     const now = Date.now();
     for (const pid in workerList) {
         if (now - workerList[pid].hbtime < 30000) {
@@ -1015,6 +1089,9 @@ async function checkWorkerLost(): Promise<void> {
  * @param cpu CPU ID
  */
 async function createChildProcess(cpu: number): Promise<cluster.Worker | null> {
+    if (stopping) {
+        return null;
+    }
     const worker = cluster.fork();
     if (!worker.process.pid) {
         return null;
@@ -1046,6 +1123,12 @@ async function createChildProcess(cpu: number): Promise<cluster.Worker | null> {
                 }
                 case 'restart': {
                     await restartWorkers();
+                    break;
+                }
+                case 'stop': {
+                    gracefulStop().catch((e: unknown) => {
+                        lCore.display('[master] [gracefulStop]', e);
+                    });
                     break;
                 }
                 case 'global': {

@@ -62,6 +62,12 @@ const linkCount: Record<string, number> = {};
 /** --- 是否正在停止，停止时对 HTTP/1.1 响应追加 Connection: close，避免请求完成后连接回到保活池 --- */
 let stopping = false;
 
+/** --- 当前缓动停止任务，避免重复 IPC 消息触发停止流程 --- */
+let stopPromise: Promise<void> | null = null;
+
+/** --- 缓动停止是否必须一直等到现有连接全部结束 --- */
+let stopWaitForever = false;
+
 /** --- 当前活跃的 HTTP/2 会话集合，用于 graceful shutdown 时发送 GOAWAY 帧 --- */
 const http2Sessions = new Set<http2.Http2Session>();
 
@@ -607,56 +613,67 @@ async function reloadCert(): Promise<void> {
     certHostIndex = {};
 }
 
+/**
+ * --- 停止接收新连接，并在现有请求、上传、异步任务和 WebSocket 全部结束后退出 worker ---
+ * @param waitForever 是否取消原有的一小时退出兜底，仅完整 stop 命令使用
+ * @returns worker 退出时结束
+ */
+async function gracefulStop(waitForever = false): Promise<void> {
+    if (waitForever) {
+        stopWaitForever = true;
+    }
+    if (stopPromise) {
+        return stopPromise;
+    }
+    stopping = true;
+    stopPromise = (async (): Promise<void> => {
+        // --- 向所有 HTTP/2 会话发送 GOAWAY 帧，通知客户端停止在该连接上发送新请求并切换到新连接 ---
+        for (const session of http2Sessions) {
+            try {
+                session.goaway(http2.constants.NGHTTP2_NO_ERROR);
+            }
+            catch {}
+        }
+        httpServer?.close();
+        http2Server?.close();
+        // --- 立即关闭空闲保活连接，活跃连接会继续执行并在响应后关闭 ---
+        httpServer?.closeIdleConnections();
+        clearInterval(hbTimer);
+        sMonitor.stop();
+        // --- 等待活跃请求全部完成；WebSocket 的路由任务会一直保留到连接关闭 ---
+        /** --- 当前已等待时间，restart 最多等待一小时，完整 stop 不限制 --- */
+        let waiting = 0;
+        while (Object.keys(linkCount).length) {
+            const str: string[] = [];
+            for (const key in linkCount) {
+                str.push(key + ':' + linkCount[key].toString());
+            }
+            lCore.debug(`[CHILD] Worker ${process.pid} busy: ${str.join(',')}.`);
+            lCore.log({}, `[CHILD] Worker ${process.pid} busy: ${str.join(',')}.`, '-warning');
+            await lCore.sleep(5_000);
+            waiting += 5_000;
+            // --- 再次清理已变为空闲的保活连接 ---
+            httpServer?.closeIdleConnections();
+            if (!stopWaitForever && (waiting > 3_600_000)) {
+                break;
+            }
+        }
+        process.exit();
+    })();
+    return stopPromise;
+}
+
 // --- 接收主进程回传信号，主要用来 reload，restart ---
 process.on('message', function(msg: kebab.Json) {
     (async function() {
         switch (msg.action) {
             case 'reload': {
                 await reload();
-                // eslint-disable-next-line no-console
-                console.log(`[child] Worker ${process.pid} reload execution succeeded.`);
+                lCore.display(`[CHILD] Worker ${process.pid} reload execution succeeded.`);
                 break;
             }
             case 'stop': {
-                // --- 需要停止监听，等待已有连接全部断开，然后关闭线程 ---
-                stopping = true;
-                // --- 向所有 HTTP/2 会话发送 GOAWAY 帧，通知 CDN 客户端停止在该连接上发送新请求并切换到新连接 ---
-                for (const session of http2Sessions) {
-                    try {
-                        session.goaway(http2.constants.NGHTTP2_NO_ERROR);
-                    }
-                    catch {}
-                }
-                httpServer?.close();
-                http2Server?.close();
-                // --- 立即关闭空闲保活连接（无活跃请求的 keep-alive socket），避免进程长时间等待 ---
-                httpServer?.closeIdleConnections();
-                clearInterval(hbTimer);
-                sMonitor.stop();
-                // --- 等待活跃请求全部完成 ---
-                /** --- 当前已等待时间，等待不超过 1 小时 --- */
-                let waiting = 0;
-                while (true) {
-                    if (!Object.keys(linkCount).length) {
-                        break;
-                    }
-                    // --- 有活跃连接，等待中 ---
-                    const str: string[] = [];
-                    for (const key in linkCount) {
-                        str.push(key + ':' + linkCount[key].toString());
-                    }
-                    lCore.debug(`[CHILD] Worker ${process.pid} busy: ${str.join(',')}.`);
-                    lCore.log({}, `[CHILD] Worker ${process.pid} busy: ${str.join(',')}.`, '-warning');
-                    await lCore.sleep(5_000);
-                    waiting += 5_000;
-                    // --- 再次清理已变为空闲的保活连接 ---
-                    httpServer?.closeIdleConnections();
-                    if (waiting > 3600_000) {
-                        break;
-                    }
-                }
-                // --- 链接全部断开 ---
-                process.exit();
+                await gracefulStop(msg.waitForever === true);
                 break;
             }
             case 'global': {
