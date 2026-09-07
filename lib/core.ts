@@ -871,6 +871,7 @@ export type TPm2Action = 'start' | 'stop' | 'restart';
  * @param name PM2 进程名称
  * @param action PM2 操作类型
  * @param hosts 局域网列表
+ * @returns 各主机是否已接收并排队，不代表 PM2 操作最终执行成功
  */
 export async function sendPm2(
     name: string, action: TPm2Action = 'restart', hosts?: string[] | 'config'

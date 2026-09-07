@@ -295,7 +295,7 @@ function createRpcListener(): void {
                     break;
                 }
                 case 'pm2': {
-                    // --- 执行 PM2 操作 ---
+                    // --- 接收 PM2 操作 ---
                     if (!msg.name || typeof msg.name !== 'string') {
                         res.end('Invalid name');
                         return;
@@ -310,12 +310,18 @@ function createRpcListener(): void {
                         res.end('Invalid pm2Action');
                         return;
                     }
-                    const rtn = await lCore.exec(`pm2 ${msg.pm2Action} ${msg.name}`);
-                    if (rtn === false) {
-                        res.end('Exec failed');
-                        return;
-                    }
-                    break;
+                    // --- 先确认已接收，让调用方完成当前 HTTP 响应，再执行可能终止本进程的 PM2 操作 ---
+                    res.end('Done');
+                    setTimeout(() => {
+                        lCore.exec(`pm2 ${msg.pm2Action} ${msg.name}`).then((rtn) => {
+                            if (rtn === false) {
+                                lCore.display(`[master] PM2 ${msg.pm2Action} ${msg.name} failed.`);
+                            }
+                        }).catch((e: unknown) => {
+                            lCore.display(`[master] PM2 ${msg.pm2Action} ${msg.name} failed.`, e);
+                        });
+                    }, 1_000);
+                    return;
                 }
                 case 'npm': {
                     // --- 执行 npm install 操作 ---
