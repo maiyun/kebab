@@ -723,9 +723,13 @@ export async function mproxy(
             });
             // --- 同时监听 close 确保 promise 一定会 resolve（客户端断连等场景） ---
             stream.pipe(res).on('close', () => {
+                stream.destroy();
                 resolve();
             });
         });
+    }
+    else {
+        stream.destroy();
     }
     return 1;
 }
@@ -832,15 +836,21 @@ export async function rproxy(
                 // --- 同时监听 close 确保 promise 一定会 resolve（客户端断连等场景） ---
                 if (compress) {
                     stream.pipe(compress.compress).pipe(res).on('close', () => {
+                        stream.destroy();
+                        compress.compress.destroy();
                         resolve();
                     });
                 }
                 else {
                     stream.pipe(res).on('close', () => {
+                        stream.destroy();
                         resolve();
                     });
                 }
             });
+        }
+        else {
+            stream.destroy();
         }
         return true;
     }

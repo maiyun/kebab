@@ -93,6 +93,16 @@ const liwsServer = liws.createServer({
     'frameReceiveMode': EFrameReceiveMode.SIMPLE,
 });
 
+/** --- 未能及时转发的 WebSocket 消息最大缓存量，超过后关闭连接保护进程内存 --- */
+const MAX_PENDING_MESSAGE_BYTES = 8 * 1024 * 1024;
+/** --- 未能及时转发的 WebSocket 消息最大条数，防止大量小帧占满内存 --- */
+const MAX_PENDING_MESSAGES = 4_096;
+
+interface IMessage {
+    'opcode': EOpcode;
+    'data': Buffer;
+}
+
 export class Socket {
 
     /** --- 当前的 ws 对象 --- */
@@ -208,19 +218,15 @@ export class Socket {
             if (!('data' in msg)) {
                 return;
             }
-            const buf: Buffer = Buffer.concat(msg.data);
-            if (this._on.message) {
-                this._on.message({
-                    'opcode': msg.opcode,
-                    'data': buf,
-                }) as any;
+            const item: IMessage = {
+                'opcode': msg.opcode,
+                'data': Buffer.concat(msg.data),
+            };
+            if (this._paused || !this._on.message) {
+                this._queueMessage(item);
+                return;
             }
-            else {
-                this._waitMsg.push({
-                    'opcode': msg.opcode,
-                    'data': buf,
-                });
-            }
+            this._on.message(item) as any;
         }).on('drain', () => {
             this._on.drain?.() as any;
         }).on('error', (e) => {
@@ -233,6 +239,8 @@ export class Socket {
         }).on('end', () => {
             this._on.end?.() as any;
         }).on('close', () => {
+            this._waitMsg.length = 0;
+            this._waitMsgBytes = 0;
             if (this._on.close) {
                 this._on.close() as any;
             }
@@ -245,10 +253,13 @@ export class Socket {
     }
 
     /** --- 还未开启监听时来的数据将存在这里 --- */
-    private readonly _waitMsg: Array<{
-        'opcode': EOpcode;
-        'data': Buffer;
-    }> = [];
+    private readonly _waitMsg: IMessage[] = [];
+
+    /** --- 尚未交给消息监听器的数据量 --- */
+    private _waitMsgBytes: number = 0;
+
+    /** --- 是否暂停向上层派发消息 --- */
+    private _paused: boolean = false;
 
     /** --- 还未开启 error 监听时产生的 error 错误对象 --- */
     private _error: any = null;
@@ -259,10 +270,7 @@ export class Socket {
     /** --- 绑定的自定义监听事件（未绑定则默认在 _bindEvent 执行） --- */
     private _on: {
         /** --- 消息 --- */
-        message?: (msg: {
-            'opcode': EOpcode;
-            'data': Buffer;
-        }) => void | Promise<void>;
+        message?: (msg: IMessage) => void | Promise<void>;
         drain?: () => void | Promise<void>;
         error?: (e: any) => void | Promise<void>;
         close?: () => void | Promise<void>;
@@ -278,6 +286,43 @@ export class Socket {
             timeout: undefined,
         };
 
+    /**
+     * --- 暂存尚不能交给上层处理的消息 ---
+     * @param msg 消息
+     */
+    private _queueMessage(msg: IMessage): void {
+        this._waitMsgBytes += msg.data.length;
+        if (
+            (this._waitMsgBytes > MAX_PENDING_MESSAGE_BYTES) ||
+            (this._waitMsg.length >= MAX_PENDING_MESSAGES)
+        ) {
+            this._waitMsg.length = 0;
+            this._waitMsgBytes = 0;
+            this.destroy();
+            return;
+        }
+        this._waitMsg.push(msg);
+    }
+
+    /** --- 依次派发缓存消息，若再次发生背压则停止 --- */
+    private _flushMessages(): void {
+        if (this._paused || !this._on.message || !this._waitMsg.length) {
+            return;
+        }
+        const messages = this._waitMsg.splice(0);
+        this._waitMsgBytes = 0;
+        for (let i = 0; i < messages.length; ++i) {
+            if (this._paused) {
+                for (; i < messages.length; ++i) {
+                    this._waitMsg.push(messages[i]);
+                    this._waitMsgBytes += messages[i].data.length;
+                }
+                return;
+            }
+            this._on.message(messages[i]) as any;
+        }
+    }
+
     /** --- 绑定监听 --- */
     public on(event: 'message', cb: (msg: {
         'opcode': EOpcode;
@@ -289,9 +334,7 @@ export class Socket {
         this._on[event] = cb;
         switch (event) {
             case 'message': {
-                for (const item of this._waitMsg) {
-                    cb(item) as any;
-                }
+                this._flushMessages();
                 break;
             }
             case 'error': {
@@ -331,6 +374,17 @@ export class Socket {
 
     public destroy(): void {
         this._ws.destroy();
+    }
+
+    /** --- 暂停向消息监听器派发数据，底层仍只保留有界缓存 --- */
+    public pause(): void {
+        this._paused = true;
+    }
+
+    /** --- 恢复向消息监听器派发数据 --- */
+    public resume(): void {
+        this._paused = false;
+        this._flushMessages();
     }
 
     /** --- 发送文本 --- */
@@ -432,69 +486,93 @@ export function createServer(request: http.IncomingMessage, socket: net.Socket, 
  */
 function bindPipe(s1: Socket, s2: Socket): Promise<void> {
     return new Promise<void>(resolve => {
+        /** --- 是否已经完成关闭，防止双向 close 重复处理 --- */
+        let closed: boolean = false;
+        /** --- 两端一起销毁，避免半开连接继续占用资源 --- */
+        const close = (): void => {
+            if (closed) {
+                return;
+            }
+            closed = true;
+            s1.destroy();
+            s2.destroy();
+            resolve();
+        };
         // --- 监听发送端的 ---
         s1.on('message', (msg) => {
             switch (msg.opcode) {
                 case EOpcode.TEXT: {
-                    s2.writeText(msg.data.toString());
+                    if (!s2.writeText(msg.data.toString())) {
+                        s1.pause();
+                    }
                     break;
                 }
                 case EOpcode.BINARY: {
-                    s2.writeBinary(msg.data);
+                    if (!s2.writeBinary(msg.data)) {
+                        s1.pause();
+                    }
                     break;
                 }
                 case EOpcode.CLOSE: {
-                    s2.end();
-                    resolve();
+                    close();
                     break;
                 }
                 case EOpcode.PING: {
-                    s2.ping(msg.data);
+                    if (!s2.ping(msg.data)) {
+                        s1.pause();
+                    }
                     break;
                 }
                 case EOpcode.PONG: {
-                    s2.pong(msg.data);
+                    if (!s2.pong(msg.data)) {
+                        s1.pause();
+                    }
                     break;
                 }
                 default: {
                     // --- EOpcode.CONTINUATION ---
                 }
             }
-        }).on('close', () => {
-            s2.end();
-            resolve();
+        }).on('close', close).on('drain', () => {
+            s2.resume();
         });
         // --- 监听远程端的 ---
         s2.on('message', (msg) => {
             switch (msg.opcode) {
                 case EOpcode.TEXT: {
-                    s1.writeText(msg.data.toString());
+                    if (!s1.writeText(msg.data.toString())) {
+                        s2.pause();
+                    }
                     break;
                 }
                 case EOpcode.BINARY: {
-                    s1.writeBinary(msg.data);
+                    if (!s1.writeBinary(msg.data)) {
+                        s2.pause();
+                    }
                     break;
                 }
                 case EOpcode.CLOSE: {
-                    s1.end();
-                    resolve();
+                    close();
                     break;
                 }
                 case EOpcode.PING: {
-                    s1.ping(msg.data);
+                    if (!s1.ping(msg.data)) {
+                        s2.pause();
+                    }
                     break;
                 }
                 case EOpcode.PONG: {
-                    s1.pong(msg.data);
+                    if (!s1.pong(msg.data)) {
+                        s2.pause();
+                    }
                     break;
                 }
                 default: {
                     // --- EOpcode.CONTINUATION ---
                 }
             }
-        }).on('close', () => {
-            s1.end();
-            resolve();
+        }).on('close', close).on('drain', () => {
+            s1.resume();
         });
     });
 }

@@ -43,31 +43,60 @@ export function rwebsocket(
     /** --- 请求端产生的双向 socket --- */
     const server = net.createServer(socket => {
         socket.setKeepAlive(true);
+        /** --- 远程端的双向 WebSocket --- */
+        let rws: lWs.Socket | null = null;
+        /** --- 心跳定时器 --- */
+        let timer: NodeJS.Timeout | null = null;
+        /** --- 是否已开始清理 --- */
+        let closed: boolean = false;
+        /** --- 同时清理 TCP、WebSocket 与心跳 --- */
+        const close = (): void => {
+            if (closed) {
+                return;
+            }
+            closed = true;
+            if (timer) {
+                clearInterval(timer);
+                timer = null;
+            }
+            socket.destroy();
+            rws?.destroy();
+        };
+        // --- 必须在异步连接前监听，避免本地先断开后留下远端连接 ---
+        socket.on('close', close).on('error', err => {
+            lCore.display('[' + lTime.format(null, 'Y-m-d H:i:s') + '] Client error: ' + socket.remoteAddress + ':' + socket.remotePort + ', ' + err.message);
+            close();
+        });
         (async () => {
             // --- 每次进一个新连接都反代到一个新 WebSocket ---
             lCore.display('[' + lTime.format(null, 'Y-m-d H:i:s') + '] New client: ' + socket.remoteAddress + ':' + socket.remotePort);
-            /** --- 远程端的双向 websocket --- */
-            const rws = await lWs.connect(url, opt);
+            rws = await lWs.connect(url, opt);
             if (!rws) {
-                socket.end();
+                close();
                 return false;
             }
-            const timer = setInterval(() => {
-                rws.ping();
+            if (closed) {
+                rws.destroy();
+                return false;
+            }
+            timer = setInterval(() => {
+                rws?.ping();
             }, 10_000);
             rws.on('message', msg => {
                 switch (msg.opcode) {
                     case lWs.EOpcode.TEXT:
                     case lWs.EOpcode.BINARY: {
-                        socket.write(msg.data);
+                        if (!socket.write(msg.data)) {
+                            rws?.pause();
+                        }
                         break;
                     }
                     case lWs.EOpcode.CLOSE: {
-                        socket.end();
+                        close();
                         break;
                     }
                     case lWs.EOpcode.PING: {
-                        rws.pong();
+                        rws?.pong();
                         break;
                     }
                     case lWs.EOpcode.PONG: {
@@ -77,20 +106,18 @@ export function rwebsocket(
                         // --- EOpcode.CONTINUATION ---
                     }
                 }
-            }).on('close', () => {
-                clearInterval(timer);
-                socket.end();
-            });
+            }).on('drain', () => {
+                socket.resume();
+            }).on('close', close);
             socket.on('data', data => {
-                rws.writeBinary(data);
-            }).on('close', () => {
-                clearInterval(timer);
-                rws.end();
+                if (rws && !rws.writeBinary(data)) {
+                    socket.pause();
+                }
+            }).on('drain', () => {
+                rws?.resume();
             }).on('end', () => {
-                rws.end();
                 lCore.display('[' + lTime.format(null, 'Y-m-d H:i:s') + '] Client disconnected: ' + socket.remoteAddress + ':' + socket.remotePort);
-            }).on('error', err => {
-                lCore.display('[' + lTime.format(null, 'Y-m-d H:i:s') + '] Client error: ' + socket.remoteAddress + ':' + socket.remotePort + ', ' + err.message);
+                close();
             });
         })().catch(() => {});
     }).listen(port, () => {
