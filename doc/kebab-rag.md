@@ -1428,7 +1428,7 @@ index/variables/VER.md
 
 # Variable: VER
 
-> `const` **VER**: `"9.17.3"` = `'9.17.3'`
+> `const` **VER**: `"9.18.0"` = `'9.18.0'`
 
 Defined in: [index.ts:10](https://github.com/maiyunnet/kebab/blob/master/index.ts#L10)
 
