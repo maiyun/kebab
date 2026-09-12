@@ -6,7 +6,7 @@
 
 # Interface: NanoIdIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12581
+Defined in: node\_modules/valibot/dist/index.d.mts:12854
 
 Nano ID issue interface.
 
@@ -54,7 +54,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12593
+Defined in: node\_modules/valibot/dist/index.d.mts:12866
 
 The expected property.
 
@@ -96,7 +96,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12585
+Defined in: node\_modules/valibot/dist/index.d.mts:12858
 
 The issue kind.
 
@@ -152,7 +152,7 @@ The issue path.
 
 > `readonly` **received**: `string`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12597
+Defined in: node\_modules/valibot/dist/index.d.mts:12870
 
 The received property.
 
@@ -166,7 +166,7 @@ The received property.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12601
+Defined in: node\_modules/valibot/dist/index.d.mts:12874
 
 The Nano ID regex.
 
@@ -180,7 +180,7 @@ The Nano ID regex.
 
 > `readonly` **type**: `"nanoid"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12589
+Defined in: node\_modules/valibot/dist/index.d.mts:12862
 
 The issue type.
 

@@ -8,6 +8,6 @@
 
 > `const` **SLUG\_REGEX**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15766
+Defined in: node\_modules/valibot/dist/index.d.mts:16114
 
 [Slug](https://en.wikipedia.org/wiki/Clean_URL#Slug) regex.

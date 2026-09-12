@@ -6,7 +6,7 @@
 
 # Interface: EndsWithAction\<TInput$1, TRequirement, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8933
+Defined in: node\_modules/valibot/dist/index.d.mts:9002
 
 Ends with action interface.
 
@@ -112,7 +112,7 @@ Whether it's async.
 
 > `readonly` **expects**: `` `"${TRequirement}"` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8945
+Defined in: node\_modules/valibot/dist/index.d.mts:9014
 
 The expected property.
 
@@ -140,7 +140,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8953
+Defined in: node\_modules/valibot/dist/index.d.mts:9022
 
 The error message.
 
@@ -150,7 +150,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`, `TRequirement`\>(`requirement`): `EndsWithAction`\<`TInput$1`, `TRequirement`, `undefined`\>; \<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): `EndsWithAction`\<`TInput$1`, `TRequirement`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8941
+Defined in: node\_modules/valibot/dist/index.d.mts:9010
 
 The action reference.
 
@@ -234,7 +234,7 @@ An ends with action.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8949
+Defined in: node\_modules/valibot/dist/index.d.mts:9018
 
 The end string.
 
@@ -244,7 +244,7 @@ The end string.
 
 > `readonly` **type**: `"ends_with"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8937
+Defined in: node\_modules/valibot/dist/index.d.mts:9006
 
 The action type.
 

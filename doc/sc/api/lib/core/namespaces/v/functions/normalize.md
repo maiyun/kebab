@@ -10,7 +10,7 @@
 
 > **normalize**(): [`NormalizeAction`](../interfaces/NormalizeAction.md)\<`undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12740
+Defined in: node\_modules/valibot/dist/index.d.mts:13013
 
 Creates a normalize transformation action.
 
@@ -24,7 +24,7 @@ A normalize action.
 
 > **normalize**\<`TForm`\>(`form`): [`NormalizeAction`](../interfaces/NormalizeAction.md)\<`TForm`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12748
+Defined in: node\_modules/valibot/dist/index.d.mts:13021
 
 Creates a normalize transformation action.
 

@@ -8,7 +8,7 @@
 
 > **returnsAsync**\<`TInput$1`, `TSchema`\>(`schema`): [`ReturnsActionAsync`](../interfaces/ReturnsActionAsync.md)\<`TInput$1`, `TSchema`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14092
+Defined in: node\_modules/valibot/dist/index.d.mts:14434
 
 Creates a function arguments transformation action.
 

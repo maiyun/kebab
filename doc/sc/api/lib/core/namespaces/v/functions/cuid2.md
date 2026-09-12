@@ -10,7 +10,7 @@
 
 > **cuid2**\<`TInput$1`\>(): [`Cuid2Action`](../interfaces/Cuid2Action.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8437
+Defined in: node\_modules/valibot/dist/index.d.mts:8506
 
 Creates a [Cuid2](https://github.com/paralleldrive/cuid2) validation action.
 
@@ -30,7 +30,7 @@ A Cuid2 action.
 
 > **cuid2**\<`TInput$1`, `TMessage`\>(`message`): [`Cuid2Action`](../interfaces/Cuid2Action.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8445
+Defined in: node\_modules/valibot/dist/index.d.mts:8514
 
 Creates a [Cuid2](https://github.com/paralleldrive/cuid2) validation action.
 

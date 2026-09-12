@@ -6,7 +6,7 @@
 
 # Interface: HexColorAction\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9803
+Defined in: node\_modules/valibot/dist/index.d.mts:9872
 
 Hex color action interface.
 
@@ -108,7 +108,7 @@ Whether it's async.
 
 > `readonly` **expects**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9815
+Defined in: node\_modules/valibot/dist/index.d.mts:9884
 
 The expected property.
 
@@ -136,7 +136,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9823
+Defined in: node\_modules/valibot/dist/index.d.mts:9892
 
 The error message.
 
@@ -146,7 +146,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `HexColorAction`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `HexColorAction`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9811
+Defined in: node\_modules/valibot/dist/index.d.mts:9880
 
 The action reference.
 
@@ -208,7 +208,7 @@ A hex color action.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9819
+Defined in: node\_modules/valibot/dist/index.d.mts:9888
 
 The hex color regex.
 
@@ -218,7 +218,7 @@ The hex color regex.
 
 > `readonly` **type**: `"hex_color"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9807
+Defined in: node\_modules/valibot/dist/index.d.mts:9876
 
 The action type.
 

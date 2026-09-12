@@ -6,7 +6,7 @@
 
 # Interface: EmojiIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8784
+Defined in: node\_modules/valibot/dist/index.d.mts:8853
 
 Emoji issue interface.
 
@@ -54,7 +54,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8796
+Defined in: node\_modules/valibot/dist/index.d.mts:8865
 
 The expected property.
 
@@ -96,7 +96,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8788
+Defined in: node\_modules/valibot/dist/index.d.mts:8857
 
 The issue kind.
 
@@ -152,7 +152,7 @@ The issue path.
 
 > `readonly` **received**: `` `"${string}"` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8800
+Defined in: node\_modules/valibot/dist/index.d.mts:8869
 
 The received property.
 
@@ -166,7 +166,7 @@ The received property.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8804
+Defined in: node\_modules/valibot/dist/index.d.mts:8873
 
 The emoji regex.
 
@@ -180,7 +180,7 @@ The emoji regex.
 
 > `readonly` **type**: `"emoji"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8792
+Defined in: node\_modules/valibot/dist/index.d.mts:8861
 
 The issue type.
 

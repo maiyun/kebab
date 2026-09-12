@@ -10,7 +10,7 @@
 
 > **includes**\<`TInput$1`, `TRequirement`\>(`requirement`): [`IncludesAction`](../interfaces/IncludesAction.md)\<`TInput$1`, `TRequirement`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9968
+Defined in: node\_modules/valibot/dist/index.d.mts:10037
 
 Creates an includes validation action.
 
@@ -42,7 +42,7 @@ An includes action.
 
 > **includes**\<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): [`IncludesAction`](../interfaces/IncludesAction.md)\<`TInput$1`, `TRequirement`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9977
+Defined in: node\_modules/valibot/dist/index.d.mts:10046
 
 Creates an includes validation action.
 

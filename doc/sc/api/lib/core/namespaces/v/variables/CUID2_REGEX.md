@@ -8,6 +8,6 @@
 
 > `const` **CUID2\_REGEX**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15633
+Defined in: node\_modules/valibot/dist/index.d.mts:15975
 
 [Cuid2](https://github.com/paralleldrive/cuid2) regex.

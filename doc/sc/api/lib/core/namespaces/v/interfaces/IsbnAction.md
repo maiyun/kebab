@@ -6,7 +6,7 @@
 
 # Interface: IsbnAction\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10272
+Defined in: node\_modules/valibot/dist/index.d.mts:10341
 
 ISBN action interface.
 
@@ -108,7 +108,7 @@ Whether it's async.
 
 > `readonly` **expects**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10284
+Defined in: node\_modules/valibot/dist/index.d.mts:10353
 
 The expected property.
 
@@ -136,7 +136,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10292
+Defined in: node\_modules/valibot/dist/index.d.mts:10361
 
 The error message.
 
@@ -146,7 +146,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `IsbnAction`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `IsbnAction`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10280
+Defined in: node\_modules/valibot/dist/index.d.mts:10349
 
 The action reference.
 
@@ -212,7 +212,7 @@ An ISBN action.
 
 > `readonly` **requirement**: (`input`) => `boolean`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10288
+Defined in: node\_modules/valibot/dist/index.d.mts:10357
 
 The validation function.
 
@@ -232,7 +232,7 @@ The validation function.
 
 > `readonly` **type**: `"isbn"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10276
+Defined in: node\_modules/valibot/dist/index.d.mts:10345
 
 The action type.
 

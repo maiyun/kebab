@@ -6,7 +6,7 @@
 
 # Interface: ValueAction\<TInput$1, TRequirement, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15441
+Defined in: node\_modules/valibot/dist/index.d.mts:15783
 
 Value action interface.
 
@@ -112,7 +112,7 @@ Whether it's async.
 
 > `readonly` **expects**: `string`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15453
+Defined in: node\_modules/valibot/dist/index.d.mts:15795
 
 The expected property.
 
@@ -140,7 +140,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15461
+Defined in: node\_modules/valibot/dist/index.d.mts:15803
 
 The error message.
 
@@ -150,7 +150,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`, `TRequirement`\>(`requirement`): `ValueAction`\<`TInput$1`, `TRequirement`, `undefined`\>; \<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): `ValueAction`\<`TInput$1`, `TRequirement`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15449
+Defined in: node\_modules/valibot/dist/index.d.mts:15791
 
 The action reference.
 
@@ -234,7 +234,7 @@ A value action.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15457
+Defined in: node\_modules/valibot/dist/index.d.mts:15799
 
 The required value.
 
@@ -244,7 +244,7 @@ The required value.
 
 > `readonly` **type**: `"value"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15445
+Defined in: node\_modules/valibot/dist/index.d.mts:15787
 
 The action type.
 

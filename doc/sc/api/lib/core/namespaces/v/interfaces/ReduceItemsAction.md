@@ -6,7 +6,7 @@
 
 # Interface: ReduceItemsAction\<TInput$1, TOutput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13939
+Defined in: node\_modules/valibot/dist/index.d.mts:14281
 
 Reduce items action interface.
 
@@ -108,7 +108,7 @@ Whether it's async.
 
 > `readonly` **initial**: `TOutput$1`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13955
+Defined in: node\_modules/valibot/dist/index.d.mts:14297
 
 The initial value.
 
@@ -132,7 +132,7 @@ The object kind.
 
 > `readonly` **operation**: `ArrayAction$1`\<`TInput$1`, `TOutput$1`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13951
+Defined in: node\_modules/valibot/dist/index.d.mts:14293
 
 The reduce items operation.
 
@@ -142,7 +142,7 @@ The reduce items operation.
 
 > `readonly` **reference**: \<`TInput$1`, `TOutput$1`\>(`operation`, `initial`) => `ReduceItemsAction`\<`TInput$1`, `TOutput$1`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13947
+Defined in: node\_modules/valibot/dist/index.d.mts:14289
 
 The action reference.
 
@@ -188,7 +188,7 @@ A reduce items action.
 
 > `readonly` **type**: `"reduce_items"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13943
+Defined in: node\_modules/valibot/dist/index.d.mts:14285
 
 The action type.
 

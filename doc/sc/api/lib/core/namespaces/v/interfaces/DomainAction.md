@@ -6,7 +6,7 @@
 
 # Interface: DomainAction\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8655
+Defined in: node\_modules/valibot/dist/index.d.mts:8724
 
 **`Beta`**
 
@@ -112,7 +112,7 @@ Whether it's async.
 
 > `readonly` **expects**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8667
+Defined in: node\_modules/valibot/dist/index.d.mts:8736
 
 **`Beta`**
 
@@ -144,7 +144,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8675
+Defined in: node\_modules/valibot/dist/index.d.mts:8744
 
 **`Beta`**
 
@@ -156,7 +156,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `DomainAction`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `DomainAction`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8663
+Defined in: node\_modules/valibot/dist/index.d.mts:8732
 
 **`Beta`**
 
@@ -232,7 +232,7 @@ A domain action.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8671
+Defined in: node\_modules/valibot/dist/index.d.mts:8740
 
 **`Beta`**
 
@@ -244,7 +244,7 @@ The domain regex.
 
 > `readonly` **type**: `"domain"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8659
+Defined in: node\_modules/valibot/dist/index.d.mts:8728
 
 **`Beta`**
 

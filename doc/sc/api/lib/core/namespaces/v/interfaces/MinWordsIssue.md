@@ -6,7 +6,7 @@
 
 # Interface: MinWordsIssue\<TInput$1, TRequirement\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12416
+Defined in: node\_modules/valibot/dist/index.d.mts:12689
 
 Min words issue interface.
 
@@ -58,7 +58,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `` `>=${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12428
+Defined in: node\_modules/valibot/dist/index.d.mts:12701
 
 The expected property.
 
@@ -100,7 +100,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12420
+Defined in: node\_modules/valibot/dist/index.d.mts:12693
 
 The issue kind.
 
@@ -156,7 +156,7 @@ The issue path.
 
 > `readonly` **received**: `` `${number}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12432
+Defined in: node\_modules/valibot/dist/index.d.mts:12705
 
 The received property.
 
@@ -170,7 +170,7 @@ The received property.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12436
+Defined in: node\_modules/valibot/dist/index.d.mts:12709
 
 The minimum words.
 
@@ -184,7 +184,7 @@ The minimum words.
 
 > `readonly` **type**: `"min_words"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12424
+Defined in: node\_modules/valibot/dist/index.d.mts:12697
 
 The issue type.
 

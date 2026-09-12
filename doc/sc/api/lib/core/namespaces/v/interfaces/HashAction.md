@@ -6,7 +6,7 @@
 
 # Interface: HashAction\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9668
+Defined in: node\_modules/valibot/dist/index.d.mts:9737
 
 Hash action interface.
 
@@ -108,7 +108,7 @@ Whether it's async.
 
 > `readonly` **expects**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9680
+Defined in: node\_modules/valibot/dist/index.d.mts:9749
 
 The expected property.
 
@@ -136,7 +136,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9688
+Defined in: node\_modules/valibot/dist/index.d.mts:9757
 
 The error message.
 
@@ -146,7 +146,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(`types`): `HashAction`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`types`, `message`): `HashAction`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9676
+Defined in: node\_modules/valibot/dist/index.d.mts:9745
 
 The action reference.
 
@@ -222,7 +222,7 @@ A hash action.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9684
+Defined in: node\_modules/valibot/dist/index.d.mts:9753
 
 The hash regex.
 
@@ -232,7 +232,7 @@ The hash regex.
 
 > `readonly` **type**: `"hash"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9672
+Defined in: node\_modules/valibot/dist/index.d.mts:9741
 
 The action type.
 

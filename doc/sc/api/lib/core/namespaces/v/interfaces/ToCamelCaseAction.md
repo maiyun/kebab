@@ -6,7 +6,7 @@
 
 # Interface: ToCamelCaseAction
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14715
+Defined in: node\_modules/valibot/dist/index.d.mts:15057
 
 **`Beta`**
 
@@ -118,7 +118,7 @@ The object kind.
 
 > `readonly` **reference**: () => `ToCamelCaseAction`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14723
+Defined in: node\_modules/valibot/dist/index.d.mts:15065
 
 **`Beta`**
 
@@ -151,7 +151,7 @@ A to camel case action.
 
 > `readonly` **type**: `"to_camel_case"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14719
+Defined in: node\_modules/valibot/dist/index.d.mts:15061
 
 **`Beta`**
 

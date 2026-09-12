@@ -10,7 +10,7 @@
 
 > **emoji**\<`TInput$1`\>(): [`EmojiAction`](../interfaces/EmojiAction.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8836
+Defined in: node\_modules/valibot/dist/index.d.mts:8905
 
 Creates an [emoji](https://en.wikipedia.org/wiki/Emoji) validation action.
 
@@ -30,7 +30,7 @@ An emoji action.
 
 > **emoji**\<`TInput$1`, `TMessage`\>(`message`): [`EmojiAction`](../interfaces/EmojiAction.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8844
+Defined in: node\_modules/valibot/dist/index.d.mts:8913
 
 Creates an [emoji](https://en.wikipedia.org/wiki/Emoji) validation action.
 

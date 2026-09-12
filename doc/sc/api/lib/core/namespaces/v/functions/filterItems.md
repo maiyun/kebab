@@ -8,7 +8,7 @@
 
 > **filterItems**\<`TInput$1`\>(`operation`): [`FilterItemsAction`](../interfaces/FilterItemsAction.md)\<`TInput$1`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9234
+Defined in: node\_modules/valibot/dist/index.d.mts:9303
 
 Creates a filter items transformation action.
 

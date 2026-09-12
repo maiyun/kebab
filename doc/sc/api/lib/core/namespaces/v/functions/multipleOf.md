@@ -10,7 +10,7 @@
 
 > **multipleOf**\<`TInput$1`, `TRequirement`\>(`requirement`): [`MultipleOfAction`](../interfaces/MultipleOfAction.md)\<`TInput$1`, `TRequirement`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12549
+Defined in: node\_modules/valibot/dist/index.d.mts:12822
 
 Creates a [multiple](https://en.wikipedia.org/wiki/Multiple_(mathematics)) of validation action.
 
@@ -42,7 +42,7 @@ A multiple of action.
 
 > **multipleOf**\<`TInput$1`, `TRequirement`\>(`requirement`): [`MultipleOfAction`](../interfaces/MultipleOfAction.md)\<`TInput$1`, `TRequirement`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12557
+Defined in: node\_modules/valibot/dist/index.d.mts:12830
 
 Creates a [multiple](https://en.wikipedia.org/wiki/Multiple_(mathematics)) of validation action.
 
@@ -74,7 +74,7 @@ A multiple of action.
 
 > **multipleOf**\<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): [`MultipleOfAction`](../interfaces/MultipleOfAction.md)\<`TInput$1`, `TRequirement`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12566
+Defined in: node\_modules/valibot/dist/index.d.mts:12839
 
 Creates a [multiple](https://en.wikipedia.org/wiki/Multiple_(mathematics)) of validation action.
 
@@ -116,7 +116,7 @@ A multiple of action.
 
 > **multipleOf**\<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): [`MultipleOfAction`](../interfaces/MultipleOfAction.md)\<`TInput$1`, `TRequirement`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12575
+Defined in: node\_modules/valibot/dist/index.d.mts:12848
 
 Creates a [multiple](https://en.wikipedia.org/wiki/Multiple_(mathematics)) of validation action.
 

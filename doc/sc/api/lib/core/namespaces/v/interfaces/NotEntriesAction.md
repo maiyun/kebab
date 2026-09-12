@@ -6,7 +6,7 @@
 
 # Interface: NotEntriesAction\<TInput$1, TRequirement, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12852
+Defined in: node\_modules/valibot/dist/index.d.mts:13194
 
 **`Beta`**
 
@@ -116,7 +116,7 @@ Whether it's async.
 
 > `readonly` **expects**: `` `!${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12864
+Defined in: node\_modules/valibot/dist/index.d.mts:13206
 
 **`Beta`**
 
@@ -148,7 +148,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12872
+Defined in: node\_modules/valibot/dist/index.d.mts:13214
 
 **`Beta`**
 
@@ -160,7 +160,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`, `TRequirement`\>(`requirement`): `NotEntriesAction`\<`TInput$1`, `TRequirement`, `undefined`\>; \<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): `NotEntriesAction`\<`TInput$1`, `TRequirement`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12860
+Defined in: node\_modules/valibot/dist/index.d.mts:13202
 
 **`Beta`**
 
@@ -250,7 +250,7 @@ A not entries action.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12868
+Defined in: node\_modules/valibot/dist/index.d.mts:13210
 
 **`Beta`**
 
@@ -262,7 +262,7 @@ The not required entries.
 
 > `readonly` **type**: `"not_entries"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12856
+Defined in: node\_modules/valibot/dist/index.d.mts:13198
 
 **`Beta`**
 

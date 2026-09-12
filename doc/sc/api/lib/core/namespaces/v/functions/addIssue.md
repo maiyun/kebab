@@ -8,7 +8,7 @@
 
 > **\_addIssue**\<`TContext`\>(`context`, `label`, `dataset`, `config`, `other?`): `void`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15905
+Defined in: node\_modules/valibot/dist/index.d.mts:16256
 
 **`Internal`**
 

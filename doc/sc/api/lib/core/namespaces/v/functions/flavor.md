@@ -8,7 +8,7 @@
 
 > **flavor**\<`TInput$1`, `TName`\>(`name`): [`FlavorAction`](../interfaces/FlavorAction.md)\<`TInput$1`, `TName`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9382
+Defined in: node\_modules/valibot/dist/index.d.mts:9451
 
 **`Beta`**
 

@@ -6,7 +6,7 @@
 
 # Interface: GuardIssue\<TInput$1, TGuard\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9536
+Defined in: node\_modules/valibot/dist/index.d.mts:9605
 
 **`Beta`**
 
@@ -112,7 +112,7 @@ The sub issues.
 
 > `readonly` **kind**: `"transformation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9540
+Defined in: node\_modules/valibot/dist/index.d.mts:9609
 
 **`Beta`**
 
@@ -192,7 +192,7 @@ The received property.
 
 > `readonly` **requirement**: `TGuard`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9548
+Defined in: node\_modules/valibot/dist/index.d.mts:9617
 
 **`Beta`**
 
@@ -208,7 +208,7 @@ The guard function.
 
 > `readonly` **type**: `"guard"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9544
+Defined in: node\_modules/valibot/dist/index.d.mts:9613
 
 **`Beta`**
 

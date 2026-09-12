@@ -6,7 +6,7 @@
 
 # Interface: ParseJsonIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13483
+Defined in: node\_modules/valibot/dist/index.d.mts:13825
 
 **`Beta`**
 
@@ -60,7 +60,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13495
+Defined in: node\_modules/valibot/dist/index.d.mts:13837
 
 **`Beta`**
 
@@ -108,7 +108,7 @@ The sub issues.
 
 > `readonly` **kind**: `"transformation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13487
+Defined in: node\_modules/valibot/dist/index.d.mts:13829
 
 **`Beta`**
 
@@ -172,7 +172,7 @@ The issue path.
 
 > `readonly` **received**: `` `"${string}"` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13499
+Defined in: node\_modules/valibot/dist/index.d.mts:13841
 
 **`Beta`**
 
@@ -204,7 +204,7 @@ The input requirement.
 
 > `readonly` **type**: `"parse_json"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13491
+Defined in: node\_modules/valibot/dist/index.d.mts:13833
 
 **`Beta`**
 

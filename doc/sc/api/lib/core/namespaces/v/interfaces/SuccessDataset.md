@@ -34,7 +34,7 @@ The dataset issues.
 
 Defined in: node\_modules/valibot/dist/index.d.mts:2928
 
-Whether is's typed.
+Whether it's typed.
 
 ***
 

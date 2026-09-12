@@ -10,7 +10,7 @@
 
 > **notSize**\<`TInput$1`, `TRequirement`\>(`requirement`): [`NotSizeAction`](../interfaces/NotSizeAction.md)\<`TInput$1`, `TRequirement`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13092
+Defined in: node\_modules/valibot/dist/index.d.mts:13434
 
 Creates a not size validation action.
 
@@ -42,7 +42,7 @@ A not size action.
 
 > **notSize**\<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): [`NotSizeAction`](../interfaces/NotSizeAction.md)\<`TInput$1`, `TRequirement`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13101
+Defined in: node\_modules/valibot/dist/index.d.mts:13443
 
 Creates a not size validation action.
 

@@ -6,7 +6,7 @@
 
 # Interface: IsrcIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10317
+Defined in: node\_modules/valibot/dist/index.d.mts:10386
 
 ISRC issue interface.
 
@@ -54,7 +54,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10329
+Defined in: node\_modules/valibot/dist/index.d.mts:10398
 
 The expected property.
 
@@ -96,7 +96,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10321
+Defined in: node\_modules/valibot/dist/index.d.mts:10390
 
 The issue kind.
 
@@ -152,7 +152,7 @@ The issue path.
 
 > `readonly` **received**: `` `"${string}"` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10333
+Defined in: node\_modules/valibot/dist/index.d.mts:10402
 
 The received property.
 
@@ -166,7 +166,7 @@ The received property.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10337
+Defined in: node\_modules/valibot/dist/index.d.mts:10406
 
 The ISRC regex.
 
@@ -180,7 +180,7 @@ The ISRC regex.
 
 > `readonly` **type**: `"isrc"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10325
+Defined in: node\_modules/valibot/dist/index.d.mts:10394
 
 The issue type.
 

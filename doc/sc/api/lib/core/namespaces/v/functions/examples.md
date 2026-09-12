@@ -8,7 +8,7 @@
 
 > **examples**\<`TInput$1`, `TExamples`\>(`examples_`): [`ExamplesAction`](../interfaces/ExamplesAction.md)\<`TInput$1`, `TExamples`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9142
+Defined in: node\_modules/valibot/dist/index.d.mts:9211
 
 **`Beta`**
 

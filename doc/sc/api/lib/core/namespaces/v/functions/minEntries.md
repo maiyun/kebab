@@ -10,7 +10,7 @@
 
 > **minEntries**\<`TInput$1`, `TRequirement`\>(`requirement`): [`MinEntriesAction`](../interfaces/MinEntriesAction.md)\<`TInput$1`, `TRequirement`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12127
+Defined in: node\_modules/valibot/dist/index.d.mts:12400
 
 **`Beta`**
 
@@ -44,7 +44,7 @@ A min entries action.
 
 > **minEntries**\<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): [`MinEntriesAction`](../interfaces/MinEntriesAction.md)\<`TInput$1`, `TRequirement`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12138
+Defined in: node\_modules/valibot/dist/index.d.mts:12411
 
 **`Beta`**
 

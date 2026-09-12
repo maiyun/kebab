@@ -10,7 +10,7 @@
 
 > **hexColor**\<`TInput$1`\>(): [`HexColorAction`](../interfaces/HexColorAction.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9830
+Defined in: node\_modules/valibot/dist/index.d.mts:9899
 
 Creates a [hex color](https://en.wikipedia.org/wiki/Web_colors#Hex_triplet) validation action.
 
@@ -30,7 +30,7 @@ A hex color action.
 
 > **hexColor**\<`TInput$1`, `TMessage`\>(`message`): [`HexColorAction`](../interfaces/HexColorAction.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9838
+Defined in: node\_modules/valibot/dist/index.d.mts:9907
 
 Creates a [hex color](https://en.wikipedia.org/wiki/Web_colors#Hex_triplet) validation action.
 

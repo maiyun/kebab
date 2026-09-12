@@ -6,7 +6,7 @@
 
 # Interface: ImeiAction\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9869
+Defined in: node\_modules/valibot/dist/index.d.mts:9938
 
 IMEI action interface.
 
@@ -108,7 +108,7 @@ Whether it's async.
 
 > `readonly` **expects**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9881
+Defined in: node\_modules/valibot/dist/index.d.mts:9950
 
 The expected property.
 
@@ -136,7 +136,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9889
+Defined in: node\_modules/valibot/dist/index.d.mts:9958
 
 The error message.
 
@@ -146,7 +146,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `ImeiAction`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `ImeiAction`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9877
+Defined in: node\_modules/valibot/dist/index.d.mts:9946
 
 The action reference.
 
@@ -216,7 +216,7 @@ An IMEI action.
 
 > `readonly` **requirement**: (`input`) => `boolean`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9885
+Defined in: node\_modules/valibot/dist/index.d.mts:9954
 
 The validation function.
 
@@ -236,7 +236,7 @@ The validation function.
 
 > `readonly` **type**: `"imei"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9873
+Defined in: node\_modules/valibot/dist/index.d.mts:9942
 
 The action type.
 

@@ -8,7 +8,7 @@
 
 > **rawCheckAsync**\<`TInput$1`\>(`action`): [`RawCheckActionAsync`](../interfaces/RawCheckActionAsync.md)\<`TInput$1`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13819
+Defined in: node\_modules/valibot/dist/index.d.mts:14161
 
 Creates a raw check validation action.
 

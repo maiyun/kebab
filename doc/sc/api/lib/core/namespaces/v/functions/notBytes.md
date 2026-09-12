@@ -10,7 +10,7 @@
 
 > **notBytes**\<`TInput$1`, `TRequirement`\>(`requirement`): [`NotBytesAction`](../interfaces/NotBytesAction.md)\<`TInput$1`, `TRequirement`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12808
+Defined in: node\_modules/valibot/dist/index.d.mts:13081
 
 Creates a not [bytes](https://en.wikipedia.org/wiki/Byte) validation action.
 
@@ -42,7 +42,7 @@ A not bytes action.
 
 > **notBytes**\<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): [`NotBytesAction`](../interfaces/NotBytesAction.md)\<`TInput$1`, `TRequirement`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12817
+Defined in: node\_modules/valibot/dist/index.d.mts:13090
 
 Creates a not [bytes](https://en.wikipedia.org/wiki/Byte) validation action.
 

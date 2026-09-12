@@ -6,7 +6,7 @@
 
 # Interface: IsbnIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10247
+Defined in: node\_modules/valibot/dist/index.d.mts:10316
 
 ISBN issue interface.
 
@@ -54,7 +54,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10259
+Defined in: node\_modules/valibot/dist/index.d.mts:10328
 
 The expected property.
 
@@ -96,7 +96,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10251
+Defined in: node\_modules/valibot/dist/index.d.mts:10320
 
 The issue kind.
 
@@ -152,7 +152,7 @@ The issue path.
 
 > `readonly` **received**: `` `"${string}"` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10263
+Defined in: node\_modules/valibot/dist/index.d.mts:10332
 
 The received property.
 
@@ -166,7 +166,7 @@ The received property.
 
 > `readonly` **requirement**: (`input`) => `boolean`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10267
+Defined in: node\_modules/valibot/dist/index.d.mts:10336
 
 The validation function.
 
@@ -190,7 +190,7 @@ The validation function.
 
 > `readonly` **type**: `"isbn"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10255
+Defined in: node\_modules/valibot/dist/index.d.mts:10324
 
 The issue type.
 

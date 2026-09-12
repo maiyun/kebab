@@ -6,7 +6,7 @@
 
 # Interface: ToDateIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14745
+Defined in: node\_modules/valibot/dist/index.d.mts:15087
 
 To date issue interface.
 
@@ -54,7 +54,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14757
+Defined in: node\_modules/valibot/dist/index.d.mts:15099
 
 The expected property.
 
@@ -96,7 +96,7 @@ The sub issues.
 
 > `readonly` **kind**: `"transformation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14749
+Defined in: node\_modules/valibot/dist/index.d.mts:15091
 
 The issue kind.
 
@@ -180,7 +180,7 @@ The input requirement.
 
 > `readonly` **type**: `"to_date"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14753
+Defined in: node\_modules/valibot/dist/index.d.mts:15095
 
 The issue type.
 

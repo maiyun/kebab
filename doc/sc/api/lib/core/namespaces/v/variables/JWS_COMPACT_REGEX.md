@@ -8,7 +8,7 @@
 
 > `const` **JWS\_COMPACT\_REGEX**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15726
+Defined in: node\_modules/valibot/dist/index.d.mts:16070
 
 [JWS compact serialization](https://datatracker.ietf.org/doc/html/rfc7515#section-3.1)
 regex.

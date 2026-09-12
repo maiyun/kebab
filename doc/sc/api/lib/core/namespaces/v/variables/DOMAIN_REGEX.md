@@ -8,7 +8,7 @@
 
 > `const` **DOMAIN\_REGEX**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15649
+Defined in: node\_modules/valibot/dist/index.d.mts:15991
 
 [Domain name](https://en.wikipedia.org/wiki/Domain_name) regex.
 

@@ -8,6 +8,6 @@
 
 > `const` **NANO\_ID\_REGEX**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15752
+Defined in: node\_modules/valibot/dist/index.d.mts:16100
 
 [Nano ID](https://github.com/ai/nanoid) regex.

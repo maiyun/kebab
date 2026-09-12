@@ -8,7 +8,7 @@
 
 > **reduceItems**\<`TInput$1`, `TOutput$1`\>(`operation`, `initial`): [`ReduceItemsAction`](../interfaces/ReduceItemsAction.md)\<`TInput$1`, `TOutput$1`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13965
+Defined in: node\_modules/valibot/dist/index.d.mts:14307
 
 Creates a reduce items transformation action.
 

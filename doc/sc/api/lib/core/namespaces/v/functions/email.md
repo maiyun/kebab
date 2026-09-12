@@ -10,7 +10,7 @@
 
 > **email**\<`TInput$1`\>(): [`EmailAction`](../interfaces/EmailAction.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8765
+Defined in: node\_modules/valibot/dist/index.d.mts:8834
 
 Creates an [email](https://en.wikipedia.org/wiki/Email_address) validation
 action.
@@ -35,7 +35,7 @@ An email action.
 
 > **email**\<`TInput$1`, `TMessage`\>(`message`): [`EmailAction`](../interfaces/EmailAction.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8778
+Defined in: node\_modules/valibot/dist/index.d.mts:8847
 
 Creates an [email](https://en.wikipedia.org/wiki/Email_address) validation
 action.

@@ -8,7 +8,7 @@
 
 > **RawCheckAddIssue**\<`TInput$1`\> = (`info?`) => `void`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13757
+Defined in: node\_modules/valibot/dist/index.d.mts:14099
 
 Raw check add issue type.
 

@@ -6,7 +6,7 @@
 
 # Interface: WordsIssue\<TInput$1, TRequirement\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15550
+Defined in: node\_modules/valibot/dist/index.d.mts:15892
 
 Words issue interface.
 
@@ -58,7 +58,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `` `${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15562
+Defined in: node\_modules/valibot/dist/index.d.mts:15904
 
 The expected property.
 
@@ -100,7 +100,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15554
+Defined in: node\_modules/valibot/dist/index.d.mts:15896
 
 The issue kind.
 
@@ -156,7 +156,7 @@ The issue path.
 
 > `readonly` **received**: `` `${number}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15566
+Defined in: node\_modules/valibot/dist/index.d.mts:15908
 
 The received property.
 
@@ -170,7 +170,7 @@ The received property.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15570
+Defined in: node\_modules/valibot/dist/index.d.mts:15912
 
 The required words.
 
@@ -184,7 +184,7 @@ The required words.
 
 > `readonly` **type**: `"words"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15558
+Defined in: node\_modules/valibot/dist/index.d.mts:15900
 
 The issue type.
 

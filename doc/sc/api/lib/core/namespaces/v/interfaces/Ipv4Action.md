@@ -6,7 +6,7 @@
 
 # Interface: Ipv4Action\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10140
+Defined in: node\_modules/valibot/dist/index.d.mts:10209
 
 IPv4 action interface.
 
@@ -108,7 +108,7 @@ Whether it's async.
 
 > `readonly` **expects**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10152
+Defined in: node\_modules/valibot/dist/index.d.mts:10221
 
 The expected property.
 
@@ -136,7 +136,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10160
+Defined in: node\_modules/valibot/dist/index.d.mts:10229
 
 The error message.
 
@@ -146,7 +146,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `Ipv4Action`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `Ipv4Action`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10148
+Defined in: node\_modules/valibot/dist/index.d.mts:10217
 
 The action reference.
 
@@ -208,7 +208,7 @@ An IPv4 action.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10156
+Defined in: node\_modules/valibot/dist/index.d.mts:10225
 
 The IPv4 regex.
 
@@ -218,7 +218,7 @@ The IPv4 regex.
 
 > `readonly` **type**: `"ipv4"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10144
+Defined in: node\_modules/valibot/dist/index.d.mts:10213
 
 The action type.
 

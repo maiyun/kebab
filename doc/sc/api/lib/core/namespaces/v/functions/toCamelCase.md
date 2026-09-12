@@ -8,7 +8,7 @@
 
 > **toCamelCase**(): [`ToCamelCaseAction`](../interfaces/ToCamelCaseAction.md)
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14739
+Defined in: node\_modules/valibot/dist/index.d.mts:15081
 
 **`Beta`**
 

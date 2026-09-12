@@ -10,7 +10,7 @@
 
 > **isbn**\<`TInput$1`\>(): [`IsbnAction`](../interfaces/IsbnAction.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10301
+Defined in: node\_modules/valibot/dist/index.d.mts:10370
 
 **`Beta`**
 
@@ -32,7 +32,7 @@ An ISBN action.
 
 > **isbn**\<`TInput$1`, `TMessage`\>(`message`): [`IsbnAction`](../interfaces/IsbnAction.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10311
+Defined in: node\_modules/valibot/dist/index.d.mts:10380
 
 **`Beta`**
 

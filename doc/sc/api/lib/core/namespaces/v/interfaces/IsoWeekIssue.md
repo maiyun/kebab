@@ -6,7 +6,7 @@
 
 # Interface: IsoWeekIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10882
+Defined in: node\_modules/valibot/dist/index.d.mts:10951
 
 ISO week issue interface.
 
@@ -54,7 +54,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10894
+Defined in: node\_modules/valibot/dist/index.d.mts:10963
 
 The expected property.
 
@@ -96,7 +96,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10886
+Defined in: node\_modules/valibot/dist/index.d.mts:10955
 
 The issue kind.
 
@@ -152,7 +152,7 @@ The issue path.
 
 > `readonly` **received**: `` `"${string}"` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10898
+Defined in: node\_modules/valibot/dist/index.d.mts:10967
 
 The received property.
 
@@ -166,7 +166,7 @@ The received property.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10902
+Defined in: node\_modules/valibot/dist/index.d.mts:10971
 
 The ISO week regex.
 
@@ -180,7 +180,7 @@ The ISO week regex.
 
 > `readonly` **type**: `"iso_week"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10890
+Defined in: node\_modules/valibot/dist/index.d.mts:10959
 
 The issue type.
 

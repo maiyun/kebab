@@ -6,7 +6,7 @@
 
 # Interface: RfcEmailAction\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14123
+Defined in: node\_modules/valibot/dist/index.d.mts:14465
 
 RFC email action interface.
 
@@ -108,7 +108,7 @@ Whether it's async.
 
 > `readonly` **expects**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14135
+Defined in: node\_modules/valibot/dist/index.d.mts:14477
 
 The expected property.
 
@@ -136,7 +136,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14143
+Defined in: node\_modules/valibot/dist/index.d.mts:14485
 
 The error message.
 
@@ -146,7 +146,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `RfcEmailAction`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `RfcEmailAction`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14131
+Defined in: node\_modules/valibot/dist/index.d.mts:14473
 
 The action reference.
 
@@ -222,7 +222,7 @@ A RFC email action.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14139
+Defined in: node\_modules/valibot/dist/index.d.mts:14481
 
 The RFC email regex.
 
@@ -232,7 +232,7 @@ The RFC email regex.
 
 > `readonly` **type**: `"rfc_email"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14127
+Defined in: node\_modules/valibot/dist/index.d.mts:14469
 
 The action type.
 

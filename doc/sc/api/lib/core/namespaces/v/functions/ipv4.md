@@ -10,7 +10,7 @@
 
 > **ipv4**\<`TInput$1`\>(): [`Ipv4Action`](../interfaces/Ipv4Action.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10167
+Defined in: node\_modules/valibot/dist/index.d.mts:10236
 
 Creates an [IPv4](https://en.wikipedia.org/wiki/IPv4) address validation action.
 
@@ -30,7 +30,7 @@ An IPv4 action.
 
 > **ipv4**\<`TInput$1`, `TMessage`\>(`message`): [`Ipv4Action`](../interfaces/Ipv4Action.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10175
+Defined in: node\_modules/valibot/dist/index.d.mts:10244
 
 Creates an [IPv4](https://en.wikipedia.org/wiki/IPv4) address validation action.
 

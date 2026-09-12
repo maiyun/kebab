@@ -10,7 +10,7 @@
 
 > **toBigint**\<`TInput$1`\>(): [`ToBigintAction`](../interfaces/ToBigintAction.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14674
+Defined in: node\_modules/valibot/dist/index.d.mts:15016
 
 **`Beta`**
 
@@ -32,7 +32,7 @@ A to bigint action.
 
 > **toBigint**\<`TInput$1`, `TMessage`\>(`message`): [`ToBigintAction`](../interfaces/ToBigintAction.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14684
+Defined in: node\_modules/valibot/dist/index.d.mts:15026
 
 **`Beta`**
 

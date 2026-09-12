@@ -10,7 +10,7 @@
 
 > **partialCheck**\<`TInput$1`, `TPaths`, `TSelection`\>(`paths`, `requirement`): [`PartialCheckAction`](../interfaces/PartialCheckAction.md)\<`TInput$1`, `TPaths`, `TSelection`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13667
+Defined in: node\_modules/valibot/dist/index.d.mts:14009
 
 Creates a partial check validation action.
 
@@ -53,7 +53,7 @@ A partial check action.
 
 > **partialCheck**\<`TInput$1`, `TPaths`, `TSelection`, `TMessage`\>(`paths`, `requirement`, `message`): [`PartialCheckAction`](../interfaces/PartialCheckAction.md)\<`TInput$1`, `TPaths`, `TSelection`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13677
+Defined in: node\_modules/valibot/dist/index.d.mts:14019
 
 Creates a partial check validation action.
 

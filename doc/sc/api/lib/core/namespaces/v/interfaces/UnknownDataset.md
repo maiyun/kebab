@@ -28,7 +28,7 @@ The dataset issues.
 
 Defined in: node\_modules/valibot/dist/index.d.mts:2911
 
-Whether is's typed.
+Whether it's typed.
 
 ***
 

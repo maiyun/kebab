@@ -10,7 +10,7 @@
 
 > **entries**\<`TInput$1`, `TRequirement`\>(`requirement`): [`EntriesAction`](../interfaces/EntriesAction.md)\<`TInput$1`, `TRequirement`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9037
+Defined in: node\_modules/valibot/dist/index.d.mts:9106
 
 **`Beta`**
 
@@ -44,7 +44,7 @@ An entries action.
 
 > **entries**\<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): [`EntriesAction`](../interfaces/EntriesAction.md)\<`TInput$1`, `TRequirement`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9048
+Defined in: node\_modules/valibot/dist/index.d.mts:9117
 
 **`Beta`**
 

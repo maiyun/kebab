@@ -6,7 +6,7 @@
 
 # Interface: OctalAction\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13337
+Defined in: node\_modules/valibot/dist/index.d.mts:13679
 
 Octal action interface.
 
@@ -108,7 +108,7 @@ Whether it's async.
 
 > `readonly` **expects**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13349
+Defined in: node\_modules/valibot/dist/index.d.mts:13691
 
 The expected property.
 
@@ -136,7 +136,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13357
+Defined in: node\_modules/valibot/dist/index.d.mts:13699
 
 The error message.
 
@@ -146,7 +146,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `OctalAction`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `OctalAction`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13345
+Defined in: node\_modules/valibot/dist/index.d.mts:13687
 
 The action reference.
 
@@ -208,7 +208,7 @@ An octal action.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13353
+Defined in: node\_modules/valibot/dist/index.d.mts:13695
 
 The octal regex.
 
@@ -218,7 +218,7 @@ The octal regex.
 
 > `readonly` **type**: `"octal"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13341
+Defined in: node\_modules/valibot/dist/index.d.mts:13683
 
 The action type.
 

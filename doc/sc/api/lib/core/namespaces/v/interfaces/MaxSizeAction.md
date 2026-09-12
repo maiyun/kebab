@@ -6,7 +6,7 @@
 
 # Interface: MaxSizeAction\<TInput$1, TRequirement, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11714
+Defined in: node\_modules/valibot/dist/index.d.mts:11918
 
 Max size action interface.
 
@@ -112,7 +112,7 @@ Whether it's async.
 
 > `readonly` **expects**: `` `<=${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11726
+Defined in: node\_modules/valibot/dist/index.d.mts:11930
 
 The expected property.
 
@@ -140,7 +140,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11734
+Defined in: node\_modules/valibot/dist/index.d.mts:11938
 
 The error message.
 
@@ -150,7 +150,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`, `TRequirement`\>(`requirement`): `MaxSizeAction`\<`TInput$1`, `TRequirement`, `undefined`\>; \<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): `MaxSizeAction`\<`TInput$1`, `TRequirement`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11722
+Defined in: node\_modules/valibot/dist/index.d.mts:11926
 
 The action reference.
 
@@ -234,7 +234,7 @@ A max size action.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11730
+Defined in: node\_modules/valibot/dist/index.d.mts:11934
 
 The maximum size.
 
@@ -244,7 +244,7 @@ The maximum size.
 
 > `readonly` **type**: `"max_size"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11718
+Defined in: node\_modules/valibot/dist/index.d.mts:11922
 
 The action type.
 

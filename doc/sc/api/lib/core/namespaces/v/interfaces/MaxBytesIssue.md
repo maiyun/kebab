@@ -6,7 +6,7 @@
 
 # Interface: MaxBytesIssue\<TInput$1, TRequirement\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11405
+Defined in: node\_modules/valibot/dist/index.d.mts:11540
 
 Max bytes issue interface.
 
@@ -58,7 +58,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `` `<=${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11417
+Defined in: node\_modules/valibot/dist/index.d.mts:11552
 
 The expected property.
 
@@ -100,7 +100,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11409
+Defined in: node\_modules/valibot/dist/index.d.mts:11544
 
 The issue kind.
 
@@ -156,7 +156,7 @@ The issue path.
 
 > `readonly` **received**: `` `${number}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11421
+Defined in: node\_modules/valibot/dist/index.d.mts:11556
 
 The received property.
 
@@ -170,7 +170,7 @@ The received property.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11425
+Defined in: node\_modules/valibot/dist/index.d.mts:11560
 
 The maximum bytes.
 
@@ -184,7 +184,7 @@ The maximum bytes.
 
 > `readonly` **type**: `"max_bytes"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11413
+Defined in: node\_modules/valibot/dist/index.d.mts:11548
 
 The issue type.
 

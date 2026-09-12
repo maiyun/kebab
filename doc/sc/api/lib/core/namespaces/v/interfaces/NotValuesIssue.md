@@ -6,7 +6,7 @@
 
 # Interface: NotValuesIssue\<TInput$1, TRequirement\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13172
+Defined in: node\_modules/valibot/dist/index.d.mts:13514
 
 Not values issue type.
 
@@ -58,7 +58,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `` `!${string}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13184
+Defined in: node\_modules/valibot/dist/index.d.mts:13526
 
 The expected property.
 
@@ -100,7 +100,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13176
+Defined in: node\_modules/valibot/dist/index.d.mts:13518
 
 The issue kind.
 
@@ -170,7 +170,7 @@ The received property.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13188
+Defined in: node\_modules/valibot/dist/index.d.mts:13530
 
 The not required values.
 
@@ -184,7 +184,7 @@ The not required values.
 
 > `readonly` **type**: `"not_values"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13180
+Defined in: node\_modules/valibot/dist/index.d.mts:13522
 
 The issue type.
 

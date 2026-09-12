@@ -8,7 +8,7 @@
 
 > **toPascalCase**(): [`ToPascalCaseAction`](../interfaces/ToPascalCaseAction.md)
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14986
+Defined in: node\_modules/valibot/dist/index.d.mts:15328
 
 **`Beta`**
 

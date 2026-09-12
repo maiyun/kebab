@@ -6,7 +6,7 @@
 
 # Interface: DomainIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8628
+Defined in: node\_modules/valibot/dist/index.d.mts:8697
 
 **`Beta`**
 
@@ -60,7 +60,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8640
+Defined in: node\_modules/valibot/dist/index.d.mts:8709
 
 **`Beta`**
 
@@ -108,7 +108,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8632
+Defined in: node\_modules/valibot/dist/index.d.mts:8701
 
 **`Beta`**
 
@@ -172,7 +172,7 @@ The issue path.
 
 > `readonly` **received**: `` `"${string}"` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8644
+Defined in: node\_modules/valibot/dist/index.d.mts:8713
 
 **`Beta`**
 
@@ -188,7 +188,7 @@ The received property.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8648
+Defined in: node\_modules/valibot/dist/index.d.mts:8717
 
 **`Beta`**
 
@@ -204,7 +204,7 @@ The domain regex.
 
 > `readonly` **type**: `"domain"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8636
+Defined in: node\_modules/valibot/dist/index.d.mts:8705
 
 **`Beta`**
 

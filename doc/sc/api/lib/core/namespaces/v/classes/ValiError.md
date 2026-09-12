@@ -6,7 +6,7 @@
 
 # Class: ValiError\<TSchema\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:16171
+Defined in: node\_modules/valibot/dist/index.d.mts:16556
 
 A Valibot error with useful information.
 
@@ -26,7 +26,7 @@ A Valibot error with useful information.
 
 > **new ValiError**\<`TSchema`\>(`issues`): `ValiError`\<`TSchema`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:16181
+Defined in: node\_modules/valibot/dist/index.d.mts:16566
 
 Creates a Valibot error with useful information.
 
@@ -52,6 +52,6 @@ The error issues.
 
 > `readonly` **issues**: \[[`InferIssue`](../type-aliases/InferIssue.md)\<`TSchema`\>, `...InferIssue<TSchema>[]`\]
 
-Defined in: node\_modules/valibot/dist/index.d.mts:16175
+Defined in: node\_modules/valibot/dist/index.d.mts:16560
 
 The error issues.

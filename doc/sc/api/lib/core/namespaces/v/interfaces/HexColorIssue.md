@@ -6,7 +6,7 @@
 
 # Interface: HexColorIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9778
+Defined in: node\_modules/valibot/dist/index.d.mts:9847
 
 Hex color issue interface.
 
@@ -54,7 +54,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9790
+Defined in: node\_modules/valibot/dist/index.d.mts:9859
 
 The expected property.
 
@@ -96,7 +96,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9782
+Defined in: node\_modules/valibot/dist/index.d.mts:9851
 
 The issue kind.
 
@@ -152,7 +152,7 @@ The issue path.
 
 > `readonly` **received**: `` `"${string}"` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9794
+Defined in: node\_modules/valibot/dist/index.d.mts:9863
 
 The received property.
 
@@ -166,7 +166,7 @@ The received property.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9798
+Defined in: node\_modules/valibot/dist/index.d.mts:9867
 
 The hex color regex.
 
@@ -180,7 +180,7 @@ The hex color regex.
 
 > `readonly` **type**: `"hex_color"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9786
+Defined in: node\_modules/valibot/dist/index.d.mts:9855
 
 The issue type.
 

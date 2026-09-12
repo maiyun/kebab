@@ -6,7 +6,7 @@
 
 # Interface: MaxWordsIssue\<TInput$1, TRequirement\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11823
+Defined in: node\_modules/valibot/dist/index.d.mts:12027
 
 Max words issue interface.
 
@@ -58,7 +58,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `` `<=${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11835
+Defined in: node\_modules/valibot/dist/index.d.mts:12039
 
 The expected property.
 
@@ -100,7 +100,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11827
+Defined in: node\_modules/valibot/dist/index.d.mts:12031
 
 The issue kind.
 
@@ -156,7 +156,7 @@ The issue path.
 
 > `readonly` **received**: `` `${number}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11839
+Defined in: node\_modules/valibot/dist/index.d.mts:12043
 
 The received property.
 
@@ -170,7 +170,7 @@ The received property.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11843
+Defined in: node\_modules/valibot/dist/index.d.mts:12047
 
 The maximum words.
 
@@ -184,7 +184,7 @@ The maximum words.
 
 > `readonly` **type**: `"max_words"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11831
+Defined in: node\_modules/valibot/dist/index.d.mts:12035
 
 The issue type.
 

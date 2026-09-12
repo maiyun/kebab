@@ -6,7 +6,7 @@
 
 # Interface: EntriesIssue\<TInput$1, TRequirement\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8979
+Defined in: node\_modules/valibot/dist/index.d.mts:9048
 
 **`Beta`**
 
@@ -64,7 +64,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `` `${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8991
+Defined in: node\_modules/valibot/dist/index.d.mts:9060
 
 **`Beta`**
 
@@ -112,7 +112,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8983
+Defined in: node\_modules/valibot/dist/index.d.mts:9052
 
 **`Beta`**
 
@@ -176,7 +176,7 @@ The issue path.
 
 > `readonly` **received**: `` `${number}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8995
+Defined in: node\_modules/valibot/dist/index.d.mts:9064
 
 **`Beta`**
 
@@ -192,7 +192,7 @@ The received property.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8999
+Defined in: node\_modules/valibot/dist/index.d.mts:9068
 
 **`Beta`**
 
@@ -208,7 +208,7 @@ The required entries.
 
 > `readonly` **type**: `"entries"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8987
+Defined in: node\_modules/valibot/dist/index.d.mts:9056
 
 **`Beta`**
 

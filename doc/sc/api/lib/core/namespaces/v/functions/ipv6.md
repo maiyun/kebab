@@ -10,7 +10,7 @@
 
 > **ipv6**\<`TInput$1`\>(): [`Ipv6Action`](../interfaces/Ipv6Action.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10233
+Defined in: node\_modules/valibot/dist/index.d.mts:10302
 
 Creates an [IPv6](https://en.wikipedia.org/wiki/IPv6) address validation action.
 
@@ -30,7 +30,7 @@ An IPv6 action.
 
 > **ipv6**\<`TInput$1`, `TMessage`\>(`message`): [`Ipv6Action`](../interfaces/Ipv6Action.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10241
+Defined in: node\_modules/valibot/dist/index.d.mts:10310
 
 Creates an [IPv6](https://en.wikipedia.org/wiki/IPv6) address validation action.
 

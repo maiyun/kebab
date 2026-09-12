@@ -6,7 +6,7 @@
 
 # Interface: FiniteAction\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9296
+Defined in: node\_modules/valibot/dist/index.d.mts:9365
 
 Finite action interface.
 
@@ -108,7 +108,7 @@ Whether it's async.
 
 > `readonly` **expects**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9308
+Defined in: node\_modules/valibot/dist/index.d.mts:9377
 
 The expected property.
 
@@ -136,7 +136,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9316
+Defined in: node\_modules/valibot/dist/index.d.mts:9385
 
 The error message.
 
@@ -146,7 +146,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `FiniteAction`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `FiniteAction`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9304
+Defined in: node\_modules/valibot/dist/index.d.mts:9373
 
 The action reference.
 
@@ -208,7 +208,7 @@ A finite action.
 
 > `readonly` **requirement**: (`input`) => `boolean`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9312
+Defined in: node\_modules/valibot/dist/index.d.mts:9381
 
 The validation function.
 
@@ -228,7 +228,7 @@ The validation function.
 
 > `readonly` **type**: `"finite"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9300
+Defined in: node\_modules/valibot/dist/index.d.mts:9369
 
 The action type.
 

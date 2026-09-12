@@ -6,7 +6,7 @@
 
 # Interface: StringifyJsonAction\<TInput$1, TConfig, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14584
+Defined in: node\_modules/valibot/dist/index.d.mts:14926
 
 **`Beta`**
 
@@ -116,7 +116,7 @@ Whether it's async.
 
 > `readonly` **config**: `TConfig`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14596
+Defined in: node\_modules/valibot/dist/index.d.mts:14938
 
 **`Beta`**
 
@@ -144,7 +144,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14600
+Defined in: node\_modules/valibot/dist/index.d.mts:14942
 
 **`Beta`**
 
@@ -156,7 +156,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `StringifyJsonAction`\<`TInput$1`, `undefined`, `undefined`\>; \<`TInput$1`, `TConfig`\>(`config`): `StringifyJsonAction`\<`TInput$1`, `TConfig`, `undefined`\>; \<`TInput$1`, `TConfig`, `TMessage`\>(`config`, `message`): `StringifyJsonAction`\<`TInput$1`, `TConfig`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14592
+Defined in: node\_modules/valibot/dist/index.d.mts:14934
 
 **`Beta`**
 
@@ -266,7 +266,7 @@ A stringify JSON action.
 
 > `readonly` **type**: `"stringify_json"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14588
+Defined in: node\_modules/valibot/dist/index.d.mts:14930
 
 **`Beta`**
 

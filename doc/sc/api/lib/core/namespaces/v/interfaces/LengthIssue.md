@@ -6,7 +6,7 @@
 
 # Interface: LengthIssue\<TInput$1, TRequirement\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11042
+Defined in: node\_modules/valibot/dist/index.d.mts:11177
 
 Length issue interface.
 
@@ -58,7 +58,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `` `${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11054
+Defined in: node\_modules/valibot/dist/index.d.mts:11189
 
 The expected property.
 
@@ -100,7 +100,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11046
+Defined in: node\_modules/valibot/dist/index.d.mts:11181
 
 The issue kind.
 
@@ -156,7 +156,7 @@ The issue path.
 
 > `readonly` **received**: `` `${number}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11058
+Defined in: node\_modules/valibot/dist/index.d.mts:11193
 
 The received property.
 
@@ -170,7 +170,7 @@ The received property.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11062
+Defined in: node\_modules/valibot/dist/index.d.mts:11197
 
 The required length.
 
@@ -184,7 +184,7 @@ The required length.
 
 > `readonly` **type**: `"length"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11050
+Defined in: node\_modules/valibot/dist/index.d.mts:11185
 
 The issue type.
 

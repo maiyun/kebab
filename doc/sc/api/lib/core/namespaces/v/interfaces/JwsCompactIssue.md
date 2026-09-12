@@ -6,7 +6,7 @@
 
 # Interface: JwsCompactIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10960
+Defined in: node\_modules/valibot/dist/index.d.mts:11029
 
 **`Beta`**
 
@@ -60,7 +60,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10972
+Defined in: node\_modules/valibot/dist/index.d.mts:11041
 
 **`Beta`**
 
@@ -108,7 +108,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10964
+Defined in: node\_modules/valibot/dist/index.d.mts:11033
 
 **`Beta`**
 
@@ -172,7 +172,7 @@ The issue path.
 
 > `readonly` **received**: `` `"${string}"` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10976
+Defined in: node\_modules/valibot/dist/index.d.mts:11045
 
 **`Beta`**
 
@@ -188,7 +188,7 @@ The received property.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10980
+Defined in: node\_modules/valibot/dist/index.d.mts:11049
 
 **`Beta`**
 
@@ -204,7 +204,7 @@ The JWS compact regex.
 
 > `readonly` **type**: `"jws_compact"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10968
+Defined in: node\_modules/valibot/dist/index.d.mts:11037
 
 **`Beta`**
 

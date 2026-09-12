@@ -10,7 +10,7 @@
 
 > **maxValue**\<`TInput$1`, `TRequirement`\>(`requirement`): [`MaxValueAction`](../interfaces/MaxValueAction.md)\<`TInput$1`, `TRequirement`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11808
+Defined in: node\_modules/valibot/dist/index.d.mts:12012
 
 Creates a max value validation action.
 
@@ -42,7 +42,7 @@ A max value action.
 
 > **maxValue**\<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): [`MaxValueAction`](../interfaces/MaxValueAction.md)\<`TInput$1`, `TRequirement`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11817
+Defined in: node\_modules/valibot/dist/index.d.mts:12021
 
 Creates a max value validation action.
 

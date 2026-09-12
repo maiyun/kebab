@@ -6,7 +6,7 @@
 
 # Interface: MinSizeAction\<TInput$1, TRequirement, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12307
+Defined in: node\_modules/valibot/dist/index.d.mts:12580
 
 Min size action interface.
 
@@ -112,7 +112,7 @@ Whether it's async.
 
 > `readonly` **expects**: `` `>=${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12319
+Defined in: node\_modules/valibot/dist/index.d.mts:12592
 
 The expected property.
 
@@ -140,7 +140,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12327
+Defined in: node\_modules/valibot/dist/index.d.mts:12600
 
 The error message.
 
@@ -150,7 +150,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`, `TRequirement`\>(`requirement`): `MinSizeAction`\<`TInput$1`, `TRequirement`, `undefined`\>; \<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): `MinSizeAction`\<`TInput$1`, `TRequirement`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12315
+Defined in: node\_modules/valibot/dist/index.d.mts:12588
 
 The action reference.
 
@@ -234,7 +234,7 @@ A min size action.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12323
+Defined in: node\_modules/valibot/dist/index.d.mts:12596
 
 The minimum size.
 
@@ -244,7 +244,7 @@ The minimum size.
 
 > `readonly` **type**: `"min_size"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12311
+Defined in: node\_modules/valibot/dist/index.d.mts:12584
 
 The action type.
 

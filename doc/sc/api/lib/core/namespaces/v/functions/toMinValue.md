@@ -8,7 +8,7 @@
 
 > **toMinValue**\<`TInput$1`, `TRequirement`\>(`requirement`): [`ToMinValueAction`](../interfaces/ToMinValueAction.md)\<`TInput$1`, `TRequirement`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14900
+Defined in: node\_modules/valibot/dist/index.d.mts:15242
 
 Creates a to min value transformation action.
 

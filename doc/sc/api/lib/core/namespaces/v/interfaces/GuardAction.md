@@ -6,7 +6,7 @@
 
 # Interface: GuardAction\<TInput$1, TGuard, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9555
+Defined in: node\_modules/valibot/dist/index.d.mts:9624
 
 **`Beta`**
 
@@ -132,7 +132,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9571
+Defined in: node\_modules/valibot/dist/index.d.mts:9640
 
 **`Beta`**
 
@@ -144,7 +144,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`, `TGuard`\>(`requirement`): `GuardAction`\<`TInput$1`, `TGuard`, `undefined`\>; \<`TGuard`\>(`requirement`): `GuardAction`\<`Parameters`\<`TGuard`\>\[`0`\], `TGuard`, `undefined`\>; \<`TInput$1`, `TGuard`, `TMessage`\>(`requirement`, `message`): `GuardAction`\<`TInput$1`, `TGuard`, `TMessage`\>; \<`TGuard`, `TMessage`\>(`requirement`, `message`): `GuardAction`\<`Parameters`\<`TGuard`\>\[`0`\], `TGuard`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9563
+Defined in: node\_modules/valibot/dist/index.d.mts:9632
 
 **`Beta`**
 
@@ -300,7 +300,7 @@ A guard action.
 
 > `readonly` **requirement**: `TGuard`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9567
+Defined in: node\_modules/valibot/dist/index.d.mts:9636
 
 **`Beta`**
 
@@ -312,7 +312,7 @@ The guard function.
 
 > `readonly` **type**: `"guard"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9559
+Defined in: node\_modules/valibot/dist/index.d.mts:9628
 
 **`Beta`**
 

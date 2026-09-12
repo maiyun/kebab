@@ -6,7 +6,7 @@
 
 # Interface: EntriesAction\<TInput$1, TRequirement, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9006
+Defined in: node\_modules/valibot/dist/index.d.mts:9075
 
 **`Beta`**
 
@@ -116,7 +116,7 @@ Whether it's async.
 
 > `readonly` **expects**: `` `${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9018
+Defined in: node\_modules/valibot/dist/index.d.mts:9087
 
 **`Beta`**
 
@@ -148,7 +148,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9026
+Defined in: node\_modules/valibot/dist/index.d.mts:9095
 
 **`Beta`**
 
@@ -160,7 +160,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`, `TRequirement`\>(`requirement`): `EntriesAction`\<`TInput$1`, `TRequirement`, `undefined`\>; \<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): `EntriesAction`\<`TInput$1`, `TRequirement`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9014
+Defined in: node\_modules/valibot/dist/index.d.mts:9083
 
 **`Beta`**
 
@@ -250,7 +250,7 @@ An entries action.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9022
+Defined in: node\_modules/valibot/dist/index.d.mts:9091
 
 **`Beta`**
 
@@ -262,7 +262,7 @@ The required entries.
 
 > `readonly` **type**: `"entries"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9010
+Defined in: node\_modules/valibot/dist/index.d.mts:9079
 
 **`Beta`**
 

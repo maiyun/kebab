@@ -6,7 +6,7 @@
 
 # Interface: Mac48Issue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11242
+Defined in: node\_modules/valibot/dist/index.d.mts:11377
 
 48-bit MAC issue interface.
 
@@ -54,7 +54,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11254
+Defined in: node\_modules/valibot/dist/index.d.mts:11389
 
 The expected property.
 
@@ -96,7 +96,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11246
+Defined in: node\_modules/valibot/dist/index.d.mts:11381
 
 The issue kind.
 
@@ -152,7 +152,7 @@ The issue path.
 
 > `readonly` **received**: `` `"${string}"` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11258
+Defined in: node\_modules/valibot/dist/index.d.mts:11393
 
 The received property.
 
@@ -166,7 +166,7 @@ The received property.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11262
+Defined in: node\_modules/valibot/dist/index.d.mts:11397
 
 The 48-bit MAC regex.
 
@@ -180,7 +180,7 @@ The 48-bit MAC regex.
 
 > `readonly` **type**: `"mac48"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11250
+Defined in: node\_modules/valibot/dist/index.d.mts:11385
 
 The issue type.
 

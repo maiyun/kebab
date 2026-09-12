@@ -8,7 +8,7 @@
 
 > **\_getGraphemeCount**(`input`): `number`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15978
+Defined in: node\_modules/valibot/dist/index.d.mts:16341
 
 **`Internal`**
 

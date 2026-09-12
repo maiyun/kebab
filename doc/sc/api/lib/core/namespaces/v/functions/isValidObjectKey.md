@@ -8,7 +8,7 @@
 
 > **\_isValidObjectKey**(`object`, `key`): `boolean`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:16049
+Defined in: node\_modules/valibot/dist/index.d.mts:16416
 
 **`Internal`**
 

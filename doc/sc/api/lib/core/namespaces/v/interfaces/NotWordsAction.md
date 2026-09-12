@@ -6,7 +6,7 @@
 
 # Interface: NotWordsAction\<TInput$1, TLocales, TRequirement, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13262
+Defined in: node\_modules/valibot/dist/index.d.mts:13604
 
 Not words action interface.
 
@@ -116,7 +116,7 @@ Whether it's async.
 
 > `readonly` **expects**: `` `!${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13274
+Defined in: node\_modules/valibot/dist/index.d.mts:13616
 
 The expected property.
 
@@ -144,7 +144,7 @@ The object kind.
 
 > `readonly` **locales**: `TLocales`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13278
+Defined in: node\_modules/valibot/dist/index.d.mts:13620
 
 The locales to be used.
 
@@ -154,7 +154,7 @@ The locales to be used.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13286
+Defined in: node\_modules/valibot/dist/index.d.mts:13628
 
 The error message.
 
@@ -164,7 +164,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`, `TLocales`, `TRequirement`\>(`locales`, `requirement`): `NotWordsAction`\<`TInput$1`, `TLocales`, `TRequirement`, `undefined`\>; \<`TInput$1`, `TLocales`, `TRequirement`, `TMessage`\>(`locales`, `requirement`, `message`): `NotWordsAction`\<`TInput$1`, `TLocales`, `TRequirement`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13270
+Defined in: node\_modules/valibot/dist/index.d.mts:13612
 
 The action reference.
 
@@ -268,7 +268,7 @@ A not words action.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13282
+Defined in: node\_modules/valibot/dist/index.d.mts:13624
 
 The not required words.
 
@@ -278,7 +278,7 @@ The not required words.
 
 > `readonly` **type**: `"not_words"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13266
+Defined in: node\_modules/valibot/dist/index.d.mts:13608
 
 The action type.
 

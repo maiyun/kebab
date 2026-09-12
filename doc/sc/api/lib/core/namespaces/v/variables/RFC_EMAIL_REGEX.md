@@ -8,7 +8,7 @@
 
 > `const` **RFC\_EMAIL\_REGEX**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15762
+Defined in: node\_modules/valibot/dist/index.d.mts:16110
 
 [RFC 5322 email address](https://datatracker.ietf.org/doc/html/rfc5322#section-3.4.1) regex.
 

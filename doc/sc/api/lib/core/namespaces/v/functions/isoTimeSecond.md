@@ -10,7 +10,7 @@
 
 > **isoTimeSecond**\<`TInput$1`\>(): [`IsoTimeSecondAction`](../interfaces/IsoTimeSecondAction.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10761
+Defined in: node\_modules/valibot/dist/index.d.mts:10830
 
 Creates an [ISO time second](https://en.wikipedia.org/wiki/ISO_8601) validation action.
 
@@ -32,7 +32,7 @@ An ISO time second action.
 
 > **isoTimeSecond**\<`TInput$1`, `TMessage`\>(`message`): [`IsoTimeSecondAction`](../interfaces/IsoTimeSecondAction.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10771
+Defined in: node\_modules/valibot/dist/index.d.mts:10840
 
 Creates an [ISO time second](https://en.wikipedia.org/wiki/ISO_8601) validation action.
 

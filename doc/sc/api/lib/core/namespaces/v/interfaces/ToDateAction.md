@@ -6,7 +6,7 @@
 
 # Interface: ToDateAction\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14762
+Defined in: node\_modules/valibot/dist/index.d.mts:15104
 
 To date action interface.
 
@@ -122,7 +122,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14774
+Defined in: node\_modules/valibot/dist/index.d.mts:15116
 
 The error message.
 
@@ -132,7 +132,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `ToDateAction`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `ToDateAction`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14770
+Defined in: node\_modules/valibot/dist/index.d.mts:15112
 
 The action reference.
 
@@ -198,7 +198,7 @@ A to date action.
 
 > `readonly` **type**: `"to_date"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14766
+Defined in: node\_modules/valibot/dist/index.d.mts:15108
 
 The action type.
 

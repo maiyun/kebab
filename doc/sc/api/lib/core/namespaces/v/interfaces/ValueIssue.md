@@ -6,7 +6,7 @@
 
 # Interface: ValueIssue\<TInput$1, TRequirement\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15420
+Defined in: node\_modules/valibot/dist/index.d.mts:15762
 
 Value issue interface.
 
@@ -58,7 +58,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `string`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15432
+Defined in: node\_modules/valibot/dist/index.d.mts:15774
 
 The expected property.
 
@@ -100,7 +100,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15424
+Defined in: node\_modules/valibot/dist/index.d.mts:15766
 
 The issue kind.
 
@@ -170,7 +170,7 @@ The received property.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15436
+Defined in: node\_modules/valibot/dist/index.d.mts:15778
 
 The required value.
 
@@ -184,7 +184,7 @@ The required value.
 
 > `readonly` **type**: `"value"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15428
+Defined in: node\_modules/valibot/dist/index.d.mts:15770
 
 The issue type.
 

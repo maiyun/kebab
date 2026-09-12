@@ -8,7 +8,7 @@
 
 > `const` **FlavorSymbol**: unique `symbol`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9339
+Defined in: node\_modules/valibot/dist/index.d.mts:9408
 
 **`Beta`**
 

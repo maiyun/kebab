@@ -8,7 +8,7 @@
 
 > **getSpecificMessage**\<`TReference`\>(`reference`, `lang?`): [`ErrorMessage`](../type-aliases/ErrorMessage.md)\<[`InferIssue`](../type-aliases/InferIssue.md)\<`ReturnType`\<`TReference`\>\>\> \| `undefined`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15869
+Defined in: node\_modules/valibot/dist/index.d.mts:16220
 
 Returns a specific error message.
 

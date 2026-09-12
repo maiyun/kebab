@@ -6,7 +6,7 @@
 
 # Interface: DescriptionAction\<TInput$1, TDescription\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8525
+Defined in: node\_modules/valibot/dist/index.d.mts:8594
 
 Description action interface.
 
@@ -58,7 +58,7 @@ The input, output and issue type.
 
 > `readonly` **description**: `TDescription`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8537
+Defined in: node\_modules/valibot/dist/index.d.mts:8606
 
 The description text.
 
@@ -82,7 +82,7 @@ The object kind.
 
 > `readonly` **reference**: \<`TInput$1`, `TDescription`\>(`description_`) => `DescriptionAction`\<`TInput$1`, `TDescription`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8533
+Defined in: node\_modules/valibot/dist/index.d.mts:8602
 
 The action reference.
 
@@ -122,7 +122,7 @@ A description action.
 
 > `readonly` **type**: `"description"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8529
+Defined in: node\_modules/valibot/dist/index.d.mts:8598
 
 The action type.
 

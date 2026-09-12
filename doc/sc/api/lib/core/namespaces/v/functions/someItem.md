@@ -10,7 +10,7 @@
 
 > **someItem**\<`TInput$1`\>(`requirement`): [`SomeItemAction`](../interfaces/SomeItemAction.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14429
+Defined in: node\_modules/valibot/dist/index.d.mts:14771
 
 Creates a some item validation action.
 
@@ -38,7 +38,7 @@ A some item action.
 
 > **someItem**\<`TInput$1`, `TMessage`\>(`requirement`, `message`): [`SomeItemAction`](../interfaces/SomeItemAction.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14438
+Defined in: node\_modules/valibot/dist/index.d.mts:14780
 
 Creates a some item validation action.
 

@@ -6,7 +6,7 @@
 
 # Interface: StringifyJsonConfig
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14546
+Defined in: node\_modules/valibot/dist/index.d.mts:14888
 
 **`Beta`**
 
@@ -18,7 +18,7 @@ Stringify JSON config interface.
 
 > `optional` **replacer?**: (`string` \| `number`)[] \| ((`this`, `key`, `value`) => `any`)
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14550
+Defined in: node\_modules/valibot/dist/index.d.mts:14892
 
 **`Beta`**
 
@@ -30,7 +30,7 @@ The JSON replacer function or array.
 
 > `optional` **space?**: `string` \| `number`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14554
+Defined in: node\_modules/valibot/dist/index.d.mts:14896
 
 **`Beta`**
 

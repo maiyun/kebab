@@ -10,7 +10,7 @@
 
 > **isrc**\<`TInput$1`\>(): [`IsrcAction`](../interfaces/IsrcAction.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10375
+Defined in: node\_modules/valibot/dist/index.d.mts:10444
 
 **`Beta`**
 
@@ -36,7 +36,7 @@ An ISRC action.
 
 > **isrc**\<`TInput$1`, `TMessage`\>(`message`): [`IsrcAction`](../interfaces/IsrcAction.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10385
+Defined in: node\_modules/valibot/dist/index.d.mts:10454
 
 **`Beta`**
 

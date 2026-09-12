@@ -8,7 +8,7 @@
 
 > **toSnakeCase**(): [`ToSnakeCaseAction`](../interfaces/ToSnakeCaseAction.md)
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15018
+Defined in: node\_modules/valibot/dist/index.d.mts:15360
 
 **`Beta`**
 

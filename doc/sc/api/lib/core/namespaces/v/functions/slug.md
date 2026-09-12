@@ -10,7 +10,7 @@
 
 > **slug**\<`TInput$1`\>(): [`SlugAction`](../interfaces/SlugAction.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14365
+Defined in: node\_modules/valibot/dist/index.d.mts:14707
 
 Creates a [slug](https://en.wikipedia.org/wiki/Clean_URL#Slug) validation action.
 
@@ -30,7 +30,7 @@ A slug action.
 
 > **slug**\<`TInput$1`, `TMessage`\>(`message`): [`SlugAction`](../interfaces/SlugAction.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14373
+Defined in: node\_modules/valibot/dist/index.d.mts:14715
 
 Creates a [slug](https://en.wikipedia.org/wiki/Clean_URL#Slug) validation action.
 

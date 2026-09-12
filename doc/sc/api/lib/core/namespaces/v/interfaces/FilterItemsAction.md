@@ -6,7 +6,7 @@
 
 # Interface: FilterItemsAction\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9213
+Defined in: node\_modules/valibot/dist/index.d.mts:9282
 
 Filter items action interface.
 
@@ -118,7 +118,7 @@ The object kind.
 
 > `readonly` **operation**: [`ArrayRequirement`](../type-aliases/ArrayRequirement.md)\<`TInput$1`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9225
+Defined in: node\_modules/valibot/dist/index.d.mts:9294
 
 The filter items operation.
 
@@ -128,7 +128,7 @@ The filter items operation.
 
 > `readonly` **reference**: \<`TInput$1`\>(`operation`) => `FilterItemsAction`\<`TInput$1`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9221
+Defined in: node\_modules/valibot/dist/index.d.mts:9290
 
 The action reference.
 
@@ -164,7 +164,7 @@ A filter items action.
 
 > `readonly` **type**: `"filter_items"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9217
+Defined in: node\_modules/valibot/dist/index.d.mts:9286
 
 The action type.
 

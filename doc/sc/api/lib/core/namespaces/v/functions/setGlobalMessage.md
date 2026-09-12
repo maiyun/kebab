@@ -8,7 +8,7 @@
 
 > **setGlobalMessage**(`message`, `lang?`): `void`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15809
+Defined in: node\_modules/valibot/dist/index.d.mts:16160
 
 Sets a global error message.
 

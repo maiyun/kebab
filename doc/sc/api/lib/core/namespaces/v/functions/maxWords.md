@@ -10,7 +10,7 @@
 
 > **maxWords**\<`TInput$1`, `TLocales`, `TRequirement`\>(`locales`, `requirement`): [`MaxWordsAction`](../interfaces/MaxWordsAction.md)\<`TInput$1`, `TLocales`, `TRequirement`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11882
+Defined in: node\_modules/valibot/dist/index.d.mts:12086
 
 Creates a max words validation action.
 
@@ -52,7 +52,7 @@ A max words action.
 
 > **maxWords**\<`TInput$1`, `TLocales`, `TRequirement`, `TMessage`\>(`locales`, `requirement`, `message`): [`MaxWordsAction`](../interfaces/MaxWordsAction.md)\<`TInput$1`, `TLocales`, `TRequirement`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11892
+Defined in: node\_modules/valibot/dist/index.d.mts:12096
 
 Creates a max words validation action.
 

@@ -6,7 +6,7 @@
 
 # Interface: ToSnakeCaseAction
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14994
+Defined in: node\_modules/valibot/dist/index.d.mts:15336
 
 **`Beta`**
 
@@ -118,7 +118,7 @@ The object kind.
 
 > `readonly` **reference**: () => `ToSnakeCaseAction`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15002
+Defined in: node\_modules/valibot/dist/index.d.mts:15344
 
 **`Beta`**
 
@@ -151,7 +151,7 @@ A to snake case action.
 
 > `readonly` **type**: `"to_snake_case"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14998
+Defined in: node\_modules/valibot/dist/index.d.mts:15340
 
 **`Beta`**
 

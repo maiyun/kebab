@@ -6,7 +6,7 @@
 
 # Interface: NotSizeAction\<TInput$1, TRequirement, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13063
+Defined in: node\_modules/valibot/dist/index.d.mts:13405
 
 Not size action interface.
 
@@ -112,7 +112,7 @@ Whether it's async.
 
 > `readonly` **expects**: `` `!${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13075
+Defined in: node\_modules/valibot/dist/index.d.mts:13417
 
 The expected property.
 
@@ -140,7 +140,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13083
+Defined in: node\_modules/valibot/dist/index.d.mts:13425
 
 The error message.
 
@@ -150,7 +150,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`, `TRequirement`\>(`requirement`): `NotSizeAction`\<`TInput$1`, `TRequirement`, `undefined`\>; \<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): `NotSizeAction`\<`TInput$1`, `TRequirement`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13071
+Defined in: node\_modules/valibot/dist/index.d.mts:13413
 
 The action reference.
 
@@ -234,7 +234,7 @@ A not size action.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13079
+Defined in: node\_modules/valibot/dist/index.d.mts:13421
 
 The not required size.
 
@@ -244,7 +244,7 @@ The not required size.
 
 > `readonly` **type**: `"not_size"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13067
+Defined in: node\_modules/valibot/dist/index.d.mts:13409
 
 The action type.
 

@@ -10,7 +10,7 @@
 
 > **parseBoolean**\<`TInput$1`\>(): [`ParseBooleanAction`](../interfaces/ParseBooleanAction.md)\<`TInput$1`, `undefined`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13443
+Defined in: node\_modules/valibot/dist/index.d.mts:13785
 
 **`Beta`**
 
@@ -32,7 +32,7 @@ A parse boolean action.
 
 > **parseBoolean**\<`TInput$1`, `TConfig`\>(`config`): [`ParseBooleanAction`](../interfaces/ParseBooleanAction.md)\<`TInput$1`, `TConfig`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13453
+Defined in: node\_modules/valibot/dist/index.d.mts:13795
 
 **`Beta`**
 
@@ -66,7 +66,7 @@ A parse boolean action.
 
 > **parseBoolean**\<`TInput$1`, `TConfig`, `TMessage`\>(`config`, `message`): [`ParseBooleanAction`](../interfaces/ParseBooleanAction.md)\<`TInput$1`, `TConfig`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13464
+Defined in: node\_modules/valibot/dist/index.d.mts:13806
 
 **`Beta`**
 

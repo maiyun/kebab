@@ -8,6 +8,6 @@
 
 > `const` **ISO\_WEEK\_REGEX**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15717
+Defined in: node\_modules/valibot/dist/index.d.mts:16061
 
 [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) week regex.

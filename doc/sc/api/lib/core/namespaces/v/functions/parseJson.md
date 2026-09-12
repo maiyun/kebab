@@ -10,7 +10,7 @@
 
 > **parseJson**\<`TInput$1`\>(): [`ParseJsonAction`](../interfaces/ParseJsonAction.md)\<`TInput$1`, `undefined`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13531
+Defined in: node\_modules/valibot/dist/index.d.mts:13873
 
 **`Beta`**
 
@@ -32,7 +32,7 @@ A parse JSON action.
 
 > **parseJson**\<`TInput$1`, `TConfig`\>(`config`): [`ParseJsonAction`](../interfaces/ParseJsonAction.md)\<`TInput$1`, `TConfig`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13541
+Defined in: node\_modules/valibot/dist/index.d.mts:13883
 
 **`Beta`**
 
@@ -66,7 +66,7 @@ A parse JSON action.
 
 > **parseJson**\<`TInput$1`, `TConfig`, `TMessage`\>(`config`, `message`): [`ParseJsonAction`](../interfaces/ParseJsonAction.md)\<`TInput$1`, `TConfig`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13552
+Defined in: node\_modules/valibot/dist/index.d.mts:13894
 
 **`Beta`**
 

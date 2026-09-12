@@ -6,7 +6,7 @@
 
 # Interface: NotSizeIssue\<TInput$1, TRequirement\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13038
+Defined in: node\_modules/valibot/dist/index.d.mts:13380
 
 Not size issue interface.
 
@@ -58,7 +58,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `` `!${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13050
+Defined in: node\_modules/valibot/dist/index.d.mts:13392
 
 The expected property.
 
@@ -100,7 +100,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13042
+Defined in: node\_modules/valibot/dist/index.d.mts:13384
 
 The issue kind.
 
@@ -156,7 +156,7 @@ The issue path.
 
 > `readonly` **received**: `` `${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13054
+Defined in: node\_modules/valibot/dist/index.d.mts:13396
 
 The received property.
 
@@ -170,7 +170,7 @@ The received property.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13058
+Defined in: node\_modules/valibot/dist/index.d.mts:13400
 
 The not required size.
 
@@ -184,7 +184,7 @@ The not required size.
 
 > `readonly` **type**: `"not_size"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13046
+Defined in: node\_modules/valibot/dist/index.d.mts:13388
 
 The issue type.
 

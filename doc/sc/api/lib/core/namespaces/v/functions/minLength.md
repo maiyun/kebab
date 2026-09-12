@@ -10,7 +10,7 @@
 
 > **minLength**\<`TInput$1`, `TRequirement`\>(`requirement`): [`MinLengthAction`](../interfaces/MinLengthAction.md)\<`TInput$1`, `TRequirement`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12267
+Defined in: node\_modules/valibot/dist/index.d.mts:12540
 
 Creates a min length validation action.
 
@@ -42,7 +42,7 @@ A min length action.
 
 > **minLength**\<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): [`MinLengthAction`](../interfaces/MinLengthAction.md)\<`TInput$1`, `TRequirement`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12276
+Defined in: node\_modules/valibot/dist/index.d.mts:12549
 
 Creates a min length validation action.
 

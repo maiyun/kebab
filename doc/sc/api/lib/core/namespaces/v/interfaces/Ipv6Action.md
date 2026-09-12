@@ -6,7 +6,7 @@
 
 # Interface: Ipv6Action\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10206
+Defined in: node\_modules/valibot/dist/index.d.mts:10275
 
 IPv6 action interface.
 
@@ -108,7 +108,7 @@ Whether it's async.
 
 > `readonly` **expects**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10218
+Defined in: node\_modules/valibot/dist/index.d.mts:10287
 
 The expected property.
 
@@ -136,7 +136,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10226
+Defined in: node\_modules/valibot/dist/index.d.mts:10295
 
 The error message.
 
@@ -146,7 +146,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `Ipv6Action`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `Ipv6Action`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10214
+Defined in: node\_modules/valibot/dist/index.d.mts:10283
 
 The action reference.
 
@@ -208,7 +208,7 @@ An IPv6 action.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10222
+Defined in: node\_modules/valibot/dist/index.d.mts:10291
 
 The IPv6 regex.
 
@@ -218,7 +218,7 @@ The IPv6 regex.
 
 > `readonly` **type**: `"ipv6"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10210
+Defined in: node\_modules/valibot/dist/index.d.mts:10279
 
 The action type.
 

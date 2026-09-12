@@ -8,7 +8,7 @@
 
 > **transformAsync**\<`TInput$1`, `TOutput$1`\>(`operation`): [`TransformActionAsync`](../interfaces/TransformActionAsync.md)\<`TInput$1`, `TOutput$1`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15147
+Defined in: node\_modules/valibot/dist/index.d.mts:15489
 
 Creates a custom transformation action.
 

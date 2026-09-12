@@ -8,7 +8,7 @@
 
 > **mapItems**\<`TInput$1`, `TOutput$1`\>(`operation`): [`MapItemsAction`](../interfaces/MapItemsAction.md)\<`TInput$1`, `TOutput$1`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11399
+Defined in: node\_modules/valibot/dist/index.d.mts:11534
 
 Creates a map items transformation action.
 

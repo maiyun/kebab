@@ -8,7 +8,7 @@
 
 > **toBoolean**\<`TInput$1`\>(): [`ToBooleanAction`](../interfaces/ToBooleanAction.md)\<`TInput$1`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14707
+Defined in: node\_modules/valibot/dist/index.d.mts:15049
 
 **`Beta`**
 

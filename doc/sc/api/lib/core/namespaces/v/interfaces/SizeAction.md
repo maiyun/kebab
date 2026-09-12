@@ -6,7 +6,7 @@
 
 # Interface: SizeAction\<TInput$1, TRequirement, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14269
+Defined in: node\_modules/valibot/dist/index.d.mts:14611
 
 Size action interface.
 
@@ -112,7 +112,7 @@ Whether it's async.
 
 > `readonly` **expects**: `` `${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14281
+Defined in: node\_modules/valibot/dist/index.d.mts:14623
 
 The expected property.
 
@@ -140,7 +140,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14289
+Defined in: node\_modules/valibot/dist/index.d.mts:14631
 
 The error message.
 
@@ -150,7 +150,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`, `TRequirement`\>(`requirement`): `SizeAction`\<`TInput$1`, `TRequirement`, `undefined`\>; \<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): `SizeAction`\<`TInput$1`, `TRequirement`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14277
+Defined in: node\_modules/valibot/dist/index.d.mts:14619
 
 The action reference.
 
@@ -234,7 +234,7 @@ A size action.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14285
+Defined in: node\_modules/valibot/dist/index.d.mts:14627
 
 The required size.
 
@@ -244,7 +244,7 @@ The required size.
 
 > `readonly` **type**: `"size"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14273
+Defined in: node\_modules/valibot/dist/index.d.mts:14615
 
 The action type.
 

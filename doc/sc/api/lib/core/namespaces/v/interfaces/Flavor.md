@@ -6,7 +6,7 @@
 
 # Interface: Flavor\<TName\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9351
+Defined in: node\_modules/valibot/dist/index.d.mts:9420
 
 **`Beta`**
 
@@ -24,6 +24,6 @@ Flavor interface.
 
 > `optional` **\[FlavorSymbol\]?**: `{ [TValue in FlavorName]: TValue }`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9352
+Defined in: node\_modules/valibot/dist/index.d.mts:9421
 
 **`Beta`**

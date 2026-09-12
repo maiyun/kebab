@@ -10,7 +10,7 @@
 
 > **maxEntries**\<`TInput$1`, `TRequirement`\>(`requirement`): [`MaxEntriesAction`](../interfaces/MaxEntriesAction.md)\<`TInput$1`, `TRequirement`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11534
+Defined in: node\_modules/valibot/dist/index.d.mts:11738
 
 **`Beta`**
 
@@ -44,7 +44,7 @@ A max entries action.
 
 > **maxEntries**\<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): [`MaxEntriesAction`](../interfaces/MaxEntriesAction.md)\<`TInput$1`, `TRequirement`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11545
+Defined in: node\_modules/valibot/dist/index.d.mts:11749
 
 **`Beta`**
 

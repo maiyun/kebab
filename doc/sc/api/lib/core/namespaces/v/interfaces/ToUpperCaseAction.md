@@ -6,7 +6,7 @@
 
 # Interface: ToUpperCaseAction
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15078
+Defined in: node\_modules/valibot/dist/index.d.mts:15420
 
 To upper case action interface.
 
@@ -112,7 +112,7 @@ The object kind.
 
 > `readonly` **reference**: () => `ToUpperCaseAction`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15086
+Defined in: node\_modules/valibot/dist/index.d.mts:15428
 
 The action reference.
 
@@ -134,7 +134,7 @@ A to upper case action.
 
 > `readonly` **type**: `"to_upper_case"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15082
+Defined in: node\_modules/valibot/dist/index.d.mts:15424
 
 The action type.
 

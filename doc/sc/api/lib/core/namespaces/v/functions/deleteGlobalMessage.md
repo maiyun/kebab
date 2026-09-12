@@ -8,7 +8,7 @@
 
 > **deleteGlobalMessage**(`lang?`): `void`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15823
+Defined in: node\_modules/valibot/dist/index.d.mts:16174
 
 Deletes a global error message.
 

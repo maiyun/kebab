@@ -6,7 +6,7 @@
 
 # Interface: MaxValueIssue\<TInput$1, TRequirement\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11758
+Defined in: node\_modules/valibot/dist/index.d.mts:11962
 
 Max value issue interface.
 
@@ -58,7 +58,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `` `<=${string}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11770
+Defined in: node\_modules/valibot/dist/index.d.mts:11974
 
 The expected property.
 
@@ -100,7 +100,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11762
+Defined in: node\_modules/valibot/dist/index.d.mts:11966
 
 The issue kind.
 
@@ -170,7 +170,7 @@ The received property.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11774
+Defined in: node\_modules/valibot/dist/index.d.mts:11978
 
 The maximum value.
 
@@ -184,7 +184,7 @@ The maximum value.
 
 > `readonly` **type**: `"max_value"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11766
+Defined in: node\_modules/valibot/dist/index.d.mts:11970
 
 The issue type.
 

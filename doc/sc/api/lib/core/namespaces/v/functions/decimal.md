@@ -10,7 +10,7 @@
 
 > **decimal**\<`TInput$1`\>(): [`DecimalAction`](../interfaces/DecimalAction.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8507
+Defined in: node\_modules/valibot/dist/index.d.mts:8576
 
 Creates a [decimal](https://en.wikipedia.org/wiki/Decimal) validation action.
 
@@ -34,7 +34,7 @@ An decimal action.
 
 > **decimal**\<`TInput$1`, `TMessage`\>(`message`): [`DecimalAction`](../interfaces/DecimalAction.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8519
+Defined in: node\_modules/valibot/dist/index.d.mts:8588
 
 Creates a [decimal](https://en.wikipedia.org/wiki/Decimal) validation action.
 

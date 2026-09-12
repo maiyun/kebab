@@ -8,7 +8,7 @@
 
 > **entriesFromList**\<`TList`, `TSchema`\>(`list`, `schema`): `Record`\<`TList`\[`number`\], `TSchema`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:16085
+Defined in: node\_modules/valibot/dist/index.d.mts:16480
 
 Creates an object entries definition from a list of keys and a schema.
 

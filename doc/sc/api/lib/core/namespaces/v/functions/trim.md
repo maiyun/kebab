@@ -8,7 +8,7 @@
 
 > **trim**(): [`TrimAction`](../interfaces/TrimAction.md)
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15168
+Defined in: node\_modules/valibot/dist/index.d.mts:15510
 
 Creates a trim transformation action.
 

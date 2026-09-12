@@ -6,7 +6,7 @@
 
 # Interface: UlidAction\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15241
+Defined in: node\_modules/valibot/dist/index.d.mts:15583
 
 ULID action interface.
 
@@ -108,7 +108,7 @@ Whether it's async.
 
 > `readonly` **expects**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15253
+Defined in: node\_modules/valibot/dist/index.d.mts:15595
 
 The expected property.
 
@@ -136,7 +136,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15261
+Defined in: node\_modules/valibot/dist/index.d.mts:15603
 
 The error message.
 
@@ -146,7 +146,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `UlidAction`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `UlidAction`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15249
+Defined in: node\_modules/valibot/dist/index.d.mts:15591
 
 The action reference.
 
@@ -208,7 +208,7 @@ An ULID action.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15257
+Defined in: node\_modules/valibot/dist/index.d.mts:15599
 
 The ULID regex.
 
@@ -218,7 +218,7 @@ The ULID regex.
 
 > `readonly` **type**: `"ulid"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15245
+Defined in: node\_modules/valibot/dist/index.d.mts:15587
 
 The action type.
 

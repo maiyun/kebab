@@ -6,7 +6,7 @@
 
 # Interface: SlugAction\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14338
+Defined in: node\_modules/valibot/dist/index.d.mts:14680
 
 Slug action type.
 
@@ -108,7 +108,7 @@ Whether it's async.
 
 > `readonly` **expects**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14350
+Defined in: node\_modules/valibot/dist/index.d.mts:14692
 
 The expected property.
 
@@ -136,7 +136,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14358
+Defined in: node\_modules/valibot/dist/index.d.mts:14700
 
 The error message.
 
@@ -146,7 +146,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `SlugAction`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `SlugAction`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14346
+Defined in: node\_modules/valibot/dist/index.d.mts:14688
 
 The action reference.
 
@@ -208,7 +208,7 @@ A slug action.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14354
+Defined in: node\_modules/valibot/dist/index.d.mts:14696
 
 The slug regex.
 
@@ -218,7 +218,7 @@ The slug regex.
 
 > `readonly` **type**: `"slug"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14342
+Defined in: node\_modules/valibot/dist/index.d.mts:14684
 
 The action type.
 

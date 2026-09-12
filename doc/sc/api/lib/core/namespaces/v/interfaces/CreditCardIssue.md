@@ -6,7 +6,7 @@
 
 # Interface: CreditCardIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8319
+Defined in: node\_modules/valibot/dist/index.d.mts:8388
 
 Credit card issue interface.
 
@@ -54,7 +54,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8331
+Defined in: node\_modules/valibot/dist/index.d.mts:8400
 
 The expected property.
 
@@ -96,7 +96,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8323
+Defined in: node\_modules/valibot/dist/index.d.mts:8392
 
 The issue kind.
 
@@ -152,7 +152,7 @@ The issue path.
 
 > `readonly` **received**: `` `"${string}"` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8335
+Defined in: node\_modules/valibot/dist/index.d.mts:8404
 
 The received property.
 
@@ -166,7 +166,7 @@ The received property.
 
 > `readonly` **requirement**: (`input`) => `boolean`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8339
+Defined in: node\_modules/valibot/dist/index.d.mts:8408
 
 The validation function.
 
@@ -190,7 +190,7 @@ The validation function.
 
 > `readonly` **type**: `"credit_card"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8327
+Defined in: node\_modules/valibot/dist/index.d.mts:8396
 
 The issue type.
 

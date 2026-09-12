@@ -6,7 +6,7 @@
 
 # Interface: HexadecimalIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9712
+Defined in: node\_modules/valibot/dist/index.d.mts:9781
 
 Hexadecimal issue interface.
 
@@ -54,7 +54,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9724
+Defined in: node\_modules/valibot/dist/index.d.mts:9793
 
 The expected property.
 
@@ -96,7 +96,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9716
+Defined in: node\_modules/valibot/dist/index.d.mts:9785
 
 The issue kind.
 
@@ -152,7 +152,7 @@ The issue path.
 
 > `readonly` **received**: `` `"${string}"` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9728
+Defined in: node\_modules/valibot/dist/index.d.mts:9797
 
 The received property.
 
@@ -166,7 +166,7 @@ The received property.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9732
+Defined in: node\_modules/valibot/dist/index.d.mts:9801
 
 The hexadecimal regex.
 
@@ -180,7 +180,7 @@ The hexadecimal regex.
 
 > `readonly` **type**: `"hexadecimal"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9720
+Defined in: node\_modules/valibot/dist/index.d.mts:9789
 
 The issue type.
 

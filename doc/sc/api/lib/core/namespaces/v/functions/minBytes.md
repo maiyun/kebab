@@ -10,7 +10,7 @@
 
 > **minBytes**\<`TInput$1`, `TRequirement`\>(`requirement`): [`MinBytesAction`](../interfaces/MinBytesAction.md)\<`TInput$1`, `TRequirement`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12052
+Defined in: node\_modules/valibot/dist/index.d.mts:12256
 
 Creates a min [bytes](https://en.wikipedia.org/wiki/Byte) validation action.
 
@@ -42,7 +42,7 @@ A min bytes action.
 
 > **minBytes**\<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): [`MinBytesAction`](../interfaces/MinBytesAction.md)\<`TInput$1`, `TRequirement`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12061
+Defined in: node\_modules/valibot/dist/index.d.mts:12265
 
 Creates a min [bytes](https://en.wikipedia.org/wiki/Byte) validation action.
 

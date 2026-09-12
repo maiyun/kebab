@@ -8,7 +8,7 @@
 
 > **\_getByteCount**(`input`): `number`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15966
+Defined in: node\_modules/valibot/dist/index.d.mts:16317
 
 **`Internal`**
 

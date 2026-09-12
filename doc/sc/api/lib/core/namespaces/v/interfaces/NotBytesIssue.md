@@ -6,7 +6,7 @@
 
 # Interface: NotBytesIssue\<TInput$1, TRequirement\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12754
+Defined in: node\_modules/valibot/dist/index.d.mts:13027
 
 Not bytes issue interface.
 
@@ -58,7 +58,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `` `!${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12766
+Defined in: node\_modules/valibot/dist/index.d.mts:13039
 
 The expected property.
 
@@ -100,7 +100,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12758
+Defined in: node\_modules/valibot/dist/index.d.mts:13031
 
 The issue kind.
 
@@ -156,7 +156,7 @@ The issue path.
 
 > `readonly` **received**: `` `${number}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12770
+Defined in: node\_modules/valibot/dist/index.d.mts:13043
 
 The received property.
 
@@ -170,7 +170,7 @@ The received property.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12774
+Defined in: node\_modules/valibot/dist/index.d.mts:13047
 
 The not required bytes.
 
@@ -184,7 +184,7 @@ The not required bytes.
 
 > `readonly` **type**: `"not_bytes"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12762
+Defined in: node\_modules/valibot/dist/index.d.mts:13035
 
 The issue type.
 

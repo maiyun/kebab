@@ -10,7 +10,7 @@
 
 > **maxBytes**\<`TInput$1`, `TRequirement`\>(`requirement`): [`MaxBytesAction`](../interfaces/MaxBytesAction.md)\<`TInput$1`, `TRequirement`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11459
+Defined in: node\_modules/valibot/dist/index.d.mts:11594
 
 Creates a max [bytes](https://en.wikipedia.org/wiki/Byte) validation action.
 
@@ -42,7 +42,7 @@ A max bytes action.
 
 > **maxBytes**\<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): [`MaxBytesAction`](../interfaces/MaxBytesAction.md)\<`TInput$1`, `TRequirement`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11468
+Defined in: node\_modules/valibot/dist/index.d.mts:11603
 
 Creates a max [bytes](https://en.wikipedia.org/wiki/Byte) validation action.
 

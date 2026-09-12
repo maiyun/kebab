@@ -10,7 +10,7 @@
 
 > **hexadecimal**\<`TInput$1`\>(): [`HexadecimalAction`](../interfaces/HexadecimalAction.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9764
+Defined in: node\_modules/valibot/dist/index.d.mts:9833
 
 Creates a [hexadecimal](https://en.wikipedia.org/wiki/Hexadecimal) validation action.
 
@@ -30,7 +30,7 @@ A hexadecimal action.
 
 > **hexadecimal**\<`TInput$1`, `TMessage`\>(`message`): [`HexadecimalAction`](../interfaces/HexadecimalAction.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9772
+Defined in: node\_modules/valibot/dist/index.d.mts:9841
 
 Creates a [hexadecimal](https://en.wikipedia.org/wiki/Hexadecimal) validation action.
 

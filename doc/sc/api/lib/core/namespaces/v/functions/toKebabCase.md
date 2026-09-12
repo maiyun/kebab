@@ -8,7 +8,7 @@
 
 > **toKebabCase**(): [`ToKebabCaseAction`](../interfaces/ToKebabCaseAction.md)
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14825
+Defined in: node\_modules/valibot/dist/index.d.mts:15167
 
 **`Beta`**
 

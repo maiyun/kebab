@@ -6,7 +6,7 @@
 
 # Interface: MapItemsAction\<TInput$1, TOutput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11378
+Defined in: node\_modules/valibot/dist/index.d.mts:11513
 
 Map items action interface.
 
@@ -122,7 +122,7 @@ The object kind.
 
 > `readonly` **operation**: `ArrayAction$2`\<`TInput$1`, `TOutput$1`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11390
+Defined in: node\_modules/valibot/dist/index.d.mts:11525
 
 The map items operation.
 
@@ -132,7 +132,7 @@ The map items operation.
 
 > `readonly` **reference**: \<`TInput$1`, `TOutput$1`\>(`operation`) => `MapItemsAction`\<`TInput$1`, `TOutput$1`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11386
+Defined in: node\_modules/valibot/dist/index.d.mts:11521
 
 The action reference.
 
@@ -172,7 +172,7 @@ A map items action.
 
 > `readonly` **type**: `"map_items"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11382
+Defined in: node\_modules/valibot/dist/index.d.mts:11517
 
 The action type.
 

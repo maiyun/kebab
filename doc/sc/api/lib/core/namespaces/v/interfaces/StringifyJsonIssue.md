@@ -6,7 +6,7 @@
 
 # Interface: StringifyJsonIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14561
+Defined in: node\_modules/valibot/dist/index.d.mts:14903
 
 **`Beta`**
 
@@ -60,7 +60,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14573
+Defined in: node\_modules/valibot/dist/index.d.mts:14915
 
 **`Beta`**
 
@@ -108,7 +108,7 @@ The sub issues.
 
 > `readonly` **kind**: `"transformation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14565
+Defined in: node\_modules/valibot/dist/index.d.mts:14907
 
 **`Beta`**
 
@@ -172,7 +172,7 @@ The issue path.
 
 > `readonly` **received**: `` `"${string}"` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14577
+Defined in: node\_modules/valibot/dist/index.d.mts:14919
 
 **`Beta`**
 
@@ -204,7 +204,7 @@ The input requirement.
 
 > `readonly` **type**: `"stringify_json"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14569
+Defined in: node\_modules/valibot/dist/index.d.mts:14911
 
 **`Beta`**
 

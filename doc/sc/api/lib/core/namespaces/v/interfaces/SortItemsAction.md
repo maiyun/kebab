@@ -6,7 +6,7 @@
 
 # Interface: SortItemsAction\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14448
+Defined in: node\_modules/valibot/dist/index.d.mts:14790
 
 Sort items action interface.
 
@@ -118,7 +118,7 @@ The object kind.
 
 > `readonly` **operation**: `ArrayAction`\<`TInput$1`\> \| `undefined`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14460
+Defined in: node\_modules/valibot/dist/index.d.mts:14802
 
 The sort items operation.
 
@@ -128,7 +128,7 @@ The sort items operation.
 
 > `readonly` **reference**: \<`TInput$1`\>(`operation?`) => `SortItemsAction`\<`TInput$1`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14456
+Defined in: node\_modules/valibot/dist/index.d.mts:14798
 
 The action reference.
 
@@ -164,7 +164,7 @@ A sort items action.
 
 > `readonly` **type**: `"sort_items"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14452
+Defined in: node\_modules/valibot/dist/index.d.mts:14794
 
 The action type.
 

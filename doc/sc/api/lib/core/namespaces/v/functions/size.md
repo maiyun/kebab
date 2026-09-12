@@ -10,7 +10,7 @@
 
 > **size**\<`TInput$1`, `TRequirement`\>(`requirement`): [`SizeAction`](../interfaces/SizeAction.md)\<`TInput$1`, `TRequirement`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14298
+Defined in: node\_modules/valibot/dist/index.d.mts:14640
 
 Creates a size validation action.
 
@@ -42,7 +42,7 @@ A size action.
 
 > **size**\<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): [`SizeAction`](../interfaces/SizeAction.md)\<`TInput$1`, `TRequirement`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14307
+Defined in: node\_modules/valibot/dist/index.d.mts:14649
 
 Creates a size validation action.
 

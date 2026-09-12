@@ -6,7 +6,7 @@
 
 # Interface: CreditCardAction\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8344
+Defined in: node\_modules/valibot/dist/index.d.mts:8413
 
 Credit card action interface.
 
@@ -108,7 +108,7 @@ Whether it's async.
 
 > `readonly` **expects**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8356
+Defined in: node\_modules/valibot/dist/index.d.mts:8425
 
 The expected property.
 
@@ -136,7 +136,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8364
+Defined in: node\_modules/valibot/dist/index.d.mts:8433
 
 The error message.
 
@@ -146,7 +146,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `CreditCardAction`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `CreditCardAction`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8352
+Defined in: node\_modules/valibot/dist/index.d.mts:8421
 
 The action reference.
 
@@ -208,7 +208,7 @@ A credit card action.
 
 > `readonly` **requirement**: (`input`) => `boolean`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8360
+Defined in: node\_modules/valibot/dist/index.d.mts:8429
 
 The validation function.
 
@@ -228,7 +228,7 @@ The validation function.
 
 > `readonly` **type**: `"credit_card"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8348
+Defined in: node\_modules/valibot/dist/index.d.mts:8417
 
 The action type.
 

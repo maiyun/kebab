@@ -8,6 +8,6 @@
 
 > `const` **DIGITS\_REGEX**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15641
+Defined in: node\_modules/valibot/dist/index.d.mts:15983
 
 [Digits](https://en.wikipedia.org/wiki/Numerical_digit) regex.

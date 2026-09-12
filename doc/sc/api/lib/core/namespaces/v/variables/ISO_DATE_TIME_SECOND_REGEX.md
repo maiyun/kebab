@@ -8,6 +8,6 @@
 
 > `const` **ISO\_DATE\_TIME\_SECOND\_REGEX**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15700
+Defined in: node\_modules/valibot/dist/index.d.mts:16044
 
 [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) date-time with seconds regex.

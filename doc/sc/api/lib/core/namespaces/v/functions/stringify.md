@@ -8,7 +8,7 @@
 
 > **\_stringify**(`input`): `string`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:16074
+Defined in: node\_modules/valibot/dist/index.d.mts:16469
 
 **`Internal`**
 

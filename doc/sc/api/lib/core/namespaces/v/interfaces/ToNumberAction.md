@@ -6,7 +6,7 @@
 
 # Interface: ToNumberAction\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14923
+Defined in: node\_modules/valibot/dist/index.d.mts:15265
 
 To number action interface.
 
@@ -122,7 +122,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14935
+Defined in: node\_modules/valibot/dist/index.d.mts:15277
 
 The error message.
 
@@ -132,7 +132,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `ToNumberAction`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `ToNumberAction`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14931
+Defined in: node\_modules/valibot/dist/index.d.mts:15273
 
 The action reference.
 
@@ -198,7 +198,7 @@ A to number action.
 
 > `readonly` **type**: `"to_number"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14927
+Defined in: node\_modules/valibot/dist/index.d.mts:15269
 
 The action type.
 

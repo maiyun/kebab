@@ -8,7 +8,7 @@
 
 > **\_isLuhnAlgo**(`input`): `boolean`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:16035
+Defined in: node\_modules/valibot/dist/index.d.mts:16388
 
 **`Internal`**
 

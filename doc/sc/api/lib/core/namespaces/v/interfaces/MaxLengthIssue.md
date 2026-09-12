@@ -6,7 +6,7 @@
 
 # Interface: MaxLengthIssue\<TInput$1, TRequirement\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11620
+Defined in: node\_modules/valibot/dist/index.d.mts:11824
 
 Max length issue interface.
 
@@ -58,7 +58,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `` `<=${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11632
+Defined in: node\_modules/valibot/dist/index.d.mts:11836
 
 The expected property.
 
@@ -100,7 +100,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11624
+Defined in: node\_modules/valibot/dist/index.d.mts:11828
 
 The issue kind.
 
@@ -156,7 +156,7 @@ The issue path.
 
 > `readonly` **received**: `` `${number}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11636
+Defined in: node\_modules/valibot/dist/index.d.mts:11840
 
 The received property.
 
@@ -170,7 +170,7 @@ The received property.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11640
+Defined in: node\_modules/valibot/dist/index.d.mts:11844
 
 The maximum length.
 
@@ -184,7 +184,7 @@ The maximum length.
 
 > `readonly` **type**: `"max_length"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11628
+Defined in: node\_modules/valibot/dist/index.d.mts:11832
 
 The issue type.
 

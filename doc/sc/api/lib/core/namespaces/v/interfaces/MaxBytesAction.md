@@ -6,7 +6,7 @@
 
 # Interface: MaxBytesAction\<TInput$1, TRequirement, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11430
+Defined in: node\_modules/valibot/dist/index.d.mts:11565
 
 Max bytes action interface.
 
@@ -112,7 +112,7 @@ Whether it's async.
 
 > `readonly` **expects**: `` `<=${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11442
+Defined in: node\_modules/valibot/dist/index.d.mts:11577
 
 The expected property.
 
@@ -140,7 +140,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11450
+Defined in: node\_modules/valibot/dist/index.d.mts:11585
 
 The error message.
 
@@ -150,7 +150,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`, `TRequirement`\>(`requirement`): `MaxBytesAction`\<`TInput$1`, `TRequirement`, `undefined`\>; \<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): `MaxBytesAction`\<`TInput$1`, `TRequirement`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11438
+Defined in: node\_modules/valibot/dist/index.d.mts:11573
 
 The action reference.
 
@@ -234,7 +234,7 @@ A max bytes action.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11446
+Defined in: node\_modules/valibot/dist/index.d.mts:11581
 
 The maximum bytes.
 
@@ -244,7 +244,7 @@ The maximum bytes.
 
 > `readonly` **type**: `"max_bytes"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11434
+Defined in: node\_modules/valibot/dist/index.d.mts:11569
 
 The action type.
 

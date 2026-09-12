@@ -6,7 +6,7 @@
 
 # Interface: MaxGraphemesAction\<TInput$1, TRequirement, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11576
+Defined in: node\_modules/valibot/dist/index.d.mts:11780
 
 Max graphemes action interface.
 
@@ -112,7 +112,7 @@ Whether it's async.
 
 > `readonly` **expects**: `` `<=${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11588
+Defined in: node\_modules/valibot/dist/index.d.mts:11792
 
 The expected property.
 
@@ -140,7 +140,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11596
+Defined in: node\_modules/valibot/dist/index.d.mts:11800
 
 The error message.
 
@@ -150,7 +150,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`, `TRequirement`\>(`requirement`): `MaxGraphemesAction`\<`TInput$1`, `TRequirement`, `undefined`\>; \<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): `MaxGraphemesAction`\<`TInput$1`, `TRequirement`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11584
+Defined in: node\_modules/valibot/dist/index.d.mts:11788
 
 The action reference.
 
@@ -234,7 +234,7 @@ A max graphemes action.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11592
+Defined in: node\_modules/valibot/dist/index.d.mts:11796
 
 The maximum graphemes.
 
@@ -244,7 +244,7 @@ The maximum graphemes.
 
 > `readonly` **type**: `"max_graphemes"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11580
+Defined in: node\_modules/valibot/dist/index.d.mts:11784
 
 The action type.
 

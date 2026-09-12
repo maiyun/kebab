@@ -6,7 +6,7 @@
 
 # Interface: ToKebabCaseAction
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14801
+Defined in: node\_modules/valibot/dist/index.d.mts:15143
 
 **`Beta`**
 
@@ -118,7 +118,7 @@ The object kind.
 
 > `readonly` **reference**: () => `ToKebabCaseAction`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14809
+Defined in: node\_modules/valibot/dist/index.d.mts:15151
 
 **`Beta`**
 
@@ -151,7 +151,7 @@ A to kebab case action.
 
 > `readonly` **type**: `"to_kebab_case"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14805
+Defined in: node\_modules/valibot/dist/index.d.mts:15147
 
 **`Beta`**
 

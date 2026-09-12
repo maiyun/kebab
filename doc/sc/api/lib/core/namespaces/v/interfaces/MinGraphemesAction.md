@@ -6,7 +6,7 @@
 
 # Interface: MinGraphemesAction\<TInput$1, TRequirement, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12169
+Defined in: node\_modules/valibot/dist/index.d.mts:12442
 
 Min graphemes action interface.
 
@@ -112,7 +112,7 @@ Whether it's async.
 
 > `readonly` **expects**: `` `>=${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12181
+Defined in: node\_modules/valibot/dist/index.d.mts:12454
 
 The expected property.
 
@@ -140,7 +140,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12189
+Defined in: node\_modules/valibot/dist/index.d.mts:12462
 
 The error message.
 
@@ -150,7 +150,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`, `TRequirement`\>(`requirement`): `MinGraphemesAction`\<`TInput$1`, `TRequirement`, `undefined`\>; \<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): `MinGraphemesAction`\<`TInput$1`, `TRequirement`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12177
+Defined in: node\_modules/valibot/dist/index.d.mts:12450
 
 The action reference.
 
@@ -234,7 +234,7 @@ A min graphemes action.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12185
+Defined in: node\_modules/valibot/dist/index.d.mts:12458
 
 The minimum graphemes.
 
@@ -244,7 +244,7 @@ The minimum graphemes.
 
 > `readonly` **type**: `"min_graphemes"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12173
+Defined in: node\_modules/valibot/dist/index.d.mts:12446
 
 The action type.
 

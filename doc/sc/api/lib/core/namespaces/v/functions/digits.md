@@ -10,7 +10,7 @@
 
 > **digits**\<`TInput$1`\>(): [`DigitsAction`](../interfaces/DigitsAction.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8608
+Defined in: node\_modules/valibot/dist/index.d.mts:8677
 
 Creates a [digits](https://en.wikipedia.org/wiki/Numerical_digit) validation action.
 
@@ -34,7 +34,7 @@ An digits action.
 
 > **digits**\<`TInput$1`, `TMessage`\>(`message`): [`DigitsAction`](../interfaces/DigitsAction.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8620
+Defined in: node\_modules/valibot/dist/index.d.mts:8689
 
 Creates a [digits](https://en.wikipedia.org/wiki/Numerical_digit) validation action.
 

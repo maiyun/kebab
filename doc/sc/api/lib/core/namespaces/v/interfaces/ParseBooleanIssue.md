@@ -6,7 +6,7 @@
 
 # Interface: ParseBooleanIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13395
+Defined in: node\_modules/valibot/dist/index.d.mts:13737
 
 **`Beta`**
 
@@ -60,7 +60,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `string`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13407
+Defined in: node\_modules/valibot/dist/index.d.mts:13749
 
 **`Beta`**
 
@@ -108,7 +108,7 @@ The sub issues.
 
 > `readonly` **kind**: `"transformation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13399
+Defined in: node\_modules/valibot/dist/index.d.mts:13741
 
 **`Beta`**
 
@@ -204,7 +204,7 @@ The input requirement.
 
 > `readonly` **type**: `"parse_boolean"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13403
+Defined in: node\_modules/valibot/dist/index.d.mts:13745
 
 **`Beta`**
 

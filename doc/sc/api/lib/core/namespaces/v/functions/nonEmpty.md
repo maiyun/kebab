@@ -10,7 +10,7 @@
 
 > **nonEmpty**\<`TInput$1`\>(): [`NonEmptyAction`](../interfaces/NonEmptyAction.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12703
+Defined in: node\_modules/valibot/dist/index.d.mts:12976
 
 Creates a non-empty validation action.
 
@@ -30,7 +30,7 @@ A non-empty action.
 
 > **nonEmpty**\<`TInput$1`, `TMessage`\>(`message`): [`NonEmptyAction`](../interfaces/NonEmptyAction.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12711
+Defined in: node\_modules/valibot/dist/index.d.mts:12984
 
 Creates a non-empty validation action.
 

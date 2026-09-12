@@ -6,7 +6,7 @@
 
 # Interface: RawTransformContext\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13853
+Defined in: node\_modules/valibot/dist/index.d.mts:14195
 
 Raw transform context interface.
 
@@ -22,7 +22,7 @@ Raw transform context interface.
 
 > `readonly` **addIssue**: [`RawTransformAddIssue`](../type-aliases/RawTransformAddIssue.md)\<`TInput$1`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13856
+Defined in: node\_modules/valibot/dist/index.d.mts:14198
 
 ***
 
@@ -30,7 +30,7 @@ Defined in: node\_modules/valibot/dist/index.d.mts:13856
 
 > `readonly` **config**: [`Config`](Config.md)\<[`RawTransformIssue`](RawTransformIssue.md)\<`TInput$1`\>\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13855
+Defined in: node\_modules/valibot/dist/index.d.mts:14197
 
 ***
 
@@ -38,7 +38,7 @@ Defined in: node\_modules/valibot/dist/index.d.mts:13855
 
 > `readonly` **dataset**: [`SuccessDataset`](SuccessDataset.md)\<`TInput$1`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13854
+Defined in: node\_modules/valibot/dist/index.d.mts:14196
 
 ***
 
@@ -46,4 +46,4 @@ Defined in: node\_modules/valibot/dist/index.d.mts:13854
 
 > `readonly` **NEVER**: `never`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13857
+Defined in: node\_modules/valibot/dist/index.d.mts:14199

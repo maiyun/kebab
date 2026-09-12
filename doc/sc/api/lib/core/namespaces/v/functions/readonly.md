@@ -8,7 +8,7 @@
 
 > **readonly**\<`TInput$1`\>(): [`ReadonlyAction`](../interfaces/ReadonlyAction.md)\<`TInput$1`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13929
+Defined in: node\_modules/valibot/dist/index.d.mts:14271
 
 Creates a readonly transformation action.
 

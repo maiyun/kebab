@@ -6,7 +6,7 @@
 
 # Interface: Mac64Action\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11333
+Defined in: node\_modules/valibot/dist/index.d.mts:11468
 
 64-bit MAC action interface.
 
@@ -108,7 +108,7 @@ Whether it's async.
 
 > `readonly` **expects**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11345
+Defined in: node\_modules/valibot/dist/index.d.mts:11480
 
 The expected property.
 
@@ -136,7 +136,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11353
+Defined in: node\_modules/valibot/dist/index.d.mts:11488
 
 The error message.
 
@@ -146,7 +146,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `Mac64Action`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `Mac64Action`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11341
+Defined in: node\_modules/valibot/dist/index.d.mts:11476
 
 The action reference.
 
@@ -208,7 +208,7 @@ A 64-bit MAC action.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11349
+Defined in: node\_modules/valibot/dist/index.d.mts:11484
 
 The 64-bit MAC regex.
 
@@ -218,7 +218,7 @@ The 64-bit MAC regex.
 
 > `readonly` **type**: `"mac64"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11337
+Defined in: node\_modules/valibot/dist/index.d.mts:11472
 
 The action type.
 

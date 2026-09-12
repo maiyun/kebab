@@ -6,7 +6,7 @@
 
 # Interface: PartialCheckIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13562
+Defined in: node\_modules/valibot/dist/index.d.mts:13904
 
 Partial check issue interface.
 
@@ -54,7 +54,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13574
+Defined in: node\_modules/valibot/dist/index.d.mts:13916
 
 The expected input.
 
@@ -96,7 +96,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13566
+Defined in: node\_modules/valibot/dist/index.d.mts:13908
 
 The issue kind.
 
@@ -166,7 +166,7 @@ The received property.
 
 > `readonly` **requirement**: (`input`) => `MaybePromise`\<`boolean`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13578
+Defined in: node\_modules/valibot/dist/index.d.mts:13920
 
 The validation function.
 
@@ -190,7 +190,7 @@ The validation function.
 
 > `readonly` **type**: `"partial_check"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13570
+Defined in: node\_modules/valibot/dist/index.d.mts:13912
 
 The issue type.
 

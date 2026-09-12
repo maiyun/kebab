@@ -10,7 +10,7 @@
 
 > **rfcEmail**\<`TInput$1`\>(): [`RfcEmailAction`](../interfaces/RfcEmailAction.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14157
+Defined in: node\_modules/valibot/dist/index.d.mts:14499
 
 Creates a [RFC email](https://datatracker.ietf.org/doc/html/rfc5322#section-3.4.1)
 validation action.
@@ -37,7 +37,7 @@ A RFC email action.
 
 > **rfcEmail**\<`TInput$1`, `TMessage`\>(`message`): [`RfcEmailAction`](../interfaces/RfcEmailAction.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14172
+Defined in: node\_modules/valibot/dist/index.d.mts:14514
 
 Creates a [RFC email](https://datatracker.ietf.org/doc/html/rfc5322#section-3.4.1)
 validation action.

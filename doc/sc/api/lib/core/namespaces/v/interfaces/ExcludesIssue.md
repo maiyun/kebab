@@ -6,7 +6,7 @@
 
 # Interface: ExcludesIssue\<TInput$1, TRequirement\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9148
+Defined in: node\_modules/valibot/dist/index.d.mts:9217
 
 Excludes issue interface.
 
@@ -58,7 +58,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `string`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9160
+Defined in: node\_modules/valibot/dist/index.d.mts:9229
 
 The expected property.
 
@@ -100,7 +100,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9152
+Defined in: node\_modules/valibot/dist/index.d.mts:9221
 
 The issue kind.
 
@@ -170,7 +170,7 @@ The received property.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9164
+Defined in: node\_modules/valibot/dist/index.d.mts:9233
 
 The content to be excluded.
 
@@ -184,7 +184,7 @@ The content to be excluded.
 
 > `readonly` **type**: `"excludes"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9156
+Defined in: node\_modules/valibot/dist/index.d.mts:9225
 
 The issue type.
 

@@ -10,7 +10,7 @@
 
 > **stringifyJson**\<`TInput$1`\>(): [`StringifyJsonAction`](../interfaces/StringifyJsonAction.md)\<`TInput$1`, `undefined`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14609
+Defined in: node\_modules/valibot/dist/index.d.mts:14951
 
 **`Beta`**
 
@@ -32,7 +32,7 @@ A stringify JSON action.
 
 > **stringifyJson**\<`TInput$1`, `TConfig`\>(`config`): [`StringifyJsonAction`](../interfaces/StringifyJsonAction.md)\<`TInput$1`, `TConfig`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14619
+Defined in: node\_modules/valibot/dist/index.d.mts:14961
 
 **`Beta`**
 
@@ -66,7 +66,7 @@ A stringify JSON action.
 
 > **stringifyJson**\<`TInput$1`, `TConfig`, `TMessage`\>(`config`, `message`): [`StringifyJsonAction`](../interfaces/StringifyJsonAction.md)\<`TInput$1`, `TConfig`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14630
+Defined in: node\_modules/valibot/dist/index.d.mts:14972
 
 **`Beta`**
 

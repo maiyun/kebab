@@ -8,7 +8,7 @@
 
 > **deleteSchemaMessage**(`lang?`): `void`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15846
+Defined in: node\_modules/valibot/dist/index.d.mts:16197
 
 Deletes a schema error message.
 

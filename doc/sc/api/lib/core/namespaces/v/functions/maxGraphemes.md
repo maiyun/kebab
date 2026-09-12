@@ -10,7 +10,7 @@
 
 > **maxGraphemes**\<`TInput$1`, `TRequirement`\>(`requirement`): [`MaxGraphemesAction`](../interfaces/MaxGraphemesAction.md)\<`TInput$1`, `TRequirement`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11605
+Defined in: node\_modules/valibot/dist/index.d.mts:11809
 
 Creates a max graphemes validation action.
 
@@ -42,7 +42,7 @@ A max graphemes action.
 
 > **maxGraphemes**\<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): [`MaxGraphemesAction`](../interfaces/MaxGraphemesAction.md)\<`TInput$1`, `TRequirement`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11614
+Defined in: node\_modules/valibot/dist/index.d.mts:11818
 
 Creates a max graphemes validation action.
 

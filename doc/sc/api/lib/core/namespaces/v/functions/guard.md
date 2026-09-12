@@ -10,7 +10,7 @@
 
 > **guard**\<`TInput$1`, `TGuard`\>(`requirement`): [`GuardAction`](../interfaces/GuardAction.md)\<`TInput$1`, `TGuard`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9582
+Defined in: node\_modules/valibot/dist/index.d.mts:9651
 
 **`Beta`**
 
@@ -44,7 +44,7 @@ A guard action.
 
 > **guard**\<`TGuard`\>(`requirement`): [`GuardAction`](../interfaces/GuardAction.md)\<`Parameters`\<`TGuard`\>\[`0`\], `TGuard`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9592
+Defined in: node\_modules/valibot/dist/index.d.mts:9661
 
 **`Beta`**
 
@@ -74,7 +74,7 @@ A guard action.
 
 > **guard**\<`TInput$1`, `TGuard`, `TMessage`\>(`requirement`, `message`): [`GuardAction`](../interfaces/GuardAction.md)\<`TInput$1`, `TGuard`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9603
+Defined in: node\_modules/valibot/dist/index.d.mts:9672
 
 **`Beta`**
 
@@ -118,7 +118,7 @@ A guard action.
 
 > **guard**\<`TGuard`, `TMessage`\>(`requirement`, `message`): [`GuardAction`](../interfaces/GuardAction.md)\<`Parameters`\<`TGuard`\>\[`0`\], `TGuard`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9614
+Defined in: node\_modules/valibot/dist/index.d.mts:9683
 
 **`Beta`**
 

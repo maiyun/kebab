@@ -6,7 +6,7 @@
 
 # Interface: EmptyIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8850
+Defined in: node\_modules/valibot/dist/index.d.mts:8919
 
 Empty issue interface.
 
@@ -54,7 +54,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `"0"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8862
+Defined in: node\_modules/valibot/dist/index.d.mts:8931
 
 The expected input.
 
@@ -96,7 +96,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8854
+Defined in: node\_modules/valibot/dist/index.d.mts:8923
 
 The issue kind.
 
@@ -152,7 +152,7 @@ The issue path.
 
 > `readonly` **received**: `` `${number}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8866
+Defined in: node\_modules/valibot/dist/index.d.mts:8935
 
 The received input.
 
@@ -180,7 +180,7 @@ The input requirement.
 
 > `readonly` **type**: `"empty"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8858
+Defined in: node\_modules/valibot/dist/index.d.mts:8927
 
 The issue type.
 

@@ -6,7 +6,7 @@
 
 # Interface: TrimStartAction
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15195
+Defined in: node\_modules/valibot/dist/index.d.mts:15537
 
 Trim start action interface.
 
@@ -112,7 +112,7 @@ The object kind.
 
 > `readonly` **reference**: () => `TrimStartAction`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15203
+Defined in: node\_modules/valibot/dist/index.d.mts:15545
 
 The action reference.
 
@@ -134,7 +134,7 @@ A trim start action.
 
 > `readonly` **type**: `"trim_start"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15199
+Defined in: node\_modules/valibot/dist/index.d.mts:15541
 
 The action type.
 

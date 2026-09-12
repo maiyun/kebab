@@ -6,7 +6,7 @@
 
 # Interface: MinEntriesAction\<TInput$1, TRequirement, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12096
+Defined in: node\_modules/valibot/dist/index.d.mts:12369
 
 **`Beta`**
 
@@ -116,7 +116,7 @@ Whether it's async.
 
 > `readonly` **expects**: `` `>=${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12108
+Defined in: node\_modules/valibot/dist/index.d.mts:12381
 
 **`Beta`**
 
@@ -148,7 +148,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12116
+Defined in: node\_modules/valibot/dist/index.d.mts:12389
 
 **`Beta`**
 
@@ -160,7 +160,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`, `TRequirement`\>(`requirement`): `MinEntriesAction`\<`TInput$1`, `TRequirement`, `undefined`\>; \<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): `MinEntriesAction`\<`TInput$1`, `TRequirement`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12104
+Defined in: node\_modules/valibot/dist/index.d.mts:12377
 
 **`Beta`**
 
@@ -250,7 +250,7 @@ A min entries action.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12112
+Defined in: node\_modules/valibot/dist/index.d.mts:12385
 
 **`Beta`**
 
@@ -262,7 +262,7 @@ The minimum entries.
 
 > `readonly` **type**: `"min_entries"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12100
+Defined in: node\_modules/valibot/dist/index.d.mts:12373
 
 **`Beta`**
 

@@ -6,7 +6,7 @@
 
 # Interface: FlavorAction\<TInput$1, TName\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9359
+Defined in: node\_modules/valibot/dist/index.d.mts:9428
 
 **`Beta`**
 
@@ -128,7 +128,7 @@ The object kind.
 
 > `readonly` **name**: `TName`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9371
+Defined in: node\_modules/valibot/dist/index.d.mts:9440
 
 **`Beta`**
 
@@ -140,7 +140,7 @@ The flavor name.
 
 > `readonly` **reference**: \<`TInput$1`, `TName`\>(`name`) => `FlavorAction`\<`TInput$1`, `TName`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9367
+Defined in: node\_modules/valibot/dist/index.d.mts:9436
 
 **`Beta`**
 
@@ -184,7 +184,7 @@ A flavor action.
 
 > `readonly` **type**: `"flavor"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9363
+Defined in: node\_modules/valibot/dist/index.d.mts:9432
 
 **`Beta`**
 

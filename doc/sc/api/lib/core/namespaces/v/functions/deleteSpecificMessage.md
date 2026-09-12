@@ -8,7 +8,7 @@
 
 > **deleteSpecificMessage**(`reference`, `lang?`): `void`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15876
+Defined in: node\_modules/valibot/dist/index.d.mts:16227
 
 Deletes a specific error message.
 

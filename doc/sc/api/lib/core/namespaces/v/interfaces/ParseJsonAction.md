@@ -6,7 +6,7 @@
 
 # Interface: ParseJsonAction\<TInput$1, TConfig, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13506
+Defined in: node\_modules/valibot/dist/index.d.mts:13848
 
 **`Beta`**
 
@@ -116,7 +116,7 @@ Whether it's async.
 
 > `readonly` **config**: `TConfig`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13518
+Defined in: node\_modules/valibot/dist/index.d.mts:13860
 
 **`Beta`**
 
@@ -144,7 +144,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13522
+Defined in: node\_modules/valibot/dist/index.d.mts:13864
 
 **`Beta`**
 
@@ -156,7 +156,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `ParseJsonAction`\<`TInput$1`, `undefined`, `undefined`\>; \<`TInput$1`, `TConfig`\>(`config`): `ParseJsonAction`\<`TInput$1`, `TConfig`, `undefined`\>; \<`TInput$1`, `TConfig`, `TMessage`\>(`config`, `message`): `ParseJsonAction`\<`TInput$1`, `TConfig`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13514
+Defined in: node\_modules/valibot/dist/index.d.mts:13856
 
 **`Beta`**
 
@@ -266,7 +266,7 @@ A parse JSON action.
 
 > `readonly` **type**: `"parse_json"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13510
+Defined in: node\_modules/valibot/dist/index.d.mts:13852
 
 **`Beta`**
 

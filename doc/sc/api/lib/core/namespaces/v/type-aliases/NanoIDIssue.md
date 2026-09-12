@@ -8,7 +8,7 @@
 
 > **NanoIDIssue**\<`TInput$1`\> = [`NanoIdIssue`](../interfaces/NanoIdIssue.md)\<`TInput$1`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12608
+Defined in: node\_modules/valibot/dist/index.d.mts:12881
 
 Nano ID issue type.
 

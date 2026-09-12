@@ -10,7 +10,7 @@
 
 > **notWords**\<`TInput$1`, `TLocales`, `TRequirement`\>(`locales`, `requirement`): [`NotWordsAction`](../interfaces/NotWordsAction.md)\<`TInput$1`, `TLocales`, `TRequirement`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13296
+Defined in: node\_modules/valibot/dist/index.d.mts:13638
 
 Creates a not words validation action.
 
@@ -52,7 +52,7 @@ A not words action.
 
 > **notWords**\<`TInput$1`, `TLocales`, `TRequirement`, `TMessage`\>(`locales`, `requirement`, `message`): [`NotWordsAction`](../interfaces/NotWordsAction.md)\<`TInput$1`, `TLocales`, `TRequirement`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13306
+Defined in: node\_modules/valibot/dist/index.d.mts:13648
 
 Creates a not words validation action.
 

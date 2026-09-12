@@ -8,7 +8,7 @@
 
 > **description**\<`TInput$1`, `TDescription`\>(`description_`): [`DescriptionAction`](../interfaces/DescriptionAction.md)\<`TInput$1`, `TDescription`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8546
+Defined in: node\_modules/valibot/dist/index.d.mts:8615
 
 Creates a description metadata action.
 

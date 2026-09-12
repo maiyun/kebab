@@ -10,7 +10,7 @@
 
 > **isoWeek**\<`TInput$1`\>(): [`IsoWeekAction`](../interfaces/IsoWeekAction.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10939
+Defined in: node\_modules/valibot/dist/index.d.mts:11008
 
 Creates an [ISO week](https://en.wikipedia.org/wiki/ISO_8601) validation action.
 
@@ -35,7 +35,7 @@ An ISO week action.
 
 > **isoWeek**\<`TInput$1`, `TMessage`\>(`message`): [`IsoWeekAction`](../interfaces/IsoWeekAction.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10952
+Defined in: node\_modules/valibot/dist/index.d.mts:11021
 
 Creates an [ISO week](https://en.wikipedia.org/wiki/ISO_8601) validation action.
 

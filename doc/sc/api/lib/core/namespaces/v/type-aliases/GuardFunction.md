@@ -8,7 +8,7 @@
 
 > **GuardFunction**\<`TInput$1`\> = (`input`) => `input is any`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9524
+Defined in: node\_modules/valibot/dist/index.d.mts:9593
 
 **`Beta`**
 

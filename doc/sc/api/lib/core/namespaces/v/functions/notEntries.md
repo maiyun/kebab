@@ -10,7 +10,7 @@
 
 > **notEntries**\<`TInput$1`, `TRequirement`\>(`requirement`): [`NotEntriesAction`](../interfaces/NotEntriesAction.md)\<`TInput$1`, `TRequirement`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12883
+Defined in: node\_modules/valibot/dist/index.d.mts:13225
 
 **`Beta`**
 
@@ -44,7 +44,7 @@ A not entries action.
 
 > **notEntries**\<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): [`NotEntriesAction`](../interfaces/NotEntriesAction.md)\<`TInput$1`, `TRequirement`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12894
+Defined in: node\_modules/valibot/dist/index.d.mts:13236
 
 **`Beta`**
 

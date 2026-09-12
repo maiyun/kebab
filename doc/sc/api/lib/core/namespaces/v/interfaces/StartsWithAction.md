@@ -6,7 +6,7 @@
 
 # Interface: StartsWithAction\<TInput$1, TRequirement, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14500
+Defined in: node\_modules/valibot/dist/index.d.mts:14842
 
 Starts with action interface.
 
@@ -112,7 +112,7 @@ Whether it's async.
 
 > `readonly` **expects**: `` `"${TRequirement}"` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14512
+Defined in: node\_modules/valibot/dist/index.d.mts:14854
 
 The expected property.
 
@@ -140,7 +140,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14520
+Defined in: node\_modules/valibot/dist/index.d.mts:14862
 
 The error message.
 
@@ -150,7 +150,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`, `TRequirement`\>(`requirement`): `StartsWithAction`\<`TInput$1`, `TRequirement`, `undefined`\>; \<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): `StartsWithAction`\<`TInput$1`, `TRequirement`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14508
+Defined in: node\_modules/valibot/dist/index.d.mts:14850
 
 The action reference.
 
@@ -234,7 +234,7 @@ A starts with action.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14516
+Defined in: node\_modules/valibot/dist/index.d.mts:14858
 
 The start string.
 
@@ -244,7 +244,7 @@ The start string.
 
 > `readonly` **type**: `"starts_with"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14504
+Defined in: node\_modules/valibot/dist/index.d.mts:14846
 
 The action type.
 

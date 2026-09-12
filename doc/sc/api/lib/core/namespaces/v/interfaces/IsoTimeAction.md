@@ -6,7 +6,7 @@
 
 # Interface: IsoTimeAction\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10662
+Defined in: node\_modules/valibot/dist/index.d.mts:10731
 
 ISO time action interface.
 
@@ -108,7 +108,7 @@ Whether it's async.
 
 > `readonly` **expects**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10674
+Defined in: node\_modules/valibot/dist/index.d.mts:10743
 
 The expected property.
 
@@ -136,7 +136,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10682
+Defined in: node\_modules/valibot/dist/index.d.mts:10751
 
 The error message.
 
@@ -146,7 +146,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `IsoTimeAction`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `IsoTimeAction`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10670
+Defined in: node\_modules/valibot/dist/index.d.mts:10739
 
 The action reference.
 
@@ -212,7 +212,7 @@ An ISO time action.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10678
+Defined in: node\_modules/valibot/dist/index.d.mts:10747
 
 The ISO time regex.
 
@@ -222,7 +222,7 @@ The ISO time regex.
 
 > `readonly` **type**: `"iso_time"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10666
+Defined in: node\_modules/valibot/dist/index.d.mts:10735
 
 The action type.
 

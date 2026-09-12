@@ -8,7 +8,7 @@
 
 > **setSpecificMessage**\<`TReference`\>(`reference`, `message`, `lang?`): `void`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15860
+Defined in: node\_modules/valibot/dist/index.d.mts:16211
 
 Sets a specific error message.
 

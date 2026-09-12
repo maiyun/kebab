@@ -6,7 +6,7 @@
 
 # Interface: TransformActionAsync\<TInput$1, TOutput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15126
+Defined in: node\_modules/valibot/dist/index.d.mts:15468
 
 Transform action async interface.
 
@@ -122,7 +122,7 @@ The object kind.
 
 > `readonly` **operation**: (`input`) => `Promise`\<`TOutput$1`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15138
+Defined in: node\_modules/valibot/dist/index.d.mts:15480
 
 The transformation operation.
 
@@ -142,7 +142,7 @@ The transformation operation.
 
 > `readonly` **reference**: \<`TInput$1`, `TOutput$1`\>(`operation`) => `TransformActionAsync`\<`TInput$1`, `TOutput$1`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15134
+Defined in: node\_modules/valibot/dist/index.d.mts:15476
 
 The action reference.
 
@@ -182,7 +182,7 @@ A transform action.
 
 > `readonly` **type**: `"transform"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15130
+Defined in: node\_modules/valibot/dist/index.d.mts:15472
 
 The action type.
 

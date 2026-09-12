@@ -6,7 +6,7 @@
 
 # Interface: JwsCompactAction\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10987
+Defined in: node\_modules/valibot/dist/index.d.mts:11056
 
 **`Beta`**
 
@@ -112,7 +112,7 @@ Whether it's async.
 
 > `readonly` **expects**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10999
+Defined in: node\_modules/valibot/dist/index.d.mts:11068
 
 **`Beta`**
 
@@ -144,7 +144,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11007
+Defined in: node\_modules/valibot/dist/index.d.mts:11076
 
 **`Beta`**
 
@@ -156,7 +156,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `JwsCompactAction`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `JwsCompactAction`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10995
+Defined in: node\_modules/valibot/dist/index.d.mts:11064
 
 **`Beta`**
 
@@ -234,7 +234,7 @@ A JWS compact action.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11003
+Defined in: node\_modules/valibot/dist/index.d.mts:11072
 
 **`Beta`**
 
@@ -246,7 +246,7 @@ The JWS compact regex.
 
 > `readonly` **type**: `"jws_compact"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10991
+Defined in: node\_modules/valibot/dist/index.d.mts:11060
 
 **`Beta`**
 

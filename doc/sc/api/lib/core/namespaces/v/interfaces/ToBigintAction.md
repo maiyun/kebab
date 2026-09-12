@@ -6,7 +6,7 @@
 
 # Interface: ToBigintAction\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14653
+Defined in: node\_modules/valibot/dist/index.d.mts:14995
 
 To bigint action interface.
 
@@ -122,7 +122,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14665
+Defined in: node\_modules/valibot/dist/index.d.mts:15007
 
 The error message.
 
@@ -132,7 +132,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `ToBigintAction`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `ToBigintAction`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14661
+Defined in: node\_modules/valibot/dist/index.d.mts:15003
 
 The action reference.
 
@@ -198,7 +198,7 @@ A to bigint action.
 
 > `readonly` **type**: `"to_bigint"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14657
+Defined in: node\_modules/valibot/dist/index.d.mts:14999
 
 The action type.
 

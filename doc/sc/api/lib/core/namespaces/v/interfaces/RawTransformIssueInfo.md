@@ -6,7 +6,7 @@
 
 # Interface: RawTransformIssueInfo\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13838
+Defined in: node\_modules/valibot/dist/index.d.mts:14180
 
 Raw transform issue info interface.
 
@@ -22,7 +22,7 @@ Raw transform issue info interface.
 
 > `optional` **expected?**: `string`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13841
+Defined in: node\_modules/valibot/dist/index.d.mts:14183
 
 ***
 
@@ -30,7 +30,7 @@ Defined in: node\_modules/valibot/dist/index.d.mts:13841
 
 > `optional` **input?**: `unknown`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13840
+Defined in: node\_modules/valibot/dist/index.d.mts:14182
 
 ***
 
@@ -38,7 +38,7 @@ Defined in: node\_modules/valibot/dist/index.d.mts:13840
 
 > `optional` **label?**: `string`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13839
+Defined in: node\_modules/valibot/dist/index.d.mts:14181
 
 ***
 
@@ -46,7 +46,7 @@ Defined in: node\_modules/valibot/dist/index.d.mts:13839
 
 > `optional` **message?**: [`ErrorMessage`](../type-aliases/ErrorMessage.md)\<[`RawTransformIssue`](RawTransformIssue.md)\<`TInput$1`\>\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13843
+Defined in: node\_modules/valibot/dist/index.d.mts:14185
 
 ***
 
@@ -54,7 +54,7 @@ Defined in: node\_modules/valibot/dist/index.d.mts:13843
 
 > `optional` **path?**: \[[`IssuePathItem`](../type-aliases/IssuePathItem.md), `...IssuePathItem[]`\]
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13844
+Defined in: node\_modules/valibot/dist/index.d.mts:14186
 
 ***
 
@@ -62,4 +62,4 @@ Defined in: node\_modules/valibot/dist/index.d.mts:13844
 
 > `optional` **received?**: `string`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13842
+Defined in: node\_modules/valibot/dist/index.d.mts:14184

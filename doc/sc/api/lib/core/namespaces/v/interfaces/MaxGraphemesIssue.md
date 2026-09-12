@@ -6,7 +6,7 @@
 
 # Interface: MaxGraphemesIssue\<TInput$1, TRequirement\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11551
+Defined in: node\_modules/valibot/dist/index.d.mts:11755
 
 Max graphemes issue interface.
 
@@ -58,7 +58,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `` `<=${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11563
+Defined in: node\_modules/valibot/dist/index.d.mts:11767
 
 The expected property.
 
@@ -100,7 +100,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11555
+Defined in: node\_modules/valibot/dist/index.d.mts:11759
 
 The issue kind.
 
@@ -156,7 +156,7 @@ The issue path.
 
 > `readonly` **received**: `` `${number}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11567
+Defined in: node\_modules/valibot/dist/index.d.mts:11771
 
 The received property.
 
@@ -170,7 +170,7 @@ The received property.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11571
+Defined in: node\_modules/valibot/dist/index.d.mts:11775
 
 The maximum graphemes.
 
@@ -184,7 +184,7 @@ The maximum graphemes.
 
 > `readonly` **type**: `"max_graphemes"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11559
+Defined in: node\_modules/valibot/dist/index.d.mts:11763
 
 The issue type.
 

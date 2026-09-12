@@ -6,7 +6,7 @@
 
 # Interface: ToMaxValueAction\<TInput$1, TRequirement\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14852
+Defined in: node\_modules/valibot/dist/index.d.mts:15194
 
 To max value action interface.
 
@@ -122,7 +122,7 @@ The object kind.
 
 > `readonly` **reference**: \<`TInput$1`, `TRequirement`\>(`requirement`) => `ToMaxValueAction`\<`TInput$1`, `TRequirement`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14860
+Defined in: node\_modules/valibot/dist/index.d.mts:15202
 
 The action reference.
 
@@ -162,7 +162,7 @@ A to max value action.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14864
+Defined in: node\_modules/valibot/dist/index.d.mts:15206
 
 The maximum value.
 
@@ -172,7 +172,7 @@ The maximum value.
 
 > `readonly` **type**: `"to_max_value"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14856
+Defined in: node\_modules/valibot/dist/index.d.mts:15198
 
 The action type.
 

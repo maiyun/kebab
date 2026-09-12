@@ -6,7 +6,7 @@
 
 # Interface: IsoWeekAction\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10907
+Defined in: node\_modules/valibot/dist/index.d.mts:10976
 
 ISO week action interface.
 
@@ -108,7 +108,7 @@ Whether it's async.
 
 > `readonly` **expects**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10919
+Defined in: node\_modules/valibot/dist/index.d.mts:10988
 
 The expected property.
 
@@ -136,7 +136,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10927
+Defined in: node\_modules/valibot/dist/index.d.mts:10996
 
 The error message.
 
@@ -146,7 +146,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `IsoWeekAction`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `IsoWeekAction`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10915
+Defined in: node\_modules/valibot/dist/index.d.mts:10984
 
 The action reference.
 
@@ -218,7 +218,7 @@ An ISO week action.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10923
+Defined in: node\_modules/valibot/dist/index.d.mts:10992
 
 The ISO week regex.
 
@@ -228,7 +228,7 @@ The ISO week regex.
 
 > `readonly` **type**: `"iso_week"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10911
+Defined in: node\_modules/valibot/dist/index.d.mts:10980
 
 The action type.
 

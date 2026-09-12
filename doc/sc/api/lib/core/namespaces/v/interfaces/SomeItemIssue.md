@@ -6,7 +6,7 @@
 
 # Interface: SomeItemIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14379
+Defined in: node\_modules/valibot/dist/index.d.mts:14721
 
 Some item issue interface.
 
@@ -54,7 +54,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14391
+Defined in: node\_modules/valibot/dist/index.d.mts:14733
 
 The expected property.
 
@@ -96,7 +96,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14383
+Defined in: node\_modules/valibot/dist/index.d.mts:14725
 
 The issue kind.
 
@@ -166,7 +166,7 @@ The received property.
 
 > `readonly` **requirement**: [`ArrayRequirement`](../type-aliases/ArrayRequirement.md)\<`TInput$1`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14395
+Defined in: node\_modules/valibot/dist/index.d.mts:14737
 
 The validation function.
 
@@ -180,7 +180,7 @@ The validation function.
 
 > `readonly` **type**: `"some_item"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14387
+Defined in: node\_modules/valibot/dist/index.d.mts:14729
 
 The issue type.
 

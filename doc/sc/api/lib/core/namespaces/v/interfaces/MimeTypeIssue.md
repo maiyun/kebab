@@ -6,7 +6,7 @@
 
 # Interface: MimeTypeIssue\<TInput$1, TRequirement\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11929
+Defined in: node\_modules/valibot/dist/index.d.mts:12133
 
 MIME type issue interface.
 
@@ -58,7 +58,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `string`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11941
+Defined in: node\_modules/valibot/dist/index.d.mts:12145
 
 The expected input.
 
@@ -100,7 +100,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11933
+Defined in: node\_modules/valibot/dist/index.d.mts:12137
 
 The issue kind.
 
@@ -156,7 +156,7 @@ The issue path.
 
 > `readonly` **received**: `` `"${string}"` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11945
+Defined in: node\_modules/valibot/dist/index.d.mts:12149
 
 The received input.
 
@@ -170,7 +170,7 @@ The received input.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11949
+Defined in: node\_modules/valibot/dist/index.d.mts:12153
 
 The MIME types.
 
@@ -184,7 +184,7 @@ The MIME types.
 
 > `readonly` **type**: `"mime_type"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11937
+Defined in: node\_modules/valibot/dist/index.d.mts:12141
 
 The issue type.
 

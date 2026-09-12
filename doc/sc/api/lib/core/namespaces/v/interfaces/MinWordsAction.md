@@ -6,7 +6,7 @@
 
 # Interface: MinWordsAction\<TInput$1, TLocales, TRequirement, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12441
+Defined in: node\_modules/valibot/dist/index.d.mts:12714
 
 Min words action interface.
 
@@ -116,7 +116,7 @@ Whether it's async.
 
 > `readonly` **expects**: `` `>=${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12453
+Defined in: node\_modules/valibot/dist/index.d.mts:12726
 
 The expected property.
 
@@ -144,7 +144,7 @@ The object kind.
 
 > `readonly` **locales**: `TLocales`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12457
+Defined in: node\_modules/valibot/dist/index.d.mts:12730
 
 The locales to be used.
 
@@ -154,7 +154,7 @@ The locales to be used.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12465
+Defined in: node\_modules/valibot/dist/index.d.mts:12738
 
 The error message.
 
@@ -164,7 +164,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`, `TLocales`, `TRequirement`\>(`locales`, `requirement`): `MinWordsAction`\<`TInput$1`, `TLocales`, `TRequirement`, `undefined`\>; \<`TInput$1`, `TLocales`, `TRequirement`, `TMessage`\>(`locales`, `requirement`, `message`): `MinWordsAction`\<`TInput$1`, `TLocales`, `TRequirement`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12449
+Defined in: node\_modules/valibot/dist/index.d.mts:12722
 
 The action reference.
 
@@ -268,7 +268,7 @@ A min words action.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12461
+Defined in: node\_modules/valibot/dist/index.d.mts:12734
 
 The minimum words.
 
@@ -278,7 +278,7 @@ The minimum words.
 
 > `readonly` **type**: `"min_words"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12445
+Defined in: node\_modules/valibot/dist/index.d.mts:12718
 
 The action type.
 

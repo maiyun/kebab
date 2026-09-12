@@ -8,7 +8,7 @@
 
 > **sortItems**\<`TInput$1`\>(`operation?`): [`SortItemsAction`](../interfaces/SortItemsAction.md)\<`TInput$1`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14469
+Defined in: node\_modules/valibot/dist/index.d.mts:14811
 
 Creates a sort items transformation action.
 

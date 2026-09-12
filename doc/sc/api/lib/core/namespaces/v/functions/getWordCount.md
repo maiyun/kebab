@@ -8,7 +8,7 @@
 
 > **\_getWordCount**(`locales`, `input`): `number`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:16023
+Defined in: node\_modules/valibot/dist/index.d.mts:16376
 
 **`Internal`**
 

@@ -10,7 +10,7 @@
 
 > **creditCard**\<`TInput$1`\>(): [`CreditCardAction`](../interfaces/CreditCardAction.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8371
+Defined in: node\_modules/valibot/dist/index.d.mts:8440
 
 Creates a [credit card](https://en.wikipedia.org/wiki/Payment_card_number) validation action.
 
@@ -30,7 +30,7 @@ A Credit card action.
 
 > **creditCard**\<`TInput$1`, `TMessage`\>(`message`): [`CreditCardAction`](../interfaces/CreditCardAction.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8379
+Defined in: node\_modules/valibot/dist/index.d.mts:8448
 
 Creates a [credit card](https://en.wikipedia.org/wiki/Payment_card_number) validation action.
 

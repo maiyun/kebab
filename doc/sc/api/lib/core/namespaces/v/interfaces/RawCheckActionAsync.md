@@ -6,7 +6,7 @@
 
 # Interface: RawCheckActionAsync\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13798
+Defined in: node\_modules/valibot/dist/index.d.mts:14140
 
 Raw check action async interface.
 
@@ -104,7 +104,7 @@ Whether it's async.
 
 > `readonly` **expects**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13810
+Defined in: node\_modules/valibot/dist/index.d.mts:14152
 
 The expected property.
 
@@ -132,7 +132,7 @@ The object kind.
 
 > `readonly` **reference**: \<`TInput$1`\>(`action`) => `RawCheckActionAsync`\<`TInput$1`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13806
+Defined in: node\_modules/valibot/dist/index.d.mts:14148
 
 The action reference.
 
@@ -168,7 +168,7 @@ A raw check action.
 
 > `readonly` **type**: `"raw_check"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13802
+Defined in: node\_modules/valibot/dist/index.d.mts:14144
 
 The action type.
 

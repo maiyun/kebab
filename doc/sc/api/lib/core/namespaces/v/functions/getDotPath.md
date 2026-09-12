@@ -10,7 +10,7 @@
 
 > **getDotPath**(`issue`): `string` \| `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:16117
+Defined in: node\_modules/valibot/dist/index.d.mts:16512
 
 Creates and returns the dot path of an issue if possible.
 
@@ -32,7 +32,7 @@ The dot path or null.
 
 > **getDotPath**\<`TSchema`\>(`issue`): [`IssueDotPath`](../type-aliases/IssueDotPath.md)\<`TSchema`\> \| `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:16125
+Defined in: node\_modules/valibot/dist/index.d.mts:16520
 
 Creates and returns the dot path of an issue if possible.
 

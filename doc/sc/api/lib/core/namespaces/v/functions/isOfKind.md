@@ -8,7 +8,7 @@
 
 > **isOfKind**\<`TKind`, `TObject`\>(`kind`, `object`): `object is Extract<TObject, { kind: TKind }>`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:16136
+Defined in: node\_modules/valibot/dist/index.d.mts:16531
 
 A generic type guard to check the kind of an object.
 

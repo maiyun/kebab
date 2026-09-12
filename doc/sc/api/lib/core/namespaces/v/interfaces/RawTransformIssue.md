@@ -6,7 +6,7 @@
 
 # Interface: RawTransformIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13825
+Defined in: node\_modules/valibot/dist/index.d.mts:14167
 
 Raw transform issue interface.
 
@@ -96,7 +96,7 @@ The sub issues.
 
 > `readonly` **kind**: `"transformation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13829
+Defined in: node\_modules/valibot/dist/index.d.mts:14171
 
 The issue kind.
 
@@ -180,7 +180,7 @@ The input requirement.
 
 > `readonly` **type**: `"raw_transform"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13833
+Defined in: node\_modules/valibot/dist/index.d.mts:14175
 
 The issue type.
 

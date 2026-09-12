@@ -10,7 +10,7 @@
 
 > **maxSize**\<`TInput$1`, `TRequirement`\>(`requirement`): [`MaxSizeAction`](../interfaces/MaxSizeAction.md)\<`TInput$1`, `TRequirement`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11743
+Defined in: node\_modules/valibot/dist/index.d.mts:11947
 
 Creates a max size validation action.
 
@@ -42,7 +42,7 @@ A max size action.
 
 > **maxSize**\<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): [`MaxSizeAction`](../interfaces/MaxSizeAction.md)\<`TInput$1`, `TRequirement`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11752
+Defined in: node\_modules/valibot/dist/index.d.mts:11956
 
 Creates a max size validation action.
 

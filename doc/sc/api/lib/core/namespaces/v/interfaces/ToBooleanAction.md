@@ -6,7 +6,7 @@
 
 # Interface: ToBooleanAction\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14690
+Defined in: node\_modules/valibot/dist/index.d.mts:15032
 
 To boolean action interface.
 
@@ -118,7 +118,7 @@ The object kind.
 
 > `readonly` **reference**: \<`TInput$1`\>() => `ToBooleanAction`\<`TInput$1`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14698
+Defined in: node\_modules/valibot/dist/index.d.mts:15040
 
 The action reference.
 
@@ -148,7 +148,7 @@ A to boolean action.
 
 > `readonly` **type**: `"to_boolean"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14694
+Defined in: node\_modules/valibot/dist/index.d.mts:15036
 
 The action type.
 

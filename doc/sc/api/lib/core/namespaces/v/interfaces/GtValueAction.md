@@ -6,7 +6,7 @@
 
 # Interface: GtValueAction\<TInput$1, TRequirement, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9478
+Defined in: node\_modules/valibot/dist/index.d.mts:9547
 
 Greater than value action type.
 
@@ -112,7 +112,7 @@ Whether it's async.
 
 > `readonly` **expects**: `` `>${string}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9490
+Defined in: node\_modules/valibot/dist/index.d.mts:9559
 
 The expected property.
 
@@ -140,7 +140,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9498
+Defined in: node\_modules/valibot/dist/index.d.mts:9567
 
 The error message.
 
@@ -150,7 +150,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`, `TRequirement`\>(`requirement`): `GtValueAction`\<`TInput$1`, `TRequirement`, `undefined`\>; \<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): `GtValueAction`\<`TInput$1`, `TRequirement`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9486
+Defined in: node\_modules/valibot/dist/index.d.mts:9555
 
 The action reference.
 
@@ -234,7 +234,7 @@ A greater than value action.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9494
+Defined in: node\_modules/valibot/dist/index.d.mts:9563
 
 The greater than value.
 
@@ -244,7 +244,7 @@ The greater than value.
 
 > `readonly` **type**: `"gt_value"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9482
+Defined in: node\_modules/valibot/dist/index.d.mts:9551
 
 The action type.
 

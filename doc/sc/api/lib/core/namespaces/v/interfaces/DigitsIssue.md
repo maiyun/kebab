@@ -6,7 +6,7 @@
 
 # Interface: DigitsIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8552
+Defined in: node\_modules/valibot/dist/index.d.mts:8621
 
 Digits issue interface.
 
@@ -54,7 +54,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8564
+Defined in: node\_modules/valibot/dist/index.d.mts:8633
 
 The expected property.
 
@@ -96,7 +96,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8556
+Defined in: node\_modules/valibot/dist/index.d.mts:8625
 
 The issue kind.
 
@@ -152,7 +152,7 @@ The issue path.
 
 > `readonly` **received**: `` `"${string}"` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8568
+Defined in: node\_modules/valibot/dist/index.d.mts:8637
 
 The received property.
 
@@ -166,7 +166,7 @@ The received property.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8572
+Defined in: node\_modules/valibot/dist/index.d.mts:8641
 
 The digits regex.
 
@@ -180,7 +180,7 @@ The digits regex.
 
 > `readonly` **type**: `"digits"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8560
+Defined in: node\_modules/valibot/dist/index.d.mts:8629
 
 The issue type.
 

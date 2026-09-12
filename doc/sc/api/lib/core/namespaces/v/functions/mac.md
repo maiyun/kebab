@@ -10,7 +10,7 @@
 
 > **mac**\<`TInput$1`\>(): [`MacAction`](../interfaces/MacAction.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11228
+Defined in: node\_modules/valibot/dist/index.d.mts:11363
 
 Creates a [MAC address](https://en.wikipedia.org/wiki/MAC_address) validation action.
 
@@ -30,7 +30,7 @@ A MAC action.
 
 > **mac**\<`TInput$1`, `TMessage`\>(`message`): [`MacAction`](../interfaces/MacAction.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11236
+Defined in: node\_modules/valibot/dist/index.d.mts:11371
 
 Creates a [MAC address](https://en.wikipedia.org/wiki/MAC_address) validation action.
 

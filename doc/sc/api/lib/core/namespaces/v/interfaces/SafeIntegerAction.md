@@ -6,7 +6,7 @@
 
 # Interface: SafeIntegerAction\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14203
+Defined in: node\_modules/valibot/dist/index.d.mts:14545
 
 Safe integer action interface.
 
@@ -108,7 +108,7 @@ Whether it's async.
 
 > `readonly` **expects**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14215
+Defined in: node\_modules/valibot/dist/index.d.mts:14557
 
 The expected property.
 
@@ -136,7 +136,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14223
+Defined in: node\_modules/valibot/dist/index.d.mts:14565
 
 The error message.
 
@@ -146,7 +146,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `SafeIntegerAction`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `SafeIntegerAction`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14211
+Defined in: node\_modules/valibot/dist/index.d.mts:14553
 
 The action reference.
 
@@ -208,7 +208,7 @@ A safe integer action.
 
 > `readonly` **requirement**: (`input`) => `boolean`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14219
+Defined in: node\_modules/valibot/dist/index.d.mts:14561
 
 The validation function.
 
@@ -228,7 +228,7 @@ The validation function.
 
 > `readonly` **type**: `"safe_integer"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14207
+Defined in: node\_modules/valibot/dist/index.d.mts:14549
 
 The action type.
 

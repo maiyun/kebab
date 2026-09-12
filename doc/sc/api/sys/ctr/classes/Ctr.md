@@ -496,11 +496,25 @@ Defined in: [sys/ctr.ts:961](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 ### \_end()
 
-> `protected` **\_end**(): `void`
+> `protected` **\_end**(`code?`, `reason?`): `void`
 
-Defined in: [sys/ctr.ts:1290](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1290)
+Defined in: [sys/ctr.ts:1292](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1292)
 
 主动关闭当前 socket 连接
+
+#### Parameters
+
+##### code?
+
+`number` = `1000`
+
+WebSocket 关闭码
+
+##### reason?
+
+`string` = `''`
+
+关闭原因
 
 #### Returns
 
@@ -606,7 +620,7 @@ Defined in: [sys/ctr.ts:369](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 > `protected` **\_handleFormData**(`events?`, `limits?`): `Promise`\<`boolean`\>
 
-Defined in: [sys/ctr.ts:1299](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1299)
+Defined in: [sys/ctr.ts:1301](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1301)
 
 获取 formdata 的信息
 

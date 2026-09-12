@@ -6,7 +6,7 @@
 
 # Interface: TrimEndAction
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15174
+Defined in: node\_modules/valibot/dist/index.d.mts:15516
 
 Trim end action interface.
 
@@ -112,7 +112,7 @@ The object kind.
 
 > `readonly` **reference**: () => `TrimEndAction`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15182
+Defined in: node\_modules/valibot/dist/index.d.mts:15524
 
 The action reference.
 
@@ -134,7 +134,7 @@ A trim end action.
 
 > `readonly` **type**: `"trim_end"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15178
+Defined in: node\_modules/valibot/dist/index.d.mts:15520
 
 The action type.
 

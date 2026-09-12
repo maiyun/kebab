@@ -8,7 +8,7 @@
 
 > **getSchemaMessage**(`lang?`): [`ErrorMessage`](../type-aliases/ErrorMessage.md)\<[`BaseIssue`](../interfaces/BaseIssue.md)\<`unknown`\>\> \| `undefined`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15840
+Defined in: node\_modules/valibot/dist/index.d.mts:16191
 
 Returns a schema error message.
 

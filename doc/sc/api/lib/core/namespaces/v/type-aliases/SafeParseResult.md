@@ -46,7 +46,7 @@ Whether it's successful.
 
 > `readonly` **typed**: `true`
 
-Whether is's typed.
+Whether it's typed.
 
 ***
 

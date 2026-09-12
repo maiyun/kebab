@@ -8,7 +8,7 @@
 
 > **trimEnd**(): [`TrimEndAction`](../interfaces/TrimEndAction.md)
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15189
+Defined in: node\_modules/valibot/dist/index.d.mts:15531
 
 Creates a trim end transformation action.
 

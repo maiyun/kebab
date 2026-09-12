@@ -6,7 +6,7 @@
 
 # Interface: MinBytesAction\<TInput$1, TRequirement, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12023
+Defined in: node\_modules/valibot/dist/index.d.mts:12227
 
 Min bytes action interface.
 
@@ -112,7 +112,7 @@ Whether it's async.
 
 > `readonly` **expects**: `` `>=${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12035
+Defined in: node\_modules/valibot/dist/index.d.mts:12239
 
 The expected property.
 
@@ -140,7 +140,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12043
+Defined in: node\_modules/valibot/dist/index.d.mts:12247
 
 The error message.
 
@@ -150,7 +150,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`, `TRequirement`\>(`requirement`): `MinBytesAction`\<`TInput$1`, `TRequirement`, `undefined`\>; \<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): `MinBytesAction`\<`TInput$1`, `TRequirement`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12031
+Defined in: node\_modules/valibot/dist/index.d.mts:12235
 
 The action reference.
 
@@ -234,7 +234,7 @@ A min bytes action.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12039
+Defined in: node\_modules/valibot/dist/index.d.mts:12243
 
 The minimum bytes.
 
@@ -244,7 +244,7 @@ The minimum bytes.
 
 > `readonly` **type**: `"min_bytes"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12027
+Defined in: node\_modules/valibot/dist/index.d.mts:12231
 
 The action type.
 

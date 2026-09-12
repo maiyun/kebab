@@ -6,7 +6,7 @@
 
 # Interface: IConnectOptions
 
-Defined in: [lib/ws.ts:35](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L35)
+Defined in: [lib/ws.ts:36](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L36)
 
 请求的传入参数选项
 
@@ -16,7 +16,7 @@ Defined in: [lib/ws.ts:35](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 > `optional` **cookie?**: `Record`\<`string`, [`ICookie`](../../cookie/interfaces/ICookie.md)\>
 
-Defined in: [lib/ws.ts:43](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L43)
+Defined in: [lib/ws.ts:44](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L44)
 
 cookie 托管对象
 
@@ -26,7 +26,7 @@ cookie 托管对象
 
 > `optional` **headers?**: [`THttpHeaders`](../../undici/type-aliases/THttpHeaders.md)
 
-Defined in: [lib/ws.ts:41](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L41)
+Defined in: [lib/ws.ts:42](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L42)
 
 ***
 
@@ -34,7 +34,7 @@ Defined in: [lib/ws.ts:41](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 > `optional` **hosts?**: `string` \| `Record`\<`string`, `string`\>
 
-Defined in: [lib/ws.ts:39](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L39)
+Defined in: [lib/ws.ts:40](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L40)
 
 自定义 host 映射，如 {'www.maiyun.net': '127.0.0.1'}，或全部映射到一个 host
 
@@ -44,7 +44,7 @@ Defined in: [lib/ws.ts:39](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 > `optional` **local?**: `string`
 
-Defined in: [lib/ws.ts:40](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L40)
+Defined in: [lib/ws.ts:41](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L41)
 
 ***
 
@@ -52,7 +52,7 @@ Defined in: [lib/ws.ts:40](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 > `optional` **masking?**: `boolean`
 
-Defined in: [lib/ws.ts:47](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L47)
+Defined in: [lib/ws.ts:48](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L48)
 
 加密模式，默认 true
 
@@ -62,7 +62,7 @@ Defined in: [lib/ws.ts:47](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 > `optional` **mode?**: [`EFrameReceiveMode`](../enumerations/EFrameReceiveMode.md)
 
-Defined in: [lib/ws.ts:45](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L45)
+Defined in: [lib/ws.ts:46](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L46)
 
 小帧模式，默认 false
 
@@ -72,7 +72,7 @@ Defined in: [lib/ws.ts:45](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 > `optional` **mproxy?**: `object`
 
-Defined in: [lib/ws.ts:49](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L49)
+Defined in: [lib/ws.ts:50](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L50)
 
 正向 mproxy 代理，url 如 wss://xxx/abc
 
@@ -86,10 +86,30 @@ Defined in: [lib/ws.ts:49](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 ***
 
+### onConnectError?
+
+> `optional` **onConnectError?**: (`error`) => `void`
+
+Defined in: [lib/ws.ts:55](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L55)
+
+WebSocket 握手失败回调
+
+#### Parameters
+
+##### error
+
+`unknown`
+
+#### Returns
+
+`void`
+
+***
+
 ### timeout?
 
 > `optional` **timeout?**: `number`
 
-Defined in: [lib/ws.ts:37](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L37)
+Defined in: [lib/ws.ts:38](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L38)
 
 秒数

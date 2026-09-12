@@ -10,7 +10,7 @@
 
 > **toDate**\<`TInput$1`\>(): [`ToDateAction`](../interfaces/ToDateAction.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14783
+Defined in: node\_modules/valibot/dist/index.d.mts:15125
 
 **`Beta`**
 
@@ -32,7 +32,7 @@ A to date action.
 
 > **toDate**\<`TInput$1`, `TMessage`\>(`message`): [`ToDateAction`](../interfaces/ToDateAction.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14793
+Defined in: node\_modules/valibot/dist/index.d.mts:15135
 
 **`Beta`**
 

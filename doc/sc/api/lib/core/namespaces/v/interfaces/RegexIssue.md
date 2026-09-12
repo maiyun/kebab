@@ -6,7 +6,7 @@
 
 # Interface: RegexIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13971
+Defined in: node\_modules/valibot/dist/index.d.mts:14313
 
 Regex issue interface.
 
@@ -54,7 +54,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `string`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13983
+Defined in: node\_modules/valibot/dist/index.d.mts:14325
 
 The expected input.
 
@@ -96,7 +96,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13975
+Defined in: node\_modules/valibot/dist/index.d.mts:14317
 
 The issue kind.
 
@@ -152,7 +152,7 @@ The issue path.
 
 > `readonly` **received**: `` `"${string}"` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13987
+Defined in: node\_modules/valibot/dist/index.d.mts:14329
 
 The received input.
 
@@ -166,7 +166,7 @@ The received input.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13991
+Defined in: node\_modules/valibot/dist/index.d.mts:14333
 
 The regex pattern.
 
@@ -180,7 +180,7 @@ The regex pattern.
 
 > `readonly` **type**: `"regex"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13979
+Defined in: node\_modules/valibot/dist/index.d.mts:14321
 
 The issue type.
 

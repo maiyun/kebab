@@ -6,7 +6,7 @@
 
 # Interface: RfcEmailIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14098
+Defined in: node\_modules/valibot/dist/index.d.mts:14440
 
 RFC email issue interface.
 
@@ -54,7 +54,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14110
+Defined in: node\_modules/valibot/dist/index.d.mts:14452
 
 The expected property.
 
@@ -96,7 +96,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14102
+Defined in: node\_modules/valibot/dist/index.d.mts:14444
 
 The issue kind.
 
@@ -152,7 +152,7 @@ The issue path.
 
 > `readonly` **received**: `` `"${string}"` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14114
+Defined in: node\_modules/valibot/dist/index.d.mts:14456
 
 The received property.
 
@@ -166,7 +166,7 @@ The received property.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14118
+Defined in: node\_modules/valibot/dist/index.d.mts:14460
 
 The RFC email regex.
 
@@ -180,7 +180,7 @@ The RFC email regex.
 
 > `readonly` **type**: `"rfc_email"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14106
+Defined in: node\_modules/valibot/dist/index.d.mts:14448
 
 The issue type.
 

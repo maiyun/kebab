@@ -10,7 +10,7 @@
 
 > **maxLength**\<`TInput$1`, `TRequirement`\>(`requirement`): [`MaxLengthAction`](../interfaces/MaxLengthAction.md)\<`TInput$1`, `TRequirement`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11674
+Defined in: node\_modules/valibot/dist/index.d.mts:11878
 
 Creates a max length validation action.
 
@@ -42,7 +42,7 @@ A max length action.
 
 > **maxLength**\<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): [`MaxLengthAction`](../interfaces/MaxLengthAction.md)\<`TInput$1`, `TRequirement`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11683
+Defined in: node\_modules/valibot/dist/index.d.mts:11887
 
 Creates a max length validation action.
 

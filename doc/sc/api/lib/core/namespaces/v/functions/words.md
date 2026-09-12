@@ -10,7 +10,7 @@
 
 > **words**\<`TInput$1`, `TLocales`, `TRequirement`\>(`locales`, `requirement`): [`WordsAction`](../interfaces/WordsAction.md)\<`TInput$1`, `TLocales`, `TRequirement`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15609
+Defined in: node\_modules/valibot/dist/index.d.mts:15951
 
 Creates a words validation action.
 
@@ -52,7 +52,7 @@ A words action.
 
 > **words**\<`TInput$1`, `TLocales`, `TRequirement`, `TMessage`\>(`locales`, `requirement`, `message`): [`WordsAction`](../interfaces/WordsAction.md)\<`TInput$1`, `TLocales`, `TRequirement`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15619
+Defined in: node\_modules/valibot/dist/index.d.mts:15961
 
 Creates a words validation action.
 

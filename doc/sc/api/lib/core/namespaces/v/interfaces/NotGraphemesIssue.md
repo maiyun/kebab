@@ -6,7 +6,7 @@
 
 # Interface: NotGraphemesIssue\<TInput$1, TRequirement\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12900
+Defined in: node\_modules/valibot/dist/index.d.mts:13242
 
 Not graphemes issue interface.
 
@@ -58,7 +58,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `` `!${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12912
+Defined in: node\_modules/valibot/dist/index.d.mts:13254
 
 The expected property.
 
@@ -100,7 +100,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12904
+Defined in: node\_modules/valibot/dist/index.d.mts:13246
 
 The issue kind.
 
@@ -156,7 +156,7 @@ The issue path.
 
 > `readonly` **received**: `` `${number}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12916
+Defined in: node\_modules/valibot/dist/index.d.mts:13258
 
 The received property.
 
@@ -170,7 +170,7 @@ The received property.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12920
+Defined in: node\_modules/valibot/dist/index.d.mts:13262
 
 The not required graphemes.
 
@@ -184,7 +184,7 @@ The not required graphemes.
 
 > `readonly` **type**: `"not_graphemes"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12908
+Defined in: node\_modules/valibot/dist/index.d.mts:13250
 
 The issue type.
 

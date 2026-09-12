@@ -8,6 +8,6 @@
 
 > `const` **BIC\_REGEX**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15629
+Defined in: node\_modules/valibot/dist/index.d.mts:15971
 
 [BIC](https://en.wikipedia.org/wiki/ISO_9362) regex.

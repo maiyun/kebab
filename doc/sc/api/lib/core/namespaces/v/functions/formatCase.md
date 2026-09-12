@@ -8,7 +8,7 @@
 
 > **\_formatCase**(`input`, `separator`, `capFirst`, `capRest`): `string`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15954
+Defined in: node\_modules/valibot/dist/index.d.mts:16305
 
 **`Internal`**
 

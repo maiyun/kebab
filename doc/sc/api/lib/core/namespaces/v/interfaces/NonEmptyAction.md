@@ -6,7 +6,7 @@
 
 # Interface: NonEmptyAction\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12680
+Defined in: node\_modules/valibot/dist/index.d.mts:12953
 
 Non empty action interface.
 
@@ -108,7 +108,7 @@ Whether it's async.
 
 > `readonly` **expects**: `"!0"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12692
+Defined in: node\_modules/valibot/dist/index.d.mts:12965
 
 The expected property.
 
@@ -136,7 +136,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12696
+Defined in: node\_modules/valibot/dist/index.d.mts:12969
 
 The error message.
 
@@ -146,7 +146,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `NonEmptyAction`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `NonEmptyAction`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12688
+Defined in: node\_modules/valibot/dist/index.d.mts:12961
 
 The action reference.
 
@@ -208,7 +208,7 @@ A non-empty action.
 
 > `readonly` **type**: `"non_empty"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12684
+Defined in: node\_modules/valibot/dist/index.d.mts:12957
 
 The action type.
 

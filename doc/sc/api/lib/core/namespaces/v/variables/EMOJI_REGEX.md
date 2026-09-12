@@ -8,7 +8,7 @@
 
 > `const` **EMOJI\_REGEX**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15660
+Defined in: node\_modules/valibot/dist/index.d.mts:16004
 
 Emoji regex from [emoji-regex-xs](https://github.com/slevithan/emoji-regex-xs) v1.0.0 (MIT license).
 

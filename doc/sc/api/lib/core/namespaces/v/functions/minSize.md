@@ -10,7 +10,7 @@
 
 > **minSize**\<`TInput$1`, `TRequirement`\>(`requirement`): [`MinSizeAction`](../interfaces/MinSizeAction.md)\<`TInput$1`, `TRequirement`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12336
+Defined in: node\_modules/valibot/dist/index.d.mts:12609
 
 Creates a min size validation action.
 
@@ -42,7 +42,7 @@ A min size action.
 
 > **minSize**\<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): [`MinSizeAction`](../interfaces/MinSizeAction.md)\<`TInput$1`, `TRequirement`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12345
+Defined in: node\_modules/valibot/dist/index.d.mts:12618
 
 Creates a min size validation action.
 

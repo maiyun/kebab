@@ -6,7 +6,7 @@
 
 # Interface: FindItemAction\<TInput$1, TOuput\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9244
+Defined in: node\_modules/valibot/dist/index.d.mts:9313
 
 Find item action interface.
 
@@ -122,7 +122,7 @@ The object kind.
 
 > `readonly` **operation**: `ArrayRequirement$1`\<`TInput$1`, `TOuput`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9256
+Defined in: node\_modules/valibot/dist/index.d.mts:9325
 
 The find item operation.
 
@@ -132,7 +132,7 @@ The find item operation.
 
 > `readonly` **reference**: \<`TInput$1`, `TOuput`\>(`operation`) => `FindItemAction`\<`TInput$1`, `TOuput`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9252
+Defined in: node\_modules/valibot/dist/index.d.mts:9321
 
 The action reference.
 
@@ -172,7 +172,7 @@ A find item action.
 
 > `readonly` **type**: `"find_item"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9248
+Defined in: node\_modules/valibot/dist/index.d.mts:9317
 
 The action type.
 

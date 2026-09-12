@@ -10,7 +10,7 @@
 
 > **ulid**\<`TInput$1`\>(): [`UlidAction`](../interfaces/UlidAction.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15268
+Defined in: node\_modules/valibot/dist/index.d.mts:15610
 
 Creates an [ULID](https://github.com/ulid/spec) validation action.
 
@@ -30,7 +30,7 @@ An ULID action.
 
 > **ulid**\<`TInput$1`, `TMessage`\>(`message`): [`UlidAction`](../interfaces/UlidAction.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15276
+Defined in: node\_modules/valibot/dist/index.d.mts:15618
 
 Creates an [ULID](https://github.com/ulid/spec) validation action.
 

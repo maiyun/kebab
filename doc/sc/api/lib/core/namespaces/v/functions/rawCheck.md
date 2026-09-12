@@ -8,7 +8,7 @@
 
 > **rawCheck**\<`TInput$1`\>(`action`): [`RawCheckAction`](../interfaces/RawCheckAction.md)\<`TInput$1`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13792
+Defined in: node\_modules/valibot/dist/index.d.mts:14134
 
 Creates a raw check validation action.
 

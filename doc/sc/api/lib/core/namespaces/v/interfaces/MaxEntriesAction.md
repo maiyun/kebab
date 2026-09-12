@@ -6,7 +6,7 @@
 
 # Interface: MaxEntriesAction\<TInput$1, TRequirement, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11503
+Defined in: node\_modules/valibot/dist/index.d.mts:11707
 
 **`Beta`**
 
@@ -116,7 +116,7 @@ Whether it's async.
 
 > `readonly` **expects**: `` `<=${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11515
+Defined in: node\_modules/valibot/dist/index.d.mts:11719
 
 **`Beta`**
 
@@ -148,7 +148,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11523
+Defined in: node\_modules/valibot/dist/index.d.mts:11727
 
 **`Beta`**
 
@@ -160,7 +160,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`, `TRequirement`\>(`requirement`): `MaxEntriesAction`\<`TInput$1`, `TRequirement`, `undefined`\>; \<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): `MaxEntriesAction`\<`TInput$1`, `TRequirement`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11511
+Defined in: node\_modules/valibot/dist/index.d.mts:11715
 
 **`Beta`**
 
@@ -250,7 +250,7 @@ A max entries action.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11519
+Defined in: node\_modules/valibot/dist/index.d.mts:11723
 
 **`Beta`**
 
@@ -262,7 +262,7 @@ The maximum entries.
 
 > `readonly` **type**: `"max_entries"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11507
+Defined in: node\_modules/valibot/dist/index.d.mts:11711
 
 **`Beta`**
 

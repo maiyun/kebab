@@ -6,7 +6,7 @@
 
 # Interface: ParseJsonConfig
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13472
+Defined in: node\_modules/valibot/dist/index.d.mts:13814
 
 **`Beta`**
 
@@ -18,7 +18,7 @@ Parse JSON config interface.
 
 > `optional` **reviver?**: (`this`, `key`, `value`) => `any`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13476
+Defined in: node\_modules/valibot/dist/index.d.mts:13818
 
 **`Beta`**
 

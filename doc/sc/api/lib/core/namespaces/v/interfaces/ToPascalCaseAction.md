@@ -6,7 +6,7 @@
 
 # Interface: ToPascalCaseAction
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14962
+Defined in: node\_modules/valibot/dist/index.d.mts:15304
 
 **`Beta`**
 
@@ -118,7 +118,7 @@ The object kind.
 
 > `readonly` **reference**: () => `ToPascalCaseAction`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14970
+Defined in: node\_modules/valibot/dist/index.d.mts:15312
 
 **`Beta`**
 
@@ -151,7 +151,7 @@ A to pascal case action.
 
 > `readonly` **type**: `"to_pascal_case"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14966
+Defined in: node\_modules/valibot/dist/index.d.mts:15308
 
 **`Beta`**
 

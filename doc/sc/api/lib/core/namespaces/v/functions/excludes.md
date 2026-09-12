@@ -10,7 +10,7 @@
 
 > **excludes**\<`TInput$1`, `TRequirement`\>(`requirement`): [`ExcludesAction`](../interfaces/ExcludesAction.md)\<`TInput$1`, `TRequirement`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9198
+Defined in: node\_modules/valibot/dist/index.d.mts:9267
 
 Creates an excludes validation action.
 
@@ -42,7 +42,7 @@ An excludes action.
 
 > **excludes**\<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): [`ExcludesAction`](../interfaces/ExcludesAction.md)\<`TInput$1`, `TRequirement`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9207
+Defined in: node\_modules/valibot/dist/index.d.mts:9276
 
 Creates an excludes validation action.
 

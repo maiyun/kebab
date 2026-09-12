@@ -6,7 +6,7 @@
 
 # Interface: LengthAction\<TInput$1, TRequirement, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11067
+Defined in: node\_modules/valibot/dist/index.d.mts:11202
 
 Length action interface.
 
@@ -112,7 +112,7 @@ Whether it's async.
 
 > `readonly` **expects**: `` `${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11079
+Defined in: node\_modules/valibot/dist/index.d.mts:11214
 
 The expected property.
 
@@ -140,7 +140,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11087
+Defined in: node\_modules/valibot/dist/index.d.mts:11222
 
 The error message.
 
@@ -150,7 +150,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`, `TRequirement`\>(`requirement`): `LengthAction`\<`TInput$1`, `TRequirement`, `undefined`\>; \<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): `LengthAction`\<`TInput$1`, `TRequirement`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11075
+Defined in: node\_modules/valibot/dist/index.d.mts:11210
 
 The action reference.
 
@@ -234,7 +234,7 @@ A length action.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11083
+Defined in: node\_modules/valibot/dist/index.d.mts:11218
 
 The required length.
 
@@ -244,7 +244,7 @@ The required length.
 
 > `readonly` **type**: `"length"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11071
+Defined in: node\_modules/valibot/dist/index.d.mts:11206
 
 The action type.
 

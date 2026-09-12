@@ -6,7 +6,7 @@
 
 # Interface: UuidAction\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15379
+Defined in: node\_modules/valibot/dist/index.d.mts:15721
 
 UUID action interface.
 
@@ -108,7 +108,7 @@ Whether it's async.
 
 > `readonly` **expects**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15391
+Defined in: node\_modules/valibot/dist/index.d.mts:15733
 
 The expected property.
 
@@ -136,7 +136,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15399
+Defined in: node\_modules/valibot/dist/index.d.mts:15741
 
 The error message.
 
@@ -146,7 +146,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `UuidAction`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `UuidAction`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15387
+Defined in: node\_modules/valibot/dist/index.d.mts:15729
 
 The action reference.
 
@@ -208,7 +208,7 @@ An UUID action.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15395
+Defined in: node\_modules/valibot/dist/index.d.mts:15737
 
 The UUID regex.
 
@@ -218,7 +218,7 @@ The UUID regex.
 
 > `readonly` **type**: `"uuid"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15383
+Defined in: node\_modules/valibot/dist/index.d.mts:15725
 
 The action type.
 

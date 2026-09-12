@@ -8,7 +8,7 @@
 
 > **returns**\<`TInput$1`, `TSchema`\>(`schema`): [`ReturnsAction`](../interfaces/ReturnsAction.md)\<`TInput$1`, `TSchema`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14065
+Defined in: node\_modules/valibot/dist/index.d.mts:14407
 
 Creates a function return transformation action.
 

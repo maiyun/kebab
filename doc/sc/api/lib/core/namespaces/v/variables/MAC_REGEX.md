@@ -8,7 +8,7 @@
 
 > `const` **MAC\_REGEX**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15748
+Defined in: node\_modules/valibot/dist/index.d.mts:16096
 
 [MAC](https://en.wikipedia.org/wiki/MAC_address) regex.
 

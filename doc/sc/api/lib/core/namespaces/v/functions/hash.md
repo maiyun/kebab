@@ -10,7 +10,7 @@
 
 > **hash**\<`TInput$1`\>(`types`): [`HashAction`](../interfaces/HashAction.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9697
+Defined in: node\_modules/valibot/dist/index.d.mts:9766
 
 Creates a [hash](https://en.wikipedia.org/wiki/Hash_function) validation action.
 
@@ -38,7 +38,7 @@ A hash action.
 
 > **hash**\<`TInput$1`, `TMessage`\>(`types`, `message`): [`HashAction`](../interfaces/HashAction.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9706
+Defined in: node\_modules/valibot/dist/index.d.mts:9775
 
 Creates a [hash](https://en.wikipedia.org/wiki/Hash_function) validation action.
 

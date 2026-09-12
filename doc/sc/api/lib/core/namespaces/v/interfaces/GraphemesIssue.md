@@ -6,7 +6,7 @@
 
 # Interface: GraphemesIssue\<TInput$1, TRequirement\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9388
+Defined in: node\_modules/valibot/dist/index.d.mts:9457
 
 Graphemes issue interface.
 
@@ -58,7 +58,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `` `${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9400
+Defined in: node\_modules/valibot/dist/index.d.mts:9469
 
 The expected property.
 
@@ -100,7 +100,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9392
+Defined in: node\_modules/valibot/dist/index.d.mts:9461
 
 The issue kind.
 
@@ -156,7 +156,7 @@ The issue path.
 
 > `readonly` **received**: `` `${number}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9404
+Defined in: node\_modules/valibot/dist/index.d.mts:9473
 
 The received property.
 
@@ -170,7 +170,7 @@ The received property.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9408
+Defined in: node\_modules/valibot/dist/index.d.mts:9477
 
 The required graphemes.
 
@@ -184,7 +184,7 @@ The required graphemes.
 
 > `readonly` **type**: `"graphemes"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9396
+Defined in: node\_modules/valibot/dist/index.d.mts:9465
 
 The issue type.
 

@@ -6,7 +6,7 @@
 
 # Interface: MaxEntriesIssue\<TInput$1, TRequirement\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11476
+Defined in: node\_modules/valibot/dist/index.d.mts:11680
 
 **`Beta`**
 
@@ -64,7 +64,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `` `<=${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11488
+Defined in: node\_modules/valibot/dist/index.d.mts:11692
 
 **`Beta`**
 
@@ -112,7 +112,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11480
+Defined in: node\_modules/valibot/dist/index.d.mts:11684
 
 **`Beta`**
 
@@ -176,7 +176,7 @@ The issue path.
 
 > `readonly` **received**: `` `${number}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11492
+Defined in: node\_modules/valibot/dist/index.d.mts:11696
 
 **`Beta`**
 
@@ -192,7 +192,7 @@ The received property.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11496
+Defined in: node\_modules/valibot/dist/index.d.mts:11700
 
 **`Beta`**
 
@@ -208,7 +208,7 @@ The maximum entries.
 
 > `readonly` **type**: `"max_entries"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11484
+Defined in: node\_modules/valibot/dist/index.d.mts:11688
 
 **`Beta`**
 

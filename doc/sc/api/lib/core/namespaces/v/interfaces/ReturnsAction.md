@@ -6,7 +6,7 @@
 
 # Interface: ReturnsAction\<TInput$1, TSchema\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14044
+Defined in: node\_modules/valibot/dist/index.d.mts:14386
 
 Returns action type.
 
@@ -132,7 +132,7 @@ The object kind.
 
 > `readonly` **reference**: \<`TInput$1`, `TSchema`\>(`schema`) => `ReturnsAction`\<`TInput$1`, `TSchema`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14052
+Defined in: node\_modules/valibot/dist/index.d.mts:14394
 
 The action reference.
 
@@ -172,7 +172,7 @@ An returns action.
 
 > `readonly` **schema**: `TSchema`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14056
+Defined in: node\_modules/valibot/dist/index.d.mts:14398
 
 The arguments schema.
 
@@ -182,7 +182,7 @@ The arguments schema.
 
 > `readonly` **type**: `"returns"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14048
+Defined in: node\_modules/valibot/dist/index.d.mts:14390
 
 The action type.
 

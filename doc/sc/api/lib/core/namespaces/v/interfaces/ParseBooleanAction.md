@@ -6,7 +6,7 @@
 
 # Interface: ParseBooleanAction\<TInput$1, TConfig, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13414
+Defined in: node\_modules/valibot/dist/index.d.mts:13756
 
 **`Beta`**
 
@@ -116,7 +116,7 @@ Whether it's async.
 
 > `readonly` **config**: `TConfig`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13430
+Defined in: node\_modules/valibot/dist/index.d.mts:13772
 
 **`Beta`**
 
@@ -128,7 +128,7 @@ The parse boolean config.
 
 > `readonly` **expects**: `string`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13426
+Defined in: node\_modules/valibot/dist/index.d.mts:13768
 
 **`Beta`**
 
@@ -156,7 +156,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13434
+Defined in: node\_modules/valibot/dist/index.d.mts:13776
 
 **`Beta`**
 
@@ -168,7 +168,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `ParseBooleanAction`\<`TInput$1`, `undefined`, `undefined`\>; \<`TInput$1`, `TConfig`\>(`config`): `ParseBooleanAction`\<`TInput$1`, `TConfig`, `undefined`\>; \<`TInput$1`, `TConfig`, `TMessage`\>(`config`, `message`): `ParseBooleanAction`\<`TInput$1`, `TConfig`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13422
+Defined in: node\_modules/valibot/dist/index.d.mts:13764
 
 **`Beta`**
 
@@ -278,7 +278,7 @@ A parse boolean action.
 
 > `readonly` **type**: `"parse_boolean"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13418
+Defined in: node\_modules/valibot/dist/index.d.mts:13760
 
 **`Beta`**
 

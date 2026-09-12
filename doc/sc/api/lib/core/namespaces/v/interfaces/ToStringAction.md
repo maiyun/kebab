@@ -6,7 +6,7 @@
 
 # Interface: ToStringAction\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15041
+Defined in: node\_modules/valibot/dist/index.d.mts:15383
 
 To string action interface.
 
@@ -122,7 +122,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15053
+Defined in: node\_modules/valibot/dist/index.d.mts:15395
 
 The error message.
 
@@ -132,7 +132,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `ToStringAction`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `ToStringAction`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15049
+Defined in: node\_modules/valibot/dist/index.d.mts:15391
 
 The action reference.
 
@@ -198,7 +198,7 @@ A to string action.
 
 > `readonly` **type**: `"to_string"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15045
+Defined in: node\_modules/valibot/dist/index.d.mts:15387
 
 The action type.
 

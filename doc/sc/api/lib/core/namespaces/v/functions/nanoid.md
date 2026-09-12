@@ -10,7 +10,7 @@
 
 > **nanoid**\<`TInput$1`\>(): [`NanoIdAction`](../interfaces/NanoIdAction.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12645
+Defined in: node\_modules/valibot/dist/index.d.mts:12918
 
 Creates a [Nano ID](https://github.com/ai/nanoid) validation action.
 
@@ -30,7 +30,7 @@ A Nano ID action.
 
 > **nanoid**\<`TInput$1`, `TMessage`\>(`message`): [`NanoIdAction`](../interfaces/NanoIdAction.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12653
+Defined in: node\_modules/valibot/dist/index.d.mts:12926
 
 Creates a [Nano ID](https://github.com/ai/nanoid) validation action.
 

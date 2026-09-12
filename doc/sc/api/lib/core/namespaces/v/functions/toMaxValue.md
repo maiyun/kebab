@@ -8,7 +8,7 @@
 
 > **toMaxValue**\<`TInput$1`, `TRequirement`\>(`requirement`): [`ToMaxValueAction`](../interfaces/ToMaxValueAction.md)\<`TInput$1`, `TRequirement`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14873
+Defined in: node\_modules/valibot/dist/index.d.mts:15215
 
 Creates a to max value transformation action.
 

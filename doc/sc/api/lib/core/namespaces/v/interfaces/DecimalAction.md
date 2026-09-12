@@ -6,7 +6,7 @@
 
 # Interface: DecimalAction\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8476
+Defined in: node\_modules/valibot/dist/index.d.mts:8545
 
 Decimal action interface.
 
@@ -108,7 +108,7 @@ Whether it's async.
 
 > `readonly` **expects**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8488
+Defined in: node\_modules/valibot/dist/index.d.mts:8557
 
 The expected property.
 
@@ -136,7 +136,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8496
+Defined in: node\_modules/valibot/dist/index.d.mts:8565
 
 The error message.
 
@@ -146,7 +146,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `DecimalAction`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `DecimalAction`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8484
+Defined in: node\_modules/valibot/dist/index.d.mts:8553
 
 The action reference.
 
@@ -216,7 +216,7 @@ An decimal action.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8492
+Defined in: node\_modules/valibot/dist/index.d.mts:8561
 
 The decimal regex.
 
@@ -226,7 +226,7 @@ The decimal regex.
 
 > `readonly` **type**: `"decimal"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8480
+Defined in: node\_modules/valibot/dist/index.d.mts:8549
 
 The action type.
 

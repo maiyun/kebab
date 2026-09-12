@@ -6,7 +6,7 @@
 
 # Interface: UrlAction\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15307
+Defined in: node\_modules/valibot/dist/index.d.mts:15649
 
 URL action interface.
 
@@ -108,7 +108,7 @@ Whether it's async.
 
 > `readonly` **expects**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15319
+Defined in: node\_modules/valibot/dist/index.d.mts:15661
 
 The expected property.
 
@@ -136,7 +136,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15327
+Defined in: node\_modules/valibot/dist/index.d.mts:15669
 
 The error message.
 
@@ -146,7 +146,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `UrlAction`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `UrlAction`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15315
+Defined in: node\_modules/valibot/dist/index.d.mts:15657
 
 The action reference.
 
@@ -156,7 +156,7 @@ The action reference.
 
 Creates an [URL](https://en.wikipedia.org/wiki/URL) validation action.
 
-Hint: The value is passed to the URL constructor to check if it is valid.
+Hint: The value is checked with the [URL parser](https://developer.mozilla.org/en-US/docs/Web/API/URL/URL).
 This check is not perfect. For example, values like "abc:1234" are accepted.
 
 ##### Type Parameters
@@ -177,7 +177,7 @@ An URL action.
 
 Creates an [URL](https://en.wikipedia.org/wiki/URL) validation action.
 
-Hint: The value is passed to the URL constructor to check if it is valid.
+Hint: The value is checked with the [URL parser](https://developer.mozilla.org/en-US/docs/Web/API/URL/URL).
 This check is not perfect. For example, values like "abc:1234" are accepted.
 
 ##### Type Parameters
@@ -214,7 +214,7 @@ An URL action.
 
 > `readonly` **requirement**: (`input`) => `boolean`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15323
+Defined in: node\_modules/valibot/dist/index.d.mts:15665
 
 The validation function.
 
@@ -234,7 +234,7 @@ The validation function.
 
 > `readonly` **type**: `"url"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15311
+Defined in: node\_modules/valibot/dist/index.d.mts:15653
 
 The action type.
 

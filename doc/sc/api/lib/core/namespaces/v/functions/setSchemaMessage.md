@@ -8,7 +8,7 @@
 
 > **setSchemaMessage**(`message`, `lang?`): `void`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15832
+Defined in: node\_modules/valibot/dist/index.d.mts:16183
 
 Sets a schema error message.
 

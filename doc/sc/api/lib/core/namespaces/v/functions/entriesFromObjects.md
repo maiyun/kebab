@@ -8,7 +8,7 @@
 
 > **entriesFromObjects**\<`TSchemas`\>(`schemas`): \{ \[TKey in string \| number \| symbol\]: RecursiveMerge\<TSchemas\>\[TKey\] \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:16107
+Defined in: node\_modules/valibot/dist/index.d.mts:16502
 
 Creates a new object entries definition from existing object schemas.
 

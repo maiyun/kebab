@@ -6,7 +6,7 @@
 
 # Interface: LtValueAction\<TInput$1, TRequirement, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11132
+Defined in: node\_modules/valibot/dist/index.d.mts:11267
 
 Less than value action type.
 
@@ -112,7 +112,7 @@ Whether it's async.
 
 > `readonly` **expects**: `` `<${string}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11144
+Defined in: node\_modules/valibot/dist/index.d.mts:11279
 
 The expected property.
 
@@ -140,7 +140,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11152
+Defined in: node\_modules/valibot/dist/index.d.mts:11287
 
 The error message.
 
@@ -150,7 +150,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`, `TRequirement`\>(`requirement`): `LtValueAction`\<`TInput$1`, `TRequirement`, `undefined`\>; \<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): `LtValueAction`\<`TInput$1`, `TRequirement`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11140
+Defined in: node\_modules/valibot/dist/index.d.mts:11275
 
 The action reference.
 
@@ -234,7 +234,7 @@ A less than value action.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11148
+Defined in: node\_modules/valibot/dist/index.d.mts:11283
 
 The less than value.
 
@@ -244,7 +244,7 @@ The less than value.
 
 > `readonly` **type**: `"lt_value"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11136
+Defined in: node\_modules/valibot/dist/index.d.mts:11271
 
 The action type.
 

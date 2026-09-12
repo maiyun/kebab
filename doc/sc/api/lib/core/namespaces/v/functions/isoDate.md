@@ -10,7 +10,7 @@
 
 > **isoDate**\<`TInput$1`\>(): [`IsoDateAction`](../interfaces/IsoDateAction.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10449
+Defined in: node\_modules/valibot/dist/index.d.mts:10518
 
 Creates an [ISO date](https://en.wikipedia.org/wiki/ISO_8601) validation action.
 
@@ -36,7 +36,7 @@ An ISO date action.
 
 > **isoDate**\<`TInput$1`, `TMessage`\>(`message`): [`IsoDateAction`](../interfaces/IsoDateAction.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10463
+Defined in: node\_modules/valibot/dist/index.d.mts:10532
 
 Creates an [ISO date](https://en.wikipedia.org/wiki/ISO_8601) validation action.
 

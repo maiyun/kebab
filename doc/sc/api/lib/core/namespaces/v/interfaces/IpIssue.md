@@ -6,7 +6,7 @@
 
 # Interface: IpIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10049
+Defined in: node\_modules/valibot/dist/index.d.mts:10118
 
 IP issue interface.
 
@@ -54,7 +54,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10061
+Defined in: node\_modules/valibot/dist/index.d.mts:10130
 
 The expected property.
 
@@ -96,7 +96,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10053
+Defined in: node\_modules/valibot/dist/index.d.mts:10122
 
 The issue kind.
 
@@ -152,7 +152,7 @@ The issue path.
 
 > `readonly` **received**: `` `"${string}"` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10065
+Defined in: node\_modules/valibot/dist/index.d.mts:10134
 
 The received property.
 
@@ -166,7 +166,7 @@ The received property.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10069
+Defined in: node\_modules/valibot/dist/index.d.mts:10138
 
 The IP regex.
 
@@ -180,7 +180,7 @@ The IP regex.
 
 > `readonly` **type**: `"ip"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10057
+Defined in: node\_modules/valibot/dist/index.d.mts:10126
 
 The issue type.
 

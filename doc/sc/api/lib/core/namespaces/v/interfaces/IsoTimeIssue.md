@@ -6,7 +6,7 @@
 
 # Interface: IsoTimeIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10637
+Defined in: node\_modules/valibot/dist/index.d.mts:10706
 
 ISO time issue interface.
 
@@ -54,7 +54,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10649
+Defined in: node\_modules/valibot/dist/index.d.mts:10718
 
 The expected property.
 
@@ -96,7 +96,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10641
+Defined in: node\_modules/valibot/dist/index.d.mts:10710
 
 The issue kind.
 
@@ -152,7 +152,7 @@ The issue path.
 
 > `readonly` **received**: `` `"${string}"` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10653
+Defined in: node\_modules/valibot/dist/index.d.mts:10722
 
 The received property.
 
@@ -166,7 +166,7 @@ The received property.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10657
+Defined in: node\_modules/valibot/dist/index.d.mts:10726
 
 The ISO time regex.
 
@@ -180,7 +180,7 @@ The ISO time regex.
 
 > `readonly` **type**: `"iso_time"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10645
+Defined in: node\_modules/valibot/dist/index.d.mts:10714
 
 The issue type.
 

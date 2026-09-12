@@ -6,7 +6,7 @@
 
 # Interface: GtValueIssue\<TInput$1, TRequirement\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9457
+Defined in: node\_modules/valibot/dist/index.d.mts:9526
 
 Greater than value issue type.
 
@@ -58,7 +58,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `` `>${string}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9469
+Defined in: node\_modules/valibot/dist/index.d.mts:9538
 
 The expected property.
 
@@ -100,7 +100,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9461
+Defined in: node\_modules/valibot/dist/index.d.mts:9530
 
 The issue kind.
 
@@ -170,7 +170,7 @@ The received property.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9473
+Defined in: node\_modules/valibot/dist/index.d.mts:9542
 
 The greater than value.
 
@@ -184,7 +184,7 @@ The greater than value.
 
 > `readonly` **type**: `"gt_value"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9465
+Defined in: node\_modules/valibot/dist/index.d.mts:9534
 
 The issue type.
 

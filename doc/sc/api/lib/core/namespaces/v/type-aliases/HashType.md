@@ -8,6 +8,6 @@
 
 > **HashType** = keyof *typeof* `HASH_LENGTHS`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9639
+Defined in: node\_modules/valibot/dist/index.d.mts:9708
 
 Hash type type.

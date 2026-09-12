@@ -6,7 +6,7 @@
 
 # Interface: EmojiAction\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8809
+Defined in: node\_modules/valibot/dist/index.d.mts:8878
 
 Emoji action interface.
 
@@ -108,7 +108,7 @@ Whether it's async.
 
 > `readonly` **expects**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8821
+Defined in: node\_modules/valibot/dist/index.d.mts:8890
 
 The expected property.
 
@@ -136,7 +136,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8829
+Defined in: node\_modules/valibot/dist/index.d.mts:8898
 
 The error message.
 
@@ -146,7 +146,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `EmojiAction`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `EmojiAction`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8817
+Defined in: node\_modules/valibot/dist/index.d.mts:8886
 
 The action reference.
 
@@ -208,7 +208,7 @@ An emoji action.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8825
+Defined in: node\_modules/valibot/dist/index.d.mts:8894
 
 The emoji regex.
 
@@ -218,7 +218,7 @@ The emoji regex.
 
 > `readonly` **type**: `"emoji"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8813
+Defined in: node\_modules/valibot/dist/index.d.mts:8882
 
 The action type.
 

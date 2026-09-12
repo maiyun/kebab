@@ -6,7 +6,7 @@
 
 # Interface: EndsWithIssue\<TInput$1, TRequirement\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8908
+Defined in: node\_modules/valibot/dist/index.d.mts:8977
 
 Ends with issue interface.
 
@@ -58,7 +58,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `` `"${TRequirement}"` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8920
+Defined in: node\_modules/valibot/dist/index.d.mts:8989
 
 The expected property.
 
@@ -100,7 +100,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8912
+Defined in: node\_modules/valibot/dist/index.d.mts:8981
 
 The issue kind.
 
@@ -156,7 +156,7 @@ The issue path.
 
 > `readonly` **received**: `` `"${string}"` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8924
+Defined in: node\_modules/valibot/dist/index.d.mts:8993
 
 The received property.
 
@@ -170,7 +170,7 @@ The received property.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8928
+Defined in: node\_modules/valibot/dist/index.d.mts:8997
 
 The end string.
 
@@ -184,7 +184,7 @@ The end string.
 
 > `readonly` **type**: `"ends_with"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8916
+Defined in: node\_modules/valibot/dist/index.d.mts:8985
 
 The issue type.
 

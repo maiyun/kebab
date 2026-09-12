@@ -6,7 +6,7 @@
 
 # Interface: GraphemesAction\<TInput$1, TRequirement, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9413
+Defined in: node\_modules/valibot/dist/index.d.mts:9482
 
 Graphemes action interface.
 
@@ -112,7 +112,7 @@ Whether it's async.
 
 > `readonly` **expects**: `` `${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9425
+Defined in: node\_modules/valibot/dist/index.d.mts:9494
 
 The expected property.
 
@@ -140,7 +140,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9433
+Defined in: node\_modules/valibot/dist/index.d.mts:9502
 
 The error message.
 
@@ -150,7 +150,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`, `TRequirement`\>(`requirement`): `GraphemesAction`\<`TInput$1`, `TRequirement`, `undefined`\>; \<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): `GraphemesAction`\<`TInput$1`, `TRequirement`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9421
+Defined in: node\_modules/valibot/dist/index.d.mts:9490
 
 The action reference.
 
@@ -234,7 +234,7 @@ A graphemes action.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9429
+Defined in: node\_modules/valibot/dist/index.d.mts:9498
 
 The required graphemes.
 
@@ -244,7 +244,7 @@ The required graphemes.
 
 > `readonly` **type**: `"graphemes"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9417
+Defined in: node\_modules/valibot/dist/index.d.mts:9486
 
 The action type.
 

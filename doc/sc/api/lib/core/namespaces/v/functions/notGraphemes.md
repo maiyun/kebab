@@ -10,7 +10,7 @@
 
 > **notGraphemes**\<`TInput$1`, `TRequirement`\>(`requirement`): [`NotGraphemesAction`](../interfaces/NotGraphemesAction.md)\<`TInput$1`, `TRequirement`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12954
+Defined in: node\_modules/valibot/dist/index.d.mts:13296
 
 Creates a not graphemes validation action.
 
@@ -42,7 +42,7 @@ A not graphemes action.
 
 > **notGraphemes**\<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): [`NotGraphemesAction`](../interfaces/NotGraphemesAction.md)\<`TInput$1`, `TRequirement`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12963
+Defined in: node\_modules/valibot/dist/index.d.mts:13305
 
 Creates a not graphemes validation action.
 

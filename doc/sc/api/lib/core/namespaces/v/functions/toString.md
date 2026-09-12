@@ -10,7 +10,7 @@
 
 > **toString**\<`TInput$1`\>(): [`ToStringAction`](../interfaces/ToStringAction.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15062
+Defined in: node\_modules/valibot/dist/index.d.mts:15404
 
 **`Beta`**
 
@@ -32,7 +32,7 @@ A to string action.
 
 > **toString**\<`TInput$1`, `TMessage`\>(`message`): [`ToStringAction`](../interfaces/ToStringAction.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15072
+Defined in: node\_modules/valibot/dist/index.d.mts:15414
 
 **`Beta`**
 

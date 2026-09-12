@@ -6,7 +6,7 @@
 
 # Interface: OctalIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13312
+Defined in: node\_modules/valibot/dist/index.d.mts:13654
 
 Octal issue interface.
 
@@ -54,7 +54,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13324
+Defined in: node\_modules/valibot/dist/index.d.mts:13666
 
 The expected property.
 
@@ -96,7 +96,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13316
+Defined in: node\_modules/valibot/dist/index.d.mts:13658
 
 The issue kind.
 
@@ -152,7 +152,7 @@ The issue path.
 
 > `readonly` **received**: `` `"${string}"` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13328
+Defined in: node\_modules/valibot/dist/index.d.mts:13670
 
 The received property.
 
@@ -166,7 +166,7 @@ The received property.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13332
+Defined in: node\_modules/valibot/dist/index.d.mts:13674
 
 The octal regex.
 
@@ -180,7 +180,7 @@ The octal regex.
 
 > `readonly` **type**: `"octal"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13320
+Defined in: node\_modules/valibot/dist/index.d.mts:13662
 
 The issue type.
 

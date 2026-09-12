@@ -6,7 +6,7 @@
 
 # Interface: MinValueIssue\<TInput$1, TRequirement\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12351
+Defined in: node\_modules/valibot/dist/index.d.mts:12624
 
 Min value issue interface.
 
@@ -58,7 +58,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `` `>=${string}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12363
+Defined in: node\_modules/valibot/dist/index.d.mts:12636
 
 The expected property.
 
@@ -100,7 +100,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12355
+Defined in: node\_modules/valibot/dist/index.d.mts:12628
 
 The issue kind.
 
@@ -170,7 +170,7 @@ The received property.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12367
+Defined in: node\_modules/valibot/dist/index.d.mts:12640
 
 The minimum value.
 
@@ -184,7 +184,7 @@ The minimum value.
 
 > `readonly` **type**: `"min_value"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12359
+Defined in: node\_modules/valibot/dist/index.d.mts:12632
 
 The issue type.
 

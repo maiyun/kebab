@@ -6,7 +6,7 @@
 
 # Interface: EmailAction\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8733
+Defined in: node\_modules/valibot/dist/index.d.mts:8802
 
 Email action interface.
 
@@ -108,7 +108,7 @@ Whether it's async.
 
 > `readonly` **expects**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8745
+Defined in: node\_modules/valibot/dist/index.d.mts:8814
 
 The expected property.
 
@@ -136,7 +136,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8753
+Defined in: node\_modules/valibot/dist/index.d.mts:8822
 
 The error message.
 
@@ -146,7 +146,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `EmailAction`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `EmailAction`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8741
+Defined in: node\_modules/valibot/dist/index.d.mts:8810
 
 The action reference.
 
@@ -218,7 +218,7 @@ An email action.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8749
+Defined in: node\_modules/valibot/dist/index.d.mts:8818
 
 The email regex.
 
@@ -228,7 +228,7 @@ The email regex.
 
 > `readonly` **type**: `"email"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8737
+Defined in: node\_modules/valibot/dist/index.d.mts:8806
 
 The action type.
 

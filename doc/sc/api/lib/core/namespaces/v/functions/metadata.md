@@ -8,7 +8,7 @@
 
 > **metadata**\<`TInput$1`, `TMetadata`\>(`metadata_`): [`MetadataAction`](../interfaces/MetadataAction.md)\<`TInput$1`, `TMetadata`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11919
+Defined in: node\_modules/valibot/dist/index.d.mts:12123
 
 Creates a custom metadata action.
 

@@ -10,7 +10,7 @@
 
 > **minGraphemes**\<`TInput$1`, `TRequirement`\>(`requirement`): [`MinGraphemesAction`](../interfaces/MinGraphemesAction.md)\<`TInput$1`, `TRequirement`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12198
+Defined in: node\_modules/valibot/dist/index.d.mts:12471
 
 Creates a min graphemes validation action.
 
@@ -42,7 +42,7 @@ A min graphemes action.
 
 > **minGraphemes**\<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): [`MinGraphemesAction`](../interfaces/MinGraphemesAction.md)\<`TInput$1`, `TRequirement`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12207
+Defined in: node\_modules/valibot/dist/index.d.mts:12480
 
 Creates a min graphemes validation action.
 

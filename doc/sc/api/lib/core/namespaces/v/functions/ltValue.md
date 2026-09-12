@@ -10,7 +10,7 @@
 
 > **ltValue**\<`TInput$1`, `TRequirement`\>(`requirement`): [`LtValueAction`](../interfaces/LtValueAction.md)\<`TInput$1`, `TRequirement`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11161
+Defined in: node\_modules/valibot/dist/index.d.mts:11296
 
 Creates a less than value validation action.
 
@@ -42,7 +42,7 @@ A less than value action.
 
 > **ltValue**\<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): [`LtValueAction`](../interfaces/LtValueAction.md)\<`TInput$1`, `TRequirement`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11170
+Defined in: node\_modules/valibot/dist/index.d.mts:11305
 
 Creates a less than value validation action.
 

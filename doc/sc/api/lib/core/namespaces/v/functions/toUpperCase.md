@@ -8,7 +8,7 @@
 
 > **toUpperCase**(): [`ToUpperCaseAction`](../interfaces/ToUpperCaseAction.md)
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15093
+Defined in: node\_modules/valibot/dist/index.d.mts:15435
 
 Creates a to upper case transformation action.
 

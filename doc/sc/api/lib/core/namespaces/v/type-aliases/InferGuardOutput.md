@@ -8,7 +8,7 @@
 
 > **InferGuardOutput**\<`TGuard`\> = `TGuard` *extends* (`input`) => `input is infer TOutput` ? `TOutput` : `unknown`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9530
+Defined in: node\_modules/valibot/dist/index.d.mts:9599
 
 **`Beta`**
 

@@ -6,7 +6,7 @@
 
 # Interface: UlidIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15216
+Defined in: node\_modules/valibot/dist/index.d.mts:15558
 
 ULID issue interface.
 
@@ -54,7 +54,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15228
+Defined in: node\_modules/valibot/dist/index.d.mts:15570
 
 The expected property.
 
@@ -96,7 +96,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15220
+Defined in: node\_modules/valibot/dist/index.d.mts:15562
 
 The issue kind.
 
@@ -152,7 +152,7 @@ The issue path.
 
 > `readonly` **received**: `` `"${string}"` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15232
+Defined in: node\_modules/valibot/dist/index.d.mts:15574
 
 The received property.
 
@@ -166,7 +166,7 @@ The received property.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15236
+Defined in: node\_modules/valibot/dist/index.d.mts:15578
 
 The ULID regex.
 
@@ -180,7 +180,7 @@ The ULID regex.
 
 > `readonly` **type**: `"ulid"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15224
+Defined in: node\_modules/valibot/dist/index.d.mts:15566
 
 The issue type.
 

@@ -6,7 +6,7 @@
 
 # Interface: ToLowerCaseAction
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14831
+Defined in: node\_modules/valibot/dist/index.d.mts:15173
 
 To lower case action interface.
 
@@ -112,7 +112,7 @@ The object kind.
 
 > `readonly` **reference**: () => `ToLowerCaseAction`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14839
+Defined in: node\_modules/valibot/dist/index.d.mts:15181
 
 The action reference.
 
@@ -134,7 +134,7 @@ A to lower case action.
 
 > `readonly` **type**: `"to_lower_case"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14835
+Defined in: node\_modules/valibot/dist/index.d.mts:15177
 
 The action type.
 

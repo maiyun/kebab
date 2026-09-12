@@ -6,7 +6,7 @@
 
 # Interface: UrlIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15282
+Defined in: node\_modules/valibot/dist/index.d.mts:15624
 
 URL issue interface.
 
@@ -54,7 +54,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15294
+Defined in: node\_modules/valibot/dist/index.d.mts:15636
 
 The expected property.
 
@@ -96,7 +96,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15286
+Defined in: node\_modules/valibot/dist/index.d.mts:15628
 
 The issue kind.
 
@@ -152,7 +152,7 @@ The issue path.
 
 > `readonly` **received**: `` `"${string}"` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15298
+Defined in: node\_modules/valibot/dist/index.d.mts:15640
 
 The received property.
 
@@ -166,7 +166,7 @@ The received property.
 
 > `readonly` **requirement**: (`input`) => `boolean`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15302
+Defined in: node\_modules/valibot/dist/index.d.mts:15644
 
 The validation function.
 
@@ -190,7 +190,7 @@ The validation function.
 
 > `readonly` **type**: `"url"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15290
+Defined in: node\_modules/valibot/dist/index.d.mts:15632
 
 The issue type.
 

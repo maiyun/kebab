@@ -10,7 +10,7 @@
 
 > **domain**\<`TInput$1`\>(): [`DomainAction`](../interfaces/DomainAction.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8688
+Defined in: node\_modules/valibot/dist/index.d.mts:8757
 
 **`Beta`**
 
@@ -36,7 +36,7 @@ A domain action.
 
 > **domain**\<`TInput$1`, `TMessage`\>(`message`): [`DomainAction`](../interfaces/DomainAction.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8702
+Defined in: node\_modules/valibot/dist/index.d.mts:8771
 
 **`Beta`**
 

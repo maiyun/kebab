@@ -10,7 +10,7 @@
 
 > **imei**\<`TInput$1`\>(): [`ImeiAction`](../interfaces/ImeiAction.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9900
+Defined in: node\_modules/valibot/dist/index.d.mts:9969
 
 Creates an [IMEI](https://en.wikipedia.org/wiki/International_Mobile_Equipment_Identity) validation action.
 
@@ -34,7 +34,7 @@ An IMEI action.
 
 > **imei**\<`TInput$1`, `TMessage`\>(`message`): [`ImeiAction`](../interfaces/ImeiAction.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9912
+Defined in: node\_modules/valibot/dist/index.d.mts:9981
 
 Creates an [IMEI](https://en.wikipedia.org/wiki/International_Mobile_Equipment_Identity) validation action.
 

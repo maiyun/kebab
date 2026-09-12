@@ -6,7 +6,7 @@
 
 # Interface: ExcludesAction\<TInput$1, TRequirement, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9169
+Defined in: node\_modules/valibot/dist/index.d.mts:9238
 
 Excludes action interface.
 
@@ -112,7 +112,7 @@ Whether it's async.
 
 > `readonly` **expects**: `string`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9181
+Defined in: node\_modules/valibot/dist/index.d.mts:9250
 
 The expected property.
 
@@ -140,7 +140,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9189
+Defined in: node\_modules/valibot/dist/index.d.mts:9258
 
 The error message.
 
@@ -150,7 +150,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`, `TRequirement`\>(`requirement`): `ExcludesAction`\<`TInput$1`, `TRequirement`, `undefined`\>; \<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): `ExcludesAction`\<`TInput$1`, `TRequirement`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9177
+Defined in: node\_modules/valibot/dist/index.d.mts:9246
 
 The action reference.
 
@@ -234,7 +234,7 @@ An excludes action.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9185
+Defined in: node\_modules/valibot/dist/index.d.mts:9254
 
 The content to be excluded.
 
@@ -244,7 +244,7 @@ The content to be excluded.
 
 > `readonly` **type**: `"excludes"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9173
+Defined in: node\_modules/valibot/dist/index.d.mts:9242
 
 The action type.
 

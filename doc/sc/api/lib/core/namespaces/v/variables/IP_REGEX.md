@@ -8,6 +8,6 @@
 
 > `const` **IP\_REGEX**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15688
+Defined in: node\_modules/valibot/dist/index.d.mts:16032
 
 [IP](https://en.wikipedia.org/wiki/IP_address) regex.

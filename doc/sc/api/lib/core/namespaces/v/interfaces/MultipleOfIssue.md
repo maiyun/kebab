@@ -6,7 +6,7 @@
 
 # Interface: MultipleOfIssue\<TInput$1, TRequirement\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12495
+Defined in: node\_modules/valibot/dist/index.d.mts:12768
 
 Multiple of issue interface.
 
@@ -58,7 +58,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `` `%${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12507
+Defined in: node\_modules/valibot/dist/index.d.mts:12780
 
 The expected property.
 
@@ -100,7 +100,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12499
+Defined in: node\_modules/valibot/dist/index.d.mts:12772
 
 The issue kind.
 
@@ -156,7 +156,7 @@ The issue path.
 
 > `readonly` **received**: `` `${TInput$1}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12511
+Defined in: node\_modules/valibot/dist/index.d.mts:12784
 
 The received property.
 
@@ -170,7 +170,7 @@ The received property.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12515
+Defined in: node\_modules/valibot/dist/index.d.mts:12788
 
 The divisor.
 
@@ -184,7 +184,7 @@ The divisor.
 
 > `readonly` **type**: `"multiple_of"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12503
+Defined in: node\_modules/valibot/dist/index.d.mts:12776
 
 The issue type.
 

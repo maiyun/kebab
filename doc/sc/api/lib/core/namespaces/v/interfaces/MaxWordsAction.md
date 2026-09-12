@@ -6,7 +6,7 @@
 
 # Interface: MaxWordsAction\<TInput$1, TLocales, TRequirement, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11848
+Defined in: node\_modules/valibot/dist/index.d.mts:12052
 
 Max words action interface.
 
@@ -116,7 +116,7 @@ Whether it's async.
 
 > `readonly` **expects**: `` `<=${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11860
+Defined in: node\_modules/valibot/dist/index.d.mts:12064
 
 The expected property.
 
@@ -144,7 +144,7 @@ The object kind.
 
 > `readonly` **locales**: `TLocales`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11864
+Defined in: node\_modules/valibot/dist/index.d.mts:12068
 
 The locales to be used.
 
@@ -154,7 +154,7 @@ The locales to be used.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11872
+Defined in: node\_modules/valibot/dist/index.d.mts:12076
 
 The error message.
 
@@ -164,7 +164,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`, `TLocales`, `TRequirement`\>(`locales`, `requirement`): `MaxWordsAction`\<`TInput$1`, `TLocales`, `TRequirement`, `undefined`\>; \<`TInput$1`, `TLocales`, `TRequirement`, `TMessage`\>(`locales`, `requirement`, `message`): `MaxWordsAction`\<`TInput$1`, `TLocales`, `TRequirement`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11856
+Defined in: node\_modules/valibot/dist/index.d.mts:12060
 
 The action reference.
 
@@ -268,7 +268,7 @@ A max words action.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11868
+Defined in: node\_modules/valibot/dist/index.d.mts:12072
 
 The maximum words.
 
@@ -278,7 +278,7 @@ The maximum words.
 
 > `readonly` **type**: `"max_words"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11852
+Defined in: node\_modules/valibot/dist/index.d.mts:12056
 
 The action type.
 

@@ -6,7 +6,7 @@
 
 # Interface: ExamplesAction\<TInput$1, TExamples\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9119
+Defined in: node\_modules/valibot/dist/index.d.mts:9188
 
 Examples action interface.
 
@@ -58,7 +58,7 @@ The input, output and issue type.
 
 > `readonly` **examples**: `TExamples`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9131
+Defined in: node\_modules/valibot/dist/index.d.mts:9200
 
 The examples.
 
@@ -82,7 +82,7 @@ The object kind.
 
 > `readonly` **reference**: \<`TInput$1`, `TExamples`\>(`examples_`) => `ExamplesAction`\<`TInput$1`, `TExamples`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9127
+Defined in: node\_modules/valibot/dist/index.d.mts:9196
 
 The action reference.
 
@@ -124,7 +124,7 @@ An examples action.
 
 > `readonly` **type**: `"examples"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9123
+Defined in: node\_modules/valibot/dist/index.d.mts:9192
 
 The action type.
 

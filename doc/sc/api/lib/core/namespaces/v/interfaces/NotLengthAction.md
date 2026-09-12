@@ -6,7 +6,7 @@
 
 # Interface: NotLengthAction\<TInput$1, TRequirement, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12994
+Defined in: node\_modules/valibot/dist/index.d.mts:13336
 
 Not length action interface.
 
@@ -112,7 +112,7 @@ Whether it's async.
 
 > `readonly` **expects**: `` `!${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13006
+Defined in: node\_modules/valibot/dist/index.d.mts:13348
 
 The expected property.
 
@@ -140,7 +140,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13014
+Defined in: node\_modules/valibot/dist/index.d.mts:13356
 
 The error message.
 
@@ -150,7 +150,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`, `TRequirement`\>(`requirement`): `NotLengthAction`\<`TInput$1`, `TRequirement`, `undefined`\>; \<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): `NotLengthAction`\<`TInput$1`, `TRequirement`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13002
+Defined in: node\_modules/valibot/dist/index.d.mts:13344
 
 The action reference.
 
@@ -234,7 +234,7 @@ A not length action.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13010
+Defined in: node\_modules/valibot/dist/index.d.mts:13352
 
 The not required length.
 
@@ -244,7 +244,7 @@ The not required length.
 
 > `readonly` **type**: `"not_length"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12998
+Defined in: node\_modules/valibot/dist/index.d.mts:13340
 
 The action type.
 

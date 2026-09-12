@@ -6,7 +6,7 @@
 
 # Interface: IpAction\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10074
+Defined in: node\_modules/valibot/dist/index.d.mts:10143
 
 IP action interface.
 
@@ -108,7 +108,7 @@ Whether it's async.
 
 > `readonly` **expects**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10086
+Defined in: node\_modules/valibot/dist/index.d.mts:10155
 
 The expected property.
 
@@ -136,7 +136,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10094
+Defined in: node\_modules/valibot/dist/index.d.mts:10163
 
 The error message.
 
@@ -146,7 +146,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `IpAction`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `IpAction`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10082
+Defined in: node\_modules/valibot/dist/index.d.mts:10151
 
 The action reference.
 
@@ -208,7 +208,7 @@ An IP action.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10090
+Defined in: node\_modules/valibot/dist/index.d.mts:10159
 
 The IP regex.
 
@@ -218,7 +218,7 @@ The IP regex.
 
 > `readonly` **type**: `"ip"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10078
+Defined in: node\_modules/valibot/dist/index.d.mts:10147
 
 The action type.
 

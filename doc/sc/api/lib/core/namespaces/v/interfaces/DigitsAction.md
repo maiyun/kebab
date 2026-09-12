@@ -6,7 +6,7 @@
 
 # Interface: DigitsAction\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8577
+Defined in: node\_modules/valibot/dist/index.d.mts:8646
 
 Digits action interface.
 
@@ -108,7 +108,7 @@ Whether it's async.
 
 > `readonly` **expects**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8589
+Defined in: node\_modules/valibot/dist/index.d.mts:8658
 
 The expected property.
 
@@ -136,7 +136,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8597
+Defined in: node\_modules/valibot/dist/index.d.mts:8666
 
 The error message.
 
@@ -146,7 +146,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `DigitsAction`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `DigitsAction`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8585
+Defined in: node\_modules/valibot/dist/index.d.mts:8654
 
 The action reference.
 
@@ -216,7 +216,7 @@ An digits action.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8593
+Defined in: node\_modules/valibot/dist/index.d.mts:8662
 
 The digits regex.
 
@@ -226,7 +226,7 @@ The digits regex.
 
 > `readonly` **type**: `"digits"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8581
+Defined in: node\_modules/valibot/dist/index.d.mts:8650
 
 The action type.
 

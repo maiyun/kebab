@@ -6,7 +6,7 @@
 
 # Interface: MetadataAction\<TInput$1, TMetadata\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11898
+Defined in: node\_modules/valibot/dist/index.d.mts:12102
 
 Metadata action interface.
 
@@ -72,7 +72,7 @@ The object kind.
 
 > `readonly` **metadata**: `TMetadata`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11910
+Defined in: node\_modules/valibot/dist/index.d.mts:12114
 
 The metadata object.
 
@@ -82,7 +82,7 @@ The metadata object.
 
 > `readonly` **reference**: \<`TInput$1`, `TMetadata`\>(`metadata_`) => `MetadataAction`\<`TInput$1`, `TMetadata`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11906
+Defined in: node\_modules/valibot/dist/index.d.mts:12110
 
 The action reference.
 
@@ -122,7 +122,7 @@ A metadata action.
 
 > `readonly` **type**: `"metadata"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11902
+Defined in: node\_modules/valibot/dist/index.d.mts:12106
 
 The action type.
 

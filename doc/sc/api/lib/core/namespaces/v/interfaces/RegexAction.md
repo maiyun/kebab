@@ -6,7 +6,7 @@
 
 # Interface: RegexAction\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13996
+Defined in: node\_modules/valibot/dist/index.d.mts:14338
 
 Regex action interface.
 
@@ -108,7 +108,7 @@ Whether it's async.
 
 > `readonly` **expects**: `string`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14008
+Defined in: node\_modules/valibot/dist/index.d.mts:14350
 
 The expected property.
 
@@ -136,7 +136,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14016
+Defined in: node\_modules/valibot/dist/index.d.mts:14358
 
 The error message.
 
@@ -146,7 +146,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(`requirement`): `RegexAction`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`requirement`, `message`): `RegexAction`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14004
+Defined in: node\_modules/valibot/dist/index.d.mts:14346
 
 The action reference.
 
@@ -226,7 +226,7 @@ A regex action.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14012
+Defined in: node\_modules/valibot/dist/index.d.mts:14354
 
 The regex pattern.
 
@@ -236,7 +236,7 @@ The regex pattern.
 
 > `readonly` **type**: `"regex"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14000
+Defined in: node\_modules/valibot/dist/index.d.mts:14342
 
 The action type.
 

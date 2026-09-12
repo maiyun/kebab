@@ -6,7 +6,7 @@
 
 # Interface: MinBytesIssue\<TInput$1, TRequirement\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11998
+Defined in: node\_modules/valibot/dist/index.d.mts:12202
 
 Min bytes issue interface.
 
@@ -58,7 +58,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `` `>=${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12010
+Defined in: node\_modules/valibot/dist/index.d.mts:12214
 
 The expected property.
 
@@ -100,7 +100,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12002
+Defined in: node\_modules/valibot/dist/index.d.mts:12206
 
 The issue kind.
 
@@ -156,7 +156,7 @@ The issue path.
 
 > `readonly` **received**: `` `${number}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12014
+Defined in: node\_modules/valibot/dist/index.d.mts:12218
 
 The received property.
 
@@ -170,7 +170,7 @@ The received property.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12018
+Defined in: node\_modules/valibot/dist/index.d.mts:12222
 
 The minimum bytes.
 
@@ -184,7 +184,7 @@ The minimum bytes.
 
 > `readonly` **type**: `"min_bytes"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12006
+Defined in: node\_modules/valibot/dist/index.d.mts:12210
 
 The issue type.
 

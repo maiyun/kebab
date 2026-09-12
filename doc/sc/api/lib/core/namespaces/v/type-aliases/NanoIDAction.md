@@ -8,7 +8,7 @@
 
 > **NanoIDAction**\<`TInput$1`, `TMessage`\> = [`NanoIdAction`](../interfaces/NanoIdAction.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12639
+Defined in: node\_modules/valibot/dist/index.d.mts:12912
 
 Nano ID action type.
 

@@ -10,7 +10,7 @@
 
 > **minValue**\<`TInput$1`, `TRequirement`\>(`requirement`): [`MinValueAction`](../interfaces/MinValueAction.md)\<`TInput$1`, `TRequirement`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12401
+Defined in: node\_modules/valibot/dist/index.d.mts:12674
 
 Creates a min value validation action.
 
@@ -42,7 +42,7 @@ A min value action.
 
 > **minValue**\<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): [`MinValueAction`](../interfaces/MinValueAction.md)\<`TInput$1`, `TRequirement`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12410
+Defined in: node\_modules/valibot/dist/index.d.mts:12683
 
 Creates a min value validation action.
 

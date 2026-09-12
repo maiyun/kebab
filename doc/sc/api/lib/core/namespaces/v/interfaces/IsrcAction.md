@@ -6,7 +6,7 @@
 
 # Interface: IsrcAction\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10342
+Defined in: node\_modules/valibot/dist/index.d.mts:10411
 
 ISRC action interface.
 
@@ -108,7 +108,7 @@ Whether it's async.
 
 > `readonly` **expects**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10354
+Defined in: node\_modules/valibot/dist/index.d.mts:10423
 
 The expected property.
 
@@ -136,7 +136,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10362
+Defined in: node\_modules/valibot/dist/index.d.mts:10431
 
 The error message.
 
@@ -146,7 +146,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `IsrcAction`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `IsrcAction`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10350
+Defined in: node\_modules/valibot/dist/index.d.mts:10419
 
 The action reference.
 
@@ -216,7 +216,7 @@ An ISRC action.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10358
+Defined in: node\_modules/valibot/dist/index.d.mts:10427
 
 The ISRC regex.
 
@@ -226,7 +226,7 @@ The ISRC regex.
 
 > `readonly` **type**: `"isrc"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10346
+Defined in: node\_modules/valibot/dist/index.d.mts:10415
 
 The action type.
 

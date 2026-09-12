@@ -8,7 +8,7 @@
 
 > **setGlobalConfig**(`config`): `void`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15788
+Defined in: node\_modules/valibot/dist/index.d.mts:16139
 
 Sets the global configuration.
 

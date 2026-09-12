@@ -8,7 +8,7 @@
 
 > `const` **HEX\_COLOR\_REGEX**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15672
+Defined in: node\_modules/valibot/dist/index.d.mts:16016
 
 [Hex color](https://en.wikipedia.org/wiki/Web_colors#Hex_triplet) regex.
 

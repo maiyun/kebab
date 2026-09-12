@@ -10,7 +10,7 @@
 
 > **octal**\<`TInput$1`\>(): [`OctalAction`](../interfaces/OctalAction.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13364
+Defined in: node\_modules/valibot/dist/index.d.mts:13706
 
 Creates an [octal](https://en.wikipedia.org/wiki/Octal) validation action.
 
@@ -30,7 +30,7 @@ An octal action.
 
 > **octal**\<`TInput$1`, `TMessage`\>(`message`): [`OctalAction`](../interfaces/OctalAction.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13372
+Defined in: node\_modules/valibot/dist/index.d.mts:13714
 
 Creates an [octal](https://en.wikipedia.org/wiki/Octal) validation action.
 

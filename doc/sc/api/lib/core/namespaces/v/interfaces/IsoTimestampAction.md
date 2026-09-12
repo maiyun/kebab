@@ -6,7 +6,7 @@
 
 # Interface: IsoTimestampAction\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10802
+Defined in: node\_modules/valibot/dist/index.d.mts:10871
 
 ISO timestamp action interface.
 
@@ -108,7 +108,7 @@ Whether it's async.
 
 > `readonly` **expects**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10814
+Defined in: node\_modules/valibot/dist/index.d.mts:10883
 
 The expected property.
 
@@ -136,7 +136,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10822
+Defined in: node\_modules/valibot/dist/index.d.mts:10891
 
 The error message.
 
@@ -146,7 +146,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `IsoTimestampAction`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `IsoTimestampAction`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10810
+Defined in: node\_modules/valibot/dist/index.d.mts:10879
 
 The action reference.
 
@@ -247,7 +247,7 @@ An ISO timestamp action.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10818
+Defined in: node\_modules/valibot/dist/index.d.mts:10887
 
 The ISO timestamp regex.
 
@@ -257,7 +257,7 @@ The ISO timestamp regex.
 
 > `readonly` **type**: `"iso_timestamp"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10806
+Defined in: node\_modules/valibot/dist/index.d.mts:10875
 
 The action type.
 

@@ -8,6 +8,6 @@
 
 > `const` **IMEI\_REGEX**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15676
+Defined in: node\_modules/valibot/dist/index.d.mts:16020
 
 [IMEI](https://en.wikipedia.org/wiki/International_Mobile_Equipment_Identity) regex.

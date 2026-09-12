@@ -10,7 +10,7 @@
 
 > **length**\<`TInput$1`, `TRequirement`\>(`requirement`): [`LengthAction`](../interfaces/LengthAction.md)\<`TInput$1`, `TRequirement`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11096
+Defined in: node\_modules/valibot/dist/index.d.mts:11231
 
 Creates a length validation action.
 
@@ -42,7 +42,7 @@ A length action.
 
 > **length**\<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): [`LengthAction`](../interfaces/LengthAction.md)\<`TInput$1`, `TRequirement`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11105
+Defined in: node\_modules/valibot/dist/index.d.mts:11240
 
 Creates a length validation action.
 

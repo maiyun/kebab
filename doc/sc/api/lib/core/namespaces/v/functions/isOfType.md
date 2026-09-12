@@ -8,7 +8,7 @@
 
 > **isOfType**\<`TType`, `TObject`\>(`type`, `object`): `object is Extract<TObject, { type: TType }>`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:16151
+Defined in: node\_modules/valibot/dist/index.d.mts:16546
 
 A generic type guard to check the type of an object.
 

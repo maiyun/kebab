@@ -6,7 +6,7 @@
 
 # Interface: RawCheckIssueInfo\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13746
+Defined in: node\_modules/valibot/dist/index.d.mts:14088
 
 Raw check issue info interface.
 
@@ -22,7 +22,7 @@ Raw check issue info interface.
 
 > `optional` **expected?**: `string`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13749
+Defined in: node\_modules/valibot/dist/index.d.mts:14091
 
 ***
 
@@ -30,7 +30,7 @@ Defined in: node\_modules/valibot/dist/index.d.mts:13749
 
 > `optional` **input?**: `unknown`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13748
+Defined in: node\_modules/valibot/dist/index.d.mts:14090
 
 ***
 
@@ -38,7 +38,7 @@ Defined in: node\_modules/valibot/dist/index.d.mts:13748
 
 > `optional` **label?**: `string`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13747
+Defined in: node\_modules/valibot/dist/index.d.mts:14089
 
 ***
 
@@ -46,7 +46,7 @@ Defined in: node\_modules/valibot/dist/index.d.mts:13747
 
 > `optional` **message?**: [`ErrorMessage`](../type-aliases/ErrorMessage.md)\<[`RawCheckIssue`](RawCheckIssue.md)\<`TInput$1`\>\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13751
+Defined in: node\_modules/valibot/dist/index.d.mts:14093
 
 ***
 
@@ -54,7 +54,7 @@ Defined in: node\_modules/valibot/dist/index.d.mts:13751
 
 > `optional` **path?**: \[[`IssuePathItem`](../type-aliases/IssuePathItem.md), `...IssuePathItem[]`\]
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13752
+Defined in: node\_modules/valibot/dist/index.d.mts:14094
 
 ***
 
@@ -62,4 +62,4 @@ Defined in: node\_modules/valibot/dist/index.d.mts:13752
 
 > `optional` **received?**: `string`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13750
+Defined in: node\_modules/valibot/dist/index.d.mts:14092

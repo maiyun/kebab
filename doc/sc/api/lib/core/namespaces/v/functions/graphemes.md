@@ -10,7 +10,7 @@
 
 > **graphemes**\<`TInput$1`, `TRequirement`\>(`requirement`): [`GraphemesAction`](../interfaces/GraphemesAction.md)\<`TInput$1`, `TRequirement`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9442
+Defined in: node\_modules/valibot/dist/index.d.mts:9511
 
 Creates a graphemes validation action.
 
@@ -42,7 +42,7 @@ A graphemes action.
 
 > **graphemes**\<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): [`GraphemesAction`](../interfaces/GraphemesAction.md)\<`TInput$1`, `TRequirement`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9451
+Defined in: node\_modules/valibot/dist/index.d.mts:9520
 
 Creates a graphemes validation action.
 

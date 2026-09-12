@@ -10,7 +10,7 @@
 
 > **uuid**\<`TInput$1`\>(): [`UuidAction`](../interfaces/UuidAction.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15406
+Defined in: node\_modules/valibot/dist/index.d.mts:15748
 
 Creates an [UUID](https://en.wikipedia.org/wiki/Universally_unique_identifier) validation action.
 
@@ -30,7 +30,7 @@ An UUID action.
 
 > **uuid**\<`TInput$1`, `TMessage`\>(`message`): [`UuidAction`](../interfaces/UuidAction.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15414
+Defined in: node\_modules/valibot/dist/index.d.mts:15756
 
 Creates an [UUID](https://en.wikipedia.org/wiki/Universally_unique_identifier) validation action.
 

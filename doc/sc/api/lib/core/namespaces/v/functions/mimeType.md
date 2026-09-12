@@ -10,7 +10,7 @@
 
 > **mimeType**\<`TInput$1`, `TRequirement`\>(`requirement`): [`MimeTypeAction`](../interfaces/MimeTypeAction.md)\<`TInput$1`, `TRequirement`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11983
+Defined in: node\_modules/valibot/dist/index.d.mts:12187
 
 Creates a [MIME type](https://developer.mozilla.org/docs/Web/HTTP/Basics_of_HTTP/MIME_types) validation action.
 
@@ -42,7 +42,7 @@ A MIME type action.
 
 > **mimeType**\<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): [`MimeTypeAction`](../interfaces/MimeTypeAction.md)\<`TInput$1`, `TRequirement`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11992
+Defined in: node\_modules/valibot/dist/index.d.mts:12196
 
 Creates a [MIME type](https://developer.mozilla.org/docs/Web/HTTP/Basics_of_HTTP/MIME_types) validation action.
 

@@ -8,7 +8,7 @@
 
 > **transform**\<`TInput$1`, `TOutput$1`\>(`operation`): [`TransformAction`](../interfaces/TransformAction.md)\<`TInput$1`, `TOutput$1`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15120
+Defined in: node\_modules/valibot/dist/index.d.mts:15462
 
 Creates a custom transformation action.
 

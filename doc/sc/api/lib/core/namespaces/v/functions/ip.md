@@ -10,7 +10,7 @@
 
 > **ip**\<`TInput$1`\>(): [`IpAction`](../interfaces/IpAction.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10101
+Defined in: node\_modules/valibot/dist/index.d.mts:10170
 
 Creates an [IP address](https://en.wikipedia.org/wiki/IP_address) validation action.
 
@@ -30,7 +30,7 @@ An IP action.
 
 > **ip**\<`TInput$1`, `TMessage`\>(`message`): [`IpAction`](../interfaces/IpAction.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10109
+Defined in: node\_modules/valibot/dist/index.d.mts:10178
 
 Creates an [IP address](https://en.wikipedia.org/wiki/IP_address) validation action.
 

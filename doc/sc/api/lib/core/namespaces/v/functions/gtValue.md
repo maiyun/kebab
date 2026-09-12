@@ -10,7 +10,7 @@
 
 > **gtValue**\<`TInput$1`, `TRequirement`\>(`requirement`): [`GtValueAction`](../interfaces/GtValueAction.md)\<`TInput$1`, `TRequirement`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9507
+Defined in: node\_modules/valibot/dist/index.d.mts:9576
 
 Creates a greater than value validation action.
 
@@ -42,7 +42,7 @@ A greater than value action.
 
 > **gtValue**\<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): [`GtValueAction`](../interfaces/GtValueAction.md)\<`TInput$1`, `TRequirement`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9516
+Defined in: node\_modules/valibot/dist/index.d.mts:9585
 
 Creates a greater than value validation action.
 

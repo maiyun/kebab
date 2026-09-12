@@ -6,7 +6,7 @@
 
 # Interface: HexadecimalAction\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9737
+Defined in: node\_modules/valibot/dist/index.d.mts:9806
 
 Hexadecimal action interface.
 
@@ -108,7 +108,7 @@ Whether it's async.
 
 > `readonly` **expects**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9749
+Defined in: node\_modules/valibot/dist/index.d.mts:9818
 
 The expected property.
 
@@ -136,7 +136,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9757
+Defined in: node\_modules/valibot/dist/index.d.mts:9826
 
 The error message.
 
@@ -146,7 +146,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `HexadecimalAction`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `HexadecimalAction`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9745
+Defined in: node\_modules/valibot/dist/index.d.mts:9814
 
 The action reference.
 
@@ -208,7 +208,7 @@ A hexadecimal action.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9753
+Defined in: node\_modules/valibot/dist/index.d.mts:9822
 
 The hexadecimal regex.
 
@@ -218,7 +218,7 @@ The hexadecimal regex.
 
 > `readonly` **type**: `"hexadecimal"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9741
+Defined in: node\_modules/valibot/dist/index.d.mts:9810
 
 The action type.
 

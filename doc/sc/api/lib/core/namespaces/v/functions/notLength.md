@@ -10,7 +10,7 @@
 
 > **notLength**\<`TInput$1`, `TRequirement`\>(`requirement`): [`NotLengthAction`](../interfaces/NotLengthAction.md)\<`TInput$1`, `TRequirement`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13023
+Defined in: node\_modules/valibot/dist/index.d.mts:13365
 
 Creates a not length validation action.
 
@@ -42,7 +42,7 @@ A not length action.
 
 > **notLength**\<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): [`NotLengthAction`](../interfaces/NotLengthAction.md)\<`TInput$1`, `TRequirement`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13032
+Defined in: node\_modules/valibot/dist/index.d.mts:13374
 
 Creates a not length validation action.
 

@@ -6,7 +6,7 @@
 
 # Interface: RawTransformActionAsync\<TInput$1, TOutput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13887
+Defined in: node\_modules/valibot/dist/index.d.mts:14229
 
 Raw transform action async interface.
 
@@ -122,7 +122,7 @@ The object kind.
 
 > `readonly` **reference**: \<`TInput$1`, `TOutput$1`\>(`action`) => `RawTransformActionAsync`\<`TInput$1`, `TOutput$1`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13895
+Defined in: node\_modules/valibot/dist/index.d.mts:14237
 
 The action reference.
 
@@ -162,7 +162,7 @@ A raw transform action.
 
 > `readonly` **type**: `"raw_transform"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13891
+Defined in: node\_modules/valibot/dist/index.d.mts:14233
 
 The action type.
 

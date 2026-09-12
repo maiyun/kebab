@@ -8,7 +8,7 @@
 
 > **toLowerCase**(): [`ToLowerCaseAction`](../interfaces/ToLowerCaseAction.md)
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14846
+Defined in: node\_modules/valibot/dist/index.d.mts:15188
 
 Creates a to lower case transformation action.
 

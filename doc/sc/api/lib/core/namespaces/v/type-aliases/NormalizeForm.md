@@ -8,6 +8,6 @@
 
 > **NormalizeForm** = `"NFC"` \| `"NFD"` \| `"NFKC"` \| `"NFKD"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12717
+Defined in: node\_modules/valibot/dist/index.d.mts:12990
 
 Normalize form type.

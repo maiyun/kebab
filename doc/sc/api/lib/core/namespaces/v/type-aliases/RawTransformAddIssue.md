@@ -8,7 +8,7 @@
 
 > **RawTransformAddIssue**\<`TInput$1`\> = (`info?`) => `void`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13849
+Defined in: node\_modules/valibot/dist/index.d.mts:14191
 
 Raw transform add issue type.
 

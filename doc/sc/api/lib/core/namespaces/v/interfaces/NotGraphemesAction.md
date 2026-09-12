@@ -6,7 +6,7 @@
 
 # Interface: NotGraphemesAction\<TInput$1, TRequirement, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12925
+Defined in: node\_modules/valibot/dist/index.d.mts:13267
 
 Not graphemes action interface.
 
@@ -112,7 +112,7 @@ Whether it's async.
 
 > `readonly` **expects**: `` `!${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12937
+Defined in: node\_modules/valibot/dist/index.d.mts:13279
 
 The expected property.
 
@@ -140,7 +140,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12945
+Defined in: node\_modules/valibot/dist/index.d.mts:13287
 
 The error message.
 
@@ -150,7 +150,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`, `TRequirement`\>(`requirement`): `NotGraphemesAction`\<`TInput$1`, `TRequirement`, `undefined`\>; \<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): `NotGraphemesAction`\<`TInput$1`, `TRequirement`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12933
+Defined in: node\_modules/valibot/dist/index.d.mts:13275
 
 The action reference.
 
@@ -234,7 +234,7 @@ A not graphemes action.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12941
+Defined in: node\_modules/valibot/dist/index.d.mts:13283
 
 The not required graphemes.
 
@@ -244,7 +244,7 @@ The not required graphemes.
 
 > `readonly` **type**: `"not_graphemes"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12929
+Defined in: node\_modules/valibot/dist/index.d.mts:13271
 
 The action type.
 

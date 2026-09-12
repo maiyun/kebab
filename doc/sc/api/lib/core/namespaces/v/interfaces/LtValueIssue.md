@@ -6,7 +6,7 @@
 
 # Interface: LtValueIssue\<TInput$1, TRequirement\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11111
+Defined in: node\_modules/valibot/dist/index.d.mts:11246
 
 Less than value issue type.
 
@@ -58,7 +58,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `` `<${string}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11123
+Defined in: node\_modules/valibot/dist/index.d.mts:11258
 
 The expected property.
 
@@ -100,7 +100,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11115
+Defined in: node\_modules/valibot/dist/index.d.mts:11250
 
 The issue kind.
 
@@ -170,7 +170,7 @@ The received property.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11127
+Defined in: node\_modules/valibot/dist/index.d.mts:11262
 
 The less than value.
 
@@ -184,7 +184,7 @@ The less than value.
 
 > `readonly` **type**: `"lt_value"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11119
+Defined in: node\_modules/valibot/dist/index.d.mts:11254
 
 The issue type.
 

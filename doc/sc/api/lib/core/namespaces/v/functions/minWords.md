@@ -10,7 +10,7 @@
 
 > **minWords**\<`TInput$1`, `TLocales`, `TRequirement`\>(`locales`, `requirement`): [`MinWordsAction`](../interfaces/MinWordsAction.md)\<`TInput$1`, `TLocales`, `TRequirement`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12475
+Defined in: node\_modules/valibot/dist/index.d.mts:12748
 
 Creates a min words validation action.
 
@@ -52,7 +52,7 @@ A min words action.
 
 > **minWords**\<`TInput$1`, `TLocales`, `TRequirement`, `TMessage`\>(`locales`, `requirement`, `message`): [`MinWordsAction`](../interfaces/MinWordsAction.md)\<`TInput$1`, `TLocales`, `TRequirement`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12485
+Defined in: node\_modules/valibot/dist/index.d.mts:12758
 
 Creates a min words validation action.
 

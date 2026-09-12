@@ -10,7 +10,7 @@
 
 > **toNumber**\<`TInput$1`\>(): [`ToNumberAction`](../interfaces/ToNumberAction.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14944
+Defined in: node\_modules/valibot/dist/index.d.mts:15286
 
 **`Beta`**
 
@@ -32,7 +32,7 @@ A to number action.
 
 > **toNumber**\<`TInput$1`, `TMessage`\>(`message`): [`ToNumberAction`](../interfaces/ToNumberAction.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14954
+Defined in: node\_modules/valibot/dist/index.d.mts:15296
 
 **`Beta`**
 

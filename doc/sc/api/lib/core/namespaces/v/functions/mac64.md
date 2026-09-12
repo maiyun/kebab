@@ -10,7 +10,7 @@
 
 > **mac64**\<`TInput$1`\>(): [`Mac64Action`](../interfaces/Mac64Action.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11360
+Defined in: node\_modules/valibot/dist/index.d.mts:11495
 
 Creates a 64-bit [MAC address](https://en.wikipedia.org/wiki/MAC_address) validation action.
 
@@ -30,7 +30,7 @@ A 64-bit MAC action.
 
 > **mac64**\<`TInput$1`, `TMessage`\>(`message`): [`Mac64Action`](../interfaces/Mac64Action.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11368
+Defined in: node\_modules/valibot/dist/index.d.mts:11503
 
 Creates a 64-bit [MAC address](https://en.wikipedia.org/wiki/MAC_address) validation action.
 

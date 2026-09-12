@@ -6,7 +6,7 @@
 
 # Interface: EmailIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8708
+Defined in: node\_modules/valibot/dist/index.d.mts:8777
 
 Email issue interface.
 
@@ -54,7 +54,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8720
+Defined in: node\_modules/valibot/dist/index.d.mts:8789
 
 The expected property.
 
@@ -96,7 +96,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8712
+Defined in: node\_modules/valibot/dist/index.d.mts:8781
 
 The issue kind.
 
@@ -152,7 +152,7 @@ The issue path.
 
 > `readonly` **received**: `` `"${string}"` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8724
+Defined in: node\_modules/valibot/dist/index.d.mts:8793
 
 The received property.
 
@@ -166,7 +166,7 @@ The received property.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8728
+Defined in: node\_modules/valibot/dist/index.d.mts:8797
 
 The email regex.
 
@@ -180,7 +180,7 @@ The email regex.
 
 > `readonly` **type**: `"email"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8716
+Defined in: node\_modules/valibot/dist/index.d.mts:8785
 
 The issue type.
 

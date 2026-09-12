@@ -6,7 +6,7 @@
 
 # Interface: PartialCheckAction\<TInput$1, TPaths, TSelection, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13633
+Defined in: node\_modules/valibot/dist/index.d.mts:13975
 
 Partial check action interface.
 
@@ -116,7 +116,7 @@ Whether it's async.
 
 > `readonly` **expects**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13645
+Defined in: node\_modules/valibot/dist/index.d.mts:13987
 
 The expected property.
 
@@ -144,7 +144,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13657
+Defined in: node\_modules/valibot/dist/index.d.mts:13999
 
 The error message.
 
@@ -154,7 +154,7 @@ The error message.
 
 > `readonly` **paths**: `TPaths`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13649
+Defined in: node\_modules/valibot/dist/index.d.mts:13991
 
 The selected paths.
 
@@ -164,7 +164,7 @@ The selected paths.
 
 > `readonly` **reference**: \{\<`TInput$1`, `TPaths`, `TSelection`\>(`paths`, `requirement`): `PartialCheckAction`\<`TInput$1`, `TPaths`, `TSelection`, `undefined`\>; \<`TInput$1`, `TPaths`, `TSelection`, `TMessage`\>(`paths`, `requirement`, `message`): `PartialCheckAction`\<`TInput$1`, `TPaths`, `TSelection`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13641
+Defined in: node\_modules/valibot/dist/index.d.mts:13983
 
 The action reference.
 
@@ -270,7 +270,7 @@ A partial check action.
 
 > `readonly` **requirement**: (`input`) => `boolean`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13653
+Defined in: node\_modules/valibot/dist/index.d.mts:13995
 
 The validation function.
 
@@ -290,7 +290,7 @@ The validation function.
 
 > `readonly` **type**: `"partial_check"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13637
+Defined in: node\_modules/valibot/dist/index.d.mts:13979
 
 The action type.
 

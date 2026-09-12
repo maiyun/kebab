@@ -8,7 +8,7 @@
 
 > **trimStart**(): [`TrimStartAction`](../interfaces/TrimStartAction.md)
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15210
+Defined in: node\_modules/valibot/dist/index.d.mts:15552
 
 Creates a trim start transformation action.
 

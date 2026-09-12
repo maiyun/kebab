@@ -10,7 +10,7 @@
 
 > **empty**\<`TInput$1`\>(): [`EmptyAction`](../interfaces/EmptyAction.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8894
+Defined in: node\_modules/valibot/dist/index.d.mts:8963
 
 Creates an empty validation action.
 
@@ -30,7 +30,7 @@ An empty action.
 
 > **empty**\<`TInput$1`, `TMessage`\>(`message`): [`EmptyAction`](../interfaces/EmptyAction.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8902
+Defined in: node\_modules/valibot/dist/index.d.mts:8971
 
 Creates an empty validation action.
 

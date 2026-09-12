@@ -19,7 +19,14 @@
 
 - [IConnectOptions](interfaces/IConnectOptions.md)
 - [IMproxyOptions](interfaces/IMproxyOptions.md)
+- [IPipeCloseInfo](interfaces/IPipeCloseInfo.md)
 - [IRproxyOptions](interfaces/IRproxyOptions.md)
+- [ISocketCloseInfo](interfaces/ISocketCloseInfo.md)
+
+## Type Aliases
+
+- [TPipeCloseEvent](type-aliases/TPipeCloseEvent.md)
+- [TPipeSide](type-aliases/TPipeSide.md)
 
 ## Functions
 

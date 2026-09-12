@@ -6,7 +6,7 @@
 
 # Interface: Cuid2Action\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8410
+Defined in: node\_modules/valibot/dist/index.d.mts:8479
 
 Cuid2 action interface.
 
@@ -108,7 +108,7 @@ Whether it's async.
 
 > `readonly` **expects**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8422
+Defined in: node\_modules/valibot/dist/index.d.mts:8491
 
 The expected property.
 
@@ -136,7 +136,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8430
+Defined in: node\_modules/valibot/dist/index.d.mts:8499
 
 The error message.
 
@@ -146,7 +146,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `Cuid2Action`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `Cuid2Action`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8418
+Defined in: node\_modules/valibot/dist/index.d.mts:8487
 
 The action reference.
 
@@ -208,7 +208,7 @@ A Cuid2 action.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8426
+Defined in: node\_modules/valibot/dist/index.d.mts:8495
 
 The Cuid2 regex.
 
@@ -218,7 +218,7 @@ The Cuid2 regex.
 
 > `readonly` **type**: `"cuid2"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8414
+Defined in: node\_modules/valibot/dist/index.d.mts:8483
 
 The action type.
 

@@ -6,7 +6,7 @@
 
 # Interface: ToBigintIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14636
+Defined in: node\_modules/valibot/dist/index.d.mts:14978
 
 To bigint issue interface.
 
@@ -54,7 +54,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14648
+Defined in: node\_modules/valibot/dist/index.d.mts:14990
 
 The expected property.
 
@@ -96,7 +96,7 @@ The sub issues.
 
 > `readonly` **kind**: `"transformation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14640
+Defined in: node\_modules/valibot/dist/index.d.mts:14982
 
 The issue kind.
 
@@ -180,7 +180,7 @@ The input requirement.
 
 > `readonly` **type**: `"to_bigint"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14644
+Defined in: node\_modules/valibot/dist/index.d.mts:14986
 
 The issue type.
 

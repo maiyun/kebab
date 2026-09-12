@@ -6,7 +6,7 @@
 
 # Interface: ImeiIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9844
+Defined in: node\_modules/valibot/dist/index.d.mts:9913
 
 IMEI issue interface.
 
@@ -54,7 +54,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9856
+Defined in: node\_modules/valibot/dist/index.d.mts:9925
 
 The expected property.
 
@@ -96,7 +96,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9848
+Defined in: node\_modules/valibot/dist/index.d.mts:9917
 
 The issue kind.
 
@@ -152,7 +152,7 @@ The issue path.
 
 > `readonly` **received**: `` `"${string}"` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9860
+Defined in: node\_modules/valibot/dist/index.d.mts:9929
 
 The received property.
 
@@ -166,7 +166,7 @@ The received property.
 
 > `readonly` **requirement**: (`input`) => `boolean`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9864
+Defined in: node\_modules/valibot/dist/index.d.mts:9933
 
 The validation function.
 
@@ -190,7 +190,7 @@ The validation function.
 
 > `readonly` **type**: `"imei"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9852
+Defined in: node\_modules/valibot/dist/index.d.mts:9921
 
 The issue type.
 

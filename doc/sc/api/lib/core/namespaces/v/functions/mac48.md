@@ -10,7 +10,7 @@
 
 > **mac48**\<`TInput$1`\>(): [`Mac48Action`](../interfaces/Mac48Action.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11294
+Defined in: node\_modules/valibot/dist/index.d.mts:11429
 
 Creates a 48-bit [MAC address](https://en.wikipedia.org/wiki/MAC_address) validation action.
 
@@ -30,7 +30,7 @@ A 48-bit MAC action.
 
 > **mac48**\<`TInput$1`, `TMessage`\>(`message`): [`Mac48Action`](../interfaces/Mac48Action.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11302
+Defined in: node\_modules/valibot/dist/index.d.mts:11437
 
 Creates a 48-bit [MAC address](https://en.wikipedia.org/wiki/MAC_address) validation action.
 

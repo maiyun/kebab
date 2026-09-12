@@ -6,7 +6,7 @@
 
 # Interface: TransformAction\<TInput$1, TOutput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15099
+Defined in: node\_modules/valibot/dist/index.d.mts:15441
 
 Transform action interface.
 
@@ -122,7 +122,7 @@ The object kind.
 
 > `readonly` **operation**: (`input`) => `TOutput$1`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15111
+Defined in: node\_modules/valibot/dist/index.d.mts:15453
 
 The transformation operation.
 
@@ -142,7 +142,7 @@ The transformation operation.
 
 > `readonly` **reference**: \<`TInput$1`, `TOutput$1`\>(`operation`) => `TransformAction`\<`TInput$1`, `TOutput$1`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15107
+Defined in: node\_modules/valibot/dist/index.d.mts:15449
 
 The action reference.
 
@@ -182,7 +182,7 @@ A transform action.
 
 > `readonly` **type**: `"transform"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15103
+Defined in: node\_modules/valibot/dist/index.d.mts:15445
 
 The action type.
 

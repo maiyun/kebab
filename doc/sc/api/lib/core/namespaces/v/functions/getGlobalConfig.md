@@ -8,7 +8,7 @@
 
 > **getGlobalConfig**\<`TIssue`\>(`config?`): [`Config`](../interfaces/Config.md)\<`TIssue`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15796
+Defined in: node\_modules/valibot/dist/index.d.mts:16147
 
 Returns the global configuration.
 

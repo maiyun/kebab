@@ -8,7 +8,7 @@
 
 > **rawTransformAsync**\<`TInput$1`, `TOutput$1`\>(`action`): [`RawTransformActionAsync`](../interfaces/RawTransformActionAsync.md)\<`TInput$1`, `TOutput$1`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13904
+Defined in: node\_modules/valibot/dist/index.d.mts:14246
 
 Creates a raw transformation action.
 

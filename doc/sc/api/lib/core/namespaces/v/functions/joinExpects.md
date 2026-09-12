@@ -8,7 +8,7 @@
 
 > **\_joinExpects**(`values`, `separator`): `string`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:16062
+Defined in: node\_modules/valibot/dist/index.d.mts:16442
 
 **`Internal`**
 

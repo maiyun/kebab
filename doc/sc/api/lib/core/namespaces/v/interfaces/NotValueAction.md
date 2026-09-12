@@ -6,7 +6,7 @@
 
 # Interface: NotValueAction\<TInput$1, TRequirement, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13128
+Defined in: node\_modules/valibot/dist/index.d.mts:13470
 
 Not value action interface.
 
@@ -112,7 +112,7 @@ Whether it's async.
 
 > `readonly` **expects**: `` `!${string}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13140
+Defined in: node\_modules/valibot/dist/index.d.mts:13482
 
 The expected property.
 
@@ -140,7 +140,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13148
+Defined in: node\_modules/valibot/dist/index.d.mts:13490
 
 The error message.
 
@@ -150,7 +150,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`, `TRequirement`\>(`requirement`): `NotValueAction`\<`TInput$1`, `TRequirement`, `undefined`\>; \<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): `NotValueAction`\<`TInput$1`, `TRequirement`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13136
+Defined in: node\_modules/valibot/dist/index.d.mts:13478
 
 The action reference.
 
@@ -234,7 +234,7 @@ A not value action.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13144
+Defined in: node\_modules/valibot/dist/index.d.mts:13486
 
 The not required value.
 
@@ -244,7 +244,7 @@ The not required value.
 
 > `readonly` **type**: `"not_value"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13132
+Defined in: node\_modules/valibot/dist/index.d.mts:13474
 
 The action type.
 

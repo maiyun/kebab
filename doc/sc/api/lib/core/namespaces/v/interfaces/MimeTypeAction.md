@@ -6,7 +6,7 @@
 
 # Interface: MimeTypeAction\<TInput$1, TRequirement, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11954
+Defined in: node\_modules/valibot/dist/index.d.mts:12158
 
 MIME type action interface.
 
@@ -112,7 +112,7 @@ Whether it's async.
 
 > `readonly` **expects**: `string`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11966
+Defined in: node\_modules/valibot/dist/index.d.mts:12170
 
 The expected property.
 
@@ -140,7 +140,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11974
+Defined in: node\_modules/valibot/dist/index.d.mts:12178
 
 The error message.
 
@@ -150,7 +150,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`, `TRequirement`\>(`requirement`): `MimeTypeAction`\<`TInput$1`, `TRequirement`, `undefined`\>; \<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): `MimeTypeAction`\<`TInput$1`, `TRequirement`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11962
+Defined in: node\_modules/valibot/dist/index.d.mts:12166
 
 The action reference.
 
@@ -234,7 +234,7 @@ A MIME type action.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11970
+Defined in: node\_modules/valibot/dist/index.d.mts:12174
 
 The MIME types.
 
@@ -244,7 +244,7 @@ The MIME types.
 
 > `readonly` **type**: `"mime_type"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11958
+Defined in: node\_modules/valibot/dist/index.d.mts:12162
 
 The action type.
 

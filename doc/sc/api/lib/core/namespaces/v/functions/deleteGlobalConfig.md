@@ -8,7 +8,7 @@
 
 > **deleteGlobalConfig**(): `void`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15800
+Defined in: node\_modules/valibot/dist/index.d.mts:16151
 
 Deletes the global configuration.
 

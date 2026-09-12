@@ -8,6 +8,6 @@
 
 > `const` **ISO\_DATE\_REGEX**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15692
+Defined in: node\_modules/valibot/dist/index.d.mts:16036
 
 [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) date regex.

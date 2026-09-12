@@ -6,7 +6,7 @@
 
 # Interface: MultipleOfAction\<TInput$1, TRequirement, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12520
+Defined in: node\_modules/valibot/dist/index.d.mts:12793
 
 Multiple of action interface.
 
@@ -112,7 +112,7 @@ Whether it's async.
 
 > `readonly` **expects**: `` `%${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12532
+Defined in: node\_modules/valibot/dist/index.d.mts:12805
 
 The expected property.
 
@@ -140,7 +140,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12540
+Defined in: node\_modules/valibot/dist/index.d.mts:12813
 
 The error message.
 
@@ -150,7 +150,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`, `TRequirement`\>(`requirement`): `MultipleOfAction`\<`TInput$1`, `TRequirement`, `undefined`\>; \<`TInput$1`, `TRequirement`\>(`requirement`): `MultipleOfAction`\<`TInput$1`, `TRequirement`, `undefined`\>; \<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): `MultipleOfAction`\<`TInput$1`, `TRequirement`, `TMessage`\>; \<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): `MultipleOfAction`\<`TInput$1`, `TRequirement`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12528
+Defined in: node\_modules/valibot/dist/index.d.mts:12801
 
 The action reference.
 
@@ -304,7 +304,7 @@ A multiple of action.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12536
+Defined in: node\_modules/valibot/dist/index.d.mts:12809
 
 The divisor.
 
@@ -314,7 +314,7 @@ The divisor.
 
 > `readonly` **type**: `"multiple_of"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12524
+Defined in: node\_modules/valibot/dist/index.d.mts:12797
 
 The action type.
 

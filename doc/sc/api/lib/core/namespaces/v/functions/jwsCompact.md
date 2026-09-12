@@ -10,7 +10,7 @@
 
 > **jwsCompact**\<`TInput$1`\>(): [`JwsCompactAction`](../interfaces/JwsCompactAction.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11021
+Defined in: node\_modules/valibot/dist/index.d.mts:11090
 
 **`Beta`**
 
@@ -37,7 +37,7 @@ A JWS compact action.
 
 > **jwsCompact**\<`TInput$1`, `TMessage`\>(`message`): [`JwsCompactAction`](../interfaces/JwsCompactAction.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11036
+Defined in: node\_modules/valibot/dist/index.d.mts:11105
 
 **`Beta`**
 

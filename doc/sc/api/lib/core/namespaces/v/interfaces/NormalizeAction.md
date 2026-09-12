@@ -6,7 +6,7 @@
 
 # Interface: NormalizeAction\<TForm\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12721
+Defined in: node\_modules/valibot/dist/index.d.mts:12994
 
 Normalize action interface.
 
@@ -104,7 +104,7 @@ Whether it's async.
 
 > `readonly` **form**: `TForm`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12733
+Defined in: node\_modules/valibot/dist/index.d.mts:13006
 
 The normalization form.
 
@@ -128,7 +128,7 @@ The object kind.
 
 > `readonly` **reference**: \{(): `NormalizeAction`\<`undefined`\>; \<`TForm`\>(`form`): `NormalizeAction`\<`TForm`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12729
+Defined in: node\_modules/valibot/dist/index.d.mts:13002
 
 The action reference.
 
@@ -180,7 +180,7 @@ A normalize action.
 
 > `readonly` **type**: `"normalize"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12725
+Defined in: node\_modules/valibot/dist/index.d.mts:12998
 
 The action type.
 

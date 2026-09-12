@@ -8,7 +8,7 @@
 
 > **findItem**\<`TInput$1`, `TOuput`\>(`operation`): [`FindItemAction`](../interfaces/FindItemAction.md)\<`TInput$1`, `TOuput`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9265
+Defined in: node\_modules/valibot/dist/index.d.mts:9334
 
 Creates a find item transformation action.
 

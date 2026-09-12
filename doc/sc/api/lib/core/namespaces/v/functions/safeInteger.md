@@ -10,7 +10,7 @@
 
 > **safeInteger**\<`TInput$1`\>(): [`SafeIntegerAction`](../interfaces/SafeIntegerAction.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14230
+Defined in: node\_modules/valibot/dist/index.d.mts:14572
 
 Creates a safe integer validation action.
 
@@ -30,7 +30,7 @@ A safe integer action.
 
 > **safeInteger**\<`TInput$1`, `TMessage`\>(`message`): [`SafeIntegerAction`](../interfaces/SafeIntegerAction.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14238
+Defined in: node\_modules/valibot/dist/index.d.mts:14580
 
 Creates a safe integer validation action.
 

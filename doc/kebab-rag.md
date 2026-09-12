@@ -5096,7 +5096,7 @@ lib/core/namespaces/v/classes/ValiError.md
 
 # Class: ValiError\<TSchema\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:16171
+Defined in: node\_modules/valibot/dist/index.d.mts:16556
 
 A Valibot error with useful information.
 
@@ -5116,7 +5116,7 @@ A Valibot error with useful information.
 
 > **new ValiError**\<`TSchema`\>(`issues`): `ValiError`\<`TSchema`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:16181
+Defined in: node\_modules/valibot/dist/index.d.mts:16566
 
 Creates a Valibot error with useful information.
 
@@ -5142,7 +5142,7 @@ The error issues.
 
 > `readonly` **issues**: \[[`InferIssue`](../type-aliases/InferIssue.md)\<`TSchema`\>, `...InferIssue<TSchema>[]`\]
 
-Defined in: node\_modules/valibot/dist/index.d.mts:16175
+Defined in: node\_modules/valibot/dist/index.d.mts:16560
 
 The error issues.
 
@@ -5159,7 +5159,7 @@ lib/core/namespaces/v/functions/addIssue.md
 
 > **\_addIssue**\<`TContext`\>(`context`, `label`, `dataset`, `config`, `other?`): `void`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15905
+Defined in: node\_modules/valibot/dist/index.d.mts:16256
 
 **`Internal`**
 
@@ -6455,14 +6455,14 @@ lib/core/namespaces/v/functions/cloneDataset.md
 
 > **\_cloneDataset**\<`TValue$1`, `TIssue`\>(`dataset`): [`OutputDataset`](../type-aliases/OutputDataset.md)\<`TValue$1`, `TIssue`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15926
+Defined in: node\_modules/valibot/dist/index.d.mts:16277
 
 Creates a shallow copy of a dataset.
 
-Hint: The `value` is copied by reference, but the `issues` array is cloned
-to avoid reusing mutable dataset state across multiple runs. Mutating a
-returned object or array value can therefore affect later cache hits that
-reuse the same cached output.
+Hint: The `value` is copied by reference, but the `issues` array, its issues
+and their `path` arrays are cloned to avoid reusing mutable dataset state
+across multiple runs. Mutating a returned object or array value can
+therefore affect later cache hits that reuse the same cached output.
 
 ## Type Parameters
 
@@ -6487,6 +6487,91 @@ The output dataset.
 [`OutputDataset`](../type-aliases/OutputDataset.md)\<`TValue$1`, `TIssue`\>
 
 The copied output dataset.
+
+lib/core/namespaces/v/functions/codePoints.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../../../index.md) / [lib/core](../../../index.md) / [v](../index.md) / codePoints
+
+# Function: codePoints()
+
+## Call Signature
+
+> **codePoints**\<`TInput$1`, `TRequirement`\>(`requirement`): [`CodePointsAction`](../interfaces/CodePointsAction.md)\<`TInput$1`, `TRequirement`, `undefined`\>
+
+Defined in: node\_modules/valibot/dist/index.d.mts:8373
+
+Creates a code points validation action.
+
+### Type Parameters
+
+#### TInput$1
+
+`TInput$1` *extends* `string`
+
+#### TRequirement
+
+`TRequirement` *extends* `number`
+
+### Parameters
+
+#### requirement
+
+`TRequirement`
+
+The required code points.
+
+### Returns
+
+[`CodePointsAction`](../interfaces/CodePointsAction.md)\<`TInput$1`, `TRequirement`, `undefined`\>
+
+A code points action.
+
+## Call Signature
+
+> **codePoints**\<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): [`CodePointsAction`](../interfaces/CodePointsAction.md)\<`TInput$1`, `TRequirement`, `TMessage`\>
+
+Defined in: node\_modules/valibot/dist/index.d.mts:8382
+
+Creates a code points validation action.
+
+### Type Parameters
+
+#### TInput$1
+
+`TInput$1` *extends* `string`
+
+#### TRequirement
+
+`TRequirement` *extends* `number`
+
+#### TMessage
+
+`TMessage` *extends* [`ErrorMessage`](../type-aliases/ErrorMessage.md)\<[`CodePointsIssue`](../interfaces/CodePointsIssue.md)\<`TInput$1`, `TRequirement`\>\> \| `undefined`
+
+### Parameters
+
+#### requirement
+
+`TRequirement`
+
+The required code points.
+
+#### message
+
+`TMessage`
+
+The error message.
+
+### Returns
+
+[`CodePointsAction`](../interfaces/CodePointsAction.md)\<`TInput$1`, `TRequirement`, `TMessage`\>
+
+A code points action.
 
 lib/core/namespaces/v/functions/config.md
 ---
@@ -6546,7 +6631,7 @@ lib/core/namespaces/v/functions/creditCard.md
 
 > **creditCard**\<`TInput$1`\>(): [`CreditCardAction`](../interfaces/CreditCardAction.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8371
+Defined in: node\_modules/valibot/dist/index.d.mts:8440
 
 Creates a [credit card](https://en.wikipedia.org/wiki/Payment_card_number) validation action.
 
@@ -6566,7 +6651,7 @@ A Credit card action.
 
 > **creditCard**\<`TInput$1`, `TMessage`\>(`message`): [`CreditCardAction`](../interfaces/CreditCardAction.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8379
+Defined in: node\_modules/valibot/dist/index.d.mts:8448
 
 Creates a [credit card](https://en.wikipedia.org/wiki/Payment_card_number) validation action.
 
@@ -6609,7 +6694,7 @@ lib/core/namespaces/v/functions/cuid2.md
 
 > **cuid2**\<`TInput$1`\>(): [`Cuid2Action`](../interfaces/Cuid2Action.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8437
+Defined in: node\_modules/valibot/dist/index.d.mts:8506
 
 Creates a [Cuid2](https://github.com/paralleldrive/cuid2) validation action.
 
@@ -6629,7 +6714,7 @@ A Cuid2 action.
 
 > **cuid2**\<`TInput$1`, `TMessage`\>(`message`): [`Cuid2Action`](../interfaces/Cuid2Action.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8445
+Defined in: node\_modules/valibot/dist/index.d.mts:8514
 
 Creates a [Cuid2](https://github.com/paralleldrive/cuid2) validation action.
 
@@ -6879,7 +6964,7 @@ lib/core/namespaces/v/functions/decimal.md
 
 > **decimal**\<`TInput$1`\>(): [`DecimalAction`](../interfaces/DecimalAction.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8507
+Defined in: node\_modules/valibot/dist/index.d.mts:8576
 
 Creates a [decimal](https://en.wikipedia.org/wiki/Decimal) validation action.
 
@@ -6903,7 +6988,7 @@ An decimal action.
 
 > **decimal**\<`TInput$1`, `TMessage`\>(`message`): [`DecimalAction`](../interfaces/DecimalAction.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8519
+Defined in: node\_modules/valibot/dist/index.d.mts:8588
 
 Creates a [decimal](https://en.wikipedia.org/wiki/Decimal) validation action.
 
@@ -6948,7 +7033,7 @@ lib/core/namespaces/v/functions/deleteGlobalConfig.md
 
 > **deleteGlobalConfig**(): `void`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15800
+Defined in: node\_modules/valibot/dist/index.d.mts:16151
 
 Deletes the global configuration.
 
@@ -6969,7 +7054,7 @@ lib/core/namespaces/v/functions/deleteGlobalMessage.md
 
 > **deleteGlobalMessage**(`lang?`): `void`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15823
+Defined in: node\_modules/valibot/dist/index.d.mts:16174
 
 Deletes a global error message.
 
@@ -6998,7 +7083,7 @@ lib/core/namespaces/v/functions/deleteSchemaMessage.md
 
 > **deleteSchemaMessage**(`lang?`): `void`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15846
+Defined in: node\_modules/valibot/dist/index.d.mts:16197
 
 Deletes a schema error message.
 
@@ -7027,7 +7112,7 @@ lib/core/namespaces/v/functions/deleteSpecificMessage.md
 
 > **deleteSpecificMessage**(`reference`, `lang?`): `void`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15876
+Defined in: node\_modules/valibot/dist/index.d.mts:16227
 
 Deletes a specific error message.
 
@@ -7062,7 +7147,7 @@ lib/core/namespaces/v/functions/description.md
 
 > **description**\<`TInput$1`, `TDescription`\>(`description_`): [`DescriptionAction`](../interfaces/DescriptionAction.md)\<`TInput$1`, `TDescription`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8546
+Defined in: node\_modules/valibot/dist/index.d.mts:8615
 
 Creates a description metadata action.
 
@@ -7105,7 +7190,7 @@ lib/core/namespaces/v/functions/digits.md
 
 > **digits**\<`TInput$1`\>(): [`DigitsAction`](../interfaces/DigitsAction.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8608
+Defined in: node\_modules/valibot/dist/index.d.mts:8677
 
 Creates a [digits](https://en.wikipedia.org/wiki/Numerical_digit) validation action.
 
@@ -7129,7 +7214,7 @@ An digits action.
 
 > **digits**\<`TInput$1`, `TMessage`\>(`message`): [`DigitsAction`](../interfaces/DigitsAction.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8620
+Defined in: node\_modules/valibot/dist/index.d.mts:8689
 
 Creates a [digits](https://en.wikipedia.org/wiki/Numerical_digit) validation action.
 
@@ -7176,7 +7261,7 @@ lib/core/namespaces/v/functions/domain.md
 
 > **domain**\<`TInput$1`\>(): [`DomainAction`](../interfaces/DomainAction.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8688
+Defined in: node\_modules/valibot/dist/index.d.mts:8757
 
 **`Beta`**
 
@@ -7202,7 +7287,7 @@ A domain action.
 
 > **domain**\<`TInput$1`, `TMessage`\>(`message`): [`DomainAction`](../interfaces/DomainAction.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8702
+Defined in: node\_modules/valibot/dist/index.d.mts:8771
 
 **`Beta`**
 
@@ -7251,7 +7336,7 @@ lib/core/namespaces/v/functions/email.md
 
 > **email**\<`TInput$1`\>(): [`EmailAction`](../interfaces/EmailAction.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8765
+Defined in: node\_modules/valibot/dist/index.d.mts:8834
 
 Creates an [email](https://en.wikipedia.org/wiki/Email_address) validation
 action.
@@ -7276,7 +7361,7 @@ An email action.
 
 > **email**\<`TInput$1`, `TMessage`\>(`message`): [`EmailAction`](../interfaces/EmailAction.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8778
+Defined in: node\_modules/valibot/dist/index.d.mts:8847
 
 Creates an [email](https://en.wikipedia.org/wiki/Email_address) validation
 action.
@@ -7324,7 +7409,7 @@ lib/core/namespaces/v/functions/emoji.md
 
 > **emoji**\<`TInput$1`\>(): [`EmojiAction`](../interfaces/EmojiAction.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8836
+Defined in: node\_modules/valibot/dist/index.d.mts:8905
 
 Creates an [emoji](https://en.wikipedia.org/wiki/Emoji) validation action.
 
@@ -7344,7 +7429,7 @@ An emoji action.
 
 > **emoji**\<`TInput$1`, `TMessage`\>(`message`): [`EmojiAction`](../interfaces/EmojiAction.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8844
+Defined in: node\_modules/valibot/dist/index.d.mts:8913
 
 Creates an [emoji](https://en.wikipedia.org/wiki/Emoji) validation action.
 
@@ -7387,7 +7472,7 @@ lib/core/namespaces/v/functions/empty.md
 
 > **empty**\<`TInput$1`\>(): [`EmptyAction`](../interfaces/EmptyAction.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8894
+Defined in: node\_modules/valibot/dist/index.d.mts:8963
 
 Creates an empty validation action.
 
@@ -7407,7 +7492,7 @@ An empty action.
 
 > **empty**\<`TInput$1`, `TMessage`\>(`message`): [`EmptyAction`](../interfaces/EmptyAction.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8902
+Defined in: node\_modules/valibot/dist/index.d.mts:8971
 
 Creates an empty validation action.
 
@@ -7450,7 +7535,7 @@ lib/core/namespaces/v/functions/endsWith.md
 
 > **endsWith**\<`TInput$1`, `TRequirement`\>(`requirement`): [`EndsWithAction`](../interfaces/EndsWithAction.md)\<`TInput$1`, `TRequirement`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8962
+Defined in: node\_modules/valibot/dist/index.d.mts:9031
 
 Creates an ends with validation action.
 
@@ -7482,7 +7567,7 @@ An ends with action.
 
 > **endsWith**\<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): [`EndsWithAction`](../interfaces/EndsWithAction.md)\<`TInput$1`, `TRequirement`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8971
+Defined in: node\_modules/valibot/dist/index.d.mts:9040
 
 Creates an ends with validation action.
 
@@ -7533,7 +7618,7 @@ lib/core/namespaces/v/functions/entriesFromList.md
 
 > **entriesFromList**\<`TList`, `TSchema`\>(`list`, `schema`): `Record`\<`TList`\[`number`\], `TSchema`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:16085
+Defined in: node\_modules/valibot/dist/index.d.mts:16480
 
 Creates an object entries definition from a list of keys and a schema.
 
@@ -7580,7 +7665,7 @@ lib/core/namespaces/v/functions/entriesFromObjects.md
 
 > **entriesFromObjects**\<`TSchemas`\>(`schemas`): \{ \[TKey in string \| number \| symbol\]: RecursiveMerge\<TSchemas\>\[TKey\] \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:16107
+Defined in: node\_modules/valibot/dist/index.d.mts:16502
 
 Creates a new object entries definition from existing object schemas.
 
@@ -7619,7 +7704,7 @@ lib/core/namespaces/v/functions/entries.md
 
 > **entries**\<`TInput$1`, `TRequirement`\>(`requirement`): [`EntriesAction`](../interfaces/EntriesAction.md)\<`TInput$1`, `TRequirement`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9037
+Defined in: node\_modules/valibot/dist/index.d.mts:9106
 
 **`Beta`**
 
@@ -7653,7 +7738,7 @@ An entries action.
 
 > **entries**\<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): [`EntriesAction`](../interfaces/EntriesAction.md)\<`TInput$1`, `TRequirement`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9048
+Defined in: node\_modules/valibot/dist/index.d.mts:9117
 
 **`Beta`**
 
@@ -7862,7 +7947,7 @@ lib/core/namespaces/v/functions/everyItem.md
 
 > **everyItem**\<`TInput$1`\>(`requirement`): [`EveryItemAction`](../interfaces/EveryItemAction.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9104
+Defined in: node\_modules/valibot/dist/index.d.mts:9173
 
 Creates an every item validation action.
 
@@ -7890,7 +7975,7 @@ An every item action.
 
 > **everyItem**\<`TInput$1`, `TMessage`\>(`requirement`, `message`): [`EveryItemAction`](../interfaces/EveryItemAction.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9113
+Defined in: node\_modules/valibot/dist/index.d.mts:9182
 
 Creates an every item validation action.
 
@@ -8091,7 +8176,7 @@ lib/core/namespaces/v/functions/examples.md
 
 > **examples**\<`TInput$1`, `TExamples`\>(`examples_`): [`ExamplesAction`](../interfaces/ExamplesAction.md)\<`TInput$1`, `TExamples`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9142
+Defined in: node\_modules/valibot/dist/index.d.mts:9211
 
 **`Beta`**
 
@@ -8136,7 +8221,7 @@ lib/core/namespaces/v/functions/excludes.md
 
 > **excludes**\<`TInput$1`, `TRequirement`\>(`requirement`): [`ExcludesAction`](../interfaces/ExcludesAction.md)\<`TInput$1`, `TRequirement`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9198
+Defined in: node\_modules/valibot/dist/index.d.mts:9267
 
 Creates an excludes validation action.
 
@@ -8168,7 +8253,7 @@ An excludes action.
 
 > **excludes**\<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): [`ExcludesAction`](../interfaces/ExcludesAction.md)\<`TInput$1`, `TRequirement`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9207
+Defined in: node\_modules/valibot/dist/index.d.mts:9276
 
 Creates an excludes validation action.
 
@@ -8366,7 +8451,7 @@ lib/core/namespaces/v/functions/filterItems.md
 
 > **filterItems**\<`TInput$1`\>(`operation`): [`FilterItemsAction`](../interfaces/FilterItemsAction.md)\<`TInput$1`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9234
+Defined in: node\_modules/valibot/dist/index.d.mts:9303
 
 Creates a filter items transformation action.
 
@@ -8403,7 +8488,7 @@ lib/core/namespaces/v/functions/findItem.md
 
 > **findItem**\<`TInput$1`, `TOuput`\>(`operation`): [`FindItemAction`](../interfaces/FindItemAction.md)\<`TInput$1`, `TOuput`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9265
+Defined in: node\_modules/valibot/dist/index.d.mts:9334
 
 Creates a find item transformation action.
 
@@ -8446,7 +8531,7 @@ lib/core/namespaces/v/functions/finite.md
 
 > **finite**\<`TInput$1`\>(): [`FiniteAction`](../interfaces/FiniteAction.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9323
+Defined in: node\_modules/valibot/dist/index.d.mts:9392
 
 Creates a [finite](https://en.wikipedia.org/wiki/Finite) validation action.
 
@@ -8466,7 +8551,7 @@ A finite action.
 
 > **finite**\<`TInput$1`, `TMessage`\>(`message`): [`FiniteAction`](../interfaces/FiniteAction.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9331
+Defined in: node\_modules/valibot/dist/index.d.mts:9400
 
 Creates a [finite](https://en.wikipedia.org/wiki/Finite) validation action.
 
@@ -8626,7 +8711,7 @@ lib/core/namespaces/v/functions/flavor.md
 
 > **flavor**\<`TInput$1`, `TName`\>(`name`): [`FlavorAction`](../interfaces/FlavorAction.md)\<`TInput$1`, `TName`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9382
+Defined in: node\_modules/valibot/dist/index.d.mts:9451
 
 **`Beta`**
 
@@ -8669,7 +8754,7 @@ lib/core/namespaces/v/functions/formatCase.md
 
 > **\_formatCase**(`input`, `separator`, `capFirst`, `capRest`): `string`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15954
+Defined in: node\_modules/valibot/dist/index.d.mts:16305
 
 **`Internal`**
 
@@ -8941,7 +9026,7 @@ lib/core/namespaces/v/functions/getByteCount.md
 
 > **\_getByteCount**(`input`): `number`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15966
+Defined in: node\_modules/valibot/dist/index.d.mts:16317
 
 **`Internal`**
 
@@ -8960,6 +9045,39 @@ The input to be measured.
 `number`
 
 The byte count.
+
+lib/core/namespaces/v/functions/getCodePointCount.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../../../index.md) / [lib/core](../../../index.md) / [v](../index.md) / \_getCodePointCount
+
+# Function: \_getCodePointCount()
+
+> **\_getCodePointCount**(`input`): `number`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:16329
+
+**`Internal`**
+
+Returns the code point count of the input.
+
+## Parameters
+
+### input
+
+`string`
+
+The input to be measured.
+
+## Returns
+
+`number`
+
+The code point count.
 
 lib/core/namespaces/v/functions/getDefault.md
 ---
@@ -9143,7 +9261,7 @@ lib/core/namespaces/v/functions/getDotPath.md
 
 > **getDotPath**(`issue`): `string` \| `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:16117
+Defined in: node\_modules/valibot/dist/index.d.mts:16512
 
 Creates and returns the dot path of an issue if possible.
 
@@ -9165,7 +9283,7 @@ The dot path or null.
 
 > **getDotPath**\<`TSchema`\>(`issue`): [`IssueDotPath`](../type-aliases/IssueDotPath.md)\<`TSchema`\> \| `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:16125
+Defined in: node\_modules/valibot/dist/index.d.mts:16520
 
 Creates and returns the dot path of an issue if possible.
 
@@ -9375,7 +9493,7 @@ lib/core/namespaces/v/functions/getGlobalConfig.md
 
 > **getGlobalConfig**\<`TIssue`\>(`config?`): [`Config`](../interfaces/Config.md)\<`TIssue`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15796
+Defined in: node\_modules/valibot/dist/index.d.mts:16147
 
 Returns the global configuration.
 
@@ -9412,7 +9530,7 @@ lib/core/namespaces/v/functions/getGlobalMessage.md
 
 > **getGlobalMessage**(`lang?`): [`ErrorMessage`](../type-aliases/ErrorMessage.md)\<[`BaseIssue`](../interfaces/BaseIssue.md)\<`unknown`\>\> \| `undefined`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15817
+Defined in: node\_modules/valibot/dist/index.d.mts:16168
 
 Returns a global error message.
 
@@ -9443,7 +9561,7 @@ lib/core/namespaces/v/functions/getGraphemeCount.md
 
 > **\_getGraphemeCount**(`input`): `number`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15978
+Defined in: node\_modules/valibot/dist/index.d.mts:16341
 
 **`Internal`**
 
@@ -9476,7 +9594,7 @@ lib/core/namespaces/v/functions/getLastMetadata.md
 
 > **\_getLastMetadata**(`schema`, `type`): `string` \| `undefined`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:16000
+Defined in: node\_modules/valibot/dist/index.d.mts:16363
 
 **`Internal`**
 
@@ -9558,7 +9676,7 @@ lib/core/namespaces/v/functions/getSchemaMessage.md
 
 > **getSchemaMessage**(`lang?`): [`ErrorMessage`](../type-aliases/ErrorMessage.md)\<[`BaseIssue`](../interfaces/BaseIssue.md)\<`unknown`\>\> \| `undefined`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15840
+Defined in: node\_modules/valibot/dist/index.d.mts:16191
 
 Returns a schema error message.
 
@@ -9589,7 +9707,7 @@ lib/core/namespaces/v/functions/getSpecificMessage.md
 
 > **getSpecificMessage**\<`TReference`\>(`reference`, `lang?`): [`ErrorMessage`](../type-aliases/ErrorMessage.md)\<[`InferIssue`](../type-aliases/InferIssue.md)\<`ReturnType`\<`TReference`\>\>\> \| `undefined`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15869
+Defined in: node\_modules/valibot/dist/index.d.mts:16220
 
 Returns a specific error message.
 
@@ -9618,43 +9736,6 @@ The language of the message.
 [`ErrorMessage`](../type-aliases/ErrorMessage.md)\<[`InferIssue`](../type-aliases/InferIssue.md)\<`ReturnType`\<`TReference`\>\>\> \| `undefined`
 
 The error message.
-
-lib/core/namespaces/v/functions/getStandardProps.md
----
-
-[**Documents for @maiyunnet/kebab**](../../../../../index.md)
-
-***
-
-[Documents for @maiyunnet/kebab](../../../../../index.md) / [lib/core](../../../index.md) / [v](../index.md) / \_getStandardProps
-
-# Function: \_getStandardProps()
-
-> **\_getStandardProps**\<`TSchema`\>(`context`): [`StandardProps`](../interfaces/StandardProps.md)\<[`InferInput`](../type-aliases/InferInput.md)\<`TSchema`\>, [`InferOutput`](../type-aliases/InferOutput.md)\<`TSchema`\>\>
-
-Defined in: node\_modules/valibot/dist/index.d.mts:16010
-
-Returns the Standard Schema properties.
-
-## Type Parameters
-
-### TSchema
-
-`TSchema` *extends* [`BaseSchema`](../interfaces/BaseSchema.md)\<`unknown`, `unknown`, [`BaseIssue`](../interfaces/BaseIssue.md)\<`unknown`\>\> \| [`BaseSchemaAsync`](../interfaces/BaseSchemaAsync.md)\<`unknown`, `unknown`, [`BaseIssue`](../interfaces/BaseIssue.md)\<`unknown`\>\>
-
-## Parameters
-
-### context
-
-`TSchema`
-
-The schema context.
-
-## Returns
-
-[`StandardProps`](../interfaces/StandardProps.md)\<[`InferInput`](../type-aliases/InferInput.md)\<`TSchema`\>, [`InferOutput`](../type-aliases/InferOutput.md)\<`TSchema`\>\>
-
-The Standard Schema properties.
 
 lib/core/namespaces/v/functions/getTitle.md
 ---
@@ -9705,7 +9786,7 @@ lib/core/namespaces/v/functions/getWordCount.md
 
 > **\_getWordCount**(`locales`, `input`): `number`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:16023
+Defined in: node\_modules/valibot/dist/index.d.mts:16376
 
 **`Internal`**
 
@@ -9746,7 +9827,7 @@ lib/core/namespaces/v/functions/graphemes.md
 
 > **graphemes**\<`TInput$1`, `TRequirement`\>(`requirement`): [`GraphemesAction`](../interfaces/GraphemesAction.md)\<`TInput$1`, `TRequirement`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9442
+Defined in: node\_modules/valibot/dist/index.d.mts:9511
 
 Creates a graphemes validation action.
 
@@ -9778,7 +9859,7 @@ A graphemes action.
 
 > **graphemes**\<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): [`GraphemesAction`](../interfaces/GraphemesAction.md)\<`TInput$1`, `TRequirement`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9451
+Defined in: node\_modules/valibot/dist/index.d.mts:9520
 
 Creates a graphemes validation action.
 
@@ -9831,7 +9912,7 @@ lib/core/namespaces/v/functions/gtValue.md
 
 > **gtValue**\<`TInput$1`, `TRequirement`\>(`requirement`): [`GtValueAction`](../interfaces/GtValueAction.md)\<`TInput$1`, `TRequirement`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9507
+Defined in: node\_modules/valibot/dist/index.d.mts:9576
 
 Creates a greater than value validation action.
 
@@ -9863,7 +9944,7 @@ A greater than value action.
 
 > **gtValue**\<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): [`GtValueAction`](../interfaces/GtValueAction.md)\<`TInput$1`, `TRequirement`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9516
+Defined in: node\_modules/valibot/dist/index.d.mts:9585
 
 Creates a greater than value validation action.
 
@@ -9916,7 +9997,7 @@ lib/core/namespaces/v/functions/guard.md
 
 > **guard**\<`TInput$1`, `TGuard`\>(`requirement`): [`GuardAction`](../interfaces/GuardAction.md)\<`TInput$1`, `TGuard`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9582
+Defined in: node\_modules/valibot/dist/index.d.mts:9651
 
 **`Beta`**
 
@@ -9950,7 +10031,7 @@ A guard action.
 
 > **guard**\<`TGuard`\>(`requirement`): [`GuardAction`](../interfaces/GuardAction.md)\<`Parameters`\<`TGuard`\>\[`0`\], `TGuard`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9592
+Defined in: node\_modules/valibot/dist/index.d.mts:9661
 
 **`Beta`**
 
@@ -9980,7 +10061,7 @@ A guard action.
 
 > **guard**\<`TInput$1`, `TGuard`, `TMessage`\>(`requirement`, `message`): [`GuardAction`](../interfaces/GuardAction.md)\<`TInput$1`, `TGuard`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9603
+Defined in: node\_modules/valibot/dist/index.d.mts:9672
 
 **`Beta`**
 
@@ -10024,7 +10105,7 @@ A guard action.
 
 > **guard**\<`TGuard`, `TMessage`\>(`requirement`, `message`): [`GuardAction`](../interfaces/GuardAction.md)\<`Parameters`\<`TGuard`\>\[`0`\], `TGuard`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9614
+Defined in: node\_modules/valibot/dist/index.d.mts:9683
 
 **`Beta`**
 
@@ -10075,7 +10156,7 @@ lib/core/namespaces/v/functions/hash.md
 
 > **hash**\<`TInput$1`\>(`types`): [`HashAction`](../interfaces/HashAction.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9697
+Defined in: node\_modules/valibot/dist/index.d.mts:9766
 
 Creates a [hash](https://en.wikipedia.org/wiki/Hash_function) validation action.
 
@@ -10103,7 +10184,7 @@ A hash action.
 
 > **hash**\<`TInput$1`, `TMessage`\>(`types`, `message`): [`HashAction`](../interfaces/HashAction.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9706
+Defined in: node\_modules/valibot/dist/index.d.mts:9775
 
 Creates a [hash](https://en.wikipedia.org/wiki/Hash_function) validation action.
 
@@ -10152,7 +10233,7 @@ lib/core/namespaces/v/functions/hexadecimal.md
 
 > **hexadecimal**\<`TInput$1`\>(): [`HexadecimalAction`](../interfaces/HexadecimalAction.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9764
+Defined in: node\_modules/valibot/dist/index.d.mts:9833
 
 Creates a [hexadecimal](https://en.wikipedia.org/wiki/Hexadecimal) validation action.
 
@@ -10172,7 +10253,7 @@ A hexadecimal action.
 
 > **hexadecimal**\<`TInput$1`, `TMessage`\>(`message`): [`HexadecimalAction`](../interfaces/HexadecimalAction.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9772
+Defined in: node\_modules/valibot/dist/index.d.mts:9841
 
 Creates a [hexadecimal](https://en.wikipedia.org/wiki/Hexadecimal) validation action.
 
@@ -10215,7 +10296,7 @@ lib/core/namespaces/v/functions/hexColor.md
 
 > **hexColor**\<`TInput$1`\>(): [`HexColorAction`](../interfaces/HexColorAction.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9830
+Defined in: node\_modules/valibot/dist/index.d.mts:9899
 
 Creates a [hex color](https://en.wikipedia.org/wiki/Web_colors#Hex_triplet) validation action.
 
@@ -10235,7 +10316,7 @@ A hex color action.
 
 > **hexColor**\<`TInput$1`, `TMessage`\>(`message`): [`HexColorAction`](../interfaces/HexColorAction.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9838
+Defined in: node\_modules/valibot/dist/index.d.mts:9907
 
 Creates a [hex color](https://en.wikipedia.org/wiki/Web_colors#Hex_triplet) validation action.
 
@@ -10278,7 +10359,7 @@ lib/core/namespaces/v/functions/imei.md
 
 > **imei**\<`TInput$1`\>(): [`ImeiAction`](../interfaces/ImeiAction.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9900
+Defined in: node\_modules/valibot/dist/index.d.mts:9969
 
 Creates an [IMEI](https://en.wikipedia.org/wiki/International_Mobile_Equipment_Identity) validation action.
 
@@ -10302,7 +10383,7 @@ An IMEI action.
 
 > **imei**\<`TInput$1`, `TMessage`\>(`message`): [`ImeiAction`](../interfaces/ImeiAction.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9912
+Defined in: node\_modules/valibot/dist/index.d.mts:9981
 
 Creates an [IMEI](https://en.wikipedia.org/wiki/International_Mobile_Equipment_Identity) validation action.
 
@@ -10349,7 +10430,7 @@ lib/core/namespaces/v/functions/includes.md
 
 > **includes**\<`TInput$1`, `TRequirement`\>(`requirement`): [`IncludesAction`](../interfaces/IncludesAction.md)\<`TInput$1`, `TRequirement`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9968
+Defined in: node\_modules/valibot/dist/index.d.mts:10037
 
 Creates an includes validation action.
 
@@ -10381,7 +10462,7 @@ An includes action.
 
 > **includes**\<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): [`IncludesAction`](../interfaces/IncludesAction.md)\<`TInput$1`, `TRequirement`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9977
+Defined in: node\_modules/valibot/dist/index.d.mts:10046
 
 Creates an includes validation action.
 
@@ -10511,7 +10592,7 @@ lib/core/namespaces/v/functions/integer.md
 
 > **integer**\<`TInput$1`\>(): [`IntegerAction`](../interfaces/IntegerAction.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10035
+Defined in: node\_modules/valibot/dist/index.d.mts:10104
 
 Creates an [integer](https://en.wikipedia.org/wiki/Integer) validation action.
 
@@ -10531,7 +10612,7 @@ An integer action.
 
 > **integer**\<`TInput$1`, `TMessage`\>(`message`): [`IntegerAction`](../interfaces/IntegerAction.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10043
+Defined in: node\_modules/valibot/dist/index.d.mts:10112
 
 Creates an [integer](https://en.wikipedia.org/wiki/Integer) validation action.
 
@@ -10728,7 +10809,7 @@ lib/core/namespaces/v/functions/ip.md
 
 > **ip**\<`TInput$1`\>(): [`IpAction`](../interfaces/IpAction.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10101
+Defined in: node\_modules/valibot/dist/index.d.mts:10170
 
 Creates an [IP address](https://en.wikipedia.org/wiki/IP_address) validation action.
 
@@ -10748,7 +10829,7 @@ An IP action.
 
 > **ip**\<`TInput$1`, `TMessage`\>(`message`): [`IpAction`](../interfaces/IpAction.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10109
+Defined in: node\_modules/valibot/dist/index.d.mts:10178
 
 Creates an [IP address](https://en.wikipedia.org/wiki/IP_address) validation action.
 
@@ -10791,7 +10872,7 @@ lib/core/namespaces/v/functions/ipv4.md
 
 > **ipv4**\<`TInput$1`\>(): [`Ipv4Action`](../interfaces/Ipv4Action.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10167
+Defined in: node\_modules/valibot/dist/index.d.mts:10236
 
 Creates an [IPv4](https://en.wikipedia.org/wiki/IPv4) address validation action.
 
@@ -10811,7 +10892,7 @@ An IPv4 action.
 
 > **ipv4**\<`TInput$1`, `TMessage`\>(`message`): [`Ipv4Action`](../interfaces/Ipv4Action.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10175
+Defined in: node\_modules/valibot/dist/index.d.mts:10244
 
 Creates an [IPv4](https://en.wikipedia.org/wiki/IPv4) address validation action.
 
@@ -10854,7 +10935,7 @@ lib/core/namespaces/v/functions/ipv6.md
 
 > **ipv6**\<`TInput$1`\>(): [`Ipv6Action`](../interfaces/Ipv6Action.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10233
+Defined in: node\_modules/valibot/dist/index.d.mts:10302
 
 Creates an [IPv6](https://en.wikipedia.org/wiki/IPv6) address validation action.
 
@@ -10874,7 +10955,7 @@ An IPv6 action.
 
 > **ipv6**\<`TInput$1`, `TMessage`\>(`message`): [`Ipv6Action`](../interfaces/Ipv6Action.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10241
+Defined in: node\_modules/valibot/dist/index.d.mts:10310
 
 Creates an [IPv6](https://en.wikipedia.org/wiki/IPv6) address validation action.
 
@@ -10917,7 +10998,7 @@ lib/core/namespaces/v/functions/isbn.md
 
 > **isbn**\<`TInput$1`\>(): [`IsbnAction`](../interfaces/IsbnAction.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10301
+Defined in: node\_modules/valibot/dist/index.d.mts:10370
 
 **`Beta`**
 
@@ -10939,7 +11020,7 @@ An ISBN action.
 
 > **isbn**\<`TInput$1`, `TMessage`\>(`message`): [`IsbnAction`](../interfaces/IsbnAction.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10311
+Defined in: node\_modules/valibot/dist/index.d.mts:10380
 
 **`Beta`**
 
@@ -10982,7 +11063,7 @@ lib/core/namespaces/v/functions/isLuhnAlgo.md
 
 > **\_isLuhnAlgo**(`input`): `boolean`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:16035
+Defined in: node\_modules/valibot/dist/index.d.mts:16388
 
 **`Internal`**
 
@@ -11061,7 +11142,7 @@ lib/core/namespaces/v/functions/isoDate.md
 
 > **isoDate**\<`TInput$1`\>(): [`IsoDateAction`](../interfaces/IsoDateAction.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10449
+Defined in: node\_modules/valibot/dist/index.d.mts:10518
 
 Creates an [ISO date](https://en.wikipedia.org/wiki/ISO_8601) validation action.
 
@@ -11087,7 +11168,7 @@ An ISO date action.
 
 > **isoDate**\<`TInput$1`, `TMessage`\>(`message`): [`IsoDateAction`](../interfaces/IsoDateAction.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10463
+Defined in: node\_modules/valibot/dist/index.d.mts:10532
 
 Creates an [ISO date](https://en.wikipedia.org/wiki/ISO_8601) validation action.
 
@@ -11136,7 +11217,7 @@ lib/core/namespaces/v/functions/isoDateTime.md
 
 > **isoDateTime**\<`TInput$1`\>(): [`IsoDateTimeAction`](../interfaces/IsoDateTimeAction.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10530
+Defined in: node\_modules/valibot/dist/index.d.mts:10599
 
 Creates an [ISO date time](https://en.wikipedia.org/wiki/ISO_8601) validation action.
 
@@ -11165,7 +11246,7 @@ An ISO date time action.
 
 > **isoDateTime**\<`TInput$1`, `TMessage`\>(`message`): [`IsoDateTimeAction`](../interfaces/IsoDateTimeAction.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10547
+Defined in: node\_modules/valibot/dist/index.d.mts:10616
 
 Creates an [ISO date time](https://en.wikipedia.org/wiki/ISO_8601) validation action.
 
@@ -11217,7 +11298,7 @@ lib/core/namespaces/v/functions/isoDateTimeSecond.md
 
 > **isoDateTimeSecond**\<`TInput$1`\>(): [`IsoDateTimeSecondAction`](../interfaces/IsoDateTimeSecondAction.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10614
+Defined in: node\_modules/valibot/dist/index.d.mts:10683
 
 Creates an [ISO date time second](https://en.wikipedia.org/wiki/ISO_8601) validation action.
 
@@ -11246,7 +11327,7 @@ An ISO date time second action.
 
 > **isoDateTimeSecond**\<`TInput$1`, `TMessage`\>(`message`): [`IsoDateTimeSecondAction`](../interfaces/IsoDateTimeSecondAction.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10631
+Defined in: node\_modules/valibot/dist/index.d.mts:10700
 
 Creates an [ISO date time second](https://en.wikipedia.org/wiki/ISO_8601) validation action.
 
@@ -11296,7 +11377,7 @@ lib/core/namespaces/v/functions/isOfKind.md
 
 > **isOfKind**\<`TKind`, `TObject`\>(`kind`, `object`): `object is Extract<TObject, { kind: TKind }>`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:16136
+Defined in: node\_modules/valibot/dist/index.d.mts:16531
 
 A generic type guard to check the kind of an object.
 
@@ -11343,7 +11424,7 @@ lib/core/namespaces/v/functions/isOfType.md
 
 > **isOfType**\<`TType`, `TObject`\>(`type`, `object`): `object is Extract<TObject, { type: TType }>`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:16151
+Defined in: node\_modules/valibot/dist/index.d.mts:16546
 
 A generic type guard to check the type of an object.
 
@@ -11392,7 +11473,7 @@ lib/core/namespaces/v/functions/isoTime.md
 
 > **isoTime**\<`TInput$1`\>(): [`IsoTimeAction`](../interfaces/IsoTimeAction.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10691
+Defined in: node\_modules/valibot/dist/index.d.mts:10760
 
 Creates an [ISO time](https://en.wikipedia.org/wiki/ISO_8601) validation action.
 
@@ -11414,7 +11495,7 @@ An ISO time action.
 
 > **isoTime**\<`TInput$1`, `TMessage`\>(`message`): [`IsoTimeAction`](../interfaces/IsoTimeAction.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10701
+Defined in: node\_modules/valibot/dist/index.d.mts:10770
 
 Creates an [ISO time](https://en.wikipedia.org/wiki/ISO_8601) validation action.
 
@@ -11459,7 +11540,7 @@ lib/core/namespaces/v/functions/isoTimeSecond.md
 
 > **isoTimeSecond**\<`TInput$1`\>(): [`IsoTimeSecondAction`](../interfaces/IsoTimeSecondAction.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10761
+Defined in: node\_modules/valibot/dist/index.d.mts:10830
 
 Creates an [ISO time second](https://en.wikipedia.org/wiki/ISO_8601) validation action.
 
@@ -11481,7 +11562,7 @@ An ISO time second action.
 
 > **isoTimeSecond**\<`TInput$1`, `TMessage`\>(`message`): [`IsoTimeSecondAction`](../interfaces/IsoTimeSecondAction.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10771
+Defined in: node\_modules/valibot/dist/index.d.mts:10840
 
 Creates an [ISO time second](https://en.wikipedia.org/wiki/ISO_8601) validation action.
 
@@ -11526,7 +11607,7 @@ lib/core/namespaces/v/functions/isoTimestamp.md
 
 > **isoTimestamp**\<`TInput$1`\>(): [`IsoTimestampAction`](../interfaces/IsoTimestampAction.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10848
+Defined in: node\_modules/valibot/dist/index.d.mts:10917
 
 Creates an [ISO timestamp](https://en.wikipedia.org/wiki/ISO_8601) validation
 action.
@@ -11565,7 +11646,7 @@ An ISO timestamp action.
 
 > **isoTimestamp**\<`TInput$1`, `TMessage`\>(`message`): [`IsoTimestampAction`](../interfaces/IsoTimestampAction.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10876
+Defined in: node\_modules/valibot/dist/index.d.mts:10945
 
 Creates an [ISO timestamp](https://en.wikipedia.org/wiki/ISO_8601) validation
 action.
@@ -11628,7 +11709,7 @@ lib/core/namespaces/v/functions/isoWeek.md
 
 > **isoWeek**\<`TInput$1`\>(): [`IsoWeekAction`](../interfaces/IsoWeekAction.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10939
+Defined in: node\_modules/valibot/dist/index.d.mts:11008
 
 Creates an [ISO week](https://en.wikipedia.org/wiki/ISO_8601) validation action.
 
@@ -11653,7 +11734,7 @@ An ISO week action.
 
 > **isoWeek**\<`TInput$1`, `TMessage`\>(`message`): [`IsoWeekAction`](../interfaces/IsoWeekAction.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10952
+Defined in: node\_modules/valibot/dist/index.d.mts:11021
 
 Creates an [ISO week](https://en.wikipedia.org/wiki/ISO_8601) validation action.
 
@@ -11701,7 +11782,7 @@ lib/core/namespaces/v/functions/isrc.md
 
 > **isrc**\<`TInput$1`\>(): [`IsrcAction`](../interfaces/IsrcAction.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10375
+Defined in: node\_modules/valibot/dist/index.d.mts:10444
 
 **`Beta`**
 
@@ -11727,7 +11808,7 @@ An ISRC action.
 
 > **isrc**\<`TInput$1`, `TMessage`\>(`message`): [`IsrcAction`](../interfaces/IsrcAction.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10385
+Defined in: node\_modules/valibot/dist/index.d.mts:10454
 
 **`Beta`**
 
@@ -11757,6 +11838,46 @@ The error message.
 
 An ISRC action.
 
+lib/core/namespaces/v/functions/isSameValueZero.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../../../index.md) / [lib/core](../../../index.md) / [v](../index.md) / \_isSameValueZero
+
+# Function: \_isSameValueZero()
+
+> **\_isSameValueZero**(`value1`, `value2`): `boolean`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:16402
+
+**`Internal`**
+
+Compares two values using the SameValueZero algorithm, which treats `NaN`
+as equal to itself unlike `===`.
+
+## Parameters
+
+### value1
+
+`unknown`
+
+The first value.
+
+### value2
+
+`unknown`
+
+The second value.
+
+## Returns
+
+`boolean`
+
+Whether the values are equal.
+
 lib/core/namespaces/v/functions/isValidObjectKey.md
 ---
 
@@ -11770,7 +11891,7 @@ lib/core/namespaces/v/functions/isValidObjectKey.md
 
 > **\_isValidObjectKey**(`object`, `key`): `boolean`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:16049
+Defined in: node\_modules/valibot/dist/index.d.mts:16416
 
 **`Internal`**
 
@@ -11810,7 +11931,7 @@ lib/core/namespaces/v/functions/isValiError.md
 
 > **isValiError**\<`TSchema`\>(`error`): `error is ValiError<TSchema>`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:16165
+Defined in: node\_modules/valibot/dist/index.d.mts:16577
 
 A type guard to check if an error is a ValiError.
 
@@ -11834,6 +11955,45 @@ The error to check.
 
 Whether its a ValiError.
 
+lib/core/namespaces/v/functions/isValueMatch.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../../../index.md) / [lib/core](../../../index.md) / [v](../index.md) / \_isValueMatch
+
+# Function: \_isValueMatch()
+
+> **\_isValueMatch**(`requirement`, `value`): `boolean`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:16429
+
+**`Internal`**
+
+Checks whether a value matches a value action requirement.
+
+## Parameters
+
+### requirement
+
+[`ValueInput`](../type-aliases/ValueInput.md)
+
+The value action requirement.
+
+### value
+
+[`ValueInput`](../type-aliases/ValueInput.md)
+
+The value to check.
+
+## Returns
+
+`boolean`
+
+Whether the value matches the requirement.
+
 lib/core/namespaces/v/functions/joinExpects.md
 ---
 
@@ -11847,7 +12007,7 @@ lib/core/namespaces/v/functions/joinExpects.md
 
 > **\_joinExpects**(`values`, `separator`): `string`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:16062
+Defined in: node\_modules/valibot/dist/index.d.mts:16442
 
 **`Internal`**
 
@@ -11888,7 +12048,7 @@ lib/core/namespaces/v/functions/jwsCompact.md
 
 > **jwsCompact**\<`TInput$1`\>(): [`JwsCompactAction`](../interfaces/JwsCompactAction.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11021
+Defined in: node\_modules/valibot/dist/index.d.mts:11090
 
 **`Beta`**
 
@@ -11915,7 +12075,7 @@ A JWS compact action.
 
 > **jwsCompact**\<`TInput$1`, `TMessage`\>(`message`): [`JwsCompactAction`](../interfaces/JwsCompactAction.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11036
+Defined in: node\_modules/valibot/dist/index.d.mts:11105
 
 **`Beta`**
 
@@ -12027,6 +12187,69 @@ The error message.
 
 A picklist schema.
 
+lib/core/namespaces/v/functions/ksuid.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../../../index.md) / [lib/core](../../../index.md) / [v](../index.md) / ksuid
+
+# Function: ksuid()
+
+## Call Signature
+
+> **ksuid**\<`TInput$1`\>(): [`KsuidAction`](../interfaces/KsuidAction.md)\<`TInput$1`, `undefined`\>
+
+Defined in: node\_modules/valibot/dist/index.d.mts:11163
+
+Creates a [KSUID](https://github.com/segmentio/ksuid) validation action.
+
+### Type Parameters
+
+#### TInput$1
+
+`TInput$1` *extends* `string`
+
+### Returns
+
+[`KsuidAction`](../interfaces/KsuidAction.md)\<`TInput$1`, `undefined`\>
+
+A KSUID action.
+
+## Call Signature
+
+> **ksuid**\<`TInput$1`, `TMessage`\>(`message`): [`KsuidAction`](../interfaces/KsuidAction.md)\<`TInput$1`, `TMessage`\>
+
+Defined in: node\_modules/valibot/dist/index.d.mts:11171
+
+Creates a [KSUID](https://github.com/segmentio/ksuid) validation action.
+
+### Type Parameters
+
+#### TInput$1
+
+`TInput$1` *extends* `string`
+
+#### TMessage
+
+`TMessage` *extends* [`ErrorMessage`](../type-aliases/ErrorMessage.md)\<[`KsuidIssue`](../interfaces/KsuidIssue.md)\<`TInput$1`\>\> \| `undefined`
+
+### Parameters
+
+#### message
+
+`TMessage`
+
+The error message.
+
+### Returns
+
+[`KsuidAction`](../interfaces/KsuidAction.md)\<`TInput$1`, `TMessage`\>
+
+A KSUID action.
+
 lib/core/namespaces/v/functions/lazyAsync.md
 ---
 
@@ -12116,7 +12339,7 @@ lib/core/namespaces/v/functions/length.md
 
 > **length**\<`TInput$1`, `TRequirement`\>(`requirement`): [`LengthAction`](../interfaces/LengthAction.md)\<`TInput$1`, `TRequirement`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11096
+Defined in: node\_modules/valibot/dist/index.d.mts:11231
 
 Creates a length validation action.
 
@@ -12148,7 +12371,7 @@ A length action.
 
 > **length**\<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): [`LengthAction`](../interfaces/LengthAction.md)\<`TInput$1`, `TRequirement`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11105
+Defined in: node\_modules/valibot/dist/index.d.mts:11240
 
 Creates a length validation action.
 
@@ -12586,7 +12809,7 @@ lib/core/namespaces/v/functions/ltValue.md
 
 > **ltValue**\<`TInput$1`, `TRequirement`\>(`requirement`): [`LtValueAction`](../interfaces/LtValueAction.md)\<`TInput$1`, `TRequirement`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11161
+Defined in: node\_modules/valibot/dist/index.d.mts:11296
 
 Creates a less than value validation action.
 
@@ -12618,7 +12841,7 @@ A less than value action.
 
 > **ltValue**\<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): [`LtValueAction`](../interfaces/LtValueAction.md)\<`TInput$1`, `TRequirement`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11170
+Defined in: node\_modules/valibot/dist/index.d.mts:11305
 
 Creates a less than value validation action.
 
@@ -12671,7 +12894,7 @@ lib/core/namespaces/v/functions/mac48.md
 
 > **mac48**\<`TInput$1`\>(): [`Mac48Action`](../interfaces/Mac48Action.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11294
+Defined in: node\_modules/valibot/dist/index.d.mts:11429
 
 Creates a 48-bit [MAC address](https://en.wikipedia.org/wiki/MAC_address) validation action.
 
@@ -12691,7 +12914,7 @@ A 48-bit MAC action.
 
 > **mac48**\<`TInput$1`, `TMessage`\>(`message`): [`Mac48Action`](../interfaces/Mac48Action.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11302
+Defined in: node\_modules/valibot/dist/index.d.mts:11437
 
 Creates a 48-bit [MAC address](https://en.wikipedia.org/wiki/MAC_address) validation action.
 
@@ -12734,7 +12957,7 @@ lib/core/namespaces/v/functions/mac64.md
 
 > **mac64**\<`TInput$1`\>(): [`Mac64Action`](../interfaces/Mac64Action.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11360
+Defined in: node\_modules/valibot/dist/index.d.mts:11495
 
 Creates a 64-bit [MAC address](https://en.wikipedia.org/wiki/MAC_address) validation action.
 
@@ -12754,7 +12977,7 @@ A 64-bit MAC action.
 
 > **mac64**\<`TInput$1`, `TMessage`\>(`message`): [`Mac64Action`](../interfaces/Mac64Action.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11368
+Defined in: node\_modules/valibot/dist/index.d.mts:11503
 
 Creates a 64-bit [MAC address](https://en.wikipedia.org/wiki/MAC_address) validation action.
 
@@ -12797,7 +13020,7 @@ lib/core/namespaces/v/functions/mac.md
 
 > **mac**\<`TInput$1`\>(): [`MacAction`](../interfaces/MacAction.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11228
+Defined in: node\_modules/valibot/dist/index.d.mts:11363
 
 Creates a [MAC address](https://en.wikipedia.org/wiki/MAC_address) validation action.
 
@@ -12817,7 +13040,7 @@ A MAC action.
 
 > **mac**\<`TInput$1`, `TMessage`\>(`message`): [`MacAction`](../interfaces/MacAction.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11236
+Defined in: node\_modules/valibot/dist/index.d.mts:11371
 
 Creates a [MAC address](https://en.wikipedia.org/wiki/MAC_address) validation action.
 
@@ -12955,7 +13178,7 @@ lib/core/namespaces/v/functions/mapItems.md
 
 > **mapItems**\<`TInput$1`, `TOutput$1`\>(`operation`): [`MapItemsAction`](../interfaces/MapItemsAction.md)\<`TInput$1`, `TOutput$1`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11399
+Defined in: node\_modules/valibot/dist/index.d.mts:11534
 
 Creates a map items transformation action.
 
@@ -13095,7 +13318,7 @@ lib/core/namespaces/v/functions/maxBytes.md
 
 > **maxBytes**\<`TInput$1`, `TRequirement`\>(`requirement`): [`MaxBytesAction`](../interfaces/MaxBytesAction.md)\<`TInput$1`, `TRequirement`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11459
+Defined in: node\_modules/valibot/dist/index.d.mts:11594
 
 Creates a max [bytes](https://en.wikipedia.org/wiki/Byte) validation action.
 
@@ -13127,7 +13350,7 @@ A max bytes action.
 
 > **maxBytes**\<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): [`MaxBytesAction`](../interfaces/MaxBytesAction.md)\<`TInput$1`, `TRequirement`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11468
+Defined in: node\_modules/valibot/dist/index.d.mts:11603
 
 Creates a max [bytes](https://en.wikipedia.org/wiki/Byte) validation action.
 
@@ -13165,6 +13388,91 @@ The error message.
 
 A max bytes action.
 
+lib/core/namespaces/v/functions/maxCodePoints.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../../../index.md) / [lib/core](../../../index.md) / [v](../index.md) / maxCodePoints
+
+# Function: maxCodePoints()
+
+## Call Signature
+
+> **maxCodePoints**\<`TInput$1`, `TRequirement`\>(`requirement`): [`MaxCodePointsAction`](../interfaces/MaxCodePointsAction.md)\<`TInput$1`, `TRequirement`, `undefined`\>
+
+Defined in: node\_modules/valibot/dist/index.d.mts:11663
+
+Creates a max code points validation action.
+
+### Type Parameters
+
+#### TInput$1
+
+`TInput$1` *extends* `string`
+
+#### TRequirement
+
+`TRequirement` *extends* `number`
+
+### Parameters
+
+#### requirement
+
+`TRequirement`
+
+The maximum code points.
+
+### Returns
+
+[`MaxCodePointsAction`](../interfaces/MaxCodePointsAction.md)\<`TInput$1`, `TRequirement`, `undefined`\>
+
+A max code points action.
+
+## Call Signature
+
+> **maxCodePoints**\<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): [`MaxCodePointsAction`](../interfaces/MaxCodePointsAction.md)\<`TInput$1`, `TRequirement`, `TMessage`\>
+
+Defined in: node\_modules/valibot/dist/index.d.mts:11672
+
+Creates a max code points validation action.
+
+### Type Parameters
+
+#### TInput$1
+
+`TInput$1` *extends* `string`
+
+#### TRequirement
+
+`TRequirement` *extends* `number`
+
+#### TMessage
+
+`TMessage` *extends* [`ErrorMessage`](../type-aliases/ErrorMessage.md)\<[`MaxCodePointsIssue`](../interfaces/MaxCodePointsIssue.md)\<`TInput$1`, `TRequirement`\>\> \| `undefined`
+
+### Parameters
+
+#### requirement
+
+`TRequirement`
+
+The maximum code points.
+
+#### message
+
+`TMessage`
+
+The error message.
+
+### Returns
+
+[`MaxCodePointsAction`](../interfaces/MaxCodePointsAction.md)\<`TInput$1`, `TRequirement`, `TMessage`\>
+
+A max code points action.
+
 lib/core/namespaces/v/functions/maxEntries.md
 ---
 
@@ -13180,7 +13488,7 @@ lib/core/namespaces/v/functions/maxEntries.md
 
 > **maxEntries**\<`TInput$1`, `TRequirement`\>(`requirement`): [`MaxEntriesAction`](../interfaces/MaxEntriesAction.md)\<`TInput$1`, `TRequirement`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11534
+Defined in: node\_modules/valibot/dist/index.d.mts:11738
 
 **`Beta`**
 
@@ -13214,7 +13522,7 @@ A max entries action.
 
 > **maxEntries**\<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): [`MaxEntriesAction`](../interfaces/MaxEntriesAction.md)\<`TInput$1`, `TRequirement`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11545
+Defined in: node\_modules/valibot/dist/index.d.mts:11749
 
 **`Beta`**
 
@@ -13269,7 +13577,7 @@ lib/core/namespaces/v/functions/maxGraphemes.md
 
 > **maxGraphemes**\<`TInput$1`, `TRequirement`\>(`requirement`): [`MaxGraphemesAction`](../interfaces/MaxGraphemesAction.md)\<`TInput$1`, `TRequirement`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11605
+Defined in: node\_modules/valibot/dist/index.d.mts:11809
 
 Creates a max graphemes validation action.
 
@@ -13301,7 +13609,7 @@ A max graphemes action.
 
 > **maxGraphemes**\<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): [`MaxGraphemesAction`](../interfaces/MaxGraphemesAction.md)\<`TInput$1`, `TRequirement`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11614
+Defined in: node\_modules/valibot/dist/index.d.mts:11818
 
 Creates a max graphemes validation action.
 
@@ -13354,7 +13662,7 @@ lib/core/namespaces/v/functions/maxLength.md
 
 > **maxLength**\<`TInput$1`, `TRequirement`\>(`requirement`): [`MaxLengthAction`](../interfaces/MaxLengthAction.md)\<`TInput$1`, `TRequirement`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11674
+Defined in: node\_modules/valibot/dist/index.d.mts:11878
 
 Creates a max length validation action.
 
@@ -13386,7 +13694,7 @@ A max length action.
 
 > **maxLength**\<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): [`MaxLengthAction`](../interfaces/MaxLengthAction.md)\<`TInput$1`, `TRequirement`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11683
+Defined in: node\_modules/valibot/dist/index.d.mts:11887
 
 Creates a max length validation action.
 
@@ -13439,7 +13747,7 @@ lib/core/namespaces/v/functions/maxSize.md
 
 > **maxSize**\<`TInput$1`, `TRequirement`\>(`requirement`): [`MaxSizeAction`](../interfaces/MaxSizeAction.md)\<`TInput$1`, `TRequirement`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11743
+Defined in: node\_modules/valibot/dist/index.d.mts:11947
 
 Creates a max size validation action.
 
@@ -13471,7 +13779,7 @@ A max size action.
 
 > **maxSize**\<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): [`MaxSizeAction`](../interfaces/MaxSizeAction.md)\<`TInput$1`, `TRequirement`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11752
+Defined in: node\_modules/valibot/dist/index.d.mts:11956
 
 Creates a max size validation action.
 
@@ -13524,7 +13832,7 @@ lib/core/namespaces/v/functions/maxValue.md
 
 > **maxValue**\<`TInput$1`, `TRequirement`\>(`requirement`): [`MaxValueAction`](../interfaces/MaxValueAction.md)\<`TInput$1`, `TRequirement`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11808
+Defined in: node\_modules/valibot/dist/index.d.mts:12012
 
 Creates a max value validation action.
 
@@ -13556,7 +13864,7 @@ A max value action.
 
 > **maxValue**\<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): [`MaxValueAction`](../interfaces/MaxValueAction.md)\<`TInput$1`, `TRequirement`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11817
+Defined in: node\_modules/valibot/dist/index.d.mts:12021
 
 Creates a max value validation action.
 
@@ -13609,7 +13917,7 @@ lib/core/namespaces/v/functions/maxWords.md
 
 > **maxWords**\<`TInput$1`, `TLocales`, `TRequirement`\>(`locales`, `requirement`): [`MaxWordsAction`](../interfaces/MaxWordsAction.md)\<`TInput$1`, `TLocales`, `TRequirement`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11882
+Defined in: node\_modules/valibot/dist/index.d.mts:12086
 
 Creates a max words validation action.
 
@@ -13651,7 +13959,7 @@ A max words action.
 
 > **maxWords**\<`TInput$1`, `TLocales`, `TRequirement`, `TMessage`\>(`locales`, `requirement`, `message`): [`MaxWordsAction`](../interfaces/MaxWordsAction.md)\<`TInput$1`, `TLocales`, `TRequirement`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11892
+Defined in: node\_modules/valibot/dist/index.d.mts:12096
 
 Creates a max words validation action.
 
@@ -13755,7 +14063,7 @@ lib/core/namespaces/v/functions/metadata.md
 
 > **metadata**\<`TInput$1`, `TMetadata`\>(`metadata_`): [`MetadataAction`](../interfaces/MetadataAction.md)\<`TInput$1`, `TMetadata`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11919
+Defined in: node\_modules/valibot/dist/index.d.mts:12123
 
 Creates a custom metadata action.
 
@@ -13798,7 +14106,7 @@ lib/core/namespaces/v/functions/mimeType.md
 
 > **mimeType**\<`TInput$1`, `TRequirement`\>(`requirement`): [`MimeTypeAction`](../interfaces/MimeTypeAction.md)\<`TInput$1`, `TRequirement`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11983
+Defined in: node\_modules/valibot/dist/index.d.mts:12187
 
 Creates a [MIME type](https://developer.mozilla.org/docs/Web/HTTP/Basics_of_HTTP/MIME_types) validation action.
 
@@ -13830,7 +14138,7 @@ A MIME type action.
 
 > **mimeType**\<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): [`MimeTypeAction`](../interfaces/MimeTypeAction.md)\<`TInput$1`, `TRequirement`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11992
+Defined in: node\_modules/valibot/dist/index.d.mts:12196
 
 Creates a [MIME type](https://developer.mozilla.org/docs/Web/HTTP/Basics_of_HTTP/MIME_types) validation action.
 
@@ -13883,7 +14191,7 @@ lib/core/namespaces/v/functions/minBytes.md
 
 > **minBytes**\<`TInput$1`, `TRequirement`\>(`requirement`): [`MinBytesAction`](../interfaces/MinBytesAction.md)\<`TInput$1`, `TRequirement`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12052
+Defined in: node\_modules/valibot/dist/index.d.mts:12256
 
 Creates a min [bytes](https://en.wikipedia.org/wiki/Byte) validation action.
 
@@ -13915,7 +14223,7 @@ A min bytes action.
 
 > **minBytes**\<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): [`MinBytesAction`](../interfaces/MinBytesAction.md)\<`TInput$1`, `TRequirement`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12061
+Defined in: node\_modules/valibot/dist/index.d.mts:12265
 
 Creates a min [bytes](https://en.wikipedia.org/wiki/Byte) validation action.
 
@@ -13953,6 +14261,91 @@ The error message.
 
 A min bytes action.
 
+lib/core/namespaces/v/functions/minCodePoints.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../../../index.md) / [lib/core](../../../index.md) / [v](../index.md) / minCodePoints
+
+# Function: minCodePoints()
+
+## Call Signature
+
+> **minCodePoints**\<`TInput$1`, `TRequirement`\>(`requirement`): [`MinCodePointsAction`](../interfaces/MinCodePointsAction.md)\<`TInput$1`, `TRequirement`, `undefined`\>
+
+Defined in: node\_modules/valibot/dist/index.d.mts:12325
+
+Creates a min code points validation action.
+
+### Type Parameters
+
+#### TInput$1
+
+`TInput$1` *extends* `string`
+
+#### TRequirement
+
+`TRequirement` *extends* `number`
+
+### Parameters
+
+#### requirement
+
+`TRequirement`
+
+The minimum code points.
+
+### Returns
+
+[`MinCodePointsAction`](../interfaces/MinCodePointsAction.md)\<`TInput$1`, `TRequirement`, `undefined`\>
+
+A min code points action.
+
+## Call Signature
+
+> **minCodePoints**\<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): [`MinCodePointsAction`](../interfaces/MinCodePointsAction.md)\<`TInput$1`, `TRequirement`, `TMessage`\>
+
+Defined in: node\_modules/valibot/dist/index.d.mts:12334
+
+Creates a min code points validation action.
+
+### Type Parameters
+
+#### TInput$1
+
+`TInput$1` *extends* `string`
+
+#### TRequirement
+
+`TRequirement` *extends* `number`
+
+#### TMessage
+
+`TMessage` *extends* [`ErrorMessage`](../type-aliases/ErrorMessage.md)\<[`MinCodePointsIssue`](../interfaces/MinCodePointsIssue.md)\<`TInput$1`, `TRequirement`\>\> \| `undefined`
+
+### Parameters
+
+#### requirement
+
+`TRequirement`
+
+The minimum code points.
+
+#### message
+
+`TMessage`
+
+The error message.
+
+### Returns
+
+[`MinCodePointsAction`](../interfaces/MinCodePointsAction.md)\<`TInput$1`, `TRequirement`, `TMessage`\>
+
+A min code points action.
+
 lib/core/namespaces/v/functions/minEntries.md
 ---
 
@@ -13968,7 +14361,7 @@ lib/core/namespaces/v/functions/minEntries.md
 
 > **minEntries**\<`TInput$1`, `TRequirement`\>(`requirement`): [`MinEntriesAction`](../interfaces/MinEntriesAction.md)\<`TInput$1`, `TRequirement`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12127
+Defined in: node\_modules/valibot/dist/index.d.mts:12400
 
 **`Beta`**
 
@@ -14002,7 +14395,7 @@ A min entries action.
 
 > **minEntries**\<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): [`MinEntriesAction`](../interfaces/MinEntriesAction.md)\<`TInput$1`, `TRequirement`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12138
+Defined in: node\_modules/valibot/dist/index.d.mts:12411
 
 **`Beta`**
 
@@ -14057,7 +14450,7 @@ lib/core/namespaces/v/functions/minGraphemes.md
 
 > **minGraphemes**\<`TInput$1`, `TRequirement`\>(`requirement`): [`MinGraphemesAction`](../interfaces/MinGraphemesAction.md)\<`TInput$1`, `TRequirement`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12198
+Defined in: node\_modules/valibot/dist/index.d.mts:12471
 
 Creates a min graphemes validation action.
 
@@ -14089,7 +14482,7 @@ A min graphemes action.
 
 > **minGraphemes**\<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): [`MinGraphemesAction`](../interfaces/MinGraphemesAction.md)\<`TInput$1`, `TRequirement`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12207
+Defined in: node\_modules/valibot/dist/index.d.mts:12480
 
 Creates a min graphemes validation action.
 
@@ -14142,7 +14535,7 @@ lib/core/namespaces/v/functions/minLength.md
 
 > **minLength**\<`TInput$1`, `TRequirement`\>(`requirement`): [`MinLengthAction`](../interfaces/MinLengthAction.md)\<`TInput$1`, `TRequirement`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12267
+Defined in: node\_modules/valibot/dist/index.d.mts:12540
 
 Creates a min length validation action.
 
@@ -14174,7 +14567,7 @@ A min length action.
 
 > **minLength**\<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): [`MinLengthAction`](../interfaces/MinLengthAction.md)\<`TInput$1`, `TRequirement`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12276
+Defined in: node\_modules/valibot/dist/index.d.mts:12549
 
 Creates a min length validation action.
 
@@ -14227,7 +14620,7 @@ lib/core/namespaces/v/functions/minSize.md
 
 > **minSize**\<`TInput$1`, `TRequirement`\>(`requirement`): [`MinSizeAction`](../interfaces/MinSizeAction.md)\<`TInput$1`, `TRequirement`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12336
+Defined in: node\_modules/valibot/dist/index.d.mts:12609
 
 Creates a min size validation action.
 
@@ -14259,7 +14652,7 @@ A min size action.
 
 > **minSize**\<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): [`MinSizeAction`](../interfaces/MinSizeAction.md)\<`TInput$1`, `TRequirement`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12345
+Defined in: node\_modules/valibot/dist/index.d.mts:12618
 
 Creates a min size validation action.
 
@@ -14312,7 +14705,7 @@ lib/core/namespaces/v/functions/minValue.md
 
 > **minValue**\<`TInput$1`, `TRequirement`\>(`requirement`): [`MinValueAction`](../interfaces/MinValueAction.md)\<`TInput$1`, `TRequirement`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12401
+Defined in: node\_modules/valibot/dist/index.d.mts:12674
 
 Creates a min value validation action.
 
@@ -14344,7 +14737,7 @@ A min value action.
 
 > **minValue**\<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): [`MinValueAction`](../interfaces/MinValueAction.md)\<`TInput$1`, `TRequirement`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12410
+Defined in: node\_modules/valibot/dist/index.d.mts:12683
 
 Creates a min value validation action.
 
@@ -14397,7 +14790,7 @@ lib/core/namespaces/v/functions/minWords.md
 
 > **minWords**\<`TInput$1`, `TLocales`, `TRequirement`\>(`locales`, `requirement`): [`MinWordsAction`](../interfaces/MinWordsAction.md)\<`TInput$1`, `TLocales`, `TRequirement`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12475
+Defined in: node\_modules/valibot/dist/index.d.mts:12748
 
 Creates a min words validation action.
 
@@ -14439,7 +14832,7 @@ A min words action.
 
 > **minWords**\<`TInput$1`, `TLocales`, `TRequirement`, `TMessage`\>(`locales`, `requirement`, `message`): [`MinWordsAction`](../interfaces/MinWordsAction.md)\<`TInput$1`, `TLocales`, `TRequirement`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12485
+Defined in: node\_modules/valibot/dist/index.d.mts:12758
 
 Creates a min words validation action.
 
@@ -14502,7 +14895,7 @@ lib/core/namespaces/v/functions/multipleOf.md
 
 > **multipleOf**\<`TInput$1`, `TRequirement`\>(`requirement`): [`MultipleOfAction`](../interfaces/MultipleOfAction.md)\<`TInput$1`, `TRequirement`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12549
+Defined in: node\_modules/valibot/dist/index.d.mts:12822
 
 Creates a [multiple](https://en.wikipedia.org/wiki/Multiple_(mathematics)) of validation action.
 
@@ -14534,7 +14927,7 @@ A multiple of action.
 
 > **multipleOf**\<`TInput$1`, `TRequirement`\>(`requirement`): [`MultipleOfAction`](../interfaces/MultipleOfAction.md)\<`TInput$1`, `TRequirement`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12557
+Defined in: node\_modules/valibot/dist/index.d.mts:12830
 
 Creates a [multiple](https://en.wikipedia.org/wiki/Multiple_(mathematics)) of validation action.
 
@@ -14566,7 +14959,7 @@ A multiple of action.
 
 > **multipleOf**\<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): [`MultipleOfAction`](../interfaces/MultipleOfAction.md)\<`TInput$1`, `TRequirement`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12566
+Defined in: node\_modules/valibot/dist/index.d.mts:12839
 
 Creates a [multiple](https://en.wikipedia.org/wiki/Multiple_(mathematics)) of validation action.
 
@@ -14608,7 +15001,7 @@ A multiple of action.
 
 > **multipleOf**\<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): [`MultipleOfAction`](../interfaces/MultipleOfAction.md)\<`TInput$1`, `TRequirement`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12575
+Defined in: node\_modules/valibot/dist/index.d.mts:12848
 
 Creates a [multiple](https://en.wikipedia.org/wiki/Multiple_(mathematics)) of validation action.
 
@@ -14714,7 +15107,7 @@ lib/core/namespaces/v/functions/nanoid.md
 
 > **nanoid**\<`TInput$1`\>(): [`NanoIdAction`](../interfaces/NanoIdAction.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12645
+Defined in: node\_modules/valibot/dist/index.d.mts:12918
 
 Creates a [Nano ID](https://github.com/ai/nanoid) validation action.
 
@@ -14734,7 +15127,7 @@ A Nano ID action.
 
 > **nanoid**\<`TInput$1`, `TMessage`\>(`message`): [`NanoIdAction`](../interfaces/NanoIdAction.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12653
+Defined in: node\_modules/valibot/dist/index.d.mts:12926
 
 Creates a [Nano ID](https://github.com/ai/nanoid) validation action.
 
@@ -14830,7 +15223,7 @@ lib/core/namespaces/v/functions/nonEmpty.md
 
 > **nonEmpty**\<`TInput$1`\>(): [`NonEmptyAction`](../interfaces/NonEmptyAction.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12703
+Defined in: node\_modules/valibot/dist/index.d.mts:12976
 
 Creates a non-empty validation action.
 
@@ -14850,7 +15243,7 @@ A non-empty action.
 
 > **nonEmpty**\<`TInput$1`, `TMessage`\>(`message`): [`NonEmptyAction`](../interfaces/NonEmptyAction.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12711
+Defined in: node\_modules/valibot/dist/index.d.mts:12984
 
 Creates a non-empty validation action.
 
@@ -15355,7 +15748,7 @@ lib/core/namespaces/v/functions/normalize.md
 
 > **normalize**(): [`NormalizeAction`](../interfaces/NormalizeAction.md)\<`undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12740
+Defined in: node\_modules/valibot/dist/index.d.mts:13013
 
 Creates a normalize transformation action.
 
@@ -15369,7 +15762,7 @@ A normalize action.
 
 > **normalize**\<`TForm`\>(`form`): [`NormalizeAction`](../interfaces/NormalizeAction.md)\<`TForm`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12748
+Defined in: node\_modules/valibot/dist/index.d.mts:13021
 
 Creates a normalize transformation action.
 
@@ -15408,7 +15801,7 @@ lib/core/namespaces/v/functions/notBytes.md
 
 > **notBytes**\<`TInput$1`, `TRequirement`\>(`requirement`): [`NotBytesAction`](../interfaces/NotBytesAction.md)\<`TInput$1`, `TRequirement`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12808
+Defined in: node\_modules/valibot/dist/index.d.mts:13081
 
 Creates a not [bytes](https://en.wikipedia.org/wiki/Byte) validation action.
 
@@ -15440,7 +15833,7 @@ A not bytes action.
 
 > **notBytes**\<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): [`NotBytesAction`](../interfaces/NotBytesAction.md)\<`TInput$1`, `TRequirement`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12817
+Defined in: node\_modules/valibot/dist/index.d.mts:13090
 
 Creates a not [bytes](https://en.wikipedia.org/wiki/Byte) validation action.
 
@@ -15478,6 +15871,91 @@ The error message.
 
 A not bytes action.
 
+lib/core/namespaces/v/functions/notCodePoints.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../../../index.md) / [lib/core](../../../index.md) / [v](../index.md) / notCodePoints
+
+# Function: notCodePoints()
+
+## Call Signature
+
+> **notCodePoints**\<`TInput$1`, `TRequirement`\>(`requirement`): [`NotCodePointsAction`](../interfaces/NotCodePointsAction.md)\<`TInput$1`, `TRequirement`, `undefined`\>
+
+Defined in: node\_modules/valibot/dist/index.d.mts:13150
+
+Creates a not code points validation action.
+
+### Type Parameters
+
+#### TInput$1
+
+`TInput$1` *extends* `string`
+
+#### TRequirement
+
+`TRequirement` *extends* `number`
+
+### Parameters
+
+#### requirement
+
+`TRequirement`
+
+The not required code points.
+
+### Returns
+
+[`NotCodePointsAction`](../interfaces/NotCodePointsAction.md)\<`TInput$1`, `TRequirement`, `undefined`\>
+
+A not code points action.
+
+## Call Signature
+
+> **notCodePoints**\<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): [`NotCodePointsAction`](../interfaces/NotCodePointsAction.md)\<`TInput$1`, `TRequirement`, `TMessage`\>
+
+Defined in: node\_modules/valibot/dist/index.d.mts:13159
+
+Creates a not code points validation action.
+
+### Type Parameters
+
+#### TInput$1
+
+`TInput$1` *extends* `string`
+
+#### TRequirement
+
+`TRequirement` *extends* `number`
+
+#### TMessage
+
+`TMessage` *extends* [`ErrorMessage`](../type-aliases/ErrorMessage.md)\<[`NotCodePointsIssue`](../interfaces/NotCodePointsIssue.md)\<`TInput$1`, `TRequirement`\>\> \| `undefined`
+
+### Parameters
+
+#### requirement
+
+`TRequirement`
+
+The not required code points.
+
+#### message
+
+`TMessage`
+
+The error message.
+
+### Returns
+
+[`NotCodePointsAction`](../interfaces/NotCodePointsAction.md)\<`TInput$1`, `TRequirement`, `TMessage`\>
+
+A not code points action.
+
 lib/core/namespaces/v/functions/notEntries.md
 ---
 
@@ -15493,7 +15971,7 @@ lib/core/namespaces/v/functions/notEntries.md
 
 > **notEntries**\<`TInput$1`, `TRequirement`\>(`requirement`): [`NotEntriesAction`](../interfaces/NotEntriesAction.md)\<`TInput$1`, `TRequirement`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12883
+Defined in: node\_modules/valibot/dist/index.d.mts:13225
 
 **`Beta`**
 
@@ -15527,7 +16005,7 @@ A not entries action.
 
 > **notEntries**\<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): [`NotEntriesAction`](../interfaces/NotEntriesAction.md)\<`TInput$1`, `TRequirement`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12894
+Defined in: node\_modules/valibot/dist/index.d.mts:13236
 
 **`Beta`**
 
@@ -15582,7 +16060,7 @@ lib/core/namespaces/v/functions/notGraphemes.md
 
 > **notGraphemes**\<`TInput$1`, `TRequirement`\>(`requirement`): [`NotGraphemesAction`](../interfaces/NotGraphemesAction.md)\<`TInput$1`, `TRequirement`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12954
+Defined in: node\_modules/valibot/dist/index.d.mts:13296
 
 Creates a not graphemes validation action.
 
@@ -15614,7 +16092,7 @@ A not graphemes action.
 
 > **notGraphemes**\<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): [`NotGraphemesAction`](../interfaces/NotGraphemesAction.md)\<`TInput$1`, `TRequirement`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12963
+Defined in: node\_modules/valibot/dist/index.d.mts:13305
 
 Creates a not graphemes validation action.
 
@@ -15667,7 +16145,7 @@ lib/core/namespaces/v/functions/notLength.md
 
 > **notLength**\<`TInput$1`, `TRequirement`\>(`requirement`): [`NotLengthAction`](../interfaces/NotLengthAction.md)\<`TInput$1`, `TRequirement`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13023
+Defined in: node\_modules/valibot/dist/index.d.mts:13365
 
 Creates a not length validation action.
 
@@ -15699,7 +16177,7 @@ A not length action.
 
 > **notLength**\<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): [`NotLengthAction`](../interfaces/NotLengthAction.md)\<`TInput$1`, `TRequirement`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13032
+Defined in: node\_modules/valibot/dist/index.d.mts:13374
 
 Creates a not length validation action.
 
@@ -15752,7 +16230,7 @@ lib/core/namespaces/v/functions/notSize.md
 
 > **notSize**\<`TInput$1`, `TRequirement`\>(`requirement`): [`NotSizeAction`](../interfaces/NotSizeAction.md)\<`TInput$1`, `TRequirement`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13092
+Defined in: node\_modules/valibot/dist/index.d.mts:13434
 
 Creates a not size validation action.
 
@@ -15784,7 +16262,7 @@ A not size action.
 
 > **notSize**\<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): [`NotSizeAction`](../interfaces/NotSizeAction.md)\<`TInput$1`, `TRequirement`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13101
+Defined in: node\_modules/valibot/dist/index.d.mts:13443
 
 Creates a not size validation action.
 
@@ -15837,7 +16315,7 @@ lib/core/namespaces/v/functions/notValue.md
 
 > **notValue**\<`TInput$1`, `TRequirement`\>(`requirement`): [`NotValueAction`](../interfaces/NotValueAction.md)\<`TInput$1`, `TRequirement`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13157
+Defined in: node\_modules/valibot/dist/index.d.mts:13499
 
 Creates a not value validation action.
 
@@ -15869,7 +16347,7 @@ A not value action.
 
 > **notValue**\<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): [`NotValueAction`](../interfaces/NotValueAction.md)\<`TInput$1`, `TRequirement`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13166
+Defined in: node\_modules/valibot/dist/index.d.mts:13508
 
 Creates a not value validation action.
 
@@ -15922,7 +16400,7 @@ lib/core/namespaces/v/functions/notValues.md
 
 > **notValues**\<`TInput$1`, `TRequirement`\>(`requirement`): [`NotValuesAction`](../interfaces/NotValuesAction.md)\<`TInput$1`, `TRequirement`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13222
+Defined in: node\_modules/valibot/dist/index.d.mts:13564
 
 Creates a not values validation action.
 
@@ -15954,7 +16432,7 @@ A not values action.
 
 > **notValues**\<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): [`NotValuesAction`](../interfaces/NotValuesAction.md)\<`TInput$1`, `TRequirement`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13231
+Defined in: node\_modules/valibot/dist/index.d.mts:13573
 
 Creates a not values validation action.
 
@@ -16007,7 +16485,7 @@ lib/core/namespaces/v/functions/notWords.md
 
 > **notWords**\<`TInput$1`, `TLocales`, `TRequirement`\>(`locales`, `requirement`): [`NotWordsAction`](../interfaces/NotWordsAction.md)\<`TInput$1`, `TLocales`, `TRequirement`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13296
+Defined in: node\_modules/valibot/dist/index.d.mts:13638
 
 Creates a not words validation action.
 
@@ -16049,7 +16527,7 @@ A not words action.
 
 > **notWords**\<`TInput$1`, `TLocales`, `TRequirement`, `TMessage`\>(`locales`, `requirement`, `message`): [`NotWordsAction`](../interfaces/NotWordsAction.md)\<`TInput$1`, `TLocales`, `TRequirement`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13306
+Defined in: node\_modules/valibot/dist/index.d.mts:13648
 
 Creates a not words validation action.
 
@@ -16947,7 +17425,7 @@ lib/core/namespaces/v/functions/octal.md
 
 > **octal**\<`TInput$1`\>(): [`OctalAction`](../interfaces/OctalAction.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13364
+Defined in: node\_modules/valibot/dist/index.d.mts:13706
 
 Creates an [octal](https://en.wikipedia.org/wiki/Octal) validation action.
 
@@ -16967,7 +17445,7 @@ An octal action.
 
 > **octal**\<`TInput$1`, `TMessage`\>(`message`): [`OctalAction`](../interfaces/OctalAction.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13372
+Defined in: node\_modules/valibot/dist/index.d.mts:13714
 
 Creates an [octal](https://en.wikipedia.org/wiki/Octal) validation action.
 
@@ -17261,7 +17739,7 @@ lib/core/namespaces/v/functions/parseBoolean.md
 
 > **parseBoolean**\<`TInput$1`\>(): [`ParseBooleanAction`](../interfaces/ParseBooleanAction.md)\<`TInput$1`, `undefined`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13443
+Defined in: node\_modules/valibot/dist/index.d.mts:13785
 
 **`Beta`**
 
@@ -17283,7 +17761,7 @@ A parse boolean action.
 
 > **parseBoolean**\<`TInput$1`, `TConfig`\>(`config`): [`ParseBooleanAction`](../interfaces/ParseBooleanAction.md)\<`TInput$1`, `TConfig`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13453
+Defined in: node\_modules/valibot/dist/index.d.mts:13795
 
 **`Beta`**
 
@@ -17317,7 +17795,7 @@ A parse boolean action.
 
 > **parseBoolean**\<`TInput$1`, `TConfig`, `TMessage`\>(`config`, `message`): [`ParseBooleanAction`](../interfaces/ParseBooleanAction.md)\<`TInput$1`, `TConfig`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13464
+Defined in: node\_modules/valibot/dist/index.d.mts:13806
 
 **`Beta`**
 
@@ -17372,7 +17850,7 @@ lib/core/namespaces/v/functions/parseJson.md
 
 > **parseJson**\<`TInput$1`\>(): [`ParseJsonAction`](../interfaces/ParseJsonAction.md)\<`TInput$1`, `undefined`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13531
+Defined in: node\_modules/valibot/dist/index.d.mts:13873
 
 **`Beta`**
 
@@ -17394,7 +17872,7 @@ A parse JSON action.
 
 > **parseJson**\<`TInput$1`, `TConfig`\>(`config`): [`ParseJsonAction`](../interfaces/ParseJsonAction.md)\<`TInput$1`, `TConfig`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13541
+Defined in: node\_modules/valibot/dist/index.d.mts:13883
 
 **`Beta`**
 
@@ -17428,7 +17906,7 @@ A parse JSON action.
 
 > **parseJson**\<`TInput$1`, `TConfig`, `TMessage`\>(`config`, `message`): [`ParseJsonAction`](../interfaces/ParseJsonAction.md)\<`TInput$1`, `TConfig`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13552
+Defined in: node\_modules/valibot/dist/index.d.mts:13894
 
 **`Beta`**
 
@@ -17764,7 +18242,7 @@ lib/core/namespaces/v/functions/partialCheckAsync.md
 
 > **partialCheckAsync**\<`TInput$1`, `TPaths`, `TSelection`\>(`paths`, `requirement`): [`PartialCheckActionAsync`](../interfaces/PartialCheckActionAsync.md)\<`TInput$1`, `TPaths`, `TSelection`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13717
+Defined in: node\_modules/valibot/dist/index.d.mts:14059
 
 Creates a partial check validation action.
 
@@ -17807,7 +18285,7 @@ A partial check action.
 
 > **partialCheckAsync**\<`TInput$1`, `TPaths`, `TSelection`, `TMessage`\>(`paths`, `requirement`, `message`): [`PartialCheckActionAsync`](../interfaces/PartialCheckActionAsync.md)\<`TInput$1`, `TPaths`, `TSelection`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13727
+Defined in: node\_modules/valibot/dist/index.d.mts:14069
 
 Creates a partial check validation action.
 
@@ -17871,7 +18349,7 @@ lib/core/namespaces/v/functions/partialCheck.md
 
 > **partialCheck**\<`TInput$1`, `TPaths`, `TSelection`\>(`paths`, `requirement`): [`PartialCheckAction`](../interfaces/PartialCheckAction.md)\<`TInput$1`, `TPaths`, `TSelection`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13667
+Defined in: node\_modules/valibot/dist/index.d.mts:14009
 
 Creates a partial check validation action.
 
@@ -17914,7 +18392,7 @@ A partial check action.
 
 > **partialCheck**\<`TInput$1`, `TPaths`, `TSelection`, `TMessage`\>(`paths`, `requirement`, `message`): [`PartialCheckAction`](../interfaces/PartialCheckAction.md)\<`TInput$1`, `TPaths`, `TSelection`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13677
+Defined in: node\_modules/valibot/dist/index.d.mts:14019
 
 Creates a partial check validation action.
 
@@ -23382,7 +23860,7 @@ lib/core/namespaces/v/functions/rawCheckAsync.md
 
 > **rawCheckAsync**\<`TInput$1`\>(`action`): [`RawCheckActionAsync`](../interfaces/RawCheckActionAsync.md)\<`TInput$1`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13819
+Defined in: node\_modules/valibot/dist/index.d.mts:14161
 
 Creates a raw check validation action.
 
@@ -23419,7 +23897,7 @@ lib/core/namespaces/v/functions/rawCheck.md
 
 > **rawCheck**\<`TInput$1`\>(`action`): [`RawCheckAction`](../interfaces/RawCheckAction.md)\<`TInput$1`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13792
+Defined in: node\_modules/valibot/dist/index.d.mts:14134
 
 Creates a raw check validation action.
 
@@ -23456,7 +23934,7 @@ lib/core/namespaces/v/functions/rawTransformAsync.md
 
 > **rawTransformAsync**\<`TInput$1`, `TOutput$1`\>(`action`): [`RawTransformActionAsync`](../interfaces/RawTransformActionAsync.md)\<`TInput$1`, `TOutput$1`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13904
+Defined in: node\_modules/valibot/dist/index.d.mts:14246
 
 Creates a raw transformation action.
 
@@ -23497,7 +23975,7 @@ lib/core/namespaces/v/functions/rawTransform.md
 
 > **rawTransform**\<`TInput$1`, `TOutput$1`\>(`action`): [`RawTransformAction`](../interfaces/RawTransformAction.md)\<`TInput$1`, `TOutput$1`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13881
+Defined in: node\_modules/valibot/dist/index.d.mts:14223
 
 Creates a raw transformation action.
 
@@ -23538,7 +24016,7 @@ lib/core/namespaces/v/functions/readonly.md
 
 > **readonly**\<`TInput$1`\>(): [`ReadonlyAction`](../interfaces/ReadonlyAction.md)\<`TInput$1`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13929
+Defined in: node\_modules/valibot/dist/index.d.mts:14271
 
 Creates a readonly transformation action.
 
@@ -23761,7 +24239,7 @@ lib/core/namespaces/v/functions/reduceItems.md
 
 > **reduceItems**\<`TInput$1`, `TOutput$1`\>(`operation`, `initial`): [`ReduceItemsAction`](../interfaces/ReduceItemsAction.md)\<`TInput$1`, `TOutput$1`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13965
+Defined in: node\_modules/valibot/dist/index.d.mts:14307
 
 Creates a reduce items transformation action.
 
@@ -23810,7 +24288,7 @@ lib/core/namespaces/v/functions/regex.md
 
 > **regex**\<`TInput$1`\>(`requirement`): [`RegexAction`](../interfaces/RegexAction.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14027
+Defined in: node\_modules/valibot/dist/index.d.mts:14369
 
 Creates a [regex](https://en.wikipedia.org/wiki/Regular_expression) validation action.
 
@@ -23840,7 +24318,7 @@ A regex action.
 
 > **regex**\<`TInput$1`, `TMessage`\>(`requirement`, `message`): [`RegexAction`](../interfaces/RegexAction.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14038
+Defined in: node\_modules/valibot/dist/index.d.mts:14380
 
 Creates a [regex](https://en.wikipedia.org/wiki/Regular_expression) validation action.
 
@@ -24219,7 +24697,7 @@ lib/core/namespaces/v/functions/returnsAsync.md
 
 > **returnsAsync**\<`TInput$1`, `TSchema`\>(`schema`): [`ReturnsActionAsync`](../interfaces/ReturnsActionAsync.md)\<`TInput$1`, `TSchema`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14092
+Defined in: node\_modules/valibot/dist/index.d.mts:14434
 
 Creates a function arguments transformation action.
 
@@ -24260,7 +24738,7 @@ lib/core/namespaces/v/functions/returns.md
 
 > **returns**\<`TInput$1`, `TSchema`\>(`schema`): [`ReturnsAction`](../interfaces/ReturnsAction.md)\<`TInput$1`, `TSchema`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14065
+Defined in: node\_modules/valibot/dist/index.d.mts:14407
 
 Creates a function return transformation action.
 
@@ -24303,7 +24781,7 @@ lib/core/namespaces/v/functions/rfcEmail.md
 
 > **rfcEmail**\<`TInput$1`\>(): [`RfcEmailAction`](../interfaces/RfcEmailAction.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14157
+Defined in: node\_modules/valibot/dist/index.d.mts:14499
 
 Creates a [RFC email](https://datatracker.ietf.org/doc/html/rfc5322#section-3.4.1)
 validation action.
@@ -24330,7 +24808,7 @@ A RFC email action.
 
 > **rfcEmail**\<`TInput$1`, `TMessage`\>(`message`): [`RfcEmailAction`](../interfaces/RfcEmailAction.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14172
+Defined in: node\_modules/valibot/dist/index.d.mts:14514
 
 Creates a [RFC email](https://datatracker.ietf.org/doc/html/rfc5322#section-3.4.1)
 validation action.
@@ -24380,7 +24858,7 @@ lib/core/namespaces/v/functions/safeInteger.md
 
 > **safeInteger**\<`TInput$1`\>(): [`SafeIntegerAction`](../interfaces/SafeIntegerAction.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14230
+Defined in: node\_modules/valibot/dist/index.d.mts:14572
 
 Creates a safe integer validation action.
 
@@ -24400,7 +24878,7 @@ A safe integer action.
 
 > **safeInteger**\<`TInput$1`, `TMessage`\>(`message`): [`SafeIntegerAction`](../interfaces/SafeIntegerAction.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14238
+Defined in: node\_modules/valibot/dist/index.d.mts:14580
 
 Creates a safe integer validation action.
 
@@ -24770,7 +25248,7 @@ lib/core/namespaces/v/functions/setGlobalConfig.md
 
 > **setGlobalConfig**(`config`): `void`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15788
+Defined in: node\_modules/valibot/dist/index.d.mts:16139
 
 Sets the global configuration.
 
@@ -24799,7 +25277,7 @@ lib/core/namespaces/v/functions/setGlobalMessage.md
 
 > **setGlobalMessage**(`message`, `lang?`): `void`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15809
+Defined in: node\_modules/valibot/dist/index.d.mts:16160
 
 Sets a global error message.
 
@@ -24911,7 +25389,7 @@ lib/core/namespaces/v/functions/setSchemaMessage.md
 
 > **setSchemaMessage**(`message`, `lang?`): `void`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15832
+Defined in: node\_modules/valibot/dist/index.d.mts:16183
 
 Sets a schema error message.
 
@@ -24946,7 +25424,7 @@ lib/core/namespaces/v/functions/setSpecificMessage.md
 
 > **setSpecificMessage**\<`TReference`\>(`reference`, `message`, `lang?`): `void`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15860
+Defined in: node\_modules/valibot/dist/index.d.mts:16211
 
 Sets a specific error message.
 
@@ -24995,7 +25473,7 @@ lib/core/namespaces/v/functions/size.md
 
 > **size**\<`TInput$1`, `TRequirement`\>(`requirement`): [`SizeAction`](../interfaces/SizeAction.md)\<`TInput$1`, `TRequirement`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14298
+Defined in: node\_modules/valibot/dist/index.d.mts:14640
 
 Creates a size validation action.
 
@@ -25027,7 +25505,7 @@ A size action.
 
 > **size**\<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): [`SizeAction`](../interfaces/SizeAction.md)\<`TInput$1`, `TRequirement`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14307
+Defined in: node\_modules/valibot/dist/index.d.mts:14649
 
 Creates a size validation action.
 
@@ -25080,7 +25558,7 @@ lib/core/namespaces/v/functions/slug.md
 
 > **slug**\<`TInput$1`\>(): [`SlugAction`](../interfaces/SlugAction.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14365
+Defined in: node\_modules/valibot/dist/index.d.mts:14707
 
 Creates a [slug](https://en.wikipedia.org/wiki/Clean_URL#Slug) validation action.
 
@@ -25100,7 +25578,7 @@ A slug action.
 
 > **slug**\<`TInput$1`, `TMessage`\>(`message`): [`SlugAction`](../interfaces/SlugAction.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14373
+Defined in: node\_modules/valibot/dist/index.d.mts:14715
 
 Creates a [slug](https://en.wikipedia.org/wiki/Clean_URL#Slug) validation action.
 
@@ -25143,7 +25621,7 @@ lib/core/namespaces/v/functions/someItem.md
 
 > **someItem**\<`TInput$1`\>(`requirement`): [`SomeItemAction`](../interfaces/SomeItemAction.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14429
+Defined in: node\_modules/valibot/dist/index.d.mts:14771
 
 Creates a some item validation action.
 
@@ -25171,7 +25649,7 @@ A some item action.
 
 > **someItem**\<`TInput$1`, `TMessage`\>(`requirement`, `message`): [`SomeItemAction`](../interfaces/SomeItemAction.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14438
+Defined in: node\_modules/valibot/dist/index.d.mts:14780
 
 Creates a some item validation action.
 
@@ -25218,7 +25696,7 @@ lib/core/namespaces/v/functions/sortItems.md
 
 > **sortItems**\<`TInput$1`\>(`operation?`): [`SortItemsAction`](../interfaces/SortItemsAction.md)\<`TInput$1`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14469
+Defined in: node\_modules/valibot/dist/index.d.mts:14811
 
 Creates a sort items transformation action.
 
@@ -25242,6 +25720,48 @@ The sort items operation.
 
 A sort items action.
 
+lib/core/namespaces/v/functions/standardSchema.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../../../index.md) / [lib/core](../../../index.md) / [v](../index.md) / \_standardSchema
+
+# Function: \_standardSchema()
+
+> **\_standardSchema**\<`TSchema`\>(`schema`): `TSchema`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:16457
+
+**`Internal`**
+
+Eagerly creates and attaches the Standard Schema properties of a schema.
+
+Hint: The contextual `this` type includes the standard properties that are
+attached before the schema is returned.
+
+## Type Parameters
+
+### TSchema
+
+`TSchema` *extends* [`BaseSchema`](../interfaces/BaseSchema.md)\<`unknown`, `unknown`, [`BaseIssue`](../interfaces/BaseIssue.md)\<`unknown`\>\> \| [`BaseSchemaAsync`](../interfaces/BaseSchemaAsync.md)\<`unknown`, `unknown`, [`BaseIssue`](../interfaces/BaseIssue.md)\<`unknown`\>\>
+
+## Parameters
+
+### schema
+
+`Omit`\<`TSchema`, `"~standard"`\> & `ThisType`\<`TSchema`\>
+
+The schema to attach standard properties to.
+
+## Returns
+
+`TSchema`
+
+The schema with standard properties attached.
+
 lib/core/namespaces/v/functions/startsWith.md
 ---
 
@@ -25257,7 +25777,7 @@ lib/core/namespaces/v/functions/startsWith.md
 
 > **startsWith**\<`TInput$1`, `TRequirement`\>(`requirement`): [`StartsWithAction`](../interfaces/StartsWithAction.md)\<`TInput$1`, `TRequirement`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14529
+Defined in: node\_modules/valibot/dist/index.d.mts:14871
 
 Creates a starts with validation action.
 
@@ -25289,7 +25809,7 @@ A starts with action.
 
 > **startsWith**\<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): [`StartsWithAction`](../interfaces/StartsWithAction.md)\<`TInput$1`, `TRequirement`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14538
+Defined in: node\_modules/valibot/dist/index.d.mts:14880
 
 Creates a starts with validation action.
 
@@ -25650,7 +26170,7 @@ lib/core/namespaces/v/functions/stringifyJson.md
 
 > **stringifyJson**\<`TInput$1`\>(): [`StringifyJsonAction`](../interfaces/StringifyJsonAction.md)\<`TInput$1`, `undefined`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14609
+Defined in: node\_modules/valibot/dist/index.d.mts:14951
 
 **`Beta`**
 
@@ -25672,7 +26192,7 @@ A stringify JSON action.
 
 > **stringifyJson**\<`TInput$1`, `TConfig`\>(`config`): [`StringifyJsonAction`](../interfaces/StringifyJsonAction.md)\<`TInput$1`, `TConfig`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14619
+Defined in: node\_modules/valibot/dist/index.d.mts:14961
 
 **`Beta`**
 
@@ -25706,7 +26226,7 @@ A stringify JSON action.
 
 > **stringifyJson**\<`TInput$1`, `TConfig`, `TMessage`\>(`config`, `message`): [`StringifyJsonAction`](../interfaces/StringifyJsonAction.md)\<`TInput$1`, `TConfig`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14630
+Defined in: node\_modules/valibot/dist/index.d.mts:14972
 
 **`Beta`**
 
@@ -25759,7 +26279,7 @@ lib/core/namespaces/v/functions/stringify.md
 
 > **\_stringify**(`input`): `string`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:16074
+Defined in: node\_modules/valibot/dist/index.d.mts:16469
 
 **`Internal`**
 
@@ -25974,7 +26494,7 @@ lib/core/namespaces/v/functions/toBigint.md
 
 > **toBigint**\<`TInput$1`\>(): [`ToBigintAction`](../interfaces/ToBigintAction.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14674
+Defined in: node\_modules/valibot/dist/index.d.mts:15016
 
 **`Beta`**
 
@@ -25996,7 +26516,7 @@ A to bigint action.
 
 > **toBigint**\<`TInput$1`, `TMessage`\>(`message`): [`ToBigintAction`](../interfaces/ToBigintAction.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14684
+Defined in: node\_modules/valibot/dist/index.d.mts:15026
 
 **`Beta`**
 
@@ -26039,7 +26559,7 @@ lib/core/namespaces/v/functions/toBoolean.md
 
 > **toBoolean**\<`TInput$1`\>(): [`ToBooleanAction`](../interfaces/ToBooleanAction.md)\<`TInput$1`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14707
+Defined in: node\_modules/valibot/dist/index.d.mts:15049
 
 **`Beta`**
 
@@ -26070,7 +26590,7 @@ lib/core/namespaces/v/functions/toCamelCase.md
 
 > **toCamelCase**(): [`ToCamelCaseAction`](../interfaces/ToCamelCaseAction.md)
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14739
+Defined in: node\_modules/valibot/dist/index.d.mts:15081
 
 **`Beta`**
 
@@ -26104,7 +26624,7 @@ lib/core/namespaces/v/functions/toDate.md
 
 > **toDate**\<`TInput$1`\>(): [`ToDateAction`](../interfaces/ToDateAction.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14783
+Defined in: node\_modules/valibot/dist/index.d.mts:15125
 
 **`Beta`**
 
@@ -26126,7 +26646,7 @@ A to date action.
 
 > **toDate**\<`TInput$1`, `TMessage`\>(`message`): [`ToDateAction`](../interfaces/ToDateAction.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14793
+Defined in: node\_modules/valibot/dist/index.d.mts:15135
 
 **`Beta`**
 
@@ -26169,7 +26689,7 @@ lib/core/namespaces/v/functions/toKebabCase.md
 
 > **toKebabCase**(): [`ToKebabCaseAction`](../interfaces/ToKebabCaseAction.md)
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14825
+Defined in: node\_modules/valibot/dist/index.d.mts:15167
 
 **`Beta`**
 
@@ -26201,7 +26721,7 @@ lib/core/namespaces/v/functions/toLowerCase.md
 
 > **toLowerCase**(): [`ToLowerCaseAction`](../interfaces/ToLowerCaseAction.md)
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14846
+Defined in: node\_modules/valibot/dist/index.d.mts:15188
 
 Creates a to lower case transformation action.
 
@@ -26224,7 +26744,7 @@ lib/core/namespaces/v/functions/toMaxValue.md
 
 > **toMaxValue**\<`TInput$1`, `TRequirement`\>(`requirement`): [`ToMaxValueAction`](../interfaces/ToMaxValueAction.md)\<`TInput$1`, `TRequirement`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14873
+Defined in: node\_modules/valibot/dist/index.d.mts:15215
 
 Creates a to max value transformation action.
 
@@ -26265,7 +26785,7 @@ lib/core/namespaces/v/functions/toMinValue.md
 
 > **toMinValue**\<`TInput$1`, `TRequirement`\>(`requirement`): [`ToMinValueAction`](../interfaces/ToMinValueAction.md)\<`TInput$1`, `TRequirement`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14900
+Defined in: node\_modules/valibot/dist/index.d.mts:15242
 
 Creates a to min value transformation action.
 
@@ -26308,7 +26828,7 @@ lib/core/namespaces/v/functions/toNumber.md
 
 > **toNumber**\<`TInput$1`\>(): [`ToNumberAction`](../interfaces/ToNumberAction.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14944
+Defined in: node\_modules/valibot/dist/index.d.mts:15286
 
 **`Beta`**
 
@@ -26330,7 +26850,7 @@ A to number action.
 
 > **toNumber**\<`TInput$1`, `TMessage`\>(`message`): [`ToNumberAction`](../interfaces/ToNumberAction.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14954
+Defined in: node\_modules/valibot/dist/index.d.mts:15296
 
 **`Beta`**
 
@@ -26373,7 +26893,7 @@ lib/core/namespaces/v/functions/toPascalCase.md
 
 > **toPascalCase**(): [`ToPascalCaseAction`](../interfaces/ToPascalCaseAction.md)
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14986
+Defined in: node\_modules/valibot/dist/index.d.mts:15328
 
 **`Beta`**
 
@@ -26405,7 +26925,7 @@ lib/core/namespaces/v/functions/toSnakeCase.md
 
 > **toSnakeCase**(): [`ToSnakeCaseAction`](../interfaces/ToSnakeCaseAction.md)
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15018
+Defined in: node\_modules/valibot/dist/index.d.mts:15360
 
 **`Beta`**
 
@@ -26439,7 +26959,7 @@ lib/core/namespaces/v/functions/toString.md
 
 > **toString**\<`TInput$1`\>(): [`ToStringAction`](../interfaces/ToStringAction.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15062
+Defined in: node\_modules/valibot/dist/index.d.mts:15404
 
 **`Beta`**
 
@@ -26461,7 +26981,7 @@ A to string action.
 
 > **toString**\<`TInput$1`, `TMessage`\>(`message`): [`ToStringAction`](../interfaces/ToStringAction.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15072
+Defined in: node\_modules/valibot/dist/index.d.mts:15414
 
 **`Beta`**
 
@@ -26504,7 +27024,7 @@ lib/core/namespaces/v/functions/toUpperCase.md
 
 > **toUpperCase**(): [`ToUpperCaseAction`](../interfaces/ToUpperCaseAction.md)
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15093
+Defined in: node\_modules/valibot/dist/index.d.mts:15435
 
 Creates a to upper case transformation action.
 
@@ -26527,7 +27047,7 @@ lib/core/namespaces/v/functions/transformAsync.md
 
 > **transformAsync**\<`TInput$1`, `TOutput$1`\>(`operation`): [`TransformActionAsync`](../interfaces/TransformActionAsync.md)\<`TInput$1`, `TOutput$1`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15147
+Defined in: node\_modules/valibot/dist/index.d.mts:15489
 
 Creates a custom transformation action.
 
@@ -26568,7 +27088,7 @@ lib/core/namespaces/v/functions/transform.md
 
 > **transform**\<`TInput$1`, `TOutput$1`\>(`operation`): [`TransformAction`](../interfaces/TransformAction.md)\<`TInput$1`, `TOutput$1`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15120
+Defined in: node\_modules/valibot/dist/index.d.mts:15462
 
 Creates a custom transformation action.
 
@@ -26609,7 +27129,7 @@ lib/core/namespaces/v/functions/trimEnd.md
 
 > **trimEnd**(): [`TrimEndAction`](../interfaces/TrimEndAction.md)
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15189
+Defined in: node\_modules/valibot/dist/index.d.mts:15531
 
 Creates a trim end transformation action.
 
@@ -26632,7 +27152,7 @@ lib/core/namespaces/v/functions/trim.md
 
 > **trim**(): [`TrimAction`](../interfaces/TrimAction.md)
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15168
+Defined in: node\_modules/valibot/dist/index.d.mts:15510
 
 Creates a trim transformation action.
 
@@ -26655,7 +27175,7 @@ lib/core/namespaces/v/functions/trimStart.md
 
 > **trimStart**(): [`TrimStartAction`](../interfaces/TrimStartAction.md)
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15210
+Defined in: node\_modules/valibot/dist/index.d.mts:15552
 
 Creates a trim start transformation action.
 
@@ -27048,7 +27568,7 @@ lib/core/namespaces/v/functions/ulid.md
 
 > **ulid**\<`TInput$1`\>(): [`UlidAction`](../interfaces/UlidAction.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15268
+Defined in: node\_modules/valibot/dist/index.d.mts:15610
 
 Creates an [ULID](https://github.com/ulid/spec) validation action.
 
@@ -27068,7 +27588,7 @@ An ULID action.
 
 > **ulid**\<`TInput$1`, `TMessage`\>(`message`): [`UlidAction`](../interfaces/UlidAction.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15276
+Defined in: node\_modules/valibot/dist/index.d.mts:15618
 
 Creates an [ULID](https://github.com/ulid/spec) validation action.
 
@@ -27585,11 +28105,11 @@ lib/core/namespaces/v/functions/url.md
 
 > **url**\<`TInput$1`\>(): [`UrlAction`](../interfaces/UrlAction.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15337
+Defined in: node\_modules/valibot/dist/index.d.mts:15679
 
 Creates an [URL](https://en.wikipedia.org/wiki/URL) validation action.
 
-Hint: The value is passed to the URL constructor to check if it is valid.
+Hint: The value is checked with the [URL parser](https://developer.mozilla.org/en-US/docs/Web/API/URL/URL).
 This check is not perfect. For example, values like "abc:1234" are accepted.
 
 ### Type Parameters
@@ -27608,11 +28128,11 @@ An URL action.
 
 > **url**\<`TInput$1`, `TMessage`\>(`message`): [`UrlAction`](../interfaces/UrlAction.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15348
+Defined in: node\_modules/valibot/dist/index.d.mts:15690
 
 Creates an [URL](https://en.wikipedia.org/wiki/URL) validation action.
 
-Hint: The value is passed to the URL constructor to check if it is valid.
+Hint: The value is checked with the [URL parser](https://developer.mozilla.org/en-US/docs/Web/API/URL/URL).
 This check is not perfect. For example, values like "abc:1234" are accepted.
 
 ### Type Parameters
@@ -27654,7 +28174,7 @@ lib/core/namespaces/v/functions/uuid.md
 
 > **uuid**\<`TInput$1`\>(): [`UuidAction`](../interfaces/UuidAction.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15406
+Defined in: node\_modules/valibot/dist/index.d.mts:15748
 
 Creates an [UUID](https://en.wikipedia.org/wiki/Universally_unique_identifier) validation action.
 
@@ -27674,7 +28194,7 @@ An UUID action.
 
 > **uuid**\<`TInput$1`, `TMessage`\>(`message`): [`UuidAction`](../interfaces/UuidAction.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15414
+Defined in: node\_modules/valibot/dist/index.d.mts:15756
 
 Creates an [UUID](https://en.wikipedia.org/wiki/Universally_unique_identifier) validation action.
 
@@ -27717,7 +28237,7 @@ lib/core/namespaces/v/functions/value.md
 
 > **value**\<`TInput$1`, `TRequirement`\>(`requirement`): [`ValueAction`](../interfaces/ValueAction.md)\<`TInput$1`, `TRequirement`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15470
+Defined in: node\_modules/valibot/dist/index.d.mts:15812
 
 Creates a value validation action.
 
@@ -27749,7 +28269,7 @@ A value action.
 
 > **value**\<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): [`ValueAction`](../interfaces/ValueAction.md)\<`TInput$1`, `TRequirement`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15479
+Defined in: node\_modules/valibot/dist/index.d.mts:15821
 
 Creates a value validation action.
 
@@ -27802,7 +28322,7 @@ lib/core/namespaces/v/functions/values.md
 
 > **values**\<`TInput$1`, `TRequirement`\>(`requirement`): [`ValuesAction`](../interfaces/ValuesAction.md)\<`TInput$1`, `TRequirement`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15535
+Defined in: node\_modules/valibot/dist/index.d.mts:15877
 
 Creates a values validation action.
 
@@ -27834,7 +28354,7 @@ A values action.
 
 > **values**\<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): [`ValuesAction`](../interfaces/ValuesAction.md)\<`TInput$1`, `TRequirement`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15544
+Defined in: node\_modules/valibot/dist/index.d.mts:15886
 
 Creates a values validation action.
 
@@ -28187,7 +28707,7 @@ lib/core/namespaces/v/functions/words.md
 
 > **words**\<`TInput$1`, `TLocales`, `TRequirement`\>(`locales`, `requirement`): [`WordsAction`](../interfaces/WordsAction.md)\<`TInput$1`, `TLocales`, `TRequirement`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15609
+Defined in: node\_modules/valibot/dist/index.d.mts:15951
 
 Creates a words validation action.
 
@@ -28229,7 +28749,7 @@ A words action.
 
 > **words**\<`TInput$1`, `TLocales`, `TRequirement`, `TMessage`\>(`locales`, `requirement`, `message`): [`WordsAction`](../interfaces/WordsAction.md)\<`TInput$1`, `TLocales`, `TRequirement`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15619
+Defined in: node\_modules/valibot/dist/index.d.mts:15961
 
 Creates a words validation action.
 
@@ -28334,6 +28854,8 @@ Valibot 数据校验工具，业务侧可通过 lCore.v 使用
 - [CheckItemsAction](interfaces/CheckItemsAction.md)
 - [CheckItemsActionAsync](interfaces/CheckItemsActionAsync.md)
 - [CheckItemsIssue](interfaces/CheckItemsIssue.md)
+- [CodePointsAction](interfaces/CodePointsAction.md)
+- [CodePointsIssue](interfaces/CodePointsIssue.md)
 - [Config](interfaces/Config.md)
 - [CreditCardAction](interfaces/CreditCardAction.md)
 - [CreditCardIssue](interfaces/CreditCardIssue.md)
@@ -28431,6 +28953,8 @@ Valibot 数据校验工具，业务侧可通过 lCore.v 使用
 - [IsrcIssue](interfaces/IsrcIssue.md)
 - [JwsCompactAction](interfaces/JwsCompactAction.md)
 - [JwsCompactIssue](interfaces/JwsCompactIssue.md)
+- [KsuidAction](interfaces/KsuidAction.md)
+- [KsuidIssue](interfaces/KsuidIssue.md)
 - [LazySchema](interfaces/LazySchema.md)
 - [LazySchemaAsync](interfaces/LazySchemaAsync.md)
 - [LengthAction](interfaces/LengthAction.md)
@@ -28458,6 +28982,8 @@ Valibot 数据校验工具，业务侧可通过 lCore.v 使用
 - [MapSchemaAsync](interfaces/MapSchemaAsync.md)
 - [MaxBytesAction](interfaces/MaxBytesAction.md)
 - [MaxBytesIssue](interfaces/MaxBytesIssue.md)
+- [MaxCodePointsAction](interfaces/MaxCodePointsAction.md)
+- [MaxCodePointsIssue](interfaces/MaxCodePointsIssue.md)
 - [MaxEntriesAction](interfaces/MaxEntriesAction.md)
 - [MaxEntriesIssue](interfaces/MaxEntriesIssue.md)
 - [MaxGraphemesAction](interfaces/MaxGraphemesAction.md)
@@ -28475,6 +29001,8 @@ Valibot 数据校验工具，业务侧可通过 lCore.v 使用
 - [MimeTypeIssue](interfaces/MimeTypeIssue.md)
 - [MinBytesAction](interfaces/MinBytesAction.md)
 - [MinBytesIssue](interfaces/MinBytesIssue.md)
+- [MinCodePointsAction](interfaces/MinCodePointsAction.md)
+- [MinCodePointsIssue](interfaces/MinCodePointsIssue.md)
 - [MinEntriesAction](interfaces/MinEntriesAction.md)
 - [MinEntriesIssue](interfaces/MinEntriesIssue.md)
 - [MinGraphemesAction](interfaces/MinGraphemesAction.md)
@@ -28509,6 +29037,8 @@ Valibot 数据校验工具，业务侧可通过 lCore.v 使用
 - [NormalizeAction](interfaces/NormalizeAction.md)
 - [NotBytesAction](interfaces/NotBytesAction.md)
 - [NotBytesIssue](interfaces/NotBytesIssue.md)
+- [NotCodePointsAction](interfaces/NotCodePointsAction.md)
+- [NotCodePointsIssue](interfaces/NotCodePointsIssue.md)
 - [NotEntriesAction](interfaces/NotEntriesAction.md)
 - [NotEntriesIssue](interfaces/NotEntriesIssue.md)
 - [NotGraphemesAction](interfaces/NotGraphemesAction.md)
@@ -28782,6 +29312,7 @@ Valibot 数据校验工具，业务侧可通过 lCore.v 使用
 - [ISO\_WEEK\_REGEX](variables/ISO_WEEK_REGEX.md)
 - [ISRC\_REGEX](variables/ISRC_REGEX.md)
 - [JWS\_COMPACT\_REGEX](variables/JWS_COMPACT_REGEX.md)
+- [KSUID\_REGEX](variables/KSUID_REGEX.md)
 - [MAC\_REGEX](variables/MAC_REGEX.md)
 - [MAC48\_REGEX](variables/MAC48_REGEX.md)
 - [MAC64\_REGEX](variables/MAC64_REGEX.md)
@@ -28798,13 +29329,16 @@ Valibot 数据校验工具，业务侧可通过 lCore.v 使用
 - [\_cloneDataset](functions/cloneDataset.md)
 - [\_formatCase](functions/formatCase.md)
 - [\_getByteCount](functions/getByteCount.md)
+- [\_getCodePointCount](functions/getCodePointCount.md)
 - [\_getGraphemeCount](functions/getGraphemeCount.md)
 - [\_getLastMetadata](functions/getLastMetadata.md)
-- [\_getStandardProps](functions/getStandardProps.md)
 - [\_getWordCount](functions/getWordCount.md)
 - [\_isLuhnAlgo](functions/isLuhnAlgo.md)
+- [\_isSameValueZero](functions/isSameValueZero.md)
 - [\_isValidObjectKey](functions/isValidObjectKey.md)
+- [\_isValueMatch](functions/isValueMatch.md)
 - [\_joinExpects](functions/joinExpects.md)
+- [\_standardSchema](functions/standardSchema.md)
 - [\_stringify](functions/stringify.md)
 - [any](functions/any.md)
 - [args](functions/args.md)
@@ -28826,6 +29360,7 @@ Valibot 数据校验工具，业务侧可通过 lCore.v 使用
 - [checkAsync](functions/checkAsync.md)
 - [checkItems](functions/checkItems.md)
 - [checkItemsAsync](functions/checkItemsAsync.md)
+- [codePoints](functions/codePoints.md)
 - [config](functions/config.md)
 - [creditCard](functions/creditCard.md)
 - [cuid2](functions/cuid2.md)
@@ -28911,6 +29446,7 @@ Valibot 数据校验工具，业务侧可通过 lCore.v 使用
 - [isValiError](functions/isValiError.md)
 - [jwsCompact](functions/jwsCompact.md)
 - [keyof](functions/keyof.md)
+- [ksuid](functions/ksuid.md)
 - [lazy](functions/lazy.md)
 - [lazyAsync](functions/lazyAsync.md)
 - [length](functions/length.md)
@@ -28927,6 +29463,7 @@ Valibot 数据校验工具，业务侧可通过 lCore.v 使用
 - [mapAsync](functions/mapAsync.md)
 - [mapItems](functions/mapItems.md)
 - [maxBytes](functions/maxBytes.md)
+- [maxCodePoints](functions/maxCodePoints.md)
 - [maxEntries](functions/maxEntries.md)
 - [maxGraphemes](functions/maxGraphemes.md)
 - [maxLength](functions/maxLength.md)
@@ -28937,6 +29474,7 @@ Valibot 数据校验工具，业务侧可通过 lCore.v 使用
 - [metadata](functions/metadata.md)
 - [mimeType](functions/mimeType.md)
 - [minBytes](functions/minBytes.md)
+- [minCodePoints](functions/minCodePoints.md)
 - [minEntries](functions/minEntries.md)
 - [minGraphemes](functions/minGraphemes.md)
 - [minLength](functions/minLength.md)
@@ -28956,6 +29494,7 @@ Valibot 数据校验工具，业务侧可通过 lCore.v 使用
 - [nonOptionalAsync](functions/nonOptionalAsync.md)
 - [normalize](functions/normalize.md)
 - [notBytes](functions/notBytes.md)
+- [notCodePoints](functions/notCodePoints.md)
 - [notEntries](functions/notEntries.md)
 - [notGraphemes](functions/notGraphemes.md)
 - [notLength](functions/notLength.md)
@@ -31106,6 +31645,7 @@ Base issue interface.
 - [`BytesIssue`](BytesIssue.md)
 - [`CheckIssue`](CheckIssue.md)
 - [`CheckItemsIssue`](CheckItemsIssue.md)
+- [`CodePointsIssue`](CodePointsIssue.md)
 - [`CreditCardIssue`](CreditCardIssue.md)
 - [`Cuid2Issue`](Cuid2Issue.md)
 - [`CustomIssue`](CustomIssue.md)
@@ -31148,6 +31688,7 @@ Base issue interface.
 - [`IsoWeekIssue`](IsoWeekIssue.md)
 - [`IsrcIssue`](IsrcIssue.md)
 - [`JwsCompactIssue`](JwsCompactIssue.md)
+- [`KsuidIssue`](KsuidIssue.md)
 - [`LengthIssue`](LengthIssue.md)
 - [`LiteralIssue`](LiteralIssue.md)
 - [`LooseObjectIssue`](LooseObjectIssue.md)
@@ -31158,6 +31699,7 @@ Base issue interface.
 - [`MacIssue`](MacIssue.md)
 - [`MapIssue`](MapIssue.md)
 - [`MaxBytesIssue`](MaxBytesIssue.md)
+- [`MaxCodePointsIssue`](MaxCodePointsIssue.md)
 - [`MaxEntriesIssue`](MaxEntriesIssue.md)
 - [`MaxGraphemesIssue`](MaxGraphemesIssue.md)
 - [`MaxLengthIssue`](MaxLengthIssue.md)
@@ -31166,6 +31708,7 @@ Base issue interface.
 - [`MaxWordsIssue`](MaxWordsIssue.md)
 - [`MimeTypeIssue`](MimeTypeIssue.md)
 - [`MinBytesIssue`](MinBytesIssue.md)
+- [`MinCodePointsIssue`](MinCodePointsIssue.md)
 - [`MinEntriesIssue`](MinEntriesIssue.md)
 - [`MinGraphemesIssue`](MinGraphemesIssue.md)
 - [`MinLengthIssue`](MinLengthIssue.md)
@@ -31181,6 +31724,7 @@ Base issue interface.
 - [`NonNullishIssue`](NonNullishIssue.md)
 - [`NonOptionalIssue`](NonOptionalIssue.md)
 - [`NotBytesIssue`](NotBytesIssue.md)
+- [`NotCodePointsIssue`](NotCodePointsIssue.md)
 - [`NotEntriesIssue`](NotEntriesIssue.md)
 - [`NotGraphemesIssue`](NotGraphemesIssue.md)
 - [`NotLengthIssue`](NotLengthIssue.md)
@@ -32404,6 +32948,7 @@ Base validation interface.
 - [`BytesAction`](BytesAction.md)
 - [`CheckAction`](CheckAction.md)
 - [`CheckItemsAction`](CheckItemsAction.md)
+- [`CodePointsAction`](CodePointsAction.md)
 - [`CreditCardAction`](CreditCardAction.md)
 - [`Cuid2Action`](Cuid2Action.md)
 - [`DecimalAction`](DecimalAction.md)
@@ -32438,12 +32983,14 @@ Base validation interface.
 - [`IsoWeekAction`](IsoWeekAction.md)
 - [`IsrcAction`](IsrcAction.md)
 - [`JwsCompactAction`](JwsCompactAction.md)
+- [`KsuidAction`](KsuidAction.md)
 - [`LengthAction`](LengthAction.md)
 - [`LtValueAction`](LtValueAction.md)
 - [`Mac48Action`](Mac48Action.md)
 - [`Mac64Action`](Mac64Action.md)
 - [`MacAction`](MacAction.md)
 - [`MaxBytesAction`](MaxBytesAction.md)
+- [`MaxCodePointsAction`](MaxCodePointsAction.md)
 - [`MaxEntriesAction`](MaxEntriesAction.md)
 - [`MaxGraphemesAction`](MaxGraphemesAction.md)
 - [`MaxLengthAction`](MaxLengthAction.md)
@@ -32452,6 +32999,7 @@ Base validation interface.
 - [`MaxWordsAction`](MaxWordsAction.md)
 - [`MimeTypeAction`](MimeTypeAction.md)
 - [`MinBytesAction`](MinBytesAction.md)
+- [`MinCodePointsAction`](MinCodePointsAction.md)
 - [`MinEntriesAction`](MinEntriesAction.md)
 - [`MinGraphemesAction`](MinGraphemesAction.md)
 - [`MinLengthAction`](MinLengthAction.md)
@@ -32462,6 +33010,7 @@ Base validation interface.
 - [`NanoIdAction`](NanoIdAction.md)
 - [`NonEmptyAction`](NonEmptyAction.md)
 - [`NotBytesAction`](NotBytesAction.md)
+- [`NotCodePointsAction`](NotCodePointsAction.md)
 - [`NotEntriesAction`](NotEntriesAction.md)
 - [`NotGraphemesAction`](NotGraphemesAction.md)
 - [`NotLengthAction`](NotLengthAction.md)
@@ -36503,6 +37052,460 @@ The issue type.
 
 [`BaseIssue`](BaseIssue.md).[`type`](BaseIssue.md#type)
 
+lib/core/namespaces/v/interfaces/CodePointsAction.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../../../index.md) / [lib/core](../../../index.md) / [v](../index.md) / CodePointsAction
+
+# Interface: CodePointsAction\<TInput$1, TRequirement, TMessage\>
+
+Defined in: node\_modules/valibot/dist/index.d.mts:8344
+
+Code points action interface.
+
+## Extends
+
+- [`BaseValidation`](BaseValidation.md)\<`TInput$1`, `TInput$1`, [`CodePointsIssue`](CodePointsIssue.md)\<`TInput$1`, `TRequirement`\>\>
+
+## Type Parameters
+
+### TInput$1
+
+`TInput$1` *extends* `string`
+
+### TRequirement
+
+`TRequirement` *extends* `number`
+
+### TMessage
+
+`TMessage` *extends* [`ErrorMessage`](../type-aliases/ErrorMessage.md)\<[`CodePointsIssue`](CodePointsIssue.md)\<`TInput$1`, `TRequirement`\>\> \| `undefined`
+
+## Properties
+
+### ~run
+
+> `readonly` **~run**: (`dataset`, `config`) => [`OutputDataset`](../type-aliases/OutputDataset.md)\<`TInput$1`, [`BaseIssue`](BaseIssue.md)\<`unknown`\> \| [`CodePointsIssue`](CodePointsIssue.md)\<`TInput$1`, `TRequirement`\>\>
+
+Defined in: node\_modules/valibot/dist/index.d.mts:3258
+
+**`Internal`**
+
+Validates known input values.
+
+#### Parameters
+
+##### dataset
+
+[`OutputDataset`](../type-aliases/OutputDataset.md)\<`TInput$1`, [`BaseIssue`](BaseIssue.md)\<`unknown`\>\>
+
+The input dataset.
+
+##### config
+
+[`Config`](Config.md)\<[`BaseIssue`](BaseIssue.md)\<`unknown`\>\>
+
+The configuration.
+
+#### Returns
+
+[`OutputDataset`](../type-aliases/OutputDataset.md)\<`TInput$1`, [`BaseIssue`](BaseIssue.md)\<`unknown`\> \| [`CodePointsIssue`](CodePointsIssue.md)\<`TInput$1`, `TRequirement`\>\>
+
+The output dataset.
+
+#### Inherited from
+
+[`BaseValidation`](BaseValidation.md).[`~run`](BaseValidation.md#run)
+
+***
+
+### ~types?
+
+> `readonly` `optional` **~types?**: `object`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:3264
+
+**`Internal`**
+
+The input, output and issue type.
+
+#### input
+
+> `readonly` **input**: `TInput$1`
+
+#### issue
+
+> `readonly` **issue**: [`CodePointsIssue`](CodePointsIssue.md)
+
+#### output
+
+> `readonly` **output**: `TInput$1`
+
+#### Inherited from
+
+[`BaseValidation`](BaseValidation.md).[`~types`](BaseValidation.md#types)
+
+***
+
+### async
+
+> `readonly` **async**: `false`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:3247
+
+Whether it's async.
+
+#### Inherited from
+
+[`BaseValidation`](BaseValidation.md).[`async`](BaseValidation.md#async)
+
+***
+
+### expects
+
+> `readonly` **expects**: `` `${TRequirement}` ``
+
+Defined in: node\_modules/valibot/dist/index.d.mts:8356
+
+The expected property.
+
+#### Overrides
+
+[`BaseValidation`](BaseValidation.md).[`expects`](BaseValidation.md#expects)
+
+***
+
+### kind
+
+> `readonly` **kind**: `"validation"`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:3231
+
+The object kind.
+
+#### Inherited from
+
+[`BaseValidation`](BaseValidation.md).[`kind`](BaseValidation.md#kind)
+
+***
+
+### message
+
+> `readonly` **message**: `TMessage`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:8364
+
+The error message.
+
+***
+
+### reference
+
+> `readonly` **reference**: \{\<`TInput$1`, `TRequirement`\>(`requirement`): `CodePointsAction`\<`TInput$1`, `TRequirement`, `undefined`\>; \<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): `CodePointsAction`\<`TInput$1`, `TRequirement`, `TMessage`\>; \}
+
+Defined in: node\_modules/valibot/dist/index.d.mts:8352
+
+The action reference.
+
+#### Call Signature
+
+> \<`TInput$1`, `TRequirement`\>(`requirement`): `CodePointsAction`\<`TInput$1`, `TRequirement`, `undefined`\>
+
+Creates a code points validation action.
+
+##### Type Parameters
+
+###### TInput$1
+
+`TInput$1` *extends* `string`
+
+###### TRequirement
+
+`TRequirement` *extends* `number`
+
+##### Parameters
+
+###### requirement
+
+`TRequirement`
+
+The required code points.
+
+##### Returns
+
+`CodePointsAction`\<`TInput$1`, `TRequirement`, `undefined`\>
+
+A code points action.
+
+#### Call Signature
+
+> \<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): `CodePointsAction`\<`TInput$1`, `TRequirement`, `TMessage`\>
+
+Creates a code points validation action.
+
+##### Type Parameters
+
+###### TInput$1
+
+`TInput$1` *extends* `string`
+
+###### TRequirement
+
+`TRequirement` *extends* `number`
+
+###### TMessage
+
+`TMessage` *extends* [`ErrorMessage`](../type-aliases/ErrorMessage.md)\<[`CodePointsIssue`](CodePointsIssue.md)\<`TInput$1`, `TRequirement`\>\> \| `undefined`
+
+##### Parameters
+
+###### requirement
+
+`TRequirement`
+
+The required code points.
+
+###### message
+
+`TMessage`
+
+The error message.
+
+##### Returns
+
+`CodePointsAction`\<`TInput$1`, `TRequirement`, `TMessage`\>
+
+A code points action.
+
+#### Overrides
+
+[`BaseValidation`](BaseValidation.md).[`reference`](BaseValidation.md#reference)
+
+***
+
+### requirement
+
+> `readonly` **requirement**: `TRequirement`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:8360
+
+The required code points.
+
+***
+
+### type
+
+> `readonly` **type**: `"code_points"`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:8348
+
+The action type.
+
+#### Overrides
+
+[`BaseValidation`](BaseValidation.md).[`type`](BaseValidation.md#type)
+
+lib/core/namespaces/v/interfaces/CodePointsIssue.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../../../index.md) / [lib/core](../../../index.md) / [v](../index.md) / CodePointsIssue
+
+# Interface: CodePointsIssue\<TInput$1, TRequirement\>
+
+Defined in: node\_modules/valibot/dist/index.d.mts:8319
+
+Code points issue interface.
+
+## Extends
+
+- [`BaseIssue`](BaseIssue.md)\<`TInput$1`\>
+
+## Type Parameters
+
+### TInput$1
+
+`TInput$1` *extends* `string`
+
+### TRequirement
+
+`TRequirement` *extends* `number`
+
+## Properties
+
+### abortEarly?
+
+> `readonly` `optional` **abortEarly?**: `boolean`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:3717
+
+Whether it should be aborted early.
+
+#### Inherited from
+
+[`BaseIssue`](BaseIssue.md).[`abortEarly`](BaseIssue.md#abortearly)
+
+***
+
+### abortPipeEarly?
+
+> `readonly` `optional` **abortPipeEarly?**: `boolean`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:3721
+
+Whether a pipe should be aborted early.
+
+#### Inherited from
+
+[`BaseIssue`](BaseIssue.md).[`abortPipeEarly`](BaseIssue.md#abortpipeearly)
+
+***
+
+### expected
+
+> `readonly` **expected**: `` `${TRequirement}` ``
+
+Defined in: node\_modules/valibot/dist/index.d.mts:8331
+
+The expected property.
+
+#### Overrides
+
+[`BaseIssue`](BaseIssue.md).[`expected`](BaseIssue.md#expected)
+
+***
+
+### input
+
+> `readonly` **input**: `TInput$1`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:3650
+
+The raw input data.
+
+#### Inherited from
+
+[`BaseIssue`](BaseIssue.md).[`input`](BaseIssue.md#input)
+
+***
+
+### issues?
+
+> `readonly` `optional` **issues?**: \[[`BaseIssue`](BaseIssue.md)\<`TInput$1`\>, `...BaseIssue<TInput$1>[]`\]
+
+Defined in: node\_modules/valibot/dist/index.d.mts:3674
+
+The sub issues.
+
+#### Inherited from
+
+[`BaseIssue`](BaseIssue.md).[`issues`](BaseIssue.md#issues)
+
+***
+
+### kind
+
+> `readonly` **kind**: `"validation"`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:8323
+
+The issue kind.
+
+#### Overrides
+
+[`BaseIssue`](BaseIssue.md).[`kind`](BaseIssue.md#kind)
+
+***
+
+### lang?
+
+> `readonly` `optional` **lang?**: `string`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:3709
+
+The selected language.
+
+#### Inherited from
+
+[`BaseIssue`](BaseIssue.md).[`lang`](BaseIssue.md#lang)
+
+***
+
+### message
+
+> `readonly` **message**: `string`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:3662
+
+The error message.
+
+#### Inherited from
+
+[`BaseIssue`](BaseIssue.md).[`message`](BaseIssue.md#message)
+
+***
+
+### path?
+
+> `readonly` `optional` **path?**: \[[`IssuePathItem`](../type-aliases/IssuePathItem.md), `...IssuePathItem[]`\]
+
+Defined in: node\_modules/valibot/dist/index.d.mts:3670
+
+The issue path.
+
+#### Inherited from
+
+[`BaseIssue`](BaseIssue.md).[`path`](BaseIssue.md#path)
+
+***
+
+### received
+
+> `readonly` **received**: `` `${number}` ``
+
+Defined in: node\_modules/valibot/dist/index.d.mts:8335
+
+The received property.
+
+#### Overrides
+
+[`BaseIssue`](BaseIssue.md).[`received`](BaseIssue.md#received)
+
+***
+
+### requirement
+
+> `readonly` **requirement**: `TRequirement`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:8339
+
+The required code points.
+
+#### Overrides
+
+[`BaseIssue`](BaseIssue.md).[`requirement`](BaseIssue.md#requirement)
+
+***
+
+### type
+
+> `readonly` **type**: `"code_points"`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:8327
+
+The issue type.
+
+#### Overrides
+
+[`BaseIssue`](BaseIssue.md).[`type`](BaseIssue.md#type)
+
 lib/core/namespaces/v/interfaces/Config.md
 ---
 
@@ -36579,7 +37582,7 @@ lib/core/namespaces/v/interfaces/CreditCardAction.md
 
 # Interface: CreditCardAction\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8344
+Defined in: node\_modules/valibot/dist/index.d.mts:8413
 
 Credit card action interface.
 
@@ -36681,7 +37684,7 @@ Whether it's async.
 
 > `readonly` **expects**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8356
+Defined in: node\_modules/valibot/dist/index.d.mts:8425
 
 The expected property.
 
@@ -36709,7 +37712,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8364
+Defined in: node\_modules/valibot/dist/index.d.mts:8433
 
 The error message.
 
@@ -36719,7 +37722,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `CreditCardAction`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `CreditCardAction`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8352
+Defined in: node\_modules/valibot/dist/index.d.mts:8421
 
 The action reference.
 
@@ -36781,7 +37784,7 @@ A credit card action.
 
 > `readonly` **requirement**: (`input`) => `boolean`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8360
+Defined in: node\_modules/valibot/dist/index.d.mts:8429
 
 The validation function.
 
@@ -36801,7 +37804,7 @@ The validation function.
 
 > `readonly` **type**: `"credit_card"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8348
+Defined in: node\_modules/valibot/dist/index.d.mts:8417
 
 The action type.
 
@@ -36820,7 +37823,7 @@ lib/core/namespaces/v/interfaces/CreditCardIssue.md
 
 # Interface: CreditCardIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8319
+Defined in: node\_modules/valibot/dist/index.d.mts:8388
 
 Credit card issue interface.
 
@@ -36868,7 +37871,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8331
+Defined in: node\_modules/valibot/dist/index.d.mts:8400
 
 The expected property.
 
@@ -36910,7 +37913,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8323
+Defined in: node\_modules/valibot/dist/index.d.mts:8392
 
 The issue kind.
 
@@ -36966,7 +37969,7 @@ The issue path.
 
 > `readonly` **received**: `` `"${string}"` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8335
+Defined in: node\_modules/valibot/dist/index.d.mts:8404
 
 The received property.
 
@@ -36980,7 +37983,7 @@ The received property.
 
 > `readonly` **requirement**: (`input`) => `boolean`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8339
+Defined in: node\_modules/valibot/dist/index.d.mts:8408
 
 The validation function.
 
@@ -37004,7 +38007,7 @@ The validation function.
 
 > `readonly` **type**: `"credit_card"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8327
+Defined in: node\_modules/valibot/dist/index.d.mts:8396
 
 The issue type.
 
@@ -37023,7 +38026,7 @@ lib/core/namespaces/v/interfaces/Cuid2Action.md
 
 # Interface: Cuid2Action\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8410
+Defined in: node\_modules/valibot/dist/index.d.mts:8479
 
 Cuid2 action interface.
 
@@ -37125,7 +38128,7 @@ Whether it's async.
 
 > `readonly` **expects**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8422
+Defined in: node\_modules/valibot/dist/index.d.mts:8491
 
 The expected property.
 
@@ -37153,7 +38156,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8430
+Defined in: node\_modules/valibot/dist/index.d.mts:8499
 
 The error message.
 
@@ -37163,7 +38166,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `Cuid2Action`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `Cuid2Action`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8418
+Defined in: node\_modules/valibot/dist/index.d.mts:8487
 
 The action reference.
 
@@ -37225,7 +38228,7 @@ A Cuid2 action.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8426
+Defined in: node\_modules/valibot/dist/index.d.mts:8495
 
 The Cuid2 regex.
 
@@ -37235,7 +38238,7 @@ The Cuid2 regex.
 
 > `readonly` **type**: `"cuid2"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8414
+Defined in: node\_modules/valibot/dist/index.d.mts:8483
 
 The action type.
 
@@ -37254,7 +38257,7 @@ lib/core/namespaces/v/interfaces/Cuid2Issue.md
 
 # Interface: Cuid2Issue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8385
+Defined in: node\_modules/valibot/dist/index.d.mts:8454
 
 Cuid2 issue interface.
 
@@ -37302,7 +38305,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8397
+Defined in: node\_modules/valibot/dist/index.d.mts:8466
 
 The expected property.
 
@@ -37344,7 +38347,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8389
+Defined in: node\_modules/valibot/dist/index.d.mts:8458
 
 The issue kind.
 
@@ -37400,7 +38403,7 @@ The issue path.
 
 > `readonly` **received**: `` `"${string}"` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8401
+Defined in: node\_modules/valibot/dist/index.d.mts:8470
 
 The received property.
 
@@ -37414,7 +38417,7 @@ The received property.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8405
+Defined in: node\_modules/valibot/dist/index.d.mts:8474
 
 The Cuid2 regex.
 
@@ -37428,7 +38431,7 @@ The Cuid2 regex.
 
 > `readonly` **type**: `"cuid2"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8393
+Defined in: node\_modules/valibot/dist/index.d.mts:8462
 
 The issue type.
 
@@ -38640,7 +39643,7 @@ lib/core/namespaces/v/interfaces/DecimalAction.md
 
 # Interface: DecimalAction\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8476
+Defined in: node\_modules/valibot/dist/index.d.mts:8545
 
 Decimal action interface.
 
@@ -38742,7 +39745,7 @@ Whether it's async.
 
 > `readonly` **expects**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8488
+Defined in: node\_modules/valibot/dist/index.d.mts:8557
 
 The expected property.
 
@@ -38770,7 +39773,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8496
+Defined in: node\_modules/valibot/dist/index.d.mts:8565
 
 The error message.
 
@@ -38780,7 +39783,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `DecimalAction`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `DecimalAction`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8484
+Defined in: node\_modules/valibot/dist/index.d.mts:8553
 
 The action reference.
 
@@ -38850,7 +39853,7 @@ An decimal action.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8492
+Defined in: node\_modules/valibot/dist/index.d.mts:8561
 
 The decimal regex.
 
@@ -38860,7 +39863,7 @@ The decimal regex.
 
 > `readonly` **type**: `"decimal"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8480
+Defined in: node\_modules/valibot/dist/index.d.mts:8549
 
 The action type.
 
@@ -38879,7 +39882,7 @@ lib/core/namespaces/v/interfaces/DecimalIssue.md
 
 # Interface: DecimalIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8451
+Defined in: node\_modules/valibot/dist/index.d.mts:8520
 
 Decimal issue interface.
 
@@ -38927,7 +39930,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8463
+Defined in: node\_modules/valibot/dist/index.d.mts:8532
 
 The expected property.
 
@@ -38969,7 +39972,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8455
+Defined in: node\_modules/valibot/dist/index.d.mts:8524
 
 The issue kind.
 
@@ -39025,7 +40028,7 @@ The issue path.
 
 > `readonly` **received**: `` `"${string}"` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8467
+Defined in: node\_modules/valibot/dist/index.d.mts:8536
 
 The received property.
 
@@ -39039,7 +40042,7 @@ The received property.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8471
+Defined in: node\_modules/valibot/dist/index.d.mts:8540
 
 The decimal regex.
 
@@ -39053,7 +40056,7 @@ The decimal regex.
 
 > `readonly` **type**: `"decimal"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8459
+Defined in: node\_modules/valibot/dist/index.d.mts:8528
 
 The issue type.
 
@@ -39072,7 +40075,7 @@ lib/core/namespaces/v/interfaces/DescriptionAction.md
 
 # Interface: DescriptionAction\<TInput$1, TDescription\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8525
+Defined in: node\_modules/valibot/dist/index.d.mts:8594
 
 Description action interface.
 
@@ -39124,7 +40127,7 @@ The input, output and issue type.
 
 > `readonly` **description**: `TDescription`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8537
+Defined in: node\_modules/valibot/dist/index.d.mts:8606
 
 The description text.
 
@@ -39148,7 +40151,7 @@ The object kind.
 
 > `readonly` **reference**: \<`TInput$1`, `TDescription`\>(`description_`) => `DescriptionAction`\<`TInput$1`, `TDescription`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8533
+Defined in: node\_modules/valibot/dist/index.d.mts:8602
 
 The action reference.
 
@@ -39188,7 +40191,7 @@ A description action.
 
 > `readonly` **type**: `"description"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8529
+Defined in: node\_modules/valibot/dist/index.d.mts:8598
 
 The action type.
 
@@ -39207,7 +40210,7 @@ lib/core/namespaces/v/interfaces/DigitsAction.md
 
 # Interface: DigitsAction\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8577
+Defined in: node\_modules/valibot/dist/index.d.mts:8646
 
 Digits action interface.
 
@@ -39309,7 +40312,7 @@ Whether it's async.
 
 > `readonly` **expects**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8589
+Defined in: node\_modules/valibot/dist/index.d.mts:8658
 
 The expected property.
 
@@ -39337,7 +40340,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8597
+Defined in: node\_modules/valibot/dist/index.d.mts:8666
 
 The error message.
 
@@ -39347,7 +40350,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `DigitsAction`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `DigitsAction`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8585
+Defined in: node\_modules/valibot/dist/index.d.mts:8654
 
 The action reference.
 
@@ -39417,7 +40420,7 @@ An digits action.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8593
+Defined in: node\_modules/valibot/dist/index.d.mts:8662
 
 The digits regex.
 
@@ -39427,7 +40430,7 @@ The digits regex.
 
 > `readonly` **type**: `"digits"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8581
+Defined in: node\_modules/valibot/dist/index.d.mts:8650
 
 The action type.
 
@@ -39446,7 +40449,7 @@ lib/core/namespaces/v/interfaces/DigitsIssue.md
 
 # Interface: DigitsIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8552
+Defined in: node\_modules/valibot/dist/index.d.mts:8621
 
 Digits issue interface.
 
@@ -39494,7 +40497,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8564
+Defined in: node\_modules/valibot/dist/index.d.mts:8633
 
 The expected property.
 
@@ -39536,7 +40539,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8556
+Defined in: node\_modules/valibot/dist/index.d.mts:8625
 
 The issue kind.
 
@@ -39592,7 +40595,7 @@ The issue path.
 
 > `readonly` **received**: `` `"${string}"` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8568
+Defined in: node\_modules/valibot/dist/index.d.mts:8637
 
 The received property.
 
@@ -39606,7 +40609,7 @@ The received property.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8572
+Defined in: node\_modules/valibot/dist/index.d.mts:8641
 
 The digits regex.
 
@@ -39620,7 +40623,7 @@ The digits regex.
 
 > `readonly` **type**: `"digits"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8560
+Defined in: node\_modules/valibot/dist/index.d.mts:8629
 
 The issue type.
 
@@ -39639,7 +40642,7 @@ lib/core/namespaces/v/interfaces/DomainAction.md
 
 # Interface: DomainAction\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8655
+Defined in: node\_modules/valibot/dist/index.d.mts:8724
 
 **`Beta`**
 
@@ -39745,7 +40748,7 @@ Whether it's async.
 
 > `readonly` **expects**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8667
+Defined in: node\_modules/valibot/dist/index.d.mts:8736
 
 **`Beta`**
 
@@ -39777,7 +40780,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8675
+Defined in: node\_modules/valibot/dist/index.d.mts:8744
 
 **`Beta`**
 
@@ -39789,7 +40792,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `DomainAction`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `DomainAction`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8663
+Defined in: node\_modules/valibot/dist/index.d.mts:8732
 
 **`Beta`**
 
@@ -39865,7 +40868,7 @@ A domain action.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8671
+Defined in: node\_modules/valibot/dist/index.d.mts:8740
 
 **`Beta`**
 
@@ -39877,7 +40880,7 @@ The domain regex.
 
 > `readonly` **type**: `"domain"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8659
+Defined in: node\_modules/valibot/dist/index.d.mts:8728
 
 **`Beta`**
 
@@ -39898,7 +40901,7 @@ lib/core/namespaces/v/interfaces/DomainIssue.md
 
 # Interface: DomainIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8628
+Defined in: node\_modules/valibot/dist/index.d.mts:8697
 
 **`Beta`**
 
@@ -39952,7 +40955,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8640
+Defined in: node\_modules/valibot/dist/index.d.mts:8709
 
 **`Beta`**
 
@@ -40000,7 +41003,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8632
+Defined in: node\_modules/valibot/dist/index.d.mts:8701
 
 **`Beta`**
 
@@ -40064,7 +41067,7 @@ The issue path.
 
 > `readonly` **received**: `` `"${string}"` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8644
+Defined in: node\_modules/valibot/dist/index.d.mts:8713
 
 **`Beta`**
 
@@ -40080,7 +41083,7 @@ The received property.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8648
+Defined in: node\_modules/valibot/dist/index.d.mts:8717
 
 **`Beta`**
 
@@ -40096,7 +41099,7 @@ The domain regex.
 
 > `readonly` **type**: `"domain"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8636
+Defined in: node\_modules/valibot/dist/index.d.mts:8705
 
 **`Beta`**
 
@@ -40117,7 +41120,7 @@ lib/core/namespaces/v/interfaces/EmailAction.md
 
 # Interface: EmailAction\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8733
+Defined in: node\_modules/valibot/dist/index.d.mts:8802
 
 Email action interface.
 
@@ -40219,7 +41222,7 @@ Whether it's async.
 
 > `readonly` **expects**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8745
+Defined in: node\_modules/valibot/dist/index.d.mts:8814
 
 The expected property.
 
@@ -40247,7 +41250,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8753
+Defined in: node\_modules/valibot/dist/index.d.mts:8822
 
 The error message.
 
@@ -40257,7 +41260,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `EmailAction`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `EmailAction`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8741
+Defined in: node\_modules/valibot/dist/index.d.mts:8810
 
 The action reference.
 
@@ -40329,7 +41332,7 @@ An email action.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8749
+Defined in: node\_modules/valibot/dist/index.d.mts:8818
 
 The email regex.
 
@@ -40339,7 +41342,7 @@ The email regex.
 
 > `readonly` **type**: `"email"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8737
+Defined in: node\_modules/valibot/dist/index.d.mts:8806
 
 The action type.
 
@@ -40358,7 +41361,7 @@ lib/core/namespaces/v/interfaces/EmailIssue.md
 
 # Interface: EmailIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8708
+Defined in: node\_modules/valibot/dist/index.d.mts:8777
 
 Email issue interface.
 
@@ -40406,7 +41409,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8720
+Defined in: node\_modules/valibot/dist/index.d.mts:8789
 
 The expected property.
 
@@ -40448,7 +41451,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8712
+Defined in: node\_modules/valibot/dist/index.d.mts:8781
 
 The issue kind.
 
@@ -40504,7 +41507,7 @@ The issue path.
 
 > `readonly` **received**: `` `"${string}"` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8724
+Defined in: node\_modules/valibot/dist/index.d.mts:8793
 
 The received property.
 
@@ -40518,7 +41521,7 @@ The received property.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8728
+Defined in: node\_modules/valibot/dist/index.d.mts:8797
 
 The email regex.
 
@@ -40532,7 +41535,7 @@ The email regex.
 
 > `readonly` **type**: `"email"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8716
+Defined in: node\_modules/valibot/dist/index.d.mts:8785
 
 The issue type.
 
@@ -40551,7 +41554,7 @@ lib/core/namespaces/v/interfaces/EmojiAction.md
 
 # Interface: EmojiAction\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8809
+Defined in: node\_modules/valibot/dist/index.d.mts:8878
 
 Emoji action interface.
 
@@ -40653,7 +41656,7 @@ Whether it's async.
 
 > `readonly` **expects**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8821
+Defined in: node\_modules/valibot/dist/index.d.mts:8890
 
 The expected property.
 
@@ -40681,7 +41684,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8829
+Defined in: node\_modules/valibot/dist/index.d.mts:8898
 
 The error message.
 
@@ -40691,7 +41694,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `EmojiAction`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `EmojiAction`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8817
+Defined in: node\_modules/valibot/dist/index.d.mts:8886
 
 The action reference.
 
@@ -40753,7 +41756,7 @@ An emoji action.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8825
+Defined in: node\_modules/valibot/dist/index.d.mts:8894
 
 The emoji regex.
 
@@ -40763,7 +41766,7 @@ The emoji regex.
 
 > `readonly` **type**: `"emoji"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8813
+Defined in: node\_modules/valibot/dist/index.d.mts:8882
 
 The action type.
 
@@ -40782,7 +41785,7 @@ lib/core/namespaces/v/interfaces/EmojiIssue.md
 
 # Interface: EmojiIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8784
+Defined in: node\_modules/valibot/dist/index.d.mts:8853
 
 Emoji issue interface.
 
@@ -40830,7 +41833,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8796
+Defined in: node\_modules/valibot/dist/index.d.mts:8865
 
 The expected property.
 
@@ -40872,7 +41875,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8788
+Defined in: node\_modules/valibot/dist/index.d.mts:8857
 
 The issue kind.
 
@@ -40928,7 +41931,7 @@ The issue path.
 
 > `readonly` **received**: `` `"${string}"` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8800
+Defined in: node\_modules/valibot/dist/index.d.mts:8869
 
 The received property.
 
@@ -40942,7 +41945,7 @@ The received property.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8804
+Defined in: node\_modules/valibot/dist/index.d.mts:8873
 
 The emoji regex.
 
@@ -40956,7 +41959,7 @@ The emoji regex.
 
 > `readonly` **type**: `"emoji"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8792
+Defined in: node\_modules/valibot/dist/index.d.mts:8861
 
 The issue type.
 
@@ -40975,7 +41978,7 @@ lib/core/namespaces/v/interfaces/EmptyAction.md
 
 # Interface: EmptyAction\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8871
+Defined in: node\_modules/valibot/dist/index.d.mts:8940
 
 Empty action interface.
 
@@ -41077,7 +42080,7 @@ Whether it's async.
 
 > `readonly` **expects**: `"0"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8883
+Defined in: node\_modules/valibot/dist/index.d.mts:8952
 
 The expected property.
 
@@ -41105,7 +42108,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8887
+Defined in: node\_modules/valibot/dist/index.d.mts:8956
 
 The error message.
 
@@ -41115,7 +42118,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `EmptyAction`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `EmptyAction`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8879
+Defined in: node\_modules/valibot/dist/index.d.mts:8948
 
 The action reference.
 
@@ -41177,7 +42180,7 @@ An empty action.
 
 > `readonly` **type**: `"empty"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8875
+Defined in: node\_modules/valibot/dist/index.d.mts:8944
 
 The action type.
 
@@ -41196,7 +42199,7 @@ lib/core/namespaces/v/interfaces/EmptyIssue.md
 
 # Interface: EmptyIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8850
+Defined in: node\_modules/valibot/dist/index.d.mts:8919
 
 Empty issue interface.
 
@@ -41244,7 +42247,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `"0"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8862
+Defined in: node\_modules/valibot/dist/index.d.mts:8931
 
 The expected input.
 
@@ -41286,7 +42289,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8854
+Defined in: node\_modules/valibot/dist/index.d.mts:8923
 
 The issue kind.
 
@@ -41342,7 +42345,7 @@ The issue path.
 
 > `readonly` **received**: `` `${number}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8866
+Defined in: node\_modules/valibot/dist/index.d.mts:8935
 
 The received input.
 
@@ -41370,7 +42373,7 @@ The input requirement.
 
 > `readonly` **type**: `"empty"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8858
+Defined in: node\_modules/valibot/dist/index.d.mts:8927
 
 The issue type.
 
@@ -41389,7 +42392,7 @@ lib/core/namespaces/v/interfaces/EndsWithAction.md
 
 # Interface: EndsWithAction\<TInput$1, TRequirement, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8933
+Defined in: node\_modules/valibot/dist/index.d.mts:9002
 
 Ends with action interface.
 
@@ -41495,7 +42498,7 @@ Whether it's async.
 
 > `readonly` **expects**: `` `"${TRequirement}"` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8945
+Defined in: node\_modules/valibot/dist/index.d.mts:9014
 
 The expected property.
 
@@ -41523,7 +42526,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8953
+Defined in: node\_modules/valibot/dist/index.d.mts:9022
 
 The error message.
 
@@ -41533,7 +42536,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`, `TRequirement`\>(`requirement`): `EndsWithAction`\<`TInput$1`, `TRequirement`, `undefined`\>; \<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): `EndsWithAction`\<`TInput$1`, `TRequirement`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8941
+Defined in: node\_modules/valibot/dist/index.d.mts:9010
 
 The action reference.
 
@@ -41617,7 +42620,7 @@ An ends with action.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8949
+Defined in: node\_modules/valibot/dist/index.d.mts:9018
 
 The end string.
 
@@ -41627,7 +42630,7 @@ The end string.
 
 > `readonly` **type**: `"ends_with"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8937
+Defined in: node\_modules/valibot/dist/index.d.mts:9006
 
 The action type.
 
@@ -41646,7 +42649,7 @@ lib/core/namespaces/v/interfaces/EndsWithIssue.md
 
 # Interface: EndsWithIssue\<TInput$1, TRequirement\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8908
+Defined in: node\_modules/valibot/dist/index.d.mts:8977
 
 Ends with issue interface.
 
@@ -41698,7 +42701,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `` `"${TRequirement}"` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8920
+Defined in: node\_modules/valibot/dist/index.d.mts:8989
 
 The expected property.
 
@@ -41740,7 +42743,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8912
+Defined in: node\_modules/valibot/dist/index.d.mts:8981
 
 The issue kind.
 
@@ -41796,7 +42799,7 @@ The issue path.
 
 > `readonly` **received**: `` `"${string}"` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8924
+Defined in: node\_modules/valibot/dist/index.d.mts:8993
 
 The received property.
 
@@ -41810,7 +42813,7 @@ The received property.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8928
+Defined in: node\_modules/valibot/dist/index.d.mts:8997
 
 The end string.
 
@@ -41824,7 +42827,7 @@ The end string.
 
 > `readonly` **type**: `"ends_with"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8916
+Defined in: node\_modules/valibot/dist/index.d.mts:8985
 
 The issue type.
 
@@ -41843,7 +42846,7 @@ lib/core/namespaces/v/interfaces/EntriesAction.md
 
 # Interface: EntriesAction\<TInput$1, TRequirement, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9006
+Defined in: node\_modules/valibot/dist/index.d.mts:9075
 
 **`Beta`**
 
@@ -41953,7 +42956,7 @@ Whether it's async.
 
 > `readonly` **expects**: `` `${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9018
+Defined in: node\_modules/valibot/dist/index.d.mts:9087
 
 **`Beta`**
 
@@ -41985,7 +42988,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9026
+Defined in: node\_modules/valibot/dist/index.d.mts:9095
 
 **`Beta`**
 
@@ -41997,7 +43000,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`, `TRequirement`\>(`requirement`): `EntriesAction`\<`TInput$1`, `TRequirement`, `undefined`\>; \<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): `EntriesAction`\<`TInput$1`, `TRequirement`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9014
+Defined in: node\_modules/valibot/dist/index.d.mts:9083
 
 **`Beta`**
 
@@ -42087,7 +43090,7 @@ An entries action.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9022
+Defined in: node\_modules/valibot/dist/index.d.mts:9091
 
 **`Beta`**
 
@@ -42099,7 +43102,7 @@ The required entries.
 
 > `readonly` **type**: `"entries"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9010
+Defined in: node\_modules/valibot/dist/index.d.mts:9079
 
 **`Beta`**
 
@@ -42120,7 +43123,7 @@ lib/core/namespaces/v/interfaces/EntriesIssue.md
 
 # Interface: EntriesIssue\<TInput$1, TRequirement\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8979
+Defined in: node\_modules/valibot/dist/index.d.mts:9048
 
 **`Beta`**
 
@@ -42178,7 +43181,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `` `${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8991
+Defined in: node\_modules/valibot/dist/index.d.mts:9060
 
 **`Beta`**
 
@@ -42226,7 +43229,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8983
+Defined in: node\_modules/valibot/dist/index.d.mts:9052
 
 **`Beta`**
 
@@ -42290,7 +43293,7 @@ The issue path.
 
 > `readonly` **received**: `` `${number}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8995
+Defined in: node\_modules/valibot/dist/index.d.mts:9064
 
 **`Beta`**
 
@@ -42306,7 +43309,7 @@ The received property.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8999
+Defined in: node\_modules/valibot/dist/index.d.mts:9068
 
 **`Beta`**
 
@@ -42322,7 +43325,7 @@ The required entries.
 
 > `readonly` **type**: `"entries"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8987
+Defined in: node\_modules/valibot/dist/index.d.mts:9056
 
 **`Beta`**
 
@@ -42820,7 +43823,7 @@ lib/core/namespaces/v/interfaces/EveryItemAction.md
 
 # Interface: EveryItemAction\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9075
+Defined in: node\_modules/valibot/dist/index.d.mts:9144
 
 Every item action interface.
 
@@ -42922,7 +43925,7 @@ Whether it's async.
 
 > `readonly` **expects**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9087
+Defined in: node\_modules/valibot/dist/index.d.mts:9156
 
 The expected property.
 
@@ -42950,7 +43953,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9095
+Defined in: node\_modules/valibot/dist/index.d.mts:9164
 
 The error message.
 
@@ -42960,7 +43963,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(`requirement`): `EveryItemAction`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`requirement`, `message`): `EveryItemAction`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9083
+Defined in: node\_modules/valibot/dist/index.d.mts:9152
 
 The action reference.
 
@@ -43036,7 +44039,7 @@ An every item action.
 
 > `readonly` **requirement**: [`ArrayRequirement`](../type-aliases/ArrayRequirement.md)\<`TInput$1`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9091
+Defined in: node\_modules/valibot/dist/index.d.mts:9160
 
 The validation function.
 
@@ -43046,7 +44049,7 @@ The validation function.
 
 > `readonly` **type**: `"every_item"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9079
+Defined in: node\_modules/valibot/dist/index.d.mts:9148
 
 The action type.
 
@@ -43065,7 +44068,7 @@ lib/core/namespaces/v/interfaces/EveryItemIssue.md
 
 # Interface: EveryItemIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9054
+Defined in: node\_modules/valibot/dist/index.d.mts:9123
 
 Every item issue interface.
 
@@ -43113,7 +44116,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9066
+Defined in: node\_modules/valibot/dist/index.d.mts:9135
 
 The expected property.
 
@@ -43155,7 +44158,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9058
+Defined in: node\_modules/valibot/dist/index.d.mts:9127
 
 The issue kind.
 
@@ -43225,7 +44228,7 @@ The received property.
 
 > `readonly` **requirement**: [`ArrayRequirement`](../type-aliases/ArrayRequirement.md)\<`TInput$1`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9070
+Defined in: node\_modules/valibot/dist/index.d.mts:9139
 
 The validation function.
 
@@ -43239,7 +44242,7 @@ The validation function.
 
 > `readonly` **type**: `"every_item"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9062
+Defined in: node\_modules/valibot/dist/index.d.mts:9131
 
 The issue type.
 
@@ -43854,7 +44857,7 @@ lib/core/namespaces/v/interfaces/ExamplesAction.md
 
 # Interface: ExamplesAction\<TInput$1, TExamples\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9119
+Defined in: node\_modules/valibot/dist/index.d.mts:9188
 
 Examples action interface.
 
@@ -43906,7 +44909,7 @@ The input, output and issue type.
 
 > `readonly` **examples**: `TExamples`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9131
+Defined in: node\_modules/valibot/dist/index.d.mts:9200
 
 The examples.
 
@@ -43930,7 +44933,7 @@ The object kind.
 
 > `readonly` **reference**: \<`TInput$1`, `TExamples`\>(`examples_`) => `ExamplesAction`\<`TInput$1`, `TExamples`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9127
+Defined in: node\_modules/valibot/dist/index.d.mts:9196
 
 The action reference.
 
@@ -43972,7 +44975,7 @@ An examples action.
 
 > `readonly` **type**: `"examples"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9123
+Defined in: node\_modules/valibot/dist/index.d.mts:9192
 
 The action type.
 
@@ -43991,7 +44994,7 @@ lib/core/namespaces/v/interfaces/ExcludesAction.md
 
 # Interface: ExcludesAction\<TInput$1, TRequirement, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9169
+Defined in: node\_modules/valibot/dist/index.d.mts:9238
 
 Excludes action interface.
 
@@ -44097,7 +45100,7 @@ Whether it's async.
 
 > `readonly` **expects**: `string`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9181
+Defined in: node\_modules/valibot/dist/index.d.mts:9250
 
 The expected property.
 
@@ -44125,7 +45128,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9189
+Defined in: node\_modules/valibot/dist/index.d.mts:9258
 
 The error message.
 
@@ -44135,7 +45138,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`, `TRequirement`\>(`requirement`): `ExcludesAction`\<`TInput$1`, `TRequirement`, `undefined`\>; \<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): `ExcludesAction`\<`TInput$1`, `TRequirement`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9177
+Defined in: node\_modules/valibot/dist/index.d.mts:9246
 
 The action reference.
 
@@ -44219,7 +45222,7 @@ An excludes action.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9185
+Defined in: node\_modules/valibot/dist/index.d.mts:9254
 
 The content to be excluded.
 
@@ -44229,7 +45232,7 @@ The content to be excluded.
 
 > `readonly` **type**: `"excludes"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9173
+Defined in: node\_modules/valibot/dist/index.d.mts:9242
 
 The action type.
 
@@ -44248,7 +45251,7 @@ lib/core/namespaces/v/interfaces/ExcludesIssue.md
 
 # Interface: ExcludesIssue\<TInput$1, TRequirement\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9148
+Defined in: node\_modules/valibot/dist/index.d.mts:9217
 
 Excludes issue interface.
 
@@ -44300,7 +45303,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `string`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9160
+Defined in: node\_modules/valibot/dist/index.d.mts:9229
 
 The expected property.
 
@@ -44342,7 +45345,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9152
+Defined in: node\_modules/valibot/dist/index.d.mts:9221
 
 The issue kind.
 
@@ -44412,7 +45415,7 @@ The received property.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9164
+Defined in: node\_modules/valibot/dist/index.d.mts:9233
 
 The content to be excluded.
 
@@ -44426,7 +45429,7 @@ The content to be excluded.
 
 > `readonly` **type**: `"excludes"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9156
+Defined in: node\_modules/valibot/dist/index.d.mts:9225
 
 The issue type.
 
@@ -44473,7 +45476,7 @@ The dataset issues.
 
 Defined in: node\_modules/valibot/dist/index.d.mts:2962
 
-Whether is's typed.
+Whether it's typed.
 
 ***
 
@@ -44906,7 +45909,7 @@ lib/core/namespaces/v/interfaces/FilterItemsAction.md
 
 # Interface: FilterItemsAction\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9213
+Defined in: node\_modules/valibot/dist/index.d.mts:9282
 
 Filter items action interface.
 
@@ -45018,7 +46021,7 @@ The object kind.
 
 > `readonly` **operation**: [`ArrayRequirement`](../type-aliases/ArrayRequirement.md)\<`TInput$1`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9225
+Defined in: node\_modules/valibot/dist/index.d.mts:9294
 
 The filter items operation.
 
@@ -45028,7 +46031,7 @@ The filter items operation.
 
 > `readonly` **reference**: \<`TInput$1`\>(`operation`) => `FilterItemsAction`\<`TInput$1`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9221
+Defined in: node\_modules/valibot/dist/index.d.mts:9290
 
 The action reference.
 
@@ -45064,7 +46067,7 @@ A filter items action.
 
 > `readonly` **type**: `"filter_items"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9217
+Defined in: node\_modules/valibot/dist/index.d.mts:9286
 
 The action type.
 
@@ -45083,7 +46086,7 @@ lib/core/namespaces/v/interfaces/FindItemAction.md
 
 # Interface: FindItemAction\<TInput$1, TOuput\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9244
+Defined in: node\_modules/valibot/dist/index.d.mts:9313
 
 Find item action interface.
 
@@ -45199,7 +46202,7 @@ The object kind.
 
 > `readonly` **operation**: `ArrayRequirement$1`\<`TInput$1`, `TOuput`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9256
+Defined in: node\_modules/valibot/dist/index.d.mts:9325
 
 The find item operation.
 
@@ -45209,7 +46212,7 @@ The find item operation.
 
 > `readonly` **reference**: \<`TInput$1`, `TOuput`\>(`operation`) => `FindItemAction`\<`TInput$1`, `TOuput`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9252
+Defined in: node\_modules/valibot/dist/index.d.mts:9321
 
 The action reference.
 
@@ -45249,7 +46252,7 @@ A find item action.
 
 > `readonly` **type**: `"find_item"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9248
+Defined in: node\_modules/valibot/dist/index.d.mts:9317
 
 The action type.
 
@@ -45268,7 +46271,7 @@ lib/core/namespaces/v/interfaces/FiniteAction.md
 
 # Interface: FiniteAction\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9296
+Defined in: node\_modules/valibot/dist/index.d.mts:9365
 
 Finite action interface.
 
@@ -45370,7 +46373,7 @@ Whether it's async.
 
 > `readonly` **expects**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9308
+Defined in: node\_modules/valibot/dist/index.d.mts:9377
 
 The expected property.
 
@@ -45398,7 +46401,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9316
+Defined in: node\_modules/valibot/dist/index.d.mts:9385
 
 The error message.
 
@@ -45408,7 +46411,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `FiniteAction`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `FiniteAction`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9304
+Defined in: node\_modules/valibot/dist/index.d.mts:9373
 
 The action reference.
 
@@ -45470,7 +46473,7 @@ A finite action.
 
 > `readonly` **requirement**: (`input`) => `boolean`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9312
+Defined in: node\_modules/valibot/dist/index.d.mts:9381
 
 The validation function.
 
@@ -45490,7 +46493,7 @@ The validation function.
 
 > `readonly` **type**: `"finite"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9300
+Defined in: node\_modules/valibot/dist/index.d.mts:9369
 
 The action type.
 
@@ -45509,7 +46512,7 @@ lib/core/namespaces/v/interfaces/FiniteIssue.md
 
 # Interface: FiniteIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9271
+Defined in: node\_modules/valibot/dist/index.d.mts:9340
 
 Finite issue interface.
 
@@ -45557,7 +46560,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9283
+Defined in: node\_modules/valibot/dist/index.d.mts:9352
 
 The expected property.
 
@@ -45599,7 +46602,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9275
+Defined in: node\_modules/valibot/dist/index.d.mts:9344
 
 The issue kind.
 
@@ -45655,7 +46658,7 @@ The issue path.
 
 > `readonly` **received**: `` `${number}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9287
+Defined in: node\_modules/valibot/dist/index.d.mts:9356
 
 The received property.
 
@@ -45669,7 +46672,7 @@ The received property.
 
 > `readonly` **requirement**: (`input`) => `boolean`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9291
+Defined in: node\_modules/valibot/dist/index.d.mts:9360
 
 The validation function.
 
@@ -45693,7 +46696,7 @@ The validation function.
 
 > `readonly` **type**: `"finite"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9279
+Defined in: node\_modules/valibot/dist/index.d.mts:9348
 
 The issue type.
 
@@ -45712,7 +46715,7 @@ lib/core/namespaces/v/interfaces/FlavorAction.md
 
 # Interface: FlavorAction\<TInput$1, TName\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9359
+Defined in: node\_modules/valibot/dist/index.d.mts:9428
 
 **`Beta`**
 
@@ -45834,7 +46837,7 @@ The object kind.
 
 > `readonly` **name**: `TName`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9371
+Defined in: node\_modules/valibot/dist/index.d.mts:9440
 
 **`Beta`**
 
@@ -45846,7 +46849,7 @@ The flavor name.
 
 > `readonly` **reference**: \<`TInput$1`, `TName`\>(`name`) => `FlavorAction`\<`TInput$1`, `TName`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9367
+Defined in: node\_modules/valibot/dist/index.d.mts:9436
 
 **`Beta`**
 
@@ -45890,7 +46893,7 @@ A flavor action.
 
 > `readonly` **type**: `"flavor"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9363
+Defined in: node\_modules/valibot/dist/index.d.mts:9432
 
 **`Beta`**
 
@@ -45911,7 +46914,7 @@ lib/core/namespaces/v/interfaces/Flavor.md
 
 # Interface: Flavor\<TName\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9351
+Defined in: node\_modules/valibot/dist/index.d.mts:9420
 
 **`Beta`**
 
@@ -45929,7 +46932,7 @@ Flavor interface.
 
 > `optional` **\[FlavorSymbol\]?**: `{ [TValue in FlavorName]: TValue }`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9352
+Defined in: node\_modules/valibot/dist/index.d.mts:9421
 
 **`Beta`**
 
@@ -46374,7 +47377,7 @@ lib/core/namespaces/v/interfaces/GraphemesAction.md
 
 # Interface: GraphemesAction\<TInput$1, TRequirement, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9413
+Defined in: node\_modules/valibot/dist/index.d.mts:9482
 
 Graphemes action interface.
 
@@ -46480,7 +47483,7 @@ Whether it's async.
 
 > `readonly` **expects**: `` `${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9425
+Defined in: node\_modules/valibot/dist/index.d.mts:9494
 
 The expected property.
 
@@ -46508,7 +47511,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9433
+Defined in: node\_modules/valibot/dist/index.d.mts:9502
 
 The error message.
 
@@ -46518,7 +47521,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`, `TRequirement`\>(`requirement`): `GraphemesAction`\<`TInput$1`, `TRequirement`, `undefined`\>; \<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): `GraphemesAction`\<`TInput$1`, `TRequirement`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9421
+Defined in: node\_modules/valibot/dist/index.d.mts:9490
 
 The action reference.
 
@@ -46602,7 +47605,7 @@ A graphemes action.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9429
+Defined in: node\_modules/valibot/dist/index.d.mts:9498
 
 The required graphemes.
 
@@ -46612,7 +47615,7 @@ The required graphemes.
 
 > `readonly` **type**: `"graphemes"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9417
+Defined in: node\_modules/valibot/dist/index.d.mts:9486
 
 The action type.
 
@@ -46631,7 +47634,7 @@ lib/core/namespaces/v/interfaces/GraphemesIssue.md
 
 # Interface: GraphemesIssue\<TInput$1, TRequirement\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9388
+Defined in: node\_modules/valibot/dist/index.d.mts:9457
 
 Graphemes issue interface.
 
@@ -46683,7 +47686,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `` `${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9400
+Defined in: node\_modules/valibot/dist/index.d.mts:9469
 
 The expected property.
 
@@ -46725,7 +47728,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9392
+Defined in: node\_modules/valibot/dist/index.d.mts:9461
 
 The issue kind.
 
@@ -46781,7 +47784,7 @@ The issue path.
 
 > `readonly` **received**: `` `${number}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9404
+Defined in: node\_modules/valibot/dist/index.d.mts:9473
 
 The received property.
 
@@ -46795,7 +47798,7 @@ The received property.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9408
+Defined in: node\_modules/valibot/dist/index.d.mts:9477
 
 The required graphemes.
 
@@ -46809,7 +47812,7 @@ The required graphemes.
 
 > `readonly` **type**: `"graphemes"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9396
+Defined in: node\_modules/valibot/dist/index.d.mts:9465
 
 The issue type.
 
@@ -46828,7 +47831,7 @@ lib/core/namespaces/v/interfaces/GtValueAction.md
 
 # Interface: GtValueAction\<TInput$1, TRequirement, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9478
+Defined in: node\_modules/valibot/dist/index.d.mts:9547
 
 Greater than value action type.
 
@@ -46934,7 +47937,7 @@ Whether it's async.
 
 > `readonly` **expects**: `` `>${string}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9490
+Defined in: node\_modules/valibot/dist/index.d.mts:9559
 
 The expected property.
 
@@ -46962,7 +47965,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9498
+Defined in: node\_modules/valibot/dist/index.d.mts:9567
 
 The error message.
 
@@ -46972,7 +47975,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`, `TRequirement`\>(`requirement`): `GtValueAction`\<`TInput$1`, `TRequirement`, `undefined`\>; \<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): `GtValueAction`\<`TInput$1`, `TRequirement`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9486
+Defined in: node\_modules/valibot/dist/index.d.mts:9555
 
 The action reference.
 
@@ -47056,7 +48059,7 @@ A greater than value action.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9494
+Defined in: node\_modules/valibot/dist/index.d.mts:9563
 
 The greater than value.
 
@@ -47066,7 +48069,7 @@ The greater than value.
 
 > `readonly` **type**: `"gt_value"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9482
+Defined in: node\_modules/valibot/dist/index.d.mts:9551
 
 The action type.
 
@@ -47085,7 +48088,7 @@ lib/core/namespaces/v/interfaces/GtValueIssue.md
 
 # Interface: GtValueIssue\<TInput$1, TRequirement\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9457
+Defined in: node\_modules/valibot/dist/index.d.mts:9526
 
 Greater than value issue type.
 
@@ -47137,7 +48140,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `` `>${string}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9469
+Defined in: node\_modules/valibot/dist/index.d.mts:9538
 
 The expected property.
 
@@ -47179,7 +48182,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9461
+Defined in: node\_modules/valibot/dist/index.d.mts:9530
 
 The issue kind.
 
@@ -47249,7 +48252,7 @@ The received property.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9473
+Defined in: node\_modules/valibot/dist/index.d.mts:9542
 
 The greater than value.
 
@@ -47263,7 +48266,7 @@ The greater than value.
 
 > `readonly` **type**: `"gt_value"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9465
+Defined in: node\_modules/valibot/dist/index.d.mts:9534
 
 The issue type.
 
@@ -47282,7 +48285,7 @@ lib/core/namespaces/v/interfaces/GuardAction.md
 
 # Interface: GuardAction\<TInput$1, TGuard, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9555
+Defined in: node\_modules/valibot/dist/index.d.mts:9624
 
 **`Beta`**
 
@@ -47408,7 +48411,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9571
+Defined in: node\_modules/valibot/dist/index.d.mts:9640
 
 **`Beta`**
 
@@ -47420,7 +48423,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`, `TGuard`\>(`requirement`): `GuardAction`\<`TInput$1`, `TGuard`, `undefined`\>; \<`TGuard`\>(`requirement`): `GuardAction`\<`Parameters`\<`TGuard`\>\[`0`\], `TGuard`, `undefined`\>; \<`TInput$1`, `TGuard`, `TMessage`\>(`requirement`, `message`): `GuardAction`\<`TInput$1`, `TGuard`, `TMessage`\>; \<`TGuard`, `TMessage`\>(`requirement`, `message`): `GuardAction`\<`Parameters`\<`TGuard`\>\[`0`\], `TGuard`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9563
+Defined in: node\_modules/valibot/dist/index.d.mts:9632
 
 **`Beta`**
 
@@ -47576,7 +48579,7 @@ A guard action.
 
 > `readonly` **requirement**: `TGuard`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9567
+Defined in: node\_modules/valibot/dist/index.d.mts:9636
 
 **`Beta`**
 
@@ -47588,7 +48591,7 @@ The guard function.
 
 > `readonly` **type**: `"guard"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9559
+Defined in: node\_modules/valibot/dist/index.d.mts:9628
 
 **`Beta`**
 
@@ -47609,7 +48612,7 @@ lib/core/namespaces/v/interfaces/GuardIssue.md
 
 # Interface: GuardIssue\<TInput$1, TGuard\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9536
+Defined in: node\_modules/valibot/dist/index.d.mts:9605
 
 **`Beta`**
 
@@ -47715,7 +48718,7 @@ The sub issues.
 
 > `readonly` **kind**: `"transformation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9540
+Defined in: node\_modules/valibot/dist/index.d.mts:9609
 
 **`Beta`**
 
@@ -47795,7 +48798,7 @@ The received property.
 
 > `readonly` **requirement**: `TGuard`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9548
+Defined in: node\_modules/valibot/dist/index.d.mts:9617
 
 **`Beta`**
 
@@ -47811,7 +48814,7 @@ The guard function.
 
 > `readonly` **type**: `"guard"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9544
+Defined in: node\_modules/valibot/dist/index.d.mts:9613
 
 **`Beta`**
 
@@ -47832,7 +48835,7 @@ lib/core/namespaces/v/interfaces/HashAction.md
 
 # Interface: HashAction\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9668
+Defined in: node\_modules/valibot/dist/index.d.mts:9737
 
 Hash action interface.
 
@@ -47934,7 +48937,7 @@ Whether it's async.
 
 > `readonly` **expects**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9680
+Defined in: node\_modules/valibot/dist/index.d.mts:9749
 
 The expected property.
 
@@ -47962,7 +48965,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9688
+Defined in: node\_modules/valibot/dist/index.d.mts:9757
 
 The error message.
 
@@ -47972,7 +48975,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(`types`): `HashAction`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`types`, `message`): `HashAction`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9676
+Defined in: node\_modules/valibot/dist/index.d.mts:9745
 
 The action reference.
 
@@ -48048,7 +49051,7 @@ A hash action.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9684
+Defined in: node\_modules/valibot/dist/index.d.mts:9753
 
 The hash regex.
 
@@ -48058,7 +49061,7 @@ The hash regex.
 
 > `readonly` **type**: `"hash"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9672
+Defined in: node\_modules/valibot/dist/index.d.mts:9741
 
 The action type.
 
@@ -48077,433 +49080,9 @@ lib/core/namespaces/v/interfaces/HashIssue.md
 
 # Interface: HashIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9643
-
-Hash issue interface.
-
-## Extends
-
-- [`BaseIssue`](BaseIssue.md)\<`TInput$1`\>
-
-## Type Parameters
-
-### TInput$1
-
-`TInput$1` *extends* `string`
-
-## Properties
-
-### abortEarly?
-
-> `readonly` `optional` **abortEarly?**: `boolean`
-
-Defined in: node\_modules/valibot/dist/index.d.mts:3717
-
-Whether it should be aborted early.
-
-#### Inherited from
-
-[`BaseIssue`](BaseIssue.md).[`abortEarly`](BaseIssue.md#abortearly)
-
-***
-
-### abortPipeEarly?
-
-> `readonly` `optional` **abortPipeEarly?**: `boolean`
-
-Defined in: node\_modules/valibot/dist/index.d.mts:3721
-
-Whether a pipe should be aborted early.
-
-#### Inherited from
-
-[`BaseIssue`](BaseIssue.md).[`abortPipeEarly`](BaseIssue.md#abortpipeearly)
-
-***
-
-### expected
-
-> `readonly` **expected**: `null`
-
-Defined in: node\_modules/valibot/dist/index.d.mts:9655
-
-The expected property.
-
-#### Overrides
-
-[`BaseIssue`](BaseIssue.md).[`expected`](BaseIssue.md#expected)
-
-***
-
-### input
-
-> `readonly` **input**: `TInput$1`
-
-Defined in: node\_modules/valibot/dist/index.d.mts:3650
-
-The raw input data.
-
-#### Inherited from
-
-[`BaseIssue`](BaseIssue.md).[`input`](BaseIssue.md#input)
-
-***
-
-### issues?
-
-> `readonly` `optional` **issues?**: \[[`BaseIssue`](BaseIssue.md)\<`TInput$1`\>, `...BaseIssue<TInput$1>[]`\]
-
-Defined in: node\_modules/valibot/dist/index.d.mts:3674
-
-The sub issues.
-
-#### Inherited from
-
-[`BaseIssue`](BaseIssue.md).[`issues`](BaseIssue.md#issues)
-
-***
-
-### kind
-
-> `readonly` **kind**: `"validation"`
-
-Defined in: node\_modules/valibot/dist/index.d.mts:9647
-
-The issue kind.
-
-#### Overrides
-
-[`BaseIssue`](BaseIssue.md).[`kind`](BaseIssue.md#kind)
-
-***
-
-### lang?
-
-> `readonly` `optional` **lang?**: `string`
-
-Defined in: node\_modules/valibot/dist/index.d.mts:3709
-
-The selected language.
-
-#### Inherited from
-
-[`BaseIssue`](BaseIssue.md).[`lang`](BaseIssue.md#lang)
-
-***
-
-### message
-
-> `readonly` **message**: `string`
-
-Defined in: node\_modules/valibot/dist/index.d.mts:3662
-
-The error message.
-
-#### Inherited from
-
-[`BaseIssue`](BaseIssue.md).[`message`](BaseIssue.md#message)
-
-***
-
-### path?
-
-> `readonly` `optional` **path?**: \[[`IssuePathItem`](../type-aliases/IssuePathItem.md), `...IssuePathItem[]`\]
-
-Defined in: node\_modules/valibot/dist/index.d.mts:3670
-
-The issue path.
-
-#### Inherited from
-
-[`BaseIssue`](BaseIssue.md).[`path`](BaseIssue.md#path)
-
-***
-
-### received
-
-> `readonly` **received**: `` `"${string}"` ``
-
-Defined in: node\_modules/valibot/dist/index.d.mts:9659
-
-The received property.
-
-#### Overrides
-
-[`BaseIssue`](BaseIssue.md).[`received`](BaseIssue.md#received)
-
-***
-
-### requirement
-
-> `readonly` **requirement**: `RegExp`
-
-Defined in: node\_modules/valibot/dist/index.d.mts:9663
-
-The hash regex.
-
-#### Overrides
-
-[`BaseIssue`](BaseIssue.md).[`requirement`](BaseIssue.md#requirement)
-
-***
-
-### type
-
-> `readonly` **type**: `"hash"`
-
-Defined in: node\_modules/valibot/dist/index.d.mts:9651
-
-The issue type.
-
-#### Overrides
-
-[`BaseIssue`](BaseIssue.md).[`type`](BaseIssue.md#type)
-
-lib/core/namespaces/v/interfaces/HexadecimalAction.md
----
-
-[**Documents for @maiyunnet/kebab**](../../../../../index.md)
-
-***
-
-[Documents for @maiyunnet/kebab](../../../../../index.md) / [lib/core](../../../index.md) / [v](../index.md) / HexadecimalAction
-
-# Interface: HexadecimalAction\<TInput$1, TMessage\>
-
-Defined in: node\_modules/valibot/dist/index.d.mts:9737
-
-Hexadecimal action interface.
-
-## Extends
-
-- [`BaseValidation`](BaseValidation.md)\<`TInput$1`, `TInput$1`, [`HexadecimalIssue`](HexadecimalIssue.md)\<`TInput$1`\>\>
-
-## Type Parameters
-
-### TInput$1
-
-`TInput$1` *extends* `string`
-
-### TMessage
-
-`TMessage` *extends* [`ErrorMessage`](../type-aliases/ErrorMessage.md)\<[`HexadecimalIssue`](HexadecimalIssue.md)\<`TInput$1`\>\> \| `undefined`
-
-## Properties
-
-### ~run
-
-> `readonly` **~run**: (`dataset`, `config`) => [`OutputDataset`](../type-aliases/OutputDataset.md)\<`TInput$1`, [`BaseIssue`](BaseIssue.md)\<`unknown`\> \| [`HexadecimalIssue`](HexadecimalIssue.md)\<`TInput$1`\>\>
-
-Defined in: node\_modules/valibot/dist/index.d.mts:3258
-
-**`Internal`**
-
-Validates known input values.
-
-#### Parameters
-
-##### dataset
-
-[`OutputDataset`](../type-aliases/OutputDataset.md)\<`TInput$1`, [`BaseIssue`](BaseIssue.md)\<`unknown`\>\>
-
-The input dataset.
-
-##### config
-
-[`Config`](Config.md)\<[`BaseIssue`](BaseIssue.md)\<`unknown`\>\>
-
-The configuration.
-
-#### Returns
-
-[`OutputDataset`](../type-aliases/OutputDataset.md)\<`TInput$1`, [`BaseIssue`](BaseIssue.md)\<`unknown`\> \| [`HexadecimalIssue`](HexadecimalIssue.md)\<`TInput$1`\>\>
-
-The output dataset.
-
-#### Inherited from
-
-[`BaseValidation`](BaseValidation.md).[`~run`](BaseValidation.md#run)
-
-***
-
-### ~types?
-
-> `readonly` `optional` **~types?**: `object`
-
-Defined in: node\_modules/valibot/dist/index.d.mts:3264
-
-**`Internal`**
-
-The input, output and issue type.
-
-#### input
-
-> `readonly` **input**: `TInput$1`
-
-#### issue
-
-> `readonly` **issue**: [`HexadecimalIssue`](HexadecimalIssue.md)
-
-#### output
-
-> `readonly` **output**: `TInput$1`
-
-#### Inherited from
-
-[`BaseValidation`](BaseValidation.md).[`~types`](BaseValidation.md#types)
-
-***
-
-### async
-
-> `readonly` **async**: `false`
-
-Defined in: node\_modules/valibot/dist/index.d.mts:3247
-
-Whether it's async.
-
-#### Inherited from
-
-[`BaseValidation`](BaseValidation.md).[`async`](BaseValidation.md#async)
-
-***
-
-### expects
-
-> `readonly` **expects**: `null`
-
-Defined in: node\_modules/valibot/dist/index.d.mts:9749
-
-The expected property.
-
-#### Overrides
-
-[`BaseValidation`](BaseValidation.md).[`expects`](BaseValidation.md#expects)
-
-***
-
-### kind
-
-> `readonly` **kind**: `"validation"`
-
-Defined in: node\_modules/valibot/dist/index.d.mts:3231
-
-The object kind.
-
-#### Inherited from
-
-[`BaseValidation`](BaseValidation.md).[`kind`](BaseValidation.md#kind)
-
-***
-
-### message
-
-> `readonly` **message**: `TMessage`
-
-Defined in: node\_modules/valibot/dist/index.d.mts:9757
-
-The error message.
-
-***
-
-### reference
-
-> `readonly` **reference**: \{\<`TInput$1`\>(): `HexadecimalAction`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `HexadecimalAction`\<`TInput$1`, `TMessage`\>; \}
-
-Defined in: node\_modules/valibot/dist/index.d.mts:9745
-
-The action reference.
-
-#### Call Signature
-
-> \<`TInput$1`\>(): `HexadecimalAction`\<`TInput$1`, `undefined`\>
-
-Creates a [hexadecimal](https://en.wikipedia.org/wiki/Hexadecimal) validation action.
-
-##### Type Parameters
-
-###### TInput$1
-
-`TInput$1` *extends* `string`
-
-##### Returns
-
-`HexadecimalAction`\<`TInput$1`, `undefined`\>
-
-A hexadecimal action.
-
-#### Call Signature
-
-> \<`TInput$1`, `TMessage`\>(`message`): `HexadecimalAction`\<`TInput$1`, `TMessage`\>
-
-Creates a [hexadecimal](https://en.wikipedia.org/wiki/Hexadecimal) validation action.
-
-##### Type Parameters
-
-###### TInput$1
-
-`TInput$1` *extends* `string`
-
-###### TMessage
-
-`TMessage` *extends* [`ErrorMessage`](../type-aliases/ErrorMessage.md)\<[`HexadecimalIssue`](HexadecimalIssue.md)\<`TInput$1`\>\> \| `undefined`
-
-##### Parameters
-
-###### message
-
-`TMessage`
-
-The error message.
-
-##### Returns
-
-`HexadecimalAction`\<`TInput$1`, `TMessage`\>
-
-A hexadecimal action.
-
-#### Overrides
-
-[`BaseValidation`](BaseValidation.md).[`reference`](BaseValidation.md#reference)
-
-***
-
-### requirement
-
-> `readonly` **requirement**: `RegExp`
-
-Defined in: node\_modules/valibot/dist/index.d.mts:9753
-
-The hexadecimal regex.
-
-***
-
-### type
-
-> `readonly` **type**: `"hexadecimal"`
-
-Defined in: node\_modules/valibot/dist/index.d.mts:9741
-
-The action type.
-
-#### Overrides
-
-[`BaseValidation`](BaseValidation.md).[`type`](BaseValidation.md#type)
-
-lib/core/namespaces/v/interfaces/HexadecimalIssue.md
----
-
-[**Documents for @maiyunnet/kebab**](../../../../../index.md)
-
-***
-
-[Documents for @maiyunnet/kebab](../../../../../index.md) / [lib/core](../../../index.md) / [v](../index.md) / HexadecimalIssue
-
-# Interface: HexadecimalIssue\<TInput$1\>
-
 Defined in: node\_modules/valibot/dist/index.d.mts:9712
 
-Hexadecimal issue interface.
+Hash issue interface.
 
 ## Extends
 
@@ -48663,6 +49242,430 @@ The received property.
 
 Defined in: node\_modules/valibot/dist/index.d.mts:9732
 
+The hash regex.
+
+#### Overrides
+
+[`BaseIssue`](BaseIssue.md).[`requirement`](BaseIssue.md#requirement)
+
+***
+
+### type
+
+> `readonly` **type**: `"hash"`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:9720
+
+The issue type.
+
+#### Overrides
+
+[`BaseIssue`](BaseIssue.md).[`type`](BaseIssue.md#type)
+
+lib/core/namespaces/v/interfaces/HexadecimalAction.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../../../index.md) / [lib/core](../../../index.md) / [v](../index.md) / HexadecimalAction
+
+# Interface: HexadecimalAction\<TInput$1, TMessage\>
+
+Defined in: node\_modules/valibot/dist/index.d.mts:9806
+
+Hexadecimal action interface.
+
+## Extends
+
+- [`BaseValidation`](BaseValidation.md)\<`TInput$1`, `TInput$1`, [`HexadecimalIssue`](HexadecimalIssue.md)\<`TInput$1`\>\>
+
+## Type Parameters
+
+### TInput$1
+
+`TInput$1` *extends* `string`
+
+### TMessage
+
+`TMessage` *extends* [`ErrorMessage`](../type-aliases/ErrorMessage.md)\<[`HexadecimalIssue`](HexadecimalIssue.md)\<`TInput$1`\>\> \| `undefined`
+
+## Properties
+
+### ~run
+
+> `readonly` **~run**: (`dataset`, `config`) => [`OutputDataset`](../type-aliases/OutputDataset.md)\<`TInput$1`, [`BaseIssue`](BaseIssue.md)\<`unknown`\> \| [`HexadecimalIssue`](HexadecimalIssue.md)\<`TInput$1`\>\>
+
+Defined in: node\_modules/valibot/dist/index.d.mts:3258
+
+**`Internal`**
+
+Validates known input values.
+
+#### Parameters
+
+##### dataset
+
+[`OutputDataset`](../type-aliases/OutputDataset.md)\<`TInput$1`, [`BaseIssue`](BaseIssue.md)\<`unknown`\>\>
+
+The input dataset.
+
+##### config
+
+[`Config`](Config.md)\<[`BaseIssue`](BaseIssue.md)\<`unknown`\>\>
+
+The configuration.
+
+#### Returns
+
+[`OutputDataset`](../type-aliases/OutputDataset.md)\<`TInput$1`, [`BaseIssue`](BaseIssue.md)\<`unknown`\> \| [`HexadecimalIssue`](HexadecimalIssue.md)\<`TInput$1`\>\>
+
+The output dataset.
+
+#### Inherited from
+
+[`BaseValidation`](BaseValidation.md).[`~run`](BaseValidation.md#run)
+
+***
+
+### ~types?
+
+> `readonly` `optional` **~types?**: `object`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:3264
+
+**`Internal`**
+
+The input, output and issue type.
+
+#### input
+
+> `readonly` **input**: `TInput$1`
+
+#### issue
+
+> `readonly` **issue**: [`HexadecimalIssue`](HexadecimalIssue.md)
+
+#### output
+
+> `readonly` **output**: `TInput$1`
+
+#### Inherited from
+
+[`BaseValidation`](BaseValidation.md).[`~types`](BaseValidation.md#types)
+
+***
+
+### async
+
+> `readonly` **async**: `false`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:3247
+
+Whether it's async.
+
+#### Inherited from
+
+[`BaseValidation`](BaseValidation.md).[`async`](BaseValidation.md#async)
+
+***
+
+### expects
+
+> `readonly` **expects**: `null`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:9818
+
+The expected property.
+
+#### Overrides
+
+[`BaseValidation`](BaseValidation.md).[`expects`](BaseValidation.md#expects)
+
+***
+
+### kind
+
+> `readonly` **kind**: `"validation"`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:3231
+
+The object kind.
+
+#### Inherited from
+
+[`BaseValidation`](BaseValidation.md).[`kind`](BaseValidation.md#kind)
+
+***
+
+### message
+
+> `readonly` **message**: `TMessage`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:9826
+
+The error message.
+
+***
+
+### reference
+
+> `readonly` **reference**: \{\<`TInput$1`\>(): `HexadecimalAction`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `HexadecimalAction`\<`TInput$1`, `TMessage`\>; \}
+
+Defined in: node\_modules/valibot/dist/index.d.mts:9814
+
+The action reference.
+
+#### Call Signature
+
+> \<`TInput$1`\>(): `HexadecimalAction`\<`TInput$1`, `undefined`\>
+
+Creates a [hexadecimal](https://en.wikipedia.org/wiki/Hexadecimal) validation action.
+
+##### Type Parameters
+
+###### TInput$1
+
+`TInput$1` *extends* `string`
+
+##### Returns
+
+`HexadecimalAction`\<`TInput$1`, `undefined`\>
+
+A hexadecimal action.
+
+#### Call Signature
+
+> \<`TInput$1`, `TMessage`\>(`message`): `HexadecimalAction`\<`TInput$1`, `TMessage`\>
+
+Creates a [hexadecimal](https://en.wikipedia.org/wiki/Hexadecimal) validation action.
+
+##### Type Parameters
+
+###### TInput$1
+
+`TInput$1` *extends* `string`
+
+###### TMessage
+
+`TMessage` *extends* [`ErrorMessage`](../type-aliases/ErrorMessage.md)\<[`HexadecimalIssue`](HexadecimalIssue.md)\<`TInput$1`\>\> \| `undefined`
+
+##### Parameters
+
+###### message
+
+`TMessage`
+
+The error message.
+
+##### Returns
+
+`HexadecimalAction`\<`TInput$1`, `TMessage`\>
+
+A hexadecimal action.
+
+#### Overrides
+
+[`BaseValidation`](BaseValidation.md).[`reference`](BaseValidation.md#reference)
+
+***
+
+### requirement
+
+> `readonly` **requirement**: `RegExp`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:9822
+
+The hexadecimal regex.
+
+***
+
+### type
+
+> `readonly` **type**: `"hexadecimal"`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:9810
+
+The action type.
+
+#### Overrides
+
+[`BaseValidation`](BaseValidation.md).[`type`](BaseValidation.md#type)
+
+lib/core/namespaces/v/interfaces/HexadecimalIssue.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../../../index.md) / [lib/core](../../../index.md) / [v](../index.md) / HexadecimalIssue
+
+# Interface: HexadecimalIssue\<TInput$1\>
+
+Defined in: node\_modules/valibot/dist/index.d.mts:9781
+
+Hexadecimal issue interface.
+
+## Extends
+
+- [`BaseIssue`](BaseIssue.md)\<`TInput$1`\>
+
+## Type Parameters
+
+### TInput$1
+
+`TInput$1` *extends* `string`
+
+## Properties
+
+### abortEarly?
+
+> `readonly` `optional` **abortEarly?**: `boolean`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:3717
+
+Whether it should be aborted early.
+
+#### Inherited from
+
+[`BaseIssue`](BaseIssue.md).[`abortEarly`](BaseIssue.md#abortearly)
+
+***
+
+### abortPipeEarly?
+
+> `readonly` `optional` **abortPipeEarly?**: `boolean`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:3721
+
+Whether a pipe should be aborted early.
+
+#### Inherited from
+
+[`BaseIssue`](BaseIssue.md).[`abortPipeEarly`](BaseIssue.md#abortpipeearly)
+
+***
+
+### expected
+
+> `readonly` **expected**: `null`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:9793
+
+The expected property.
+
+#### Overrides
+
+[`BaseIssue`](BaseIssue.md).[`expected`](BaseIssue.md#expected)
+
+***
+
+### input
+
+> `readonly` **input**: `TInput$1`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:3650
+
+The raw input data.
+
+#### Inherited from
+
+[`BaseIssue`](BaseIssue.md).[`input`](BaseIssue.md#input)
+
+***
+
+### issues?
+
+> `readonly` `optional` **issues?**: \[[`BaseIssue`](BaseIssue.md)\<`TInput$1`\>, `...BaseIssue<TInput$1>[]`\]
+
+Defined in: node\_modules/valibot/dist/index.d.mts:3674
+
+The sub issues.
+
+#### Inherited from
+
+[`BaseIssue`](BaseIssue.md).[`issues`](BaseIssue.md#issues)
+
+***
+
+### kind
+
+> `readonly` **kind**: `"validation"`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:9785
+
+The issue kind.
+
+#### Overrides
+
+[`BaseIssue`](BaseIssue.md).[`kind`](BaseIssue.md#kind)
+
+***
+
+### lang?
+
+> `readonly` `optional` **lang?**: `string`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:3709
+
+The selected language.
+
+#### Inherited from
+
+[`BaseIssue`](BaseIssue.md).[`lang`](BaseIssue.md#lang)
+
+***
+
+### message
+
+> `readonly` **message**: `string`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:3662
+
+The error message.
+
+#### Inherited from
+
+[`BaseIssue`](BaseIssue.md).[`message`](BaseIssue.md#message)
+
+***
+
+### path?
+
+> `readonly` `optional` **path?**: \[[`IssuePathItem`](../type-aliases/IssuePathItem.md), `...IssuePathItem[]`\]
+
+Defined in: node\_modules/valibot/dist/index.d.mts:3670
+
+The issue path.
+
+#### Inherited from
+
+[`BaseIssue`](BaseIssue.md).[`path`](BaseIssue.md#path)
+
+***
+
+### received
+
+> `readonly` **received**: `` `"${string}"` ``
+
+Defined in: node\_modules/valibot/dist/index.d.mts:9797
+
+The received property.
+
+#### Overrides
+
+[`BaseIssue`](BaseIssue.md).[`received`](BaseIssue.md#received)
+
+***
+
+### requirement
+
+> `readonly` **requirement**: `RegExp`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:9801
+
 The hexadecimal regex.
 
 #### Overrides
@@ -48675,7 +49678,7 @@ The hexadecimal regex.
 
 > `readonly` **type**: `"hexadecimal"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9720
+Defined in: node\_modules/valibot/dist/index.d.mts:9789
 
 The issue type.
 
@@ -48694,7 +49697,7 @@ lib/core/namespaces/v/interfaces/HexColorAction.md
 
 # Interface: HexColorAction\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9803
+Defined in: node\_modules/valibot/dist/index.d.mts:9872
 
 Hex color action interface.
 
@@ -48796,7 +49799,7 @@ Whether it's async.
 
 > `readonly` **expects**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9815
+Defined in: node\_modules/valibot/dist/index.d.mts:9884
 
 The expected property.
 
@@ -48824,7 +49827,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9823
+Defined in: node\_modules/valibot/dist/index.d.mts:9892
 
 The error message.
 
@@ -48834,7 +49837,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `HexColorAction`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `HexColorAction`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9811
+Defined in: node\_modules/valibot/dist/index.d.mts:9880
 
 The action reference.
 
@@ -48896,7 +49899,7 @@ A hex color action.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9819
+Defined in: node\_modules/valibot/dist/index.d.mts:9888
 
 The hex color regex.
 
@@ -48906,7 +49909,7 @@ The hex color regex.
 
 > `readonly` **type**: `"hex_color"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9807
+Defined in: node\_modules/valibot/dist/index.d.mts:9876
 
 The action type.
 
@@ -48925,7 +49928,7 @@ lib/core/namespaces/v/interfaces/HexColorIssue.md
 
 # Interface: HexColorIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9778
+Defined in: node\_modules/valibot/dist/index.d.mts:9847
 
 Hex color issue interface.
 
@@ -48973,7 +49976,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9790
+Defined in: node\_modules/valibot/dist/index.d.mts:9859
 
 The expected property.
 
@@ -49015,7 +50018,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9782
+Defined in: node\_modules/valibot/dist/index.d.mts:9851
 
 The issue kind.
 
@@ -49071,7 +50074,7 @@ The issue path.
 
 > `readonly` **received**: `` `"${string}"` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9794
+Defined in: node\_modules/valibot/dist/index.d.mts:9863
 
 The received property.
 
@@ -49085,7 +50088,7 @@ The received property.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9798
+Defined in: node\_modules/valibot/dist/index.d.mts:9867
 
 The hex color regex.
 
@@ -49099,7 +50102,7 @@ The hex color regex.
 
 > `readonly` **type**: `"hex_color"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9786
+Defined in: node\_modules/valibot/dist/index.d.mts:9855
 
 The issue type.
 
@@ -49118,7 +50121,7 @@ lib/core/namespaces/v/interfaces/ImeiAction.md
 
 # Interface: ImeiAction\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9869
+Defined in: node\_modules/valibot/dist/index.d.mts:9938
 
 IMEI action interface.
 
@@ -49220,7 +50223,7 @@ Whether it's async.
 
 > `readonly` **expects**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9881
+Defined in: node\_modules/valibot/dist/index.d.mts:9950
 
 The expected property.
 
@@ -49248,7 +50251,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9889
+Defined in: node\_modules/valibot/dist/index.d.mts:9958
 
 The error message.
 
@@ -49258,7 +50261,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `ImeiAction`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `ImeiAction`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9877
+Defined in: node\_modules/valibot/dist/index.d.mts:9946
 
 The action reference.
 
@@ -49328,7 +50331,7 @@ An IMEI action.
 
 > `readonly` **requirement**: (`input`) => `boolean`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9885
+Defined in: node\_modules/valibot/dist/index.d.mts:9954
 
 The validation function.
 
@@ -49348,7 +50351,7 @@ The validation function.
 
 > `readonly` **type**: `"imei"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9873
+Defined in: node\_modules/valibot/dist/index.d.mts:9942
 
 The action type.
 
@@ -49367,7 +50370,7 @@ lib/core/namespaces/v/interfaces/ImeiIssue.md
 
 # Interface: ImeiIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9844
+Defined in: node\_modules/valibot/dist/index.d.mts:9913
 
 IMEI issue interface.
 
@@ -49415,7 +50418,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9856
+Defined in: node\_modules/valibot/dist/index.d.mts:9925
 
 The expected property.
 
@@ -49457,7 +50460,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9848
+Defined in: node\_modules/valibot/dist/index.d.mts:9917
 
 The issue kind.
 
@@ -49513,7 +50516,7 @@ The issue path.
 
 > `readonly` **received**: `` `"${string}"` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9860
+Defined in: node\_modules/valibot/dist/index.d.mts:9929
 
 The received property.
 
@@ -49527,7 +50530,7 @@ The received property.
 
 > `readonly` **requirement**: (`input`) => `boolean`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9864
+Defined in: node\_modules/valibot/dist/index.d.mts:9933
 
 The validation function.
 
@@ -49551,7 +50554,7 @@ The validation function.
 
 > `readonly` **type**: `"imei"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9852
+Defined in: node\_modules/valibot/dist/index.d.mts:9921
 
 The issue type.
 
@@ -49570,7 +50573,7 @@ lib/core/namespaces/v/interfaces/IncludesAction.md
 
 # Interface: IncludesAction\<TInput$1, TRequirement, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9939
+Defined in: node\_modules/valibot/dist/index.d.mts:10008
 
 Includes action interface.
 
@@ -49676,7 +50679,7 @@ Whether it's async.
 
 > `readonly` **expects**: `string`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9951
+Defined in: node\_modules/valibot/dist/index.d.mts:10020
 
 The expected property.
 
@@ -49704,7 +50707,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9959
+Defined in: node\_modules/valibot/dist/index.d.mts:10028
 
 The error message.
 
@@ -49714,7 +50717,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`, `TRequirement`\>(`requirement`): `IncludesAction`\<`TInput$1`, `TRequirement`, `undefined`\>; \<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): `IncludesAction`\<`TInput$1`, `TRequirement`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9947
+Defined in: node\_modules/valibot/dist/index.d.mts:10016
 
 The action reference.
 
@@ -49798,7 +50801,7 @@ An includes action.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9955
+Defined in: node\_modules/valibot/dist/index.d.mts:10024
 
 The content to be included.
 
@@ -49808,7 +50811,7 @@ The content to be included.
 
 > `readonly` **type**: `"includes"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9943
+Defined in: node\_modules/valibot/dist/index.d.mts:10012
 
 The action type.
 
@@ -49827,7 +50830,7 @@ lib/core/namespaces/v/interfaces/IncludesIssue.md
 
 # Interface: IncludesIssue\<TInput$1, TRequirement\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9918
+Defined in: node\_modules/valibot/dist/index.d.mts:9987
 
 Includes issue interface.
 
@@ -49879,7 +50882,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `string`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9930
+Defined in: node\_modules/valibot/dist/index.d.mts:9999
 
 The expected property.
 
@@ -49921,7 +50924,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9922
+Defined in: node\_modules/valibot/dist/index.d.mts:9991
 
 The issue kind.
 
@@ -49991,7 +50994,7 @@ The received property.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9934
+Defined in: node\_modules/valibot/dist/index.d.mts:10003
 
 The content to be included.
 
@@ -50005,7 +51008,7 @@ The content to be included.
 
 > `readonly` **type**: `"includes"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9926
+Defined in: node\_modules/valibot/dist/index.d.mts:9995
 
 The issue type.
 
@@ -50472,7 +51475,7 @@ lib/core/namespaces/v/interfaces/IntegerAction.md
 
 # Interface: IntegerAction\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10008
+Defined in: node\_modules/valibot/dist/index.d.mts:10077
 
 Integer action interface.
 
@@ -50574,7 +51577,7 @@ Whether it's async.
 
 > `readonly` **expects**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10020
+Defined in: node\_modules/valibot/dist/index.d.mts:10089
 
 The expected property.
 
@@ -50602,7 +51605,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10028
+Defined in: node\_modules/valibot/dist/index.d.mts:10097
 
 The error message.
 
@@ -50612,7 +51615,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `IntegerAction`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `IntegerAction`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10016
+Defined in: node\_modules/valibot/dist/index.d.mts:10085
 
 The action reference.
 
@@ -50674,7 +51677,7 @@ An integer action.
 
 > `readonly` **requirement**: (`input`) => `boolean`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10024
+Defined in: node\_modules/valibot/dist/index.d.mts:10093
 
 The validation function.
 
@@ -50694,7 +51697,7 @@ The validation function.
 
 > `readonly` **type**: `"integer"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10012
+Defined in: node\_modules/valibot/dist/index.d.mts:10081
 
 The action type.
 
@@ -50713,7 +51716,7 @@ lib/core/namespaces/v/interfaces/IntegerIssue.md
 
 # Interface: IntegerIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9983
+Defined in: node\_modules/valibot/dist/index.d.mts:10052
 
 Integer issue interface.
 
@@ -50761,7 +51764,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9995
+Defined in: node\_modules/valibot/dist/index.d.mts:10064
 
 The expected property.
 
@@ -50803,7 +51806,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9987
+Defined in: node\_modules/valibot/dist/index.d.mts:10056
 
 The issue kind.
 
@@ -50859,7 +51862,7 @@ The issue path.
 
 > `readonly` **received**: `` `${number}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9999
+Defined in: node\_modules/valibot/dist/index.d.mts:10068
 
 The received property.
 
@@ -50873,7 +51876,7 @@ The received property.
 
 > `readonly` **requirement**: (`input`) => `boolean`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10003
+Defined in: node\_modules/valibot/dist/index.d.mts:10072
 
 The validation function.
 
@@ -50897,7 +51900,7 @@ The validation function.
 
 > `readonly` **type**: `"integer"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9991
+Defined in: node\_modules/valibot/dist/index.d.mts:10060
 
 The issue type.
 
@@ -51699,7 +52702,7 @@ lib/core/namespaces/v/interfaces/IpAction.md
 
 # Interface: IpAction\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10074
+Defined in: node\_modules/valibot/dist/index.d.mts:10143
 
 IP action interface.
 
@@ -51801,7 +52804,7 @@ Whether it's async.
 
 > `readonly` **expects**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10086
+Defined in: node\_modules/valibot/dist/index.d.mts:10155
 
 The expected property.
 
@@ -51829,7 +52832,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10094
+Defined in: node\_modules/valibot/dist/index.d.mts:10163
 
 The error message.
 
@@ -51839,7 +52842,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `IpAction`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `IpAction`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10082
+Defined in: node\_modules/valibot/dist/index.d.mts:10151
 
 The action reference.
 
@@ -51901,7 +52904,7 @@ An IP action.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10090
+Defined in: node\_modules/valibot/dist/index.d.mts:10159
 
 The IP regex.
 
@@ -51911,7 +52914,7 @@ The IP regex.
 
 > `readonly` **type**: `"ip"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10078
+Defined in: node\_modules/valibot/dist/index.d.mts:10147
 
 The action type.
 
@@ -51930,7 +52933,7 @@ lib/core/namespaces/v/interfaces/IpIssue.md
 
 # Interface: IpIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10049
+Defined in: node\_modules/valibot/dist/index.d.mts:10118
 
 IP issue interface.
 
@@ -51978,7 +52981,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10061
+Defined in: node\_modules/valibot/dist/index.d.mts:10130
 
 The expected property.
 
@@ -52020,7 +53023,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10053
+Defined in: node\_modules/valibot/dist/index.d.mts:10122
 
 The issue kind.
 
@@ -52076,7 +53079,7 @@ The issue path.
 
 > `readonly` **received**: `` `"${string}"` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10065
+Defined in: node\_modules/valibot/dist/index.d.mts:10134
 
 The received property.
 
@@ -52090,7 +53093,7 @@ The received property.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10069
+Defined in: node\_modules/valibot/dist/index.d.mts:10138
 
 The IP regex.
 
@@ -52104,7 +53107,7 @@ The IP regex.
 
 > `readonly` **type**: `"ip"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10057
+Defined in: node\_modules/valibot/dist/index.d.mts:10126
 
 The issue type.
 
@@ -52123,7 +53126,7 @@ lib/core/namespaces/v/interfaces/Ipv4Action.md
 
 # Interface: Ipv4Action\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10140
+Defined in: node\_modules/valibot/dist/index.d.mts:10209
 
 IPv4 action interface.
 
@@ -52225,7 +53228,7 @@ Whether it's async.
 
 > `readonly` **expects**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10152
+Defined in: node\_modules/valibot/dist/index.d.mts:10221
 
 The expected property.
 
@@ -52253,7 +53256,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10160
+Defined in: node\_modules/valibot/dist/index.d.mts:10229
 
 The error message.
 
@@ -52263,7 +53266,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `Ipv4Action`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `Ipv4Action`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10148
+Defined in: node\_modules/valibot/dist/index.d.mts:10217
 
 The action reference.
 
@@ -52325,7 +53328,7 @@ An IPv4 action.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10156
+Defined in: node\_modules/valibot/dist/index.d.mts:10225
 
 The IPv4 regex.
 
@@ -52335,7 +53338,7 @@ The IPv4 regex.
 
 > `readonly` **type**: `"ipv4"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10144
+Defined in: node\_modules/valibot/dist/index.d.mts:10213
 
 The action type.
 
@@ -52354,7 +53357,7 @@ lib/core/namespaces/v/interfaces/Ipv4Issue.md
 
 # Interface: Ipv4Issue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10115
+Defined in: node\_modules/valibot/dist/index.d.mts:10184
 
 IPv4 issue interface.
 
@@ -52402,7 +53405,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10127
+Defined in: node\_modules/valibot/dist/index.d.mts:10196
 
 The expected property.
 
@@ -52444,7 +53447,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10119
+Defined in: node\_modules/valibot/dist/index.d.mts:10188
 
 The issue kind.
 
@@ -52500,7 +53503,7 @@ The issue path.
 
 > `readonly` **received**: `` `"${string}"` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10131
+Defined in: node\_modules/valibot/dist/index.d.mts:10200
 
 The received property.
 
@@ -52514,7 +53517,7 @@ The received property.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10135
+Defined in: node\_modules/valibot/dist/index.d.mts:10204
 
 The IPv4 regex.
 
@@ -52528,7 +53531,7 @@ The IPv4 regex.
 
 > `readonly` **type**: `"ipv4"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10123
+Defined in: node\_modules/valibot/dist/index.d.mts:10192
 
 The issue type.
 
@@ -52547,7 +53550,7 @@ lib/core/namespaces/v/interfaces/Ipv6Action.md
 
 # Interface: Ipv6Action\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10206
+Defined in: node\_modules/valibot/dist/index.d.mts:10275
 
 IPv6 action interface.
 
@@ -52649,7 +53652,7 @@ Whether it's async.
 
 > `readonly` **expects**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10218
+Defined in: node\_modules/valibot/dist/index.d.mts:10287
 
 The expected property.
 
@@ -52677,7 +53680,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10226
+Defined in: node\_modules/valibot/dist/index.d.mts:10295
 
 The error message.
 
@@ -52687,7 +53690,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `Ipv6Action`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `Ipv6Action`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10214
+Defined in: node\_modules/valibot/dist/index.d.mts:10283
 
 The action reference.
 
@@ -52749,7 +53752,7 @@ An IPv6 action.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10222
+Defined in: node\_modules/valibot/dist/index.d.mts:10291
 
 The IPv6 regex.
 
@@ -52759,7 +53762,7 @@ The IPv6 regex.
 
 > `readonly` **type**: `"ipv6"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10210
+Defined in: node\_modules/valibot/dist/index.d.mts:10279
 
 The action type.
 
@@ -52778,7 +53781,7 @@ lib/core/namespaces/v/interfaces/Ipv6Issue.md
 
 # Interface: Ipv6Issue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10181
+Defined in: node\_modules/valibot/dist/index.d.mts:10250
 
 IPv6 issue interface.
 
@@ -52826,7 +53829,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10193
+Defined in: node\_modules/valibot/dist/index.d.mts:10262
 
 The expected property.
 
@@ -52868,7 +53871,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10185
+Defined in: node\_modules/valibot/dist/index.d.mts:10254
 
 The issue kind.
 
@@ -52924,7 +53927,7 @@ The issue path.
 
 > `readonly` **received**: `` `"${string}"` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10197
+Defined in: node\_modules/valibot/dist/index.d.mts:10266
 
 The received property.
 
@@ -52938,7 +53941,7 @@ The received property.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10201
+Defined in: node\_modules/valibot/dist/index.d.mts:10270
 
 The IPv6 regex.
 
@@ -52952,7 +53955,7 @@ The IPv6 regex.
 
 > `readonly` **type**: `"ipv6"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10189
+Defined in: node\_modules/valibot/dist/index.d.mts:10258
 
 The issue type.
 
@@ -52971,7 +53974,7 @@ lib/core/namespaces/v/interfaces/IsbnAction.md
 
 # Interface: IsbnAction\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10272
+Defined in: node\_modules/valibot/dist/index.d.mts:10341
 
 ISBN action interface.
 
@@ -53073,7 +54076,7 @@ Whether it's async.
 
 > `readonly` **expects**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10284
+Defined in: node\_modules/valibot/dist/index.d.mts:10353
 
 The expected property.
 
@@ -53101,7 +54104,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10292
+Defined in: node\_modules/valibot/dist/index.d.mts:10361
 
 The error message.
 
@@ -53111,7 +54114,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `IsbnAction`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `IsbnAction`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10280
+Defined in: node\_modules/valibot/dist/index.d.mts:10349
 
 The action reference.
 
@@ -53177,7 +54180,7 @@ An ISBN action.
 
 > `readonly` **requirement**: (`input`) => `boolean`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10288
+Defined in: node\_modules/valibot/dist/index.d.mts:10357
 
 The validation function.
 
@@ -53197,7 +54200,7 @@ The validation function.
 
 > `readonly` **type**: `"isbn"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10276
+Defined in: node\_modules/valibot/dist/index.d.mts:10345
 
 The action type.
 
@@ -53216,7 +54219,7 @@ lib/core/namespaces/v/interfaces/IsbnIssue.md
 
 # Interface: IsbnIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10247
+Defined in: node\_modules/valibot/dist/index.d.mts:10316
 
 ISBN issue interface.
 
@@ -53264,7 +54267,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10259
+Defined in: node\_modules/valibot/dist/index.d.mts:10328
 
 The expected property.
 
@@ -53306,7 +54309,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10251
+Defined in: node\_modules/valibot/dist/index.d.mts:10320
 
 The issue kind.
 
@@ -53362,7 +54365,7 @@ The issue path.
 
 > `readonly` **received**: `` `"${string}"` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10263
+Defined in: node\_modules/valibot/dist/index.d.mts:10332
 
 The received property.
 
@@ -53376,7 +54379,7 @@ The received property.
 
 > `readonly` **requirement**: (`input`) => `boolean`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10267
+Defined in: node\_modules/valibot/dist/index.d.mts:10336
 
 The validation function.
 
@@ -53400,7 +54403,7 @@ The validation function.
 
 > `readonly` **type**: `"isbn"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10255
+Defined in: node\_modules/valibot/dist/index.d.mts:10324
 
 The issue type.
 
@@ -53419,7 +54422,7 @@ lib/core/namespaces/v/interfaces/IsoDateAction.md
 
 # Interface: IsoDateAction\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10416
+Defined in: node\_modules/valibot/dist/index.d.mts:10485
 
 ISO date action interface.
 
@@ -53521,7 +54524,7 @@ Whether it's async.
 
 > `readonly` **expects**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10428
+Defined in: node\_modules/valibot/dist/index.d.mts:10497
 
 The expected property.
 
@@ -53549,7 +54552,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10436
+Defined in: node\_modules/valibot/dist/index.d.mts:10505
 
 The error message.
 
@@ -53559,7 +54562,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `IsoDateAction`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `IsoDateAction`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10424
+Defined in: node\_modules/valibot/dist/index.d.mts:10493
 
 The action reference.
 
@@ -53633,7 +54636,7 @@ An ISO date action.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10432
+Defined in: node\_modules/valibot/dist/index.d.mts:10501
 
 The ISO date regex.
 
@@ -53643,7 +54646,7 @@ The ISO date regex.
 
 > `readonly` **type**: `"iso_date"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10420
+Defined in: node\_modules/valibot/dist/index.d.mts:10489
 
 The action type.
 
@@ -53662,7 +54665,7 @@ lib/core/namespaces/v/interfaces/IsoDateIssue.md
 
 # Interface: IsoDateIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10391
+Defined in: node\_modules/valibot/dist/index.d.mts:10460
 
 ISO date issue interface.
 
@@ -53710,7 +54713,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10403
+Defined in: node\_modules/valibot/dist/index.d.mts:10472
 
 The expected property.
 
@@ -53752,7 +54755,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10395
+Defined in: node\_modules/valibot/dist/index.d.mts:10464
 
 The issue kind.
 
@@ -53808,7 +54811,7 @@ The issue path.
 
 > `readonly` **received**: `` `"${string}"` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10407
+Defined in: node\_modules/valibot/dist/index.d.mts:10476
 
 The received property.
 
@@ -53822,7 +54825,7 @@ The received property.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10411
+Defined in: node\_modules/valibot/dist/index.d.mts:10480
 
 The ISO date regex.
 
@@ -53836,7 +54839,7 @@ The ISO date regex.
 
 > `readonly` **type**: `"iso_date"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10399
+Defined in: node\_modules/valibot/dist/index.d.mts:10468
 
 The issue type.
 
@@ -53855,7 +54858,7 @@ lib/core/namespaces/v/interfaces/IsoDateTimeAction.md
 
 # Interface: IsoDateTimeAction\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10494
+Defined in: node\_modules/valibot/dist/index.d.mts:10563
 
 ISO date time action interface.
 
@@ -53957,7 +54960,7 @@ Whether it's async.
 
 > `readonly` **expects**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10506
+Defined in: node\_modules/valibot/dist/index.d.mts:10575
 
 The expected property.
 
@@ -53985,7 +54988,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10514
+Defined in: node\_modules/valibot/dist/index.d.mts:10583
 
 The error message.
 
@@ -53995,7 +54998,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `IsoDateTimeAction`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `IsoDateTimeAction`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10502
+Defined in: node\_modules/valibot/dist/index.d.mts:10571
 
 The action reference.
 
@@ -54075,7 +55078,7 @@ An ISO date time action.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10510
+Defined in: node\_modules/valibot/dist/index.d.mts:10579
 
 The ISO date time regex.
 
@@ -54085,7 +55088,7 @@ The ISO date time regex.
 
 > `readonly` **type**: `"iso_date_time"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10498
+Defined in: node\_modules/valibot/dist/index.d.mts:10567
 
 The action type.
 
@@ -54104,7 +55107,7 @@ lib/core/namespaces/v/interfaces/IsoDateTimeIssue.md
 
 # Interface: IsoDateTimeIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10469
+Defined in: node\_modules/valibot/dist/index.d.mts:10538
 
 ISO date time issue interface.
 
@@ -54152,7 +55155,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10481
+Defined in: node\_modules/valibot/dist/index.d.mts:10550
 
 The expected property.
 
@@ -54194,7 +55197,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10473
+Defined in: node\_modules/valibot/dist/index.d.mts:10542
 
 The issue kind.
 
@@ -54250,7 +55253,7 @@ The issue path.
 
 > `readonly` **received**: `` `"${string}"` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10485
+Defined in: node\_modules/valibot/dist/index.d.mts:10554
 
 The received property.
 
@@ -54264,7 +55267,7 @@ The received property.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10489
+Defined in: node\_modules/valibot/dist/index.d.mts:10558
 
 The ISO date time regex.
 
@@ -54278,7 +55281,7 @@ The ISO date time regex.
 
 > `readonly` **type**: `"iso_date_time"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10477
+Defined in: node\_modules/valibot/dist/index.d.mts:10546
 
 The issue type.
 
@@ -54297,7 +55300,7 @@ lib/core/namespaces/v/interfaces/IsoDateTimeSecondAction.md
 
 # Interface: IsoDateTimeSecondAction\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10578
+Defined in: node\_modules/valibot/dist/index.d.mts:10647
 
 ISO date time second action interface.
 
@@ -54399,7 +55402,7 @@ Whether it's async.
 
 > `readonly` **expects**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10590
+Defined in: node\_modules/valibot/dist/index.d.mts:10659
 
 The expected property.
 
@@ -54427,7 +55430,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10598
+Defined in: node\_modules/valibot/dist/index.d.mts:10667
 
 The error message.
 
@@ -54437,7 +55440,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `IsoDateTimeSecondAction`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `IsoDateTimeSecondAction`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10586
+Defined in: node\_modules/valibot/dist/index.d.mts:10655
 
 The action reference.
 
@@ -54517,7 +55520,7 @@ An ISO date time second action.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10594
+Defined in: node\_modules/valibot/dist/index.d.mts:10663
 
 The ISO date time with seconds regex.
 
@@ -54527,7 +55530,7 @@ The ISO date time with seconds regex.
 
 > `readonly` **type**: `"iso_date_time_second"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10582
+Defined in: node\_modules/valibot/dist/index.d.mts:10651
 
 The action type.
 
@@ -54546,7 +55549,7 @@ lib/core/namespaces/v/interfaces/IsoDateTimeSecondIssue.md
 
 # Interface: IsoDateTimeSecondIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10553
+Defined in: node\_modules/valibot/dist/index.d.mts:10622
 
 ISO date time second issue interface.
 
@@ -54594,7 +55597,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10565
+Defined in: node\_modules/valibot/dist/index.d.mts:10634
 
 The expected property.
 
@@ -54636,7 +55639,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10557
+Defined in: node\_modules/valibot/dist/index.d.mts:10626
 
 The issue kind.
 
@@ -54692,7 +55695,7 @@ The issue path.
 
 > `readonly` **received**: `` `"${string}"` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10569
+Defined in: node\_modules/valibot/dist/index.d.mts:10638
 
 The received property.
 
@@ -54706,7 +55709,7 @@ The received property.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10573
+Defined in: node\_modules/valibot/dist/index.d.mts:10642
 
 The ISO date time with seconds regex.
 
@@ -54720,7 +55723,7 @@ The ISO date time with seconds regex.
 
 > `readonly` **type**: `"iso_date_time_second"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10561
+Defined in: node\_modules/valibot/dist/index.d.mts:10630
 
 The issue type.
 
@@ -54739,7 +55742,7 @@ lib/core/namespaces/v/interfaces/IsoTimeAction.md
 
 # Interface: IsoTimeAction\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10662
+Defined in: node\_modules/valibot/dist/index.d.mts:10731
 
 ISO time action interface.
 
@@ -54841,7 +55844,7 @@ Whether it's async.
 
 > `readonly` **expects**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10674
+Defined in: node\_modules/valibot/dist/index.d.mts:10743
 
 The expected property.
 
@@ -54869,7 +55872,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10682
+Defined in: node\_modules/valibot/dist/index.d.mts:10751
 
 The error message.
 
@@ -54879,7 +55882,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `IsoTimeAction`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `IsoTimeAction`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10670
+Defined in: node\_modules/valibot/dist/index.d.mts:10739
 
 The action reference.
 
@@ -54945,7 +55948,7 @@ An ISO time action.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10678
+Defined in: node\_modules/valibot/dist/index.d.mts:10747
 
 The ISO time regex.
 
@@ -54955,7 +55958,7 @@ The ISO time regex.
 
 > `readonly` **type**: `"iso_time"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10666
+Defined in: node\_modules/valibot/dist/index.d.mts:10735
 
 The action type.
 
@@ -54974,7 +55977,7 @@ lib/core/namespaces/v/interfaces/IsoTimeIssue.md
 
 # Interface: IsoTimeIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10637
+Defined in: node\_modules/valibot/dist/index.d.mts:10706
 
 ISO time issue interface.
 
@@ -55022,7 +56025,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10649
+Defined in: node\_modules/valibot/dist/index.d.mts:10718
 
 The expected property.
 
@@ -55064,7 +56067,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10641
+Defined in: node\_modules/valibot/dist/index.d.mts:10710
 
 The issue kind.
 
@@ -55120,7 +56123,7 @@ The issue path.
 
 > `readonly` **received**: `` `"${string}"` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10653
+Defined in: node\_modules/valibot/dist/index.d.mts:10722
 
 The received property.
 
@@ -55134,7 +56137,7 @@ The received property.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10657
+Defined in: node\_modules/valibot/dist/index.d.mts:10726
 
 The ISO time regex.
 
@@ -55148,7 +56151,7 @@ The ISO time regex.
 
 > `readonly` **type**: `"iso_time"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10645
+Defined in: node\_modules/valibot/dist/index.d.mts:10714
 
 The issue type.
 
@@ -55167,7 +56170,7 @@ lib/core/namespaces/v/interfaces/IsoTimeSecondAction.md
 
 # Interface: IsoTimeSecondAction\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10732
+Defined in: node\_modules/valibot/dist/index.d.mts:10801
 
 ISO time second action interface.
 
@@ -55269,7 +56272,7 @@ Whether it's async.
 
 > `readonly` **expects**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10744
+Defined in: node\_modules/valibot/dist/index.d.mts:10813
 
 The expected property.
 
@@ -55297,7 +56300,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10752
+Defined in: node\_modules/valibot/dist/index.d.mts:10821
 
 The error message.
 
@@ -55307,7 +56310,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `IsoTimeSecondAction`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `IsoTimeSecondAction`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10740
+Defined in: node\_modules/valibot/dist/index.d.mts:10809
 
 The action reference.
 
@@ -55373,7 +56376,7 @@ An ISO time second action.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10748
+Defined in: node\_modules/valibot/dist/index.d.mts:10817
 
 The ISO time second regex.
 
@@ -55383,7 +56386,7 @@ The ISO time second regex.
 
 > `readonly` **type**: `"iso_time_second"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10736
+Defined in: node\_modules/valibot/dist/index.d.mts:10805
 
 The action type.
 
@@ -55402,7 +56405,7 @@ lib/core/namespaces/v/interfaces/IsoTimeSecondIssue.md
 
 # Interface: IsoTimeSecondIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10707
+Defined in: node\_modules/valibot/dist/index.d.mts:10776
 
 ISO time second issue interface.
 
@@ -55450,7 +56453,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10719
+Defined in: node\_modules/valibot/dist/index.d.mts:10788
 
 The expected property.
 
@@ -55492,7 +56495,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10711
+Defined in: node\_modules/valibot/dist/index.d.mts:10780
 
 The issue kind.
 
@@ -55548,7 +56551,7 @@ The issue path.
 
 > `readonly` **received**: `` `"${string}"` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10723
+Defined in: node\_modules/valibot/dist/index.d.mts:10792
 
 The received property.
 
@@ -55562,7 +56565,7 @@ The received property.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10727
+Defined in: node\_modules/valibot/dist/index.d.mts:10796
 
 The ISO time with seconds regex.
 
@@ -55576,7 +56579,7 @@ The ISO time with seconds regex.
 
 > `readonly` **type**: `"iso_time_second"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10715
+Defined in: node\_modules/valibot/dist/index.d.mts:10784
 
 The issue type.
 
@@ -55595,7 +56598,7 @@ lib/core/namespaces/v/interfaces/IsoTimestampAction.md
 
 # Interface: IsoTimestampAction\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10802
+Defined in: node\_modules/valibot/dist/index.d.mts:10871
 
 ISO timestamp action interface.
 
@@ -55697,7 +56700,7 @@ Whether it's async.
 
 > `readonly` **expects**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10814
+Defined in: node\_modules/valibot/dist/index.d.mts:10883
 
 The expected property.
 
@@ -55725,7 +56728,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10822
+Defined in: node\_modules/valibot/dist/index.d.mts:10891
 
 The error message.
 
@@ -55735,7 +56738,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `IsoTimestampAction`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `IsoTimestampAction`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10810
+Defined in: node\_modules/valibot/dist/index.d.mts:10879
 
 The action reference.
 
@@ -55836,7 +56839,7 @@ An ISO timestamp action.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10818
+Defined in: node\_modules/valibot/dist/index.d.mts:10887
 
 The ISO timestamp regex.
 
@@ -55846,7 +56849,7 @@ The ISO timestamp regex.
 
 > `readonly` **type**: `"iso_timestamp"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10806
+Defined in: node\_modules/valibot/dist/index.d.mts:10875
 
 The action type.
 
@@ -55865,7 +56868,7 @@ lib/core/namespaces/v/interfaces/IsoTimestampIssue.md
 
 # Interface: IsoTimestampIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10777
+Defined in: node\_modules/valibot/dist/index.d.mts:10846
 
 ISO timestamp issue interface.
 
@@ -55913,7 +56916,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10789
+Defined in: node\_modules/valibot/dist/index.d.mts:10858
 
 The expected property.
 
@@ -55955,7 +56958,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10781
+Defined in: node\_modules/valibot/dist/index.d.mts:10850
 
 The issue kind.
 
@@ -56011,7 +57014,7 @@ The issue path.
 
 > `readonly` **received**: `` `"${string}"` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10793
+Defined in: node\_modules/valibot/dist/index.d.mts:10862
 
 The received property.
 
@@ -56025,7 +57028,7 @@ The received property.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10797
+Defined in: node\_modules/valibot/dist/index.d.mts:10866
 
 The ISO timestamp regex.
 
@@ -56039,7 +57042,7 @@ The ISO timestamp regex.
 
 > `readonly` **type**: `"iso_timestamp"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10785
+Defined in: node\_modules/valibot/dist/index.d.mts:10854
 
 The issue type.
 
@@ -56058,7 +57061,7 @@ lib/core/namespaces/v/interfaces/IsoWeekAction.md
 
 # Interface: IsoWeekAction\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10907
+Defined in: node\_modules/valibot/dist/index.d.mts:10976
 
 ISO week action interface.
 
@@ -56160,7 +57163,7 @@ Whether it's async.
 
 > `readonly` **expects**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10919
+Defined in: node\_modules/valibot/dist/index.d.mts:10988
 
 The expected property.
 
@@ -56188,7 +57191,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10927
+Defined in: node\_modules/valibot/dist/index.d.mts:10996
 
 The error message.
 
@@ -56198,7 +57201,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `IsoWeekAction`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `IsoWeekAction`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10915
+Defined in: node\_modules/valibot/dist/index.d.mts:10984
 
 The action reference.
 
@@ -56270,7 +57273,7 @@ An ISO week action.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10923
+Defined in: node\_modules/valibot/dist/index.d.mts:10992
 
 The ISO week regex.
 
@@ -56280,7 +57283,7 @@ The ISO week regex.
 
 > `readonly` **type**: `"iso_week"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10911
+Defined in: node\_modules/valibot/dist/index.d.mts:10980
 
 The action type.
 
@@ -56299,7 +57302,7 @@ lib/core/namespaces/v/interfaces/IsoWeekIssue.md
 
 # Interface: IsoWeekIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10882
+Defined in: node\_modules/valibot/dist/index.d.mts:10951
 
 ISO week issue interface.
 
@@ -56347,7 +57350,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10894
+Defined in: node\_modules/valibot/dist/index.d.mts:10963
 
 The expected property.
 
@@ -56389,7 +57392,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10886
+Defined in: node\_modules/valibot/dist/index.d.mts:10955
 
 The issue kind.
 
@@ -56445,7 +57448,7 @@ The issue path.
 
 > `readonly` **received**: `` `"${string}"` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10898
+Defined in: node\_modules/valibot/dist/index.d.mts:10967
 
 The received property.
 
@@ -56459,7 +57462,7 @@ The received property.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10902
+Defined in: node\_modules/valibot/dist/index.d.mts:10971
 
 The ISO week regex.
 
@@ -56473,7 +57476,7 @@ The ISO week regex.
 
 > `readonly` **type**: `"iso_week"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10890
+Defined in: node\_modules/valibot/dist/index.d.mts:10959
 
 The issue type.
 
@@ -56492,7 +57495,7 @@ lib/core/namespaces/v/interfaces/IsrcAction.md
 
 # Interface: IsrcAction\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10342
+Defined in: node\_modules/valibot/dist/index.d.mts:10411
 
 ISRC action interface.
 
@@ -56594,7 +57597,7 @@ Whether it's async.
 
 > `readonly` **expects**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10354
+Defined in: node\_modules/valibot/dist/index.d.mts:10423
 
 The expected property.
 
@@ -56622,7 +57625,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10362
+Defined in: node\_modules/valibot/dist/index.d.mts:10431
 
 The error message.
 
@@ -56632,7 +57635,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `IsrcAction`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `IsrcAction`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10350
+Defined in: node\_modules/valibot/dist/index.d.mts:10419
 
 The action reference.
 
@@ -56702,7 +57705,7 @@ An ISRC action.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10358
+Defined in: node\_modules/valibot/dist/index.d.mts:10427
 
 The ISRC regex.
 
@@ -56712,7 +57715,7 @@ The ISRC regex.
 
 > `readonly` **type**: `"isrc"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10346
+Defined in: node\_modules/valibot/dist/index.d.mts:10415
 
 The action type.
 
@@ -56731,7 +57734,7 @@ lib/core/namespaces/v/interfaces/IsrcIssue.md
 
 # Interface: IsrcIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10317
+Defined in: node\_modules/valibot/dist/index.d.mts:10386
 
 ISRC issue interface.
 
@@ -56779,7 +57782,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10329
+Defined in: node\_modules/valibot/dist/index.d.mts:10398
 
 The expected property.
 
@@ -56821,7 +57824,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10321
+Defined in: node\_modules/valibot/dist/index.d.mts:10390
 
 The issue kind.
 
@@ -56877,7 +57880,7 @@ The issue path.
 
 > `readonly` **received**: `` `"${string}"` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10333
+Defined in: node\_modules/valibot/dist/index.d.mts:10402
 
 The received property.
 
@@ -56891,7 +57894,7 @@ The received property.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10337
+Defined in: node\_modules/valibot/dist/index.d.mts:10406
 
 The ISRC regex.
 
@@ -56905,7 +57908,7 @@ The ISRC regex.
 
 > `readonly` **type**: `"isrc"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10325
+Defined in: node\_modules/valibot/dist/index.d.mts:10394
 
 The issue type.
 
@@ -56924,7 +57927,7 @@ lib/core/namespaces/v/interfaces/JwsCompactAction.md
 
 # Interface: JwsCompactAction\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10987
+Defined in: node\_modules/valibot/dist/index.d.mts:11056
 
 **`Beta`**
 
@@ -57030,7 +58033,7 @@ Whether it's async.
 
 > `readonly` **expects**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10999
+Defined in: node\_modules/valibot/dist/index.d.mts:11068
 
 **`Beta`**
 
@@ -57062,7 +58065,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11007
+Defined in: node\_modules/valibot/dist/index.d.mts:11076
 
 **`Beta`**
 
@@ -57074,7 +58077,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `JwsCompactAction`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `JwsCompactAction`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10995
+Defined in: node\_modules/valibot/dist/index.d.mts:11064
 
 **`Beta`**
 
@@ -57152,7 +58155,7 @@ A JWS compact action.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11003
+Defined in: node\_modules/valibot/dist/index.d.mts:11072
 
 **`Beta`**
 
@@ -57164,7 +58167,7 @@ The JWS compact regex.
 
 > `readonly` **type**: `"jws_compact"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10991
+Defined in: node\_modules/valibot/dist/index.d.mts:11060
 
 **`Beta`**
 
@@ -57185,7 +58188,7 @@ lib/core/namespaces/v/interfaces/JwsCompactIssue.md
 
 # Interface: JwsCompactIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10960
+Defined in: node\_modules/valibot/dist/index.d.mts:11029
 
 **`Beta`**
 
@@ -57239,7 +58242,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10972
+Defined in: node\_modules/valibot/dist/index.d.mts:11041
 
 **`Beta`**
 
@@ -57287,7 +58290,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10964
+Defined in: node\_modules/valibot/dist/index.d.mts:11033
 
 **`Beta`**
 
@@ -57351,7 +58354,7 @@ The issue path.
 
 > `readonly` **received**: `` `"${string}"` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10976
+Defined in: node\_modules/valibot/dist/index.d.mts:11045
 
 **`Beta`**
 
@@ -57367,7 +58370,7 @@ The received property.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10980
+Defined in: node\_modules/valibot/dist/index.d.mts:11049
 
 **`Beta`**
 
@@ -57383,9 +58386,433 @@ The JWS compact regex.
 
 > `readonly` **type**: `"jws_compact"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10968
+Defined in: node\_modules/valibot/dist/index.d.mts:11037
 
 **`Beta`**
+
+The issue type.
+
+#### Overrides
+
+[`BaseIssue`](BaseIssue.md).[`type`](BaseIssue.md#type)
+
+lib/core/namespaces/v/interfaces/KsuidAction.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../../../index.md) / [lib/core](../../../index.md) / [v](../index.md) / KsuidAction
+
+# Interface: KsuidAction\<TInput$1, TMessage\>
+
+Defined in: node\_modules/valibot/dist/index.d.mts:11136
+
+KSUID action interface.
+
+## Extends
+
+- [`BaseValidation`](BaseValidation.md)\<`TInput$1`, `TInput$1`, [`KsuidIssue`](KsuidIssue.md)\<`TInput$1`\>\>
+
+## Type Parameters
+
+### TInput$1
+
+`TInput$1` *extends* `string`
+
+### TMessage
+
+`TMessage` *extends* [`ErrorMessage`](../type-aliases/ErrorMessage.md)\<[`KsuidIssue`](KsuidIssue.md)\<`TInput$1`\>\> \| `undefined`
+
+## Properties
+
+### ~run
+
+> `readonly` **~run**: (`dataset`, `config`) => [`OutputDataset`](../type-aliases/OutputDataset.md)\<`TInput$1`, [`BaseIssue`](BaseIssue.md)\<`unknown`\> \| [`KsuidIssue`](KsuidIssue.md)\<`TInput$1`\>\>
+
+Defined in: node\_modules/valibot/dist/index.d.mts:3258
+
+**`Internal`**
+
+Validates known input values.
+
+#### Parameters
+
+##### dataset
+
+[`OutputDataset`](../type-aliases/OutputDataset.md)\<`TInput$1`, [`BaseIssue`](BaseIssue.md)\<`unknown`\>\>
+
+The input dataset.
+
+##### config
+
+[`Config`](Config.md)\<[`BaseIssue`](BaseIssue.md)\<`unknown`\>\>
+
+The configuration.
+
+#### Returns
+
+[`OutputDataset`](../type-aliases/OutputDataset.md)\<`TInput$1`, [`BaseIssue`](BaseIssue.md)\<`unknown`\> \| [`KsuidIssue`](KsuidIssue.md)\<`TInput$1`\>\>
+
+The output dataset.
+
+#### Inherited from
+
+[`BaseValidation`](BaseValidation.md).[`~run`](BaseValidation.md#run)
+
+***
+
+### ~types?
+
+> `readonly` `optional` **~types?**: `object`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:3264
+
+**`Internal`**
+
+The input, output and issue type.
+
+#### input
+
+> `readonly` **input**: `TInput$1`
+
+#### issue
+
+> `readonly` **issue**: [`KsuidIssue`](KsuidIssue.md)
+
+#### output
+
+> `readonly` **output**: `TInput$1`
+
+#### Inherited from
+
+[`BaseValidation`](BaseValidation.md).[`~types`](BaseValidation.md#types)
+
+***
+
+### async
+
+> `readonly` **async**: `false`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:3247
+
+Whether it's async.
+
+#### Inherited from
+
+[`BaseValidation`](BaseValidation.md).[`async`](BaseValidation.md#async)
+
+***
+
+### expects
+
+> `readonly` **expects**: `null`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:11148
+
+The expected property.
+
+#### Overrides
+
+[`BaseValidation`](BaseValidation.md).[`expects`](BaseValidation.md#expects)
+
+***
+
+### kind
+
+> `readonly` **kind**: `"validation"`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:3231
+
+The object kind.
+
+#### Inherited from
+
+[`BaseValidation`](BaseValidation.md).[`kind`](BaseValidation.md#kind)
+
+***
+
+### message
+
+> `readonly` **message**: `TMessage`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:11156
+
+The error message.
+
+***
+
+### reference
+
+> `readonly` **reference**: \{\<`TInput$1`\>(): `KsuidAction`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `KsuidAction`\<`TInput$1`, `TMessage`\>; \}
+
+Defined in: node\_modules/valibot/dist/index.d.mts:11144
+
+The action reference.
+
+#### Call Signature
+
+> \<`TInput$1`\>(): `KsuidAction`\<`TInput$1`, `undefined`\>
+
+Creates a [KSUID](https://github.com/segmentio/ksuid) validation action.
+
+##### Type Parameters
+
+###### TInput$1
+
+`TInput$1` *extends* `string`
+
+##### Returns
+
+`KsuidAction`\<`TInput$1`, `undefined`\>
+
+A KSUID action.
+
+#### Call Signature
+
+> \<`TInput$1`, `TMessage`\>(`message`): `KsuidAction`\<`TInput$1`, `TMessage`\>
+
+Creates a [KSUID](https://github.com/segmentio/ksuid) validation action.
+
+##### Type Parameters
+
+###### TInput$1
+
+`TInput$1` *extends* `string`
+
+###### TMessage
+
+`TMessage` *extends* [`ErrorMessage`](../type-aliases/ErrorMessage.md)\<[`KsuidIssue`](KsuidIssue.md)\<`TInput$1`\>\> \| `undefined`
+
+##### Parameters
+
+###### message
+
+`TMessage`
+
+The error message.
+
+##### Returns
+
+`KsuidAction`\<`TInput$1`, `TMessage`\>
+
+A KSUID action.
+
+#### Overrides
+
+[`BaseValidation`](BaseValidation.md).[`reference`](BaseValidation.md#reference)
+
+***
+
+### requirement
+
+> `readonly` **requirement**: `RegExp`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:11152
+
+The KSUID regex.
+
+***
+
+### type
+
+> `readonly` **type**: `"ksuid"`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:11140
+
+The action type.
+
+#### Overrides
+
+[`BaseValidation`](BaseValidation.md).[`type`](BaseValidation.md#type)
+
+lib/core/namespaces/v/interfaces/KsuidIssue.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../../../index.md) / [lib/core](../../../index.md) / [v](../index.md) / KsuidIssue
+
+# Interface: KsuidIssue\<TInput$1\>
+
+Defined in: node\_modules/valibot/dist/index.d.mts:11111
+
+KSUID issue interface.
+
+## Extends
+
+- [`BaseIssue`](BaseIssue.md)\<`TInput$1`\>
+
+## Type Parameters
+
+### TInput$1
+
+`TInput$1` *extends* `string`
+
+## Properties
+
+### abortEarly?
+
+> `readonly` `optional` **abortEarly?**: `boolean`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:3717
+
+Whether it should be aborted early.
+
+#### Inherited from
+
+[`BaseIssue`](BaseIssue.md).[`abortEarly`](BaseIssue.md#abortearly)
+
+***
+
+### abortPipeEarly?
+
+> `readonly` `optional` **abortPipeEarly?**: `boolean`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:3721
+
+Whether a pipe should be aborted early.
+
+#### Inherited from
+
+[`BaseIssue`](BaseIssue.md).[`abortPipeEarly`](BaseIssue.md#abortpipeearly)
+
+***
+
+### expected
+
+> `readonly` **expected**: `null`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:11123
+
+The expected property.
+
+#### Overrides
+
+[`BaseIssue`](BaseIssue.md).[`expected`](BaseIssue.md#expected)
+
+***
+
+### input
+
+> `readonly` **input**: `TInput$1`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:3650
+
+The raw input data.
+
+#### Inherited from
+
+[`BaseIssue`](BaseIssue.md).[`input`](BaseIssue.md#input)
+
+***
+
+### issues?
+
+> `readonly` `optional` **issues?**: \[[`BaseIssue`](BaseIssue.md)\<`TInput$1`\>, `...BaseIssue<TInput$1>[]`\]
+
+Defined in: node\_modules/valibot/dist/index.d.mts:3674
+
+The sub issues.
+
+#### Inherited from
+
+[`BaseIssue`](BaseIssue.md).[`issues`](BaseIssue.md#issues)
+
+***
+
+### kind
+
+> `readonly` **kind**: `"validation"`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:11115
+
+The issue kind.
+
+#### Overrides
+
+[`BaseIssue`](BaseIssue.md).[`kind`](BaseIssue.md#kind)
+
+***
+
+### lang?
+
+> `readonly` `optional` **lang?**: `string`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:3709
+
+The selected language.
+
+#### Inherited from
+
+[`BaseIssue`](BaseIssue.md).[`lang`](BaseIssue.md#lang)
+
+***
+
+### message
+
+> `readonly` **message**: `string`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:3662
+
+The error message.
+
+#### Inherited from
+
+[`BaseIssue`](BaseIssue.md).[`message`](BaseIssue.md#message)
+
+***
+
+### path?
+
+> `readonly` `optional` **path?**: \[[`IssuePathItem`](../type-aliases/IssuePathItem.md), `...IssuePathItem[]`\]
+
+Defined in: node\_modules/valibot/dist/index.d.mts:3670
+
+The issue path.
+
+#### Inherited from
+
+[`BaseIssue`](BaseIssue.md).[`path`](BaseIssue.md#path)
+
+***
+
+### received
+
+> `readonly` **received**: `` `"${string}"` ``
+
+Defined in: node\_modules/valibot/dist/index.d.mts:11127
+
+The received property.
+
+#### Overrides
+
+[`BaseIssue`](BaseIssue.md).[`received`](BaseIssue.md#received)
+
+***
+
+### requirement
+
+> `readonly` **requirement**: `RegExp`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:11131
+
+The KSUID regex.
+
+#### Overrides
+
+[`BaseIssue`](BaseIssue.md).[`requirement`](BaseIssue.md#requirement)
+
+***
+
+### type
+
+> `readonly` **type**: `"ksuid"`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:11119
 
 The issue type.
 
@@ -57872,7 +59299,7 @@ lib/core/namespaces/v/interfaces/LengthAction.md
 
 # Interface: LengthAction\<TInput$1, TRequirement, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11067
+Defined in: node\_modules/valibot/dist/index.d.mts:11202
 
 Length action interface.
 
@@ -57978,7 +59405,7 @@ Whether it's async.
 
 > `readonly` **expects**: `` `${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11079
+Defined in: node\_modules/valibot/dist/index.d.mts:11214
 
 The expected property.
 
@@ -58006,7 +59433,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11087
+Defined in: node\_modules/valibot/dist/index.d.mts:11222
 
 The error message.
 
@@ -58016,7 +59443,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`, `TRequirement`\>(`requirement`): `LengthAction`\<`TInput$1`, `TRequirement`, `undefined`\>; \<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): `LengthAction`\<`TInput$1`, `TRequirement`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11075
+Defined in: node\_modules/valibot/dist/index.d.mts:11210
 
 The action reference.
 
@@ -58100,7 +59527,7 @@ A length action.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11083
+Defined in: node\_modules/valibot/dist/index.d.mts:11218
 
 The required length.
 
@@ -58110,7 +59537,7 @@ The required length.
 
 > `readonly` **type**: `"length"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11071
+Defined in: node\_modules/valibot/dist/index.d.mts:11206
 
 The action type.
 
@@ -58129,7 +59556,7 @@ lib/core/namespaces/v/interfaces/LengthIssue.md
 
 # Interface: LengthIssue\<TInput$1, TRequirement\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11042
+Defined in: node\_modules/valibot/dist/index.d.mts:11177
 
 Length issue interface.
 
@@ -58181,7 +59608,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `` `${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11054
+Defined in: node\_modules/valibot/dist/index.d.mts:11189
 
 The expected property.
 
@@ -58223,7 +59650,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11046
+Defined in: node\_modules/valibot/dist/index.d.mts:11181
 
 The issue kind.
 
@@ -58279,7 +59706,7 @@ The issue path.
 
 > `readonly` **received**: `` `${number}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11058
+Defined in: node\_modules/valibot/dist/index.d.mts:11193
 
 The received property.
 
@@ -58293,7 +59720,7 @@ The received property.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11062
+Defined in: node\_modules/valibot/dist/index.d.mts:11197
 
 The required length.
 
@@ -58307,7 +59734,7 @@ The required length.
 
 > `readonly` **type**: `"length"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11050
+Defined in: node\_modules/valibot/dist/index.d.mts:11185
 
 The issue type.
 
@@ -60340,7 +61767,7 @@ lib/core/namespaces/v/interfaces/LtValueAction.md
 
 # Interface: LtValueAction\<TInput$1, TRequirement, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11132
+Defined in: node\_modules/valibot/dist/index.d.mts:11267
 
 Less than value action type.
 
@@ -60446,7 +61873,7 @@ Whether it's async.
 
 > `readonly` **expects**: `` `<${string}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11144
+Defined in: node\_modules/valibot/dist/index.d.mts:11279
 
 The expected property.
 
@@ -60474,7 +61901,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11152
+Defined in: node\_modules/valibot/dist/index.d.mts:11287
 
 The error message.
 
@@ -60484,7 +61911,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`, `TRequirement`\>(`requirement`): `LtValueAction`\<`TInput$1`, `TRequirement`, `undefined`\>; \<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): `LtValueAction`\<`TInput$1`, `TRequirement`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11140
+Defined in: node\_modules/valibot/dist/index.d.mts:11275
 
 The action reference.
 
@@ -60568,7 +61995,7 @@ A less than value action.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11148
+Defined in: node\_modules/valibot/dist/index.d.mts:11283
 
 The less than value.
 
@@ -60578,7 +62005,7 @@ The less than value.
 
 > `readonly` **type**: `"lt_value"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11136
+Defined in: node\_modules/valibot/dist/index.d.mts:11271
 
 The action type.
 
@@ -60597,7 +62024,7 @@ lib/core/namespaces/v/interfaces/LtValueIssue.md
 
 # Interface: LtValueIssue\<TInput$1, TRequirement\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11111
+Defined in: node\_modules/valibot/dist/index.d.mts:11246
 
 Less than value issue type.
 
@@ -60649,7 +62076,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `` `<${string}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11123
+Defined in: node\_modules/valibot/dist/index.d.mts:11258
 
 The expected property.
 
@@ -60691,7 +62118,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11115
+Defined in: node\_modules/valibot/dist/index.d.mts:11250
 
 The issue kind.
 
@@ -60761,7 +62188,7 @@ The received property.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11127
+Defined in: node\_modules/valibot/dist/index.d.mts:11262
 
 The less than value.
 
@@ -60775,7 +62202,7 @@ The less than value.
 
 > `readonly` **type**: `"lt_value"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11119
+Defined in: node\_modules/valibot/dist/index.d.mts:11254
 
 The issue type.
 
@@ -60794,7 +62221,7 @@ lib/core/namespaces/v/interfaces/Mac48Action.md
 
 # Interface: Mac48Action\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11267
+Defined in: node\_modules/valibot/dist/index.d.mts:11402
 
 48-bit MAC action interface.
 
@@ -60896,7 +62323,7 @@ Whether it's async.
 
 > `readonly` **expects**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11279
+Defined in: node\_modules/valibot/dist/index.d.mts:11414
 
 The expected property.
 
@@ -60924,7 +62351,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11287
+Defined in: node\_modules/valibot/dist/index.d.mts:11422
 
 The error message.
 
@@ -60934,7 +62361,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `Mac48Action`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `Mac48Action`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11275
+Defined in: node\_modules/valibot/dist/index.d.mts:11410
 
 The action reference.
 
@@ -60996,7 +62423,7 @@ A 48-bit MAC action.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11283
+Defined in: node\_modules/valibot/dist/index.d.mts:11418
 
 The 48-bit MAC regex.
 
@@ -61006,7 +62433,7 @@ The 48-bit MAC regex.
 
 > `readonly` **type**: `"mac48"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11271
+Defined in: node\_modules/valibot/dist/index.d.mts:11406
 
 The action type.
 
@@ -61025,7 +62452,7 @@ lib/core/namespaces/v/interfaces/Mac48Issue.md
 
 # Interface: Mac48Issue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11242
+Defined in: node\_modules/valibot/dist/index.d.mts:11377
 
 48-bit MAC issue interface.
 
@@ -61073,7 +62500,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11254
+Defined in: node\_modules/valibot/dist/index.d.mts:11389
 
 The expected property.
 
@@ -61115,7 +62542,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11246
+Defined in: node\_modules/valibot/dist/index.d.mts:11381
 
 The issue kind.
 
@@ -61171,7 +62598,7 @@ The issue path.
 
 > `readonly` **received**: `` `"${string}"` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11258
+Defined in: node\_modules/valibot/dist/index.d.mts:11393
 
 The received property.
 
@@ -61185,7 +62612,7 @@ The received property.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11262
+Defined in: node\_modules/valibot/dist/index.d.mts:11397
 
 The 48-bit MAC regex.
 
@@ -61199,7 +62626,7 @@ The 48-bit MAC regex.
 
 > `readonly` **type**: `"mac48"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11250
+Defined in: node\_modules/valibot/dist/index.d.mts:11385
 
 The issue type.
 
@@ -61218,7 +62645,7 @@ lib/core/namespaces/v/interfaces/Mac64Action.md
 
 # Interface: Mac64Action\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11333
+Defined in: node\_modules/valibot/dist/index.d.mts:11468
 
 64-bit MAC action interface.
 
@@ -61320,7 +62747,7 @@ Whether it's async.
 
 > `readonly` **expects**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11345
+Defined in: node\_modules/valibot/dist/index.d.mts:11480
 
 The expected property.
 
@@ -61348,7 +62775,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11353
+Defined in: node\_modules/valibot/dist/index.d.mts:11488
 
 The error message.
 
@@ -61358,7 +62785,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `Mac64Action`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `Mac64Action`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11341
+Defined in: node\_modules/valibot/dist/index.d.mts:11476
 
 The action reference.
 
@@ -61420,7 +62847,7 @@ A 64-bit MAC action.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11349
+Defined in: node\_modules/valibot/dist/index.d.mts:11484
 
 The 64-bit MAC regex.
 
@@ -61430,7 +62857,7 @@ The 64-bit MAC regex.
 
 > `readonly` **type**: `"mac64"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11337
+Defined in: node\_modules/valibot/dist/index.d.mts:11472
 
 The action type.
 
@@ -61449,7 +62876,7 @@ lib/core/namespaces/v/interfaces/Mac64Issue.md
 
 # Interface: Mac64Issue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11308
+Defined in: node\_modules/valibot/dist/index.d.mts:11443
 
 64-bit MAC issue interface.
 
@@ -61497,7 +62924,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11320
+Defined in: node\_modules/valibot/dist/index.d.mts:11455
 
 The expected property.
 
@@ -61539,7 +62966,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11312
+Defined in: node\_modules/valibot/dist/index.d.mts:11447
 
 The issue kind.
 
@@ -61595,7 +63022,7 @@ The issue path.
 
 > `readonly` **received**: `` `"${string}"` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11324
+Defined in: node\_modules/valibot/dist/index.d.mts:11459
 
 The received property.
 
@@ -61609,7 +63036,7 @@ The received property.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11328
+Defined in: node\_modules/valibot/dist/index.d.mts:11463
 
 The 64-bit MAC regex.
 
@@ -61623,7 +63050,7 @@ The 64-bit MAC regex.
 
 > `readonly` **type**: `"mac64"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11316
+Defined in: node\_modules/valibot/dist/index.d.mts:11451
 
 The issue type.
 
@@ -61642,7 +63069,7 @@ lib/core/namespaces/v/interfaces/MacAction.md
 
 # Interface: MacAction\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11201
+Defined in: node\_modules/valibot/dist/index.d.mts:11336
 
 MAC action interface.
 
@@ -61744,7 +63171,7 @@ Whether it's async.
 
 > `readonly` **expects**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11213
+Defined in: node\_modules/valibot/dist/index.d.mts:11348
 
 The expected property.
 
@@ -61772,7 +63199,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11221
+Defined in: node\_modules/valibot/dist/index.d.mts:11356
 
 The error message.
 
@@ -61782,7 +63209,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `MacAction`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `MacAction`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11209
+Defined in: node\_modules/valibot/dist/index.d.mts:11344
 
 The action reference.
 
@@ -61844,7 +63271,7 @@ A MAC action.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11217
+Defined in: node\_modules/valibot/dist/index.d.mts:11352
 
 The MAC regex.
 
@@ -61854,7 +63281,7 @@ The MAC regex.
 
 > `readonly` **type**: `"mac"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11205
+Defined in: node\_modules/valibot/dist/index.d.mts:11340
 
 The action type.
 
@@ -61873,7 +63300,7 @@ lib/core/namespaces/v/interfaces/MacIssue.md
 
 # Interface: MacIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11176
+Defined in: node\_modules/valibot/dist/index.d.mts:11311
 
 MAC issue interface.
 
@@ -61921,7 +63348,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11188
+Defined in: node\_modules/valibot/dist/index.d.mts:11323
 
 The expected property.
 
@@ -61963,7 +63390,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11180
+Defined in: node\_modules/valibot/dist/index.d.mts:11315
 
 The issue kind.
 
@@ -62019,7 +63446,7 @@ The issue path.
 
 > `readonly` **received**: `` `"${string}"` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11192
+Defined in: node\_modules/valibot/dist/index.d.mts:11327
 
 The received property.
 
@@ -62033,7 +63460,7 @@ The received property.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11196
+Defined in: node\_modules/valibot/dist/index.d.mts:11331
 
 The MAC regex.
 
@@ -62047,7 +63474,7 @@ The MAC regex.
 
 > `readonly` **type**: `"mac"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11184
+Defined in: node\_modules/valibot/dist/index.d.mts:11319
 
 The issue type.
 
@@ -62253,7 +63680,7 @@ lib/core/namespaces/v/interfaces/MapItemsAction.md
 
 # Interface: MapItemsAction\<TInput$1, TOutput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11378
+Defined in: node\_modules/valibot/dist/index.d.mts:11513
 
 Map items action interface.
 
@@ -62369,7 +63796,7 @@ The object kind.
 
 > `readonly` **operation**: `ArrayAction$2`\<`TInput$1`, `TOutput$1`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11390
+Defined in: node\_modules/valibot/dist/index.d.mts:11525
 
 The map items operation.
 
@@ -62379,7 +63806,7 @@ The map items operation.
 
 > `readonly` **reference**: \<`TInput$1`, `TOutput$1`\>(`operation`) => `MapItemsAction`\<`TInput$1`, `TOutput$1`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11386
+Defined in: node\_modules/valibot/dist/index.d.mts:11521
 
 The action reference.
 
@@ -62419,7 +63846,7 @@ A map items action.
 
 > `readonly` **type**: `"map_items"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11382
+Defined in: node\_modules/valibot/dist/index.d.mts:11517
 
 The action type.
 
@@ -63187,7 +64614,7 @@ lib/core/namespaces/v/interfaces/MaxBytesAction.md
 
 # Interface: MaxBytesAction\<TInput$1, TRequirement, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11430
+Defined in: node\_modules/valibot/dist/index.d.mts:11565
 
 Max bytes action interface.
 
@@ -63293,7 +64720,7 @@ Whether it's async.
 
 > `readonly` **expects**: `` `<=${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11442
+Defined in: node\_modules/valibot/dist/index.d.mts:11577
 
 The expected property.
 
@@ -63321,7 +64748,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11450
+Defined in: node\_modules/valibot/dist/index.d.mts:11585
 
 The error message.
 
@@ -63331,7 +64758,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`, `TRequirement`\>(`requirement`): `MaxBytesAction`\<`TInput$1`, `TRequirement`, `undefined`\>; \<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): `MaxBytesAction`\<`TInput$1`, `TRequirement`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11438
+Defined in: node\_modules/valibot/dist/index.d.mts:11573
 
 The action reference.
 
@@ -63415,7 +64842,7 @@ A max bytes action.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11446
+Defined in: node\_modules/valibot/dist/index.d.mts:11581
 
 The maximum bytes.
 
@@ -63425,7 +64852,7 @@ The maximum bytes.
 
 > `readonly` **type**: `"max_bytes"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11434
+Defined in: node\_modules/valibot/dist/index.d.mts:11569
 
 The action type.
 
@@ -63444,7 +64871,7 @@ lib/core/namespaces/v/interfaces/MaxBytesIssue.md
 
 # Interface: MaxBytesIssue\<TInput$1, TRequirement\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11405
+Defined in: node\_modules/valibot/dist/index.d.mts:11540
 
 Max bytes issue interface.
 
@@ -63496,7 +64923,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `` `<=${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11417
+Defined in: node\_modules/valibot/dist/index.d.mts:11552
 
 The expected property.
 
@@ -63538,7 +64965,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11409
+Defined in: node\_modules/valibot/dist/index.d.mts:11544
 
 The issue kind.
 
@@ -63594,7 +65021,7 @@ The issue path.
 
 > `readonly` **received**: `` `${number}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11421
+Defined in: node\_modules/valibot/dist/index.d.mts:11556
 
 The received property.
 
@@ -63608,7 +65035,7 @@ The received property.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11425
+Defined in: node\_modules/valibot/dist/index.d.mts:11560
 
 The maximum bytes.
 
@@ -63622,7 +65049,461 @@ The maximum bytes.
 
 > `readonly` **type**: `"max_bytes"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11413
+Defined in: node\_modules/valibot/dist/index.d.mts:11548
+
+The issue type.
+
+#### Overrides
+
+[`BaseIssue`](BaseIssue.md).[`type`](BaseIssue.md#type)
+
+lib/core/namespaces/v/interfaces/MaxCodePointsAction.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../../../index.md) / [lib/core](../../../index.md) / [v](../index.md) / MaxCodePointsAction
+
+# Interface: MaxCodePointsAction\<TInput$1, TRequirement, TMessage\>
+
+Defined in: node\_modules/valibot/dist/index.d.mts:11634
+
+Max code points action interface.
+
+## Extends
+
+- [`BaseValidation`](BaseValidation.md)\<`TInput$1`, `TInput$1`, [`MaxCodePointsIssue`](MaxCodePointsIssue.md)\<`TInput$1`, `TRequirement`\>\>
+
+## Type Parameters
+
+### TInput$1
+
+`TInput$1` *extends* `string`
+
+### TRequirement
+
+`TRequirement` *extends* `number`
+
+### TMessage
+
+`TMessage` *extends* [`ErrorMessage`](../type-aliases/ErrorMessage.md)\<[`MaxCodePointsIssue`](MaxCodePointsIssue.md)\<`TInput$1`, `TRequirement`\>\> \| `undefined`
+
+## Properties
+
+### ~run
+
+> `readonly` **~run**: (`dataset`, `config`) => [`OutputDataset`](../type-aliases/OutputDataset.md)\<`TInput$1`, [`BaseIssue`](BaseIssue.md)\<`unknown`\> \| [`MaxCodePointsIssue`](MaxCodePointsIssue.md)\<`TInput$1`, `TRequirement`\>\>
+
+Defined in: node\_modules/valibot/dist/index.d.mts:3258
+
+**`Internal`**
+
+Validates known input values.
+
+#### Parameters
+
+##### dataset
+
+[`OutputDataset`](../type-aliases/OutputDataset.md)\<`TInput$1`, [`BaseIssue`](BaseIssue.md)\<`unknown`\>\>
+
+The input dataset.
+
+##### config
+
+[`Config`](Config.md)\<[`BaseIssue`](BaseIssue.md)\<`unknown`\>\>
+
+The configuration.
+
+#### Returns
+
+[`OutputDataset`](../type-aliases/OutputDataset.md)\<`TInput$1`, [`BaseIssue`](BaseIssue.md)\<`unknown`\> \| [`MaxCodePointsIssue`](MaxCodePointsIssue.md)\<`TInput$1`, `TRequirement`\>\>
+
+The output dataset.
+
+#### Inherited from
+
+[`BaseValidation`](BaseValidation.md).[`~run`](BaseValidation.md#run)
+
+***
+
+### ~types?
+
+> `readonly` `optional` **~types?**: `object`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:3264
+
+**`Internal`**
+
+The input, output and issue type.
+
+#### input
+
+> `readonly` **input**: `TInput$1`
+
+#### issue
+
+> `readonly` **issue**: [`MaxCodePointsIssue`](MaxCodePointsIssue.md)
+
+#### output
+
+> `readonly` **output**: `TInput$1`
+
+#### Inherited from
+
+[`BaseValidation`](BaseValidation.md).[`~types`](BaseValidation.md#types)
+
+***
+
+### async
+
+> `readonly` **async**: `false`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:3247
+
+Whether it's async.
+
+#### Inherited from
+
+[`BaseValidation`](BaseValidation.md).[`async`](BaseValidation.md#async)
+
+***
+
+### expects
+
+> `readonly` **expects**: `` `<=${TRequirement}` ``
+
+Defined in: node\_modules/valibot/dist/index.d.mts:11646
+
+The expected property.
+
+#### Overrides
+
+[`BaseValidation`](BaseValidation.md).[`expects`](BaseValidation.md#expects)
+
+***
+
+### kind
+
+> `readonly` **kind**: `"validation"`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:3231
+
+The object kind.
+
+#### Inherited from
+
+[`BaseValidation`](BaseValidation.md).[`kind`](BaseValidation.md#kind)
+
+***
+
+### message
+
+> `readonly` **message**: `TMessage`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:11654
+
+The error message.
+
+***
+
+### reference
+
+> `readonly` **reference**: \{\<`TInput$1`, `TRequirement`\>(`requirement`): `MaxCodePointsAction`\<`TInput$1`, `TRequirement`, `undefined`\>; \<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): `MaxCodePointsAction`\<`TInput$1`, `TRequirement`, `TMessage`\>; \}
+
+Defined in: node\_modules/valibot/dist/index.d.mts:11642
+
+The action reference.
+
+#### Call Signature
+
+> \<`TInput$1`, `TRequirement`\>(`requirement`): `MaxCodePointsAction`\<`TInput$1`, `TRequirement`, `undefined`\>
+
+Creates a max code points validation action.
+
+##### Type Parameters
+
+###### TInput$1
+
+`TInput$1` *extends* `string`
+
+###### TRequirement
+
+`TRequirement` *extends* `number`
+
+##### Parameters
+
+###### requirement
+
+`TRequirement`
+
+The maximum code points.
+
+##### Returns
+
+`MaxCodePointsAction`\<`TInput$1`, `TRequirement`, `undefined`\>
+
+A max code points action.
+
+#### Call Signature
+
+> \<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): `MaxCodePointsAction`\<`TInput$1`, `TRequirement`, `TMessage`\>
+
+Creates a max code points validation action.
+
+##### Type Parameters
+
+###### TInput$1
+
+`TInput$1` *extends* `string`
+
+###### TRequirement
+
+`TRequirement` *extends* `number`
+
+###### TMessage
+
+`TMessage` *extends* [`ErrorMessage`](../type-aliases/ErrorMessage.md)\<[`MaxCodePointsIssue`](MaxCodePointsIssue.md)\<`TInput$1`, `TRequirement`\>\> \| `undefined`
+
+##### Parameters
+
+###### requirement
+
+`TRequirement`
+
+The maximum code points.
+
+###### message
+
+`TMessage`
+
+The error message.
+
+##### Returns
+
+`MaxCodePointsAction`\<`TInput$1`, `TRequirement`, `TMessage`\>
+
+A max code points action.
+
+#### Overrides
+
+[`BaseValidation`](BaseValidation.md).[`reference`](BaseValidation.md#reference)
+
+***
+
+### requirement
+
+> `readonly` **requirement**: `TRequirement`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:11650
+
+The maximum code points.
+
+***
+
+### type
+
+> `readonly` **type**: `"max_code_points"`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:11638
+
+The action type.
+
+#### Overrides
+
+[`BaseValidation`](BaseValidation.md).[`type`](BaseValidation.md#type)
+
+lib/core/namespaces/v/interfaces/MaxCodePointsIssue.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../../../index.md) / [lib/core](../../../index.md) / [v](../index.md) / MaxCodePointsIssue
+
+# Interface: MaxCodePointsIssue\<TInput$1, TRequirement\>
+
+Defined in: node\_modules/valibot/dist/index.d.mts:11609
+
+Max code points issue interface.
+
+## Extends
+
+- [`BaseIssue`](BaseIssue.md)\<`TInput$1`\>
+
+## Type Parameters
+
+### TInput$1
+
+`TInput$1` *extends* `string`
+
+### TRequirement
+
+`TRequirement` *extends* `number`
+
+## Properties
+
+### abortEarly?
+
+> `readonly` `optional` **abortEarly?**: `boolean`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:3717
+
+Whether it should be aborted early.
+
+#### Inherited from
+
+[`BaseIssue`](BaseIssue.md).[`abortEarly`](BaseIssue.md#abortearly)
+
+***
+
+### abortPipeEarly?
+
+> `readonly` `optional` **abortPipeEarly?**: `boolean`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:3721
+
+Whether a pipe should be aborted early.
+
+#### Inherited from
+
+[`BaseIssue`](BaseIssue.md).[`abortPipeEarly`](BaseIssue.md#abortpipeearly)
+
+***
+
+### expected
+
+> `readonly` **expected**: `` `<=${TRequirement}` ``
+
+Defined in: node\_modules/valibot/dist/index.d.mts:11621
+
+The expected property.
+
+#### Overrides
+
+[`BaseIssue`](BaseIssue.md).[`expected`](BaseIssue.md#expected)
+
+***
+
+### input
+
+> `readonly` **input**: `TInput$1`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:3650
+
+The raw input data.
+
+#### Inherited from
+
+[`BaseIssue`](BaseIssue.md).[`input`](BaseIssue.md#input)
+
+***
+
+### issues?
+
+> `readonly` `optional` **issues?**: \[[`BaseIssue`](BaseIssue.md)\<`TInput$1`\>, `...BaseIssue<TInput$1>[]`\]
+
+Defined in: node\_modules/valibot/dist/index.d.mts:3674
+
+The sub issues.
+
+#### Inherited from
+
+[`BaseIssue`](BaseIssue.md).[`issues`](BaseIssue.md#issues)
+
+***
+
+### kind
+
+> `readonly` **kind**: `"validation"`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:11613
+
+The issue kind.
+
+#### Overrides
+
+[`BaseIssue`](BaseIssue.md).[`kind`](BaseIssue.md#kind)
+
+***
+
+### lang?
+
+> `readonly` `optional` **lang?**: `string`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:3709
+
+The selected language.
+
+#### Inherited from
+
+[`BaseIssue`](BaseIssue.md).[`lang`](BaseIssue.md#lang)
+
+***
+
+### message
+
+> `readonly` **message**: `string`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:3662
+
+The error message.
+
+#### Inherited from
+
+[`BaseIssue`](BaseIssue.md).[`message`](BaseIssue.md#message)
+
+***
+
+### path?
+
+> `readonly` `optional` **path?**: \[[`IssuePathItem`](../type-aliases/IssuePathItem.md), `...IssuePathItem[]`\]
+
+Defined in: node\_modules/valibot/dist/index.d.mts:3670
+
+The issue path.
+
+#### Inherited from
+
+[`BaseIssue`](BaseIssue.md).[`path`](BaseIssue.md#path)
+
+***
+
+### received
+
+> `readonly` **received**: `` `${number}` ``
+
+Defined in: node\_modules/valibot/dist/index.d.mts:11625
+
+The received property.
+
+#### Overrides
+
+[`BaseIssue`](BaseIssue.md).[`received`](BaseIssue.md#received)
+
+***
+
+### requirement
+
+> `readonly` **requirement**: `TRequirement`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:11629
+
+The maximum code points.
+
+#### Overrides
+
+[`BaseIssue`](BaseIssue.md).[`requirement`](BaseIssue.md#requirement)
+
+***
+
+### type
+
+> `readonly` **type**: `"max_code_points"`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:11617
 
 The issue type.
 
@@ -63641,7 +65522,7 @@ lib/core/namespaces/v/interfaces/MaxEntriesAction.md
 
 # Interface: MaxEntriesAction\<TInput$1, TRequirement, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11503
+Defined in: node\_modules/valibot/dist/index.d.mts:11707
 
 **`Beta`**
 
@@ -63751,7 +65632,7 @@ Whether it's async.
 
 > `readonly` **expects**: `` `<=${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11515
+Defined in: node\_modules/valibot/dist/index.d.mts:11719
 
 **`Beta`**
 
@@ -63783,7 +65664,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11523
+Defined in: node\_modules/valibot/dist/index.d.mts:11727
 
 **`Beta`**
 
@@ -63795,7 +65676,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`, `TRequirement`\>(`requirement`): `MaxEntriesAction`\<`TInput$1`, `TRequirement`, `undefined`\>; \<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): `MaxEntriesAction`\<`TInput$1`, `TRequirement`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11511
+Defined in: node\_modules/valibot/dist/index.d.mts:11715
 
 **`Beta`**
 
@@ -63885,7 +65766,7 @@ A max entries action.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11519
+Defined in: node\_modules/valibot/dist/index.d.mts:11723
 
 **`Beta`**
 
@@ -63897,7 +65778,7 @@ The maximum entries.
 
 > `readonly` **type**: `"max_entries"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11507
+Defined in: node\_modules/valibot/dist/index.d.mts:11711
 
 **`Beta`**
 
@@ -63918,7 +65799,7 @@ lib/core/namespaces/v/interfaces/MaxEntriesIssue.md
 
 # Interface: MaxEntriesIssue\<TInput$1, TRequirement\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11476
+Defined in: node\_modules/valibot/dist/index.d.mts:11680
 
 **`Beta`**
 
@@ -63976,7 +65857,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `` `<=${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11488
+Defined in: node\_modules/valibot/dist/index.d.mts:11692
 
 **`Beta`**
 
@@ -64024,7 +65905,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11480
+Defined in: node\_modules/valibot/dist/index.d.mts:11684
 
 **`Beta`**
 
@@ -64088,7 +65969,7 @@ The issue path.
 
 > `readonly` **received**: `` `${number}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11492
+Defined in: node\_modules/valibot/dist/index.d.mts:11696
 
 **`Beta`**
 
@@ -64104,7 +65985,7 @@ The received property.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11496
+Defined in: node\_modules/valibot/dist/index.d.mts:11700
 
 **`Beta`**
 
@@ -64120,7 +66001,7 @@ The maximum entries.
 
 > `readonly` **type**: `"max_entries"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11484
+Defined in: node\_modules/valibot/dist/index.d.mts:11688
 
 **`Beta`**
 
@@ -64141,7 +66022,7 @@ lib/core/namespaces/v/interfaces/MaxGraphemesAction.md
 
 # Interface: MaxGraphemesAction\<TInput$1, TRequirement, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11576
+Defined in: node\_modules/valibot/dist/index.d.mts:11780
 
 Max graphemes action interface.
 
@@ -64247,7 +66128,7 @@ Whether it's async.
 
 > `readonly` **expects**: `` `<=${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11588
+Defined in: node\_modules/valibot/dist/index.d.mts:11792
 
 The expected property.
 
@@ -64275,7 +66156,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11596
+Defined in: node\_modules/valibot/dist/index.d.mts:11800
 
 The error message.
 
@@ -64285,7 +66166,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`, `TRequirement`\>(`requirement`): `MaxGraphemesAction`\<`TInput$1`, `TRequirement`, `undefined`\>; \<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): `MaxGraphemesAction`\<`TInput$1`, `TRequirement`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11584
+Defined in: node\_modules/valibot/dist/index.d.mts:11788
 
 The action reference.
 
@@ -64369,7 +66250,7 @@ A max graphemes action.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11592
+Defined in: node\_modules/valibot/dist/index.d.mts:11796
 
 The maximum graphemes.
 
@@ -64379,7 +66260,7 @@ The maximum graphemes.
 
 > `readonly` **type**: `"max_graphemes"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11580
+Defined in: node\_modules/valibot/dist/index.d.mts:11784
 
 The action type.
 
@@ -64398,7 +66279,7 @@ lib/core/namespaces/v/interfaces/MaxGraphemesIssue.md
 
 # Interface: MaxGraphemesIssue\<TInput$1, TRequirement\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11551
+Defined in: node\_modules/valibot/dist/index.d.mts:11755
 
 Max graphemes issue interface.
 
@@ -64450,7 +66331,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `` `<=${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11563
+Defined in: node\_modules/valibot/dist/index.d.mts:11767
 
 The expected property.
 
@@ -64492,7 +66373,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11555
+Defined in: node\_modules/valibot/dist/index.d.mts:11759
 
 The issue kind.
 
@@ -64548,7 +66429,7 @@ The issue path.
 
 > `readonly` **received**: `` `${number}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11567
+Defined in: node\_modules/valibot/dist/index.d.mts:11771
 
 The received property.
 
@@ -64562,7 +66443,7 @@ The received property.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11571
+Defined in: node\_modules/valibot/dist/index.d.mts:11775
 
 The maximum graphemes.
 
@@ -64576,7 +66457,7 @@ The maximum graphemes.
 
 > `readonly` **type**: `"max_graphemes"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11559
+Defined in: node\_modules/valibot/dist/index.d.mts:11763
 
 The issue type.
 
@@ -64595,7 +66476,7 @@ lib/core/namespaces/v/interfaces/MaxLengthAction.md
 
 # Interface: MaxLengthAction\<TInput$1, TRequirement, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11645
+Defined in: node\_modules/valibot/dist/index.d.mts:11849
 
 Max length action interface.
 
@@ -64701,7 +66582,7 @@ Whether it's async.
 
 > `readonly` **expects**: `` `<=${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11657
+Defined in: node\_modules/valibot/dist/index.d.mts:11861
 
 The expected property.
 
@@ -64729,7 +66610,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11665
+Defined in: node\_modules/valibot/dist/index.d.mts:11869
 
 The error message.
 
@@ -64739,7 +66620,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`, `TRequirement`\>(`requirement`): `MaxLengthAction`\<`TInput$1`, `TRequirement`, `undefined`\>; \<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): `MaxLengthAction`\<`TInput$1`, `TRequirement`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11653
+Defined in: node\_modules/valibot/dist/index.d.mts:11857
 
 The action reference.
 
@@ -64823,7 +66704,7 @@ A max length action.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11661
+Defined in: node\_modules/valibot/dist/index.d.mts:11865
 
 The maximum length.
 
@@ -64833,7 +66714,7 @@ The maximum length.
 
 > `readonly` **type**: `"max_length"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11649
+Defined in: node\_modules/valibot/dist/index.d.mts:11853
 
 The action type.
 
@@ -64852,7 +66733,7 @@ lib/core/namespaces/v/interfaces/MaxLengthIssue.md
 
 # Interface: MaxLengthIssue\<TInput$1, TRequirement\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11620
+Defined in: node\_modules/valibot/dist/index.d.mts:11824
 
 Max length issue interface.
 
@@ -64904,7 +66785,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `` `<=${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11632
+Defined in: node\_modules/valibot/dist/index.d.mts:11836
 
 The expected property.
 
@@ -64946,7 +66827,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11624
+Defined in: node\_modules/valibot/dist/index.d.mts:11828
 
 The issue kind.
 
@@ -65002,7 +66883,7 @@ The issue path.
 
 > `readonly` **received**: `` `${number}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11636
+Defined in: node\_modules/valibot/dist/index.d.mts:11840
 
 The received property.
 
@@ -65016,7 +66897,7 @@ The received property.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11640
+Defined in: node\_modules/valibot/dist/index.d.mts:11844
 
 The maximum length.
 
@@ -65030,7 +66911,7 @@ The maximum length.
 
 > `readonly` **type**: `"max_length"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11628
+Defined in: node\_modules/valibot/dist/index.d.mts:11832
 
 The issue type.
 
@@ -65049,7 +66930,7 @@ lib/core/namespaces/v/interfaces/MaxSizeAction.md
 
 # Interface: MaxSizeAction\<TInput$1, TRequirement, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11714
+Defined in: node\_modules/valibot/dist/index.d.mts:11918
 
 Max size action interface.
 
@@ -65155,7 +67036,7 @@ Whether it's async.
 
 > `readonly` **expects**: `` `<=${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11726
+Defined in: node\_modules/valibot/dist/index.d.mts:11930
 
 The expected property.
 
@@ -65183,7 +67064,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11734
+Defined in: node\_modules/valibot/dist/index.d.mts:11938
 
 The error message.
 
@@ -65193,7 +67074,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`, `TRequirement`\>(`requirement`): `MaxSizeAction`\<`TInput$1`, `TRequirement`, `undefined`\>; \<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): `MaxSizeAction`\<`TInput$1`, `TRequirement`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11722
+Defined in: node\_modules/valibot/dist/index.d.mts:11926
 
 The action reference.
 
@@ -65277,7 +67158,7 @@ A max size action.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11730
+Defined in: node\_modules/valibot/dist/index.d.mts:11934
 
 The maximum size.
 
@@ -65287,7 +67168,7 @@ The maximum size.
 
 > `readonly` **type**: `"max_size"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11718
+Defined in: node\_modules/valibot/dist/index.d.mts:11922
 
 The action type.
 
@@ -65306,7 +67187,7 @@ lib/core/namespaces/v/interfaces/MaxSizeIssue.md
 
 # Interface: MaxSizeIssue\<TInput$1, TRequirement\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11689
+Defined in: node\_modules/valibot/dist/index.d.mts:11893
 
 Max size issue interface.
 
@@ -65358,7 +67239,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `` `<=${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11701
+Defined in: node\_modules/valibot/dist/index.d.mts:11905
 
 The expected property.
 
@@ -65400,7 +67281,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11693
+Defined in: node\_modules/valibot/dist/index.d.mts:11897
 
 The issue kind.
 
@@ -65456,7 +67337,7 @@ The issue path.
 
 > `readonly` **received**: `` `${number}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11705
+Defined in: node\_modules/valibot/dist/index.d.mts:11909
 
 The received property.
 
@@ -65470,7 +67351,7 @@ The received property.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11709
+Defined in: node\_modules/valibot/dist/index.d.mts:11913
 
 The maximum size.
 
@@ -65484,7 +67365,7 @@ The maximum size.
 
 > `readonly` **type**: `"max_size"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11697
+Defined in: node\_modules/valibot/dist/index.d.mts:11901
 
 The issue type.
 
@@ -65503,7 +67384,7 @@ lib/core/namespaces/v/interfaces/MaxValueAction.md
 
 # Interface: MaxValueAction\<TInput$1, TRequirement, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11779
+Defined in: node\_modules/valibot/dist/index.d.mts:11983
 
 Max value action interface.
 
@@ -65609,7 +67490,7 @@ Whether it's async.
 
 > `readonly` **expects**: `` `<=${string}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11791
+Defined in: node\_modules/valibot/dist/index.d.mts:11995
 
 The expected property.
 
@@ -65637,7 +67518,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11799
+Defined in: node\_modules/valibot/dist/index.d.mts:12003
 
 The error message.
 
@@ -65647,7 +67528,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`, `TRequirement`\>(`requirement`): `MaxValueAction`\<`TInput$1`, `TRequirement`, `undefined`\>; \<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): `MaxValueAction`\<`TInput$1`, `TRequirement`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11787
+Defined in: node\_modules/valibot/dist/index.d.mts:11991
 
 The action reference.
 
@@ -65731,7 +67612,7 @@ A max value action.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11795
+Defined in: node\_modules/valibot/dist/index.d.mts:11999
 
 The maximum value.
 
@@ -65741,7 +67622,7 @@ The maximum value.
 
 > `readonly` **type**: `"max_value"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11783
+Defined in: node\_modules/valibot/dist/index.d.mts:11987
 
 The action type.
 
@@ -65760,7 +67641,7 @@ lib/core/namespaces/v/interfaces/MaxValueIssue.md
 
 # Interface: MaxValueIssue\<TInput$1, TRequirement\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11758
+Defined in: node\_modules/valibot/dist/index.d.mts:11962
 
 Max value issue interface.
 
@@ -65812,7 +67693,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `` `<=${string}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11770
+Defined in: node\_modules/valibot/dist/index.d.mts:11974
 
 The expected property.
 
@@ -65854,7 +67735,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11762
+Defined in: node\_modules/valibot/dist/index.d.mts:11966
 
 The issue kind.
 
@@ -65924,7 +67805,7 @@ The received property.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11774
+Defined in: node\_modules/valibot/dist/index.d.mts:11978
 
 The maximum value.
 
@@ -65938,7 +67819,7 @@ The maximum value.
 
 > `readonly` **type**: `"max_value"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11766
+Defined in: node\_modules/valibot/dist/index.d.mts:11970
 
 The issue type.
 
@@ -65957,7 +67838,7 @@ lib/core/namespaces/v/interfaces/MaxWordsAction.md
 
 # Interface: MaxWordsAction\<TInput$1, TLocales, TRequirement, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11848
+Defined in: node\_modules/valibot/dist/index.d.mts:12052
 
 Max words action interface.
 
@@ -66067,7 +67948,7 @@ Whether it's async.
 
 > `readonly` **expects**: `` `<=${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11860
+Defined in: node\_modules/valibot/dist/index.d.mts:12064
 
 The expected property.
 
@@ -66095,7 +67976,7 @@ The object kind.
 
 > `readonly` **locales**: `TLocales`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11864
+Defined in: node\_modules/valibot/dist/index.d.mts:12068
 
 The locales to be used.
 
@@ -66105,7 +67986,7 @@ The locales to be used.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11872
+Defined in: node\_modules/valibot/dist/index.d.mts:12076
 
 The error message.
 
@@ -66115,7 +67996,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`, `TLocales`, `TRequirement`\>(`locales`, `requirement`): `MaxWordsAction`\<`TInput$1`, `TLocales`, `TRequirement`, `undefined`\>; \<`TInput$1`, `TLocales`, `TRequirement`, `TMessage`\>(`locales`, `requirement`, `message`): `MaxWordsAction`\<`TInput$1`, `TLocales`, `TRequirement`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11856
+Defined in: node\_modules/valibot/dist/index.d.mts:12060
 
 The action reference.
 
@@ -66219,7 +68100,7 @@ A max words action.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11868
+Defined in: node\_modules/valibot/dist/index.d.mts:12072
 
 The maximum words.
 
@@ -66229,7 +68110,7 @@ The maximum words.
 
 > `readonly` **type**: `"max_words"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11852
+Defined in: node\_modules/valibot/dist/index.d.mts:12056
 
 The action type.
 
@@ -66248,7 +68129,7 @@ lib/core/namespaces/v/interfaces/MaxWordsIssue.md
 
 # Interface: MaxWordsIssue\<TInput$1, TRequirement\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11823
+Defined in: node\_modules/valibot/dist/index.d.mts:12027
 
 Max words issue interface.
 
@@ -66300,7 +68181,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `` `<=${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11835
+Defined in: node\_modules/valibot/dist/index.d.mts:12039
 
 The expected property.
 
@@ -66342,7 +68223,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11827
+Defined in: node\_modules/valibot/dist/index.d.mts:12031
 
 The issue kind.
 
@@ -66398,7 +68279,7 @@ The issue path.
 
 > `readonly` **received**: `` `${number}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11839
+Defined in: node\_modules/valibot/dist/index.d.mts:12043
 
 The received property.
 
@@ -66412,7 +68293,7 @@ The received property.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11843
+Defined in: node\_modules/valibot/dist/index.d.mts:12047
 
 The maximum words.
 
@@ -66426,7 +68307,7 @@ The maximum words.
 
 > `readonly` **type**: `"max_words"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11831
+Defined in: node\_modules/valibot/dist/index.d.mts:12035
 
 The issue type.
 
@@ -66445,7 +68326,7 @@ lib/core/namespaces/v/interfaces/MetadataAction.md
 
 # Interface: MetadataAction\<TInput$1, TMetadata\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11898
+Defined in: node\_modules/valibot/dist/index.d.mts:12102
 
 Metadata action interface.
 
@@ -66511,7 +68392,7 @@ The object kind.
 
 > `readonly` **metadata**: `TMetadata`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11910
+Defined in: node\_modules/valibot/dist/index.d.mts:12114
 
 The metadata object.
 
@@ -66521,7 +68402,7 @@ The metadata object.
 
 > `readonly` **reference**: \<`TInput$1`, `TMetadata`\>(`metadata_`) => `MetadataAction`\<`TInput$1`, `TMetadata`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11906
+Defined in: node\_modules/valibot/dist/index.d.mts:12110
 
 The action reference.
 
@@ -66561,7 +68442,7 @@ A metadata action.
 
 > `readonly` **type**: `"metadata"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11902
+Defined in: node\_modules/valibot/dist/index.d.mts:12106
 
 The action type.
 
@@ -66580,7 +68461,7 @@ lib/core/namespaces/v/interfaces/MimeTypeAction.md
 
 # Interface: MimeTypeAction\<TInput$1, TRequirement, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11954
+Defined in: node\_modules/valibot/dist/index.d.mts:12158
 
 MIME type action interface.
 
@@ -66686,7 +68567,7 @@ Whether it's async.
 
 > `readonly` **expects**: `string`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11966
+Defined in: node\_modules/valibot/dist/index.d.mts:12170
 
 The expected property.
 
@@ -66714,7 +68595,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11974
+Defined in: node\_modules/valibot/dist/index.d.mts:12178
 
 The error message.
 
@@ -66724,7 +68605,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`, `TRequirement`\>(`requirement`): `MimeTypeAction`\<`TInput$1`, `TRequirement`, `undefined`\>; \<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): `MimeTypeAction`\<`TInput$1`, `TRequirement`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11962
+Defined in: node\_modules/valibot/dist/index.d.mts:12166
 
 The action reference.
 
@@ -66808,7 +68689,7 @@ A MIME type action.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11970
+Defined in: node\_modules/valibot/dist/index.d.mts:12174
 
 The MIME types.
 
@@ -66818,7 +68699,7 @@ The MIME types.
 
 > `readonly` **type**: `"mime_type"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11958
+Defined in: node\_modules/valibot/dist/index.d.mts:12162
 
 The action type.
 
@@ -66837,7 +68718,7 @@ lib/core/namespaces/v/interfaces/MimeTypeIssue.md
 
 # Interface: MimeTypeIssue\<TInput$1, TRequirement\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11929
+Defined in: node\_modules/valibot/dist/index.d.mts:12133
 
 MIME type issue interface.
 
@@ -66889,7 +68770,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `string`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11941
+Defined in: node\_modules/valibot/dist/index.d.mts:12145
 
 The expected input.
 
@@ -66931,7 +68812,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11933
+Defined in: node\_modules/valibot/dist/index.d.mts:12137
 
 The issue kind.
 
@@ -66987,7 +68868,7 @@ The issue path.
 
 > `readonly` **received**: `` `"${string}"` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11945
+Defined in: node\_modules/valibot/dist/index.d.mts:12149
 
 The received input.
 
@@ -67001,7 +68882,7 @@ The received input.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11949
+Defined in: node\_modules/valibot/dist/index.d.mts:12153
 
 The MIME types.
 
@@ -67015,7 +68896,7 @@ The MIME types.
 
 > `readonly` **type**: `"mime_type"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11937
+Defined in: node\_modules/valibot/dist/index.d.mts:12141
 
 The issue type.
 
@@ -67034,7 +68915,7 @@ lib/core/namespaces/v/interfaces/MinBytesAction.md
 
 # Interface: MinBytesAction\<TInput$1, TRequirement, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12023
+Defined in: node\_modules/valibot/dist/index.d.mts:12227
 
 Min bytes action interface.
 
@@ -67140,7 +69021,7 @@ Whether it's async.
 
 > `readonly` **expects**: `` `>=${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12035
+Defined in: node\_modules/valibot/dist/index.d.mts:12239
 
 The expected property.
 
@@ -67168,7 +69049,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12043
+Defined in: node\_modules/valibot/dist/index.d.mts:12247
 
 The error message.
 
@@ -67178,7 +69059,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`, `TRequirement`\>(`requirement`): `MinBytesAction`\<`TInput$1`, `TRequirement`, `undefined`\>; \<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): `MinBytesAction`\<`TInput$1`, `TRequirement`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12031
+Defined in: node\_modules/valibot/dist/index.d.mts:12235
 
 The action reference.
 
@@ -67262,7 +69143,7 @@ A min bytes action.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12039
+Defined in: node\_modules/valibot/dist/index.d.mts:12243
 
 The minimum bytes.
 
@@ -67272,7 +69153,7 @@ The minimum bytes.
 
 > `readonly` **type**: `"min_bytes"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12027
+Defined in: node\_modules/valibot/dist/index.d.mts:12231
 
 The action type.
 
@@ -67291,7 +69172,7 @@ lib/core/namespaces/v/interfaces/MinBytesIssue.md
 
 # Interface: MinBytesIssue\<TInput$1, TRequirement\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11998
+Defined in: node\_modules/valibot/dist/index.d.mts:12202
 
 Min bytes issue interface.
 
@@ -67343,7 +69224,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `` `>=${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12010
+Defined in: node\_modules/valibot/dist/index.d.mts:12214
 
 The expected property.
 
@@ -67385,7 +69266,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12002
+Defined in: node\_modules/valibot/dist/index.d.mts:12206
 
 The issue kind.
 
@@ -67441,7 +69322,7 @@ The issue path.
 
 > `readonly` **received**: `` `${number}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12014
+Defined in: node\_modules/valibot/dist/index.d.mts:12218
 
 The received property.
 
@@ -67455,7 +69336,7 @@ The received property.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12018
+Defined in: node\_modules/valibot/dist/index.d.mts:12222
 
 The minimum bytes.
 
@@ -67469,7 +69350,461 @@ The minimum bytes.
 
 > `readonly` **type**: `"min_bytes"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12006
+Defined in: node\_modules/valibot/dist/index.d.mts:12210
+
+The issue type.
+
+#### Overrides
+
+[`BaseIssue`](BaseIssue.md).[`type`](BaseIssue.md#type)
+
+lib/core/namespaces/v/interfaces/MinCodePointsAction.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../../../index.md) / [lib/core](../../../index.md) / [v](../index.md) / MinCodePointsAction
+
+# Interface: MinCodePointsAction\<TInput$1, TRequirement, TMessage\>
+
+Defined in: node\_modules/valibot/dist/index.d.mts:12296
+
+Min code points action interface.
+
+## Extends
+
+- [`BaseValidation`](BaseValidation.md)\<`TInput$1`, `TInput$1`, [`MinCodePointsIssue`](MinCodePointsIssue.md)\<`TInput$1`, `TRequirement`\>\>
+
+## Type Parameters
+
+### TInput$1
+
+`TInput$1` *extends* `string`
+
+### TRequirement
+
+`TRequirement` *extends* `number`
+
+### TMessage
+
+`TMessage` *extends* [`ErrorMessage`](../type-aliases/ErrorMessage.md)\<[`MinCodePointsIssue`](MinCodePointsIssue.md)\<`TInput$1`, `TRequirement`\>\> \| `undefined`
+
+## Properties
+
+### ~run
+
+> `readonly` **~run**: (`dataset`, `config`) => [`OutputDataset`](../type-aliases/OutputDataset.md)\<`TInput$1`, [`BaseIssue`](BaseIssue.md)\<`unknown`\> \| [`MinCodePointsIssue`](MinCodePointsIssue.md)\<`TInput$1`, `TRequirement`\>\>
+
+Defined in: node\_modules/valibot/dist/index.d.mts:3258
+
+**`Internal`**
+
+Validates known input values.
+
+#### Parameters
+
+##### dataset
+
+[`OutputDataset`](../type-aliases/OutputDataset.md)\<`TInput$1`, [`BaseIssue`](BaseIssue.md)\<`unknown`\>\>
+
+The input dataset.
+
+##### config
+
+[`Config`](Config.md)\<[`BaseIssue`](BaseIssue.md)\<`unknown`\>\>
+
+The configuration.
+
+#### Returns
+
+[`OutputDataset`](../type-aliases/OutputDataset.md)\<`TInput$1`, [`BaseIssue`](BaseIssue.md)\<`unknown`\> \| [`MinCodePointsIssue`](MinCodePointsIssue.md)\<`TInput$1`, `TRequirement`\>\>
+
+The output dataset.
+
+#### Inherited from
+
+[`BaseValidation`](BaseValidation.md).[`~run`](BaseValidation.md#run)
+
+***
+
+### ~types?
+
+> `readonly` `optional` **~types?**: `object`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:3264
+
+**`Internal`**
+
+The input, output and issue type.
+
+#### input
+
+> `readonly` **input**: `TInput$1`
+
+#### issue
+
+> `readonly` **issue**: [`MinCodePointsIssue`](MinCodePointsIssue.md)
+
+#### output
+
+> `readonly` **output**: `TInput$1`
+
+#### Inherited from
+
+[`BaseValidation`](BaseValidation.md).[`~types`](BaseValidation.md#types)
+
+***
+
+### async
+
+> `readonly` **async**: `false`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:3247
+
+Whether it's async.
+
+#### Inherited from
+
+[`BaseValidation`](BaseValidation.md).[`async`](BaseValidation.md#async)
+
+***
+
+### expects
+
+> `readonly` **expects**: `` `>=${TRequirement}` ``
+
+Defined in: node\_modules/valibot/dist/index.d.mts:12308
+
+The expected property.
+
+#### Overrides
+
+[`BaseValidation`](BaseValidation.md).[`expects`](BaseValidation.md#expects)
+
+***
+
+### kind
+
+> `readonly` **kind**: `"validation"`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:3231
+
+The object kind.
+
+#### Inherited from
+
+[`BaseValidation`](BaseValidation.md).[`kind`](BaseValidation.md#kind)
+
+***
+
+### message
+
+> `readonly` **message**: `TMessage`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:12316
+
+The error message.
+
+***
+
+### reference
+
+> `readonly` **reference**: \{\<`TInput$1`, `TRequirement`\>(`requirement`): `MinCodePointsAction`\<`TInput$1`, `TRequirement`, `undefined`\>; \<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): `MinCodePointsAction`\<`TInput$1`, `TRequirement`, `TMessage`\>; \}
+
+Defined in: node\_modules/valibot/dist/index.d.mts:12304
+
+The action reference.
+
+#### Call Signature
+
+> \<`TInput$1`, `TRequirement`\>(`requirement`): `MinCodePointsAction`\<`TInput$1`, `TRequirement`, `undefined`\>
+
+Creates a min code points validation action.
+
+##### Type Parameters
+
+###### TInput$1
+
+`TInput$1` *extends* `string`
+
+###### TRequirement
+
+`TRequirement` *extends* `number`
+
+##### Parameters
+
+###### requirement
+
+`TRequirement`
+
+The minimum code points.
+
+##### Returns
+
+`MinCodePointsAction`\<`TInput$1`, `TRequirement`, `undefined`\>
+
+A min code points action.
+
+#### Call Signature
+
+> \<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): `MinCodePointsAction`\<`TInput$1`, `TRequirement`, `TMessage`\>
+
+Creates a min code points validation action.
+
+##### Type Parameters
+
+###### TInput$1
+
+`TInput$1` *extends* `string`
+
+###### TRequirement
+
+`TRequirement` *extends* `number`
+
+###### TMessage
+
+`TMessage` *extends* [`ErrorMessage`](../type-aliases/ErrorMessage.md)\<[`MinCodePointsIssue`](MinCodePointsIssue.md)\<`TInput$1`, `TRequirement`\>\> \| `undefined`
+
+##### Parameters
+
+###### requirement
+
+`TRequirement`
+
+The minimum code points.
+
+###### message
+
+`TMessage`
+
+The error message.
+
+##### Returns
+
+`MinCodePointsAction`\<`TInput$1`, `TRequirement`, `TMessage`\>
+
+A min code points action.
+
+#### Overrides
+
+[`BaseValidation`](BaseValidation.md).[`reference`](BaseValidation.md#reference)
+
+***
+
+### requirement
+
+> `readonly` **requirement**: `TRequirement`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:12312
+
+The minimum code points.
+
+***
+
+### type
+
+> `readonly` **type**: `"min_code_points"`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:12300
+
+The action type.
+
+#### Overrides
+
+[`BaseValidation`](BaseValidation.md).[`type`](BaseValidation.md#type)
+
+lib/core/namespaces/v/interfaces/MinCodePointsIssue.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../../../index.md) / [lib/core](../../../index.md) / [v](../index.md) / MinCodePointsIssue
+
+# Interface: MinCodePointsIssue\<TInput$1, TRequirement\>
+
+Defined in: node\_modules/valibot/dist/index.d.mts:12271
+
+Min code points issue interface.
+
+## Extends
+
+- [`BaseIssue`](BaseIssue.md)\<`TInput$1`\>
+
+## Type Parameters
+
+### TInput$1
+
+`TInput$1` *extends* `string`
+
+### TRequirement
+
+`TRequirement` *extends* `number`
+
+## Properties
+
+### abortEarly?
+
+> `readonly` `optional` **abortEarly?**: `boolean`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:3717
+
+Whether it should be aborted early.
+
+#### Inherited from
+
+[`BaseIssue`](BaseIssue.md).[`abortEarly`](BaseIssue.md#abortearly)
+
+***
+
+### abortPipeEarly?
+
+> `readonly` `optional` **abortPipeEarly?**: `boolean`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:3721
+
+Whether a pipe should be aborted early.
+
+#### Inherited from
+
+[`BaseIssue`](BaseIssue.md).[`abortPipeEarly`](BaseIssue.md#abortpipeearly)
+
+***
+
+### expected
+
+> `readonly` **expected**: `` `>=${TRequirement}` ``
+
+Defined in: node\_modules/valibot/dist/index.d.mts:12283
+
+The expected property.
+
+#### Overrides
+
+[`BaseIssue`](BaseIssue.md).[`expected`](BaseIssue.md#expected)
+
+***
+
+### input
+
+> `readonly` **input**: `TInput$1`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:3650
+
+The raw input data.
+
+#### Inherited from
+
+[`BaseIssue`](BaseIssue.md).[`input`](BaseIssue.md#input)
+
+***
+
+### issues?
+
+> `readonly` `optional` **issues?**: \[[`BaseIssue`](BaseIssue.md)\<`TInput$1`\>, `...BaseIssue<TInput$1>[]`\]
+
+Defined in: node\_modules/valibot/dist/index.d.mts:3674
+
+The sub issues.
+
+#### Inherited from
+
+[`BaseIssue`](BaseIssue.md).[`issues`](BaseIssue.md#issues)
+
+***
+
+### kind
+
+> `readonly` **kind**: `"validation"`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:12275
+
+The issue kind.
+
+#### Overrides
+
+[`BaseIssue`](BaseIssue.md).[`kind`](BaseIssue.md#kind)
+
+***
+
+### lang?
+
+> `readonly` `optional` **lang?**: `string`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:3709
+
+The selected language.
+
+#### Inherited from
+
+[`BaseIssue`](BaseIssue.md).[`lang`](BaseIssue.md#lang)
+
+***
+
+### message
+
+> `readonly` **message**: `string`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:3662
+
+The error message.
+
+#### Inherited from
+
+[`BaseIssue`](BaseIssue.md).[`message`](BaseIssue.md#message)
+
+***
+
+### path?
+
+> `readonly` `optional` **path?**: \[[`IssuePathItem`](../type-aliases/IssuePathItem.md), `...IssuePathItem[]`\]
+
+Defined in: node\_modules/valibot/dist/index.d.mts:3670
+
+The issue path.
+
+#### Inherited from
+
+[`BaseIssue`](BaseIssue.md).[`path`](BaseIssue.md#path)
+
+***
+
+### received
+
+> `readonly` **received**: `` `${number}` ``
+
+Defined in: node\_modules/valibot/dist/index.d.mts:12287
+
+The received property.
+
+#### Overrides
+
+[`BaseIssue`](BaseIssue.md).[`received`](BaseIssue.md#received)
+
+***
+
+### requirement
+
+> `readonly` **requirement**: `TRequirement`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:12291
+
+The minimum code points.
+
+#### Overrides
+
+[`BaseIssue`](BaseIssue.md).[`requirement`](BaseIssue.md#requirement)
+
+***
+
+### type
+
+> `readonly` **type**: `"min_code_points"`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:12279
 
 The issue type.
 
@@ -67488,7 +69823,7 @@ lib/core/namespaces/v/interfaces/MinEntriesAction.md
 
 # Interface: MinEntriesAction\<TInput$1, TRequirement, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12096
+Defined in: node\_modules/valibot/dist/index.d.mts:12369
 
 **`Beta`**
 
@@ -67598,7 +69933,7 @@ Whether it's async.
 
 > `readonly` **expects**: `` `>=${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12108
+Defined in: node\_modules/valibot/dist/index.d.mts:12381
 
 **`Beta`**
 
@@ -67630,7 +69965,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12116
+Defined in: node\_modules/valibot/dist/index.d.mts:12389
 
 **`Beta`**
 
@@ -67642,7 +69977,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`, `TRequirement`\>(`requirement`): `MinEntriesAction`\<`TInput$1`, `TRequirement`, `undefined`\>; \<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): `MinEntriesAction`\<`TInput$1`, `TRequirement`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12104
+Defined in: node\_modules/valibot/dist/index.d.mts:12377
 
 **`Beta`**
 
@@ -67732,7 +70067,7 @@ A min entries action.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12112
+Defined in: node\_modules/valibot/dist/index.d.mts:12385
 
 **`Beta`**
 
@@ -67744,7 +70079,7 @@ The minimum entries.
 
 > `readonly` **type**: `"min_entries"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12100
+Defined in: node\_modules/valibot/dist/index.d.mts:12373
 
 **`Beta`**
 
@@ -67765,7 +70100,7 @@ lib/core/namespaces/v/interfaces/MinEntriesIssue.md
 
 # Interface: MinEntriesIssue\<TInput$1, TRequirement\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12069
+Defined in: node\_modules/valibot/dist/index.d.mts:12342
 
 **`Beta`**
 
@@ -67823,7 +70158,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `` `>=${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12081
+Defined in: node\_modules/valibot/dist/index.d.mts:12354
 
 **`Beta`**
 
@@ -67871,7 +70206,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12073
+Defined in: node\_modules/valibot/dist/index.d.mts:12346
 
 **`Beta`**
 
@@ -67935,7 +70270,7 @@ The issue path.
 
 > `readonly` **received**: `` `${number}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12085
+Defined in: node\_modules/valibot/dist/index.d.mts:12358
 
 **`Beta`**
 
@@ -67951,7 +70286,7 @@ The received property.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12089
+Defined in: node\_modules/valibot/dist/index.d.mts:12362
 
 **`Beta`**
 
@@ -67967,7 +70302,7 @@ The minimum entries.
 
 > `readonly` **type**: `"min_entries"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12077
+Defined in: node\_modules/valibot/dist/index.d.mts:12350
 
 **`Beta`**
 
@@ -67988,7 +70323,7 @@ lib/core/namespaces/v/interfaces/MinGraphemesAction.md
 
 # Interface: MinGraphemesAction\<TInput$1, TRequirement, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12169
+Defined in: node\_modules/valibot/dist/index.d.mts:12442
 
 Min graphemes action interface.
 
@@ -68094,7 +70429,7 @@ Whether it's async.
 
 > `readonly` **expects**: `` `>=${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12181
+Defined in: node\_modules/valibot/dist/index.d.mts:12454
 
 The expected property.
 
@@ -68122,7 +70457,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12189
+Defined in: node\_modules/valibot/dist/index.d.mts:12462
 
 The error message.
 
@@ -68132,7 +70467,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`, `TRequirement`\>(`requirement`): `MinGraphemesAction`\<`TInput$1`, `TRequirement`, `undefined`\>; \<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): `MinGraphemesAction`\<`TInput$1`, `TRequirement`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12177
+Defined in: node\_modules/valibot/dist/index.d.mts:12450
 
 The action reference.
 
@@ -68216,7 +70551,7 @@ A min graphemes action.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12185
+Defined in: node\_modules/valibot/dist/index.d.mts:12458
 
 The minimum graphemes.
 
@@ -68226,7 +70561,7 @@ The minimum graphemes.
 
 > `readonly` **type**: `"min_graphemes"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12173
+Defined in: node\_modules/valibot/dist/index.d.mts:12446
 
 The action type.
 
@@ -68245,7 +70580,7 @@ lib/core/namespaces/v/interfaces/MinGraphemesIssue.md
 
 # Interface: MinGraphemesIssue\<TInput$1, TRequirement\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12144
+Defined in: node\_modules/valibot/dist/index.d.mts:12417
 
 Min graphemes issue interface.
 
@@ -68297,7 +70632,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `` `>=${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12156
+Defined in: node\_modules/valibot/dist/index.d.mts:12429
 
 The expected property.
 
@@ -68339,7 +70674,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12148
+Defined in: node\_modules/valibot/dist/index.d.mts:12421
 
 The issue kind.
 
@@ -68395,7 +70730,7 @@ The issue path.
 
 > `readonly` **received**: `` `${number}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12160
+Defined in: node\_modules/valibot/dist/index.d.mts:12433
 
 The received property.
 
@@ -68409,7 +70744,7 @@ The received property.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12164
+Defined in: node\_modules/valibot/dist/index.d.mts:12437
 
 The minimum graphemes.
 
@@ -68423,7 +70758,7 @@ The minimum graphemes.
 
 > `readonly` **type**: `"min_graphemes"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12152
+Defined in: node\_modules/valibot/dist/index.d.mts:12425
 
 The issue type.
 
@@ -68442,7 +70777,7 @@ lib/core/namespaces/v/interfaces/MinLengthAction.md
 
 # Interface: MinLengthAction\<TInput$1, TRequirement, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12238
+Defined in: node\_modules/valibot/dist/index.d.mts:12511
 
 Min length action interface.
 
@@ -68548,7 +70883,7 @@ Whether it's async.
 
 > `readonly` **expects**: `` `>=${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12250
+Defined in: node\_modules/valibot/dist/index.d.mts:12523
 
 The expected property.
 
@@ -68576,7 +70911,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12258
+Defined in: node\_modules/valibot/dist/index.d.mts:12531
 
 The error message.
 
@@ -68586,7 +70921,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`, `TRequirement`\>(`requirement`): `MinLengthAction`\<`TInput$1`, `TRequirement`, `undefined`\>; \<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): `MinLengthAction`\<`TInput$1`, `TRequirement`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12246
+Defined in: node\_modules/valibot/dist/index.d.mts:12519
 
 The action reference.
 
@@ -68670,7 +71005,7 @@ A min length action.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12254
+Defined in: node\_modules/valibot/dist/index.d.mts:12527
 
 The minimum length.
 
@@ -68680,7 +71015,7 @@ The minimum length.
 
 > `readonly` **type**: `"min_length"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12242
+Defined in: node\_modules/valibot/dist/index.d.mts:12515
 
 The action type.
 
@@ -68699,7 +71034,7 @@ lib/core/namespaces/v/interfaces/MinLengthIssue.md
 
 # Interface: MinLengthIssue\<TInput$1, TRequirement\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12213
+Defined in: node\_modules/valibot/dist/index.d.mts:12486
 
 Min length issue interface.
 
@@ -68751,7 +71086,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `` `>=${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12225
+Defined in: node\_modules/valibot/dist/index.d.mts:12498
 
 The expected property.
 
@@ -68793,7 +71128,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12217
+Defined in: node\_modules/valibot/dist/index.d.mts:12490
 
 The issue kind.
 
@@ -68849,7 +71184,7 @@ The issue path.
 
 > `readonly` **received**: `` `${number}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12229
+Defined in: node\_modules/valibot/dist/index.d.mts:12502
 
 The received property.
 
@@ -68863,7 +71198,7 @@ The received property.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12233
+Defined in: node\_modules/valibot/dist/index.d.mts:12506
 
 The minimum length.
 
@@ -68877,7 +71212,7 @@ The minimum length.
 
 > `readonly` **type**: `"min_length"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12221
+Defined in: node\_modules/valibot/dist/index.d.mts:12494
 
 The issue type.
 
@@ -68896,7 +71231,7 @@ lib/core/namespaces/v/interfaces/MinSizeAction.md
 
 # Interface: MinSizeAction\<TInput$1, TRequirement, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12307
+Defined in: node\_modules/valibot/dist/index.d.mts:12580
 
 Min size action interface.
 
@@ -69002,7 +71337,7 @@ Whether it's async.
 
 > `readonly` **expects**: `` `>=${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12319
+Defined in: node\_modules/valibot/dist/index.d.mts:12592
 
 The expected property.
 
@@ -69030,7 +71365,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12327
+Defined in: node\_modules/valibot/dist/index.d.mts:12600
 
 The error message.
 
@@ -69040,7 +71375,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`, `TRequirement`\>(`requirement`): `MinSizeAction`\<`TInput$1`, `TRequirement`, `undefined`\>; \<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): `MinSizeAction`\<`TInput$1`, `TRequirement`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12315
+Defined in: node\_modules/valibot/dist/index.d.mts:12588
 
 The action reference.
 
@@ -69124,7 +71459,7 @@ A min size action.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12323
+Defined in: node\_modules/valibot/dist/index.d.mts:12596
 
 The minimum size.
 
@@ -69134,7 +71469,7 @@ The minimum size.
 
 > `readonly` **type**: `"min_size"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12311
+Defined in: node\_modules/valibot/dist/index.d.mts:12584
 
 The action type.
 
@@ -69153,7 +71488,7 @@ lib/core/namespaces/v/interfaces/MinSizeIssue.md
 
 # Interface: MinSizeIssue\<TInput$1, TRequirement\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12282
+Defined in: node\_modules/valibot/dist/index.d.mts:12555
 
 Min size issue interface.
 
@@ -69205,7 +71540,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `` `>=${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12294
+Defined in: node\_modules/valibot/dist/index.d.mts:12567
 
 The expected property.
 
@@ -69247,7 +71582,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12286
+Defined in: node\_modules/valibot/dist/index.d.mts:12559
 
 The issue kind.
 
@@ -69303,7 +71638,7 @@ The issue path.
 
 > `readonly` **received**: `` `${number}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12298
+Defined in: node\_modules/valibot/dist/index.d.mts:12571
 
 The received property.
 
@@ -69317,7 +71652,7 @@ The received property.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12302
+Defined in: node\_modules/valibot/dist/index.d.mts:12575
 
 The minimum size.
 
@@ -69331,7 +71666,7 @@ The minimum size.
 
 > `readonly` **type**: `"min_size"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12290
+Defined in: node\_modules/valibot/dist/index.d.mts:12563
 
 The issue type.
 
@@ -69350,7 +71685,7 @@ lib/core/namespaces/v/interfaces/MinValueAction.md
 
 # Interface: MinValueAction\<TInput$1, TRequirement, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12372
+Defined in: node\_modules/valibot/dist/index.d.mts:12645
 
 Min value action interface.
 
@@ -69456,7 +71791,7 @@ Whether it's async.
 
 > `readonly` **expects**: `` `>=${string}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12384
+Defined in: node\_modules/valibot/dist/index.d.mts:12657
 
 The expected property.
 
@@ -69484,7 +71819,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12392
+Defined in: node\_modules/valibot/dist/index.d.mts:12665
 
 The error message.
 
@@ -69494,7 +71829,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`, `TRequirement`\>(`requirement`): `MinValueAction`\<`TInput$1`, `TRequirement`, `undefined`\>; \<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): `MinValueAction`\<`TInput$1`, `TRequirement`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12380
+Defined in: node\_modules/valibot/dist/index.d.mts:12653
 
 The action reference.
 
@@ -69578,7 +71913,7 @@ A min value action.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12388
+Defined in: node\_modules/valibot/dist/index.d.mts:12661
 
 The minimum value.
 
@@ -69588,7 +71923,7 @@ The minimum value.
 
 > `readonly` **type**: `"min_value"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12376
+Defined in: node\_modules/valibot/dist/index.d.mts:12649
 
 The action type.
 
@@ -69607,7 +71942,7 @@ lib/core/namespaces/v/interfaces/MinValueIssue.md
 
 # Interface: MinValueIssue\<TInput$1, TRequirement\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12351
+Defined in: node\_modules/valibot/dist/index.d.mts:12624
 
 Min value issue interface.
 
@@ -69659,7 +71994,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `` `>=${string}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12363
+Defined in: node\_modules/valibot/dist/index.d.mts:12636
 
 The expected property.
 
@@ -69701,7 +72036,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12355
+Defined in: node\_modules/valibot/dist/index.d.mts:12628
 
 The issue kind.
 
@@ -69771,7 +72106,7 @@ The received property.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12367
+Defined in: node\_modules/valibot/dist/index.d.mts:12640
 
 The minimum value.
 
@@ -69785,7 +72120,7 @@ The minimum value.
 
 > `readonly` **type**: `"min_value"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12359
+Defined in: node\_modules/valibot/dist/index.d.mts:12632
 
 The issue type.
 
@@ -69804,7 +72139,7 @@ lib/core/namespaces/v/interfaces/MinWordsAction.md
 
 # Interface: MinWordsAction\<TInput$1, TLocales, TRequirement, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12441
+Defined in: node\_modules/valibot/dist/index.d.mts:12714
 
 Min words action interface.
 
@@ -69914,7 +72249,7 @@ Whether it's async.
 
 > `readonly` **expects**: `` `>=${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12453
+Defined in: node\_modules/valibot/dist/index.d.mts:12726
 
 The expected property.
 
@@ -69942,7 +72277,7 @@ The object kind.
 
 > `readonly` **locales**: `TLocales`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12457
+Defined in: node\_modules/valibot/dist/index.d.mts:12730
 
 The locales to be used.
 
@@ -69952,7 +72287,7 @@ The locales to be used.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12465
+Defined in: node\_modules/valibot/dist/index.d.mts:12738
 
 The error message.
 
@@ -69962,7 +72297,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`, `TLocales`, `TRequirement`\>(`locales`, `requirement`): `MinWordsAction`\<`TInput$1`, `TLocales`, `TRequirement`, `undefined`\>; \<`TInput$1`, `TLocales`, `TRequirement`, `TMessage`\>(`locales`, `requirement`, `message`): `MinWordsAction`\<`TInput$1`, `TLocales`, `TRequirement`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12449
+Defined in: node\_modules/valibot/dist/index.d.mts:12722
 
 The action reference.
 
@@ -70066,7 +72401,7 @@ A min words action.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12461
+Defined in: node\_modules/valibot/dist/index.d.mts:12734
 
 The minimum words.
 
@@ -70076,7 +72411,7 @@ The minimum words.
 
 > `readonly` **type**: `"min_words"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12445
+Defined in: node\_modules/valibot/dist/index.d.mts:12718
 
 The action type.
 
@@ -70095,7 +72430,7 @@ lib/core/namespaces/v/interfaces/MinWordsIssue.md
 
 # Interface: MinWordsIssue\<TInput$1, TRequirement\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12416
+Defined in: node\_modules/valibot/dist/index.d.mts:12689
 
 Min words issue interface.
 
@@ -70147,7 +72482,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `` `>=${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12428
+Defined in: node\_modules/valibot/dist/index.d.mts:12701
 
 The expected property.
 
@@ -70189,7 +72524,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12420
+Defined in: node\_modules/valibot/dist/index.d.mts:12693
 
 The issue kind.
 
@@ -70245,7 +72580,7 @@ The issue path.
 
 > `readonly` **received**: `` `${number}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12432
+Defined in: node\_modules/valibot/dist/index.d.mts:12705
 
 The received property.
 
@@ -70259,7 +72594,7 @@ The received property.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12436
+Defined in: node\_modules/valibot/dist/index.d.mts:12709
 
 The minimum words.
 
@@ -70273,7 +72608,7 @@ The minimum words.
 
 > `readonly` **type**: `"min_words"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12424
+Defined in: node\_modules/valibot/dist/index.d.mts:12697
 
 The issue type.
 
@@ -70292,7 +72627,7 @@ lib/core/namespaces/v/interfaces/MultipleOfAction.md
 
 # Interface: MultipleOfAction\<TInput$1, TRequirement, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12520
+Defined in: node\_modules/valibot/dist/index.d.mts:12793
 
 Multiple of action interface.
 
@@ -70398,7 +72733,7 @@ Whether it's async.
 
 > `readonly` **expects**: `` `%${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12532
+Defined in: node\_modules/valibot/dist/index.d.mts:12805
 
 The expected property.
 
@@ -70426,7 +72761,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12540
+Defined in: node\_modules/valibot/dist/index.d.mts:12813
 
 The error message.
 
@@ -70436,7 +72771,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`, `TRequirement`\>(`requirement`): `MultipleOfAction`\<`TInput$1`, `TRequirement`, `undefined`\>; \<`TInput$1`, `TRequirement`\>(`requirement`): `MultipleOfAction`\<`TInput$1`, `TRequirement`, `undefined`\>; \<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): `MultipleOfAction`\<`TInput$1`, `TRequirement`, `TMessage`\>; \<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): `MultipleOfAction`\<`TInput$1`, `TRequirement`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12528
+Defined in: node\_modules/valibot/dist/index.d.mts:12801
 
 The action reference.
 
@@ -70590,7 +72925,7 @@ A multiple of action.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12536
+Defined in: node\_modules/valibot/dist/index.d.mts:12809
 
 The divisor.
 
@@ -70600,7 +72935,7 @@ The divisor.
 
 > `readonly` **type**: `"multiple_of"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12524
+Defined in: node\_modules/valibot/dist/index.d.mts:12797
 
 The action type.
 
@@ -70619,7 +72954,7 @@ lib/core/namespaces/v/interfaces/MultipleOfIssue.md
 
 # Interface: MultipleOfIssue\<TInput$1, TRequirement\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12495
+Defined in: node\_modules/valibot/dist/index.d.mts:12768
 
 Multiple of issue interface.
 
@@ -70671,7 +73006,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `` `%${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12507
+Defined in: node\_modules/valibot/dist/index.d.mts:12780
 
 The expected property.
 
@@ -70713,7 +73048,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12499
+Defined in: node\_modules/valibot/dist/index.d.mts:12772
 
 The issue kind.
 
@@ -70769,7 +73104,7 @@ The issue path.
 
 > `readonly` **received**: `` `${TInput$1}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12511
+Defined in: node\_modules/valibot/dist/index.d.mts:12784
 
 The received property.
 
@@ -70783,7 +73118,7 @@ The received property.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12515
+Defined in: node\_modules/valibot/dist/index.d.mts:12788
 
 The divisor.
 
@@ -70797,7 +73132,7 @@ The divisor.
 
 > `readonly` **type**: `"multiple_of"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12503
+Defined in: node\_modules/valibot/dist/index.d.mts:12776
 
 The issue type.
 
@@ -71003,7 +73338,7 @@ lib/core/namespaces/v/interfaces/NanoIdAction.md
 
 # Interface: NanoIdAction\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12612
+Defined in: node\_modules/valibot/dist/index.d.mts:12885
 
 Nano ID action interface.
 
@@ -71105,7 +73440,7 @@ Whether it's async.
 
 > `readonly` **expects**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12624
+Defined in: node\_modules/valibot/dist/index.d.mts:12897
 
 The expected property.
 
@@ -71133,7 +73468,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12632
+Defined in: node\_modules/valibot/dist/index.d.mts:12905
 
 The error message.
 
@@ -71143,7 +73478,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `NanoIdAction`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `NanoIdAction`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12620
+Defined in: node\_modules/valibot/dist/index.d.mts:12893
 
 The action reference.
 
@@ -71205,7 +73540,7 @@ A Nano ID action.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12628
+Defined in: node\_modules/valibot/dist/index.d.mts:12901
 
 The Nano ID regex.
 
@@ -71215,7 +73550,7 @@ The Nano ID regex.
 
 > `readonly` **type**: `"nanoid"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12616
+Defined in: node\_modules/valibot/dist/index.d.mts:12889
 
 The action type.
 
@@ -71234,7 +73569,7 @@ lib/core/namespaces/v/interfaces/NanoIdIssue.md
 
 # Interface: NanoIdIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12581
+Defined in: node\_modules/valibot/dist/index.d.mts:12854
 
 Nano ID issue interface.
 
@@ -71282,7 +73617,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12593
+Defined in: node\_modules/valibot/dist/index.d.mts:12866
 
 The expected property.
 
@@ -71324,7 +73659,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12585
+Defined in: node\_modules/valibot/dist/index.d.mts:12858
 
 The issue kind.
 
@@ -71380,7 +73715,7 @@ The issue path.
 
 > `readonly` **received**: `string`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12597
+Defined in: node\_modules/valibot/dist/index.d.mts:12870
 
 The received property.
 
@@ -71394,7 +73729,7 @@ The received property.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12601
+Defined in: node\_modules/valibot/dist/index.d.mts:12874
 
 The Nano ID regex.
 
@@ -71408,7 +73743,7 @@ The Nano ID regex.
 
 > `readonly` **type**: `"nanoid"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12589
+Defined in: node\_modules/valibot/dist/index.d.mts:12862
 
 The issue type.
 
@@ -72060,7 +74395,7 @@ lib/core/namespaces/v/interfaces/NonEmptyAction.md
 
 # Interface: NonEmptyAction\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12680
+Defined in: node\_modules/valibot/dist/index.d.mts:12953
 
 Non empty action interface.
 
@@ -72162,7 +74497,7 @@ Whether it's async.
 
 > `readonly` **expects**: `"!0"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12692
+Defined in: node\_modules/valibot/dist/index.d.mts:12965
 
 The expected property.
 
@@ -72190,7 +74525,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12696
+Defined in: node\_modules/valibot/dist/index.d.mts:12969
 
 The error message.
 
@@ -72200,7 +74535,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `NonEmptyAction`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `NonEmptyAction`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12688
+Defined in: node\_modules/valibot/dist/index.d.mts:12961
 
 The action reference.
 
@@ -72262,7 +74597,7 @@ A non-empty action.
 
 > `readonly` **type**: `"non_empty"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12684
+Defined in: node\_modules/valibot/dist/index.d.mts:12957
 
 The action type.
 
@@ -72281,7 +74616,7 @@ lib/core/namespaces/v/interfaces/NonEmptyIssue.md
 
 # Interface: NonEmptyIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12659
+Defined in: node\_modules/valibot/dist/index.d.mts:12932
 
 Non empty issue interface.
 
@@ -72329,7 +74664,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `"!0"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12671
+Defined in: node\_modules/valibot/dist/index.d.mts:12944
 
 The expected input.
 
@@ -72371,7 +74706,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12663
+Defined in: node\_modules/valibot/dist/index.d.mts:12936
 
 The issue kind.
 
@@ -72427,7 +74762,7 @@ The issue path.
 
 > `readonly` **received**: `"0"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12675
+Defined in: node\_modules/valibot/dist/index.d.mts:12948
 
 The received input.
 
@@ -72455,7 +74790,7 @@ The input requirement.
 
 > `readonly` **type**: `"non_empty"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12667
+Defined in: node\_modules/valibot/dist/index.d.mts:12940
 
 The issue type.
 
@@ -74823,7 +77158,7 @@ lib/core/namespaces/v/interfaces/NormalizeAction.md
 
 # Interface: NormalizeAction\<TForm\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12721
+Defined in: node\_modules/valibot/dist/index.d.mts:12994
 
 Normalize action interface.
 
@@ -74921,7 +77256,7 @@ Whether it's async.
 
 > `readonly` **form**: `TForm`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12733
+Defined in: node\_modules/valibot/dist/index.d.mts:13006
 
 The normalization form.
 
@@ -74945,7 +77280,7 @@ The object kind.
 
 > `readonly` **reference**: \{(): `NormalizeAction`\<`undefined`\>; \<`TForm`\>(`form`): `NormalizeAction`\<`TForm`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12729
+Defined in: node\_modules/valibot/dist/index.d.mts:13002
 
 The action reference.
 
@@ -74997,7 +77332,7 @@ A normalize action.
 
 > `readonly` **type**: `"normalize"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12725
+Defined in: node\_modules/valibot/dist/index.d.mts:12998
 
 The action type.
 
@@ -75016,7 +77351,7 @@ lib/core/namespaces/v/interfaces/NotBytesAction.md
 
 # Interface: NotBytesAction\<TInput$1, TRequirement, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12779
+Defined in: node\_modules/valibot/dist/index.d.mts:13052
 
 Not bytes action interface.
 
@@ -75122,7 +77457,7 @@ Whether it's async.
 
 > `readonly` **expects**: `` `!${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12791
+Defined in: node\_modules/valibot/dist/index.d.mts:13064
 
 The expected property.
 
@@ -75150,7 +77485,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12799
+Defined in: node\_modules/valibot/dist/index.d.mts:13072
 
 The error message.
 
@@ -75160,7 +77495,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`, `TRequirement`\>(`requirement`): `NotBytesAction`\<`TInput$1`, `TRequirement`, `undefined`\>; \<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): `NotBytesAction`\<`TInput$1`, `TRequirement`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12787
+Defined in: node\_modules/valibot/dist/index.d.mts:13060
 
 The action reference.
 
@@ -75244,7 +77579,7 @@ A not bytes action.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12795
+Defined in: node\_modules/valibot/dist/index.d.mts:13068
 
 The not required bytes.
 
@@ -75254,7 +77589,7 @@ The not required bytes.
 
 > `readonly` **type**: `"not_bytes"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12783
+Defined in: node\_modules/valibot/dist/index.d.mts:13056
 
 The action type.
 
@@ -75273,7 +77608,7 @@ lib/core/namespaces/v/interfaces/NotBytesIssue.md
 
 # Interface: NotBytesIssue\<TInput$1, TRequirement\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12754
+Defined in: node\_modules/valibot/dist/index.d.mts:13027
 
 Not bytes issue interface.
 
@@ -75325,7 +77660,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `` `!${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12766
+Defined in: node\_modules/valibot/dist/index.d.mts:13039
 
 The expected property.
 
@@ -75367,7 +77702,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12758
+Defined in: node\_modules/valibot/dist/index.d.mts:13031
 
 The issue kind.
 
@@ -75423,7 +77758,7 @@ The issue path.
 
 > `readonly` **received**: `` `${number}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12770
+Defined in: node\_modules/valibot/dist/index.d.mts:13043
 
 The received property.
 
@@ -75437,7 +77772,7 @@ The received property.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12774
+Defined in: node\_modules/valibot/dist/index.d.mts:13047
 
 The not required bytes.
 
@@ -75451,7 +77786,461 @@ The not required bytes.
 
 > `readonly` **type**: `"not_bytes"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12762
+Defined in: node\_modules/valibot/dist/index.d.mts:13035
+
+The issue type.
+
+#### Overrides
+
+[`BaseIssue`](BaseIssue.md).[`type`](BaseIssue.md#type)
+
+lib/core/namespaces/v/interfaces/NotCodePointsAction.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../../../index.md) / [lib/core](../../../index.md) / [v](../index.md) / NotCodePointsAction
+
+# Interface: NotCodePointsAction\<TInput$1, TRequirement, TMessage\>
+
+Defined in: node\_modules/valibot/dist/index.d.mts:13121
+
+Not code points action interface.
+
+## Extends
+
+- [`BaseValidation`](BaseValidation.md)\<`TInput$1`, `TInput$1`, [`NotCodePointsIssue`](NotCodePointsIssue.md)\<`TInput$1`, `TRequirement`\>\>
+
+## Type Parameters
+
+### TInput$1
+
+`TInput$1` *extends* `string`
+
+### TRequirement
+
+`TRequirement` *extends* `number`
+
+### TMessage
+
+`TMessage` *extends* [`ErrorMessage`](../type-aliases/ErrorMessage.md)\<[`NotCodePointsIssue`](NotCodePointsIssue.md)\<`TInput$1`, `TRequirement`\>\> \| `undefined`
+
+## Properties
+
+### ~run
+
+> `readonly` **~run**: (`dataset`, `config`) => [`OutputDataset`](../type-aliases/OutputDataset.md)\<`TInput$1`, [`BaseIssue`](BaseIssue.md)\<`unknown`\> \| [`NotCodePointsIssue`](NotCodePointsIssue.md)\<`TInput$1`, `TRequirement`\>\>
+
+Defined in: node\_modules/valibot/dist/index.d.mts:3258
+
+**`Internal`**
+
+Validates known input values.
+
+#### Parameters
+
+##### dataset
+
+[`OutputDataset`](../type-aliases/OutputDataset.md)\<`TInput$1`, [`BaseIssue`](BaseIssue.md)\<`unknown`\>\>
+
+The input dataset.
+
+##### config
+
+[`Config`](Config.md)\<[`BaseIssue`](BaseIssue.md)\<`unknown`\>\>
+
+The configuration.
+
+#### Returns
+
+[`OutputDataset`](../type-aliases/OutputDataset.md)\<`TInput$1`, [`BaseIssue`](BaseIssue.md)\<`unknown`\> \| [`NotCodePointsIssue`](NotCodePointsIssue.md)\<`TInput$1`, `TRequirement`\>\>
+
+The output dataset.
+
+#### Inherited from
+
+[`BaseValidation`](BaseValidation.md).[`~run`](BaseValidation.md#run)
+
+***
+
+### ~types?
+
+> `readonly` `optional` **~types?**: `object`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:3264
+
+**`Internal`**
+
+The input, output and issue type.
+
+#### input
+
+> `readonly` **input**: `TInput$1`
+
+#### issue
+
+> `readonly` **issue**: [`NotCodePointsIssue`](NotCodePointsIssue.md)
+
+#### output
+
+> `readonly` **output**: `TInput$1`
+
+#### Inherited from
+
+[`BaseValidation`](BaseValidation.md).[`~types`](BaseValidation.md#types)
+
+***
+
+### async
+
+> `readonly` **async**: `false`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:3247
+
+Whether it's async.
+
+#### Inherited from
+
+[`BaseValidation`](BaseValidation.md).[`async`](BaseValidation.md#async)
+
+***
+
+### expects
+
+> `readonly` **expects**: `` `!${TRequirement}` ``
+
+Defined in: node\_modules/valibot/dist/index.d.mts:13133
+
+The expected property.
+
+#### Overrides
+
+[`BaseValidation`](BaseValidation.md).[`expects`](BaseValidation.md#expects)
+
+***
+
+### kind
+
+> `readonly` **kind**: `"validation"`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:3231
+
+The object kind.
+
+#### Inherited from
+
+[`BaseValidation`](BaseValidation.md).[`kind`](BaseValidation.md#kind)
+
+***
+
+### message
+
+> `readonly` **message**: `TMessage`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:13141
+
+The error message.
+
+***
+
+### reference
+
+> `readonly` **reference**: \{\<`TInput$1`, `TRequirement`\>(`requirement`): `NotCodePointsAction`\<`TInput$1`, `TRequirement`, `undefined`\>; \<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): `NotCodePointsAction`\<`TInput$1`, `TRequirement`, `TMessage`\>; \}
+
+Defined in: node\_modules/valibot/dist/index.d.mts:13129
+
+The action reference.
+
+#### Call Signature
+
+> \<`TInput$1`, `TRequirement`\>(`requirement`): `NotCodePointsAction`\<`TInput$1`, `TRequirement`, `undefined`\>
+
+Creates a not code points validation action.
+
+##### Type Parameters
+
+###### TInput$1
+
+`TInput$1` *extends* `string`
+
+###### TRequirement
+
+`TRequirement` *extends* `number`
+
+##### Parameters
+
+###### requirement
+
+`TRequirement`
+
+The not required code points.
+
+##### Returns
+
+`NotCodePointsAction`\<`TInput$1`, `TRequirement`, `undefined`\>
+
+A not code points action.
+
+#### Call Signature
+
+> \<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): `NotCodePointsAction`\<`TInput$1`, `TRequirement`, `TMessage`\>
+
+Creates a not code points validation action.
+
+##### Type Parameters
+
+###### TInput$1
+
+`TInput$1` *extends* `string`
+
+###### TRequirement
+
+`TRequirement` *extends* `number`
+
+###### TMessage
+
+`TMessage` *extends* [`ErrorMessage`](../type-aliases/ErrorMessage.md)\<[`NotCodePointsIssue`](NotCodePointsIssue.md)\<`TInput$1`, `TRequirement`\>\> \| `undefined`
+
+##### Parameters
+
+###### requirement
+
+`TRequirement`
+
+The not required code points.
+
+###### message
+
+`TMessage`
+
+The error message.
+
+##### Returns
+
+`NotCodePointsAction`\<`TInput$1`, `TRequirement`, `TMessage`\>
+
+A not code points action.
+
+#### Overrides
+
+[`BaseValidation`](BaseValidation.md).[`reference`](BaseValidation.md#reference)
+
+***
+
+### requirement
+
+> `readonly` **requirement**: `TRequirement`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:13137
+
+The not required code points.
+
+***
+
+### type
+
+> `readonly` **type**: `"not_code_points"`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:13125
+
+The action type.
+
+#### Overrides
+
+[`BaseValidation`](BaseValidation.md).[`type`](BaseValidation.md#type)
+
+lib/core/namespaces/v/interfaces/NotCodePointsIssue.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../../../index.md) / [lib/core](../../../index.md) / [v](../index.md) / NotCodePointsIssue
+
+# Interface: NotCodePointsIssue\<TInput$1, TRequirement\>
+
+Defined in: node\_modules/valibot/dist/index.d.mts:13096
+
+Not code points issue interface.
+
+## Extends
+
+- [`BaseIssue`](BaseIssue.md)\<`TInput$1`\>
+
+## Type Parameters
+
+### TInput$1
+
+`TInput$1` *extends* `string`
+
+### TRequirement
+
+`TRequirement` *extends* `number`
+
+## Properties
+
+### abortEarly?
+
+> `readonly` `optional` **abortEarly?**: `boolean`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:3717
+
+Whether it should be aborted early.
+
+#### Inherited from
+
+[`BaseIssue`](BaseIssue.md).[`abortEarly`](BaseIssue.md#abortearly)
+
+***
+
+### abortPipeEarly?
+
+> `readonly` `optional` **abortPipeEarly?**: `boolean`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:3721
+
+Whether a pipe should be aborted early.
+
+#### Inherited from
+
+[`BaseIssue`](BaseIssue.md).[`abortPipeEarly`](BaseIssue.md#abortpipeearly)
+
+***
+
+### expected
+
+> `readonly` **expected**: `` `!${TRequirement}` ``
+
+Defined in: node\_modules/valibot/dist/index.d.mts:13108
+
+The expected property.
+
+#### Overrides
+
+[`BaseIssue`](BaseIssue.md).[`expected`](BaseIssue.md#expected)
+
+***
+
+### input
+
+> `readonly` **input**: `TInput$1`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:3650
+
+The raw input data.
+
+#### Inherited from
+
+[`BaseIssue`](BaseIssue.md).[`input`](BaseIssue.md#input)
+
+***
+
+### issues?
+
+> `readonly` `optional` **issues?**: \[[`BaseIssue`](BaseIssue.md)\<`TInput$1`\>, `...BaseIssue<TInput$1>[]`\]
+
+Defined in: node\_modules/valibot/dist/index.d.mts:3674
+
+The sub issues.
+
+#### Inherited from
+
+[`BaseIssue`](BaseIssue.md).[`issues`](BaseIssue.md#issues)
+
+***
+
+### kind
+
+> `readonly` **kind**: `"validation"`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:13100
+
+The issue kind.
+
+#### Overrides
+
+[`BaseIssue`](BaseIssue.md).[`kind`](BaseIssue.md#kind)
+
+***
+
+### lang?
+
+> `readonly` `optional` **lang?**: `string`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:3709
+
+The selected language.
+
+#### Inherited from
+
+[`BaseIssue`](BaseIssue.md).[`lang`](BaseIssue.md#lang)
+
+***
+
+### message
+
+> `readonly` **message**: `string`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:3662
+
+The error message.
+
+#### Inherited from
+
+[`BaseIssue`](BaseIssue.md).[`message`](BaseIssue.md#message)
+
+***
+
+### path?
+
+> `readonly` `optional` **path?**: \[[`IssuePathItem`](../type-aliases/IssuePathItem.md), `...IssuePathItem[]`\]
+
+Defined in: node\_modules/valibot/dist/index.d.mts:3670
+
+The issue path.
+
+#### Inherited from
+
+[`BaseIssue`](BaseIssue.md).[`path`](BaseIssue.md#path)
+
+***
+
+### received
+
+> `readonly` **received**: `` `${number}` ``
+
+Defined in: node\_modules/valibot/dist/index.d.mts:13112
+
+The received property.
+
+#### Overrides
+
+[`BaseIssue`](BaseIssue.md).[`received`](BaseIssue.md#received)
+
+***
+
+### requirement
+
+> `readonly` **requirement**: `TRequirement`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:13116
+
+The not required code points.
+
+#### Overrides
+
+[`BaseIssue`](BaseIssue.md).[`requirement`](BaseIssue.md#requirement)
+
+***
+
+### type
+
+> `readonly` **type**: `"not_code_points"`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:13104
 
 The issue type.
 
@@ -75470,7 +78259,7 @@ lib/core/namespaces/v/interfaces/NotEntriesAction.md
 
 # Interface: NotEntriesAction\<TInput$1, TRequirement, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12852
+Defined in: node\_modules/valibot/dist/index.d.mts:13194
 
 **`Beta`**
 
@@ -75580,7 +78369,7 @@ Whether it's async.
 
 > `readonly` **expects**: `` `!${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12864
+Defined in: node\_modules/valibot/dist/index.d.mts:13206
 
 **`Beta`**
 
@@ -75612,7 +78401,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12872
+Defined in: node\_modules/valibot/dist/index.d.mts:13214
 
 **`Beta`**
 
@@ -75624,7 +78413,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`, `TRequirement`\>(`requirement`): `NotEntriesAction`\<`TInput$1`, `TRequirement`, `undefined`\>; \<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): `NotEntriesAction`\<`TInput$1`, `TRequirement`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12860
+Defined in: node\_modules/valibot/dist/index.d.mts:13202
 
 **`Beta`**
 
@@ -75714,7 +78503,7 @@ A not entries action.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12868
+Defined in: node\_modules/valibot/dist/index.d.mts:13210
 
 **`Beta`**
 
@@ -75726,7 +78515,7 @@ The not required entries.
 
 > `readonly` **type**: `"not_entries"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12856
+Defined in: node\_modules/valibot/dist/index.d.mts:13198
 
 **`Beta`**
 
@@ -75747,7 +78536,7 @@ lib/core/namespaces/v/interfaces/NotEntriesIssue.md
 
 # Interface: NotEntriesIssue\<TInput$1, TRequirement\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12825
+Defined in: node\_modules/valibot/dist/index.d.mts:13167
 
 **`Beta`**
 
@@ -75805,7 +78594,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `` `!${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12837
+Defined in: node\_modules/valibot/dist/index.d.mts:13179
 
 **`Beta`**
 
@@ -75853,7 +78642,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12829
+Defined in: node\_modules/valibot/dist/index.d.mts:13171
 
 **`Beta`**
 
@@ -75917,7 +78706,7 @@ The issue path.
 
 > `readonly` **received**: `` `${number}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12841
+Defined in: node\_modules/valibot/dist/index.d.mts:13183
 
 **`Beta`**
 
@@ -75933,7 +78722,7 @@ The received property.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12845
+Defined in: node\_modules/valibot/dist/index.d.mts:13187
 
 **`Beta`**
 
@@ -75949,7 +78738,7 @@ The not required entries.
 
 > `readonly` **type**: `"not_entries"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12833
+Defined in: node\_modules/valibot/dist/index.d.mts:13175
 
 **`Beta`**
 
@@ -75970,7 +78759,7 @@ lib/core/namespaces/v/interfaces/NotGraphemesAction.md
 
 # Interface: NotGraphemesAction\<TInput$1, TRequirement, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12925
+Defined in: node\_modules/valibot/dist/index.d.mts:13267
 
 Not graphemes action interface.
 
@@ -76076,7 +78865,7 @@ Whether it's async.
 
 > `readonly` **expects**: `` `!${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12937
+Defined in: node\_modules/valibot/dist/index.d.mts:13279
 
 The expected property.
 
@@ -76104,7 +78893,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12945
+Defined in: node\_modules/valibot/dist/index.d.mts:13287
 
 The error message.
 
@@ -76114,7 +78903,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`, `TRequirement`\>(`requirement`): `NotGraphemesAction`\<`TInput$1`, `TRequirement`, `undefined`\>; \<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): `NotGraphemesAction`\<`TInput$1`, `TRequirement`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12933
+Defined in: node\_modules/valibot/dist/index.d.mts:13275
 
 The action reference.
 
@@ -76198,7 +78987,7 @@ A not graphemes action.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12941
+Defined in: node\_modules/valibot/dist/index.d.mts:13283
 
 The not required graphemes.
 
@@ -76208,7 +78997,7 @@ The not required graphemes.
 
 > `readonly` **type**: `"not_graphemes"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12929
+Defined in: node\_modules/valibot/dist/index.d.mts:13271
 
 The action type.
 
@@ -76227,7 +79016,7 @@ lib/core/namespaces/v/interfaces/NotGraphemesIssue.md
 
 # Interface: NotGraphemesIssue\<TInput$1, TRequirement\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12900
+Defined in: node\_modules/valibot/dist/index.d.mts:13242
 
 Not graphemes issue interface.
 
@@ -76279,7 +79068,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `` `!${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12912
+Defined in: node\_modules/valibot/dist/index.d.mts:13254
 
 The expected property.
 
@@ -76321,7 +79110,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12904
+Defined in: node\_modules/valibot/dist/index.d.mts:13246
 
 The issue kind.
 
@@ -76377,7 +79166,7 @@ The issue path.
 
 > `readonly` **received**: `` `${number}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12916
+Defined in: node\_modules/valibot/dist/index.d.mts:13258
 
 The received property.
 
@@ -76391,7 +79180,7 @@ The received property.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12920
+Defined in: node\_modules/valibot/dist/index.d.mts:13262
 
 The not required graphemes.
 
@@ -76405,7 +79194,7 @@ The not required graphemes.
 
 > `readonly` **type**: `"not_graphemes"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12908
+Defined in: node\_modules/valibot/dist/index.d.mts:13250
 
 The issue type.
 
@@ -76424,7 +79213,7 @@ lib/core/namespaces/v/interfaces/NotLengthAction.md
 
 # Interface: NotLengthAction\<TInput$1, TRequirement, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12994
+Defined in: node\_modules/valibot/dist/index.d.mts:13336
 
 Not length action interface.
 
@@ -76530,7 +79319,7 @@ Whether it's async.
 
 > `readonly` **expects**: `` `!${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13006
+Defined in: node\_modules/valibot/dist/index.d.mts:13348
 
 The expected property.
 
@@ -76558,7 +79347,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13014
+Defined in: node\_modules/valibot/dist/index.d.mts:13356
 
 The error message.
 
@@ -76568,7 +79357,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`, `TRequirement`\>(`requirement`): `NotLengthAction`\<`TInput$1`, `TRequirement`, `undefined`\>; \<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): `NotLengthAction`\<`TInput$1`, `TRequirement`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13002
+Defined in: node\_modules/valibot/dist/index.d.mts:13344
 
 The action reference.
 
@@ -76652,7 +79441,7 @@ A not length action.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13010
+Defined in: node\_modules/valibot/dist/index.d.mts:13352
 
 The not required length.
 
@@ -76662,7 +79451,7 @@ The not required length.
 
 > `readonly` **type**: `"not_length"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12998
+Defined in: node\_modules/valibot/dist/index.d.mts:13340
 
 The action type.
 
@@ -76681,7 +79470,7 @@ lib/core/namespaces/v/interfaces/NotLengthIssue.md
 
 # Interface: NotLengthIssue\<TInput$1, TRequirement\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12969
+Defined in: node\_modules/valibot/dist/index.d.mts:13311
 
 Not length issue interface.
 
@@ -76733,7 +79522,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `` `!${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12981
+Defined in: node\_modules/valibot/dist/index.d.mts:13323
 
 The expected property.
 
@@ -76775,7 +79564,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12973
+Defined in: node\_modules/valibot/dist/index.d.mts:13315
 
 The issue kind.
 
@@ -76831,7 +79620,7 @@ The issue path.
 
 > `readonly` **received**: `` `${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12985
+Defined in: node\_modules/valibot/dist/index.d.mts:13327
 
 The received property.
 
@@ -76845,7 +79634,7 @@ The received property.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12989
+Defined in: node\_modules/valibot/dist/index.d.mts:13331
 
 The not required length.
 
@@ -76859,7 +79648,7 @@ The not required length.
 
 > `readonly` **type**: `"not_length"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12977
+Defined in: node\_modules/valibot/dist/index.d.mts:13319
 
 The issue type.
 
@@ -76878,7 +79667,7 @@ lib/core/namespaces/v/interfaces/NotSizeAction.md
 
 # Interface: NotSizeAction\<TInput$1, TRequirement, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13063
+Defined in: node\_modules/valibot/dist/index.d.mts:13405
 
 Not size action interface.
 
@@ -76984,7 +79773,7 @@ Whether it's async.
 
 > `readonly` **expects**: `` `!${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13075
+Defined in: node\_modules/valibot/dist/index.d.mts:13417
 
 The expected property.
 
@@ -77012,7 +79801,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13083
+Defined in: node\_modules/valibot/dist/index.d.mts:13425
 
 The error message.
 
@@ -77022,7 +79811,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`, `TRequirement`\>(`requirement`): `NotSizeAction`\<`TInput$1`, `TRequirement`, `undefined`\>; \<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): `NotSizeAction`\<`TInput$1`, `TRequirement`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13071
+Defined in: node\_modules/valibot/dist/index.d.mts:13413
 
 The action reference.
 
@@ -77106,7 +79895,7 @@ A not size action.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13079
+Defined in: node\_modules/valibot/dist/index.d.mts:13421
 
 The not required size.
 
@@ -77116,7 +79905,7 @@ The not required size.
 
 > `readonly` **type**: `"not_size"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13067
+Defined in: node\_modules/valibot/dist/index.d.mts:13409
 
 The action type.
 
@@ -77135,7 +79924,7 @@ lib/core/namespaces/v/interfaces/NotSizeIssue.md
 
 # Interface: NotSizeIssue\<TInput$1, TRequirement\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13038
+Defined in: node\_modules/valibot/dist/index.d.mts:13380
 
 Not size issue interface.
 
@@ -77187,7 +79976,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `` `!${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13050
+Defined in: node\_modules/valibot/dist/index.d.mts:13392
 
 The expected property.
 
@@ -77229,7 +80018,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13042
+Defined in: node\_modules/valibot/dist/index.d.mts:13384
 
 The issue kind.
 
@@ -77285,7 +80074,7 @@ The issue path.
 
 > `readonly` **received**: `` `${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13054
+Defined in: node\_modules/valibot/dist/index.d.mts:13396
 
 The received property.
 
@@ -77299,7 +80088,7 @@ The received property.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13058
+Defined in: node\_modules/valibot/dist/index.d.mts:13400
 
 The not required size.
 
@@ -77313,7 +80102,7 @@ The not required size.
 
 > `readonly` **type**: `"not_size"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13046
+Defined in: node\_modules/valibot/dist/index.d.mts:13388
 
 The issue type.
 
@@ -77332,7 +80121,7 @@ lib/core/namespaces/v/interfaces/NotValueAction.md
 
 # Interface: NotValueAction\<TInput$1, TRequirement, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13128
+Defined in: node\_modules/valibot/dist/index.d.mts:13470
 
 Not value action interface.
 
@@ -77438,7 +80227,7 @@ Whether it's async.
 
 > `readonly` **expects**: `` `!${string}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13140
+Defined in: node\_modules/valibot/dist/index.d.mts:13482
 
 The expected property.
 
@@ -77466,7 +80255,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13148
+Defined in: node\_modules/valibot/dist/index.d.mts:13490
 
 The error message.
 
@@ -77476,7 +80265,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`, `TRequirement`\>(`requirement`): `NotValueAction`\<`TInput$1`, `TRequirement`, `undefined`\>; \<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): `NotValueAction`\<`TInput$1`, `TRequirement`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13136
+Defined in: node\_modules/valibot/dist/index.d.mts:13478
 
 The action reference.
 
@@ -77560,7 +80349,7 @@ A not value action.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13144
+Defined in: node\_modules/valibot/dist/index.d.mts:13486
 
 The not required value.
 
@@ -77570,7 +80359,7 @@ The not required value.
 
 > `readonly` **type**: `"not_value"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13132
+Defined in: node\_modules/valibot/dist/index.d.mts:13474
 
 The action type.
 
@@ -77589,7 +80378,7 @@ lib/core/namespaces/v/interfaces/NotValueIssue.md
 
 # Interface: NotValueIssue\<TInput$1, TRequirement\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13107
+Defined in: node\_modules/valibot/dist/index.d.mts:13449
 
 Not value issue interface.
 
@@ -77641,7 +80430,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `` `!${string}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13119
+Defined in: node\_modules/valibot/dist/index.d.mts:13461
 
 The expected property.
 
@@ -77683,7 +80472,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13111
+Defined in: node\_modules/valibot/dist/index.d.mts:13453
 
 The issue kind.
 
@@ -77753,7 +80542,7 @@ The received property.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13123
+Defined in: node\_modules/valibot/dist/index.d.mts:13465
 
 The not required value.
 
@@ -77767,7 +80556,7 @@ The not required value.
 
 > `readonly` **type**: `"not_value"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13115
+Defined in: node\_modules/valibot/dist/index.d.mts:13457
 
 The issue type.
 
@@ -77786,7 +80575,7 @@ lib/core/namespaces/v/interfaces/NotValuesAction.md
 
 # Interface: NotValuesAction\<TInput$1, TRequirement, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13193
+Defined in: node\_modules/valibot/dist/index.d.mts:13535
 
 Not values action type.
 
@@ -77892,7 +80681,7 @@ Whether it's async.
 
 > `readonly` **expects**: `` `!${string}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13205
+Defined in: node\_modules/valibot/dist/index.d.mts:13547
 
 The expected property.
 
@@ -77920,7 +80709,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13213
+Defined in: node\_modules/valibot/dist/index.d.mts:13555
 
 The error message.
 
@@ -77930,7 +80719,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`, `TRequirement`\>(`requirement`): `NotValuesAction`\<`TInput$1`, `TRequirement`, `undefined`\>; \<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): `NotValuesAction`\<`TInput$1`, `TRequirement`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13201
+Defined in: node\_modules/valibot/dist/index.d.mts:13543
 
 The action reference.
 
@@ -78014,7 +80803,7 @@ A not values action.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13209
+Defined in: node\_modules/valibot/dist/index.d.mts:13551
 
 The not required values.
 
@@ -78024,7 +80813,7 @@ The not required values.
 
 > `readonly` **type**: `"not_values"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13197
+Defined in: node\_modules/valibot/dist/index.d.mts:13539
 
 The action type.
 
@@ -78043,7 +80832,7 @@ lib/core/namespaces/v/interfaces/NotValuesIssue.md
 
 # Interface: NotValuesIssue\<TInput$1, TRequirement\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13172
+Defined in: node\_modules/valibot/dist/index.d.mts:13514
 
 Not values issue type.
 
@@ -78095,7 +80884,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `` `!${string}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13184
+Defined in: node\_modules/valibot/dist/index.d.mts:13526
 
 The expected property.
 
@@ -78137,7 +80926,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13176
+Defined in: node\_modules/valibot/dist/index.d.mts:13518
 
 The issue kind.
 
@@ -78207,7 +80996,7 @@ The received property.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13188
+Defined in: node\_modules/valibot/dist/index.d.mts:13530
 
 The not required values.
 
@@ -78221,7 +81010,7 @@ The not required values.
 
 > `readonly` **type**: `"not_values"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13180
+Defined in: node\_modules/valibot/dist/index.d.mts:13522
 
 The issue type.
 
@@ -78240,7 +81029,7 @@ lib/core/namespaces/v/interfaces/NotWordsAction.md
 
 # Interface: NotWordsAction\<TInput$1, TLocales, TRequirement, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13262
+Defined in: node\_modules/valibot/dist/index.d.mts:13604
 
 Not words action interface.
 
@@ -78350,7 +81139,7 @@ Whether it's async.
 
 > `readonly` **expects**: `` `!${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13274
+Defined in: node\_modules/valibot/dist/index.d.mts:13616
 
 The expected property.
 
@@ -78378,7 +81167,7 @@ The object kind.
 
 > `readonly` **locales**: `TLocales`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13278
+Defined in: node\_modules/valibot/dist/index.d.mts:13620
 
 The locales to be used.
 
@@ -78388,7 +81177,7 @@ The locales to be used.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13286
+Defined in: node\_modules/valibot/dist/index.d.mts:13628
 
 The error message.
 
@@ -78398,7 +81187,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`, `TLocales`, `TRequirement`\>(`locales`, `requirement`): `NotWordsAction`\<`TInput$1`, `TLocales`, `TRequirement`, `undefined`\>; \<`TInput$1`, `TLocales`, `TRequirement`, `TMessage`\>(`locales`, `requirement`, `message`): `NotWordsAction`\<`TInput$1`, `TLocales`, `TRequirement`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13270
+Defined in: node\_modules/valibot/dist/index.d.mts:13612
 
 The action reference.
 
@@ -78502,7 +81291,7 @@ A not words action.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13282
+Defined in: node\_modules/valibot/dist/index.d.mts:13624
 
 The not required words.
 
@@ -78512,7 +81301,7 @@ The not required words.
 
 > `readonly` **type**: `"not_words"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13266
+Defined in: node\_modules/valibot/dist/index.d.mts:13608
 
 The action type.
 
@@ -78531,7 +81320,7 @@ lib/core/namespaces/v/interfaces/NotWordsIssue.md
 
 # Interface: NotWordsIssue\<TInput$1, TRequirement\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13237
+Defined in: node\_modules/valibot/dist/index.d.mts:13579
 
 Not words issue interface.
 
@@ -78583,7 +81372,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `` `!${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13249
+Defined in: node\_modules/valibot/dist/index.d.mts:13591
 
 The expected property.
 
@@ -78625,7 +81414,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13241
+Defined in: node\_modules/valibot/dist/index.d.mts:13583
 
 The issue kind.
 
@@ -78681,7 +81470,7 @@ The issue path.
 
 > `readonly` **received**: `` `${number}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13253
+Defined in: node\_modules/valibot/dist/index.d.mts:13595
 
 The received property.
 
@@ -78695,7 +81484,7 @@ The received property.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13257
+Defined in: node\_modules/valibot/dist/index.d.mts:13599
 
 The not required words.
 
@@ -78709,7 +81498,7 @@ The not required words.
 
 > `readonly` **type**: `"not_words"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13245
+Defined in: node\_modules/valibot/dist/index.d.mts:13587
 
 The issue type.
 
@@ -82527,7 +85316,7 @@ lib/core/namespaces/v/interfaces/OctalAction.md
 
 # Interface: OctalAction\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13337
+Defined in: node\_modules/valibot/dist/index.d.mts:13679
 
 Octal action interface.
 
@@ -82629,7 +85418,7 @@ Whether it's async.
 
 > `readonly` **expects**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13349
+Defined in: node\_modules/valibot/dist/index.d.mts:13691
 
 The expected property.
 
@@ -82657,7 +85446,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13357
+Defined in: node\_modules/valibot/dist/index.d.mts:13699
 
 The error message.
 
@@ -82667,7 +85456,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `OctalAction`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `OctalAction`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13345
+Defined in: node\_modules/valibot/dist/index.d.mts:13687
 
 The action reference.
 
@@ -82729,7 +85518,7 @@ An octal action.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13353
+Defined in: node\_modules/valibot/dist/index.d.mts:13695
 
 The octal regex.
 
@@ -82739,7 +85528,7 @@ The octal regex.
 
 > `readonly` **type**: `"octal"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13341
+Defined in: node\_modules/valibot/dist/index.d.mts:13683
 
 The action type.
 
@@ -82758,7 +85547,7 @@ lib/core/namespaces/v/interfaces/OctalIssue.md
 
 # Interface: OctalIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13312
+Defined in: node\_modules/valibot/dist/index.d.mts:13654
 
 Octal issue interface.
 
@@ -82806,7 +85595,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13324
+Defined in: node\_modules/valibot/dist/index.d.mts:13666
 
 The expected property.
 
@@ -82848,7 +85637,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13316
+Defined in: node\_modules/valibot/dist/index.d.mts:13658
 
 The issue kind.
 
@@ -82904,7 +85693,7 @@ The issue path.
 
 > `readonly` **received**: `` `"${string}"` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13328
+Defined in: node\_modules/valibot/dist/index.d.mts:13670
 
 The received property.
 
@@ -82918,7 +85707,7 @@ The received property.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13332
+Defined in: node\_modules/valibot/dist/index.d.mts:13674
 
 The octal regex.
 
@@ -82932,7 +85721,7 @@ The octal regex.
 
 > `readonly` **type**: `"octal"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13320
+Defined in: node\_modules/valibot/dist/index.d.mts:13662
 
 The issue type.
 
@@ -83547,7 +86336,7 @@ lib/core/namespaces/v/interfaces/ParseBooleanAction.md
 
 # Interface: ParseBooleanAction\<TInput$1, TConfig, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13414
+Defined in: node\_modules/valibot/dist/index.d.mts:13756
 
 **`Beta`**
 
@@ -83657,7 +86446,7 @@ Whether it's async.
 
 > `readonly` **config**: `TConfig`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13430
+Defined in: node\_modules/valibot/dist/index.d.mts:13772
 
 **`Beta`**
 
@@ -83669,7 +86458,7 @@ The parse boolean config.
 
 > `readonly` **expects**: `string`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13426
+Defined in: node\_modules/valibot/dist/index.d.mts:13768
 
 **`Beta`**
 
@@ -83697,7 +86486,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13434
+Defined in: node\_modules/valibot/dist/index.d.mts:13776
 
 **`Beta`**
 
@@ -83709,7 +86498,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `ParseBooleanAction`\<`TInput$1`, `undefined`, `undefined`\>; \<`TInput$1`, `TConfig`\>(`config`): `ParseBooleanAction`\<`TInput$1`, `TConfig`, `undefined`\>; \<`TInput$1`, `TConfig`, `TMessage`\>(`config`, `message`): `ParseBooleanAction`\<`TInput$1`, `TConfig`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13422
+Defined in: node\_modules/valibot/dist/index.d.mts:13764
 
 **`Beta`**
 
@@ -83819,7 +86608,7 @@ A parse boolean action.
 
 > `readonly` **type**: `"parse_boolean"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13418
+Defined in: node\_modules/valibot/dist/index.d.mts:13760
 
 **`Beta`**
 
@@ -83840,7 +86629,7 @@ lib/core/namespaces/v/interfaces/ParseBooleanConfig.md
 
 # Interface: ParseBooleanConfig
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13380
+Defined in: node\_modules/valibot/dist/index.d.mts:13722
 
 **`Beta`**
 
@@ -83852,7 +86641,7 @@ Parse boolean config interface.
 
 > `optional` **falsy?**: `MaybeReadonly`\<`unknown`[]\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13388
+Defined in: node\_modules/valibot/dist/index.d.mts:13730
 
 **`Beta`**
 
@@ -83864,7 +86653,7 @@ The falsy values.
 
 > `optional` **truthy?**: `MaybeReadonly`\<`unknown`[]\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13384
+Defined in: node\_modules/valibot/dist/index.d.mts:13726
 
 **`Beta`**
 
@@ -83881,7 +86670,7 @@ lib/core/namespaces/v/interfaces/ParseBooleanIssue.md
 
 # Interface: ParseBooleanIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13395
+Defined in: node\_modules/valibot/dist/index.d.mts:13737
 
 **`Beta`**
 
@@ -83935,7 +86724,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `string`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13407
+Defined in: node\_modules/valibot/dist/index.d.mts:13749
 
 **`Beta`**
 
@@ -83983,7 +86772,7 @@ The sub issues.
 
 > `readonly` **kind**: `"transformation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13399
+Defined in: node\_modules/valibot/dist/index.d.mts:13741
 
 **`Beta`**
 
@@ -84079,7 +86868,7 @@ The input requirement.
 
 > `readonly` **type**: `"parse_boolean"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13403
+Defined in: node\_modules/valibot/dist/index.d.mts:13745
 
 **`Beta`**
 
@@ -84100,7 +86889,7 @@ lib/core/namespaces/v/interfaces/ParseJsonAction.md
 
 # Interface: ParseJsonAction\<TInput$1, TConfig, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13506
+Defined in: node\_modules/valibot/dist/index.d.mts:13848
 
 **`Beta`**
 
@@ -84210,7 +86999,7 @@ Whether it's async.
 
 > `readonly` **config**: `TConfig`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13518
+Defined in: node\_modules/valibot/dist/index.d.mts:13860
 
 **`Beta`**
 
@@ -84238,7 +87027,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13522
+Defined in: node\_modules/valibot/dist/index.d.mts:13864
 
 **`Beta`**
 
@@ -84250,7 +87039,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `ParseJsonAction`\<`TInput$1`, `undefined`, `undefined`\>; \<`TInput$1`, `TConfig`\>(`config`): `ParseJsonAction`\<`TInput$1`, `TConfig`, `undefined`\>; \<`TInput$1`, `TConfig`, `TMessage`\>(`config`, `message`): `ParseJsonAction`\<`TInput$1`, `TConfig`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13514
+Defined in: node\_modules/valibot/dist/index.d.mts:13856
 
 **`Beta`**
 
@@ -84360,7 +87149,7 @@ A parse JSON action.
 
 > `readonly` **type**: `"parse_json"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13510
+Defined in: node\_modules/valibot/dist/index.d.mts:13852
 
 **`Beta`**
 
@@ -84381,7 +87170,7 @@ lib/core/namespaces/v/interfaces/ParseJsonConfig.md
 
 # Interface: ParseJsonConfig
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13472
+Defined in: node\_modules/valibot/dist/index.d.mts:13814
 
 **`Beta`**
 
@@ -84393,7 +87182,7 @@ Parse JSON config interface.
 
 > `optional` **reviver?**: (`this`, `key`, `value`) => `any`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13476
+Defined in: node\_modules/valibot/dist/index.d.mts:13818
 
 **`Beta`**
 
@@ -84428,7 +87217,7 @@ lib/core/namespaces/v/interfaces/ParseJsonIssue.md
 
 # Interface: ParseJsonIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13483
+Defined in: node\_modules/valibot/dist/index.d.mts:13825
 
 **`Beta`**
 
@@ -84482,7 +87271,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13495
+Defined in: node\_modules/valibot/dist/index.d.mts:13837
 
 **`Beta`**
 
@@ -84530,7 +87319,7 @@ The sub issues.
 
 > `readonly` **kind**: `"transformation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13487
+Defined in: node\_modules/valibot/dist/index.d.mts:13829
 
 **`Beta`**
 
@@ -84594,7 +87383,7 @@ The issue path.
 
 > `readonly` **received**: `` `"${string}"` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13499
+Defined in: node\_modules/valibot/dist/index.d.mts:13841
 
 **`Beta`**
 
@@ -84626,7 +87415,7 @@ The input requirement.
 
 > `readonly` **type**: `"parse_json"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13491
+Defined in: node\_modules/valibot/dist/index.d.mts:13833
 
 **`Beta`**
 
@@ -84769,7 +87558,7 @@ lib/core/namespaces/v/interfaces/PartialCheckActionAsync.md
 
 # Interface: PartialCheckActionAsync\<TInput$1, TPaths, TSelection, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13683
+Defined in: node\_modules/valibot/dist/index.d.mts:14025
 
 Partial check action async interface.
 
@@ -84879,7 +87668,7 @@ Whether it's async.
 
 > `readonly` **expects**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13695
+Defined in: node\_modules/valibot/dist/index.d.mts:14037
 
 The expected property.
 
@@ -84907,7 +87696,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13707
+Defined in: node\_modules/valibot/dist/index.d.mts:14049
 
 The error message.
 
@@ -84917,7 +87706,7 @@ The error message.
 
 > `readonly` **paths**: `TPaths`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13699
+Defined in: node\_modules/valibot/dist/index.d.mts:14041
 
 The selected paths.
 
@@ -84927,7 +87716,7 @@ The selected paths.
 
 > `readonly` **reference**: \{\<`TInput$1`, `TPaths`, `TSelection`\>(`paths`, `requirement`): `PartialCheckActionAsync`\<`TInput$1`, `TPaths`, `TSelection`, `undefined`\>; \<`TInput$1`, `TPaths`, `TSelection`, `TMessage`\>(`paths`, `requirement`, `message`): `PartialCheckActionAsync`\<`TInput$1`, `TPaths`, `TSelection`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13691
+Defined in: node\_modules/valibot/dist/index.d.mts:14033
 
 The action reference.
 
@@ -85033,7 +87822,7 @@ A partial check action.
 
 > `readonly` **requirement**: (`input`) => `MaybePromise`\<`boolean`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13703
+Defined in: node\_modules/valibot/dist/index.d.mts:14045
 
 The validation function.
 
@@ -85053,7 +87842,7 @@ The validation function.
 
 > `readonly` **type**: `"partial_check"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13687
+Defined in: node\_modules/valibot/dist/index.d.mts:14029
 
 The action type.
 
@@ -85072,7 +87861,7 @@ lib/core/namespaces/v/interfaces/PartialCheckAction.md
 
 # Interface: PartialCheckAction\<TInput$1, TPaths, TSelection, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13633
+Defined in: node\_modules/valibot/dist/index.d.mts:13975
 
 Partial check action interface.
 
@@ -85182,7 +87971,7 @@ Whether it's async.
 
 > `readonly` **expects**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13645
+Defined in: node\_modules/valibot/dist/index.d.mts:13987
 
 The expected property.
 
@@ -85210,7 +87999,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13657
+Defined in: node\_modules/valibot/dist/index.d.mts:13999
 
 The error message.
 
@@ -85220,7 +88009,7 @@ The error message.
 
 > `readonly` **paths**: `TPaths`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13649
+Defined in: node\_modules/valibot/dist/index.d.mts:13991
 
 The selected paths.
 
@@ -85230,7 +88019,7 @@ The selected paths.
 
 > `readonly` **reference**: \{\<`TInput$1`, `TPaths`, `TSelection`\>(`paths`, `requirement`): `PartialCheckAction`\<`TInput$1`, `TPaths`, `TSelection`, `undefined`\>; \<`TInput$1`, `TPaths`, `TSelection`, `TMessage`\>(`paths`, `requirement`, `message`): `PartialCheckAction`\<`TInput$1`, `TPaths`, `TSelection`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13641
+Defined in: node\_modules/valibot/dist/index.d.mts:13983
 
 The action reference.
 
@@ -85336,7 +88125,7 @@ A partial check action.
 
 > `readonly` **requirement**: (`input`) => `boolean`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13653
+Defined in: node\_modules/valibot/dist/index.d.mts:13995
 
 The validation function.
 
@@ -85356,7 +88145,7 @@ The validation function.
 
 > `readonly` **type**: `"partial_check"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13637
+Defined in: node\_modules/valibot/dist/index.d.mts:13979
 
 The action type.
 
@@ -85375,7 +88164,7 @@ lib/core/namespaces/v/interfaces/PartialCheckIssue.md
 
 # Interface: PartialCheckIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13562
+Defined in: node\_modules/valibot/dist/index.d.mts:13904
 
 Partial check issue interface.
 
@@ -85423,7 +88212,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13574
+Defined in: node\_modules/valibot/dist/index.d.mts:13916
 
 The expected input.
 
@@ -85465,7 +88254,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13566
+Defined in: node\_modules/valibot/dist/index.d.mts:13908
 
 The issue kind.
 
@@ -85535,7 +88324,7 @@ The received property.
 
 > `readonly` **requirement**: (`input`) => `MaybePromise`\<`boolean`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13578
+Defined in: node\_modules/valibot/dist/index.d.mts:13920
 
 The validation function.
 
@@ -85559,7 +88348,7 @@ The validation function.
 
 > `readonly` **type**: `"partial_check"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13570
+Defined in: node\_modules/valibot/dist/index.d.mts:13912
 
 The issue type.
 
@@ -85610,7 +88399,7 @@ The dataset issues.
 
 Defined in: node\_modules/valibot/dist/index.d.mts:2945
 
-Whether is's typed.
+Whether it's typed.
 
 ***
 
@@ -86491,7 +89280,7 @@ lib/core/namespaces/v/interfaces/RawCheckActionAsync.md
 
 # Interface: RawCheckActionAsync\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13798
+Defined in: node\_modules/valibot/dist/index.d.mts:14140
 
 Raw check action async interface.
 
@@ -86589,7 +89378,7 @@ Whether it's async.
 
 > `readonly` **expects**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13810
+Defined in: node\_modules/valibot/dist/index.d.mts:14152
 
 The expected property.
 
@@ -86617,7 +89406,7 @@ The object kind.
 
 > `readonly` **reference**: \<`TInput$1`\>(`action`) => `RawCheckActionAsync`\<`TInput$1`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13806
+Defined in: node\_modules/valibot/dist/index.d.mts:14148
 
 The action reference.
 
@@ -86653,7 +89442,7 @@ A raw check action.
 
 > `readonly` **type**: `"raw_check"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13802
+Defined in: node\_modules/valibot/dist/index.d.mts:14144
 
 The action type.
 
@@ -86672,7 +89461,7 @@ lib/core/namespaces/v/interfaces/RawCheckAction.md
 
 # Interface: RawCheckAction\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13771
+Defined in: node\_modules/valibot/dist/index.d.mts:14113
 
 Raw check action interface.
 
@@ -86770,7 +89559,7 @@ Whether it's async.
 
 > `readonly` **expects**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13783
+Defined in: node\_modules/valibot/dist/index.d.mts:14125
 
 The expected property.
 
@@ -86798,7 +89587,7 @@ The object kind.
 
 > `readonly` **reference**: \<`TInput$1`\>(`action`) => `RawCheckAction`\<`TInput$1`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13779
+Defined in: node\_modules/valibot/dist/index.d.mts:14121
 
 The action reference.
 
@@ -86834,7 +89623,7 @@ A raw check action.
 
 > `readonly` **type**: `"raw_check"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13775
+Defined in: node\_modules/valibot/dist/index.d.mts:14117
 
 The action type.
 
@@ -86853,7 +89642,7 @@ lib/core/namespaces/v/interfaces/RawCheckContext.md
 
 # Interface: RawCheckContext\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13761
+Defined in: node\_modules/valibot/dist/index.d.mts:14103
 
 Raw check context interface.
 
@@ -86869,7 +89658,7 @@ Raw check context interface.
 
 > `readonly` **addIssue**: [`RawCheckAddIssue`](../type-aliases/RawCheckAddIssue.md)\<`TInput$1`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13764
+Defined in: node\_modules/valibot/dist/index.d.mts:14106
 
 ***
 
@@ -86877,7 +89666,7 @@ Defined in: node\_modules/valibot/dist/index.d.mts:13764
 
 > `readonly` **config**: [`Config`](Config.md)\<[`RawCheckIssue`](RawCheckIssue.md)\<`TInput$1`\>\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13763
+Defined in: node\_modules/valibot/dist/index.d.mts:14105
 
 ***
 
@@ -86885,7 +89674,7 @@ Defined in: node\_modules/valibot/dist/index.d.mts:13763
 
 > `readonly` **dataset**: [`OutputDataset`](../type-aliases/OutputDataset.md)\<`TInput$1`, [`BaseIssue`](BaseIssue.md)\<`unknown`\>\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13762
+Defined in: node\_modules/valibot/dist/index.d.mts:14104
 
 lib/core/namespaces/v/interfaces/RawCheckIssueInfo.md
 ---
@@ -86898,7 +89687,7 @@ lib/core/namespaces/v/interfaces/RawCheckIssueInfo.md
 
 # Interface: RawCheckIssueInfo\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13746
+Defined in: node\_modules/valibot/dist/index.d.mts:14088
 
 Raw check issue info interface.
 
@@ -86914,7 +89703,7 @@ Raw check issue info interface.
 
 > `optional` **expected?**: `string`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13749
+Defined in: node\_modules/valibot/dist/index.d.mts:14091
 
 ***
 
@@ -86922,7 +89711,7 @@ Defined in: node\_modules/valibot/dist/index.d.mts:13749
 
 > `optional` **input?**: `unknown`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13748
+Defined in: node\_modules/valibot/dist/index.d.mts:14090
 
 ***
 
@@ -86930,7 +89719,7 @@ Defined in: node\_modules/valibot/dist/index.d.mts:13748
 
 > `optional` **label?**: `string`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13747
+Defined in: node\_modules/valibot/dist/index.d.mts:14089
 
 ***
 
@@ -86938,7 +89727,7 @@ Defined in: node\_modules/valibot/dist/index.d.mts:13747
 
 > `optional` **message?**: [`ErrorMessage`](../type-aliases/ErrorMessage.md)\<[`RawCheckIssue`](RawCheckIssue.md)\<`TInput$1`\>\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13751
+Defined in: node\_modules/valibot/dist/index.d.mts:14093
 
 ***
 
@@ -86946,7 +89735,7 @@ Defined in: node\_modules/valibot/dist/index.d.mts:13751
 
 > `optional` **path?**: \[[`IssuePathItem`](../type-aliases/IssuePathItem.md), `...IssuePathItem[]`\]
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13752
+Defined in: node\_modules/valibot/dist/index.d.mts:14094
 
 ***
 
@@ -86954,7 +89743,7 @@ Defined in: node\_modules/valibot/dist/index.d.mts:13752
 
 > `optional` **received?**: `string`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13750
+Defined in: node\_modules/valibot/dist/index.d.mts:14092
 
 lib/core/namespaces/v/interfaces/RawCheckIssue.md
 ---
@@ -86967,7 +89756,7 @@ lib/core/namespaces/v/interfaces/RawCheckIssue.md
 
 # Interface: RawCheckIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13733
+Defined in: node\_modules/valibot/dist/index.d.mts:14075
 
 Raw check issue interface.
 
@@ -87057,7 +89846,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13737
+Defined in: node\_modules/valibot/dist/index.d.mts:14079
 
 The issue kind.
 
@@ -87141,7 +89930,7 @@ The input requirement.
 
 > `readonly` **type**: `"raw_check"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13741
+Defined in: node\_modules/valibot/dist/index.d.mts:14083
 
 The issue type.
 
@@ -87160,7 +89949,7 @@ lib/core/namespaces/v/interfaces/RawTransformActionAsync.md
 
 # Interface: RawTransformActionAsync\<TInput$1, TOutput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13887
+Defined in: node\_modules/valibot/dist/index.d.mts:14229
 
 Raw transform action async interface.
 
@@ -87276,7 +90065,7 @@ The object kind.
 
 > `readonly` **reference**: \<`TInput$1`, `TOutput$1`\>(`action`) => `RawTransformActionAsync`\<`TInput$1`, `TOutput$1`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13895
+Defined in: node\_modules/valibot/dist/index.d.mts:14237
 
 The action reference.
 
@@ -87316,7 +90105,7 @@ A raw transform action.
 
 > `readonly` **type**: `"raw_transform"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13891
+Defined in: node\_modules/valibot/dist/index.d.mts:14233
 
 The action type.
 
@@ -87335,7 +90124,7 @@ lib/core/namespaces/v/interfaces/RawTransformAction.md
 
 # Interface: RawTransformAction\<TInput$1, TOutput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13864
+Defined in: node\_modules/valibot/dist/index.d.mts:14206
 
 Raw transform action interface.
 
@@ -87451,7 +90240,7 @@ The object kind.
 
 > `readonly` **reference**: \<`TInput$1`, `TOutput$1`\>(`action`) => `RawTransformAction`\<`TInput$1`, `TOutput$1`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13872
+Defined in: node\_modules/valibot/dist/index.d.mts:14214
 
 The action reference.
 
@@ -87491,7 +90280,7 @@ A raw transform action.
 
 > `readonly` **type**: `"raw_transform"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13868
+Defined in: node\_modules/valibot/dist/index.d.mts:14210
 
 The action type.
 
@@ -87510,7 +90299,7 @@ lib/core/namespaces/v/interfaces/RawTransformContext.md
 
 # Interface: RawTransformContext\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13853
+Defined in: node\_modules/valibot/dist/index.d.mts:14195
 
 Raw transform context interface.
 
@@ -87526,7 +90315,7 @@ Raw transform context interface.
 
 > `readonly` **addIssue**: [`RawTransformAddIssue`](../type-aliases/RawTransformAddIssue.md)\<`TInput$1`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13856
+Defined in: node\_modules/valibot/dist/index.d.mts:14198
 
 ***
 
@@ -87534,7 +90323,7 @@ Defined in: node\_modules/valibot/dist/index.d.mts:13856
 
 > `readonly` **config**: [`Config`](Config.md)\<[`RawTransformIssue`](RawTransformIssue.md)\<`TInput$1`\>\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13855
+Defined in: node\_modules/valibot/dist/index.d.mts:14197
 
 ***
 
@@ -87542,7 +90331,7 @@ Defined in: node\_modules/valibot/dist/index.d.mts:13855
 
 > `readonly` **dataset**: [`SuccessDataset`](SuccessDataset.md)\<`TInput$1`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13854
+Defined in: node\_modules/valibot/dist/index.d.mts:14196
 
 ***
 
@@ -87550,7 +90339,7 @@ Defined in: node\_modules/valibot/dist/index.d.mts:13854
 
 > `readonly` **NEVER**: `never`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13857
+Defined in: node\_modules/valibot/dist/index.d.mts:14199
 
 lib/core/namespaces/v/interfaces/RawTransformIssueInfo.md
 ---
@@ -87563,7 +90352,7 @@ lib/core/namespaces/v/interfaces/RawTransformIssueInfo.md
 
 # Interface: RawTransformIssueInfo\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13838
+Defined in: node\_modules/valibot/dist/index.d.mts:14180
 
 Raw transform issue info interface.
 
@@ -87579,7 +90368,7 @@ Raw transform issue info interface.
 
 > `optional` **expected?**: `string`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13841
+Defined in: node\_modules/valibot/dist/index.d.mts:14183
 
 ***
 
@@ -87587,7 +90376,7 @@ Defined in: node\_modules/valibot/dist/index.d.mts:13841
 
 > `optional` **input?**: `unknown`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13840
+Defined in: node\_modules/valibot/dist/index.d.mts:14182
 
 ***
 
@@ -87595,7 +90384,7 @@ Defined in: node\_modules/valibot/dist/index.d.mts:13840
 
 > `optional` **label?**: `string`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13839
+Defined in: node\_modules/valibot/dist/index.d.mts:14181
 
 ***
 
@@ -87603,7 +90392,7 @@ Defined in: node\_modules/valibot/dist/index.d.mts:13839
 
 > `optional` **message?**: [`ErrorMessage`](../type-aliases/ErrorMessage.md)\<[`RawTransformIssue`](RawTransformIssue.md)\<`TInput$1`\>\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13843
+Defined in: node\_modules/valibot/dist/index.d.mts:14185
 
 ***
 
@@ -87611,7 +90400,7 @@ Defined in: node\_modules/valibot/dist/index.d.mts:13843
 
 > `optional` **path?**: \[[`IssuePathItem`](../type-aliases/IssuePathItem.md), `...IssuePathItem[]`\]
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13844
+Defined in: node\_modules/valibot/dist/index.d.mts:14186
 
 ***
 
@@ -87619,7 +90408,7 @@ Defined in: node\_modules/valibot/dist/index.d.mts:13844
 
 > `optional` **received?**: `string`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13842
+Defined in: node\_modules/valibot/dist/index.d.mts:14184
 
 lib/core/namespaces/v/interfaces/RawTransformIssue.md
 ---
@@ -87632,7 +90421,7 @@ lib/core/namespaces/v/interfaces/RawTransformIssue.md
 
 # Interface: RawTransformIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13825
+Defined in: node\_modules/valibot/dist/index.d.mts:14167
 
 Raw transform issue interface.
 
@@ -87722,7 +90511,7 @@ The sub issues.
 
 > `readonly` **kind**: `"transformation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13829
+Defined in: node\_modules/valibot/dist/index.d.mts:14171
 
 The issue kind.
 
@@ -87806,7 +90595,7 @@ The input requirement.
 
 > `readonly` **type**: `"raw_transform"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13833
+Defined in: node\_modules/valibot/dist/index.d.mts:14175
 
 The issue type.
 
@@ -87825,7 +90614,7 @@ lib/core/namespaces/v/interfaces/ReadonlyAction.md
 
 # Interface: ReadonlyAction\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13914
+Defined in: node\_modules/valibot/dist/index.d.mts:14256
 
 Readonly action interface.
 
@@ -87937,7 +90726,7 @@ The object kind.
 
 > `readonly` **reference**: \<`TInput$1`\>() => `ReadonlyAction`\<`TInput$1`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13922
+Defined in: node\_modules/valibot/dist/index.d.mts:14264
 
 The action reference.
 
@@ -87965,7 +90754,7 @@ A readonly action.
 
 > `readonly` **type**: `"readonly"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13918
+Defined in: node\_modules/valibot/dist/index.d.mts:14260
 
 The action type.
 
@@ -88855,7 +91644,7 @@ lib/core/namespaces/v/interfaces/ReduceItemsAction.md
 
 # Interface: ReduceItemsAction\<TInput$1, TOutput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13939
+Defined in: node\_modules/valibot/dist/index.d.mts:14281
 
 Reduce items action interface.
 
@@ -88957,7 +91746,7 @@ Whether it's async.
 
 > `readonly` **initial**: `TOutput$1`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13955
+Defined in: node\_modules/valibot/dist/index.d.mts:14297
 
 The initial value.
 
@@ -88981,7 +91770,7 @@ The object kind.
 
 > `readonly` **operation**: `ArrayAction$1`\<`TInput$1`, `TOutput$1`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13951
+Defined in: node\_modules/valibot/dist/index.d.mts:14293
 
 The reduce items operation.
 
@@ -88991,7 +91780,7 @@ The reduce items operation.
 
 > `readonly` **reference**: \<`TInput$1`, `TOutput$1`\>(`operation`, `initial`) => `ReduceItemsAction`\<`TInput$1`, `TOutput$1`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13947
+Defined in: node\_modules/valibot/dist/index.d.mts:14289
 
 The action reference.
 
@@ -89037,7 +91826,7 @@ A reduce items action.
 
 > `readonly` **type**: `"reduce_items"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13943
+Defined in: node\_modules/valibot/dist/index.d.mts:14285
 
 The action type.
 
@@ -89056,7 +91845,7 @@ lib/core/namespaces/v/interfaces/RegexAction.md
 
 # Interface: RegexAction\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13996
+Defined in: node\_modules/valibot/dist/index.d.mts:14338
 
 Regex action interface.
 
@@ -89158,7 +91947,7 @@ Whether it's async.
 
 > `readonly` **expects**: `string`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14008
+Defined in: node\_modules/valibot/dist/index.d.mts:14350
 
 The expected property.
 
@@ -89186,7 +91975,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14016
+Defined in: node\_modules/valibot/dist/index.d.mts:14358
 
 The error message.
 
@@ -89196,7 +91985,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(`requirement`): `RegexAction`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`requirement`, `message`): `RegexAction`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14004
+Defined in: node\_modules/valibot/dist/index.d.mts:14346
 
 The action reference.
 
@@ -89276,7 +92065,7 @@ A regex action.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14012
+Defined in: node\_modules/valibot/dist/index.d.mts:14354
 
 The regex pattern.
 
@@ -89286,7 +92075,7 @@ The regex pattern.
 
 > `readonly` **type**: `"regex"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14000
+Defined in: node\_modules/valibot/dist/index.d.mts:14342
 
 The action type.
 
@@ -89305,7 +92094,7 @@ lib/core/namespaces/v/interfaces/RegexIssue.md
 
 # Interface: RegexIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13971
+Defined in: node\_modules/valibot/dist/index.d.mts:14313
 
 Regex issue interface.
 
@@ -89353,7 +92142,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `string`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13983
+Defined in: node\_modules/valibot/dist/index.d.mts:14325
 
 The expected input.
 
@@ -89395,7 +92184,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13975
+Defined in: node\_modules/valibot/dist/index.d.mts:14317
 
 The issue kind.
 
@@ -89451,7 +92240,7 @@ The issue path.
 
 > `readonly` **received**: `` `"${string}"` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13987
+Defined in: node\_modules/valibot/dist/index.d.mts:14329
 
 The received input.
 
@@ -89465,7 +92254,7 @@ The received input.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13991
+Defined in: node\_modules/valibot/dist/index.d.mts:14333
 
 The regex pattern.
 
@@ -89479,7 +92268,7 @@ The regex pattern.
 
 > `readonly` **type**: `"regex"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13979
+Defined in: node\_modules/valibot/dist/index.d.mts:14321
 
 The issue type.
 
@@ -89498,7 +92287,7 @@ lib/core/namespaces/v/interfaces/ReturnsActionAsync.md
 
 # Interface: ReturnsActionAsync\<TInput$1, TSchema\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14071
+Defined in: node\_modules/valibot/dist/index.d.mts:14413
 
 Returns action async type.
 
@@ -89624,7 +92413,7 @@ The object kind.
 
 > `readonly` **reference**: \<`TInput$1`, `TSchema`\>(`schema`) => `ReturnsActionAsync`\<`TInput$1`, `TSchema`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14079
+Defined in: node\_modules/valibot/dist/index.d.mts:14421
 
 The action reference.
 
@@ -89664,7 +92453,7 @@ An returns action.
 
 > `readonly` **schema**: `TSchema`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14083
+Defined in: node\_modules/valibot/dist/index.d.mts:14425
 
 The arguments schema.
 
@@ -89674,7 +92463,7 @@ The arguments schema.
 
 > `readonly` **type**: `"returns"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14075
+Defined in: node\_modules/valibot/dist/index.d.mts:14417
 
 The action type.
 
@@ -89693,7 +92482,7 @@ lib/core/namespaces/v/interfaces/ReturnsAction.md
 
 # Interface: ReturnsAction\<TInput$1, TSchema\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14044
+Defined in: node\_modules/valibot/dist/index.d.mts:14386
 
 Returns action type.
 
@@ -89819,7 +92608,7 @@ The object kind.
 
 > `readonly` **reference**: \<`TInput$1`, `TSchema`\>(`schema`) => `ReturnsAction`\<`TInput$1`, `TSchema`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14052
+Defined in: node\_modules/valibot/dist/index.d.mts:14394
 
 The action reference.
 
@@ -89859,7 +92648,7 @@ An returns action.
 
 > `readonly` **schema**: `TSchema`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14056
+Defined in: node\_modules/valibot/dist/index.d.mts:14398
 
 The arguments schema.
 
@@ -89869,7 +92658,7 @@ The arguments schema.
 
 > `readonly` **type**: `"returns"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14048
+Defined in: node\_modules/valibot/dist/index.d.mts:14390
 
 The action type.
 
@@ -89888,7 +92677,7 @@ lib/core/namespaces/v/interfaces/RfcEmailAction.md
 
 # Interface: RfcEmailAction\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14123
+Defined in: node\_modules/valibot/dist/index.d.mts:14465
 
 RFC email action interface.
 
@@ -89990,7 +92779,7 @@ Whether it's async.
 
 > `readonly` **expects**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14135
+Defined in: node\_modules/valibot/dist/index.d.mts:14477
 
 The expected property.
 
@@ -90018,7 +92807,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14143
+Defined in: node\_modules/valibot/dist/index.d.mts:14485
 
 The error message.
 
@@ -90028,7 +92817,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `RfcEmailAction`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `RfcEmailAction`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14131
+Defined in: node\_modules/valibot/dist/index.d.mts:14473
 
 The action reference.
 
@@ -90104,7 +92893,7 @@ A RFC email action.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14139
+Defined in: node\_modules/valibot/dist/index.d.mts:14481
 
 The RFC email regex.
 
@@ -90114,7 +92903,7 @@ The RFC email regex.
 
 > `readonly` **type**: `"rfc_email"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14127
+Defined in: node\_modules/valibot/dist/index.d.mts:14469
 
 The action type.
 
@@ -90133,7 +92922,7 @@ lib/core/namespaces/v/interfaces/RfcEmailIssue.md
 
 # Interface: RfcEmailIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14098
+Defined in: node\_modules/valibot/dist/index.d.mts:14440
 
 RFC email issue interface.
 
@@ -90181,7 +92970,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14110
+Defined in: node\_modules/valibot/dist/index.d.mts:14452
 
 The expected property.
 
@@ -90223,7 +93012,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14102
+Defined in: node\_modules/valibot/dist/index.d.mts:14444
 
 The issue kind.
 
@@ -90279,7 +93068,7 @@ The issue path.
 
 > `readonly` **received**: `` `"${string}"` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14114
+Defined in: node\_modules/valibot/dist/index.d.mts:14456
 
 The received property.
 
@@ -90293,7 +93082,7 @@ The received property.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14118
+Defined in: node\_modules/valibot/dist/index.d.mts:14460
 
 The RFC email regex.
 
@@ -90307,7 +93096,7 @@ The RFC email regex.
 
 > `readonly` **type**: `"rfc_email"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14106
+Defined in: node\_modules/valibot/dist/index.d.mts:14448
 
 The issue type.
 
@@ -90326,7 +93115,7 @@ lib/core/namespaces/v/interfaces/SafeIntegerAction.md
 
 # Interface: SafeIntegerAction\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14203
+Defined in: node\_modules/valibot/dist/index.d.mts:14545
 
 Safe integer action interface.
 
@@ -90428,7 +93217,7 @@ Whether it's async.
 
 > `readonly` **expects**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14215
+Defined in: node\_modules/valibot/dist/index.d.mts:14557
 
 The expected property.
 
@@ -90456,7 +93245,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14223
+Defined in: node\_modules/valibot/dist/index.d.mts:14565
 
 The error message.
 
@@ -90466,7 +93255,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `SafeIntegerAction`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `SafeIntegerAction`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14211
+Defined in: node\_modules/valibot/dist/index.d.mts:14553
 
 The action reference.
 
@@ -90528,7 +93317,7 @@ A safe integer action.
 
 > `readonly` **requirement**: (`input`) => `boolean`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14219
+Defined in: node\_modules/valibot/dist/index.d.mts:14561
 
 The validation function.
 
@@ -90548,7 +93337,7 @@ The validation function.
 
 > `readonly` **type**: `"safe_integer"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14207
+Defined in: node\_modules/valibot/dist/index.d.mts:14549
 
 The action type.
 
@@ -90567,7 +93356,7 @@ lib/core/namespaces/v/interfaces/SafeIntegerIssue.md
 
 # Interface: SafeIntegerIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14178
+Defined in: node\_modules/valibot/dist/index.d.mts:14520
 
 Safe integer issue interface.
 
@@ -90615,7 +93404,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14190
+Defined in: node\_modules/valibot/dist/index.d.mts:14532
 
 The expected property.
 
@@ -90657,7 +93446,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14182
+Defined in: node\_modules/valibot/dist/index.d.mts:14524
 
 The issue kind.
 
@@ -90713,7 +93502,7 @@ The issue path.
 
 > `readonly` **received**: `` `${number}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14194
+Defined in: node\_modules/valibot/dist/index.d.mts:14536
 
 The received property.
 
@@ -90727,7 +93516,7 @@ The received property.
 
 > `readonly` **requirement**: (`input`) => `boolean`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14198
+Defined in: node\_modules/valibot/dist/index.d.mts:14540
 
 The validation function.
 
@@ -90751,7 +93540,7 @@ The validation function.
 
 > `readonly` **type**: `"safe_integer"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14186
+Defined in: node\_modules/valibot/dist/index.d.mts:14528
 
 The issue type.
 
@@ -91740,7 +94529,7 @@ lib/core/namespaces/v/interfaces/SizeAction.md
 
 # Interface: SizeAction\<TInput$1, TRequirement, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14269
+Defined in: node\_modules/valibot/dist/index.d.mts:14611
 
 Size action interface.
 
@@ -91846,7 +94635,7 @@ Whether it's async.
 
 > `readonly` **expects**: `` `${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14281
+Defined in: node\_modules/valibot/dist/index.d.mts:14623
 
 The expected property.
 
@@ -91874,7 +94663,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14289
+Defined in: node\_modules/valibot/dist/index.d.mts:14631
 
 The error message.
 
@@ -91884,7 +94673,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`, `TRequirement`\>(`requirement`): `SizeAction`\<`TInput$1`, `TRequirement`, `undefined`\>; \<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): `SizeAction`\<`TInput$1`, `TRequirement`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14277
+Defined in: node\_modules/valibot/dist/index.d.mts:14619
 
 The action reference.
 
@@ -91968,7 +94757,7 @@ A size action.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14285
+Defined in: node\_modules/valibot/dist/index.d.mts:14627
 
 The required size.
 
@@ -91978,7 +94767,7 @@ The required size.
 
 > `readonly` **type**: `"size"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14273
+Defined in: node\_modules/valibot/dist/index.d.mts:14615
 
 The action type.
 
@@ -91997,7 +94786,7 @@ lib/core/namespaces/v/interfaces/SizeIssue.md
 
 # Interface: SizeIssue\<TInput$1, TRequirement\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14244
+Defined in: node\_modules/valibot/dist/index.d.mts:14586
 
 Size issue interface.
 
@@ -92049,7 +94838,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `` `${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14256
+Defined in: node\_modules/valibot/dist/index.d.mts:14598
 
 The expected property.
 
@@ -92091,7 +94880,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14248
+Defined in: node\_modules/valibot/dist/index.d.mts:14590
 
 The issue kind.
 
@@ -92147,7 +94936,7 @@ The issue path.
 
 > `readonly` **received**: `` `${number}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14260
+Defined in: node\_modules/valibot/dist/index.d.mts:14602
 
 The received property.
 
@@ -92161,7 +94950,7 @@ The received property.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14264
+Defined in: node\_modules/valibot/dist/index.d.mts:14606
 
 The required size.
 
@@ -92175,7 +94964,7 @@ The required size.
 
 > `readonly` **type**: `"size"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14252
+Defined in: node\_modules/valibot/dist/index.d.mts:14594
 
 The issue type.
 
@@ -92194,7 +94983,7 @@ lib/core/namespaces/v/interfaces/SlugAction.md
 
 # Interface: SlugAction\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14338
+Defined in: node\_modules/valibot/dist/index.d.mts:14680
 
 Slug action type.
 
@@ -92296,7 +95085,7 @@ Whether it's async.
 
 > `readonly` **expects**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14350
+Defined in: node\_modules/valibot/dist/index.d.mts:14692
 
 The expected property.
 
@@ -92324,7 +95113,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14358
+Defined in: node\_modules/valibot/dist/index.d.mts:14700
 
 The error message.
 
@@ -92334,7 +95123,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `SlugAction`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `SlugAction`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14346
+Defined in: node\_modules/valibot/dist/index.d.mts:14688
 
 The action reference.
 
@@ -92396,7 +95185,7 @@ A slug action.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14354
+Defined in: node\_modules/valibot/dist/index.d.mts:14696
 
 The slug regex.
 
@@ -92406,7 +95195,7 @@ The slug regex.
 
 > `readonly` **type**: `"slug"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14342
+Defined in: node\_modules/valibot/dist/index.d.mts:14684
 
 The action type.
 
@@ -92425,7 +95214,7 @@ lib/core/namespaces/v/interfaces/SlugIssue.md
 
 # Interface: SlugIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14313
+Defined in: node\_modules/valibot/dist/index.d.mts:14655
 
 Slug issue type.
 
@@ -92473,7 +95262,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14325
+Defined in: node\_modules/valibot/dist/index.d.mts:14667
 
 The expected property.
 
@@ -92515,7 +95304,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14317
+Defined in: node\_modules/valibot/dist/index.d.mts:14659
 
 The issue kind.
 
@@ -92571,7 +95360,7 @@ The issue path.
 
 > `readonly` **received**: `` `"${string}"` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14329
+Defined in: node\_modules/valibot/dist/index.d.mts:14671
 
 The received property.
 
@@ -92585,7 +95374,7 @@ The received property.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14333
+Defined in: node\_modules/valibot/dist/index.d.mts:14675
 
 The slug regex.
 
@@ -92599,7 +95388,7 @@ The slug regex.
 
 > `readonly` **type**: `"slug"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14321
+Defined in: node\_modules/valibot/dist/index.d.mts:14663
 
 The issue type.
 
@@ -92618,7 +95407,7 @@ lib/core/namespaces/v/interfaces/SomeItemAction.md
 
 # Interface: SomeItemAction\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14400
+Defined in: node\_modules/valibot/dist/index.d.mts:14742
 
 Some item action interface.
 
@@ -92720,7 +95509,7 @@ Whether it's async.
 
 > `readonly` **expects**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14412
+Defined in: node\_modules/valibot/dist/index.d.mts:14754
 
 The expected property.
 
@@ -92748,7 +95537,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14420
+Defined in: node\_modules/valibot/dist/index.d.mts:14762
 
 The error message.
 
@@ -92758,7 +95547,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(`requirement`): `SomeItemAction`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`requirement`, `message`): `SomeItemAction`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14408
+Defined in: node\_modules/valibot/dist/index.d.mts:14750
 
 The action reference.
 
@@ -92834,7 +95623,7 @@ A some item action.
 
 > `readonly` **requirement**: [`ArrayRequirement`](../type-aliases/ArrayRequirement.md)\<`TInput$1`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14416
+Defined in: node\_modules/valibot/dist/index.d.mts:14758
 
 The validation function.
 
@@ -92844,7 +95633,7 @@ The validation function.
 
 > `readonly` **type**: `"some_item"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14404
+Defined in: node\_modules/valibot/dist/index.d.mts:14746
 
 The action type.
 
@@ -92863,7 +95652,7 @@ lib/core/namespaces/v/interfaces/SomeItemIssue.md
 
 # Interface: SomeItemIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14379
+Defined in: node\_modules/valibot/dist/index.d.mts:14721
 
 Some item issue interface.
 
@@ -92911,7 +95700,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14391
+Defined in: node\_modules/valibot/dist/index.d.mts:14733
 
 The expected property.
 
@@ -92953,7 +95742,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14383
+Defined in: node\_modules/valibot/dist/index.d.mts:14725
 
 The issue kind.
 
@@ -93023,7 +95812,7 @@ The received property.
 
 > `readonly` **requirement**: [`ArrayRequirement`](../type-aliases/ArrayRequirement.md)\<`TInput$1`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14395
+Defined in: node\_modules/valibot/dist/index.d.mts:14737
 
 The validation function.
 
@@ -93037,7 +95826,7 @@ The validation function.
 
 > `readonly` **type**: `"some_item"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14387
+Defined in: node\_modules/valibot/dist/index.d.mts:14729
 
 The issue type.
 
@@ -93056,7 +95845,7 @@ lib/core/namespaces/v/interfaces/SortItemsAction.md
 
 # Interface: SortItemsAction\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14448
+Defined in: node\_modules/valibot/dist/index.d.mts:14790
 
 Sort items action interface.
 
@@ -93168,7 +95957,7 @@ The object kind.
 
 > `readonly` **operation**: `ArrayAction`\<`TInput$1`\> \| `undefined`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14460
+Defined in: node\_modules/valibot/dist/index.d.mts:14802
 
 The sort items operation.
 
@@ -93178,7 +95967,7 @@ The sort items operation.
 
 > `readonly` **reference**: \<`TInput$1`\>(`operation?`) => `SortItemsAction`\<`TInput$1`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14456
+Defined in: node\_modules/valibot/dist/index.d.mts:14798
 
 The action reference.
 
@@ -93214,7 +96003,7 @@ A sort items action.
 
 > `readonly` **type**: `"sort_items"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14452
+Defined in: node\_modules/valibot/dist/index.d.mts:14794
 
 The action type.
 
@@ -93308,7 +96097,7 @@ lib/core/namespaces/v/interfaces/StartsWithAction.md
 
 # Interface: StartsWithAction\<TInput$1, TRequirement, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14500
+Defined in: node\_modules/valibot/dist/index.d.mts:14842
 
 Starts with action interface.
 
@@ -93414,7 +96203,7 @@ Whether it's async.
 
 > `readonly` **expects**: `` `"${TRequirement}"` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14512
+Defined in: node\_modules/valibot/dist/index.d.mts:14854
 
 The expected property.
 
@@ -93442,7 +96231,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14520
+Defined in: node\_modules/valibot/dist/index.d.mts:14862
 
 The error message.
 
@@ -93452,7 +96241,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`, `TRequirement`\>(`requirement`): `StartsWithAction`\<`TInput$1`, `TRequirement`, `undefined`\>; \<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): `StartsWithAction`\<`TInput$1`, `TRequirement`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14508
+Defined in: node\_modules/valibot/dist/index.d.mts:14850
 
 The action reference.
 
@@ -93536,7 +96325,7 @@ A starts with action.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14516
+Defined in: node\_modules/valibot/dist/index.d.mts:14858
 
 The start string.
 
@@ -93546,7 +96335,7 @@ The start string.
 
 > `readonly` **type**: `"starts_with"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14504
+Defined in: node\_modules/valibot/dist/index.d.mts:14846
 
 The action type.
 
@@ -93565,7 +96354,7 @@ lib/core/namespaces/v/interfaces/StartsWithIssue.md
 
 # Interface: StartsWithIssue\<TInput$1, TRequirement\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14475
+Defined in: node\_modules/valibot/dist/index.d.mts:14817
 
 Starts with issue interface.
 
@@ -93617,7 +96406,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `` `"${TRequirement}"` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14487
+Defined in: node\_modules/valibot/dist/index.d.mts:14829
 
 The expected property.
 
@@ -93659,7 +96448,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14479
+Defined in: node\_modules/valibot/dist/index.d.mts:14821
 
 The issue kind.
 
@@ -93715,7 +96504,7 @@ The issue path.
 
 > `readonly` **received**: `` `"${string}"` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14491
+Defined in: node\_modules/valibot/dist/index.d.mts:14833
 
 The received property.
 
@@ -93729,7 +96518,7 @@ The received property.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14495
+Defined in: node\_modules/valibot/dist/index.d.mts:14837
 
 The start string.
 
@@ -93743,7 +96532,7 @@ The start string.
 
 > `readonly` **type**: `"starts_with"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14483
+Defined in: node\_modules/valibot/dist/index.d.mts:14825
 
 The issue type.
 
@@ -95328,7 +98117,7 @@ lib/core/namespaces/v/interfaces/StringifyJsonAction.md
 
 # Interface: StringifyJsonAction\<TInput$1, TConfig, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14584
+Defined in: node\_modules/valibot/dist/index.d.mts:14926
 
 **`Beta`**
 
@@ -95438,7 +98227,7 @@ Whether it's async.
 
 > `readonly` **config**: `TConfig`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14596
+Defined in: node\_modules/valibot/dist/index.d.mts:14938
 
 **`Beta`**
 
@@ -95466,7 +98255,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14600
+Defined in: node\_modules/valibot/dist/index.d.mts:14942
 
 **`Beta`**
 
@@ -95478,7 +98267,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `StringifyJsonAction`\<`TInput$1`, `undefined`, `undefined`\>; \<`TInput$1`, `TConfig`\>(`config`): `StringifyJsonAction`\<`TInput$1`, `TConfig`, `undefined`\>; \<`TInput$1`, `TConfig`, `TMessage`\>(`config`, `message`): `StringifyJsonAction`\<`TInput$1`, `TConfig`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14592
+Defined in: node\_modules/valibot/dist/index.d.mts:14934
 
 **`Beta`**
 
@@ -95588,7 +98377,7 @@ A stringify JSON action.
 
 > `readonly` **type**: `"stringify_json"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14588
+Defined in: node\_modules/valibot/dist/index.d.mts:14930
 
 **`Beta`**
 
@@ -95609,7 +98398,7 @@ lib/core/namespaces/v/interfaces/StringifyJsonConfig.md
 
 # Interface: StringifyJsonConfig
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14546
+Defined in: node\_modules/valibot/dist/index.d.mts:14888
 
 **`Beta`**
 
@@ -95621,7 +98410,7 @@ Stringify JSON config interface.
 
 > `optional` **replacer?**: (`string` \| `number`)[] \| ((`this`, `key`, `value`) => `any`)
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14550
+Defined in: node\_modules/valibot/dist/index.d.mts:14892
 
 **`Beta`**
 
@@ -95633,7 +98422,7 @@ The JSON replacer function or array.
 
 > `optional` **space?**: `string` \| `number`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14554
+Defined in: node\_modules/valibot/dist/index.d.mts:14896
 
 **`Beta`**
 
@@ -95650,7 +98439,7 @@ lib/core/namespaces/v/interfaces/StringifyJsonIssue.md
 
 # Interface: StringifyJsonIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14561
+Defined in: node\_modules/valibot/dist/index.d.mts:14903
 
 **`Beta`**
 
@@ -95704,7 +98493,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14573
+Defined in: node\_modules/valibot/dist/index.d.mts:14915
 
 **`Beta`**
 
@@ -95752,7 +98541,7 @@ The sub issues.
 
 > `readonly` **kind**: `"transformation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14565
+Defined in: node\_modules/valibot/dist/index.d.mts:14907
 
 **`Beta`**
 
@@ -95816,7 +98605,7 @@ The issue path.
 
 > `readonly` **received**: `` `"${string}"` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14577
+Defined in: node\_modules/valibot/dist/index.d.mts:14919
 
 **`Beta`**
 
@@ -95848,7 +98637,7 @@ The input requirement.
 
 > `readonly` **type**: `"stringify_json"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14569
+Defined in: node\_modules/valibot/dist/index.d.mts:14911
 
 **`Beta`**
 
@@ -96307,7 +99096,7 @@ The dataset issues.
 
 Defined in: node\_modules/valibot/dist/index.d.mts:2928
 
-Whether is's typed.
+Whether it's typed.
 
 ***
 
@@ -96875,7 +99664,7 @@ lib/core/namespaces/v/interfaces/ToBigintAction.md
 
 # Interface: ToBigintAction\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14653
+Defined in: node\_modules/valibot/dist/index.d.mts:14995
 
 To bigint action interface.
 
@@ -96991,7 +99780,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14665
+Defined in: node\_modules/valibot/dist/index.d.mts:15007
 
 The error message.
 
@@ -97001,7 +99790,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `ToBigintAction`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `ToBigintAction`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14661
+Defined in: node\_modules/valibot/dist/index.d.mts:15003
 
 The action reference.
 
@@ -97067,7 +99856,7 @@ A to bigint action.
 
 > `readonly` **type**: `"to_bigint"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14657
+Defined in: node\_modules/valibot/dist/index.d.mts:14999
 
 The action type.
 
@@ -97086,7 +99875,7 @@ lib/core/namespaces/v/interfaces/ToBigintIssue.md
 
 # Interface: ToBigintIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14636
+Defined in: node\_modules/valibot/dist/index.d.mts:14978
 
 To bigint issue interface.
 
@@ -97134,7 +99923,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14648
+Defined in: node\_modules/valibot/dist/index.d.mts:14990
 
 The expected property.
 
@@ -97176,7 +99965,7 @@ The sub issues.
 
 > `readonly` **kind**: `"transformation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14640
+Defined in: node\_modules/valibot/dist/index.d.mts:14982
 
 The issue kind.
 
@@ -97260,7 +100049,7 @@ The input requirement.
 
 > `readonly` **type**: `"to_bigint"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14644
+Defined in: node\_modules/valibot/dist/index.d.mts:14986
 
 The issue type.
 
@@ -97279,7 +100068,7 @@ lib/core/namespaces/v/interfaces/ToBooleanAction.md
 
 # Interface: ToBooleanAction\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14690
+Defined in: node\_modules/valibot/dist/index.d.mts:15032
 
 To boolean action interface.
 
@@ -97391,7 +100180,7 @@ The object kind.
 
 > `readonly` **reference**: \<`TInput$1`\>() => `ToBooleanAction`\<`TInput$1`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14698
+Defined in: node\_modules/valibot/dist/index.d.mts:15040
 
 The action reference.
 
@@ -97421,7 +100210,7 @@ A to boolean action.
 
 > `readonly` **type**: `"to_boolean"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14694
+Defined in: node\_modules/valibot/dist/index.d.mts:15036
 
 The action type.
 
@@ -97440,7 +100229,7 @@ lib/core/namespaces/v/interfaces/ToCamelCaseAction.md
 
 # Interface: ToCamelCaseAction
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14715
+Defined in: node\_modules/valibot/dist/index.d.mts:15057
 
 **`Beta`**
 
@@ -97552,7 +100341,7 @@ The object kind.
 
 > `readonly` **reference**: () => `ToCamelCaseAction`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14723
+Defined in: node\_modules/valibot/dist/index.d.mts:15065
 
 **`Beta`**
 
@@ -97585,7 +100374,7 @@ A to camel case action.
 
 > `readonly` **type**: `"to_camel_case"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14719
+Defined in: node\_modules/valibot/dist/index.d.mts:15061
 
 **`Beta`**
 
@@ -97606,7 +100395,7 @@ lib/core/namespaces/v/interfaces/ToDateAction.md
 
 # Interface: ToDateAction\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14762
+Defined in: node\_modules/valibot/dist/index.d.mts:15104
 
 To date action interface.
 
@@ -97722,7 +100511,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14774
+Defined in: node\_modules/valibot/dist/index.d.mts:15116
 
 The error message.
 
@@ -97732,7 +100521,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `ToDateAction`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `ToDateAction`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14770
+Defined in: node\_modules/valibot/dist/index.d.mts:15112
 
 The action reference.
 
@@ -97798,7 +100587,7 @@ A to date action.
 
 > `readonly` **type**: `"to_date"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14766
+Defined in: node\_modules/valibot/dist/index.d.mts:15108
 
 The action type.
 
@@ -97817,7 +100606,7 @@ lib/core/namespaces/v/interfaces/ToDateIssue.md
 
 # Interface: ToDateIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14745
+Defined in: node\_modules/valibot/dist/index.d.mts:15087
 
 To date issue interface.
 
@@ -97865,7 +100654,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14757
+Defined in: node\_modules/valibot/dist/index.d.mts:15099
 
 The expected property.
 
@@ -97907,7 +100696,7 @@ The sub issues.
 
 > `readonly` **kind**: `"transformation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14749
+Defined in: node\_modules/valibot/dist/index.d.mts:15091
 
 The issue kind.
 
@@ -97991,7 +100780,7 @@ The input requirement.
 
 > `readonly` **type**: `"to_date"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14753
+Defined in: node\_modules/valibot/dist/index.d.mts:15095
 
 The issue type.
 
@@ -98010,7 +100799,7 @@ lib/core/namespaces/v/interfaces/ToKebabCaseAction.md
 
 # Interface: ToKebabCaseAction
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14801
+Defined in: node\_modules/valibot/dist/index.d.mts:15143
 
 **`Beta`**
 
@@ -98122,7 +100911,7 @@ The object kind.
 
 > `readonly` **reference**: () => `ToKebabCaseAction`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14809
+Defined in: node\_modules/valibot/dist/index.d.mts:15151
 
 **`Beta`**
 
@@ -98155,7 +100944,7 @@ A to kebab case action.
 
 > `readonly` **type**: `"to_kebab_case"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14805
+Defined in: node\_modules/valibot/dist/index.d.mts:15147
 
 **`Beta`**
 
@@ -98176,7 +100965,7 @@ lib/core/namespaces/v/interfaces/ToLowerCaseAction.md
 
 # Interface: ToLowerCaseAction
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14831
+Defined in: node\_modules/valibot/dist/index.d.mts:15173
 
 To lower case action interface.
 
@@ -98282,7 +101071,7 @@ The object kind.
 
 > `readonly` **reference**: () => `ToLowerCaseAction`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14839
+Defined in: node\_modules/valibot/dist/index.d.mts:15181
 
 The action reference.
 
@@ -98304,7 +101093,7 @@ A to lower case action.
 
 > `readonly` **type**: `"to_lower_case"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14835
+Defined in: node\_modules/valibot/dist/index.d.mts:15177
 
 The action type.
 
@@ -98323,7 +101112,7 @@ lib/core/namespaces/v/interfaces/ToMaxValueAction.md
 
 # Interface: ToMaxValueAction\<TInput$1, TRequirement\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14852
+Defined in: node\_modules/valibot/dist/index.d.mts:15194
 
 To max value action interface.
 
@@ -98439,7 +101228,7 @@ The object kind.
 
 > `readonly` **reference**: \<`TInput$1`, `TRequirement`\>(`requirement`) => `ToMaxValueAction`\<`TInput$1`, `TRequirement`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14860
+Defined in: node\_modules/valibot/dist/index.d.mts:15202
 
 The action reference.
 
@@ -98479,7 +101268,7 @@ A to max value action.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14864
+Defined in: node\_modules/valibot/dist/index.d.mts:15206
 
 The maximum value.
 
@@ -98489,7 +101278,7 @@ The maximum value.
 
 > `readonly` **type**: `"to_max_value"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14856
+Defined in: node\_modules/valibot/dist/index.d.mts:15198
 
 The action type.
 
@@ -98508,7 +101297,7 @@ lib/core/namespaces/v/interfaces/ToMinValueAction.md
 
 # Interface: ToMinValueAction\<TInput$1, TRequirement\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14879
+Defined in: node\_modules/valibot/dist/index.d.mts:15221
 
 To min value action interface.
 
@@ -98624,7 +101413,7 @@ The object kind.
 
 > `readonly` **reference**: \<`TInput$1`, `TRequirement`\>(`requirement`) => `ToMinValueAction`\<`TInput$1`, `TRequirement`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14887
+Defined in: node\_modules/valibot/dist/index.d.mts:15229
 
 The action reference.
 
@@ -98664,7 +101453,7 @@ A to min value action.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14891
+Defined in: node\_modules/valibot/dist/index.d.mts:15233
 
 The minimum value.
 
@@ -98674,7 +101463,7 @@ The minimum value.
 
 > `readonly` **type**: `"to_min_value"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14883
+Defined in: node\_modules/valibot/dist/index.d.mts:15225
 
 The action type.
 
@@ -98693,7 +101482,7 @@ lib/core/namespaces/v/interfaces/ToNumberAction.md
 
 # Interface: ToNumberAction\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14923
+Defined in: node\_modules/valibot/dist/index.d.mts:15265
 
 To number action interface.
 
@@ -98809,7 +101598,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14935
+Defined in: node\_modules/valibot/dist/index.d.mts:15277
 
 The error message.
 
@@ -98819,7 +101608,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `ToNumberAction`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `ToNumberAction`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14931
+Defined in: node\_modules/valibot/dist/index.d.mts:15273
 
 The action reference.
 
@@ -98885,7 +101674,7 @@ A to number action.
 
 > `readonly` **type**: `"to_number"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14927
+Defined in: node\_modules/valibot/dist/index.d.mts:15269
 
 The action type.
 
@@ -98904,7 +101693,7 @@ lib/core/namespaces/v/interfaces/ToNumberIssue.md
 
 # Interface: ToNumberIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14906
+Defined in: node\_modules/valibot/dist/index.d.mts:15248
 
 To number issue interface.
 
@@ -98952,7 +101741,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14918
+Defined in: node\_modules/valibot/dist/index.d.mts:15260
 
 The expected property.
 
@@ -98994,7 +101783,7 @@ The sub issues.
 
 > `readonly` **kind**: `"transformation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14910
+Defined in: node\_modules/valibot/dist/index.d.mts:15252
 
 The issue kind.
 
@@ -99078,7 +101867,7 @@ The input requirement.
 
 > `readonly` **type**: `"to_number"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14914
+Defined in: node\_modules/valibot/dist/index.d.mts:15256
 
 The issue type.
 
@@ -99097,7 +101886,7 @@ lib/core/namespaces/v/interfaces/ToPascalCaseAction.md
 
 # Interface: ToPascalCaseAction
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14962
+Defined in: node\_modules/valibot/dist/index.d.mts:15304
 
 **`Beta`**
 
@@ -99209,7 +101998,7 @@ The object kind.
 
 > `readonly` **reference**: () => `ToPascalCaseAction`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14970
+Defined in: node\_modules/valibot/dist/index.d.mts:15312
 
 **`Beta`**
 
@@ -99242,7 +102031,7 @@ A to pascal case action.
 
 > `readonly` **type**: `"to_pascal_case"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14966
+Defined in: node\_modules/valibot/dist/index.d.mts:15308
 
 **`Beta`**
 
@@ -99263,7 +102052,7 @@ lib/core/namespaces/v/interfaces/ToSnakeCaseAction.md
 
 # Interface: ToSnakeCaseAction
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14994
+Defined in: node\_modules/valibot/dist/index.d.mts:15336
 
 **`Beta`**
 
@@ -99375,7 +102164,7 @@ The object kind.
 
 > `readonly` **reference**: () => `ToSnakeCaseAction`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15002
+Defined in: node\_modules/valibot/dist/index.d.mts:15344
 
 **`Beta`**
 
@@ -99408,7 +102197,7 @@ A to snake case action.
 
 > `readonly` **type**: `"to_snake_case"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14998
+Defined in: node\_modules/valibot/dist/index.d.mts:15340
 
 **`Beta`**
 
@@ -99429,7 +102218,7 @@ lib/core/namespaces/v/interfaces/ToStringAction.md
 
 # Interface: ToStringAction\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15041
+Defined in: node\_modules/valibot/dist/index.d.mts:15383
 
 To string action interface.
 
@@ -99545,7 +102334,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15053
+Defined in: node\_modules/valibot/dist/index.d.mts:15395
 
 The error message.
 
@@ -99555,7 +102344,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `ToStringAction`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `ToStringAction`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15049
+Defined in: node\_modules/valibot/dist/index.d.mts:15391
 
 The action reference.
 
@@ -99621,7 +102410,7 @@ A to string action.
 
 > `readonly` **type**: `"to_string"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15045
+Defined in: node\_modules/valibot/dist/index.d.mts:15387
 
 The action type.
 
@@ -99640,7 +102429,7 @@ lib/core/namespaces/v/interfaces/ToStringIssue.md
 
 # Interface: ToStringIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15024
+Defined in: node\_modules/valibot/dist/index.d.mts:15366
 
 To string issue interface.
 
@@ -99688,7 +102477,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15036
+Defined in: node\_modules/valibot/dist/index.d.mts:15378
 
 The expected property.
 
@@ -99730,7 +102519,7 @@ The sub issues.
 
 > `readonly` **kind**: `"transformation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15028
+Defined in: node\_modules/valibot/dist/index.d.mts:15370
 
 The issue kind.
 
@@ -99814,7 +102603,7 @@ The input requirement.
 
 > `readonly` **type**: `"to_string"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15032
+Defined in: node\_modules/valibot/dist/index.d.mts:15374
 
 The issue type.
 
@@ -99833,7 +102622,7 @@ lib/core/namespaces/v/interfaces/ToUpperCaseAction.md
 
 # Interface: ToUpperCaseAction
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15078
+Defined in: node\_modules/valibot/dist/index.d.mts:15420
 
 To upper case action interface.
 
@@ -99939,7 +102728,7 @@ The object kind.
 
 > `readonly` **reference**: () => `ToUpperCaseAction`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15086
+Defined in: node\_modules/valibot/dist/index.d.mts:15428
 
 The action reference.
 
@@ -99961,7 +102750,7 @@ A to upper case action.
 
 > `readonly` **type**: `"to_upper_case"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15082
+Defined in: node\_modules/valibot/dist/index.d.mts:15424
 
 The action type.
 
@@ -99980,7 +102769,7 @@ lib/core/namespaces/v/interfaces/TransformActionAsync.md
 
 # Interface: TransformActionAsync\<TInput$1, TOutput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15126
+Defined in: node\_modules/valibot/dist/index.d.mts:15468
 
 Transform action async interface.
 
@@ -100096,7 +102885,7 @@ The object kind.
 
 > `readonly` **operation**: (`input`) => `Promise`\<`TOutput$1`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15138
+Defined in: node\_modules/valibot/dist/index.d.mts:15480
 
 The transformation operation.
 
@@ -100116,7 +102905,7 @@ The transformation operation.
 
 > `readonly` **reference**: \<`TInput$1`, `TOutput$1`\>(`operation`) => `TransformActionAsync`\<`TInput$1`, `TOutput$1`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15134
+Defined in: node\_modules/valibot/dist/index.d.mts:15476
 
 The action reference.
 
@@ -100156,7 +102945,7 @@ A transform action.
 
 > `readonly` **type**: `"transform"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15130
+Defined in: node\_modules/valibot/dist/index.d.mts:15472
 
 The action type.
 
@@ -100175,7 +102964,7 @@ lib/core/namespaces/v/interfaces/TransformAction.md
 
 # Interface: TransformAction\<TInput$1, TOutput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15099
+Defined in: node\_modules/valibot/dist/index.d.mts:15441
 
 Transform action interface.
 
@@ -100291,7 +103080,7 @@ The object kind.
 
 > `readonly` **operation**: (`input`) => `TOutput$1`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15111
+Defined in: node\_modules/valibot/dist/index.d.mts:15453
 
 The transformation operation.
 
@@ -100311,7 +103100,7 @@ The transformation operation.
 
 > `readonly` **reference**: \<`TInput$1`, `TOutput$1`\>(`operation`) => `TransformAction`\<`TInput$1`, `TOutput$1`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15107
+Defined in: node\_modules/valibot/dist/index.d.mts:15449
 
 The action reference.
 
@@ -100351,7 +103140,7 @@ A transform action.
 
 > `readonly` **type**: `"transform"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15103
+Defined in: node\_modules/valibot/dist/index.d.mts:15445
 
 The action type.
 
@@ -100370,7 +103159,7 @@ lib/core/namespaces/v/interfaces/TrimAction.md
 
 # Interface: TrimAction
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15153
+Defined in: node\_modules/valibot/dist/index.d.mts:15495
 
 Trim action interface.
 
@@ -100476,7 +103265,7 @@ The object kind.
 
 > `readonly` **reference**: () => `TrimAction`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15161
+Defined in: node\_modules/valibot/dist/index.d.mts:15503
 
 The action reference.
 
@@ -100498,7 +103287,7 @@ A trim action.
 
 > `readonly` **type**: `"trim"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15157
+Defined in: node\_modules/valibot/dist/index.d.mts:15499
 
 The action type.
 
@@ -100517,7 +103306,7 @@ lib/core/namespaces/v/interfaces/TrimEndAction.md
 
 # Interface: TrimEndAction
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15174
+Defined in: node\_modules/valibot/dist/index.d.mts:15516
 
 Trim end action interface.
 
@@ -100623,7 +103412,7 @@ The object kind.
 
 > `readonly` **reference**: () => `TrimEndAction`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15182
+Defined in: node\_modules/valibot/dist/index.d.mts:15524
 
 The action reference.
 
@@ -100645,7 +103434,7 @@ A trim end action.
 
 > `readonly` **type**: `"trim_end"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15178
+Defined in: node\_modules/valibot/dist/index.d.mts:15520
 
 The action type.
 
@@ -100664,7 +103453,7 @@ lib/core/namespaces/v/interfaces/TrimStartAction.md
 
 # Interface: TrimStartAction
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15195
+Defined in: node\_modules/valibot/dist/index.d.mts:15537
 
 Trim start action interface.
 
@@ -100770,7 +103559,7 @@ The object kind.
 
 > `readonly` **reference**: () => `TrimStartAction`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15203
+Defined in: node\_modules/valibot/dist/index.d.mts:15545
 
 The action reference.
 
@@ -100792,7 +103581,7 @@ A trim start action.
 
 > `readonly` **type**: `"trim_start"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15199
+Defined in: node\_modules/valibot/dist/index.d.mts:15541
 
 The action type.
 
@@ -102495,7 +105284,7 @@ lib/core/namespaces/v/interfaces/UlidAction.md
 
 # Interface: UlidAction\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15241
+Defined in: node\_modules/valibot/dist/index.d.mts:15583
 
 ULID action interface.
 
@@ -102597,7 +105386,7 @@ Whether it's async.
 
 > `readonly` **expects**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15253
+Defined in: node\_modules/valibot/dist/index.d.mts:15595
 
 The expected property.
 
@@ -102625,7 +105414,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15261
+Defined in: node\_modules/valibot/dist/index.d.mts:15603
 
 The error message.
 
@@ -102635,7 +105424,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `UlidAction`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `UlidAction`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15249
+Defined in: node\_modules/valibot/dist/index.d.mts:15591
 
 The action reference.
 
@@ -102697,7 +105486,7 @@ An ULID action.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15257
+Defined in: node\_modules/valibot/dist/index.d.mts:15599
 
 The ULID regex.
 
@@ -102707,7 +105496,7 @@ The ULID regex.
 
 > `readonly` **type**: `"ulid"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15245
+Defined in: node\_modules/valibot/dist/index.d.mts:15587
 
 The action type.
 
@@ -102726,7 +105515,7 @@ lib/core/namespaces/v/interfaces/UlidIssue.md
 
 # Interface: UlidIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15216
+Defined in: node\_modules/valibot/dist/index.d.mts:15558
 
 ULID issue interface.
 
@@ -102774,7 +105563,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15228
+Defined in: node\_modules/valibot/dist/index.d.mts:15570
 
 The expected property.
 
@@ -102816,7 +105605,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15220
+Defined in: node\_modules/valibot/dist/index.d.mts:15562
 
 The issue kind.
 
@@ -102872,7 +105661,7 @@ The issue path.
 
 > `readonly` **received**: `` `"${string}"` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15232
+Defined in: node\_modules/valibot/dist/index.d.mts:15574
 
 The received property.
 
@@ -102886,7 +105675,7 @@ The received property.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15236
+Defined in: node\_modules/valibot/dist/index.d.mts:15578
 
 The ULID regex.
 
@@ -102900,7 +105689,7 @@ The ULID regex.
 
 > `readonly` **type**: `"ulid"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15224
+Defined in: node\_modules/valibot/dist/index.d.mts:15566
 
 The issue type.
 
@@ -104736,7 +107525,7 @@ The dataset issues.
 
 Defined in: node\_modules/valibot/dist/index.d.mts:2911
 
-Whether is's typed.
+Whether it's typed.
 
 ***
 
@@ -105001,7 +107790,7 @@ lib/core/namespaces/v/interfaces/UrlAction.md
 
 # Interface: UrlAction\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15307
+Defined in: node\_modules/valibot/dist/index.d.mts:15649
 
 URL action interface.
 
@@ -105103,7 +107892,7 @@ Whether it's async.
 
 > `readonly` **expects**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15319
+Defined in: node\_modules/valibot/dist/index.d.mts:15661
 
 The expected property.
 
@@ -105131,7 +107920,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15327
+Defined in: node\_modules/valibot/dist/index.d.mts:15669
 
 The error message.
 
@@ -105141,7 +107930,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `UrlAction`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `UrlAction`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15315
+Defined in: node\_modules/valibot/dist/index.d.mts:15657
 
 The action reference.
 
@@ -105151,7 +107940,7 @@ The action reference.
 
 Creates an [URL](https://en.wikipedia.org/wiki/URL) validation action.
 
-Hint: The value is passed to the URL constructor to check if it is valid.
+Hint: The value is checked with the [URL parser](https://developer.mozilla.org/en-US/docs/Web/API/URL/URL).
 This check is not perfect. For example, values like "abc:1234" are accepted.
 
 ##### Type Parameters
@@ -105172,7 +107961,7 @@ An URL action.
 
 Creates an [URL](https://en.wikipedia.org/wiki/URL) validation action.
 
-Hint: The value is passed to the URL constructor to check if it is valid.
+Hint: The value is checked with the [URL parser](https://developer.mozilla.org/en-US/docs/Web/API/URL/URL).
 This check is not perfect. For example, values like "abc:1234" are accepted.
 
 ##### Type Parameters
@@ -105209,7 +107998,7 @@ An URL action.
 
 > `readonly` **requirement**: (`input`) => `boolean`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15323
+Defined in: node\_modules/valibot/dist/index.d.mts:15665
 
 The validation function.
 
@@ -105229,7 +108018,7 @@ The validation function.
 
 > `readonly` **type**: `"url"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15311
+Defined in: node\_modules/valibot/dist/index.d.mts:15653
 
 The action type.
 
@@ -105248,7 +108037,7 @@ lib/core/namespaces/v/interfaces/UrlIssue.md
 
 # Interface: UrlIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15282
+Defined in: node\_modules/valibot/dist/index.d.mts:15624
 
 URL issue interface.
 
@@ -105296,7 +108085,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15294
+Defined in: node\_modules/valibot/dist/index.d.mts:15636
 
 The expected property.
 
@@ -105338,7 +108127,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15286
+Defined in: node\_modules/valibot/dist/index.d.mts:15628
 
 The issue kind.
 
@@ -105394,7 +108183,7 @@ The issue path.
 
 > `readonly` **received**: `` `"${string}"` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15298
+Defined in: node\_modules/valibot/dist/index.d.mts:15640
 
 The received property.
 
@@ -105408,7 +108197,7 @@ The received property.
 
 > `readonly` **requirement**: (`input`) => `boolean`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15302
+Defined in: node\_modules/valibot/dist/index.d.mts:15644
 
 The validation function.
 
@@ -105432,7 +108221,7 @@ The validation function.
 
 > `readonly` **type**: `"url"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15290
+Defined in: node\_modules/valibot/dist/index.d.mts:15632
 
 The issue type.
 
@@ -105451,7 +108240,7 @@ lib/core/namespaces/v/interfaces/UuidAction.md
 
 # Interface: UuidAction\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15379
+Defined in: node\_modules/valibot/dist/index.d.mts:15721
 
 UUID action interface.
 
@@ -105553,7 +108342,7 @@ Whether it's async.
 
 > `readonly` **expects**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15391
+Defined in: node\_modules/valibot/dist/index.d.mts:15733
 
 The expected property.
 
@@ -105581,7 +108370,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15399
+Defined in: node\_modules/valibot/dist/index.d.mts:15741
 
 The error message.
 
@@ -105591,7 +108380,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `UuidAction`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `UuidAction`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15387
+Defined in: node\_modules/valibot/dist/index.d.mts:15729
 
 The action reference.
 
@@ -105653,7 +108442,7 @@ An UUID action.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15395
+Defined in: node\_modules/valibot/dist/index.d.mts:15737
 
 The UUID regex.
 
@@ -105663,7 +108452,7 @@ The UUID regex.
 
 > `readonly` **type**: `"uuid"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15383
+Defined in: node\_modules/valibot/dist/index.d.mts:15725
 
 The action type.
 
@@ -105682,7 +108471,7 @@ lib/core/namespaces/v/interfaces/UuidIssue.md
 
 # Interface: UuidIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15354
+Defined in: node\_modules/valibot/dist/index.d.mts:15696
 
 UUID issue interface.
 
@@ -105730,7 +108519,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15366
+Defined in: node\_modules/valibot/dist/index.d.mts:15708
 
 The expected property.
 
@@ -105772,7 +108561,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15358
+Defined in: node\_modules/valibot/dist/index.d.mts:15700
 
 The issue kind.
 
@@ -105828,7 +108617,7 @@ The issue path.
 
 > `readonly` **received**: `` `"${string}"` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15370
+Defined in: node\_modules/valibot/dist/index.d.mts:15712
 
 The received property.
 
@@ -105842,7 +108631,7 @@ The received property.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15374
+Defined in: node\_modules/valibot/dist/index.d.mts:15716
 
 The UUID regex.
 
@@ -105856,7 +108645,7 @@ The UUID regex.
 
 > `readonly` **type**: `"uuid"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15362
+Defined in: node\_modules/valibot/dist/index.d.mts:15704
 
 The issue type.
 
@@ -105875,7 +108664,7 @@ lib/core/namespaces/v/interfaces/ValueAction.md
 
 # Interface: ValueAction\<TInput$1, TRequirement, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15441
+Defined in: node\_modules/valibot/dist/index.d.mts:15783
 
 Value action interface.
 
@@ -105981,7 +108770,7 @@ Whether it's async.
 
 > `readonly` **expects**: `string`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15453
+Defined in: node\_modules/valibot/dist/index.d.mts:15795
 
 The expected property.
 
@@ -106009,7 +108798,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15461
+Defined in: node\_modules/valibot/dist/index.d.mts:15803
 
 The error message.
 
@@ -106019,7 +108808,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`, `TRequirement`\>(`requirement`): `ValueAction`\<`TInput$1`, `TRequirement`, `undefined`\>; \<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): `ValueAction`\<`TInput$1`, `TRequirement`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15449
+Defined in: node\_modules/valibot/dist/index.d.mts:15791
 
 The action reference.
 
@@ -106103,7 +108892,7 @@ A value action.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15457
+Defined in: node\_modules/valibot/dist/index.d.mts:15799
 
 The required value.
 
@@ -106113,7 +108902,7 @@ The required value.
 
 > `readonly` **type**: `"value"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15445
+Defined in: node\_modules/valibot/dist/index.d.mts:15787
 
 The action type.
 
@@ -106132,7 +108921,7 @@ lib/core/namespaces/v/interfaces/ValueIssue.md
 
 # Interface: ValueIssue\<TInput$1, TRequirement\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15420
+Defined in: node\_modules/valibot/dist/index.d.mts:15762
 
 Value issue interface.
 
@@ -106184,7 +108973,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `string`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15432
+Defined in: node\_modules/valibot/dist/index.d.mts:15774
 
 The expected property.
 
@@ -106226,7 +109015,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15424
+Defined in: node\_modules/valibot/dist/index.d.mts:15766
 
 The issue kind.
 
@@ -106296,7 +109085,7 @@ The received property.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15436
+Defined in: node\_modules/valibot/dist/index.d.mts:15778
 
 The required value.
 
@@ -106310,7 +109099,7 @@ The required value.
 
 > `readonly` **type**: `"value"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15428
+Defined in: node\_modules/valibot/dist/index.d.mts:15770
 
 The issue type.
 
@@ -106329,7 +109118,7 @@ lib/core/namespaces/v/interfaces/ValuesAction.md
 
 # Interface: ValuesAction\<TInput$1, TRequirement, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15506
+Defined in: node\_modules/valibot/dist/index.d.mts:15848
 
 Values action type.
 
@@ -106435,7 +109224,7 @@ Whether it's async.
 
 > `readonly` **expects**: `string`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15518
+Defined in: node\_modules/valibot/dist/index.d.mts:15860
 
 The expected property.
 
@@ -106463,7 +109252,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15526
+Defined in: node\_modules/valibot/dist/index.d.mts:15868
 
 The error message.
 
@@ -106473,7 +109262,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`, `TRequirement`\>(`requirement`): `ValuesAction`\<`TInput$1`, `TRequirement`, `undefined`\>; \<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): `ValuesAction`\<`TInput$1`, `TRequirement`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15514
+Defined in: node\_modules/valibot/dist/index.d.mts:15856
 
 The action reference.
 
@@ -106557,7 +109346,7 @@ A values action.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15522
+Defined in: node\_modules/valibot/dist/index.d.mts:15864
 
 The required values.
 
@@ -106567,7 +109356,7 @@ The required values.
 
 > `readonly` **type**: `"values"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15510
+Defined in: node\_modules/valibot/dist/index.d.mts:15852
 
 The action type.
 
@@ -106586,7 +109375,7 @@ lib/core/namespaces/v/interfaces/ValuesIssue.md
 
 # Interface: ValuesIssue\<TInput$1, TRequirement\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15485
+Defined in: node\_modules/valibot/dist/index.d.mts:15827
 
 Values issue type.
 
@@ -106638,7 +109427,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `string`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15497
+Defined in: node\_modules/valibot/dist/index.d.mts:15839
 
 The expected property.
 
@@ -106680,7 +109469,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15489
+Defined in: node\_modules/valibot/dist/index.d.mts:15831
 
 The issue kind.
 
@@ -106750,7 +109539,7 @@ The received property.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15501
+Defined in: node\_modules/valibot/dist/index.d.mts:15843
 
 The required values.
 
@@ -106764,7 +109553,7 @@ The required values.
 
 > `readonly` **type**: `"values"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15493
+Defined in: node\_modules/valibot/dist/index.d.mts:15835
 
 The issue type.
 
@@ -108064,7 +110853,7 @@ lib/core/namespaces/v/interfaces/WordsAction.md
 
 # Interface: WordsAction\<TInput$1, TLocales, TRequirement, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15575
+Defined in: node\_modules/valibot/dist/index.d.mts:15917
 
 Words action interface.
 
@@ -108174,7 +110963,7 @@ Whether it's async.
 
 > `readonly` **expects**: `` `${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15587
+Defined in: node\_modules/valibot/dist/index.d.mts:15929
 
 The expected property.
 
@@ -108202,7 +110991,7 @@ The object kind.
 
 > `readonly` **locales**: `TLocales`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15591
+Defined in: node\_modules/valibot/dist/index.d.mts:15933
 
 The locales to be used.
 
@@ -108212,7 +111001,7 @@ The locales to be used.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15599
+Defined in: node\_modules/valibot/dist/index.d.mts:15941
 
 The error message.
 
@@ -108222,7 +111011,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`, `TLocales`, `TRequirement`\>(`locales`, `requirement`): `WordsAction`\<`TInput$1`, `TLocales`, `TRequirement`, `undefined`\>; \<`TInput$1`, `TLocales`, `TRequirement`, `TMessage`\>(`locales`, `requirement`, `message`): `WordsAction`\<`TInput$1`, `TLocales`, `TRequirement`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15583
+Defined in: node\_modules/valibot/dist/index.d.mts:15925
 
 The action reference.
 
@@ -108326,7 +111115,7 @@ A words action.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15595
+Defined in: node\_modules/valibot/dist/index.d.mts:15937
 
 The required words.
 
@@ -108336,7 +111125,7 @@ The required words.
 
 > `readonly` **type**: `"words"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15579
+Defined in: node\_modules/valibot/dist/index.d.mts:15921
 
 The action type.
 
@@ -108355,7 +111144,7 @@ lib/core/namespaces/v/interfaces/WordsIssue.md
 
 # Interface: WordsIssue\<TInput$1, TRequirement\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15550
+Defined in: node\_modules/valibot/dist/index.d.mts:15892
 
 Words issue interface.
 
@@ -108407,7 +111196,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `` `${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15562
+Defined in: node\_modules/valibot/dist/index.d.mts:15904
 
 The expected property.
 
@@ -108449,7 +111238,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15554
+Defined in: node\_modules/valibot/dist/index.d.mts:15896
 
 The issue kind.
 
@@ -108505,7 +111294,7 @@ The issue path.
 
 > `readonly` **received**: `` `${number}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15566
+Defined in: node\_modules/valibot/dist/index.d.mts:15908
 
 The received property.
 
@@ -108519,7 +111308,7 @@ The received property.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15570
+Defined in: node\_modules/valibot/dist/index.d.mts:15912
 
 The required words.
 
@@ -108533,7 +111322,7 @@ The required words.
 
 > `readonly` **type**: `"words"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15558
+Defined in: node\_modules/valibot/dist/index.d.mts:15900
 
 The issue type.
 
@@ -108946,7 +111735,7 @@ lib/core/namespaces/v/type-aliases/FlavorName.md
 
 > **FlavorName** = `string` \| `number` \| `symbol`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9345
+Defined in: node\_modules/valibot/dist/index.d.mts:9414
 
 **`Beta`**
 
@@ -109321,7 +112110,7 @@ lib/core/namespaces/v/type-aliases/GlobalConfig.md
 
 > **GlobalConfig** = `Omit`\<[`Config`](../interfaces/Config.md)\<`never`\>, `"message"`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15782
+Defined in: node\_modules/valibot/dist/index.d.mts:16133
 
 The global config type.
 
@@ -109338,7 +112127,7 @@ lib/core/namespaces/v/type-aliases/GuardFunction.md
 
 > **GuardFunction**\<`TInput$1`\> = (`input`) => `input is any`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9524
+Defined in: node\_modules/valibot/dist/index.d.mts:9593
 
 **`Beta`**
 
@@ -109373,7 +112162,7 @@ lib/core/namespaces/v/type-aliases/HashType.md
 
 > **HashType** = keyof *typeof* `HASH_LENGTHS`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9639
+Defined in: node\_modules/valibot/dist/index.d.mts:9708
 
 Hash type type.
 
@@ -109505,7 +112294,7 @@ lib/core/namespaces/v/type-aliases/InferGuardOutput.md
 
 > **InferGuardOutput**\<`TGuard`\> = `TGuard` *extends* (`input`) => `input is infer TOutput` ? `TOutput` : `unknown`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9530
+Defined in: node\_modules/valibot/dist/index.d.mts:9599
 
 **`Beta`**
 
@@ -109732,7 +112521,7 @@ lib/core/namespaces/v/type-aliases/NanoIDAction.md
 
 > **NanoIDAction**\<`TInput$1`, `TMessage`\> = [`NanoIdAction`](../interfaces/NanoIdAction.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12639
+Defined in: node\_modules/valibot/dist/index.d.mts:12912
 
 Nano ID action type.
 
@@ -109763,7 +112552,7 @@ lib/core/namespaces/v/type-aliases/NanoIDIssue.md
 
 > **NanoIDIssue**\<`TInput$1`\> = [`NanoIdIssue`](../interfaces/NanoIdIssue.md)\<`TInput$1`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12608
+Defined in: node\_modules/valibot/dist/index.d.mts:12881
 
 Nano ID issue type.
 
@@ -109790,7 +112579,7 @@ lib/core/namespaces/v/type-aliases/NormalizeForm.md
 
 > **NormalizeForm** = `"NFC"` \| `"NFD"` \| `"NFKC"` \| `"NFKD"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12717
+Defined in: node\_modules/valibot/dist/index.d.mts:12990
 
 Normalize form type.
 
@@ -109998,7 +112787,7 @@ lib/core/namespaces/v/type-aliases/RawCheckAddIssue.md
 
 > **RawCheckAddIssue**\<`TInput$1`\> = (`info?`) => `void`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13757
+Defined in: node\_modules/valibot/dist/index.d.mts:14099
 
 Raw check add issue type.
 
@@ -110031,7 +112820,7 @@ lib/core/namespaces/v/type-aliases/RawTransformAddIssue.md
 
 > **RawTransformAddIssue**\<`TInput$1`\> = (`info?`) => `void`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13849
+Defined in: node\_modules/valibot/dist/index.d.mts:14191
 
 Raw transform add issue type.
 
@@ -110102,7 +112891,7 @@ Whether it's successful.
 
 > `readonly` **typed**: `true`
 
-Whether is's typed.
+Whether it's typed.
 
 ***
 
@@ -110896,7 +113685,7 @@ lib/core/namespaces/v/variables/BASE64_REGEX.md
 
 > `const` **BASE64\_REGEX**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15625
+Defined in: node\_modules/valibot/dist/index.d.mts:15967
 
 [Base64](https://en.wikipedia.org/wiki/Base64) regex.
 
@@ -110913,7 +113702,7 @@ lib/core/namespaces/v/variables/BIC_REGEX.md
 
 > `const` **BIC\_REGEX**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15629
+Defined in: node\_modules/valibot/dist/index.d.mts:15971
 
 [BIC](https://en.wikipedia.org/wiki/ISO_9362) regex.
 
@@ -110947,7 +113736,7 @@ lib/core/namespaces/v/variables/CUID2_REGEX.md
 
 > `const` **CUID2\_REGEX**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15633
+Defined in: node\_modules/valibot/dist/index.d.mts:15975
 
 [Cuid2](https://github.com/paralleldrive/cuid2) regex.
 
@@ -110964,7 +113753,7 @@ lib/core/namespaces/v/variables/DECIMAL_REGEX.md
 
 > `const` **DECIMAL\_REGEX**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15637
+Defined in: node\_modules/valibot/dist/index.d.mts:15979
 
 [Decimal](https://en.wikipedia.org/wiki/Decimal) regex.
 
@@ -110981,7 +113770,7 @@ lib/core/namespaces/v/variables/DIGITS_REGEX.md
 
 > `const` **DIGITS\_REGEX**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15641
+Defined in: node\_modules/valibot/dist/index.d.mts:15983
 
 [Digits](https://en.wikipedia.org/wiki/Numerical_digit) regex.
 
@@ -110998,7 +113787,7 @@ lib/core/namespaces/v/variables/DOMAIN_REGEX.md
 
 > `const` **DOMAIN\_REGEX**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15649
+Defined in: node\_modules/valibot/dist/index.d.mts:15991
 
 [Domain name](https://en.wikipedia.org/wiki/Domain_name) regex.
 
@@ -111019,9 +113808,11 @@ lib/core/namespaces/v/variables/EMAIL_REGEX.md
 
 > `const` **EMAIL\_REGEX**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15653
+Defined in: node\_modules/valibot/dist/index.d.mts:15997
 
 [Email address](https://en.wikipedia.org/wiki/Email_address) regex.
+
+Hint: We decided against the `i` flag to avoid matching non-ASCII characters.
 
 lib/core/namespaces/v/variables/EMOJI_REGEX.md
 ---
@@ -111036,7 +113827,7 @@ lib/core/namespaces/v/variables/EMOJI_REGEX.md
 
 > `const` **EMOJI\_REGEX**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15660
+Defined in: node\_modules/valibot/dist/index.d.mts:16004
 
 Emoji regex from [emoji-regex-xs](https://github.com/slevithan/emoji-regex-xs) v1.0.0 (MIT license).
 
@@ -111056,7 +113847,7 @@ lib/core/namespaces/v/variables/FlavorSymbol.md
 
 > `const` **FlavorSymbol**: unique `symbol`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9339
+Defined in: node\_modules/valibot/dist/index.d.mts:9408
 
 **`Beta`**
 
@@ -111075,7 +113866,7 @@ lib/core/namespaces/v/variables/HEXADECIMAL_REGEX.md
 
 > `const` **HEXADECIMAL\_REGEX**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15666
+Defined in: node\_modules/valibot/dist/index.d.mts:16010
 
 [Hexadecimal](https://en.wikipedia.org/wiki/Hexadecimal) regex.
 
@@ -111094,7 +113885,7 @@ lib/core/namespaces/v/variables/HEX_COLOR_REGEX.md
 
 > `const` **HEX\_COLOR\_REGEX**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15672
+Defined in: node\_modules/valibot/dist/index.d.mts:16016
 
 [Hex color](https://en.wikipedia.org/wiki/Web_colors#Hex_triplet) regex.
 
@@ -111113,7 +113904,7 @@ lib/core/namespaces/v/variables/IMEI_REGEX.md
 
 > `const` **IMEI\_REGEX**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15676
+Defined in: node\_modules/valibot/dist/index.d.mts:16020
 
 [IMEI](https://en.wikipedia.org/wiki/International_Mobile_Equipment_Identity) regex.
 
@@ -111130,7 +113921,7 @@ lib/core/namespaces/v/variables/IP_REGEX.md
 
 > `const` **IP\_REGEX**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15688
+Defined in: node\_modules/valibot/dist/index.d.mts:16032
 
 [IP](https://en.wikipedia.org/wiki/IP_address) regex.
 
@@ -111147,7 +113938,7 @@ lib/core/namespaces/v/variables/IPV4_REGEX.md
 
 > `const` **IPV4\_REGEX**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15680
+Defined in: node\_modules/valibot/dist/index.d.mts:16024
 
 [IPv4](https://en.wikipedia.org/wiki/IPv4) regex.
 
@@ -111164,7 +113955,7 @@ lib/core/namespaces/v/variables/IPV6_REGEX.md
 
 > `const` **IPV6\_REGEX**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15684
+Defined in: node\_modules/valibot/dist/index.d.mts:16028
 
 [IPv6](https://en.wikipedia.org/wiki/IPv6) regex.
 
@@ -111181,7 +113972,7 @@ lib/core/namespaces/v/variables/ISO_DATE_REGEX.md
 
 > `const` **ISO\_DATE\_REGEX**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15692
+Defined in: node\_modules/valibot/dist/index.d.mts:16036
 
 [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) date regex.
 
@@ -111198,7 +113989,7 @@ lib/core/namespaces/v/variables/ISO_DATE_TIME_REGEX.md
 
 > `const` **ISO\_DATE\_TIME\_REGEX**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15696
+Defined in: node\_modules/valibot/dist/index.d.mts:16040
 
 [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) date-time regex.
 
@@ -111215,7 +114006,7 @@ lib/core/namespaces/v/variables/ISO_DATE_TIME_SECOND_REGEX.md
 
 > `const` **ISO\_DATE\_TIME\_SECOND\_REGEX**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15700
+Defined in: node\_modules/valibot/dist/index.d.mts:16044
 
 [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) date-time with seconds regex.
 
@@ -111232,7 +114023,7 @@ lib/core/namespaces/v/variables/ISO_TIME_REGEX.md
 
 > `const` **ISO\_TIME\_REGEX**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15704
+Defined in: node\_modules/valibot/dist/index.d.mts:16048
 
 [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) time regex.
 
@@ -111249,7 +114040,7 @@ lib/core/namespaces/v/variables/ISO_TIME_SECOND_REGEX.md
 
 > `const` **ISO\_TIME\_SECOND\_REGEX**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15708
+Defined in: node\_modules/valibot/dist/index.d.mts:16052
 
 [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) time with seconds regex.
 
@@ -111266,7 +114057,7 @@ lib/core/namespaces/v/variables/ISO_TIMESTAMP_REGEX.md
 
 > `const` **ISO\_TIMESTAMP\_REGEX**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15713
+Defined in: node\_modules/valibot/dist/index.d.mts:16057
 
 [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) timestamp regex. Allows a
 space as a date/time separator and an optional space before the UTC offset.
@@ -111284,7 +114075,7 @@ lib/core/namespaces/v/variables/ISO_WEEK_REGEX.md
 
 > `const` **ISO\_WEEK\_REGEX**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15717
+Defined in: node\_modules/valibot/dist/index.d.mts:16061
 
 [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) week regex.
 
@@ -111301,7 +114092,7 @@ lib/core/namespaces/v/variables/ISRC_REGEX.md
 
 > `const` **ISRC\_REGEX**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15730
+Defined in: node\_modules/valibot/dist/index.d.mts:16074
 
 [ISRC](https://en.wikipedia.org/wiki/International_Standard_Recording_Code) regex.
 
@@ -111318,7 +114109,7 @@ lib/core/namespaces/v/variables/JWS_COMPACT_REGEX.md
 
 > `const` **JWS\_COMPACT\_REGEX**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15726
+Defined in: node\_modules/valibot/dist/index.d.mts:16070
 
 [JWS compact serialization](https://datatracker.ietf.org/doc/html/rfc7515#section-3.1)
 regex.
@@ -111326,6 +114117,23 @@ regex.
 Hint: Empty payload and signature segments are allowed because the
 Base64URL-encoded representation of an empty octet sequence is an empty
 string.
+
+lib/core/namespaces/v/variables/KSUID_REGEX.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../../../index.md) / [lib/core](../../../index.md) / [v](../index.md) / KSUID\_REGEX
+
+# Variable: KSUID\_REGEX
+
+> `const` **KSUID\_REGEX**: `RegExp`
+
+Defined in: node\_modules/valibot/dist/index.d.mts:16078
+
+[KSUID](https://github.com/segmentio/ksuid) regex.
 
 lib/core/namespaces/v/variables/MAC48_REGEX.md
 ---
@@ -111340,7 +114148,7 @@ lib/core/namespaces/v/variables/MAC48_REGEX.md
 
 > `const` **MAC48\_REGEX**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15736
+Defined in: node\_modules/valibot/dist/index.d.mts:16084
 
 [MAC](https://en.wikipedia.org/wiki/MAC_address) 48 bit regex.
 
@@ -111359,7 +114167,7 @@ lib/core/namespaces/v/variables/MAC64_REGEX.md
 
 > `const` **MAC64\_REGEX**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15742
+Defined in: node\_modules/valibot/dist/index.d.mts:16090
 
 [MAC](https://en.wikipedia.org/wiki/MAC_address) 64 bit regex.
 
@@ -111378,7 +114186,7 @@ lib/core/namespaces/v/variables/MAC_REGEX.md
 
 > `const` **MAC\_REGEX**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15748
+Defined in: node\_modules/valibot/dist/index.d.mts:16096
 
 [MAC](https://en.wikipedia.org/wiki/MAC_address) regex.
 
@@ -111397,7 +114205,7 @@ lib/core/namespaces/v/variables/NANO_ID_REGEX.md
 
 > `const` **NANO\_ID\_REGEX**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15752
+Defined in: node\_modules/valibot/dist/index.d.mts:16100
 
 [Nano ID](https://github.com/ai/nanoid) regex.
 
@@ -111414,7 +114222,7 @@ lib/core/namespaces/v/variables/OCTAL_REGEX.md
 
 > `const` **OCTAL\_REGEX**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15756
+Defined in: node\_modules/valibot/dist/index.d.mts:16104
 
 [Octal](https://en.wikipedia.org/wiki/Octal) regex.
 
@@ -111431,7 +114239,7 @@ lib/core/namespaces/v/variables/RFC_EMAIL_REGEX.md
 
 > `const` **RFC\_EMAIL\_REGEX**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15762
+Defined in: node\_modules/valibot/dist/index.d.mts:16110
 
 [RFC 5322 email address](https://datatracker.ietf.org/doc/html/rfc5322#section-3.4.1) regex.
 
@@ -111450,7 +114258,7 @@ lib/core/namespaces/v/variables/SLUG_REGEX.md
 
 > `const` **SLUG\_REGEX**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15766
+Defined in: node\_modules/valibot/dist/index.d.mts:16114
 
 [Slug](https://en.wikipedia.org/wiki/Clean_URL#Slug) regex.
 
@@ -111467,11 +114275,14 @@ lib/core/namespaces/v/variables/ULID_REGEX.md
 
 > `const` **ULID\_REGEX**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15772
+Defined in: node\_modules/valibot/dist/index.d.mts:16123
 
 [ULID](https://github.com/ulid/spec) regex.
 
 Hint: We decided against the `i` flag for better JSON Schema compatibility.
+Hint: The first character is restricted to `[0-7]` because the 48-bit
+timestamp cannot exceed 2^48-1, making the maximum valid ULID
+`7ZZZZZZZZZZZZZZZZZZZZZZZZZ` in Crockford's Base32 encoding.
 
 lib/core/namespaces/v/variables/UUID_REGEX.md
 ---
@@ -111486,7 +114297,7 @@ lib/core/namespaces/v/variables/UUID_REGEX.md
 
 > `const` **UUID\_REGEX**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15776
+Defined in: node\_modules/valibot/dist/index.d.mts:16127
 
 [UUID](https://en.wikipedia.org/wiki/Universally_unique_identifier) regex.
 
@@ -126876,7 +129687,7 @@ lib/ws/classes/Socket.md
 
 # Class: Socket
 
-Defined in: [lib/ws.ts:106](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L106)
+Defined in: [lib/ws.ts:163](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L163)
 
 ## Constructors
 
@@ -126884,7 +129695,7 @@ Defined in: [lib/ws.ts:106](https://github.com/maiyunnet/kebab/blob/master/lib/w
 
 > **new Socket**(`request?`, `socket?`, `head?`, `options?`): `Socket`
 
-Defined in: [lib/ws.ts:111](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L111)
+Defined in: [lib/ws.ts:192](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L192)
 
 #### Parameters
 
@@ -126922,7 +129733,7 @@ Defined in: [lib/ws.ts:111](https://github.com/maiyunnet/kebab/blob/master/lib/w
 
 > **get** **ended**(): `boolean`
 
-Defined in: [lib/ws.ts:420](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L420)
+Defined in: [lib/ws.ts:664](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L664)
 
 当前是否已经结束读取，并且无法继续读取
 
@@ -126938,7 +129749,7 @@ Defined in: [lib/ws.ts:420](https://github.com/maiyunnet/kebab/blob/master/lib/w
 
 > **get** **finished**(): `boolean`
 
-Defined in: [lib/ws.ts:425](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L425)
+Defined in: [lib/ws.ts:669](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L669)
 
 当前是否已经结束写入，并且无法继续写入
 
@@ -126954,7 +129765,7 @@ Defined in: [lib/ws.ts:425](https://github.com/maiyunnet/kebab/blob/master/lib/w
 
 > **get** **isServer**(): `boolean`
 
-Defined in: [lib/ws.ts:432](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L432)
+Defined in: [lib/ws.ts:676](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L676)
 
 当前连接是不是服务器连接
 
@@ -126970,7 +129781,7 @@ Defined in: [lib/ws.ts:432](https://github.com/maiyunnet/kebab/blob/master/lib/w
 
 > **get** **writable**(): `boolean`
 
-Defined in: [lib/ws.ts:415](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L415)
+Defined in: [lib/ws.ts:659](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L659)
 
 当前是否是可写状态
 
@@ -126984,7 +129795,7 @@ Defined in: [lib/ws.ts:415](https://github.com/maiyunnet/kebab/blob/master/lib/w
 
 > **connect**(`u`, `opt?`): `Promise`\<`Socket` \| `null`\>
 
-Defined in: [lib/ws.ts:134](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L134)
+Defined in: [lib/ws.ts:225](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L225)
 
 以客户端形式发起链接
 
@@ -127012,7 +129823,7 @@ Defined in: [lib/ws.ts:134](https://github.com/maiyunnet/kebab/blob/master/lib/w
 
 > **destroy**(): `void`
 
-Defined in: [lib/ws.ts:375](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L375)
+Defined in: [lib/ws.ts:576](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L576)
 
 #### Returns
 
@@ -127022,9 +129833,25 @@ Defined in: [lib/ws.ts:375](https://github.com/maiyunnet/kebab/blob/master/lib/w
 
 ### end()
 
-> **end**(): `void`
+> **end**(`code?`, `reason?`): `void`
 
-Defined in: [lib/ws.ts:371](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L371)
+Defined in: [lib/ws.ts:568](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L568)
+
+正常结束 WebSocket 连接
+
+#### Parameters
+
+##### code?
+
+`number` = `1000`
+
+WebSocket 关闭码
+
+##### reason?
+
+`string` = `''`
+
+关闭原因，超过协议上限时自动安全截断
 
 #### Returns
 
@@ -127036,7 +129863,7 @@ Defined in: [lib/ws.ts:371](https://github.com/maiyunnet/kebab/blob/master/lib/w
 
 > **off**(`event`): `this`
 
-Defined in: [lib/ws.ts:366](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L366)
+Defined in: [lib/ws.ts:558](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L558)
 
 取消监听
 
@@ -127058,7 +129885,7 @@ Defined in: [lib/ws.ts:366](https://github.com/maiyunnet/kebab/blob/master/lib/w
 
 > **on**(`event`, `cb`): `this`
 
-Defined in: [lib/ws.ts:327](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L327)
+Defined in: [lib/ws.ts:512](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L512)
 
 绑定监听
 
@@ -127080,7 +129907,7 @@ Defined in: [lib/ws.ts:327](https://github.com/maiyunnet/kebab/blob/master/lib/w
 
 > **on**(`event`, `cb`): `this`
 
-Defined in: [lib/ws.ts:331](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L331)
+Defined in: [lib/ws.ts:516](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L516)
 
 绑定监听
 
@@ -127102,7 +129929,7 @@ Defined in: [lib/ws.ts:331](https://github.com/maiyunnet/kebab/blob/master/lib/w
 
 > **on**(`event`, `cb`): `this`
 
-Defined in: [lib/ws.ts:332](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L332)
+Defined in: [lib/ws.ts:517](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L517)
 
 绑定监听
 
@@ -127110,7 +129937,29 @@ Defined in: [lib/ws.ts:332](https://github.com/maiyunnet/kebab/blob/master/lib/w
 
 ###### event
 
-`"end"` \| `"close"` \| `"timeout"` \| `"drain"`
+`"close"`
+
+###### cb
+
+(`info`) => `void` \| `Promise`\<`void`\>
+
+##### Returns
+
+`this`
+
+#### Call Signature
+
+> **on**(`event`, `cb`): `this`
+
+Defined in: [lib/ws.ts:518](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L518)
+
+绑定监听
+
+##### Parameters
+
+###### event
+
+`"end"` \| `"timeout"` \| `"drain"`
 
 ###### cb
 
@@ -127126,9 +129975,9 @@ Defined in: [lib/ws.ts:332](https://github.com/maiyunnet/kebab/blob/master/lib/w
 
 > **pause**(): `void`
 
-Defined in: [lib/ws.ts:380](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L380)
+Defined in: [lib/ws.ts:582](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L582)
 
-暂停向消息监听器派发数据，底层仍只保留有界缓存
+暂停向消息监听器派发数据，并暂停底层 TCP 读取
 
 #### Returns
 
@@ -127140,7 +129989,7 @@ Defined in: [lib/ws.ts:380](https://github.com/maiyunnet/kebab/blob/master/lib/w
 
 > **ping**(`data?`): `boolean`
 
-Defined in: [lib/ws.ts:437](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L437)
+Defined in: [lib/ws.ts:681](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L681)
 
 发送 ping
 
@@ -127160,7 +130009,7 @@ Defined in: [lib/ws.ts:437](https://github.com/maiyunnet/kebab/blob/master/lib/w
 
 > **pong**(`data?`): `boolean`
 
-Defined in: [lib/ws.ts:448](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L448)
+Defined in: [lib/ws.ts:686](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L686)
 
 发送 ping
 
@@ -127180,9 +130029,9 @@ Defined in: [lib/ws.ts:448](https://github.com/maiyunnet/kebab/blob/master/lib/w
 
 > **resume**(): `void`
 
-Defined in: [lib/ws.ts:385](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L385)
+Defined in: [lib/ws.ts:588](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L588)
 
-恢复向消息监听器派发数据
+恢复派发缓存消息，并恢复底层 TCP 读取
 
 #### Returns
 
@@ -127194,7 +130043,7 @@ Defined in: [lib/ws.ts:385](https://github.com/maiyunnet/kebab/blob/master/lib/w
 
 > **writeBinary**(`data`): `boolean`
 
-Defined in: [lib/ws.ts:407](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L407)
+Defined in: [lib/ws.ts:607](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L607)
 
 发送二进制
 
@@ -127214,7 +130063,7 @@ Defined in: [lib/ws.ts:407](https://github.com/maiyunnet/kebab/blob/master/lib/w
 
 > **writeResult**(`data`): `boolean`
 
-Defined in: [lib/ws.ts:399](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L399)
+Defined in: [lib/ws.ts:602](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L602)
 
 发送结果对象字符串
 
@@ -127234,7 +130083,7 @@ Defined in: [lib/ws.ts:399](https://github.com/maiyunnet/kebab/blob/master/lib/w
 
 > **writeText**(`data`): `boolean`
 
-Defined in: [lib/ws.ts:391](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L391)
+Defined in: [lib/ws.ts:597](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L597)
 
 发送文本
 
@@ -127259,7 +130108,7 @@ lib/ws/enumerations/EFrameReceiveMode.md
 
 # Enumeration: EFrameReceiveMode
 
-Defined in: [lib/ws.ts:18](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L18)
+Defined in: [lib/ws.ts:19](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L19)
 
 一般用 SIMPLE
 
@@ -127269,7 +130118,7 @@ Defined in: [lib/ws.ts:18](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 > **LITE**: `1`
 
-Defined in: [lib/ws.ts:20](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L20)
+Defined in: [lib/ws.ts:21](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L21)
 
 ***
 
@@ -127277,7 +130126,7 @@ Defined in: [lib/ws.ts:20](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 > **SIMPLE**: `2`
 
-Defined in: [lib/ws.ts:21](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L21)
+Defined in: [lib/ws.ts:22](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L22)
 
 ***
 
@@ -127285,7 +130134,7 @@ Defined in: [lib/ws.ts:21](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 > **STANDARD**: `0`
 
-Defined in: [lib/ws.ts:19](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L19)
+Defined in: [lib/ws.ts:20](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L20)
 
 lib/ws/enumerations/EOpcode.md
 ---
@@ -127298,7 +130147,7 @@ lib/ws/enumerations/EOpcode.md
 
 # Enumeration: EOpcode
 
-Defined in: [lib/ws.ts:25](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L25)
+Defined in: [lib/ws.ts:26](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L26)
 
 OPCODE
 
@@ -127308,7 +130157,7 @@ OPCODE
 
 > **BINARY**: `2`
 
-Defined in: [lib/ws.ts:28](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L28)
+Defined in: [lib/ws.ts:29](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L29)
 
 ***
 
@@ -127316,7 +130165,7 @@ Defined in: [lib/ws.ts:28](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 > **CLOSE**: `8`
 
-Defined in: [lib/ws.ts:29](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L29)
+Defined in: [lib/ws.ts:30](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L30)
 
 ***
 
@@ -127324,7 +130173,7 @@ Defined in: [lib/ws.ts:29](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 > **CONTINUATION**: `0`
 
-Defined in: [lib/ws.ts:26](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L26)
+Defined in: [lib/ws.ts:27](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L27)
 
 ***
 
@@ -127332,7 +130181,7 @@ Defined in: [lib/ws.ts:26](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 > **PING**: `9`
 
-Defined in: [lib/ws.ts:30](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L30)
+Defined in: [lib/ws.ts:31](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L31)
 
 ***
 
@@ -127340,7 +130189,7 @@ Defined in: [lib/ws.ts:30](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 > **PONG**: `10`
 
-Defined in: [lib/ws.ts:31](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L31)
+Defined in: [lib/ws.ts:32](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L32)
 
 ***
 
@@ -127348,7 +130197,7 @@ Defined in: [lib/ws.ts:31](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 > **TEXT**: `1`
 
-Defined in: [lib/ws.ts:27](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L27)
+Defined in: [lib/ws.ts:28](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L28)
 
 lib/ws/functions/connect.md
 ---
@@ -127363,7 +130212,7 @@ lib/ws/functions/connect.md
 
 > **connect**(`u`, `opt?`): `Promise`\<[`Socket`](../classes/Socket.md) \| `null`\>
 
-Defined in: [lib/ws.ts:465](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L465)
+Defined in: [lib/ws.ts:729](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L729)
 
 创建一个 ws 客户端发起 ws 请求
 
@@ -127398,7 +130247,7 @@ lib/ws/functions/createServer.md
 
 > **createServer**(`request`, `socket`, `head?`, `options?`): [`Socket`](../classes/Socket.md)
 
-Defined in: [lib/ws.ts:475](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L475)
+Defined in: [lib/ws.ts:739](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L739)
 
 创建一个 ws 服务器接收处理器
 
@@ -127447,7 +130296,7 @@ lib/ws/functions/mproxy.md
 
 > **mproxy**(`ctr`, `auth`, `opt?`): `Promise`\<`number`\>
 
-Defined in: [lib/ws.ts:587](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L587)
+Defined in: [lib/ws.ts:965](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L965)
 
 正向 mproxy 代理，读取 get 的 url 为实际请求地址
 get: url, auth
@@ -127489,7 +130338,7 @@ lib/ws/functions/rproxy.md
 
 > **rproxy**(`ctr`, `url`, `opt?`): `Promise`\<`boolean`\>
 
-Defined in: [lib/ws.ts:624](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L624)
+Defined in: [lib/ws.ts:1002](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L1002)
 
 反向代理，将本 socket 连接反代到其他网址，在 ws 的 onLoad 事件中使用
 
@@ -127530,7 +130379,7 @@ lib/ws/functions/rsocket.md
 
 > **rsocket**(`ctr`, `host`, `port`): `Promise`\<`boolean`\>
 
-Defined in: [lib/ws.ts:653](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L653)
+Defined in: [lib/ws.ts:1048](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L1048)
 
 反向代理，将本 websocket 连接反代到其他真正的 socket，在 ws 的 onLoad 事件中使用
 
@@ -127582,7 +130431,14 @@ lib/ws/index.md
 
 - [IConnectOptions](interfaces/IConnectOptions.md)
 - [IMproxyOptions](interfaces/IMproxyOptions.md)
+- [IPipeCloseInfo](interfaces/IPipeCloseInfo.md)
 - [IRproxyOptions](interfaces/IRproxyOptions.md)
+- [ISocketCloseInfo](interfaces/ISocketCloseInfo.md)
+
+## Type Aliases
+
+- [TPipeCloseEvent](type-aliases/TPipeCloseEvent.md)
+- [TPipeSide](type-aliases/TPipeSide.md)
 
 ## Functions
 
@@ -127603,7 +130459,7 @@ lib/ws/interfaces/IConnectOptions.md
 
 # Interface: IConnectOptions
 
-Defined in: [lib/ws.ts:35](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L35)
+Defined in: [lib/ws.ts:36](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L36)
 
 请求的传入参数选项
 
@@ -127613,7 +130469,7 @@ Defined in: [lib/ws.ts:35](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 > `optional` **cookie?**: `Record`\<`string`, [`ICookie`](../../cookie/interfaces/ICookie.md)\>
 
-Defined in: [lib/ws.ts:43](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L43)
+Defined in: [lib/ws.ts:44](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L44)
 
 cookie 托管对象
 
@@ -127623,7 +130479,7 @@ cookie 托管对象
 
 > `optional` **headers?**: [`THttpHeaders`](../../undici/type-aliases/THttpHeaders.md)
 
-Defined in: [lib/ws.ts:41](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L41)
+Defined in: [lib/ws.ts:42](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L42)
 
 ***
 
@@ -127631,7 +130487,7 @@ Defined in: [lib/ws.ts:41](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 > `optional` **hosts?**: `string` \| `Record`\<`string`, `string`\>
 
-Defined in: [lib/ws.ts:39](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L39)
+Defined in: [lib/ws.ts:40](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L40)
 
 自定义 host 映射，如 {'www.maiyun.net': '127.0.0.1'}，或全部映射到一个 host
 
@@ -127641,7 +130497,7 @@ Defined in: [lib/ws.ts:39](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 > `optional` **local?**: `string`
 
-Defined in: [lib/ws.ts:40](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L40)
+Defined in: [lib/ws.ts:41](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L41)
 
 ***
 
@@ -127649,7 +130505,7 @@ Defined in: [lib/ws.ts:40](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 > `optional` **masking?**: `boolean`
 
-Defined in: [lib/ws.ts:47](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L47)
+Defined in: [lib/ws.ts:48](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L48)
 
 加密模式，默认 true
 
@@ -127659,7 +130515,7 @@ Defined in: [lib/ws.ts:47](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 > `optional` **mode?**: [`EFrameReceiveMode`](../enumerations/EFrameReceiveMode.md)
 
-Defined in: [lib/ws.ts:45](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L45)
+Defined in: [lib/ws.ts:46](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L46)
 
 小帧模式，默认 false
 
@@ -127669,7 +130525,7 @@ Defined in: [lib/ws.ts:45](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 > `optional` **mproxy?**: `object`
 
-Defined in: [lib/ws.ts:49](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L49)
+Defined in: [lib/ws.ts:50](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L50)
 
 正向 mproxy 代理，url 如 wss://xxx/abc
 
@@ -127683,11 +130539,31 @@ Defined in: [lib/ws.ts:49](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 ***
 
+### onConnectError?
+
+> `optional` **onConnectError?**: (`error`) => `void`
+
+Defined in: [lib/ws.ts:55](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L55)
+
+WebSocket 握手失败回调
+
+#### Parameters
+
+##### error
+
+`unknown`
+
+#### Returns
+
+`void`
+
+***
+
 ### timeout?
 
 > `optional` **timeout?**: `number`
 
-Defined in: [lib/ws.ts:37](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L37)
+Defined in: [lib/ws.ts:38](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L38)
 
 秒数
 
@@ -127702,7 +130578,7 @@ lib/ws/interfaces/IMproxyOptions.md
 
 # Interface: IMproxyOptions
 
-Defined in: [lib/ws.ts:56](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L56)
+Defined in: [lib/ws.ts:80](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L80)
 
 正向代理请求的传入参数选项
 
@@ -127712,7 +130588,7 @@ Defined in: [lib/ws.ts:56](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 > `optional` **filter?**: (`h`) => `boolean`
 
-Defined in: [lib/ws.ts:64](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L64)
+Defined in: [lib/ws.ts:88](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L88)
 
 过滤 header，返回 true 则留下
 
@@ -127732,7 +130608,7 @@ Defined in: [lib/ws.ts:64](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 > `optional` **headers?**: [`THttpHeaders`](../../undici/type-aliases/THttpHeaders.md)
 
-Defined in: [lib/ws.ts:62](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L62)
+Defined in: [lib/ws.ts:86](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L86)
 
 ***
 
@@ -127740,7 +130616,7 @@ Defined in: [lib/ws.ts:62](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 > `optional` **hosts?**: `string` \| `Record`\<`string`, `string`\>
 
-Defined in: [lib/ws.ts:60](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L60)
+Defined in: [lib/ws.ts:84](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L84)
 
 自定义 host 映射，如 {'www.maiyun.net': '127.0.0.1'}，或全部映射到一个 host
 
@@ -127750,7 +130626,7 @@ Defined in: [lib/ws.ts:60](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 > `optional` **local?**: `string`
 
-Defined in: [lib/ws.ts:61](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L61)
+Defined in: [lib/ws.ts:85](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L85)
 
 ***
 
@@ -127758,7 +130634,7 @@ Defined in: [lib/ws.ts:61](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 > `optional` **masking?**: `boolean`
 
-Defined in: [lib/ws.ts:68](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L68)
+Defined in: [lib/ws.ts:92](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L92)
 
 加密模式，默认 true
 
@@ -127768,7 +130644,7 @@ Defined in: [lib/ws.ts:68](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 > `optional` **mode?**: [`EFrameReceiveMode`](../enumerations/EFrameReceiveMode.md)
 
-Defined in: [lib/ws.ts:66](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L66)
+Defined in: [lib/ws.ts:90](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L90)
 
 小帧模式，默认 false
 
@@ -127778,9 +130654,64 @@ Defined in: [lib/ws.ts:66](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 > `optional` **timeout?**: `number`
 
-Defined in: [lib/ws.ts:58](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L58)
+Defined in: [lib/ws.ts:82](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L82)
 
 秒数
+
+lib/ws/interfaces/IPipeCloseInfo.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../index.md) / [lib/ws](../index.md) / IPipeCloseInfo
+
+# Interface: IPipeCloseInfo
+
+Defined in: [lib/ws.ts:65](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L65)
+
+WebSocket 管道关闭信息
+
+## Properties
+
+### code?
+
+> `optional` **code?**: `number`
+
+Defined in: [lib/ws.ts:69](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L69)
+
+***
+
+### error?
+
+> `optional` **error?**: `unknown`
+
+Defined in: [lib/ws.ts:68](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L68)
+
+***
+
+### event
+
+> **event**: [`TPipeCloseEvent`](../type-aliases/TPipeCloseEvent.md)
+
+Defined in: [lib/ws.ts:67](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L67)
+
+***
+
+### reason?
+
+> `optional` **reason?**: `string`
+
+Defined in: [lib/ws.ts:70](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L70)
+
+***
+
+### side
+
+> **side**: [`TPipeSide`](../type-aliases/TPipeSide.md)
+
+Defined in: [lib/ws.ts:66](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L66)
 
 lib/ws/interfaces/IRproxyOptions.md
 ---
@@ -127793,17 +130724,37 @@ lib/ws/interfaces/IRproxyOptions.md
 
 # Interface: IRproxyOptions
 
-Defined in: [lib/ws.ts:72](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L72)
+Defined in: [lib/ws.ts:96](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L96)
 
 反向代理请求的传入参数选项
 
 ## Properties
 
+### closeReason?
+
+> `optional` **closeReason?**: (`info`) => `string`
+
+Defined in: [lib/ws.ts:119](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L119)
+
+生成回传给另一侧的 WebSocket 关闭原因，仅在管道断开时调用
+
+#### Parameters
+
+##### info
+
+[`IPipeCloseInfo`](IPipeCloseInfo.md)
+
+#### Returns
+
+`string`
+
+***
+
 ### filter?
 
 > `optional` **filter?**: (`h`) => `boolean`
 
-Defined in: [lib/ws.ts:80](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L80)
+Defined in: [lib/ws.ts:104](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L104)
 
 过滤 header，返回 true 则留下
 
@@ -127823,7 +130774,7 @@ Defined in: [lib/ws.ts:80](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 > `optional` **headers?**: [`THttpHeaders`](../../undici/type-aliases/THttpHeaders.md)
 
-Defined in: [lib/ws.ts:78](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L78)
+Defined in: [lib/ws.ts:102](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L102)
 
 ***
 
@@ -127831,7 +130782,7 @@ Defined in: [lib/ws.ts:78](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 > `optional` **hosts?**: `string` \| `Record`\<`string`, `string`\>
 
-Defined in: [lib/ws.ts:76](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L76)
+Defined in: [lib/ws.ts:100](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L100)
 
 自定义 host 映射，如 {'www.maiyun.net': '127.0.0.1'}，或全部映射到一个 host
 
@@ -127841,7 +130792,7 @@ Defined in: [lib/ws.ts:76](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 > `optional` **local?**: `string`
 
-Defined in: [lib/ws.ts:77](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L77)
+Defined in: [lib/ws.ts:101](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L101)
 
 ***
 
@@ -127849,7 +130800,7 @@ Defined in: [lib/ws.ts:77](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 > `optional` **masking?**: `boolean`
 
-Defined in: [lib/ws.ts:84](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L84)
+Defined in: [lib/ws.ts:108](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L108)
 
 加密模式，默认 true
 
@@ -127859,7 +130810,7 @@ Defined in: [lib/ws.ts:84](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 > `optional` **mode?**: [`EFrameReceiveMode`](../enumerations/EFrameReceiveMode.md)
 
-Defined in: [lib/ws.ts:82](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L82)
+Defined in: [lib/ws.ts:106](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L106)
 
 小帧模式，默认 false
 
@@ -127869,7 +130820,7 @@ Defined in: [lib/ws.ts:82](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 > `optional` **mproxy?**: `object`
 
-Defined in: [lib/ws.ts:86](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L86)
+Defined in: [lib/ws.ts:110](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L110)
 
 正向 mproxy 代理，url 如 wss://xxx/abc
 
@@ -127883,13 +130834,118 @@ Defined in: [lib/ws.ts:86](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 ***
 
+### onClose?
+
+> `optional` **onClose?**: (`info`) => `void`
+
+Defined in: [lib/ws.ts:117](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L117)
+
+管道关闭回调，返回首先关闭的一侧及其底层事件
+
+#### Parameters
+
+##### info
+
+[`IPipeCloseInfo`](IPipeCloseInfo.md)
+
+#### Returns
+
+`void`
+
+***
+
+### onConnectError?
+
+> `optional` **onConnectError?**: (`error`) => `void`
+
+Defined in: [lib/ws.ts:115](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L115)
+
+连接目标 WebSocket 失败回调
+
+#### Parameters
+
+##### error
+
+`unknown`
+
+#### Returns
+
+`void`
+
+***
+
 ### timeout?
 
 > `optional` **timeout?**: `number`
 
-Defined in: [lib/ws.ts:74](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L74)
+Defined in: [lib/ws.ts:98](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L98)
 
 秒数
+
+lib/ws/interfaces/ISocketCloseInfo.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../index.md) / [lib/ws](../index.md) / ISocketCloseInfo
+
+# Interface: ISocketCloseInfo
+
+Defined in: [lib/ws.ts:74](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L74)
+
+WebSocket 关闭信息
+
+## Properties
+
+### code
+
+> **code**: `number`
+
+Defined in: [lib/ws.ts:75](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L75)
+
+***
+
+### reason
+
+> **reason**: `string`
+
+Defined in: [lib/ws.ts:76](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L76)
+
+lib/ws/type-aliases/TPipeCloseEvent.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../index.md) / [lib/ws](../index.md) / TPipeCloseEvent
+
+# Type Alias: TPipeCloseEvent
+
+> **TPipeCloseEvent** = `"close"` \| `"end"` \| `"timeout"` \| `"error"`
+
+Defined in: [lib/ws.ts:62](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L62)
+
+WebSocket 管道结束前最后收到的底层事件
+
+lib/ws/type-aliases/TPipeSide.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../index.md) / [lib/ws](../index.md) / TPipeSide
+
+# Type Alias: TPipeSide
+
+> **TPipeSide** = `"source"` \| `"target"`
+
+Defined in: [lib/ws.ts:59](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L59)
+
+WebSocket 管道首先结束的一侧
 
 lib/zip/classes/Zip.md
 ---
@@ -129818,11 +132874,25 @@ Defined in: [sys/ctr.ts:961](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 ### \_end()
 
-> `protected` **\_end**(): `void`
+> `protected` **\_end**(`code?`, `reason?`): `void`
 
-Defined in: [sys/ctr.ts:1290](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1290)
+Defined in: [sys/ctr.ts:1292](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1292)
 
 主动关闭当前 socket 连接
+
+#### Parameters
+
+##### code?
+
+`number` = `1000`
+
+WebSocket 关闭码
+
+##### reason?
+
+`string` = `''`
+
+关闭原因
 
 #### Returns
 
@@ -129928,7 +132998,7 @@ Defined in: [sys/ctr.ts:369](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 > `protected` **\_handleFormData**(`events?`, `limits?`): `Promise`\<`boolean`\>
 
-Defined in: [sys/ctr.ts:1299](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1299)
+Defined in: [sys/ctr.ts:1301](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1301)
 
 获取 formdata 的信息
 
@@ -133953,7 +137023,7 @@ sys/route/functions/clearKebabConfigs.md
 
 > **clearKebabConfigs**(): `void`
 
-Defined in: [sys/route.ts:31](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L31)
+Defined in: [sys/route.ts:29](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L29)
 
 清除已经加载的虚拟主机配置文件
 
@@ -133974,7 +137044,7 @@ sys/route/functions/getFormData.md
 
 > **getFormData**(`req`, `events?`, `limits?`): `Promise`\<`false` \| \{ `files`: `Record`\<`string`, [`IPostFile`](../../../index/interfaces/IPostFile.md) \| [`IPostFile`](../../../index/interfaces/IPostFile.md)[]\>; `post`: `Record`\<`string`, [`Json`](../../../index/type-aliases/Json.md)\>; \}\>
 
-Defined in: [sys/route.ts:995](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L995)
+Defined in: [sys/route.ts:993](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L993)
 
 获取 formdata 的 post
 
@@ -134071,7 +137141,7 @@ sys/route/functions/getPost.md
 
 > **getPost**(`req`): `Promise`\<\{ `input`: `string`; `post`: `Record`\<`string`, `any`\>; `raw`: `Record`\<`string`, `any`\>; \}\>
 
-Defined in: [sys/route.ts:909](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L909)
+Defined in: [sys/route.ts:907](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L907)
 
 获取 post 对象（通常已自动获取），如果是文件上传（formdata）的情况则不获取
 
@@ -134100,7 +137170,7 @@ sys/route/functions/run.md
 
 > **run**(`data`): `Promise`\<`boolean`\>
 
-Defined in: [sys/route.ts:102](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L102)
+Defined in: [sys/route.ts:100](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L100)
 
 若为动态路径则执行此函数，此函数不进行判断 kebab.json 是否存在
 
@@ -134187,7 +137257,7 @@ sys/route/functions/unlinkUploadFiles.md
 
 > **unlinkUploadFiles**(`cctr`): `Promise`\<`void`\>
 
-Defined in: [sys/route.ts:868](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L868)
+Defined in: [sys/route.ts:866](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L866)
 
 删除本次请求所有已上传的临时文件
 
@@ -134216,7 +137286,7 @@ sys/route/functions/waitCtr.md
 
 > **waitCtr**(`cctr`): `Promise`\<`void`\>
 
-Defined in: [sys/route.ts:888](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L888)
+Defined in: [sys/route.ts:886](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L886)
 
 等待异步任务结束，并删除临时文件，如果结束后还有事务没关闭，则会在本函数中打印控制台并且写入 log 文件
 此时其实已经给客户端返回了，此处等待不消耗客户端的等待时间

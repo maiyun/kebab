@@ -6,7 +6,7 @@
 
 # Interface: MacAction\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11201
+Defined in: node\_modules/valibot/dist/index.d.mts:11336
 
 MAC action interface.
 
@@ -108,7 +108,7 @@ Whether it's async.
 
 > `readonly` **expects**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11213
+Defined in: node\_modules/valibot/dist/index.d.mts:11348
 
 The expected property.
 
@@ -136,7 +136,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11221
+Defined in: node\_modules/valibot/dist/index.d.mts:11356
 
 The error message.
 
@@ -146,7 +146,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `MacAction`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `MacAction`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11209
+Defined in: node\_modules/valibot/dist/index.d.mts:11344
 
 The action reference.
 
@@ -208,7 +208,7 @@ A MAC action.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11217
+Defined in: node\_modules/valibot/dist/index.d.mts:11352
 
 The MAC regex.
 
@@ -218,7 +218,7 @@ The MAC regex.
 
 > `readonly` **type**: `"mac"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11205
+Defined in: node\_modules/valibot/dist/index.d.mts:11340
 
 The action type.
 

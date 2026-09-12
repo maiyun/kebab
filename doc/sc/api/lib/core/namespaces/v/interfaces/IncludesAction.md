@@ -6,7 +6,7 @@
 
 # Interface: IncludesAction\<TInput$1, TRequirement, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9939
+Defined in: node\_modules/valibot/dist/index.d.mts:10008
 
 Includes action interface.
 
@@ -112,7 +112,7 @@ Whether it's async.
 
 > `readonly` **expects**: `string`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9951
+Defined in: node\_modules/valibot/dist/index.d.mts:10020
 
 The expected property.
 
@@ -140,7 +140,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9959
+Defined in: node\_modules/valibot/dist/index.d.mts:10028
 
 The error message.
 
@@ -150,7 +150,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`, `TRequirement`\>(`requirement`): `IncludesAction`\<`TInput$1`, `TRequirement`, `undefined`\>; \<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): `IncludesAction`\<`TInput$1`, `TRequirement`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9947
+Defined in: node\_modules/valibot/dist/index.d.mts:10016
 
 The action reference.
 
@@ -234,7 +234,7 @@ An includes action.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9955
+Defined in: node\_modules/valibot/dist/index.d.mts:10024
 
 The content to be included.
 
@@ -244,7 +244,7 @@ The content to be included.
 
 > `readonly` **type**: `"includes"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9943
+Defined in: node\_modules/valibot/dist/index.d.mts:10012
 
 The action type.
 

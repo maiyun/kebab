@@ -10,7 +10,7 @@
 
 > **values**\<`TInput$1`, `TRequirement`\>(`requirement`): [`ValuesAction`](../interfaces/ValuesAction.md)\<`TInput$1`, `TRequirement`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15535
+Defined in: node\_modules/valibot/dist/index.d.mts:15877
 
 Creates a values validation action.
 
@@ -42,7 +42,7 @@ A values action.
 
 > **values**\<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): [`ValuesAction`](../interfaces/ValuesAction.md)\<`TInput$1`, `TRequirement`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15544
+Defined in: node\_modules/valibot/dist/index.d.mts:15886
 
 Creates a values validation action.
 

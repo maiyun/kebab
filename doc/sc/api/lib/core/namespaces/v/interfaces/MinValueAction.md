@@ -6,7 +6,7 @@
 
 # Interface: MinValueAction\<TInput$1, TRequirement, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12372
+Defined in: node\_modules/valibot/dist/index.d.mts:12645
 
 Min value action interface.
 
@@ -112,7 +112,7 @@ Whether it's async.
 
 > `readonly` **expects**: `` `>=${string}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12384
+Defined in: node\_modules/valibot/dist/index.d.mts:12657
 
 The expected property.
 
@@ -140,7 +140,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12392
+Defined in: node\_modules/valibot/dist/index.d.mts:12665
 
 The error message.
 
@@ -150,7 +150,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`, `TRequirement`\>(`requirement`): `MinValueAction`\<`TInput$1`, `TRequirement`, `undefined`\>; \<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): `MinValueAction`\<`TInput$1`, `TRequirement`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12380
+Defined in: node\_modules/valibot/dist/index.d.mts:12653
 
 The action reference.
 
@@ -234,7 +234,7 @@ A min value action.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12388
+Defined in: node\_modules/valibot/dist/index.d.mts:12661
 
 The minimum value.
 
@@ -244,7 +244,7 @@ The minimum value.
 
 > `readonly` **type**: `"min_value"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12376
+Defined in: node\_modules/valibot/dist/index.d.mts:12649
 
 The action type.
 

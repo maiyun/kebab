@@ -6,7 +6,7 @@
 
 # Interface: RawCheckIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13733
+Defined in: node\_modules/valibot/dist/index.d.mts:14075
 
 Raw check issue interface.
 
@@ -96,7 +96,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13737
+Defined in: node\_modules/valibot/dist/index.d.mts:14079
 
 The issue kind.
 
@@ -180,7 +180,7 @@ The input requirement.
 
 > `readonly` **type**: `"raw_check"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13741
+Defined in: node\_modules/valibot/dist/index.d.mts:14083
 
 The issue type.
 

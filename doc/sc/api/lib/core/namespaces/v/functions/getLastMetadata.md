@@ -8,7 +8,7 @@
 
 > **\_getLastMetadata**(`schema`, `type`): `string` \| `undefined`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:16000
+Defined in: node\_modules/valibot/dist/index.d.mts:16363
 
 **`Internal`**
 

@@ -6,7 +6,7 @@
 
 # Interface: IsoDateAction\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10416
+Defined in: node\_modules/valibot/dist/index.d.mts:10485
 
 ISO date action interface.
 
@@ -108,7 +108,7 @@ Whether it's async.
 
 > `readonly` **expects**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10428
+Defined in: node\_modules/valibot/dist/index.d.mts:10497
 
 The expected property.
 
@@ -136,7 +136,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10436
+Defined in: node\_modules/valibot/dist/index.d.mts:10505
 
 The error message.
 
@@ -146,7 +146,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `IsoDateAction`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `IsoDateAction`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10424
+Defined in: node\_modules/valibot/dist/index.d.mts:10493
 
 The action reference.
 
@@ -220,7 +220,7 @@ An ISO date action.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10432
+Defined in: node\_modules/valibot/dist/index.d.mts:10501
 
 The ISO date regex.
 
@@ -230,7 +230,7 @@ The ISO date regex.
 
 > `readonly` **type**: `"iso_date"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10420
+Defined in: node\_modules/valibot/dist/index.d.mts:10489
 
 The action type.
 

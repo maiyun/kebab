@@ -8,7 +8,7 @@
 
 > **getGlobalMessage**(`lang?`): [`ErrorMessage`](../type-aliases/ErrorMessage.md)\<[`BaseIssue`](../interfaces/BaseIssue.md)\<`unknown`\>\> \| `undefined`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15817
+Defined in: node\_modules/valibot/dist/index.d.mts:16168
 
 Returns a global error message.
 

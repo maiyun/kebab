@@ -6,7 +6,7 @@
 
 # Interface: SlugIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14313
+Defined in: node\_modules/valibot/dist/index.d.mts:14655
 
 Slug issue type.
 
@@ -54,7 +54,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14325
+Defined in: node\_modules/valibot/dist/index.d.mts:14667
 
 The expected property.
 
@@ -96,7 +96,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14317
+Defined in: node\_modules/valibot/dist/index.d.mts:14659
 
 The issue kind.
 
@@ -152,7 +152,7 @@ The issue path.
 
 > `readonly` **received**: `` `"${string}"` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14329
+Defined in: node\_modules/valibot/dist/index.d.mts:14671
 
 The received property.
 
@@ -166,7 +166,7 @@ The received property.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14333
+Defined in: node\_modules/valibot/dist/index.d.mts:14675
 
 The slug regex.
 
@@ -180,7 +180,7 @@ The slug regex.
 
 > `readonly` **type**: `"slug"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14321
+Defined in: node\_modules/valibot/dist/index.d.mts:14663
 
 The issue type.
 

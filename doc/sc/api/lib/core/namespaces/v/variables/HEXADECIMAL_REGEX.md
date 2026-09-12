@@ -8,7 +8,7 @@
 
 > `const` **HEXADECIMAL\_REGEX**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15666
+Defined in: node\_modules/valibot/dist/index.d.mts:16010
 
 [Hexadecimal](https://en.wikipedia.org/wiki/Hexadecimal) regex.
 

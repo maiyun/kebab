@@ -8,6 +8,6 @@
 
 > **GlobalConfig** = `Omit`\<[`Config`](../interfaces/Config.md)\<`never`\>, `"message"`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15782
+Defined in: node\_modules/valibot/dist/index.d.mts:16133
 
 The global config type.

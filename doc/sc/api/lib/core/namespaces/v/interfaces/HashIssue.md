@@ -6,7 +6,7 @@
 
 # Interface: HashIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9643
+Defined in: node\_modules/valibot/dist/index.d.mts:9712
 
 Hash issue interface.
 
@@ -54,7 +54,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9655
+Defined in: node\_modules/valibot/dist/index.d.mts:9724
 
 The expected property.
 
@@ -96,7 +96,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9647
+Defined in: node\_modules/valibot/dist/index.d.mts:9716
 
 The issue kind.
 
@@ -152,7 +152,7 @@ The issue path.
 
 > `readonly` **received**: `` `"${string}"` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9659
+Defined in: node\_modules/valibot/dist/index.d.mts:9728
 
 The received property.
 
@@ -166,7 +166,7 @@ The received property.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9663
+Defined in: node\_modules/valibot/dist/index.d.mts:9732
 
 The hash regex.
 
@@ -180,7 +180,7 @@ The hash regex.
 
 > `readonly` **type**: `"hash"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9651
+Defined in: node\_modules/valibot/dist/index.d.mts:9720
 
 The issue type.
 

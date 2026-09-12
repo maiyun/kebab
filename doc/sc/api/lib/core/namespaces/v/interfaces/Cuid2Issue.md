@@ -6,7 +6,7 @@
 
 # Interface: Cuid2Issue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8385
+Defined in: node\_modules/valibot/dist/index.d.mts:8454
 
 Cuid2 issue interface.
 
@@ -54,7 +54,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8397
+Defined in: node\_modules/valibot/dist/index.d.mts:8466
 
 The expected property.
 
@@ -96,7 +96,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8389
+Defined in: node\_modules/valibot/dist/index.d.mts:8458
 
 The issue kind.
 
@@ -152,7 +152,7 @@ The issue path.
 
 > `readonly` **received**: `` `"${string}"` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8401
+Defined in: node\_modules/valibot/dist/index.d.mts:8470
 
 The received property.
 
@@ -166,7 +166,7 @@ The received property.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8405
+Defined in: node\_modules/valibot/dist/index.d.mts:8474
 
 The Cuid2 regex.
 
@@ -180,7 +180,7 @@ The Cuid2 regex.
 
 > `readonly` **type**: `"cuid2"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8393
+Defined in: node\_modules/valibot/dist/index.d.mts:8462
 
 The issue type.
 

@@ -6,7 +6,7 @@
 
 # Interface: EveryItemAction\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9075
+Defined in: node\_modules/valibot/dist/index.d.mts:9144
 
 Every item action interface.
 
@@ -108,7 +108,7 @@ Whether it's async.
 
 > `readonly` **expects**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9087
+Defined in: node\_modules/valibot/dist/index.d.mts:9156
 
 The expected property.
 
@@ -136,7 +136,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9095
+Defined in: node\_modules/valibot/dist/index.d.mts:9164
 
 The error message.
 
@@ -146,7 +146,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(`requirement`): `EveryItemAction`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`requirement`, `message`): `EveryItemAction`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9083
+Defined in: node\_modules/valibot/dist/index.d.mts:9152
 
 The action reference.
 
@@ -222,7 +222,7 @@ An every item action.
 
 > `readonly` **requirement**: [`ArrayRequirement`](../type-aliases/ArrayRequirement.md)\<`TInput$1`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9091
+Defined in: node\_modules/valibot/dist/index.d.mts:9160
 
 The validation function.
 
@@ -232,7 +232,7 @@ The validation function.
 
 > `readonly` **type**: `"every_item"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9079
+Defined in: node\_modules/valibot/dist/index.d.mts:9148
 
 The action type.
 

@@ -6,7 +6,7 @@
 
 # Interface: MaxValueAction\<TInput$1, TRequirement, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11779
+Defined in: node\_modules/valibot/dist/index.d.mts:11983
 
 Max value action interface.
 
@@ -112,7 +112,7 @@ Whether it's async.
 
 > `readonly` **expects**: `` `<=${string}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11791
+Defined in: node\_modules/valibot/dist/index.d.mts:11995
 
 The expected property.
 
@@ -140,7 +140,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11799
+Defined in: node\_modules/valibot/dist/index.d.mts:12003
 
 The error message.
 
@@ -150,7 +150,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`, `TRequirement`\>(`requirement`): `MaxValueAction`\<`TInput$1`, `TRequirement`, `undefined`\>; \<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): `MaxValueAction`\<`TInput$1`, `TRequirement`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11787
+Defined in: node\_modules/valibot/dist/index.d.mts:11991
 
 The action reference.
 
@@ -234,7 +234,7 @@ A max value action.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11795
+Defined in: node\_modules/valibot/dist/index.d.mts:11999
 
 The maximum value.
 
@@ -244,7 +244,7 @@ The maximum value.
 
 > `readonly` **type**: `"max_value"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:11783
+Defined in: node\_modules/valibot/dist/index.d.mts:11987
 
 The action type.
 

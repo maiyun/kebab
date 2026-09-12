@@ -10,7 +10,7 @@
 
 > **everyItem**\<`TInput$1`\>(`requirement`): [`EveryItemAction`](../interfaces/EveryItemAction.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9104
+Defined in: node\_modules/valibot/dist/index.d.mts:9173
 
 Creates an every item validation action.
 
@@ -38,7 +38,7 @@ An every item action.
 
 > **everyItem**\<`TInput$1`, `TMessage`\>(`requirement`, `message`): [`EveryItemAction`](../interfaces/EveryItemAction.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9113
+Defined in: node\_modules/valibot/dist/index.d.mts:9182
 
 Creates an every item validation action.
 

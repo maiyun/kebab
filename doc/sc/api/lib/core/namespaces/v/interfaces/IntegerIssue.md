@@ -6,7 +6,7 @@
 
 # Interface: IntegerIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9983
+Defined in: node\_modules/valibot/dist/index.d.mts:10052
 
 Integer issue interface.
 
@@ -54,7 +54,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9995
+Defined in: node\_modules/valibot/dist/index.d.mts:10064
 
 The expected property.
 
@@ -96,7 +96,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9987
+Defined in: node\_modules/valibot/dist/index.d.mts:10056
 
 The issue kind.
 
@@ -152,7 +152,7 @@ The issue path.
 
 > `readonly` **received**: `` `${number}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9999
+Defined in: node\_modules/valibot/dist/index.d.mts:10068
 
 The received property.
 
@@ -166,7 +166,7 @@ The received property.
 
 > `readonly` **requirement**: (`input`) => `boolean`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10003
+Defined in: node\_modules/valibot/dist/index.d.mts:10072
 
 The validation function.
 
@@ -190,7 +190,7 @@ The validation function.
 
 > `readonly` **type**: `"integer"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9991
+Defined in: node\_modules/valibot/dist/index.d.mts:10060
 
 The issue type.
 

@@ -10,7 +10,7 @@
 
 > **partialCheckAsync**\<`TInput$1`, `TPaths`, `TSelection`\>(`paths`, `requirement`): [`PartialCheckActionAsync`](../interfaces/PartialCheckActionAsync.md)\<`TInput$1`, `TPaths`, `TSelection`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13717
+Defined in: node\_modules/valibot/dist/index.d.mts:14059
 
 Creates a partial check validation action.
 
@@ -53,7 +53,7 @@ A partial check action.
 
 > **partialCheckAsync**\<`TInput$1`, `TPaths`, `TSelection`, `TMessage`\>(`paths`, `requirement`, `message`): [`PartialCheckActionAsync`](../interfaces/PartialCheckActionAsync.md)\<`TInput$1`, `TPaths`, `TSelection`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13727
+Defined in: node\_modules/valibot/dist/index.d.mts:14069
 
 Creates a partial check validation action.
 

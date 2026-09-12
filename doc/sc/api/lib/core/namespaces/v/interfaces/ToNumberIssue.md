@@ -6,7 +6,7 @@
 
 # Interface: ToNumberIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14906
+Defined in: node\_modules/valibot/dist/index.d.mts:15248
 
 To number issue interface.
 
@@ -54,7 +54,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14918
+Defined in: node\_modules/valibot/dist/index.d.mts:15260
 
 The expected property.
 
@@ -96,7 +96,7 @@ The sub issues.
 
 > `readonly` **kind**: `"transformation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14910
+Defined in: node\_modules/valibot/dist/index.d.mts:15252
 
 The issue kind.
 
@@ -180,7 +180,7 @@ The input requirement.
 
 > `readonly` **type**: `"to_number"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14914
+Defined in: node\_modules/valibot/dist/index.d.mts:15256
 
 The issue type.
 

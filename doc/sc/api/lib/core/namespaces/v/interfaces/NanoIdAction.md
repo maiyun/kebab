@@ -6,7 +6,7 @@
 
 # Interface: NanoIdAction\<TInput$1, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12612
+Defined in: node\_modules/valibot/dist/index.d.mts:12885
 
 Nano ID action interface.
 
@@ -108,7 +108,7 @@ Whether it's async.
 
 > `readonly` **expects**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12624
+Defined in: node\_modules/valibot/dist/index.d.mts:12897
 
 The expected property.
 
@@ -136,7 +136,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12632
+Defined in: node\_modules/valibot/dist/index.d.mts:12905
 
 The error message.
 
@@ -146,7 +146,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`\>(): `NanoIdAction`\<`TInput$1`, `undefined`\>; \<`TInput$1`, `TMessage`\>(`message`): `NanoIdAction`\<`TInput$1`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12620
+Defined in: node\_modules/valibot/dist/index.d.mts:12893
 
 The action reference.
 
@@ -208,7 +208,7 @@ A Nano ID action.
 
 > `readonly` **requirement**: `RegExp`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12628
+Defined in: node\_modules/valibot/dist/index.d.mts:12901
 
 The Nano ID regex.
 
@@ -218,7 +218,7 @@ The Nano ID regex.
 
 > `readonly` **type**: `"nanoid"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12616
+Defined in: node\_modules/valibot/dist/index.d.mts:12889
 
 The action type.
 

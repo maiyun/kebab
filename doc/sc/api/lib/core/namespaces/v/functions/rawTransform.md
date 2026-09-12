@@ -8,7 +8,7 @@
 
 > **rawTransform**\<`TInput$1`, `TOutput$1`\>(`action`): [`RawTransformAction`](../interfaces/RawTransformAction.md)\<`TInput$1`, `TOutput$1`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13881
+Defined in: node\_modules/valibot/dist/index.d.mts:14223
 
 Creates a raw transformation action.
 

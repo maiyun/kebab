@@ -10,7 +10,7 @@
 
 > **regex**\<`TInput$1`\>(`requirement`): [`RegexAction`](../interfaces/RegexAction.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14027
+Defined in: node\_modules/valibot/dist/index.d.mts:14369
 
 Creates a [regex](https://en.wikipedia.org/wiki/Regular_expression) validation action.
 
@@ -40,7 +40,7 @@ A regex action.
 
 > **regex**\<`TInput$1`, `TMessage`\>(`requirement`, `message`): [`RegexAction`](../interfaces/RegexAction.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14038
+Defined in: node\_modules/valibot/dist/index.d.mts:14380
 
 Creates a [regex](https://en.wikipedia.org/wiki/Regular_expression) validation action.
 

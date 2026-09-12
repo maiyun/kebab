@@ -6,7 +6,7 @@
 
 # Interface: NotBytesAction\<TInput$1, TRequirement, TMessage\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12779
+Defined in: node\_modules/valibot/dist/index.d.mts:13052
 
 Not bytes action interface.
 
@@ -112,7 +112,7 @@ Whether it's async.
 
 > `readonly` **expects**: `` `!${TRequirement}` ``
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12791
+Defined in: node\_modules/valibot/dist/index.d.mts:13064
 
 The expected property.
 
@@ -140,7 +140,7 @@ The object kind.
 
 > `readonly` **message**: `TMessage`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12799
+Defined in: node\_modules/valibot/dist/index.d.mts:13072
 
 The error message.
 
@@ -150,7 +150,7 @@ The error message.
 
 > `readonly` **reference**: \{\<`TInput$1`, `TRequirement`\>(`requirement`): `NotBytesAction`\<`TInput$1`, `TRequirement`, `undefined`\>; \<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): `NotBytesAction`\<`TInput$1`, `TRequirement`, `TMessage`\>; \}
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12787
+Defined in: node\_modules/valibot/dist/index.d.mts:13060
 
 The action reference.
 
@@ -234,7 +234,7 @@ A not bytes action.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12795
+Defined in: node\_modules/valibot/dist/index.d.mts:13068
 
 The not required bytes.
 
@@ -244,7 +244,7 @@ The not required bytes.
 
 > `readonly` **type**: `"not_bytes"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:12783
+Defined in: node\_modules/valibot/dist/index.d.mts:13056
 
 The action type.
 

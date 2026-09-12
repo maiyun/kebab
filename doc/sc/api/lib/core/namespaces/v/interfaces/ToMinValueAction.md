@@ -6,7 +6,7 @@
 
 # Interface: ToMinValueAction\<TInput$1, TRequirement\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14879
+Defined in: node\_modules/valibot/dist/index.d.mts:15221
 
 To min value action interface.
 
@@ -122,7 +122,7 @@ The object kind.
 
 > `readonly` **reference**: \<`TInput$1`, `TRequirement`\>(`requirement`) => `ToMinValueAction`\<`TInput$1`, `TRequirement`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14887
+Defined in: node\_modules/valibot/dist/index.d.mts:15229
 
 The action reference.
 
@@ -162,7 +162,7 @@ A to min value action.
 
 > `readonly` **requirement**: `TRequirement`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14891
+Defined in: node\_modules/valibot/dist/index.d.mts:15233
 
 The minimum value.
 
@@ -172,7 +172,7 @@ The minimum value.
 
 > `readonly` **type**: `"to_min_value"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14883
+Defined in: node\_modules/valibot/dist/index.d.mts:15225
 
 The action type.
 

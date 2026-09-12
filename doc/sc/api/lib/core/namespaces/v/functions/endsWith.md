@@ -10,7 +10,7 @@
 
 > **endsWith**\<`TInput$1`, `TRequirement`\>(`requirement`): [`EndsWithAction`](../interfaces/EndsWithAction.md)\<`TInput$1`, `TRequirement`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8962
+Defined in: node\_modules/valibot/dist/index.d.mts:9031
 
 Creates an ends with validation action.
 
@@ -42,7 +42,7 @@ An ends with action.
 
 > **endsWith**\<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): [`EndsWithAction`](../interfaces/EndsWithAction.md)\<`TInput$1`, `TRequirement`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:8971
+Defined in: node\_modules/valibot/dist/index.d.mts:9040
 
 Creates an ends with validation action.
 

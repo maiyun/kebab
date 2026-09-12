@@ -6,7 +6,7 @@
 
 # Interface: ReadonlyAction\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13914
+Defined in: node\_modules/valibot/dist/index.d.mts:14256
 
 Readonly action interface.
 
@@ -118,7 +118,7 @@ The object kind.
 
 > `readonly` **reference**: \<`TInput$1`\>() => `ReadonlyAction`\<`TInput$1`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13922
+Defined in: node\_modules/valibot/dist/index.d.mts:14264
 
 The action reference.
 
@@ -146,7 +146,7 @@ A readonly action.
 
 > `readonly` **type**: `"readonly"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13918
+Defined in: node\_modules/valibot/dist/index.d.mts:14260
 
 The action type.
 

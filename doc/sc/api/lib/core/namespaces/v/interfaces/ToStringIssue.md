@@ -6,7 +6,7 @@
 
 # Interface: ToStringIssue\<TInput$1\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15024
+Defined in: node\_modules/valibot/dist/index.d.mts:15366
 
 To string issue interface.
 
@@ -54,7 +54,7 @@ Whether a pipe should be aborted early.
 
 > `readonly` **expected**: `null`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15036
+Defined in: node\_modules/valibot/dist/index.d.mts:15378
 
 The expected property.
 
@@ -96,7 +96,7 @@ The sub issues.
 
 > `readonly` **kind**: `"transformation"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15028
+Defined in: node\_modules/valibot/dist/index.d.mts:15370
 
 The issue kind.
 
@@ -180,7 +180,7 @@ The input requirement.
 
 > `readonly` **type**: `"to_string"`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:15032
+Defined in: node\_modules/valibot/dist/index.d.mts:15374
 
 The issue type.
 

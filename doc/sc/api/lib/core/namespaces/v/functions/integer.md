@@ -10,7 +10,7 @@
 
 > **integer**\<`TInput$1`\>(): [`IntegerAction`](../interfaces/IntegerAction.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10035
+Defined in: node\_modules/valibot/dist/index.d.mts:10104
 
 Creates an [integer](https://en.wikipedia.org/wiki/Integer) validation action.
 
@@ -30,7 +30,7 @@ An integer action.
 
 > **integer**\<`TInput$1`, `TMessage`\>(`message`): [`IntegerAction`](../interfaces/IntegerAction.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:10043
+Defined in: node\_modules/valibot/dist/index.d.mts:10112
 
 Creates an [integer](https://en.wikipedia.org/wiki/Integer) validation action.
 

@@ -10,7 +10,7 @@
 
 > **startsWith**\<`TInput$1`, `TRequirement`\>(`requirement`): [`StartsWithAction`](../interfaces/StartsWithAction.md)\<`TInput$1`, `TRequirement`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14529
+Defined in: node\_modules/valibot/dist/index.d.mts:14871
 
 Creates a starts with validation action.
 
@@ -42,7 +42,7 @@ A starts with action.
 
 > **startsWith**\<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): [`StartsWithAction`](../interfaces/StartsWithAction.md)\<`TInput$1`, `TRequirement`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:14538
+Defined in: node\_modules/valibot/dist/index.d.mts:14880
 
 Creates a starts with validation action.
 

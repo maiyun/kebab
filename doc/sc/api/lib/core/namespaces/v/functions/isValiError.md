@@ -8,7 +8,7 @@
 
 > **isValiError**\<`TSchema`\>(`error`): `error is ValiError<TSchema>`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:16165
+Defined in: node\_modules/valibot/dist/index.d.mts:16577
 
 A type guard to check if an error is a ValiError.
 

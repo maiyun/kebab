@@ -10,7 +10,7 @@
 
 > **notValues**\<`TInput$1`, `TRequirement`\>(`requirement`): [`NotValuesAction`](../interfaces/NotValuesAction.md)\<`TInput$1`, `TRequirement`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13222
+Defined in: node\_modules/valibot/dist/index.d.mts:13564
 
 Creates a not values validation action.
 
@@ -42,7 +42,7 @@ A not values action.
 
 > **notValues**\<`TInput$1`, `TRequirement`, `TMessage`\>(`requirement`, `message`): [`NotValuesAction`](../interfaces/NotValuesAction.md)\<`TInput$1`, `TRequirement`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:13231
+Defined in: node\_modules/valibot/dist/index.d.mts:13573
 
 Creates a not values validation action.
 

@@ -10,7 +10,7 @@
 
 > **finite**\<`TInput$1`\>(): [`FiniteAction`](../interfaces/FiniteAction.md)\<`TInput$1`, `undefined`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9323
+Defined in: node\_modules/valibot/dist/index.d.mts:9392
 
 Creates a [finite](https://en.wikipedia.org/wiki/Finite) validation action.
 
@@ -30,7 +30,7 @@ A finite action.
 
 > **finite**\<`TInput$1`, `TMessage`\>(`message`): [`FiniteAction`](../interfaces/FiniteAction.md)\<`TInput$1`, `TMessage`\>
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9331
+Defined in: node\_modules/valibot/dist/index.d.mts:9400
 
 Creates a [finite](https://en.wikipedia.org/wiki/Finite) validation action.
 

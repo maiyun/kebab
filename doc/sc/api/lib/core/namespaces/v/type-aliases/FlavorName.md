@@ -8,7 +8,7 @@
 
 > **FlavorName** = `string` \| `number` \| `symbol`
 
-Defined in: node\_modules/valibot/dist/index.d.mts:9345
+Defined in: node\_modules/valibot/dist/index.d.mts:9414
 
 **`Beta`**
 
