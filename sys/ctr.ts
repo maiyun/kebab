@@ -1286,9 +1286,11 @@ export class Ctr {
 
     /**
      * --- 主动关闭当前 socket 连接 ---
+     * @param code WebSocket 关闭码
+     * @param reason 关闭原因
      */
-    protected _end(): void {
-        this._socket.end();
+    protected _end(code: number = 1000, reason: string = ''): void {
+        this._socket.end(code, reason);
     }
 
     /**

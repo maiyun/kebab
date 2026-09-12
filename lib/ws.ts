@@ -115,6 +115,8 @@ export interface IRproxyOptions {
     onConnectError?: (error: unknown) => void;
     /** --- 管道关闭回调，返回首先关闭的一侧及其底层事件 --- */
     onClose?: (info: IPipeCloseInfo) => void;
+    /** --- 生成回传给另一侧的 WebSocket 关闭原因，仅在管道断开时调用 --- */
+    closeReason?: (info: IPipeCloseInfo) => string;
 }
 
 /** --- 单条 WebSocket 消息最大 64 MiB，与原实现保持一致 --- */
@@ -558,12 +560,17 @@ export class Socket {
         return this;
     }
 
-    public end(): void {
+    /**
+     * --- 正常结束 WebSocket 连接 ---
+     * @param code WebSocket 关闭码
+     * @param reason 关闭原因，超过协议上限时自动安全截断
+     */
+    public end(code: number = 1000, reason: string = ''): void {
         if (this._ws.readyState !== WebSocket.OPEN) {
             return;
         }
         this._finished = true;
-        this._ws.close(1000);
+        this._ws.close(code, truncateCloseReason(reason));
     }
 
     public destroy(): void {
@@ -736,12 +743,60 @@ export function createServer(request: http.IncomingMessage, socket: net.Socket, 
     return new Socket(request, socket, head, options);
 }
 
+/** --- WebSocket 关闭原因最大字节数，控制帧的另外 2 字节用于关闭码 --- */
+const MAX_CLOSE_REASON_BYTES = 123;
+
+/**
+ * --- 按 UTF-8 字节安全截断 WebSocket 关闭原因 ---
+ * @param reason 原始关闭原因
+ * @returns 可写入关闭帧的原因
+ */
+function truncateCloseReason(reason: string): string {
+    const data = Buffer.from(reason);
+    if (data.length <= MAX_CLOSE_REASON_BYTES) {
+        return reason;
+    }
+    let length = MAX_CLOSE_REASON_BYTES;
+    while (length && ((data[length] & 0xC0) === 0x80)) {
+        --length;
+    }
+    return data.subarray(0, length).toString();
+}
+
+/**
+ * --- 判断关闭码是否允许写入 WebSocket 关闭帧 ---
+ * @param code 关闭码
+ * @returns 是否有效
+ */
+function isSendableCloseCode(code: number | undefined): code is number {
+    if (code === undefined) {
+        return false;
+    }
+    if ((code === 1000) || ((code >= 3000) && (code <= 4999))) {
+        return true;
+    }
+    return (code >= 1001) && (code <= 1014) && ![1004, 1005, 1006].includes(code);
+}
+
+/**
+ * --- 获取可安全转发给对端的关闭原因，仅保留关闭帧中已有的内容 ---
+ * @param info 管道关闭信息
+ * @returns 关闭原因
+ */
+function getPipeCloseReason(info: IPipeCloseInfo): string {
+    return info.reason ?? '';
+}
+
 /**
  * --- 绑定 socket 管道 ---
  * @param s1 第一个 socket
  * @param s2 第二个 socket
  */
-function bindPipe(s1: Socket, s2: Socket): Promise<IPipeCloseInfo> {
+function bindPipe(
+    s1: Socket,
+    s2: Socket,
+    closeReason?: (info: IPipeCloseInfo) => string
+): Promise<IPipeCloseInfo> {
     return new Promise<IPipeCloseInfo>(resolve => {
         /** --- 是否已经完成关闭，防止双向 close 重复处理 --- */
         let closed: boolean = false;
@@ -757,7 +812,7 @@ function bindPipe(s1: Socket, s2: Socket): Promise<IPipeCloseInfo> {
         let sourceCloseInfo: ISocketCloseInfo | undefined;
         /** --- 目标侧 WebSocket 关闭信息 --- */
         let targetCloseInfo: ISocketCloseInfo | undefined;
-        /** --- 两端一起销毁，避免半开连接继续占用资源 --- */
+        /** --- 销毁已断开侧，并将原因通过关闭帧回传另一侧 --- */
         const close = (side: TPipeSide): void => {
             if (closed) {
                 return;
@@ -774,8 +829,23 @@ function bindPipe(s1: Socket, s2: Socket): Promise<IPipeCloseInfo> {
                 'error': targetError,
                 ...targetCloseInfo,
             };
-            s1.destroy();
-            s2.destroy();
+            const code = isSendableCloseCode(info.code) ? info.code : 1011;
+            let reason: string;
+            try {
+                reason = closeReason?.(info) ?? getPipeCloseReason(info);
+            }
+            catch (error: unknown) {
+                lCore.log({}, `[WS][PIPE][CLOSE REASON ERROR] ${lText.stringifyError(error)}`, '-error');
+                reason = getPipeCloseReason(info);
+            }
+            if (side === 'source') {
+                s1.destroy();
+                s2.end(code, reason);
+            }
+            else {
+                s1.end(code, reason);
+                s2.destroy();
+            }
             resolve(info);
         };
         // --- 监听发送端的 ---
@@ -957,7 +1027,7 @@ export async function rproxy(
         lCore.log(ctr, `[WS][RPROXY][TARGET CONNECT ERROR] ${endpoint}: ${lText.stringifyError(connectError)}`, '-error');
         return false;
     }
-    const info = await bindPipe(socket, rsocket);
+    const info = await bindPipe(socket, rsocket, opt.closeReason);
     opt.onClose?.(info);
     if ((info.side === 'target') || (info.event === 'error') || (info.event === 'timeout')) {
         const target = lText.parseUrl(url);
