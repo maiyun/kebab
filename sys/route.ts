@@ -8,8 +8,6 @@ import * as http2 from 'http2';
 import * as net from 'net';
 import * as fs from 'fs';
 import * as stream from 'stream';
-// --- 第三方 ---
-import * as ws from '@litert/websocket';
 // --- 库和定义 ---
 import * as lFs from '#kebab/lib/fs.js';
 import * as lZlib from '#kebab/lib/zlib.js';
@@ -374,7 +372,7 @@ export async function run(data: {
                 await new Promise<void>(function(resolve) {
                     wsSocket.on('message', async function(msg): Promise<void> {
                         switch (msg.opcode) {
-                            case ws.EOpcode.CLOSE: {
+                            case lWs.EOpcode.CLOSE: {
                                 const r = await (cctr as kebab.Json)['onMessage'](msg.data, msg.opcode);
                                 if (r === false) {
                                     break;
@@ -382,7 +380,7 @@ export async function run(data: {
                                 wsSocket.end();
                                 break;
                             }
-                            case ws.EOpcode.PING: {
+                            case lWs.EOpcode.PING: {
                                 const r = await (cctr as kebab.Json)['onMessage'](msg.data, msg.opcode);
                                 if (r === false) {
                                     break;
@@ -390,14 +388,14 @@ export async function run(data: {
                                 wsSocket.pong();
                                 break;
                             }
-                            case ws.EOpcode.BINARY:
-                            case ws.EOpcode.TEXT: {
+                            case lWs.EOpcode.BINARY:
+                            case lWs.EOpcode.TEXT: {
                                 try {
                                     const r = await (cctr as kebab.Json)['onMessage'](msg.data, msg.opcode);
                                     if (r === false) {
                                         break;
                                     }
-                                    const wrtn = await (cctr as kebab.Json)['onData'](msg.opcode === ws.EOpcode.TEXT ? msg.data.toString() : msg.data, msg.opcode);
+                                    const wrtn = await (cctr as kebab.Json)['onData'](msg.opcode === lWs.EOpcode.TEXT ? msg.data.toString() : msg.data, msg.opcode);
                                     if (wrtn === false) {
                                         wsSocket.end();
                                         return;
