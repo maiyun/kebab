@@ -2343,8 +2343,8 @@ error: ${JSON.stringify(res.error)}
     public async undiciPost(): Promise<kebab.Json> {
         const echo = [];
 
-        const res = await lUndici.post(this._internalUrl + 'test/netPost1', { 'a': '1', 'b': '2', 'c': ['1', '2', '3'] });
-        echo.push(`<pre>lUndici.post('${this._internalUrl}test/netPost1', { 'a': '1', 'b': '2', 'c': ['1', '2', '3'] });</pre>
+        const res = await lUndici.post(this._internalUrl + 'test/undiciPost1', { 'a': '1', 'b': '2', 'c': ['1', '2', '3'] });
+        echo.push(`<pre>lUndici.post('${this._internalUrl}test/undiciPost1', { 'a': '1', 'b': '2', 'c': ['1', '2', '3'] });</pre>
 headers: <pre>${JSON.stringify(res.headers, null, 4)}</pre>
 content: <pre>${(await res.getContent())?.toString() ?? 'null'}</pre>
 error: ${JSON.stringify(res.error)}`);
@@ -2359,8 +2359,8 @@ error: ${JSON.stringify(res.error)}`);
     public async undiciPostString(): Promise<string> {
         const echo = [];
 
-        const res = await lUndici.post(this._internalUrl + 'test/netPostString1', 'HeiHei');
-        echo.push(`<pre>lUndici.post('${this._internalUrl}test/netPostString1', 'HeiHei');</pre>
+        const res = await lUndici.post(this._internalUrl + 'test/undiciPostString1', 'HeiHei');
+        echo.push(`<pre>lUndici.post('${this._internalUrl}test/undiciPostString1', 'HeiHei');</pre>
 headers: <pre>${JSON.stringify(res.headers, null, 4)}</pre>
 content: <pre>${(await res.getContent())?.toString() ?? 'null'}</pre>
 error: ${JSON.stringify(res.error)}`);
@@ -2375,8 +2375,8 @@ error: ${JSON.stringify(res.error)}`);
     public async undiciOpen(): Promise<kebab.Json> {
         const echo = [];
 
-        const res = await lUndici.open(this._internalUrl + 'test/netPost1').post().data({ 'a': '2', 'b': '0', 'c': ['0', '1', '3'] }).request();
-        echo.push(`<pre>lUndici.open('${this._internalUrl}test/netPost1').post().data({ 'a': '2', 'b': '0', 'c': ['0', '1', '3'] }).request();</pre>
+        const res = await lUndici.open(this._internalUrl + 'test/undiciPost1').post().data({ 'a': '2', 'b': '0', 'c': ['0', '1', '3'] }).request();
+        echo.push(`<pre>lUndici.open('${this._internalUrl}test/undiciPost1').post().data({ 'a': '2', 'b': '0', 'c': ['0', '1', '3'] }).request();</pre>
 headers: <pre>${JSON.stringify(res.headers, null, 4)}</pre>
 content: <pre>${(await res.getContent())?.toString() ?? 'null'}</pre>
 error: ${JSON.stringify(res.error)}`);
