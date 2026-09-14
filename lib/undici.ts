@@ -63,14 +63,32 @@ function normalizeRetry(retry?: number): number {
         Math.max(0, Math.floor(retry)) : 0;
 }
 
+/**
+ * --- 将 Agent 的秒数配置转换为毫秒 ---
+ * @param timeout 秒数
+ * @returns 未设置或数值无效时返回 undefined，否则返回毫秒数
+ */
+function normalizeAgentTimeout(timeout: number | undefined): number | undefined {
+    if (timeout === undefined) {
+        return undefined;
+    }
+    const milliseconds = timeout * 1_000;
+    if (!Number.isFinite(milliseconds) || (milliseconds <= 0)) {
+        return undefined;
+    }
+    return milliseconds;
+}
+
 /** --- 获取或创建 undici.agent 对象 --- */
 function getAgent(opt: IRequestOptions = {}): undici.Agent | undici.ProxyAgent {
     let k = opt.reuse ?? 'default';
     if (typeof k !== 'string') {
         return k;
     }
+    const keepAliveTimeout = normalizeAgentTimeout(opt.keepAliveTimeout);
+    const reuseTimeout = normalizeAgentTimeout(opt.reuseTimeout);
     if (k === 'default') {
-        // --- hosts/local/keep 均会影响 agent 行为，需生成独立的 key ---
+        // --- hosts/local/keep/连接时长均会影响 agent 行为，需生成独立的 key ---
         const features: string[] = [];
         if (opt.hosts) {
             features.push(`h:${lCrypto.hashHmac('md5', lText.stringifyJson(opt.hosts))}`);
@@ -80,6 +98,12 @@ function getAgent(opt: IRequestOptions = {}): undici.Agent | undici.ProxyAgent {
         }
         if (opt.keep === false) {
             features.push('k:0');
+        }
+        if (keepAliveTimeout !== undefined) {
+            features.push(`ka:${keepAliveTimeout}`);
+        }
+        if (reuseTimeout !== undefined) {
+            features.push(`rt:${reuseTimeout}`);
         }
         if (features.length > 0) {
             k = features.join('|');
@@ -92,6 +116,13 @@ function getAgent(opt: IRequestOptions = {}): undici.Agent | undici.ProxyAgent {
                 lookup: buildDnsLookup(opt.hosts),
             },
             'pipelining': opt.keep === false ? 0 : 1,
+            ...(keepAliveTimeout === undefined ? {} : {
+                'keepAliveTimeout': keepAliveTimeout,
+                'keepAliveMaxTimeout': keepAliveTimeout,
+            }),
+            ...(reuseTimeout === undefined ? {} : {
+                'clientTtl': reuseTimeout,
+            }),
         }));
     }
     return agents.get(k)!;
@@ -271,6 +302,10 @@ export async function fetch(
         'hosts'?: Record<string, string> | string;
         /** --- 网络异常后的重试次数，默认 0；流式请求体不可重试，非幂等请求需由调用方保证安全 --- */
         'retry'?: number;
+        /** --- 空闲连接允许复用的最长秒数；非正数或无效值按未设置处理；默认无服务端提示时为 4 秒，有提示时采用提示值减 2 秒且最多 600 秒 --- */
+        'keepAliveTimeout'?: number;
+        /** --- 连接建立后允许承接新请求的最长秒数；非正数或无效值按未设置处理；达到后不再复用但不会中断在途请求，默认不限制 --- */
+        'reuseTimeout'?: number;
     } = {},
 ): Promise<Response> {
     // --- 解析 URL ---
@@ -359,6 +394,8 @@ export async function fetch(
         'hosts': init.hosts,
         'mproxy': init.mproxy,
         'retry': init.retry,
+        'keepAliveTimeout': init.keepAliveTimeout,
+        'reuseTimeout': init.reuseTimeout,
         'signal': init.signal ?? undefined,
         'follow': init.redirect === 'follow' ? 10 : 0,
     };
@@ -888,6 +925,10 @@ export interface IRequestOptions {
     };
     /** --- 连接是否保持长连接（即是否允许复用），默认为 true --- */
     'keep'?: boolean;
+    /** --- 空闲连接允许复用的最长秒数；非正数或无效值按未设置处理；默认无服务端提示时为 4 秒，有提示时采用提示值减 2 秒且最多 600 秒；自定义 Agent 由其自身配置 --- */
+    'keepAliveTimeout'?: number;
+    /** --- 连接建立后允许承接新请求的最长秒数；非正数或无效值按未设置处理；达到后不再复用但不会中断在途请求，默认不限制；自定义 Agent 由其自身配置 --- */
+    'reuseTimeout'?: number;
     /** --- 复用池名/Agent，默认为 default --- */
     'reuse'?: string | undici.ProxyAgent | undici.Agent;
     /** --- cookie 托管对象 --- */
@@ -907,6 +948,10 @@ export interface IMproxyOptions {
     'hosts'?: Record<string, string> | string;
     'local'?: string;
     'headers'?: THttpHeaders;
+    /** --- 空闲连接允许复用的最长秒数；非正数或无效值按未设置处理；默认无服务端提示时为 4 秒，有提示时采用提示值减 2 秒且最多 600 秒 --- */
+    'keepAliveTimeout'?: number;
+    /** --- 连接建立后允许承接新请求的最长秒数；非正数或无效值按未设置处理；达到后不再复用但不会中断在途请求，默认不限制 --- */
+    'reuseTimeout'?: number;
     /** --- 过滤 header，返回 true 则留下 --- */
     filter?: (h: string) => boolean;
     /** --- 默认为 default --- */
@@ -922,6 +967,10 @@ export interface IRproxyOptions {
     'hosts'?: Record<string, string> | string;
     'local'?: string;
     'headers'?: THttpHeaders;
+    /** --- 空闲连接允许复用的最长秒数；非正数或无效值按未设置处理；默认无服务端提示时为 4 秒，有提示时采用提示值减 2 秒且最多 600 秒 --- */
+    'keepAliveTimeout'?: number;
+    /** --- 连接建立后允许承接新请求的最长秒数；非正数或无效值按未设置处理；达到后不再复用但不会中断在途请求，默认不限制 --- */
+    'reuseTimeout'?: number;
     /** --- 过滤 header，返回 true 则留下 --- */
     filter?: (h: string) => boolean;
     /** --- 正向 mproxy 代理，url 如 https://xxx/abc --- */

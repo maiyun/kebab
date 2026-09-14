@@ -81,6 +81,24 @@ export class Request {
     }
 
     /**
+     * --- 设置空闲连接允许复用的最长时间 ---
+     * @param timeout 秒数；非正数或无效值按未设置处理；默认无服务端提示时为 4 秒，有提示时采用提示值减 2 秒且最多 600 秒
+     */
+    public keepAliveTimeout(timeout: number): this {
+        this._opt['keepAliveTimeout'] = timeout;
+        return this;
+    }
+
+    /**
+     * --- 设置连接建立后允许承接新请求的最长时间 ---
+     * @param timeout 秒数；非正数或无效值按未设置处理；达到后不再复用但不会中断在途请求，默认不限制
+     */
+    public reuseTimeout(timeout: number): this {
+        this._opt['reuseTimeout'] = timeout;
+        return this;
+    }
+
+    /**
      * --- 设置网络异常后的重试次数 ---
      * @param retry 重试次数，默认为 1；非幂等请求需由调用方保证安全
      */
