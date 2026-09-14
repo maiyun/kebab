@@ -180,6 +180,7 @@ export async function run(data: {
         'host': data.uri.host ?? '',
         'hostname': data.uri.hostname ?? '',
         'hostport': data.uri.port ? parseInt(data.uri.port) : (data.uri.protocol === 'https:' ? 443 : 80),
+        'urlOrigin': (data.uri.protocol ?? '') + '//' + (data.uri.host ?? ''),
         'uri': data.uri,
 
         // --- 服务端用的路径 ---

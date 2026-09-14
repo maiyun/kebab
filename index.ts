@@ -199,6 +199,8 @@ export interface IConfigConst {
     'host': string;
     'hostname': string;
     'hostport': number;
+    /** --- 协议与 host，如 https://example.com:8443 --- */
+    'urlOrigin': string;
     'uri': IUrlParse;
 
     // --- 服务端用的路径 ---
