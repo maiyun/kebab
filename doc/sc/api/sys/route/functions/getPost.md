@@ -6,9 +6,9 @@
 
 # Function: getPost()
 
-> **getPost**(`req`): `Promise`\<\{ `input`: `string`; `post`: `Record`\<`string`, `any`\>; `raw`: `Record`\<`string`, `any`\>; \}\>
+> **getPost**(`req`): `Promise`\<`false` \| \{ `input`: `string`; `post`: `Record`\<`string`, `any`\>; `raw`: `Record`\<`string`, `any`\>; \}\>
 
-Defined in: [sys/route.ts:908](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L908)
+Defined in: [sys/route.ts:912](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L912)
 
 获取 post 对象（通常已自动获取），如果是文件上传（formdata）的情况则不获取
 
@@ -22,4 +22,6 @@ Defined in: [sys/route.ts:908](https://github.com/maiyunnet/kebab/blob/master/sy
 
 ## Returns
 
-`Promise`\<\{ `input`: `string`; `post`: `Record`\<`string`, `any`\>; `raw`: `Record`\<`string`, `any`\>; \}\>
+`Promise`\<`false` \| \{ `input`: `string`; `post`: `Record`\<`string`, `any`\>; `raw`: `Record`\<`string`, `any`\>; \}\>
+
+解析后的 POST 数据，请求传输中断时返回 false

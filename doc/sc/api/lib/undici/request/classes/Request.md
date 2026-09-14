@@ -54,7 +54,7 @@ Defined in: [lib/undici/request.ts:30](https://github.com/maiyunnet/kebab/blob/m
 
 > **follow**(`follow?`): `this`
 
-Defined in: [lib/undici/request.ts:96](https://github.com/maiyunnet/kebab/blob/master/lib/undici/request.ts#L96)
+Defined in: [lib/undici/request.ts:114](https://github.com/maiyunnet/kebab/blob/master/lib/undici/request.ts#L114)
 
 设置是否跟随请求方的 location，留空为跟随，不设置为不跟随
 
@@ -88,7 +88,7 @@ method get 方法别名
 
 > **headers**(`headers`): `this`
 
-Defined in: [lib/undici/request.ts:132](https://github.com/maiyunnet/kebab/blob/master/lib/undici/request.ts#L132)
+Defined in: [lib/undici/request.ts:150](https://github.com/maiyunnet/kebab/blob/master/lib/undici/request.ts#L150)
 
 批量设置提交的 headers
 
@@ -108,7 +108,7 @@ Defined in: [lib/undici/request.ts:132](https://github.com/maiyunnet/kebab/blob/
 
 > **hosts**(`hosts`): `this`
 
-Defined in: [lib/undici/request.ts:105](https://github.com/maiyunnet/kebab/blob/master/lib/undici/request.ts#L105)
+Defined in: [lib/undici/request.ts:123](https://github.com/maiyunnet/kebab/blob/master/lib/undici/request.ts#L123)
 
 设置域名 -> ip的对应键值，就像电脑里的 hosts 一样
 
@@ -138,11 +138,33 @@ type json 方法别名
 
 ***
 
+### keepAliveTimeout()
+
+> **keepAliveTimeout**(`timeout`): `this`
+
+Defined in: [lib/undici/request.ts:87](https://github.com/maiyunnet/kebab/blob/master/lib/undici/request.ts#L87)
+
+设置空闲连接允许复用的最长时间
+
+#### Parameters
+
+##### timeout
+
+`number`
+
+秒数；非正数或无效值按未设置处理；默认无服务端提示时为 4 秒，有提示时采用提示值减 2 秒且最多 600 秒
+
+#### Returns
+
+`this`
+
+***
+
 ### local()
 
 > **local**(`addr`): `this`
 
-Defined in: [lib/undici/request.ts:123](https://github.com/maiyunnet/kebab/blob/master/lib/undici/request.ts#L123)
+Defined in: [lib/undici/request.ts:141](https://github.com/maiyunnet/kebab/blob/master/lib/undici/request.ts#L141)
 
 设置使用的本地网卡 IP
 
@@ -196,7 +218,7 @@ method post 方法别名
 
 > **request**(`cookie?`): `Promise`\<[`Response`](../../response/classes/Response.md)\>
 
-Defined in: [lib/undici/request.ts:152](https://github.com/maiyunnet/kebab/blob/master/lib/undici/request.ts#L152)
+Defined in: [lib/undici/request.ts:170](https://github.com/maiyunnet/kebab/blob/master/lib/undici/request.ts#L170)
 
 发起请求
 
@@ -216,7 +238,7 @@ Defined in: [lib/undici/request.ts:152](https://github.com/maiyunnet/kebab/blob/
 
 > **retry**(`retry?`): `this`
 
-Defined in: [lib/undici/request.ts:87](https://github.com/maiyunnet/kebab/blob/master/lib/undici/request.ts#L87)
+Defined in: [lib/undici/request.ts:105](https://github.com/maiyunnet/kebab/blob/master/lib/undici/request.ts#L105)
 
 设置网络异常后的重试次数
 
@@ -234,11 +256,33 @@ Defined in: [lib/undici/request.ts:87](https://github.com/maiyunnet/kebab/blob/m
 
 ***
 
+### reuseTimeout()
+
+> **reuseTimeout**(`timeout`): `this`
+
+Defined in: [lib/undici/request.ts:96](https://github.com/maiyunnet/kebab/blob/master/lib/undici/request.ts#L96)
+
+设置连接建立后允许承接新请求的最长时间
+
+#### Parameters
+
+##### timeout
+
+`number`
+
+秒数；非正数或无效值按未设置处理；达到后不再复用但不会中断在途请求，默认不限制
+
+#### Returns
+
+`this`
+
+***
+
 ### save()
 
 > **save**(`save`): `this`
 
-Defined in: [lib/undici/request.ts:114](https://github.com/maiyunnet/kebab/blob/master/lib/undici/request.ts#L114)
+Defined in: [lib/undici/request.ts:132](https://github.com/maiyunnet/kebab/blob/master/lib/undici/request.ts#L132)
 
 设置后将直接保存到本地文件，不会返回，save 为本地实体路径
 
@@ -258,7 +302,7 @@ Defined in: [lib/undici/request.ts:114](https://github.com/maiyunnet/kebab/blob/
 
 > **setHeader**(`name`, `val`): `this`
 
-Defined in: [lib/undici/request.ts:142](https://github.com/maiyunnet/kebab/blob/master/lib/undici/request.ts#L142)
+Defined in: [lib/undici/request.ts:160](https://github.com/maiyunnet/kebab/blob/master/lib/undici/request.ts#L160)
 
 设置单条 header
 

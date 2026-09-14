@@ -25,3 +25,4 @@
 ## Functions
 
 - [clearLocaleData](functions/clearLocaleData.md)
+- [isHttpRequestAvailable](functions/isHttpRequestAvailable.md)
