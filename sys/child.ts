@@ -254,7 +254,7 @@ async function requestHandler(
         'timer': {} as NodeJS.Timeout,
         'timeout': 30_000,
         'callback': () => {
-            if (!req.socket?.writable) {
+            if (!sCtr.isHttpRequestAvailable(req, res)) {
                 // --- 用户连接已中断 ---
                 return;
             }

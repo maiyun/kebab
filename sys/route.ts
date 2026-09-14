@@ -498,6 +498,9 @@ export async function run(data: {
     }
     if (reqStartRtn === 1) {
         const rawPost = await getPost(data.req);
+        if (!rawPost) {
+            return true;
+        }
         // --- 原始 POST ---
         middle.setPrototype('_rawPost', rawPost.raw);
         // --- 原始 input ---
@@ -904,14 +907,15 @@ export async function waitCtr(cctr: sCtr.Ctr): Promise<void> {
 /**
  * --- 获取 post 对象（通常已自动获取），如果是文件上传（formdata）的情况则不获取 ---
  * @param req 请求对象
+ * @returns 解析后的 POST 数据，请求传输中断时返回 false
  */
 export function getPost(
     req: http2.Http2ServerRequest | http.IncomingMessage
 ): Promise<{
-        'input': string;
-        'raw': Record<string, any>;
-        'post': Record<string, any>;
-    }> {
+    'input': string;
+    'raw': Record<string, any>;
+    'post': Record<string, any>;
+} | false> {
     return new Promise(function(resolve) {
         const ct = req.headers['content-type'] ?? '';
         if (ct.includes('form-data')) {
@@ -927,7 +931,32 @@ export function getPost(
         const maxPostSize = 50 * 1024 * 1024;
         let buffer: Buffer = Buffer.from('');
         let overflow = false;
-        req.on('data', function(chunk: Buffer) {
+        let finished = false;
+        let onData: (chunk: Buffer) => void;
+        let onEnd: () => void;
+        let onError: () => void;
+        let onAborted: () => void;
+        let onClose: () => void;
+        const cleanup = (): void => {
+            req.off('data', onData);
+            req.off('end', onEnd);
+            req.off('error', onError);
+            req.off('aborted', onAborted);
+            req.off('close', onClose);
+        };
+        const finish = (result: {
+            'input': string;
+            'raw': Record<string, any>;
+            'post': Record<string, any>;
+        } | false): void => {
+            if (finished) {
+                return;
+            }
+            finished = true;
+            cleanup();
+            resolve(result);
+        };
+        onData = (chunk: Buffer): void => {
             if (overflow) {
                 return;
             }
@@ -937,10 +966,10 @@ export function getPost(
                 return;
             }
             buffer = Buffer.concat([buffer, chunk], buffer.length + chunk.length);
-        });
-        req.on('end', function() {
+        };
+        onEnd = (): void => {
             if (overflow) {
-                resolve({
+                finish({
                     'input': '',
                     'raw': {},
                     'post': {},
@@ -949,7 +978,7 @@ export function getPost(
             }
             const s = buffer.toString();
             if (!s) {
-                resolve({
+                finish({
                     'input': '',
                     'raw': {},
                     'post': {},
@@ -960,14 +989,14 @@ export function getPost(
             if (ct.includes('json')) {
                 try {
                     const raw = lText.parseJson<any>(s);
-                    resolve({
+                    finish({
                         'input': s,
                         'raw': raw,
                         'post': lText.trimJson(raw),
                     });
                 }
                 catch {
-                    resolve({
+                    finish({
                         'input': '',
                         'raw': {},
                         'post': {},
@@ -976,12 +1005,26 @@ export function getPost(
                 return;
             }
             const raw = lText.queryParse(s);
-            resolve({
+            finish({
                 'input': s,
                 'raw': raw,
                 'post': lText.trimJson(raw),
             });
-        });
+        };
+        onError = (): void => {
+            finish(false);
+        };
+        onAborted = (): void => {
+            finish(false);
+        };
+        onClose = (): void => {
+            finish(false);
+        };
+        req.on('data', onData);
+        req.on('end', onEnd);
+        req.on('error', onError);
+        req.on('aborted', onAborted);
+        req.on('close', onClose);
     });
 }
 

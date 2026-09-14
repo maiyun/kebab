@@ -95,6 +95,31 @@ export type TValibotResult<
     readonly response: kebab.Json[];
 };
 
+/**
+ * --- 判断当前 HTTP 请求是否仍可响应 ---
+ * @param req 请求对象
+ * @param res 响应对象
+ * @returns 客户端对应的请求流仍可响应时返回 true
+ */
+export function isHttpRequestAvailable(
+    req: http2.Http2ServerRequest | http.IncomingMessage,
+    res: http2.Http2ServerResponse | http.ServerResponse
+): boolean {
+    if (req.destroyed && !req.complete) {
+        return false;
+    }
+    if (('stream' in req) && (req.stream.closed || req.stream.destroyed)) {
+        return false;
+    }
+    if (req.socket.destroyed || !req.socket.writable) {
+        return false;
+    }
+    if (res.destroyed || res.closed || res.writableEnded || !res.writable) {
+        return false;
+    }
+    return true;
+}
+
 export class Ctr {
 
     /** --- 路由参数序列数组 --- */
@@ -172,7 +197,13 @@ export class Ctr {
 
     /** --- 当前用户连接是否还在连接中 --- */
     protected get _isAvail(): boolean {
-        return this._req.socket.writable;
+        if (this._socket) {
+            return this._socket.writable;
+        }
+        if (!this._res) {
+            return !this._req.socket.destroyed && this._req.socket.writable;
+        }
+        return isHttpRequestAvailable(this._req, this._res);
     }
 
     /** --- timeout 的 timer --- */
