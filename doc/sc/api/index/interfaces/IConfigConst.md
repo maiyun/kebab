@@ -16,7 +16,7 @@ Defined in: [index.ts:183](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **ctrPath**: `string`
 
-Defined in: [index.ts:208](https://github.com/maiyunnet/kebab/blob/master/index.ts#L208)
+Defined in: [index.ts:210](https://github.com/maiyunnet/kebab/blob/master/index.ts#L210)
 
 ***
 
@@ -24,7 +24,7 @@ Defined in: [index.ts:208](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **dataPath**: `string`
 
-Defined in: [index.ts:210](https://github.com/maiyunnet/kebab/blob/master/index.ts#L210)
+Defined in: [index.ts:212](https://github.com/maiyunnet/kebab/blob/master/index.ts#L212)
 
 ***
 
@@ -80,7 +80,7 @@ Defined in: [index.ts:195](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **modPath**: `string`
 
-Defined in: [index.ts:207](https://github.com/maiyunnet/kebab/blob/master/index.ts#L207)
+Defined in: [index.ts:209](https://github.com/maiyunnet/kebab/blob/master/index.ts#L209)
 
 ***
 
@@ -118,7 +118,7 @@ Defined in: [index.ts:189](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **rootPath**: `string`
 
-Defined in: [index.ts:206](https://github.com/maiyunnet/kebab/blob/master/index.ts#L206)
+Defined in: [index.ts:208](https://github.com/maiyunnet/kebab/blob/master/index.ts#L208)
 
 ***
 
@@ -142,7 +142,7 @@ Defined in: [index.ts:190](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **uri**: [`IUrlParse`](IUrlParse.md)
 
-Defined in: [index.ts:202](https://github.com/maiyunnet/kebab/blob/master/index.ts#L202)
+Defined in: [index.ts:204](https://github.com/maiyunnet/kebab/blob/master/index.ts#L204)
 
 ***
 
@@ -150,7 +150,7 @@ Defined in: [index.ts:202](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **urlBase**: `string`
 
-Defined in: [index.ts:215](https://github.com/maiyunnet/kebab/blob/master/index.ts#L215)
+Defined in: [index.ts:217](https://github.com/maiyunnet/kebab/blob/master/index.ts#L217)
 
 ***
 
@@ -158,7 +158,17 @@ Defined in: [index.ts:215](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **urlFull**: `string`
 
-Defined in: [index.ts:217](https://github.com/maiyunnet/kebab/blob/master/index.ts#L217)
+Defined in: [index.ts:219](https://github.com/maiyunnet/kebab/blob/master/index.ts#L219)
+
+***
+
+### urlOrigin
+
+> **urlOrigin**: `string`
+
+Defined in: [index.ts:203](https://github.com/maiyunnet/kebab/blob/master/index.ts#L203)
+
+协议与 host，如 https://example.com:8443
 
 ***
 
@@ -166,7 +176,7 @@ Defined in: [index.ts:217](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **urlStc**: `string`
 
-Defined in: [index.ts:216](https://github.com/maiyunnet/kebab/blob/master/index.ts#L216)
+Defined in: [index.ts:218](https://github.com/maiyunnet/kebab/blob/master/index.ts#L218)
 
 ***
 
@@ -174,7 +184,7 @@ Defined in: [index.ts:216](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **urlStcFull**: `string`
 
-Defined in: [index.ts:218](https://github.com/maiyunnet/kebab/blob/master/index.ts#L218)
+Defined in: [index.ts:220](https://github.com/maiyunnet/kebab/blob/master/index.ts#L220)
 
 ***
 
@@ -182,7 +192,7 @@ Defined in: [index.ts:218](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **viewPath**: `string`
 
-Defined in: [index.ts:209](https://github.com/maiyunnet/kebab/blob/master/index.ts#L209)
+Defined in: [index.ts:211](https://github.com/maiyunnet/kebab/blob/master/index.ts#L211)
 
 ***
 
@@ -198,4 +208,4 @@ Defined in: [index.ts:196](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **wsPath**: `string`
 
-Defined in: [index.ts:211](https://github.com/maiyunnet/kebab/blob/master/index.ts#L211)
+Defined in: [index.ts:213](https://github.com/maiyunnet/kebab/blob/master/index.ts#L213)

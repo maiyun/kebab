@@ -225,7 +225,7 @@ Defined in: [index.ts:183](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **ctrPath**: `string`
 
-Defined in: [index.ts:208](https://github.com/maiyunnet/kebab/blob/master/index.ts#L208)
+Defined in: [index.ts:210](https://github.com/maiyunnet/kebab/blob/master/index.ts#L210)
 
 ***
 
@@ -233,7 +233,7 @@ Defined in: [index.ts:208](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **dataPath**: `string`
 
-Defined in: [index.ts:210](https://github.com/maiyunnet/kebab/blob/master/index.ts#L210)
+Defined in: [index.ts:212](https://github.com/maiyunnet/kebab/blob/master/index.ts#L212)
 
 ***
 
@@ -289,7 +289,7 @@ Defined in: [index.ts:195](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **modPath**: `string`
 
-Defined in: [index.ts:207](https://github.com/maiyunnet/kebab/blob/master/index.ts#L207)
+Defined in: [index.ts:209](https://github.com/maiyunnet/kebab/blob/master/index.ts#L209)
 
 ***
 
@@ -327,7 +327,7 @@ Defined in: [index.ts:189](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **rootPath**: `string`
 
-Defined in: [index.ts:206](https://github.com/maiyunnet/kebab/blob/master/index.ts#L206)
+Defined in: [index.ts:208](https://github.com/maiyunnet/kebab/blob/master/index.ts#L208)
 
 ***
 
@@ -351,7 +351,7 @@ Defined in: [index.ts:190](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **uri**: [`IUrlParse`](IUrlParse.md)
 
-Defined in: [index.ts:202](https://github.com/maiyunnet/kebab/blob/master/index.ts#L202)
+Defined in: [index.ts:204](https://github.com/maiyunnet/kebab/blob/master/index.ts#L204)
 
 ***
 
@@ -359,7 +359,7 @@ Defined in: [index.ts:202](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **urlBase**: `string`
 
-Defined in: [index.ts:215](https://github.com/maiyunnet/kebab/blob/master/index.ts#L215)
+Defined in: [index.ts:217](https://github.com/maiyunnet/kebab/blob/master/index.ts#L217)
 
 ***
 
@@ -367,7 +367,17 @@ Defined in: [index.ts:215](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **urlFull**: `string`
 
-Defined in: [index.ts:217](https://github.com/maiyunnet/kebab/blob/master/index.ts#L217)
+Defined in: [index.ts:219](https://github.com/maiyunnet/kebab/blob/master/index.ts#L219)
+
+***
+
+### urlOrigin
+
+> **urlOrigin**: `string`
+
+Defined in: [index.ts:203](https://github.com/maiyunnet/kebab/blob/master/index.ts#L203)
+
+协议与 host，如 https://example.com:8443
 
 ***
 
@@ -375,7 +385,7 @@ Defined in: [index.ts:217](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **urlStc**: `string`
 
-Defined in: [index.ts:216](https://github.com/maiyunnet/kebab/blob/master/index.ts#L216)
+Defined in: [index.ts:218](https://github.com/maiyunnet/kebab/blob/master/index.ts#L218)
 
 ***
 
@@ -383,7 +393,7 @@ Defined in: [index.ts:216](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **urlStcFull**: `string`
 
-Defined in: [index.ts:218](https://github.com/maiyunnet/kebab/blob/master/index.ts#L218)
+Defined in: [index.ts:220](https://github.com/maiyunnet/kebab/blob/master/index.ts#L220)
 
 ***
 
@@ -391,7 +401,7 @@ Defined in: [index.ts:218](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **viewPath**: `string`
 
-Defined in: [index.ts:209](https://github.com/maiyunnet/kebab/blob/master/index.ts#L209)
+Defined in: [index.ts:211](https://github.com/maiyunnet/kebab/blob/master/index.ts#L211)
 
 ***
 
@@ -407,7 +417,7 @@ Defined in: [index.ts:196](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **wsPath**: `string`
 
-Defined in: [index.ts:211](https://github.com/maiyunnet/kebab/blob/master/index.ts#L211)
+Defined in: [index.ts:213](https://github.com/maiyunnet/kebab/blob/master/index.ts#L213)
 
 index/interfaces/IConfigDb.md
 ---
@@ -967,7 +977,7 @@ index/interfaces/IPostFile.md
 
 # Interface: IPostFile
 
-Defined in: [index.ts:230](https://github.com/maiyunnet/kebab/blob/master/index.ts#L230)
+Defined in: [index.ts:232](https://github.com/maiyunnet/kebab/blob/master/index.ts#L232)
 
 上传的文件信息对象
 
@@ -977,7 +987,7 @@ Defined in: [index.ts:230](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > `readonly` **name**: `string`
 
-Defined in: [index.ts:231](https://github.com/maiyunnet/kebab/blob/master/index.ts#L231)
+Defined in: [index.ts:233](https://github.com/maiyunnet/kebab/blob/master/index.ts#L233)
 
 ***
 
@@ -985,7 +995,7 @@ Defined in: [index.ts:231](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > `readonly` **origin**: `string`
 
-Defined in: [index.ts:232](https://github.com/maiyunnet/kebab/blob/master/index.ts#L232)
+Defined in: [index.ts:234](https://github.com/maiyunnet/kebab/blob/master/index.ts#L234)
 
 ***
 
@@ -993,7 +1003,7 @@ Defined in: [index.ts:232](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > `readonly` **path**: `string`
 
-Defined in: [index.ts:234](https://github.com/maiyunnet/kebab/blob/master/index.ts#L234)
+Defined in: [index.ts:236](https://github.com/maiyunnet/kebab/blob/master/index.ts#L236)
 
 ***
 
@@ -1001,7 +1011,7 @@ Defined in: [index.ts:234](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > `readonly` **size**: `number`
 
-Defined in: [index.ts:233](https://github.com/maiyunnet/kebab/blob/master/index.ts#L233)
+Defined in: [index.ts:235](https://github.com/maiyunnet/kebab/blob/master/index.ts#L235)
 
 index/interfaces/IUrlParse.md
 ---
@@ -1115,7 +1125,7 @@ index/interfaces/IVhost.md
 
 # Interface: IVhost
 
-Defined in: [index.ts:222](https://github.com/maiyunnet/kebab/blob/master/index.ts#L222)
+Defined in: [index.ts:224](https://github.com/maiyunnet/kebab/blob/master/index.ts#L224)
 
 虚拟机配置对象
 
@@ -1125,7 +1135,7 @@ Defined in: [index.ts:222](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > `readonly` **domains**: `string`[]
 
-Defined in: [index.ts:224](https://github.com/maiyunnet/kebab/blob/master/index.ts#L224)
+Defined in: [index.ts:226](https://github.com/maiyunnet/kebab/blob/master/index.ts#L226)
 
 ***
 
@@ -1133,7 +1143,7 @@ Defined in: [index.ts:224](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > `readonly` `optional` **name?**: `string`
 
-Defined in: [index.ts:223](https://github.com/maiyunnet/kebab/blob/master/index.ts#L223)
+Defined in: [index.ts:225](https://github.com/maiyunnet/kebab/blob/master/index.ts#L225)
 
 ***
 
@@ -1141,7 +1151,7 @@ Defined in: [index.ts:223](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > `readonly` `optional` **remark?**: `string`
 
-Defined in: [index.ts:226](https://github.com/maiyunnet/kebab/blob/master/index.ts#L226)
+Defined in: [index.ts:228](https://github.com/maiyunnet/kebab/blob/master/index.ts#L228)
 
 ***
 
@@ -1149,7 +1159,7 @@ Defined in: [index.ts:226](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > `readonly` **root**: `string`
 
-Defined in: [index.ts:225](https://github.com/maiyunnet/kebab/blob/master/index.ts#L225)
+Defined in: [index.ts:227](https://github.com/maiyunnet/kebab/blob/master/index.ts#L227)
 
 index.md
 ---
@@ -1428,7 +1438,7 @@ index/variables/VER.md
 
 # Variable: VER
 
-> `const` **VER**: `"9.18.0"` = `'9.18.0'`
+> `const` **VER**: `"9.18.1"` = `'9.18.1'`
 
 Defined in: [index.ts:10](https://github.com/maiyunnet/kebab/blob/master/index.ts#L10)
 
@@ -137044,7 +137054,7 @@ sys/route/functions/getFormData.md
 
 > **getFormData**(`req`, `events?`, `limits?`): `Promise`\<`false` \| \{ `files`: `Record`\<`string`, [`IPostFile`](../../../index/interfaces/IPostFile.md) \| [`IPostFile`](../../../index/interfaces/IPostFile.md)[]\>; `post`: `Record`\<`string`, [`Json`](../../../index/type-aliases/Json.md)\>; \}\>
 
-Defined in: [sys/route.ts:993](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L993)
+Defined in: [sys/route.ts:994](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L994)
 
 获取 formdata 的 post
 
@@ -137141,7 +137151,7 @@ sys/route/functions/getPost.md
 
 > **getPost**(`req`): `Promise`\<\{ `input`: `string`; `post`: `Record`\<`string`, `any`\>; `raw`: `Record`\<`string`, `any`\>; \}\>
 
-Defined in: [sys/route.ts:907](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L907)
+Defined in: [sys/route.ts:908](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L908)
 
 获取 post 对象（通常已自动获取），如果是文件上传（formdata）的情况则不获取
 
@@ -137257,7 +137267,7 @@ sys/route/functions/unlinkUploadFiles.md
 
 > **unlinkUploadFiles**(`cctr`): `Promise`\<`void`\>
 
-Defined in: [sys/route.ts:866](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L866)
+Defined in: [sys/route.ts:867](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L867)
 
 删除本次请求所有已上传的临时文件
 
@@ -137286,7 +137296,7 @@ sys/route/functions/waitCtr.md
 
 > **waitCtr**(`cctr`): `Promise`\<`void`\>
 
-Defined in: [sys/route.ts:886](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L886)
+Defined in: [sys/route.ts:887](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L887)
 
 等待异步任务结束，并删除临时文件，如果结束后还有事务没关闭，则会在本函数中打印控制台并且写入 log 文件
 此时其实已经给客户端返回了，此处等待不消耗客户端的等待时间
