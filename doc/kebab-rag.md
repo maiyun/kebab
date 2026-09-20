@@ -1438,7 +1438,7 @@ index/variables/VER.md
 
 # Variable: VER
 
-> `const` **VER**: `"9.18.2"` = `'9.18.2'`
+> `const` **VER**: `"9.19.0"` = `'9.19.0'`
 
 Defined in: [index.ts:10](https://github.com/maiyunnet/kebab/blob/master/index.ts#L10)
 
@@ -132834,7 +132834,7 @@ Defined in: [sys/ctr.ts:258](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 > `protected` **\_checkInput**(`input`, `rule`, `rtn`): `boolean`
 
-Defined in: [sys/ctr.ts:799](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L799)
+Defined in: [sys/ctr.ts:721](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L721)
 
 检测提交的数据类型
 
@@ -132868,7 +132868,7 @@ Defined in: [sys/ctr.ts:799](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 > `protected` **\_checkXInput**(`input`, `rule`, `rtn`, `ignore?`): `boolean`
 
-Defined in: [sys/ctr.ts:978](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L978)
+Defined in: [sys/ctr.ts:900](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L900)
 
 检测提交的数据类型（会检测 XSRF）
 
@@ -132908,7 +132908,7 @@ Defined in: [sys/ctr.ts:978](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 > `protected` **\_cross**(`opt?`): `boolean`
 
-Defined in: [sys/ctr.ts:1213](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1213)
+Defined in: [sys/ctr.ts:1135](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1135)
 
 开启跨域请求
 
@@ -132953,7 +132953,7 @@ Defined in: [sys/ctr.ts:1213](https://github.com/maiyunnet/kebab/blob/master/sys
 
 > `protected` **\_device**(): `"unknown"` \| `"android"` \| `"linux"` \| `"windows"` \| `"macintosh"` \| `"ipad"`
 
-Defined in: [sys/ctr.ts:1023](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1023)
+Defined in: [sys/ctr.ts:945](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L945)
 
 根据用户 ua 获取当前用户的设备类型
 
@@ -132967,7 +132967,7 @@ Defined in: [sys/ctr.ts:1023](https://github.com/maiyunnet/kebab/blob/master/sys
 
 > `protected` **\_enabledXsrf**(`opt?`): `void`
 
-Defined in: [sys/ctr.ts:992](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L992)
+Defined in: [sys/ctr.ts:914](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L914)
 
 当前页面开启 XSRF 支持（主要检测 cookie 是否存在）
 如果当前页面有 CDN，请不要使用
@@ -132990,7 +132990,7 @@ Defined in: [sys/ctr.ts:992](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 > `protected` **\_end**(`code?`, `reason?`): `void`
 
-Defined in: [sys/ctr.ts:1323](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1323)
+Defined in: [sys/ctr.ts:1245](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1245)
 
 主动关闭当前 socket 连接
 
@@ -133018,7 +133018,7 @@ WebSocket 关闭码
 
 > `protected` **\_getBasicAuth**(`user`, `pwd`): `string`
 
-Defined in: [sys/ctr.ts:1016](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1016)
+Defined in: [sys/ctr.ts:938](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L938)
 
 获取 Auth 字符串，用于客户端提交
 
@@ -133046,7 +133046,7 @@ Defined in: [sys/ctr.ts:1016](https://github.com/maiyunnet/kebab/blob/master/sys
 
 > `protected` **\_getLocale**(): `string`
 
-Defined in: [sys/ctr.ts:1204](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1204)
+Defined in: [sys/ctr.ts:1126](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1126)
 
 获取当前语言名
 
@@ -133060,7 +133060,7 @@ Defined in: [sys/ctr.ts:1204](https://github.com/maiyunnet/kebab/blob/master/sys
 
 > `protected` **\_getLocaleJsonString**(): `string`
 
-Defined in: [sys/ctr.ts:1192](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1192)
+Defined in: [sys/ctr.ts:1114](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1114)
 
 根据当前后台语言包设置情况获取 JSON 字符串传输到前台
 
@@ -133112,7 +133112,7 @@ Defined in: [sys/ctr.ts:400](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 > `protected` **\_handleFormData**(`events?`, `limits?`): `Promise`\<`boolean`\>
 
-Defined in: [sys/ctr.ts:1332](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1332)
+Defined in: [sys/ctr.ts:1254](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1254)
 
 获取 formdata 的信息
 
@@ -133190,7 +133190,7 @@ multipart 字段与文件总数量，默认 1000
 
 > **\_l**(`key`, `data?`): `string`
 
-Defined in: [sys/ctr.ts:1256](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1256)
+Defined in: [sys/ctr.ts:1178](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1178)
 
 获取语言包值
 
@@ -133216,7 +133216,7 @@ Defined in: [sys/ctr.ts:1256](https://github.com/maiyunnet/kebab/blob/master/sys
 
 > `protected` **\_loadData**\<`T`\>(`path`): `Promise`\<`false` \| `T` \| `null`\>
 
-Defined in: [sys/ctr.ts:1092](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1092)
+Defined in: [sys/ctr.ts:1014](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1014)
 
 获取 data JSON 数据
 
@@ -133244,7 +133244,7 @@ Defined in: [sys/ctr.ts:1092](https://github.com/maiyunnet/kebab/blob/master/sys
 
 > `protected` **\_loadLocale**(`loc`, `pkg?`): `Promise`\<`boolean`\>
 
-Defined in: [sys/ctr.ts:1143](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1143)
+Defined in: [sys/ctr.ts:1065](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1065)
 
 设定语言并加载语言包
 
@@ -133276,7 +133276,7 @@ Defined in: [sys/ctr.ts:444](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 加载 React 全页面进行 SSR 渲染，组件需渲染完整 HTML 文档（含 html/head/body），无需 EJS
 框架自动注入 props：_urlBase/_urlFull/_urlStc/_staticVer/_staticPath/_staticPathFull
-多语言：自动注入 _locale（当前语言名）和 _localeData（已载语言包的合并键值对）
+多语言：自动注入 _locale（当前语言名）和 _localeData（当前语种已载语言包的合并键值对）
 组件内创建：const l = (key: string, ...args: string[]): string => { let i = 0; return (_localeData[key] ?? key).replace(/\?/g, () => args[i++] ?? ''); };
 
 #### Parameters
@@ -133301,13 +133301,7 @@ Defined in: [sys/ctr.ts:444](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 `boolean`
 
-是否注入客户端水合脚本（import map + hydrateRoot），默认 true
-
-###### reactVer?
-
-`string`
-
-react/react-dom/react-router-dom 版本号，用于 esm.sh CDN，默认 19
+是否注入客户端水合 bundle，默认 true；设为 false 时仅输出服务端渲染的 HTML
 
 ###### router?
 
@@ -133365,7 +133359,7 @@ Defined in: [sys/ctr.ts:417](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 > `protected` **\_location**(`location`): `false`
 
-Defined in: [sys/ctr.ts:1113](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1113)
+Defined in: [sys/ctr.ts:1035](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1035)
 
 跳转（302临时跳转），支持相对本项目根路径的路径或绝对路径
 
@@ -133387,7 +133381,7 @@ Defined in: [sys/ctr.ts:1113](https://github.com/maiyunnet/kebab/blob/master/sys
 
 > `protected` **\_ping**(`data?`): `boolean`
 
-Defined in: [sys/ctr.ts:1306](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1306)
+Defined in: [sys/ctr.ts:1228](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1228)
 
 发送 socket ping
 
@@ -133409,7 +133403,7 @@ Defined in: [sys/ctr.ts:1306](https://github.com/maiyunnet/kebab/blob/master/sys
 
 > `protected` **\_pong**(`data?`): `boolean`
 
-Defined in: [sys/ctr.ts:1314](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1314)
+Defined in: [sys/ctr.ts:1236](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1236)
 
 发送 socket pong
 
@@ -133431,7 +133425,7 @@ Defined in: [sys/ctr.ts:1314](https://github.com/maiyunnet/kebab/blob/master/sys
 
 > `protected` **\_startSession**(`link`, `auth?`, `opt?`): `Promise`\<`boolean`\>
 
-Defined in: [sys/ctr.ts:1127](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1127)
+Defined in: [sys/ctr.ts:1049](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1049)
 
 开启 Session
 
@@ -133465,7 +133459,7 @@ Kv 或 Db 实例
 
 > `protected` **\_valibot**\<`TSchema`\>(`schema`, `input`, `options?`): [`TValibotResult`](../type-aliases/TValibotResult.md)\<`TSchema`\>
 
-Defined in: [sys/ctr.ts:718](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L718)
+Defined in: [sys/ctr.ts:640](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L640)
 
 使用 Valibot schema 校验并解析输入，成功后 output 会自动推导类型
 
@@ -133507,7 +133501,7 @@ Valibot 配置和自定义客户端返回值
 
 > `protected` **\_valibotx**\<`TSchema`\>(`schema`, `input`, `options?`): [`TValibotResult`](../type-aliases/TValibotResult.md)\<`TSchema`, [`IValibotXsrfIssue`](../interfaces/IValibotXsrfIssue.md) \| [`InferIssue`](../../../lib/core/namespaces/v/type-aliases/InferIssue.md)\<`TSchema`\>\>
 
-Defined in: [sys/ctr.ts:742](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L742)
+Defined in: [sys/ctr.ts:664](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L664)
 
 使用 Valibot schema 校验并解析输入，同时检测 XSRF
 
@@ -133549,7 +133543,7 @@ Valibot 配置、自定义客户端返回值和 XSRF 选项
 
 > `protected` **\_writeBinary**(`data`): `boolean`
 
-Defined in: [sys/ctr.ts:1298](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1298)
+Defined in: [sys/ctr.ts:1220](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1220)
 
 发送 socket 二进制
 
@@ -133571,7 +133565,7 @@ Defined in: [sys/ctr.ts:1298](https://github.com/maiyunnet/kebab/blob/master/sys
 
 > `protected` **\_writeResult**(`data`): `boolean`
 
-Defined in: [sys/ctr.ts:1290](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1290)
+Defined in: [sys/ctr.ts:1212](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1212)
 
 发送结果对象文本
 
@@ -133593,7 +133587,7 @@ Defined in: [sys/ctr.ts:1290](https://github.com/maiyunnet/kebab/blob/master/sys
 
 > `protected` **\_writeText**(`data`): `boolean`
 
-Defined in: [sys/ctr.ts:1282](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1282)
+Defined in: [sys/ctr.ts:1204](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1204)
 
 发送 socket 文本
 
@@ -133615,7 +133609,7 @@ Defined in: [sys/ctr.ts:1282](https://github.com/maiyunnet/kebab/blob/master/sys
 
 > **getAuthorization**(): `false` \| \{ `pwd`: `string`; `type`: `"basic"`; `user`: `string`; \} \| \{ `token`: `string`; `type`: `"bearer"`; \}
 
-Defined in: [sys/ctr.ts:1044](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1044)
+Defined in: [sys/ctr.ts:966](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L966)
 
 通过 header 或 _auth 获取鉴权信息，支持 Basic Auth 和 Bearer Token
 
