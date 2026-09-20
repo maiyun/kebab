@@ -95,6 +95,22 @@ export type TValibotResult<
     readonly response: kebab.Json[];
 };
 
+/** --- React SSR 页面选项 --- */
+export interface IReactPageOptions {
+    /** --- 是否注入客户端水合 bundle，默认 true；设为 false 时仅输出服务端渲染的 HTML --- */
+    'hydrate'?: boolean;
+    /**
+     * --- 路由模式，不传则不注入任何 Router，组件自行管理路由（如 MemoryRouter）或无路由 ---
+     * --- 'browser'：服务端用 StaticRouter，客户端用 BrowserRouter，地址栏与路由联动 ---
+     * --- 组件本身只需使用 Routes/Route/Link 等，不要包含任何 Router 包裹层 ---
+     */
+    'router'?: 'browser';
+    /** --- BrowserRouter 的 basename，相对于 urlBase，默认空字符串 --- */
+    'routerBase'?: string;
+    /** --- 静态资源基础路径，覆盖 config.set.staticPath（支持 CDN） --- */
+    'staticPath'?: string;
+}
+
 /**
  * --- 判断当前 HTTP 请求是否仍可响应 ---
  * @param req 请求对象
@@ -444,57 +460,34 @@ export class Ctr {
     protected async _loadReactPage(
         path: string,
         props: Record<string, kebab.Json> = {},
-        opt: {
-            /** --- 是否注入客户端水合 bundle，默认 true；设为 false 时仅输出服务端渲染的 HTML --- */
-            'hydrate'?: boolean;
-            /**
-             * --- 路由模式，不传则不注入任何 Router，组件自行管理路由（如 MemoryRouter）或无路由 ---
-             * --- 'browser'：服务端用 StaticRouter，客户端用 BrowserRouter，地址栏与路由联动 ---
-             * --- 组件本身只需使用 Routes/Route/Link 等，不要包含任何 Router 包裹层 ---
-             */
-            'router'?: 'browser';
-            /**
-             * --- BrowserRouter 的 basename，相对于 urlBase，默认空字符串 ---
-             * --- 例如组件挂载在 /test/react-router-page，则填 'test/react-router-page' ---
-             */
-            'routerBase'?: string;
-            /**
-             * --- 静态资源基础路径，覆盖 config.set.staticPath，用于指定 CDN 或自定义路径 ---
-             * --- 影响 _staticPath prop 以及水合脚本中 JS 文件的 URL 前缀 ---
-             */
-            'staticPath'?: string;
-        } = {}
+        opt: IReactPageOptions = {}
     ): Promise<string> {
-        // --- 约定：传入路径不含 .page 后缀，框架自动补全（对应 build 命令的 *.page.tsx 约定）---
-        // --- 服务端读取 tsc 生成的组件 JS，浏览器读取 kebab build 生成的 bundle ---
-        const componentPath = this._config.const.rootPath + 'stc/' + path + '.page.js';
+        // --- 校验服务端组件与客户端水合产物 ---
+        const hydrate = opt.hydrate !== false;
+        const pagePath = `${this._config.const.rootPath}stc/${path}.page`;
+        const componentPath = `${pagePath}.js`;
         if (!await lFs.isFile(componentPath)) {
-            lCore.debug(`[CTR][_loadReactPage] componentPath ${componentPath} is not a file`);
-            lCore.log(this, `[CTR][_loadReactPage] componentPath ${componentPath} is not a file`, '-error');
-            return '';
+            return this._reactPageError(`componentPath ${componentPath} is not a file`);
         }
-        const bundlePath = this._config.const.rootPath + 'stc/' + path + '.page.bundle.js';
-        if ((opt.hydrate !== false) && !await lFs.isFile(bundlePath)) {
-            /** --- 完整错误仅写入服务端日志，避免向客户端暴露文件系统路径 --- */
-            const message =
-                `[CTR][_loadReactPage] bundlePath ${bundlePath} is not a file; ` +
-                `run "npx kebab build -d ${this._config.const.rootPath}stc"`;
-            lCore.debug(message);
-            lCore.log(this, message, '-error');
-            this._httpCode = 500;
-            return '<h1>500 Server Error</h1><hr>Kebab';
+        const bundlePath = `${pagePath}.bundle.js`;
+        if (hydrate && !await lFs.isFile(bundlePath)) {
+            return this._reactPageError(
+                `bundlePath ${bundlePath} is not a file; run "npx kebab build -d ${this._config.const.rootPath}stc"`
+            );
         }
+
         try {
-            const reactDomServer = await import('react-dom/server');
+            // --- 并行加载 SSR 依赖与页面组件 ---
             const importPath = componentPath.startsWith('/')
                 ? componentPath
                 : `file:///${componentPath.replace(/\\/g, '/')}`;
-            const mod = await import(importPath);
-            const component = mod.default;
-            const react = await import('react');
-            // --- 语言包数据：当前语种的各命名包已由 _loadLocale 合并 ---
-            const localeData = { ...(this._localeData[this._locale] ?? {}) };
-            // --- 把框架常量合并进 props，与 _loadView 行为一致 ---
+            const [react, reactDomServer, page] = await Promise.all([
+                import('react'),
+                import('react-dom/server'),
+                import(importPath),
+            ]);
+
+            // --- 合并框架 Props 与路由配置 ---
             const staticPath = opt.staticPath ?? this._config.set.staticPath;
             const fullProps: Record<string, kebab.Json> = {
                 ...props,
@@ -505,54 +498,57 @@ export class Ctr {
                 '_staticPath': staticPath,
                 '_staticPathFull': this._config.set.staticPathFull,
                 '_locale': this._locale,
-                '_localeData': localeData,
+                '_localeData': { ...(this._localeData[this._locale] ?? {}) },
             };
             if (opt.router === 'browser') {
-                // --- BrowserRouter 的 basename 同时用于服务端 StaticRouter 和客户端水合 ---
-                const base = opt.routerBase ?? '';
-                const routerBase = this._config.const.urlBase + base.replace(/^\//, '');
+                const routerBase = `${this._config.const.urlBase}${(opt.routerBase ?? '').replace(/^\//, '')}`;
                 fullProps['_routerBase'] = routerBase.replace(/\/$/, '');
             }
-            // --- 框架自动注入的 HTML 片段，用户组件无需手动渲染 ---
-            let bodyInject = '';
-            if (opt.hydrate !== false) {
-                // --- propsJson 在渲染前序列化，框架直接注入 HTML，组件无需手动渲染 ---
-                const propsJson = lText.stringifyJson(fullProps).replace(/<\/script>/gi, '<\\/script>');
-                const clientUrl = `${staticPath}${path}.page.bundle.js?v=${this._config.set.staticVer}`;
-                // --- props JSON + 水合脚本注入到 </body> 前 ---
-                bodyInject =
-                    `<script id="__kebab_props__" type="application/json">${propsJson}</script>` +
-                    `<script type="module">import'${clientUrl}';</script>`;
-            }
-            // --- BrowserRouter 模式：服务端用 StaticRouter 渲染，与客户端的 BrowserRouter 等价 ---
-            // --- component 来自动态 import，TypeScript 无法精确推断，需要明确限定 element 类型 ---
+
+            // --- 创建页面元素，BrowserRouter 模式下由 StaticRouter 包裹 ---
+            const component = page.default as Parameters<typeof react.createElement>[0];
+            const pageElement = react.createElement(component, fullProps);
             let element: Parameters<typeof reactDomServer.renderToString>[0] =
-                react.createElement(component as Parameters<typeof react.createElement>[0], fullProps);
+                pageElement;
             if (opt.router === 'browser') {
-                // --- StaticRouter 在 react-router-dom v7 中从主包直接导出，无需 /server 子路径 ---
-                const lReactRouter = await import('react-router-dom');
-                const reqUrl = this._req.url ?? '/';
+                const reactRouter = await import('react-router-dom');
                 element = react.createElement(
-                    lReactRouter.StaticRouter,
+                    reactRouter.StaticRouter,
                     {
-                        'location': reqUrl,
+                        'location': this._req.url ?? '/',
                         'basename': fullProps['_routerBase'] as string,
                     },
-                    react.createElement(component as Parameters<typeof react.createElement>[0], fullProps)
+                    pageElement
                 );
             }
-            // --- 框架将 props JSON + 水合 bundle 注入到 </body> 前 ---
-            let html = '<!DOCTYPE html>' + reactDomServer.renderToString(element);
-            if (opt.hydrate !== false) {
-                html = html.replace('</body>', bodyInject + '</body>');
+
+            // --- 渲染完整 HTML，并按需注入客户端水合数据与 bundle ---
+            const html = `<!DOCTYPE html>${reactDomServer.renderToString(element)}`;
+            if (!hydrate) {
+                return html;
             }
-            return html;
+            const propsJson = lText.stringifyJson(fullProps).replace(/<\/script>/gi, '<\\/script>');
+            const clientUrl = `${staticPath}${path}.page.bundle.js?v=${this._config.set.staticVer}`;
+            const propsScript = `<script id="__kebab_props__" type="application/json">${propsJson}</script>`;
+            const hydrateScript = `<script type="module">import'${clientUrl}';</script>`;
+            return html.replace('</body>', `${propsScript}${hydrateScript}</body>`);
         }
         catch (e: kebab.Json) {
-            lCore.debug(`[CTR][_loadReactPage] ${e.message ?? ''}`);
-            lCore.log(this, '[CTR][_loadReactPage] ' + lText.stringifyError(e), '-error');
-            return '';
+            return this._reactPageError(e.message ?? '', lText.stringifyError(e));
         }
+    }
+
+    /**
+     * --- 记录 React 页面错误并返回脱敏响应 ---
+     * @param message 调试信息
+     * @param detail 日志详情
+     * @returns 脱敏后的 500 页面
+     */
+    private _reactPageError(message: string, detail: string = message): string {
+        lCore.debug(`[CTR][_loadReactPage] ${message}`);
+        lCore.log(this, `[CTR][_loadReactPage] ${detail}`, '-error');
+        this._httpCode = 500;
+        return '<h1>500 Server Error</h1><hr>Kebab';
     }
 
     /**
