@@ -5,7 +5,8 @@
  * 1. 这个 .page.tsx 文件（组件 + IProps）
  * 2. 一个 <link> 标签引入 CSS（如果不需要样式可省略）
  * 3. 在 Ctr 方法里调用 _loadReactPage('view/hello', props)
- * 其他一切由框架自动处理：SSR 渲染、import map、props 注入、客户端水合。
+ * 4. 执行 node ./source/main build -d source/www/example/stc 生成客户端水合 bundle
+ * 其他一切由框架自动处理：SSR 渲染、props 注入、客户端水合。
  */
 import { useState, type ReactElement } from 'react';
 

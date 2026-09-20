@@ -9,26 +9,22 @@
  *
  * 【使用方式】
  * 在 Ctr 方法中调用 _loadReactPage('view/react', { ...props })，
- * 框架自动将 import map、props JSON、水合脚本注入 HTML，组件只写业务逻辑，无需任何框架样板代码。
+ * 框架自动将 props JSON、水合脚本注入 HTML，组件只写业务逻辑，无需任何框架样板代码。
  *
  * 【多页面 / 共用组件】
  * 将公共 UI（如 Label/Input/Checkbox）放在 stc/lib/ui/ 目录，各页面 import 进来。
  * 这和 shadcn/ui 推荐的 components/ui/ 目录结构完全一致。
- * tsc watch 会自动将所有 .tsx 编译为同路径的 .js，无需打包工具。
+ * tsc watch 会自动将所有 .tsx 编译为同路径的 .js，供服务端 SSR 使用。
  *
  * 【编译方式】
  * 本文件 (.tsx) 已集成到 source/tsconfig.json 的 include 中，
- * 开启 `tsc: watch - source/tsconfig.json` 即可自动编译，无需额外命令。
+ * 开启 `tsc: watch - source/tsconfig.json` 即可自动编译服务端文件。
  * 编译输出：stc/view/react.page.js（由 tsc 覆盖写入，勿手动编辑 .js 文件）
+ * 客户端水合需执行：node ./source/main build -d source/www/example/stc
  *
  * 【运行时机】
  * - 服务端（Node.js）：_loadReactPage() 调用 renderToString()，产出完整 HTML 字符串。
- * - 客户端（浏览器）：import map 将 bare import 解析到 esm.sh，hydrateRoot 接管 document。
- * - 两端使用同一份 JS 文件：服务端从磁盘读，浏览器从静态 URL 下载。
- *
- * 【第三方包 import map 自动解析】
- * 开发模式下，框架会自动扫描入口 JS 及其相对引用中的所有 bare specifier，
- * 并通过 esm.sh CDN 自动生成 import map 条目，无需手动配置。
+ * - 客户端（浏览器）：加载 kebab build 生成的 bundle，由 hydrateRoot 接管 document。
  *
  * 【限制】
  * - 不能包含 Node.js 专属代码（fs/path/lDb 等），数据必须通过 props 传入。
@@ -210,7 +206,7 @@ function ShadcnDemo() {
                     All components below are imported from <code className="bg-slate-100 px-1 rounded">stc/lib/ui/</code>,
                     following the same <code className="bg-slate-100 px-1 rounded">components/ui/</code> structure recommended by shadcn/ui.
                     Built on Radix UI primitives, styled with Tailwind CSS.
-                    In dev mode, the framework auto-scans all bare imports and generates the import map automatically.
+                    Client dependencies are bundled locally by the Kebab build command.
                 </p>
             </Card>
 
@@ -392,8 +388,7 @@ export default function ReactPage({ title, serverTime, node, _urlBase, _urlStc, 
                 <meta charSet="UTF-8" />
                 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
                 <title>{title}</title>
-                {/* import map 由框架自动注入在此标签前，无需手动添加 */}
-                {/* dev: Tailwind Play CDN；prod: 将此行替换为 kebab build 编译的 CSS 文件 */}
+                {/* CSS 和客户端水合 bundle 均由 kebab build 生成 */}
                 <link href={`${_urlStc}view/react.page.css?v=${_staticVer}`} rel="stylesheet" />
             </head>
             <body className="bg-slate-50 min-h-screen font-sans">
@@ -494,8 +489,7 @@ export default function ReactPage({ title, serverTime, node, _urlBase, _urlStc, 
                                 <p className="text-slate-500 text-xs mt-3">
                                     Mirrors the shadcn/ui{' '}
                                     <code className="bg-slate-100 px-1 rounded">components/ui/</code> convention.
-                                    In dev mode, the framework auto-scans imports —
-                                    no manual import map configuration needed.
+                                    Client dependencies are bundled locally by the Kebab build command.
                                 </p>
                             </Card>
 

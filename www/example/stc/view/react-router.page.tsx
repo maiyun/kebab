@@ -15,13 +15,13 @@
  * 3. 嵌套路由通过 Outlet 渲染子路由内容
  *
  * 【编译方式】
- * tsc watch 会自动编译本文件为同路径的 .js，无需额外命令。
- * 如需打包为 .bundle.js，执行：node ./source/main build
+ * tsc watch 会自动编译本文件为同路径的 .js，供服务端 SSR 使用。
+ * 客户端水合必须执行：node ./source/main build -d source/www/example/stc
  *
  * 【Tailwind CSS 构建】
  * 需提前执行 node ./source/main build -d source/www/example/stc 生成 CSS 产物。
  * 框架通过 _staticPath 和 _staticVer 自动拼接带版本号 URL；
- * import map、props JSON、水合脚本均由框架自动注入 HTML，组件无需手动处理。
+ * props JSON、水合脚本均由框架自动注入 HTML，组件无需手动处理。
  */
 
 import { useState, useEffect } from 'react';
@@ -336,7 +336,6 @@ export default function ReactRouterPage({
                 <meta charSet="UTF-8" />
                 <meta name="viewport" content="width=device-width, initial-scale=1" />
                 <title suppressHydrationWarning>{title}</title>
-                {/* --- import map 由框架自动注入在此标签前，无需手动添加 --- */}
                 {/* --- dev: 需先执行 node ./source/main build -d source/www/example/stc 生成 CSS --- */}
                 <link rel="stylesheet" href={`${_urlStc}view/react-router.page.css?v=${_staticVer}`} />
             </head>
