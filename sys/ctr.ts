@@ -49,6 +49,9 @@ export type TValibotResponse<TIssue extends v.BaseIssue<unknown>> = kebab.Json[]
 /** --- 在 issue 路径完整后，根据 Kebab 生成的语言键翻译消息 --- */
 export type TValibotTranslate = (key: string, issue: v.BaseIssue<unknown>) => string;
 
+/** --- HTTP 重定向状态码 --- */
+export type TRedirectHttpCode = 301 | 302 | 303 | 307 | 308;
+
 /** --- Valibot 同步校验选项 --- */
 export interface IValibotOptions<TIssue extends v.BaseIssue<unknown>> {
     /** --- 传给 Valibot 的校验配置 --- */
@@ -1025,13 +1028,15 @@ export class Ctr {
     }
 
     /**
-     * --- 跳转（302临时跳转），支持相对本项目根路径的路径或绝对路径 ---
+     * --- 跳转，支持相对本项目根路径的路径或绝对路径 ---
      * @param location 相对或绝对网址
+     * @param httpCode HTTP 重定向状态码，默认 302
      */
-    protected _location(location: string): false {
+    protected _location(location: string, httpCode: TRedirectHttpCode = 302): false {
+        this._httpCode = httpCode;
         if (this._res) {
             this._res.setHeader('location', lText.urlResolve(this._config.const.urlBase, location));
-            // this._res.writeHead(302); Kebab 中要在最后设置，否则会报错：ERR_HTTP_HEADERS_SENT
+            // this._res.writeHead(httpCode); Kebab 中要在最后设置，否则会报错：ERR_HTTP_HEADERS_SENT
         }
         return false;
     }

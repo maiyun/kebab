@@ -632,6 +632,8 @@ export async function run(data: {
         data.res.setHeader('expires', new Date(Date.now() + cacheTTL * 1_000).toUTCString());
         data.res.setHeader('cache-control', 'max-age=' + cacheTTL.toString());
     }
+    // --- 记录控制器是否显式设置状态码；未设置时，带 Location 的空响应仍兼容为 302 ---
+    const hasCustomHttpCode = httpCode !== 0;
     // --- 设置自定义 hcode ---
     if (httpCode === 0) {
         httpCode = 200;
@@ -642,7 +644,7 @@ export async function run(data: {
             // --- 已经自行输出过 writeHead，可能自行处理了内容，如 pipe，则不再 writeHead ---
         }
         else {
-            lCore.writeHead(data.res, data.res.getHeader('location') ? 302 : httpCode);
+            lCore.writeHead(data.res, data.res.getHeader('location') && !hasCustomHttpCode ? 302 : httpCode);
         }
         if (!data.res.writableEnded) {
             // --- 如果当前还没结束，则强制关闭连接，一切 pipe 请自行在方法中 await，否则会被中断 ---

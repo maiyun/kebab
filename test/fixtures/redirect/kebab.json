@@ -1,0 +1,7 @@
+{
+    "set": {
+        "cacheTtl": 0,
+        "mustHttps": false
+    },
+    "route": {}
+}
