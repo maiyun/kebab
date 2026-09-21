@@ -8,7 +8,7 @@
 
 > **TValibotResult**\<`TSchema`, `TIssue`\> = \{ `issues`: `undefined`; `output`: [`InferOutput`](../../../lib/core/namespaces/v/type-aliases/InferOutput.md)\<`TSchema`\>; `response`: `undefined`; `success`: `true`; `typed`: `true`; \} \| \{ `issues`: \[`TIssue`, `...TIssue[]`\]; `output`: `undefined`; `response`: [`Json`](../../../index/type-aliases/Json.md)[]; `success`: `false`; `typed`: `boolean`; \}
 
-Defined in: [sys/ctr.ts:81](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L81)
+Defined in: [sys/ctr.ts:84](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L84)
 
 Valibot 校验结果：仅成功分支提供 schema 推导后的 output
 

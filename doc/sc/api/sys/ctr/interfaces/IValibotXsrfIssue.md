@@ -6,7 +6,7 @@
 
 # Interface: IValibotXsrfIssue
 
-Defined in: [sys/ctr.ts:63](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L63)
+Defined in: [sys/ctr.ts:66](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L66)
 
 XSRF 校验失败的问题描述
 
@@ -90,7 +90,7 @@ The sub issues.
 
 > `readonly` **kind**: `"validation"`
 
-Defined in: [sys/ctr.ts:64](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L64)
+Defined in: [sys/ctr.ts:67](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L67)
 
 The issue kind.
 
@@ -174,7 +174,7 @@ The input requirement.
 
 > `readonly` **type**: `"xsrf"`
 
-Defined in: [sys/ctr.ts:65](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L65)
+Defined in: [sys/ctr.ts:68](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L68)
 
 The issue type.
 

@@ -6,7 +6,7 @@
 
 # Interface: IValibotXOptions\<TIssue\>
 
-Defined in: [sys/ctr.ts:69](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L69)
+Defined in: [sys/ctr.ts:72](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L72)
 
 带 XSRF 检测的 Valibot 同步校验选项
 
@@ -22,7 +22,7 @@ Defined in: [sys/ctr.ts:69](https://github.com/maiyunnet/kebab/blob/master/sys/c
 
 > `optional` **config?**: [`Config`](../../../lib/core/namespaces/v/interfaces/Config.md)\<`TIssue`\>
 
-Defined in: [sys/ctr.ts:71](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L71)
+Defined in: [sys/ctr.ts:74](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L74)
 
 传给 Valibot 的校验配置
 
@@ -32,7 +32,7 @@ Defined in: [sys/ctr.ts:71](https://github.com/maiyunnet/kebab/blob/master/sys/c
 
 > `optional` **ignoreXsrf?**: `boolean`
 
-Defined in: [sys/ctr.ts:77](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L77)
+Defined in: [sys/ctr.ts:80](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L80)
 
 是否忽略 XSRF 检测
 
@@ -42,7 +42,7 @@ Defined in: [sys/ctr.ts:77](https://github.com/maiyunnet/kebab/blob/master/sys/c
 
 > `optional` **response?**: [`TValibotResponse`](../type-aliases/TValibotResponse.md)\<[`IValibotXsrfIssue`](IValibotXsrfIssue.md) \| `TIssue`\>
 
-Defined in: [sys/ctr.ts:73](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L73)
+Defined in: [sys/ctr.ts:76](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L76)
 
 校验失败时返回给客户端的内容，回调同时可能收到 XSRF issue
 
@@ -52,6 +52,6 @@ Defined in: [sys/ctr.ts:73](https://github.com/maiyunnet/kebab/blob/master/sys/c
 
 > `optional` **translate?**: [`TValibotTranslate`](../type-aliases/TValibotTranslate.md)
 
-Defined in: [sys/ctr.ts:75](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L75)
+Defined in: [sys/ctr.ts:78](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L78)
 
 使用完整 issue 路径翻译消息，包括 XSRF issue

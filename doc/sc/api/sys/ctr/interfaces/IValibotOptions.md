@@ -6,7 +6,7 @@
 
 # Interface: IValibotOptions\<TIssue\>
 
-Defined in: [sys/ctr.ts:53](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L53)
+Defined in: [sys/ctr.ts:56](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L56)
 
 Valibot 同步校验选项
 
@@ -22,7 +22,7 @@ Valibot 同步校验选项
 
 > `optional` **config?**: [`Config`](../../../lib/core/namespaces/v/interfaces/Config.md)\<`TIssue`\>
 
-Defined in: [sys/ctr.ts:55](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L55)
+Defined in: [sys/ctr.ts:58](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L58)
 
 传给 Valibot 的校验配置
 
@@ -32,7 +32,7 @@ Defined in: [sys/ctr.ts:55](https://github.com/maiyunnet/kebab/blob/master/sys/c
 
 > `optional` **response?**: [`TValibotResponse`](../type-aliases/TValibotResponse.md)\<`TIssue`\>
 
-Defined in: [sys/ctr.ts:57](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L57)
+Defined in: [sys/ctr.ts:60](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L60)
 
 校验失败时返回给客户端的内容，默认使用首个 issue 的消息
 
@@ -42,6 +42,6 @@ Defined in: [sys/ctr.ts:57](https://github.com/maiyunnet/kebab/blob/master/sys/c
 
 > `optional` **translate?**: [`TValibotTranslate`](../type-aliases/TValibotTranslate.md)
 
-Defined in: [sys/ctr.ts:59](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L59)
+Defined in: [sys/ctr.ts:62](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L62)
 
 使用完整 issue 路径翻译消息

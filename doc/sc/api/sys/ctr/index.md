@@ -12,12 +12,14 @@
 
 ## Interfaces
 
+- [IReactPageOptions](interfaces/IReactPageOptions.md)
 - [IValibotOptions](interfaces/IValibotOptions.md)
 - [IValibotXOptions](interfaces/IValibotXOptions.md)
 - [IValibotXsrfIssue](interfaces/IValibotXsrfIssue.md)
 
 ## Type Aliases
 
+- [TRedirectHttpCode](type-aliases/TRedirectHttpCode.md)
 - [TValibotResponse](type-aliases/TValibotResponse.md)
 - [TValibotResult](type-aliases/TValibotResult.md)
 - [TValibotTranslate](type-aliases/TValibotTranslate.md)

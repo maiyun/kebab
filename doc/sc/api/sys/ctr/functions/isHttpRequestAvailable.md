@@ -8,7 +8,7 @@
 
 > **isHttpRequestAvailable**(`req`, `res`): `boolean`
 
-Defined in: [sys/ctr.ts:104](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L104)
+Defined in: [sys/ctr.ts:123](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L123)
 
 判断当前 HTTP 请求是否仍可响应
 
