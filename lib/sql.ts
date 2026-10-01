@@ -18,6 +18,9 @@ export enum ESERVICE {
     'PGSQL',
 }
 
+/** --- 非空游标值；大整数和日期请使用数据库可比较的字符串 --- */
+export type TCursorValue = string | number;
+
 /** --- JSON 查询操作符 --- */
 export enum EJSON {
     /** --- 包含值 (MySQL: JSON_CONTAINS, PG: @>) --- */
@@ -84,6 +87,7 @@ export class Sql {
         this._service = opt.service ?? ESERVICE.MYSQL;
         if (opt.data) {
             this._data = opt.data;
+            this._placeholderCounter = opt.data.length + 1;
         }
         if (opt.sql) {
             this._sql = opt.sql;
@@ -827,6 +831,57 @@ export class Sql {
     }
 
     /**
+     * --- 按非空、同向排序字段定位游标并设置排序；字段组合须唯一且有匹配索引 ---
+     * --- 使用行比较，让 PostgreSQL 可以从复合索引边界开始扫描 ---
+     * @param c 排序字段，支持表别名；不支持表达式、GROUP BY 或 UNION
+     * @param values 上一页末行的字段值，省略时读取首批
+     * @param d 扫描方向；读取前一批时反转方向并在取回后反转列表
+     * @returns 当前 SQL 对象
+     */
+    public seek(c: string | string[], values?: TCursorValue[], d: 'DESC' | 'ASC' = 'DESC'): this {
+        const fields = typeof c === 'string' ? [c] : c;
+        if (!fields.length || new Set(fields).size !== fields.length ||
+            fields.some(field => !/^[a-zA-Z_][a-zA-Z0-9_]*(\.[a-zA-Z_][a-zA-Z0-9_]*)?$/.test(field)) ||
+            !['ASC', 'DESC'].includes(d)) {
+            throw new Error('Invalid cursor ordering');
+        }
+        if (this._sql.some(part => /^ (ORDER BY|LIMIT|GROUP BY|HAVING|UNION|FOR UPDATE)\b/i.test(part))) {
+            throw new Error('seek requires an ungrouped query without ordering or pagination');
+        }
+        if (values !== undefined) {
+            if (values.length !== fields.length || values.some(value =>
+                (typeof value !== 'string' && typeof value !== 'number') ||
+                (typeof value === 'number' && (!Number.isFinite(value) || (Number.isInteger(value) && !Number.isSafeInteger(value))))
+            )) {
+                throw new Error('Invalid cursor values; use strings for large integers');
+            }
+            const columns = fields.map(field => this.field(field));
+            const placeholders = values.map(() => this._placeholder());
+            const left = columns.length === 1 ? columns[0] : `(${columns.join(', ')})`;
+            const right = placeholders.length === 1 ? placeholders[0] : `(${placeholders.join(', ')})`;
+            let condition = `${left} ${d === 'DESC' ? '<' : '>'} ${right}`;
+            if (columns.length > 1) {
+                // --- 显式收紧首列边界，避免已有较宽范围条件让 PG 在索引内遍历到行比较边界 ---
+                condition += ` AND ${columns[0]} ${d === 'DESC' ? '<=' : '>='} ${this._placeholder()}`;
+            }
+            const index = this._sql.findIndex(part => part.startsWith(' WHERE '));
+            if (index === -1) {
+                this._whereDataPosition[0] = this._data.length;
+                this._sql.push(' WHERE ' + condition);
+            }
+            else {
+                this._sql[index] = ` WHERE (${this._sql[index].slice(7)}) AND ${condition}`;
+            }
+            this._data.push(...values);
+            if (columns.length > 1) {
+                this._data.push(values[0]);
+            }
+            this._whereDataPosition[1] = this._data.length;
+        }
+        return this.by(fields, d);
+    }
+
+    /**
      * --- GROUP BY ---
      * @param c 字段字符串或数组
      */
@@ -876,6 +931,10 @@ export class Sql {
      */
     public copy(f?: string | string[], opt: {
         'where'?: string | kebab.Json;
+        /** --- false 时移除本查询的排序，不修改子查询 --- */
+        'order'?: false;
+        /** --- false 时移除本查询的 LIMIT/OFFSET，不修改子查询 --- */
+        'limit'?: false;
     } = {}): Sql {
         const sql: string[] = lCore.clone(this._sql);
         const data: any[] = lCore.clone(this._data);
@@ -993,7 +1052,13 @@ export class Sql {
                 sql[i] = sql[i].replace(/\$\d+/g, () => `$${counter++}`);
             }
         }
-        return get({
+        for (let i = sql.length - 1; i >= 0; --i) {
+            if ((opt.order === false && sql[i].startsWith(' ORDER BY ')) ||
+                (opt.limit === false && sql[i].startsWith(' LIMIT '))) {
+                sql.splice(i, 1);
+            }
+        }
+        const result = get({
             'service': this._service,
             'ctr': this._ctr,
             'pre': this._pre,
@@ -1001,6 +1066,10 @@ export class Sql {
             'sql': sql,
             'alias': lCore.clone(this._alias),
         }).hint(this._hint);
+        if (opt.where === undefined) {
+            result._whereDataPosition = [...this._whereDataPosition];
+        }
+        return result;
     }
 
     // --- 操作 ---

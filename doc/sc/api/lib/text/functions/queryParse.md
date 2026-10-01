@@ -8,7 +8,7 @@
 
 > **queryParse**(`query`): `Record`\<`string`, `string` \| `string`[]\>
 
-Defined in: [lib/text.ts:480](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L480)
+Defined in: [lib/text.ts:518](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L518)
 
 将 query string 转换为对象
 

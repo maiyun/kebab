@@ -8,7 +8,7 @@
 
 > **stringifyError**(`error`): `string`
 
-Defined in: [lib/text.ts:707](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L707)
+Defined in: [lib/text.ts:745](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L745)
 
 将未知异常转换为适合单行日志的文本，Error 优先返回完整堆栈
 

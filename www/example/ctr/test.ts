@@ -267,6 +267,7 @@ export default class extends sCtr.Ctr {
             `<br><a href="${this._config.const.urlBase}test/sql?type=json">View "test/sql?type=json"</a> <a href="${this._config.const.urlBase}test/sql?type=json&s=pgsql">pgsql</a>`,
             `<br><a href="${this._config.const.urlBase}test/sql?type=having">View "test/sql?type=having"</a> <a href="${this._config.const.urlBase}test/sql?type=having&s=pgsql">pgsql</a>`,
             `<br><a href="${this._config.const.urlBase}test/sql?type=by">View "test/sql?type=by"</a> <a href="${this._config.const.urlBase}test/sql?type=by&s=pgsql">pgsql</a>`,
+            `<br><a href="${this._config.const.urlBase}test/sql?type=seek">View "test/sql?type=seek"</a> <a href="${this._config.const.urlBase}test/sql?type=seek&s=pgsql">pgsql</a>`,
             `<br><a href="${this._config.const.urlBase}test/sql?type=field">View "test/sql?type=field"</a> <a href="${this._config.const.urlBase}test/sql?type=field&s=pgsql">pgsql</a>`,
             `<br><a href="${this._config.const.urlBase}test/sql?type=hint">View "test/sql?type=hint"</a>`,
 
@@ -904,6 +905,11 @@ test.set({
 const result = await test.create();
 JSON.stringify(result));</pre>` + JSON.stringify(result));
 
+            if (result !== true) {
+                echo.push(`<p>The new test row was not inserted. The fixed test names and tokens may already be in use;
+the cursor demo below reads existing test rows.</p>`);
+            }
+
             echo.push('<pre>JSON.stringify(test.toArray());</pre>' + lText.htmlescape(JSON.stringify(test.toArray())));
 
             echo.push('<br><br>Test table:');
@@ -942,6 +948,93 @@ const r = await ls.explain();</pre>` + lText.htmlescape(JSON.stringify(r)));
             }
             else {
                 echo.push('<div>false</div>');
+            }
+
+            // --- 近似总数与游标分页，复用原始筛选，翻页不重复估算 ---
+            // --- 固定名称和 token 的测试数据可能已占满，不能依赖本次新增成功或只取最近五分钟 ---
+
+            const isPgsql = db.getService() === lDb.ESERVICE.PGSQL;
+            const query = mTest.select<mTest>(db, [
+                // --- PG int8 可能超出 Number 精度，投影成文本，排序仍使用原表字段 ---
+                isPgsql ? 't.id::text id' : 't.id', 't.name', 't.time_add',
+            ], {
+                'ctr': this,
+                'pre': isPgsql ? 'm' : undefined,
+                'alias': 't',
+            }).filter([
+                ['t.token', 'LIKE', 'test_%'],
+                ['t.time_add', '<=', time],
+            ]);
+            const estimated = await query.totalEstimate();
+            echo.push(`<br><b>Approximate total / cursor pagination:</b>
+<p>totalEstimate() is PostgreSQL only; false means unavailable, not zero.
+The estimate can be inaccurate; use hasMore to decide whether to fetch the next batch.
+Keep filters and the ending time fixed while paging. Cursor fields must be non-null and jointly unique;
+use a (time_add, id) index for large tables.
+This demo includes existing test rows up to the fixed ending time, without a five-minute restriction.</p>
+<pre>const isPgsql = db.getService() === lDb.ESERVICE.PGSQL;
+const query = mTest.select&lt;mTest&gt;(db, [
+    isPgsql ? 't.id::text id' : 't.id', 't.name', 't.time_add',
+], {
+    'ctr': this,
+    'pre': isPgsql ? 'm' : undefined,
+    'alias': 't',
+}).filter([
+    ['t.token', 'LIKE', 'test_%'],
+    ['t.time_add', '&lt;=', time],
+]);
+const estimated = await query.totalEstimate();</pre>
+<b>estimated:</b> ${lText.htmlescape(lText.stringifyJson(estimated))}`);
+
+            const first = await query.allCursor(2, {
+                'by': ['t.time_add', 't.id'],
+                'order': 'DESC',
+            });
+            echo.push(`<pre>const first = await query.allCursor(2, {
+    'by': ['t.time_add', 't.id'],
+    'order': 'DESC',
+});</pre><b>first:</b><pre>${lText.htmlescape(lText.stringifyJson(first, 4))}</pre>`);
+            if (first === false) {
+                echo.push('<p>First batch query failed.</p>');
+            }
+            else if (first.hasMore && first.next) {
+                const second = await query.allCursor(2, {
+                    'by': ['t.time_add', 't.id'],
+                    'order': 'DESC',
+                    'cursor': first.next,
+                });
+                echo.push(`<pre>if (first !== false &amp;&amp; first.hasMore &amp;&amp; first.next) {
+    const second = await query.allCursor(2, {
+        'by': ['t.time_add', 't.id'],
+        'order': 'DESC',
+        'cursor': first.next,
+    });
+}</pre><b>second:</b><pre>${lText.htmlescape(lText.stringifyJson(second, 4))}</pre>`);
+                if (second === false) {
+                    echo.push('<p>Next batch query failed.</p>');
+                }
+                else if (second.previous) {
+                    const previous = await query.allCursor(2, {
+                        'by': ['t.time_add', 't.id'],
+                        'order': 'DESC',
+                        'cursor': second.previous,
+                        'before': true,
+                    });
+                    echo.push(`<pre>if (second !== false &amp;&amp; second.previous) {
+    const previous = await query.allCursor(2, {
+        'by': ['t.time_add', 't.id'],
+        'order': 'DESC',
+        'cursor': second.previous,
+        'before': true,
+    });
+}</pre><b>previous:</b><pre>${lText.htmlescape(lText.stringifyJson(previous, 4))}</pre>
+<p>With before: true, rows stay in DESC display order;
+hasMore now indicates whether there are more rows before this batch.</p>`);
+                }
+            }
+            else {
+                echo.push(`<p>No next batch. The first list already contains the complete result;
+its length is the exact total for this query.</p>`);
             }
 
             let ft = await mTest.one<mTest>(db, [
@@ -3685,6 +3778,75 @@ Result:<pre id="result">Nothing.</pre>`);
 <b>format() :</b> ${sql.format(s, sd)}`);
                 break;
             }
+            case 'seek': {
+                echo.push(`<p><b>Without cursor values, seek() and by() generate the same first-batch SQL.</b>
+With cursor values, seek() adds a WHERE boundary and sets ORDER BY. Compare the two next-batch examples below:
+by() + OFFSET skips rows by position, while seek() continues after the preceding batch's last row.</p>
+<p>by() only sets ORDER BY;
+do not call by() again after seek(). Call seek() before limit().
+Cursor fields must be non-null and jointly unique. Pass large integer IDs as strings.</p>`);
+                sql.select(['t.id', 't.time_add'], 'test t').where([
+                    ['t.time_add', '>=', 1700000000],
+                    ['t.time_add', '<=', 1700600000],
+                ]);
+                echo.push(`<pre>sql.select(['t.id', 't.time_add'], 'test t').where([
+    ['t.time_add', '&gt;=', 1700000000],
+    ['t.time_add', '&lt;=', 1700600000],
+]);</pre>`);
+
+                // --- 同一筛选条件，对比普通排序与游标定位 ---
+                const sorted = sql.copy().by(['t.time_add', 't.id'], 'DESC').limit(2);
+                echo.push(`<b>by(): sort only</b>
+<pre>const sorted = sql.copy().by(['t.time_add', 't.id'], 'DESC').limit(2);</pre>
+<b>getSql():</b> ${lText.htmlescape(sorted.getSql())}<br>
+<b>getData():</b><pre>${lText.htmlescape(lText.stringifyJson(sorted.getData(), 4))}</pre>
+<p>This always reads the first two rows of the current matching result.</p><hr>`);
+
+                const offsetNext = sql.copy().by(['t.time_add', 't.id'], 'DESC').limit(2, 2);
+                echo.push(`<b>by() + OFFSET: next batch by position</b>
+<pre>const offsetNext = sql.copy().by(['t.time_add', 't.id'], 'DESC').limit(2, 2);</pre>
+<b>getSql():</b> ${lText.htmlescape(offsetNext.getSql())}<br>
+<b>getData():</b><pre>${lText.htmlescape(lText.stringifyJson(offsetNext.getData(), 4))}</pre>
+<p>limit(offset, count) skips the first two matching rows. Larger offsets require skipping more rows;
+new rows inserted before that position can shift subsequent pages.</p><hr>`);
+
+                const next = sql.copy().seek(['t.time_add', 't.id'], [1700500000, '9007199254740993']).limit(2);
+                echo.push(`<b>seek() with a cursor: next batch after a row</b>
+<pre>const next = sql.copy().seek(
+    ['t.time_add', 't.id'], [1700500000, '9007199254740993']
+).limit(2);</pre>
+<b>getSql():</b> ${lText.htmlescape(next.getSql())}<br>
+<b>getData():</b><pre>${lText.htmlescape(lText.stringifyJson(next.getData(), 4))}</pre>
+<p>This adds a WHERE boundary based on the last row's time_add and id, with no OFFSET.
+Use the actual last row from the preceding batch as the cursor; the values here are illustrative.
+A matching composite index lets the database locate that boundary.</p><hr>`);
+
+                const first = sql.copy().seek(['t.time_add', 't.id']).limit(2);
+                echo.push(`<b>seek() without a cursor: same SQL as by() for the first batch</b>
+<pre>const first = sql.copy().seek(['t.time_add', 't.id']).limit(2);</pre>
+<b>getSql():</b> ${lText.htmlescape(first.getSql())}<br>
+<b>getData():</b><pre>${lText.htmlescape(lText.stringifyJson(first.getData(), 4))}</pre>
+<p>Without a cursor, seek() generates the same SQL as the by() first-batch example above.
+It is the cursor values in the preceding seek() example that add the WHERE boundary.</p><hr>`);
+
+                const previous = sql.copy().seek(['t.time_add', 't.id'], [1700500000, '9007199254740993'], 'ASC').limit(2);
+                echo.push(`<pre>const previous = sql.copy().seek(
+    ['t.time_add', 't.id'], [1700500000, '9007199254740993'], 'ASC'
+).limit(2);</pre>
+<b>getSql():</b> ${lText.htmlescape(previous.getSql())}<br>
+<b>getData():</b><pre>${lText.htmlescape(lText.stringifyJson(previous.getData(), 4))}</pre>
+<p>SQL seek() scans the previous batch in ASC order; reverse the rows for DESC display.
+Model allCursor(..., { before: true }) handles that reversal automatically.</p><hr>`);
+
+                const unpaged = first.copy(undefined, { 'order': false, 'limit': false });
+                echo.push(`<pre>const unpaged = first.copy(undefined, { 'order': false, 'limit': false });</pre>
+<b>getSql():</b> ${lText.htmlescape(unpaged.getSql())}<br>
+<b>getData():</b><pre>${lText.htmlescape(lText.stringifyJson(unpaged.getData(), 4))}</pre>
+<b>first remains:</b> ${lText.htmlescape(first.getSql())}<br><br>
+copy() removes the outer ordering and pagination without changing the original.<br>
+It keeps WHERE conditions, including any cursor boundary; estimate the base filter before adding a cursor.`);
+                break;
+            }
             case 'field': {
                 echo.push(`<pre>sql.field('abc');</pre>` + sql.field('abc'));
                 echo.push(`<pre>sql.field('abc', 'a_');</pre>` + sql.field('abc', 'a_'));
@@ -5048,7 +5210,17 @@ function doUpload() {
      */
     private _getEnd(): string {
         const rt = this._getRunTime();
-        return 'Processed in ' + rt.toString() + ' second(s), ' + (Math.round(rt * 10000000) / 10000).toString() + 'ms, ' + (Math.round(this._getMemoryUsage() / 1024 * 100) / 100).toString() + ' K.<style>*{font-family:Consolas,"Courier New",Courier,FreeMono,monospace;line-height: 1.5;font-size:12px;}pre{padding:10px;background-color:rgba(0,0,0,.07);white-space:pre-wrap;word-break:break-all;}hr{margin:20px 0;border-color:#000;border-style:dashed;border-width:1px 0 0 0;}td,th{padding:5px;border:solid 1px #000;}</style><meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no">';
+        return 'Processed in ' + rt.toString() + ' second(s), ' + (Math.round(rt * 10000000) / 10000).toString() + 'ms, ' + (Math.round(this._getMemoryUsage() / 1024 * 100) / 100).toString() + ` K.
+<style>
+body{margin:20px;font-family:system-ui,-apple-system,"Segoe UI","Noto Sans",sans-serif;font-size:16px;line-height:1.65;color:#1f2937;background:#fff;overflow-wrap:anywhere;}
+pre,code,kbd,samp{font-family:ui-monospace,"Cascadia Code","SFMono-Regular",Consolas,"Liberation Mono",monospace;font-size:15px;line-height:1.6;}
+pre{margin:16px 0;padding:14px 16px;border:1px solid #e5e7eb;border-radius:6px;background:#f3f4f6;white-space:pre-wrap;word-break:normal;}
+b,strong,th{font-weight:600;}
+input,button,select,textarea{font:inherit;}
+hr{margin:24px 0;border:0;border-top:1px solid #d1d5db;}
+td,th{padding:8px 10px;border:1px solid #d1d5db;}
+@media(max-width:600px){body{margin:12px;}pre{padding:12px;}}
+</style><meta name="viewport" content="width=device-width,initial-scale=1">`;
     }
 
 }

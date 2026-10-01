@@ -8,7 +8,7 @@
 
 > **trimJson**(`json`): `any`
 
-Defined in: [lib/text.ts:738](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L738)
+Defined in: [lib/text.ts:776](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L776)
 
 递归删除 json 中的字符串首尾空格，会返回一个新的对象
 

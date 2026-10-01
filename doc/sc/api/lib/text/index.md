@@ -22,6 +22,7 @@
 
 ## Functions
 
+- [compareVersion](functions/compareVersion.md)
 - [csvescape](functions/csvescape.md)
 - [getFileExt](functions/getFileExt.md)
 - [getFilename](functions/getFilename.md)
@@ -46,6 +47,7 @@
 - [parseHost](functions/parseHost.md)
 - [parseJson](functions/parseJson.md)
 - [parseUrl](functions/parseUrl.md)
+- [parseVersion](functions/parseVersion.md)
 - [queryParse](functions/queryParse.md)
 - [queryStringify](functions/queryStringify.md)
 - [sizeFormat](functions/sizeFormat.md)

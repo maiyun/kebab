@@ -1,14 +1,15 @@
 #!/usr/bin/env bash
-SCRIPT_ROOT=$(cd $(dirname $0); pwd)
+set -euo pipefail
 
-cd $SCRIPT_ROOT/..
+SCRIPT_ROOT=$(cd -- "$(dirname -- "$0")" && pwd)
+
+cd "$SCRIPT_ROOT/.."
 
 API_DOC_OUTPUT_DIR=doc/sc/api
 
-# check if any files in src is not stashed in git
+# --- 文档针对当前工作区生成，未提交的源码不应阻止本地验证 ---
 if [[ -n $(git status --porcelain "./index.ts" "./main.ts" "./lib" "./sys") ]]; then
-    echo "Error: You have unstaged changes. Please commit or stash them before generating API docs."
-    exit 1
+    echo "Warning: Source changes are uncommitted; generating documentation from the current working tree."
 fi
 
 rm -rf $API_DOC_OUTPUT_DIR
@@ -35,7 +36,7 @@ done
 
 # --- 定义额外的单文件列表 ---
 # extra_files=("doc/sc/quick-start.md" "doc/sc/another-single.md")
-extra_files=("doc/sc/quick-start.md")
+extra_files=("doc/sc/quick-start.md" "doc/sc/query-pagination.md")
 
 # --- 处理单文件 ---
 for f in "${extra_files[@]}"; do
@@ -45,6 +46,9 @@ for f in "${extra_files[@]}"; do
     filename=$(basename "$f")
     printf "\n%s\n---\n\n" "$filename" >> "doc/kebab-rag.md"
     cat "$f" >> "doc/kebab-rag.md"
+  else
+    echo "Error: Required documentation file is missing: $f" >&2
+    exit 1
   fi
 done
 

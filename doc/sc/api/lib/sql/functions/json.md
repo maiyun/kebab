@@ -8,7 +8,7 @@
 
 > **json**\<`T`\>(`obj`): `T`
 
-Defined in: [lib/sql.ts:1477](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L1477)
+Defined in: [lib/sql.ts:1546](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L1546)
 
 标记需要写入 JSON/jsonb 字段的值；实际序列化延迟到数据库边界
 

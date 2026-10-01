@@ -13,6 +13,7 @@
 
 ## Interfaces
 
+- [ICursorPage](interfaces/ICursorPage.md)
 - [IModUnionItem](interfaces/IModUnionItem.md)
 - [IRows](interfaces/IRows.md)
 

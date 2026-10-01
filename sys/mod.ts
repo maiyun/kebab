@@ -16,6 +16,14 @@ export type TOnlyProperties<T> = {
     [K in keyof T as T[K] extends (...args: any[]) => any ? never : K]: T[K]
 };
 
+/** --- 一批游标查询结果，hasMore 表示扫描方向上还有记录 --- */
+export interface ICursorPage<T extends Record<string, unknown> = Record<string, unknown>> {
+    'list': T[];
+    'hasMore': boolean;
+    'next': lSql.TCursorValue[] | null;
+    'previous': lSql.TCursorValue[] | null;
+}
+
 /** --- 条数列表 --- */
 export class Rows<T extends Mod> implements IRows<T> {
 
@@ -1581,6 +1589,97 @@ export default class Mod {
             count += Number(item.count);
         }
         return count;
+    }
+
+    /**
+     * --- 从 PostgreSQL 执行计划估算查询总行数，移除外层排序和分页，不执行数据扫描 ---
+     * --- 请在应用游标条件前调用；非 PostgreSQL、框架分表联查或查询失败返回 false，绝不回退到 COUNT ---
+     * @returns 近似行数或 false；估算可能偏差很大，不能用于判断有无下一批
+     */
+    public async totalEstimate(): Promise<number | false> {
+        if (this._db.getService() !== lDb.ESERVICE.PGSQL || this._index !== null || this._contain) {
+            return false;
+        }
+        const sql = this._sql.copy(undefined, { 'order': false, 'limit': false });
+        const result = await this._db.query('EXPLAIN (FORMAT JSON) ' + sql.getSql(), sql.getData());
+        if (result.rows === null) {
+            lCore.log(this._ctr ?? {}, '[MOD][totalEstimate] Query failed', '-error');
+            return false;
+        }
+        const plan: unknown = result.rows[0]?.['QUERY PLAN'];
+        const parsed: unknown = typeof plan === 'string' ? lText.parseJson(plan) : plan;
+        if (!Array.isArray(parsed)) {
+            return false;
+        }
+        const root: unknown = parsed[0];
+        if (!root || typeof root !== 'object') {
+            return false;
+        }
+        const node: unknown = (root as Record<string, unknown>)['Plan'];
+        if (!node || typeof node !== 'object') {
+            return false;
+        }
+        const rows: unknown = (node as Record<string, unknown>)['Plan Rows'];
+        return typeof rows === 'number' && Number.isFinite(rows) && rows >= 0 ? Math.round(rows) : false;
+    }
+
+    /**
+     * --- 读取一批游标数据，多取一条判断后续记录，不使用 OFFSET，不修改原查询 ---
+     * --- 排序字段必须全部非空、同向，且组合唯一；SELECT 中须包含对应字段（同名或指定 keys） ---
+     * @param count 本批数量
+     * @param opt 排序、边界和方向；before 为 true 时读取前一批并恢复展示顺序
+     * @param opt.by 排序字段，支持表别名
+     * @param opt.keys SELECT 结果中对应的字段名，默认去掉 by 的表别名
+     * @param opt.order 展示顺序，默认 DESC
+     * @param opt.cursor 边界行的字段值，首批省略
+     * @param opt.before 是否读取边界前一批，须提供 cursor
+     * @returns 列表、首末行游标和扫描方向上的 hasMore，数据库错误返回 false
+     */
+    public async allCursor<T extends Record<string, unknown> = Record<string, unknown>>(count: number, opt: {
+        'by': string | string[];
+        'keys'?: string[];
+        'order'?: 'DESC' | 'ASC';
+        'cursor'?: lSql.TCursorValue[];
+        'before'?: boolean;
+    }): Promise<ICursorPage<T> | false> {
+        if (!Number.isSafeInteger(count) || count < 1 || count >= Number.MAX_SAFE_INTEGER ||
+            this._index !== null || this._contain || (opt.before && !opt.cursor) ||
+            (opt.order !== undefined && !['ASC', 'DESC'].includes(opt.order))) {
+            throw new Error('Invalid cursor page options; framework sharding and contain are unsupported');
+        }
+        const fields = typeof opt.by === 'string' ? [opt.by] : opt.by;
+        const keys = opt.keys ?? fields.map(field => field.split('.').pop()!);
+        if (keys.length !== fields.length || new Set(keys).size !== keys.length) {
+            throw new Error('Cursor result keys must match ordering fields');
+        }
+        const order = opt.order ?? 'DESC';
+        const direction = opt.before ? (order === 'DESC' ? 'ASC' : 'DESC') : order;
+        const sql = this._sql.copy(undefined, { 'order': false, 'limit': false });
+        sql.seek(fields, opt.cursor, direction).limit(count + 1);
+        const result = await this._db.query(sql.getSql(), sql.getData());
+        if (result.rows === null) {
+            lCore.log(this._ctr ?? {}, '[MOD][allCursor] Query failed', '-error');
+            return false;
+        }
+        const hasMore = result.rows.length > count;
+        const list = result.rows.slice(0, count) as T[];
+        if (opt.before) {
+            list.reverse();
+        }
+        const boundary = (row: T): lSql.TCursorValue[] => keys.map(key => {
+            const value = row[key];
+            if ((typeof value !== 'string' && typeof value !== 'number') ||
+                (typeof value === 'number' && (!Number.isFinite(value) || (Number.isInteger(value) && !Number.isSafeInteger(value))))) {
+                throw new Error('Cursor columns must be non-null strings or safe numbers');
+            }
+            return value;
+        });
+        return {
+            'list': list,
+            'hasMore': hasMore,
+            'next': list.length ? boundary(list[list.length - 1]) : null,
+            'previous': list.length ? boundary(list[0]) : null,
+        };
     }
 
     /**

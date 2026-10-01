@@ -34,6 +34,12 @@ Node 22 +
 
 Ai, Buffer, Captcha, Consistent, Core, Cron, Crypto, Db (MySQL, PostgreSQL), Dns (DNSPod, Alibaba Cloud), Fs, Kv (Redis), Lan, Lang, Net, S3, Scan, Session, Socket, Sql, Ssh (Shell, Sftp), Text, Time, Turnstile (Cloudflare, Tencent Cloud), Vector (Milvus), Ws, Zip, Zlib.
 
+## 文档
+
+- [快速开始](sc/quick-start.md)
+- [游标分页与 PostgreSQL 近似总数](sc/query-pagination.md)
+- [API 参考](sc/api/index.md)
+
 ## 部分特性
 
 ### 开袋即食

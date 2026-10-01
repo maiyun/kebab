@@ -8,7 +8,7 @@
 
 > **parseJson**\<`T`\>(`str`): `false` \| `T`
 
-Defined in: [lib/text.ts:663](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L663)
+Defined in: [lib/text.ts:701](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L701)
 
 将字符串解析为对象，返回 false 代表解析失败，支持 BigInt
 

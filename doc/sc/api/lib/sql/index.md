@@ -15,6 +15,10 @@
 
 - [Sql](classes/Sql.md)
 
+## Type Aliases
+
+- [TCursorValue](type-aliases/TCursorValue.md)
+
 ## Functions
 
 - [aoMix](functions/aoMix.md)

@@ -8,7 +8,7 @@
 
 > **sizeFormat**(`size`, `spliter?`): `string`
 
-Defined in: [lib/text.ts:16](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L16)
+Defined in: [lib/text.ts:54](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L54)
 
 将文件大小格式化为带单位的字符串
 

@@ -9,6 +9,44 @@ import * as lFs from './fs.js';
 import * as lCore from './core.js';
 
 /**
+ * --- 解析三段正式发行版本 X.Y.Z，不接受前导零、预发行和构建后缀 ---
+ * @param value 待解析的版本
+ * @returns 三段安全整数，无效时返回 null
+ */
+export function parseVersion(value: unknown): [number, number, number] | null {
+    if ((typeof value !== 'string') || (value.length > 64)) {
+        return null;
+    }
+    const match = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/.exec(value);
+    // --- $ 可匹配末尾换行前的位置，必须额外确认匹配完整输入 ---
+    if (match?.[0] !== value) {
+        return null;
+    }
+    const parts: [number, number, number] = [Number(match[1]), Number(match[2]), Number(match[3])];
+    return parts.every(Number.isSafeInteger) ? parts : null;
+}
+
+/**
+ * --- 逐段比较三段正式发行版本 X.Y.Z，不按字符串或浮点数比较 ---
+ * @param version 待比较的版本
+ * @param target 目标版本
+ * @returns 小于返回 -1，等于返回 0，大于返回 1；任一版本无效时返回 null
+ */
+export function compareVersion(version: unknown, target: unknown): -1 | 0 | 1 | null {
+    const current = parseVersion(version);
+    const other = parseVersion(target);
+    if (!current || !other) {
+        return null;
+    }
+    for (let index = 0; index < current.length; index++) {
+        if (current[index] !== other[index]) {
+            return current[index] < other[index] ? -1 : 1;
+        }
+    }
+    return 0;
+}
+
+/**
  * --- 将文件大小格式化为带单位的字符串 ---
  * @param size 文件大小
  * @param spliter 分隔符
