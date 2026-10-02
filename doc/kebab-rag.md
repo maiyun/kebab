@@ -1589,7 +1589,7 @@ index/variables/VER.md
 
 # Variable: VER
 
-> `const` **VER**: `"9.20.0"` = `'9.20.0'`
+> `const` **VER**: `"9.20.1"` = `'9.20.1'`
 
 Defined in: [index.ts:10](https://github.com/maiyunnet/kebab/blob/master/index.ts#L10)
 
@@ -122018,7 +122018,7 @@ Defined in: [lib/s3.ts:88](https://github.com/maiyunnet/kebab/blob/master/lib/s3
 
 > **deleteObject**(`key`, `bucket?`): `Promise`\<`boolean`\>
 
-Defined in: [lib/s3.ts:279](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L279)
+Defined in: [lib/s3.ts:367](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L367)
 
 删除对象
 
@@ -122046,7 +122046,7 @@ bucket 名
 
 > **deleteObjects**(`keys`, `bucket?`): `Promise`\<`boolean`\>
 
-Defined in: [lib/s3.ts:299](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L299)
+Defined in: [lib/s3.ts:387](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L387)
 
 批量删除对象
 
@@ -122074,7 +122074,7 @@ bucket 名
 
 > **destroy**(): `void`
 
-Defined in: [lib/s3.ts:341](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L341)
+Defined in: [lib/s3.ts:429](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L429)
 
 销毁连接，释放资源
 一般会自动垃圾回收，但高频接口也可主动调用
@@ -122089,7 +122089,7 @@ Defined in: [lib/s3.ts:341](https://github.com/maiyunnet/kebab/blob/master/lib/s
 
 > **getObject**(`key`, `bucket?`): `Promise`\<`false` \| `Readable` & `SdkStreamMixin` \| `Blob` & `SdkStreamMixin` \| `ReadableStream`\<`any`\> & `SdkStreamMixin` \| `undefined`\>
 
-Defined in: [lib/s3.ts:235](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L235)
+Defined in: [lib/s3.ts:323](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L323)
 
 获取对象流，可通过流获取 buffer 或 text
 
@@ -122117,7 +122117,7 @@ bucket 名
 
 > **getObjectBuffer**(`key`, `bucket?`): `Promise`\<`false` \| `Buffer`\<`ArrayBufferLike`\>\>
 
-Defined in: [lib/s3.ts:256](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L256)
+Defined in: [lib/s3.ts:344](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L344)
 
 获取对象 Buffer
 
@@ -122147,7 +122147,7 @@ bucket 名
 
 > **headObject**(`key`, `bucket?`): `Promise`\<`false` \| `HeadObjectCommandOutput`\>
 
-Defined in: [lib/s3.ts:321](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L321)
+Defined in: [lib/s3.ts:409](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L409)
 
 检测对象是否存在
 
@@ -122175,9 +122175,9 @@ bucket 名
 
 > **putObject**(`key`, `content`, `length?`, `bucket?`): `Promise`\<`false` \| `CompleteMultipartUploadCommandOutput`\>
 
-Defined in: [lib/s3.ts:139](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L139)
+Defined in: [lib/s3.ts:140](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L140)
 
-上传对象（可传流且也可无需设置 length） --
+上传对象，流内容可省略 length
 
 #### Parameters
 
@@ -122195,9 +122195,9 @@ Defined in: [lib/s3.ts:139](https://github.com/maiyunnet/kebab/blob/master/lib/s
 
 ##### length?
 
-`number` \| \{ `bucket?`: `string`; `disposition?`: `string`; `length?`: `number`; `type?`: `string`; \}
+`number` \| \{ `bucket?`: `string`; `disposition?`: `string`; `length?`: `number`; `signal?`: `AbortSignal`; `type?`: `string`; \}
 
-设置 contentLength，如果是流模式则需要设置此项，也可以设置为对象参数
+contentLength 或上传选项
 
 `number`
 
@@ -122205,21 +122205,35 @@ Defined in: [lib/s3.ts:139](https://github.com/maiyunnet/kebab/blob/master/lib/s
 
 ###### Type Literal
 
-\{ `bucket?`: `string`; `disposition?`: `string`; `length?`: `number`; `type?`: `string`; \}
+\{ `bucket?`: `string`; `disposition?`: `string`; `length?`: `number`; `signal?`: `AbortSignal`; `type?`: `string`; \}
 
-设置 contentLength，如果是流模式则需要设置此项，也可以设置为对象参数
+contentLength 或上传选项
 
 ###### bucket?
 
 `string`
 
+bucket 名，省略时使用预定义 bucket
+
 ###### disposition?
 
 `string`
 
+content-disposition，如 attachment
+
 ###### length?
 
 `number`
+
+contentLength，流内容可省略
+
+###### signal?
+
+`AbortSignal`
+
+取消上传请求并销毁输入流，等待已知的未完成分片清理后返回 false
+清理使用独立的 30 秒超时信号，失败时记录错误；不传则沿用原上传流程
+不删除同名对象，上传完成与取消同时发生时，由调用方清理独立任务文件
 
 ###### type?
 
@@ -122237,13 +122251,15 @@ bucket 名
 
 `Promise`\<`false` \| `CompleteMultipartUploadCommandOutput`\>
 
+上传结果，失败或取消返回 false；传入 signal 时，返回前会尝试清理已知的未完成分片
+
 ***
 
 ### putObjects()
 
 > **putObjects**(`items`, `options?`): `Promise`\<[`IPutObjectsItemResult`](../interfaces/IPutObjectsItemResult.md)[]\>
 
-Defined in: [lib/s3.ts:184](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L184)
+Defined in: [lib/s3.ts:272](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L272)
 
 批量上传对象，并发控制，单次失败不影响其他项
 
@@ -122347,7 +122363,7 @@ lib/s3/functions/get.md
 
 > **get**(`ctr`, `opt`): [`S3`](../classes/S3.md)
 
-Defined in: [lib/s3.ts:351](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L351)
+Defined in: [lib/s3.ts:439](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L439)
 
 创建一个对象存储对象
 
