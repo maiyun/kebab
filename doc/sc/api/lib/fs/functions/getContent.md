@@ -6,7 +6,7 @@
 
 # Function: getContent()
 
-读取完整文件或一段
+读取完整文件或一段，区间包含首尾字节
 
 ## Param
 
@@ -24,7 +24,7 @@
 
 > **getContent**(`path`, `options?`): `Promise`\<`Buffer`\<`ArrayBufferLike`\> \| `null`\>
 
-Defined in: [lib/fs.ts:14](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L14)
+Defined in: [lib/fs.ts:16](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L16)
 
 ### Parameters
 
@@ -50,7 +50,7 @@ Defined in: [lib/fs.ts:14](https://github.com/maiyunnet/kebab/blob/master/lib/fs
 
 > **getContent**(`path`, `options`): `Promise`\<`string` \| `null`\>
 
-Defined in: [lib/fs.ts:18](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L18)
+Defined in: [lib/fs.ts:20](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L20)
 
 ### Parameters
 

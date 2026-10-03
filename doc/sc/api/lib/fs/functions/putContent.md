@@ -8,7 +8,7 @@
 
 > **putContent**(`path`, `data`, `options?`): `Promise`\<`boolean`\>
 
-Defined in: [lib/fs.ts:92](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L92)
+Defined in: [lib/fs.ts:59](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L59)
 
 写入文件内容
 

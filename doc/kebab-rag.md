@@ -118073,7 +118073,7 @@ lib/fs/functions/chmod.md
 
 > **chmod**(`path`, `mod`): `Promise`\<`boolean`\>
 
-Defined in: [lib/fs.ts:277](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L277)
+Defined in: [lib/fs.ts:225](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L225)
 
 修改权限
 
@@ -118108,7 +118108,7 @@ lib/fs/functions/copyFile.md
 
 > **copyFile**(`src`, `dest`): `Promise`\<`boolean`\>
 
-Defined in: [lib/fs.ts:385](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L385)
+Defined in: [lib/fs.ts:317](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L317)
 
 复制文件
 
@@ -118143,7 +118143,7 @@ lib/fs/functions/copyFolder.md
 
 > **copyFolder**(`from`, `to`, `ignore?`): `Promise`\<`number`\>
 
-Defined in: [lib/fs.ts:340](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L340)
+Defined in: [lib/fs.ts:274](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L274)
 
 复制文件夹里的内容到另一个地方，失败不会回滚
 
@@ -118184,7 +118184,7 @@ lib/fs/functions/createReadStream.md
 
 > **createReadStream**(`path`, `options?`): `ReadStream`
 
-Defined in: [lib/fs.ts:400](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L400)
+Defined in: [lib/fs.ts:332](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L332)
 
 创建读取文件的流
 
@@ -118219,7 +118219,7 @@ lib/fs/functions/createWriteStream.md
 
 > **createWriteStream**(`path`, `options?`): `WriteStream`
 
-Defined in: [lib/fs.ts:447](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L447)
+Defined in: [lib/fs.ts:365](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L365)
 
 创建写入文件的流
 
@@ -118252,7 +118252,7 @@ lib/fs/functions/getContent.md
 
 # Function: getContent()
 
-读取完整文件或一段
+读取完整文件或一段，区间包含首尾字节
 
 ## Param
 
@@ -118270,7 +118270,7 @@ lib/fs/functions/getContent.md
 
 > **getContent**(`path`, `options?`): `Promise`\<`Buffer`\<`ArrayBufferLike`\> \| `null`\>
 
-Defined in: [lib/fs.ts:14](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L14)
+Defined in: [lib/fs.ts:16](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L16)
 
 ### Parameters
 
@@ -118296,7 +118296,7 @@ Defined in: [lib/fs.ts:14](https://github.com/maiyunnet/kebab/blob/master/lib/fs
 
 > **getContent**(`path`, `options`): `Promise`\<`string` \| `null`\>
 
-Defined in: [lib/fs.ts:18](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L18)
+Defined in: [lib/fs.ts:20](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L20)
 
 ### Parameters
 
@@ -118325,7 +118325,7 @@ lib/fs/functions/isDir.md
 
 > **isDir**(`path`): `Promise`\<`false` \| `Stats`\>
 
-Defined in: [lib/fs.ts:181](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L181)
+Defined in: [lib/fs.ts:144](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L144)
 
 判断是否是目录或目录是否存在，是的话返回 stats
 
@@ -118354,7 +118354,7 @@ lib/fs/functions/isFile.md
 
 > **isFile**(`path`): `Promise`\<`false` \| `Stats`\>
 
-Defined in: [lib/fs.ts:193](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L193)
+Defined in: [lib/fs.ts:153](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L153)
 
 判断是否是文件或文件是否存在，是的话返回 stats
 
@@ -118383,7 +118383,7 @@ lib/fs/functions/mkdir.md
 
 > **mkdir**(`path`, `mode?`): `Promise`\<`boolean`\>
 
-Defined in: [lib/fs.ts:206](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L206)
+Defined in: [lib/fs.ts:163](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L163)
 
 深度创建目录，如果最末目录存在，则自动创建成功
 
@@ -118418,7 +118418,7 @@ lib/fs/functions/pipe.md
 
 > **pipe**(`path`, `destination`, `options?`): `Promise`\<`boolean`\>
 
-Defined in: [lib/fs.ts:430](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L430)
+Defined in: [lib/fs.ts:348](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L348)
 
 读取文件写入到流，并等待写入完成
 
@@ -118461,7 +118461,7 @@ lib/fs/functions/putContent.md
 
 > **putContent**(`path`, `data`, `options?`): `Promise`\<`boolean`\>
 
-Defined in: [lib/fs.ts:92](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L92)
+Defined in: [lib/fs.ts:59](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L59)
 
 写入文件内容
 
@@ -118512,7 +118512,7 @@ lib/fs/functions/readDir.md
 
 > **readDir**(`path`, `encoding?`): `Promise`\<`Dirent`\<`string`\>[]\>
 
-Defined in: [lib/fs.ts:306](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L306)
+Defined in: [lib/fs.ts:254](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L254)
 
 获取文件夹下文件列表
 
@@ -118545,7 +118545,7 @@ lib/fs/functions/readLink.md
 
 > **readLink**(`path`, `encoding?`): `Promise`\<`string` \| `null`\>
 
-Defined in: [lib/fs.ts:114](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L114)
+Defined in: [lib/fs.ts:81](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L81)
 
 读取链接的 target
 
@@ -118580,9 +118580,16 @@ lib/fs/functions/readToResponse.md
 
 > **readToResponse**(`path`, `req`, `res`, `stat?`): `Promise`\<`void`\>
 
-Defined in: [lib/fs.ts:478](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L478)
+Defined in: [lib/fs.ts:481](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L481)
 
-读取文件并输出到 http 的 response
+读取文件并输出到 http 的 response，支持 GET 字节范围与条件请求
+
+Range 支持 start-end、start-、-length 及最多 16 段，请求头上限 8 KiB；相邻和重叠区间合并。
+有效区间返回 206，全部越界或区间过多返回 416；无效语法、未知单位和空文件忽略 Range。
+部分响应按原始文件字节流式输出，不进行动态压缩。If-Range 日期须匹配 Last-Modified，
+且文件不启用动态压缩、修改时间早于当前响应所在秒，否则退回完整响应；
+文件元数据生成的 ETag 为弱校验值，不接受其作为 If-Range 的强校验值。
+HEAD 忽略 Range 且不输出响应体。
 
 ## Parameters
 
@@ -118614,6 +118621,8 @@ http 响应对象
 
 `Promise`\<`void`\>
 
+输出完成或连接终止后无返回值
+
 lib/fs/functions/rename.md
 ---
 
@@ -118627,7 +118636,7 @@ lib/fs/functions/rename.md
 
 > **rename**(`oldPath`, `newPath`): `Promise`\<`boolean`\>
 
-Defined in: [lib/fs.ts:292](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L292)
+Defined in: [lib/fs.ts:240](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L240)
 
 重命名/移动文件文件夹
 
@@ -118662,7 +118671,7 @@ lib/fs/functions/rmdirDeep.md
 
 > **rmdirDeep**(`path`): `Promise`\<`boolean`\>
 
-Defined in: [lib/fs.ts:245](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L245)
+Defined in: [lib/fs.ts:200](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L200)
 
 Danger 危险：危险函数，尽量不要使用
 This is a danger function, please don't use it
@@ -118674,9 +118683,13 @@ This is a danger function, please don't use it
 
 `string`
 
+目录路径，不递归读取符号链接指向的目录
+
 ## Returns
 
 `Promise`\<`boolean`\>
+
+删除成功或根路径不是目录返回 true，删除失败返回 false
 
 lib/fs/functions/rmdir.md
 ---
@@ -118691,7 +118704,7 @@ lib/fs/functions/rmdir.md
 
 > **rmdir**(`path`): `Promise`\<`boolean`\>
 
-Defined in: [lib/fs.ts:227](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L227)
+Defined in: [lib/fs.ts:180](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L180)
 
 删除空目录
 
@@ -118720,7 +118733,7 @@ lib/fs/functions/stats.md
 
 > **stats**(`path`): `Promise`\<`Stats` \| `null`\>
 
-Defined in: [lib/fs.ts:168](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L168)
+Defined in: [lib/fs.ts:131](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L131)
 
 获取对象是否存在，存在则返回 stats 对象，否则返回 null
 
@@ -118749,7 +118762,7 @@ lib/fs/functions/symlink.md
 
 > **symlink**(`filePath`, `linkPath`, `type?`): `Promise`\<`boolean`\>
 
-Defined in: [lib/fs.ts:131](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L131)
+Defined in: [lib/fs.ts:98](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L98)
 
 把源文件创建一个 link
 
@@ -118790,7 +118803,7 @@ lib/fs/functions/unlink.md
 
 > **unlink**(`path`): `Promise`\<`boolean`\>
 
-Defined in: [lib/fs.ts:145](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L145)
+Defined in: [lib/fs.ts:112](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L112)
 
 删除一个文件
 

@@ -4,8 +4,10 @@
  * Last: 2020-3-11 22:21:51, 2022-12-29 01:18:25, 2023-12-13 20:50:09
  */
 import * as fs from 'fs';
+import * as crypto from 'crypto';
 import * as http from 'http';
 import * as http2 from 'http2';
+import * as stream from 'stream';
 import * as mime from '@litert/mime';
 import * as lText from './text.js';
 import * as lCore from './core.js';
@@ -21,65 +23,30 @@ export function getContent(path: string, options: BufferEncoding | {
     'end'?: number;
 }): Promise<string | null>;
 /**
- * --- 读取完整文件或一段 ---
+ * --- 读取完整文件或一段，区间包含首尾字节 ---
  * @param path 文件路径
  * @param options 编码或选项
+ * @returns 文件内容，读取失败返回 null
  */
 export async function getContent(path: string, options?: BufferEncoding | {
     'encoding'?: BufferEncoding;
     'start'?: number;
     'end'?: number;
 }): Promise<Buffer | string | null> {
-    if (typeof options === 'string') {
-        options = {
-            'encoding': options
-        };
-    }
-    else {
-        options ??= {};
-    }
-    const encoding = options.encoding;
-    const start = options.start;
-    const end = options.end;
-    if ((start !== undefined) || (end !== undefined)) {
-        return new Promise(function(resolve) {
-            const rs = createReadStream(path, {
-                'start': start,
-                'end': end
-            });
-            const data: Buffer[] = [];
-            rs.on('data', (chunk) => {
-                if (!(chunk instanceof Buffer)) {
-                    return;
-                }
-                data.push(chunk);
-            }).on('end', function() {
-                const buf = Buffer.concat(data);
-                if (encoding) {
-                    resolve(buf.toString());
-                }
-                else {
-                    resolve(buf);
-                }
-            }).on('error', function() {
-                resolve(null);
-            });
-        });
-    }
-    else {
-        try {
-            if (encoding) {
-                return await fs.promises.readFile(path, {
-                    'encoding': encoding
-                });
-            }
-            else {
-                return await fs.promises.readFile(path);
-            }
+    const { encoding, start, end } = typeof options === 'string' ? { 'encoding': options } : options ?? {};
+    try {
+        if (start === undefined && end === undefined) {
+            return await fs.promises.readFile(path, { encoding });
         }
-        catch {
-            return null;
+        const data: Buffer[] = [];
+        for await (const chunk of createReadStream(path, { start, end }) as AsyncIterable<Buffer>) {
+            data.push(chunk);
         }
+        const content = Buffer.concat(data);
+        return encoding ? content.toString(encoding) : content;
+    }
+    catch {
+        return null;
     }
 }
 
@@ -143,22 +110,18 @@ export async function symlink(filePath: string, linkPath: string, type?: 'dir' |
  * @param path 要删除的文件路径
  */
 export async function unlink(path: string): Promise<boolean> {
-    for (let i = 0; i <= 2; ++i) {
+    for (let i = 0; i < 4; ++i) {
         try {
             await fs.promises.unlink(path);
             return true;
         }
         catch {
-            await lCore.sleep(250);
+            if (i < 3) {
+                await lCore.sleep(250);
+            }
         }
     }
-    try {
-        await fs.promises.unlink(path);
-        return true;
-    }
-    catch {
-        return false;
-    }
+    return false;
 }
 
 /**
@@ -180,10 +143,7 @@ export async function stats(path: string): Promise<fs.Stats | null> {
  */
 export async function isDir(path: string): Promise<fs.Stats | false> {
     const pstats = await stats(path);
-    if (!pstats?.isDirectory()) {
-        return false;
-    }
-    return pstats;
+    return pstats?.isDirectory() ? pstats : false;
 }
 
 /**
@@ -192,10 +152,7 @@ export async function isDir(path: string): Promise<fs.Stats | false> {
  */
 export async function isFile(path: string): Promise<fs.Stats | false> {
     const pstats = await stats(path);
-    if (!pstats?.isFile()) {
-        return false;
-    }
-    return pstats;
+    return pstats?.isFile() ? pstats : false;
 }
 
 /**
@@ -204,10 +161,6 @@ export async function isFile(path: string): Promise<fs.Stats | false> {
  * @param mode 权限
  */
 export async function mkdir(path: string, mode: number = 0o755): Promise<boolean> {
-    if (await isDir(path)) {
-        return true;
-    }
-    // --- 深度创建目录 ---
     try {
         await fs.promises.mkdir(path, {
             'recursive': true,
@@ -241,29 +194,23 @@ export async function rmdir(path: string): Promise<boolean> {
  * --- Danger 危险：危险函数，尽量不要使用 ---
  * --- This is a danger function, please don't use it ---
  * --- 删除一个非空目录 ---
+ * @param path 目录路径，不递归读取符号链接指向的目录
+ * @returns 删除成功或根路径不是目录返回 true，删除失败返回 false
  */
 export async function rmdirDeep(path: string): Promise<boolean> {
+    // --- 去掉末尾斜线再用 lstat 检查，避免目录链接被跟随 ---
+    if (await isDir(path.replace(/\/+$/, '') || path) === false) {
+        return true;
+    }
     if (!path.endsWith('/')) {
         path += '/';
     }
     const list = await readDir(path);
     for (const item of list) {
-        const stat = await stats(item.name);
-        if (!stat) {
+        const target = path + item.name;
+        const result = item.isDirectory() ? await rmdirDeep(target) : await unlink(target);
+        if (!result) {
             return false;
-        }
-        if (stat.isDirectory()) {
-            // --- 目录 ---
-            const rtn = await rmdirDeep(path + item.name);
-            if (!rtn) {
-                return false;
-            }
-        }
-        else {
-            const rtn = await unlink(path + item.name);
-            if (!rtn) {
-                return false;
-            }
         }
     }
     return rmdir(path);
@@ -305,26 +252,12 @@ export async function rename(oldPath: string, newPath: string): Promise<boolean>
  */
 export async function readDir(path: string, encoding?: BufferEncoding): Promise<fs.Dirent[]> {
     try {
-        const list: fs.Dirent[] = [];
-        const dlist = await fs.promises.readdir(path, {
+        const list = await fs.promises.readdir(path, {
             'encoding': encoding,
             'withFileTypes': true
         });
-        for (const item of dlist) {
-            if (item.name === '.' || item.name === '..') {
-                continue;
-            }
-            list.push(item);
-        }
-        // --- 将 list 根据先目录后文件排序，如果是同是目录或文件，则以名称排序 ---
-        list.sort((a, b) => {
-            // --- 目录排在文件前面 ---
-            if (a.isDirectory() && !b.isDirectory()) return -1;
-            if (!a.isDirectory() && b.isDirectory()) return 1;
-            // --- 同类型按名称排序 ---
-            return a.name.localeCompare(b.name);
-        });
-        return list;
+        // --- 目录优先，同类型按名称排序；readdir 本身不返回 . 和 .. ---
+        return list.sort((a, b) => Number(b.isDirectory()) - Number(a.isDirectory()) || a.name.localeCompare(b.name));
     }
     catch {
         return [];
@@ -353,13 +286,11 @@ export async function copyFolder(from: string, to: string, ignore: RegExp[] = []
             if (r === -1) {
                 return r;
             }
-            else {
-                num += r;
-            }
+            num += r;
         }
         else if (item.isFile()) {
             // --- 先判断本文件是否被排除 ---
-            if (ignore.length > 0 && lText.match(item.name, ignore)) {
+            if (lText.match(item.name, ignore)) {
                 continue;
             }
             if (!checkTo) {
@@ -404,21 +335,7 @@ export function createReadStream(path: string, options?: BufferEncoding | {
     'start'?: number;
     'end'?: number;
 }): fs.ReadStream {
-    if (typeof options === 'string') {
-        options = {
-            'encoding': options
-        };
-    }
-    else {
-        options ??= {};
-    }
-    return fs.createReadStream(path, {
-        'flags': options.flags,
-        'encoding': options.encoding,
-        'autoClose': options.autoClose,
-        'start': options.start,
-        'end': options.end
-    });
+    return fs.createReadStream(path, typeof options === 'string' ? { 'encoding': options } : options);
 }
 
 /**
@@ -451,29 +368,114 @@ export function createWriteStream(path: string, options?: BufferEncoding | {
     'autoClose'?: boolean;
     'start'?: number;
 }): fs.WriteStream {
-    if (typeof options === 'string') {
-        options = {
-            'encoding': options
-        };
-    }
-    else {
-        options ??= {};
-    }
-    return fs.createWriteStream(path, {
-        'flags': options.flags,
-        'encoding': options.encoding,
-        'mode': options.mode,
-        'autoClose': options.autoClose,
-        'start': options.start
-    });
+    return fs.createWriteStream(path, typeof options === 'string' ? { 'encoding': options } : options);
+}
+
+/** --- 文件字节区间，包含首尾字节 --- */
+interface IFileRange {
+    'start': number;
+    'end': number;
+    'order': number;
 }
 
 /**
- * --- 读取文件并输出到 http 的 response ---
+ * --- 解析并合并字节区间，限制多段请求的读取开销 ---
+ * @param value Range 请求头
+ * @param size 文件字节数
+ * @returns 区间列表；false 表示全部越界或区间过多；null 表示忽略请求头
+ */
+function parseFileRanges(value: string, size: number): IFileRange[] | false | null {
+    if (!/^bytes=/i.test(value) || size === 0 || !Number.isSafeInteger(size)) {
+        return null;
+    }
+    const values = value.slice(6).split(',');
+    // --- 防止客户端利用大量小区间放大文件读取与响应开销 ---
+    if (value.length > 8192 || values.length > 16) {
+        return false;
+    }
+    const total = BigInt(size);
+    const ranges: IFileRange[] = [];
+    let count = 0;
+    for (const item of values) {
+        const part = item.trim();
+        if (part === '') {
+            continue;
+        }
+        const match = /^(\d*)-(\d*)$/.exec(part);
+        if (!match || match[1] === '' && match[2] === '') {
+            return null;
+        }
+        ++count;
+        // --- 先以 BigInt 解析，避免超大偏移被浮点取整后读错字节 ---
+        const start = match[1] !== '' ? BigInt(match[1]) : total - BigInt(match[2]);
+        const end = match[1] !== '' && match[2] !== '' ? BigInt(match[2]) : total - 1n;
+        if (match[1] !== '' && match[2] !== '' && end < start) {
+            return null;
+        }
+        if (start >= total) {
+            continue;
+        }
+        ranges.push({
+            'start': Number(start < 0n ? 0n : start),
+            'end': Number(end >= total ? total - 1n : end),
+            'order': count
+        });
+    }
+    if (count === 0) {
+        return null;
+    }
+    if (ranges.length === 0) {
+        return false;
+    }
+    ranges.sort((a, b) => a.start - b.start);
+    const merged: IFileRange[] = [];
+    for (const range of ranges) {
+        const previous = merged[merged.length - 1];
+        if (previous && range.start <= previous.end + 1) {
+            previous.end = Math.max(previous.end, range.end);
+            previous.order = Math.min(previous.order, range.order);
+        }
+        else {
+            merged.push(range);
+        }
+    }
+    return merged.sort((a, b) => a.order - b.order);
+}
+
+/**
+ * --- 逐段读取 multipart 响应，保持背压且在取消时关闭当前文件流 ---
+ * @param path 文件路径
+ * @param ranges 文件区间
+ * @param headers 每段的 MIME 头
+ * @param footer 结束边界
+ * @returns multipart 数据流
+ */
+async function* readFileRanges(
+    path: string, ranges: IFileRange[], headers: Buffer[], footer: Buffer
+): AsyncGenerator<Buffer> {
+    for (let i = 0; i < ranges.length; ++i) {
+        yield headers[i];
+        yield* createReadStream(path, ranges[i]) as AsyncIterable<Buffer>;
+        yield Buffer.from('\r\n');
+    }
+    yield footer;
+}
+
+/**
+ * --- 读取文件并输出到 http 的 response，支持 GET 字节范围与条件请求 ---
+ *
+ * Range 支持 start-end、start-、-length 及最多 16 段，请求头上限 8 KiB；相邻和重叠区间合并。
+ * 有效区间返回 206，全部越界或区间过多返回 416；无效语法、未知单位和空文件忽略 Range。
+ * 部分响应按原始文件字节流式输出，不进行动态压缩。If-Range 日期须匹配 Last-Modified，
+ * 且文件不启用动态压缩、修改时间早于当前响应所在秒，否则退回完整响应；
+ * 文件元数据生成的 ETag 为弱校验值，不接受其作为 If-Range 的强校验值。
+ * HEAD 忽略 Range 且不输出响应体。
+ *
  * @param path 文件绝对路径
  * @param req http 请求对象
  * @param res http 响应对象
  * @param stat 文件的 stat（如果有）
+ * @returns 输出完成或连接终止后无返回值
  */
 export async function readToResponse(path: string,
     req: http2.Http2ServerRequest | http.IncomingMessage,
@@ -485,7 +487,7 @@ export async function readToResponse(path: string,
         const content = '<h1>404 Not found</h1><hr>Kebab';
         res.setHeader('content-length', Buffer.byteLength(content));
         lCore.writeHead(res, 404);
-        res.end(content);
+        res.end(req.method === 'HEAD' ? '' : content);
         return;
     }
     // --- 判断缓存以及 MIME 和编码 ---
@@ -495,44 +497,110 @@ export async function readToResponse(path: string,
     if (mimeData.mime.startsWith('text/') || ['json', 'xml', 'svg', 'js', 'mjs', 'map', 'webmanifest'].includes(mimeData.extension)) {
         charset = '; charset=utf-8';
     }
+    const hash = `W/"${stat.size.toString(16)}-${stat.mtime.getTime().toString(16)}"`;
+    const lastModified = stat.mtime.toUTCString();
+    const modifiedTime = Date.parse(lastModified);
+    const canCompress = mimeData.compressible && stat.size >= 1024;
+    res.setHeader('etag', hash);
+    res.setHeader('last-modified', lastModified);
+    res.setHeader('accept-ranges', 'bytes');
+    if (canCompress) {
+        const vary = res.getHeader('vary');
+        const values = (Array.isArray(vary) ? vary.join(',') : String(vary ?? '')).split(',').map((item) => item.trim()).filter(Boolean);
+        if (!values.some((item) => item === '*' || item.toLowerCase() === 'accept-encoding')) {
+            values.push('Accept-Encoding');
+            res.setHeader('vary', values.join(', '));
+        }
+    }
     // --- 这些文件可能需要缓存 ---
     if (['htm', 'html', 'css', 'js', 'mjs', 'xml', 'jpg', 'jpeg', 'svg', 'gif', 'png', 'json'].includes(mimeData.extension)) {
         /** --- 静态文件默认缓存秒数 --- */
         const cacheTTL = 600;
-        const hash = `W/"${stat.size.toString(16)}-${stat.mtime.getTime().toString(16)}"`;
-        const lastModified = stat.mtime.toUTCString();
-        res.setHeader('etag', hash);
         res.setHeader('expires', new Date(Date.now() + cacheTTL * 1_000).toUTCString());
         res.setHeader('cache-control', 'public, max-age=' + cacheTTL.toString());
-        // --- 判断返回 304 吗 ---
-        const noneMatch = req.headers['if-none-match'];
-        const modifiedSince = req.headers['if-modified-since'];
-        if ((hash === noneMatch) && (lastModified === modifiedSince)) {
-            lCore.writeHead(res, 304);
-            res.end();
-            return;
-        }
-        res.setHeader('last-modified', lastModified);
     }
     else {
         res.setHeader('cache-control', 'no-cache, must-revalidate');
     }
-    // --- 设置 type ---
-    res.setHeader('content-type', mimeData.mime + charset);
+    // --- 条件请求优先于 Range；弱 ETag 只能用于缓存验证，不能用于 If-Match ---
+    const match = req.headers['if-match'];
+    const unmodifiedSince = req.headers['if-unmodified-since'];
+    if (match !== undefined ? match.trim() !== '*' : unmodifiedSince !== undefined && modifiedTime > Date.parse(unmodifiedSince)) {
+        res.setHeader('content-length', 0);
+        lCore.writeHead(res, 412);
+        res.end();
+        return;
+    }
+    const noneMatch = req.headers['if-none-match'];
+    const modifiedSince = req.headers['if-modified-since'];
+    const isRead = req.method === 'GET' || req.method === 'HEAD';
+    const unchanged = noneMatch !== undefined ? noneMatch.trim() === '*' || noneMatch.split(',').some((item) => item.trim().replace(/^W\//, '') === hash.slice(2)) :
+        isRead && modifiedSince !== undefined && modifiedTime <= Date.parse(modifiedSince);
+    if (unchanged) {
+        if (!isRead) {
+            res.setHeader('content-length', 0);
+        }
+        lCore.writeHead(res, isRead ? 304 : 412);
+        res.end();
+        return;
+    }
+    const contentType = mimeData.mime + charset;
+    res.setHeader('content-type', contentType);
+    const rangeHeader = req.headers['range'];
+    const ifRange = req.headers['if-range'];
+    // --- 日期必须精确匹配且至少早一秒；压缩与原始字节共享的日期不能作强校验，避免跨编码续传 ---
+    const rangeMatches = ifRange === undefined || typeof ifRange === 'string' && !ifRange.includes('"') &&
+        Date.parse(ifRange) === modifiedTime && modifiedTime <= Date.now() - 1_000 && !canCompress;
+    const ranges = req.method === 'GET' && rangeHeader !== undefined &&
+        rangeMatches ? parseFileRanges(rangeHeader, stat.size) : null;
+    if (ranges === false) {
+        res.setHeader('content-range', `bytes */${stat.size}`);
+        res.setHeader('content-length', 0);
+        lCore.writeHead(res, 416);
+        res.end();
+        return;
+    }
     // --- 判断客户端支持的压缩模式 ---
     const encoding = req.headers['accept-encoding'] ?? '';
-    if (mimeData.compressible && (stat.size >= 1024)) {
+    if (ranges === null && canCompress && encoding !== '') {
         // --- 压缩 ---
         const compress = await lZlib.compress(encoding, await getContent(path));
         if (compress) {
             res.setHeader('content-encoding', compress.type);
             res.setHeader('content-length', Buffer.byteLength(compress.buffer));
-            res.end(compress.buffer);
+            lCore.writeHead(res, 200);
+            res.end(req.method === 'HEAD' ? '' : compress.buffer);
             return;
         }
     }
-    // --- 不压缩 ---
-    res.setHeader('content-length', stat.size);
-    lCore.writeHead(res, 200);
-    await pipe(path, res instanceof http2.Http2ServerResponse ? (res.stream ?? res) : res);
+    let headers: Buffer[] = [];
+    let footer = Buffer.alloc(0);
+    if (ranges !== null && ranges.length > 1) {
+        const boundary = `kebab-${crypto.randomBytes(16).toString('hex')}`;
+        headers = ranges.map((range) => Buffer.from(`--${boundary}\r\nContent-Type: ${contentType}\r\nContent-Range: bytes ${range.start}-${range.end}/${stat.size}\r\n\r\n`));
+        footer = Buffer.from(`--${boundary}--\r\n`);
+        res.setHeader('content-type', `multipart/byteranges; boundary=${boundary}`);
+        res.setHeader('content-length', ranges.reduce((length, range, i) => length + headers[i].length + (range.end - range.start + 1) + 2, footer.length));
+    }
+    else if (ranges !== null) {
+        res.setHeader('content-range', `bytes ${ranges[0].start}-${ranges[0].end}/${stat.size}`);
+        res.setHeader('content-length', ranges[0].end - ranges[0].start + 1);
+    }
+    else {
+        res.setHeader('content-length', stat.size);
+    }
+    lCore.writeHead(res, ranges === null ? 200 : 206);
+    if (req.method === 'HEAD') {
+        res.end();
+        return;
+    }
+    const source = ranges !== null && ranges.length > 1 ?
+        stream.Readable.from(readFileRanges(path, ranges, headers, footer)) : createReadStream(path, ranges?.[0]);
+    try {
+        await stream.promises.pipeline(source, res instanceof http2.Http2ServerResponse ? (res.stream ?? res) : res);
+    }
+    catch {
+        // --- 已提交响应头后不能再发送错误页；管道会关闭文件流及断开的响应 ---
+        res.destroy();
+    }
 }

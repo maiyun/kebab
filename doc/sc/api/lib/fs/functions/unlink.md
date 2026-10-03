@@ -8,7 +8,7 @@
 
 > **unlink**(`path`): `Promise`\<`boolean`\>
 
-Defined in: [lib/fs.ts:145](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L145)
+Defined in: [lib/fs.ts:112](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L112)
 
 删除一个文件
 
