@@ -8,7 +8,7 @@
 
 > **pipe**(`path`, `destination`, `options?`): `Promise`\<`boolean`\>
 
-Defined in: [lib/fs.ts:348](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L348)
+Defined in: [lib/fs.ts:347](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L347)
 
 读取文件写入到流，并等待写入完成
 

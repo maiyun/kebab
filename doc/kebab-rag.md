@@ -1589,7 +1589,7 @@ index/variables/VER.md
 
 # Variable: VER
 
-> `const` **VER**: `"9.20.1"` = `'9.20.1'`
+> `const` **VER**: `"9.21.0"` = `'9.21.0'`
 
 Defined in: [index.ts:10](https://github.com/maiyunnet/kebab/blob/master/index.ts#L10)
 
@@ -118073,7 +118073,7 @@ lib/fs/functions/chmod.md
 
 > **chmod**(`path`, `mod`): `Promise`\<`boolean`\>
 
-Defined in: [lib/fs.ts:225](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L225)
+Defined in: [lib/fs.ts:224](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L224)
 
 修改权限
 
@@ -118108,7 +118108,7 @@ lib/fs/functions/copyFile.md
 
 > **copyFile**(`src`, `dest`): `Promise`\<`boolean`\>
 
-Defined in: [lib/fs.ts:317](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L317)
+Defined in: [lib/fs.ts:316](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L316)
 
 复制文件
 
@@ -118143,7 +118143,7 @@ lib/fs/functions/copyFolder.md
 
 > **copyFolder**(`from`, `to`, `ignore?`): `Promise`\<`number`\>
 
-Defined in: [lib/fs.ts:274](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L274)
+Defined in: [lib/fs.ts:273](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L273)
 
 复制文件夹里的内容到另一个地方，失败不会回滚
 
@@ -118184,7 +118184,7 @@ lib/fs/functions/createReadStream.md
 
 > **createReadStream**(`path`, `options?`): `ReadStream`
 
-Defined in: [lib/fs.ts:332](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L332)
+Defined in: [lib/fs.ts:331](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L331)
 
 创建读取文件的流
 
@@ -118219,7 +118219,7 @@ lib/fs/functions/createWriteStream.md
 
 > **createWriteStream**(`path`, `options?`): `WriteStream`
 
-Defined in: [lib/fs.ts:365](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L365)
+Defined in: [lib/fs.ts:364](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L364)
 
 创建写入文件的流
 
@@ -118418,7 +118418,7 @@ lib/fs/functions/pipe.md
 
 > **pipe**(`path`, `destination`, `options?`): `Promise`\<`boolean`\>
 
-Defined in: [lib/fs.ts:348](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L348)
+Defined in: [lib/fs.ts:347](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L347)
 
 读取文件写入到流，并等待写入完成
 
@@ -118512,7 +118512,7 @@ lib/fs/functions/readDir.md
 
 > **readDir**(`path`, `encoding?`): `Promise`\<`Dirent`\<`string`\>[]\>
 
-Defined in: [lib/fs.ts:254](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L254)
+Defined in: [lib/fs.ts:253](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L253)
 
 获取文件夹下文件列表
 
@@ -118580,7 +118580,7 @@ lib/fs/functions/readToResponse.md
 
 > **readToResponse**(`path`, `req`, `res`, `stat?`): `Promise`\<`void`\>
 
-Defined in: [lib/fs.ts:481](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L481)
+Defined in: [lib/fs.ts:480](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L480)
 
 读取文件并输出到 http 的 response，支持 GET 字节范围与条件请求
 
@@ -118636,7 +118636,7 @@ lib/fs/functions/rename.md
 
 > **rename**(`oldPath`, `newPath`): `Promise`\<`boolean`\>
 
-Defined in: [lib/fs.ts:240](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L240)
+Defined in: [lib/fs.ts:239](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L239)
 
 重命名/移动文件文件夹
 

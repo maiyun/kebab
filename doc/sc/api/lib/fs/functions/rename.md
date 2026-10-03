@@ -8,7 +8,7 @@
 
 > **rename**(`oldPath`, `newPath`): `Promise`\<`boolean`\>
 
-Defined in: [lib/fs.ts:240](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L240)
+Defined in: [lib/fs.ts:239](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L239)
 
 重命名/移动文件文件夹
 

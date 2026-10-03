@@ -8,7 +8,7 @@
 
 > **readToResponse**(`path`, `req`, `res`, `stat?`): `Promise`\<`void`\>
 
-Defined in: [lib/fs.ts:481](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L481)
+Defined in: [lib/fs.ts:480](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L480)
 
 读取文件并输出到 http 的 response，支持 GET 字节范围与条件请求
 
