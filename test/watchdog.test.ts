@@ -6,6 +6,7 @@ import * as path from 'node:path';
 import * as nodeTest from 'node:test';
 import * as timers from 'node:timers/promises';
 import * as workerThreads from 'node:worker_threads';
+import type { ISnapshot } from '#kebab/sys/monitor.js';
 
 /** --- Worker 返回的实际诊断结果 --- */
 interface IDiagnostic {
@@ -26,6 +27,99 @@ function burnCpu(duration: number): void {
     while (process.hrtime.bigint() < end) {
         Math.sqrt(Number(process.hrtime.bigint() % 10_000n));
     }
+}
+
+for (const format of [undefined, 'jsonl', 'csv'] as const) {
+    await nodeTest.test(`watchdog independently writes compatible ${format ?? 'default JSONL'} logs`, async () => {
+        // --- 目录进入日志消息，逗号和双引号用于验证真实写盘的转义 ---
+        const directory = await fs.mkdtemp(path.join(os.tmpdir(), 'kebab-watchdog-log,"-'));
+        const buffer = new SharedArrayBuffer(40);
+        const view = new BigInt64Array(buffer);
+        Atomics.store(view, 0, process.hrtime.bigint() / 1_000_000n);
+        // --- 跳过 Inspector；只验证主线程阻塞时 Worker 独立写日志 ---
+        Atomics.store(view, 2, 1n);
+        const worker = new workerThreads.Worker(new URL('../sys/monitor/watchdog.js', import.meta.url), {
+            'workerData': {
+                buffer, 'logDir': directory, 'logFormat': format, 'pid': process.pid,
+                'threshold': 100, 'interval': 20, 'cooldown': 30, 'profileDuration': 100, 'requests': [],
+            },
+        });
+        const heartbeatTimer = setInterval(() => {
+            Atomics.store(view, 0, process.hrtime.bigint() / 1_000_000n);
+        }, 20);
+        try {
+            await events.once(worker, 'online');
+            await timers.setTimeout(100);
+            Atomics.store(view, 0, process.hrtime.bigint() / 1_000_000n);
+            const blockStart = Date.now();
+            burnCpu(600);
+            const blockEnd = Date.now();
+            const root = path.join(directory, 'system-monitor');
+            const files = await fs.readdir(root, { 'recursive': true });
+            const logFiles = files.filter(file => /\.(jsonl|csv)$/.test(file));
+            assert.equal(logFiles.length, 1);
+            const file = path.join(root, logFiles[0]);
+            assert.ok(file.endsWith(`.${format ?? 'jsonl'}`));
+            const stat = await fs.stat(file);
+            assert.ok(stat.mtimeMs >= blockStart && stat.mtimeMs < blockEnd,
+                'the log must be saved before the main-thread block ends');
+            assert.equal(stat.mode & 0o777, 0o600);
+            const lines = (await fs.readFile(file, 'utf8')).trimEnd().split('\n');
+            const fields = [
+                'time', 'unix', 'url', 'cookie', 'session', 'userAgent', 'realIp', 'cfIp', 'xIp',
+                'osMem', 'procMem', 'message',
+            ];
+            if (format === 'csv') {
+                assert.equal(lines[0], 'TIME,UNIX,URL,COOKIE,SESSION,USER_AGENT,REALIP,CFIP,XIP,OS,PROCESS,MESSAGE');
+                assert.ok(lines.length > 1);
+                for (const line of lines.slice(1)) {
+                    const values = [...line.matchAll(/"((?:[^"]|"")*)"(?:,|$)/g)]
+                        .map(match => match[1].replace(/""/g, '"'));
+                    assert.equal(values.length, 12);
+                    assert.equal(values[3], '');
+                    assert.equal(values[4], '{}');
+                    assert.ok(values[11].includes(`EVENT:${directory}`));
+                }
+            }
+            else {
+                assert.ok(lines.length > 0);
+                for (const line of lines) {
+                    const entry = JSON.parse(line) as Record<string, unknown>;
+                    assert.deepEqual(Object.keys(entry), fields);
+                    assert.deepEqual(entry.cookie, {});
+                    assert.deepEqual(entry.session, {});
+                    assert.equal(typeof entry.unix, 'number');
+                    assert.ok(String(entry.message).includes(`EVENT:${directory}`));
+                }
+            }
+            if (format === 'csv') {
+                // --- 模拟新采样携带重载后的格式；不重启 Worker，下次阻塞应写 JSONL ---
+                const snapshot: ISnapshot = {
+                    'pid': process.pid, 'time': Date.now(), 'cpuProcess': 0, 'cpuOs': 0,
+                    'mem': process.memoryUsage(), 'heap': { 'totalSize': 0, 'usedSize': 0, 'sizeLimit': 0 },
+                    'osMem': { 'total': os.totalmem(), 'free': os.freemem() },
+                    'eloopLag': 0, 'eloopMax': 0, 'activeRequests': [], 'activeCount': 0, 'recentRequests': [],
+                };
+                worker.postMessage({ 'type': 'snapshot', snapshot, 'logFormat': 'jsonl' });
+                await timers.setTimeout(100);
+                Atomics.store(view, 0, process.hrtime.bigint() / 1_000_000n);
+                burnCpu(600);
+                const updatedFiles = await fs.readdir(root, { 'recursive': true });
+                const jsonlFile = updatedFiles.find(name => name.endsWith('.jsonl'));
+                assert.ok(jsonlFile, 'the existing Worker must apply a reloaded log format');
+                const entries = (await fs.readFile(path.join(root, jsonlFile), 'utf8')).trimEnd().split('\n');
+                assert.ok(entries.length > 0);
+                const entry = JSON.parse(entries[0]) as Record<string, unknown>;
+                assert.deepEqual(Object.keys(entry), fields);
+                assert.ok(String(entry.message).includes(`EVENT:${directory}`));
+            }
+        }
+        finally {
+            clearInterval(heartbeatTimer);
+            await worker.terminate();
+            await fs.rm(directory, { 'recursive': true, 'force': true });
+        }
+    });
 }
 
 await nodeTest.test('watchdog captures real blocking work and a second event within cooldown', async () => {

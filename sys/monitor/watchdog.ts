@@ -8,6 +8,7 @@
 import * as workerThreads from 'worker_threads';
 import * as fs from 'fs';
 import * as path from 'path';
+import * as os from 'os';
 import * as inspector from 'inspector/promises';
 import type { IActiveRequest, ISnapshot, ISnapshotRequest } from '#kebab/sys/monitor.js';
 
@@ -15,6 +16,8 @@ import type { IActiveRequest, ISnapshot, ISnapshotRequest } from '#kebab/sys/mon
 interface IWatchdogData {
     'buffer': SharedArrayBuffer;
     'logDir': string;
+    /** --- 与 Core.log 一致的日志格式，未传入时使用 jsonl --- */
+    'logFormat'?: 'csv' | 'jsonl';
     'pid': number;
     'threshold': number;
     'cooldown': number;
@@ -24,7 +27,7 @@ interface IWatchdogData {
 }
 
 /** --- 主线程提供的上下文；CPU/RSS 和心跳仍由 Worker 独立采样 --- */
-type TWatchdogMessage = { 'type': 'snapshot'; 'snapshot': ISnapshot; } |
+type TWatchdogMessage = { 'type': 'snapshot'; 'snapshot': ISnapshot; 'logFormat': 'csv' | 'jsonl'; } |
     { 'type': 'request'; 'id': string; 'request': IActiveRequest; } |
     { 'type': 'complete'; 'id': string; 'request': ISnapshotRequest; } |
     { 'type': 'profile'; 'dir': string; 'ts': string; };
@@ -45,6 +48,7 @@ let lastTime = Number(process.hrtime.bigint() / 1_000_000n);
 workerThreads.parentPort?.on('message', (message: TWatchdogMessage) => {
     if (message.type === 'snapshot') {
         snapshot = message.snapshot;
+        data.logFormat = message.logFormat;
     }
     else if (message.type === 'request') {
         activeRequests.set(message.id, message.request);
@@ -75,7 +79,8 @@ function fmtTs(date: Date): string {
 }
 
 /**
- * --- 写入看门狗日志，文件系统失败时保留标准错误输出 ---
+ * --- 独立写入看门狗日志，格式和字段与 Core.log 一致，失败时保留标准错误输出 ---
+ * --- 不向主线程转发，也不加载 Core 的控制器、网络等依赖 ---
  * @param msg 日志内容
  * @returns 无返回值
  */
@@ -85,12 +90,35 @@ function writeLog(msg: string): void {
     const dir = path.join(data.logDir, 'system-monitor', ts.slice(0, 4), ts.slice(4, 6), ts.slice(6, 8));
     try {
         fs.mkdirSync(dir, { 'recursive': true, 'mode': 0o700 });
-        const file = path.join(dir, `${ts.slice(8, 10)}.csv`);
-        if (!fs.existsSync(file)) {
-            fs.writeFileSync(file, 'TIME,UNIX,MESSAGE\n', { 'mode': 0o600 });
+        const format = data.logFormat ?? 'jsonl';
+        const file = path.join(dir, `${ts.slice(8, 10)}.${format}`);
+        // --- Worker 没有单个请求上下文；内存使用 MB，保持日志字段可直接展示 ---
+        const entry = {
+            'time': `${ts.slice(8, 10)}:${ts.slice(10, 12)}:${ts.slice(12, 14)}`,
+            'unix': Math.floor(now.getTime() / 1000),
+            'url': '', 'cookie': {}, 'session': {}, 'userAgent': '',
+            'realIp': '', 'cfIp': '', 'xIp': '',
+            'osMem': `${Math.round((os.totalmem() - os.freemem()) / 1024 / 1024 * 100) / 100}MB`,
+            'procMem': `${Math.round(process.memoryUsage.rss() / 1024 / 1024 * 100) / 100}MB`,
+            'message': msg,
+        };
+        let content: string;
+        if (format === 'jsonl') {
+            content = JSON.stringify(entry) + '\n';
         }
-        const time = `${ts.slice(8, 10)}:${ts.slice(10, 12)}:${ts.slice(12, 14)}`;
-        fs.appendFileSync(file, `"${time}","${Math.floor(now.getTime() / 1000)}","${msg.replace(/"/g, '""')}"\n`);
+        else {
+            if (!fs.existsSync(file)) {
+                fs.writeFileSync(file,
+                    'TIME,UNIX,URL,COOKIE,SESSION,USER_AGENT,REALIP,CFIP,XIP,OS,PROCESS,MESSAGE\n',
+                    { 'mode': 0o600 });
+            }
+            const fields = [
+                entry.time, String(entry.unix), entry.url, '', '{}', 'No HTTP_USER_AGENT',
+                entry.realIp, entry.cfIp, entry.xIp, entry.osMem, entry.procMem, entry.message,
+            ];
+            content = fields.map(field => `"${field.replace(/"/g, '""')}"`).join(',') + '\n';
+        }
+        fs.appendFileSync(file, content, { 'mode': 0o600 });
     }
     catch (error: unknown) {
         process.stderr.write(`[MONITOR] Watchdog log failed: ${String(error)}\n`);

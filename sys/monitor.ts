@@ -424,6 +424,7 @@ function startWatchdog(): void {
             'workerData': {
                 'buffer': heartbeatBuffer,
                 'logDir': kebab.LOG_CWD,
+                'logFormat': lCore.globalConfig.logFormat ?? 'jsonl',
                 'pid': process.pid,
                 'threshold': watchdogThreshold,
                 'cooldown': WATCHDOG_COOLDOWN,
@@ -666,7 +667,8 @@ function check(): void {
     }
 
     const snapshot = createSnapshot(Math.round(cpuPercent * 100) / 100, cpuOs);
-    watchdog?.postMessage({ 'type': 'snapshot', snapshot });
+    // --- 采样时同步配置，框架 reload 后看门狗也使用当前日志格式 ---
+    watchdog?.postMessage({ 'type': 'snapshot', snapshot, 'logFormat': lCore.globalConfig.logFormat ?? 'jsonl' });
     eloopHistogram?.reset();
     // --- 调试暂停和同步诊断不能冒充业务阻塞，也不能连接暂停前后的异常计数 ---
     if (isDebugMode()) {

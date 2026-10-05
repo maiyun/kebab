@@ -22,10 +22,15 @@ class WatchdogMock extends events.EventEmitter {
 
     public static view: BigInt64Array;
 
+    public static logFormat: 'csv' | 'jsonl';
+
+    public static snapshotLogFormat: 'csv' | 'jsonl' | undefined;
+
     public constructor(_url: URL, opt: workerThreads.WorkerOptions) {
         super();
-        const data = opt.workerData as { 'buffer': SharedArrayBuffer; };
+        const data = opt.workerData as { 'buffer': SharedArrayBuffer; 'logFormat': 'csv' | 'jsonl'; };
         WatchdogMock.view = new BigInt64Array(data.buffer);
+        WatchdogMock.logFormat = data.logFormat;
         // --- 让重型诊断走显式 busy 分支，测试只控制资源采样及事件生命周期 ---
         Atomics.store(WatchdogMock.view, 2, 2n);
     }
@@ -35,9 +40,14 @@ class WatchdogMock extends events.EventEmitter {
         return;
     }
 
-    /** @returns 无返回值 */
-    public postMessage(): void {
-        return;
+    /**
+     * @param message 主线程发送的消息
+     * @returns 无返回值
+     */
+    public postMessage(message: { 'type': string; 'logFormat'?: 'csv' | 'jsonl'; }): void {
+        if (message.type === 'snapshot') {
+            WatchdogMock.snapshotLogFormat = message.logFormat;
+        }
     }
 
     /** @returns 退出码 */
@@ -68,6 +78,8 @@ await nodeTest.test('monitor independently confirms resources and preserves revi
     module.syncBuiltinESMExports();
     process.chdir(directory);
     const monitor = await import('#kebab/sys/monitor.js');
+    const core = await import('#kebab/lib/core.js');
+    const originalLogFormat = core.globalConfig.logFormat;
 
     /**
      * --- 输入一段真实采样窗口，单调时钟与系统时钟分别可控 ---
@@ -101,6 +113,19 @@ await nodeTest.test('monitor independently confirms resources and preserves revi
     }
 
     try {
+        await test.test('watchdog receives the configured framework log format', () => {
+            for (const format of ['jsonl', 'csv'] as const) {
+                core.globalConfig.logFormat = format;
+                assert.equal(monitor.start(), true);
+                assert.equal(WatchdogMock.logFormat, format);
+                const nextFormat = format === 'jsonl' ? 'csv' : 'jsonl';
+                core.globalConfig.logFormat = nextFormat;
+                advance(1);
+                assert.equal(WatchdogMock.snapshotLogFormat, nextFormat);
+                monitor.stop();
+            }
+            core.globalConfig.logFormat = originalLogFormat;
+        });
         await test.test('invalid options return false without starting monitoring', () => {
             for (const opt of [{ 'cpu': 0 }, { 'cpu': NaN }, { 'mem': -1 }, { 'eloop': 0 },
                 { 'duration': 0 }, { 'blocked': 0 }]) {
@@ -221,6 +246,7 @@ await nodeTest.test('monitor independently confirms resources and preserves revi
     }
     finally {
         monitor.stop();
+        core.globalConfig.logFormat = originalLogFormat;
         await readEvents();
         process.chdir(originalCwd);
         test.mock.restoreAll();
