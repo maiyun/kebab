@@ -38,6 +38,7 @@ Ai, Buffer, Captcha, Consistent, Core, Cron, Crypto, Db (MySQL, PostgreSQL), Dns
 
 - [快速开始](sc/quick-start.md)
 - [游标分页与 PostgreSQL 近似总数](sc/query-pagination.md)
+- [性能监控与异常复盘](sc/monitor.md)
 - [API 参考](sc/api/index.md)
 
 ## 部分特性

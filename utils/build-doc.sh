@@ -36,7 +36,7 @@ done
 
 # --- 定义额外的单文件列表 ---
 # extra_files=("doc/sc/quick-start.md" "doc/sc/another-single.md")
-extra_files=("doc/sc/quick-start.md" "doc/sc/query-pagination.md")
+extra_files=("doc/sc/quick-start.md" "doc/sc/query-pagination.md" "doc/sc/monitor.md")
 
 # --- 处理单文件 ---
 for f in "${extra_files[@]}"; do

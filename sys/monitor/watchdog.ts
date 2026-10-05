@@ -1,17 +1,17 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2026-02-08
- * Last: 2026-08-22
- * --- 看门狗 Worker 线程，独立事件循环监控主线程心跳 ---
- * --- 阻塞时通过 inspector.connectToMainThread() 远程抓取主线程 JS 调用栈和 CPU Profile ---
- * --- 看门狗必须最小依赖、最大自治，不引入项目库，确保主线程异常时仍能可靠运行 ---
+ * Last: 2026-10-05
+ * --- 独立线程监测主线程心跳，阻塞期间保存资源采样、请求、调用栈和 CPU Profile ---
+ * --- 只依赖 Node.js；主线程无法运行时，日志与 Inspector 超时仍可独立处理 ---
  */
 import * as workerThreads from 'worker_threads';
 import * as fs from 'fs';
 import * as path from 'path';
-import * as inspector from 'inspector';
+import * as inspector from 'inspector/promises';
+import type { IActiveRequest, ISnapshot, ISnapshotRequest } from '#kebab/sys/monitor.js';
 
-/** --- Worker 线程接收的配置数据 --- */
+/** --- Worker 配置，threshold/interval/profileDuration 单位 ms，cooldown 单位秒 --- */
 interface IWatchdogData {
     'buffer': SharedArrayBuffer;
     'logDir': string;
@@ -20,313 +20,325 @@ interface IWatchdogData {
     'cooldown': number;
     'interval': number;
     'profileDuration': number;
+    'requests': Array<[string, IActiveRequest]>;
 }
+
+/** --- 主线程提供的上下文；CPU/RSS 和心跳仍由 Worker 独立采样 --- */
+type TWatchdogMessage = { 'type': 'snapshot'; 'snapshot': ISnapshot; } |
+    { 'type': 'request'; 'id': string; 'request': IActiveRequest; } |
+    { 'type': 'complete'; 'id': string; 'request': ISnapshotRequest; } |
+    { 'type': 'profile'; 'dir': string; 'ts': string; };
 
 const data = workerThreads.workerData as IWatchdogData;
-const view = new Uint32Array(data.buffer);
+/** --- 0: 心跳 ms, 1: 调试, 2: Inspector 所有者（0-空闲,1-常规 Profile,2-阻塞 Profile）, 3: 同步诊断, 4: 已保存现场的心跳 --- */
+const view = new BigInt64Array(data.buffer);
+const activeRequests = new Map(data.requests);
+const recentRequests: ISnapshotRequest[] = [];
+const samples: Array<{ 'time': number; 'elapsed': number; 'cpu': number; 'rss': number; 'heartbeatLag': number; }> = [];
+let snapshot: ISnapshot | null = null;
+let lastAlertHeartbeat = 0n;
+let lastAlertTime = 0;
+let capturing = false;
+let lastCpu = process.cpuUsage();
+let lastTime = Number(process.hrtime.bigint() / 1_000_000n);
 
-/** --- 上次告警时间（秒级时间戳） --- */
-let lastAlertTime: number = 0;
-
-/** --- 是否正在诊断采集 --- */
-let capturing: boolean = false;
+workerThreads.parentPort?.on('message', (message: TWatchdogMessage) => {
+    if (message.type === 'snapshot') {
+        snapshot = message.snapshot;
+    }
+    else if (message.type === 'request') {
+        activeRequests.set(message.id, message.request);
+    }
+    else if (message.type === 'complete') {
+        activeRequests.delete(message.id);
+        recentRequests.push(message.request);
+        if (recentRequests.length > 100) {
+            recentRequests.shift();
+        }
+    }
+    else {
+        collectProfile(message.dir, message.ts).catch((error: unknown) => {
+            writeLog(`WATCHDOG: Unexpected profile failure: ${String(error)}`);
+        });
+    }
+});
 
 /**
- * --- 格式化时间戳为 YmdHis 字符串 ---
+ * --- 格式化本地时间，用于日志目录和文件名 ---
+ * @param date 要格式化的时间
+ * @returns YmdHis 字符串
  */
-function fmtTs(): string {
-    const d = new Date();
-    return String(d.getFullYear()) +
-        String(d.getMonth() + 1).padStart(2, '0') +
-        String(d.getDate()).padStart(2, '0') +
-        String(d.getHours()).padStart(2, '0') +
-        String(d.getMinutes()).padStart(2, '0') +
-        String(d.getSeconds()).padStart(2, '0');
+function fmtTs(date: Date): string {
+    return String(date.getFullYear()) + String(date.getMonth() + 1).padStart(2, '0') +
+        String(date.getDate()).padStart(2, '0') + String(date.getHours()).padStart(2, '0') +
+        String(date.getMinutes()).padStart(2, '0') + String(date.getSeconds()).padStart(2, '0');
 }
 
 /**
- * --- 格式化当前时间为 HH:mm:ss ---
- */
-function fmtTime(): string {
-    const d = new Date();
-    return String(d.getHours()).padStart(2, '0') + ':' +
-        String(d.getMinutes()).padStart(2, '0') + ':' +
-        String(d.getSeconds()).padStart(2, '0');
-}
-
-/**
- * --- 写入日志到 CSV 文件 ---
- * @param msg 日志消息
+ * --- 写入看门狗日志，文件系统失败时保留标准错误输出 ---
+ * @param msg 日志内容
+ * @returns 无返回值
  */
 function writeLog(msg: string): void {
-    const d = new Date();
-    const dir = path.join(
-        data.logDir, 'system-monitor',
-        String(d.getFullYear()),
-        String(d.getMonth() + 1).padStart(2, '0'),
-        String(d.getDate()).padStart(2, '0'),
-    );
+    const now = new Date();
+    const ts = fmtTs(now);
+    const dir = path.join(data.logDir, 'system-monitor', ts.slice(0, 4), ts.slice(4, 6), ts.slice(6, 8));
     try {
-        fs.mkdirSync(dir, { 'recursive': true, 'mode': 0o777 });
-        const h = String(d.getHours()).padStart(2, '0');
-        const file = path.join(dir, h + '.csv');
+        fs.mkdirSync(dir, { 'recursive': true, 'mode': 0o700 });
+        const file = path.join(dir, `${ts.slice(8, 10)}.csv`);
         if (!fs.existsSync(file)) {
-            fs.writeFileSync(
-                file, 'TIME,UNIX,MESSAGE\n', { 'mode': 0o777 },
-            );
+            fs.writeFileSync(file, 'TIME,UNIX,MESSAGE\n', { 'mode': 0o600 });
         }
-        const now = Math.floor(Date.now() / 1000);
-        fs.appendFileSync(
-            file,
-            `"${fmtTime()}","${now}","${msg}"\n`,
-        );
+        const time = `${ts.slice(8, 10)}:${ts.slice(10, 12)}:${ts.slice(12, 14)}`;
+        fs.appendFileSync(file, `"${time}","${Math.floor(now.getTime() / 1000)}","${msg.replace(/"/g, '""')}"\n`);
     }
-    catch {
-        // --- 文件系统不可用时无法做更多处理 ---
+    catch (error: unknown) {
+        process.stderr.write(`[MONITOR] Watchdog log failed: ${String(error)}\n`);
     }
 }
 
 /**
- * --- 通过 Inspector 远程抓取主线程调用栈和 CPU Profile ---
- * @param blockSec 阻塞秒数
+ * --- 写入权限受限的诊断文件 ---
+ * @param dir 诊断目录
+ * @param name 文件名
+ * @param content 文件内容
+ * @returns 是否保存成功
  */
-function captureDiag(blockSec: number): void {
+function writeFile(dir: string, name: string, content: string): boolean {
+    try {
+        fs.writeFileSync(path.join(dir, name), content, { 'mode': 0o600 });
+        fs.chmodSync(path.join(dir, name), 0o600);
+        return true;
+    }
+    catch (error: unknown) {
+        process.stderr.write(`[MONITOR] Watchdog diagnostic write failed: ${String(error)}\n`);
+        return false;
+    }
+}
+
+/**
+ * --- 按主线程请求采集 Profile，开始、停止、超时和文件写入都不依赖主线程事件循环 ---
+ * @param dir 主线程已创建的诊断目录
+ * @param ts 唯一采集时间标识
+ * @returns 无返回值，独立保存结果并通知主线程
+ */
+async function collectProfile(dir: string, ts: string): Promise<void> {
+    const file = `cpu-${ts}.cpuprofile`;
+    const result = { 'file': file, 'saved': false, 'errors': [] as string[] };
+    if (Atomics.compareExchange(view, 2, 0n, 1n) !== 0n) {
+        result.errors.push('Inspector is already collecting a profile.');
+        const recorded = writeFile(dir, `profile-${ts}.json`, JSON.stringify(result, null, 2));
+        workerThreads.parentPort?.postMessage({ 'type': 'profile', ...result, recorded });
+        return;
+    }
+    const session = new inspector.Session();
+    let timedOut = false;
+    const timeout = setTimeout(() => {
+        timedOut = true;
+        session.disconnect();
+    }, data.profileDuration + 10_000);
+    try {
+        session.connectToMainThread();
+        await session.post('Profiler.enable');
+        await session.post('Profiler.start');
+        await new Promise<void>(resolve => setTimeout(resolve, data.profileDuration));
+        const { profile } = await session.post('Profiler.stop');
+        result.saved = writeFile(dir, file, JSON.stringify(profile));
+        if (!result.saved) {
+            result.errors.push('Failed to save CPU profile.');
+        }
+    }
+    catch (error: unknown) {
+        result.errors.push(timedOut ? 'Inspector profile collection timed out.' : String(error));
+    }
+    finally {
+        clearTimeout(timeout);
+        session.disconnect();
+        Atomics.compareExchange(view, 2, 1n, 0n);
+        const recorded = writeFile(dir, `profile-${ts}.json`, JSON.stringify(result, null, 2));
+        if (!recorded) {
+            writeLog('WATCHDOG: Failed to save CPU profile result.');
+        }
+        workerThreads.parentPort?.postMessage({ 'type': 'profile', ...result, recorded });
+    }
+}
+
+/**
+ * --- 保存阻塞现场；暂停后立即恢复，再写磁盘，整个会话有统一超时和释放出口 ---
+ * @param blockMs 心跳中断时间 ms
+ * @param heartbeat 这次阻塞前的心跳，用于区分连续阻塞和新事件
+ * @returns 无返回值，采集结果保留在 blocked-event.json
+ */
+async function captureDiag(blockMs: number, heartbeat: bigint): Promise<void> {
     if (capturing) {
         return;
     }
     capturing = true;
-    const ts = fmtTs();
-    const diagDir = path.join(
-        data.logDir, 'monitor', ts.slice(0, 4), ts.slice(4, 6),
-        ts.slice(6, 8), `${ts.slice(8)}-pid-${data.pid}`,
-    );
-    const session = new inspector.Session();
-    try {
-        session.connectToMainThread();
+    const now = new Date();
+    const ts = fmtTs(now);
+    const id = `${ts}-${now.getTime()}`;
+    const dir = path.join(data.logDir, 'monitor', ts.slice(0, 4), ts.slice(4, 6), ts.slice(6, 8),
+        `${ts.slice(8)}-pid-${data.pid}-${now.getTime()}-blocked`);
+    const cpu = process.cpuUsage();
+    const rss = process.memoryUsage.rss();
+    const requests: ISnapshotRequest[] = [];
+    for (const req of activeRequests.values()) {
+        if (requests.length >= 100) {
+            break;
+        }
+        requests.push({
+            'url': req.url, 'method': req.method, 'duration': now.getTime() - req.start,
+            'cpuUser': cpu.user - req.startCpu.user, 'cpuSystem': cpu.system - req.startCpu.system,
+            'memDelta': rss - req.startMem,
+        });
     }
-    catch {
+    const record = {
+        'pid': data.pid, 'time': now.getTime(), 'heartbeat': Number(heartbeat), 'blockMs': blockMs,
+        'samples': [...samples], 'lastMainSnapshot': snapshot, 'activeRequests': requests, 'activeCount': activeRequests.size,
+        'recentRequests': recentRequests.filter(req => now.getTime() - (req.completedAt ?? 0) <= 60_000),
+        'status': 'pending', 'files': [] as string[], 'errors': [] as string[],
+    };
+    try {
+        fs.mkdirSync(dir, { 'recursive': true, 'mode': 0o700 });
+        fs.chmodSync(dir, 0o700);
+    }
+    catch (error: unknown) {
+        writeLog(`WATCHDOG: Failed to create diagnostic directory: ${String(error)}`);
         capturing = false;
         return;
     }
-    let didPause = false;
-    /** --- 10s 超时与 Debugger.enable 回调存在竞态，超时后 session 已断开，回调仍在断开的 session 上操作 --- */
-    let timedOut = false;
-    /** --- scriptId → URL 映射表 --- */
+    if (!writeFile(dir, 'blocked-event.json', JSON.stringify(record, null, 2))) {
+        capturing = false;
+        return;
+    }
+    writeLog(`WATCHDOG: Main thread heartbeat delayed ${blockMs}ms, PID:${data.pid}, EVENT:${dir}`);
+    if (Atomics.compareExchange(view, 2, 0n, 2n) !== 0n) {
+        record.status = 'skipped-busy';
+        lastAlertTime = Number(process.hrtime.bigint() / 1_000_000n) - data.cooldown * 1_000 + 5_000;
+        record.errors.push('Inspector is already collecting a profile.');
+        if (!writeFile(dir, 'blocked-event.json', JSON.stringify(record, null, 2))) {
+            writeLog('WATCHDOG: Failed to save Inspector busy result.');
+        }
+        capturing = false;
+        return;
+    }
+
+    const session = new inspector.Session();
     const scriptUrls: Record<string, string> = {};
-    const pauseTimeout = setTimeout(() => {
-        if (!didPause) {
-            timedOut = true;
-            try {
-                session.post('Debugger.resume');
-            }
-            catch {
-                // --- 忽略 ---
-            }
-            try {
-                session.post('Debugger.disable');
-            }
-            catch {
-                // --- 忽略 ---
-            }
-            try {
-                session.disconnect();
-            }
-            catch {
-                // --- 忽略 ---
-            }
-            capturing = false;
-        }
-    }, 10_000);
-    session.on('Debugger.scriptParsed', (msg) => {
-        scriptUrls[msg.params.scriptId] = msg.params.url ?? '';
+    let timedOut = false;
+    let finishPause: ((frames: inspector.Debugger.CallFrame[] | false) => void) | null = null;
+    const timeout = setTimeout(() => {
+        timedOut = true;
+        finishPause?.(false);
+        // --- 断开会话会使挂起的 post 失败，并释放我们设置的暂停状态 ---
+        session.disconnect();
+    }, data.profileDuration + 10_000);
+    session.on('Debugger.scriptParsed', (message) => {
+        scriptUrls[message.params.scriptId] = message.params.url;
     });
-    session.on('Debugger.paused', (msg) => {
-        if (timedOut) {
-            return;
-        }
-        didPause = true;
-        clearTimeout(pauseTimeout);
-        let stackLines: string[] = [];
+    try {
+        session.connectToMainThread();
+        // --- 先启动 Profile，避免等待调用栈时错过仍在执行的热点 ---
+        await session.post('Profiler.enable');
+        await session.post('Profiler.start');
+        const profileStarted = Number(process.hrtime.bigint() / 1_000_000n);
         try {
-            const frames = msg.params.callFrames;
-            stackLines = frames.map((f, i) => {
-                const url = f.url
-                    || scriptUrls[f.location.scriptId]
-                    || '';
-                const line = f.location.lineNumber + 1;
-                const col = (f.location.columnNumber ?? 0) + 1;
-                const name = f.functionName || '(anonymous)';
-                return `#${i} ${name} (${url}:${line}:${col})`;
+            await session.post('Debugger.enable');
+            const frames = await new Promise<inspector.Debugger.CallFrame[] | false>((resolve) => {
+                finishPause = resolve;
+                session.once('Debugger.paused', (message) => { resolve(message.params.callFrames); });
+                void session.post('Debugger.pause').catch(() => { resolve(false); });
             });
-        }
-        catch {
-            // --- 忽略堆栈解析错误 ---
-        }
-        session.post('Debugger.resume', (resumeErr) => {
-            if (resumeErr) {
-                // --- resume 失败仍尝试 disable 并断开，防止主线程卡死 ---
-                try {
-                    session.post('Debugger.disable');
-                }
-                catch {
-                    // --- 忽略 ---
-                }
-                try {
-                    session.disconnect();
-                }
-                catch {
-                    // --- 忽略 ---
-                }
-                capturing = false;
-                return;
-            }
-            session.post('Debugger.disable', () => {
-                // --- 写入堆栈文件 ---
-                try {
-                    fs.mkdirSync(diagDir, {
-                        'recursive': true, 'mode': 0o700,
-                    });
-                    fs.chmodSync(diagDir, 0o700);
-                    const content =
-                        `Event Loop Blocked: ${blockSec}s\n` +
-                        `Captured: ${new Date().toISOString()}\n` +
-                        `PID: ${data.pid}\n\n` +
-                        `Call Stack:\n${stackLines.join('\n')}\n`;
-                    fs.writeFileSync(
-                        path.join(
-                            diagDir,
-                            `blocked-stack-${ts}.txt`,
-                        ),
-                        content,
-                        { 'mode': 0o600 },
-                    );
-                    fs.chmodSync(
-                        path.join(diagDir, `blocked-stack-${ts}.txt`),
-                        0o600,
-                    );
-                }
-                catch {
-                    // --- 忽略 ---
-                }
-                // --- 采集 CPU Profile ---
-                collectProfile(session, diagDir, ts);
-            });
-        });
-    });
-    session.post('Debugger.enable', (err) => {
-        if (err || timedOut) {
-            clearTimeout(pauseTimeout);
-            if (!timedOut) {
-                session.disconnect();
-                capturing = false;
-            }
-            return;
-        }
-        try {
-            session.post('Debugger.pause', (err2) => {
-                if (err2 || timedOut) {
-                    clearTimeout(pauseTimeout);
-                    if (!timedOut) {
-                        try {
-                            session.post('Debugger.disable');
-                        }
-                        catch {
-                            // --- 忽略 ---
-                        }
-                        session.disconnect();
-                        capturing = false;
-                    }
-                }
-            });
-        }
-        catch {
-            clearTimeout(pauseTimeout);
-            try {
-                session.disconnect();
-            }
-            catch {
-                // --- 忽略 ---
-            }
-            capturing = false;
-        }
-    });
-}
-
-/**
- * --- 采集 CPU Profile ---
- * @param session Inspector 会话
- * @param diagDir 诊断输出目录
- * @param ts 时间戳字符串
- */
-function collectProfile(
-    session: inspector.Session, diagDir: string, ts: string,
-): void {
-    session.post('Profiler.enable', (err) => {
-        if (err) {
-            session.disconnect();
-            capturing = false;
-            return;
-        }
-        session.post('Profiler.start', (err2) => {
-            if (err2) {
-                session.post('Profiler.disable');
-                session.disconnect();
-                capturing = false;
-                return;
-            }
-            setTimeout(() => {
-                session.post('Profiler.stop', (err3, r) => {
-                    if (!err3 && r?.profile) {
-                        try {
-                            fs.writeFileSync(
-                                path.join(
-                                    diagDir,
-                                    `blocked-cpu-${ts}.cpuprofile`,
-                                ),
-                                JSON.stringify(r.profile),
-                                { 'mode': 0o600 },
-                            );
-                            fs.chmodSync(
-                                path.join(
-                                    diagDir,
-                                    `blocked-cpu-${ts}.cpuprofile`,
-                                ),
-                                0o600,
-                            );
-                        }
-                        catch {
-                            // --- 忽略 ---
-                        }
-                    }
-                    session.post('Profiler.disable');
-                    session.disconnect();
-                    capturing = false;
+            if (frames !== false && !timedOut) {
+                const lines = frames.map((frame, i) => {
+                    const url = frame.url || scriptUrls[frame.location.scriptId] || '';
+                    return `#${i} ${frame.functionName || '(anonymous)'} ` +
+                        `(${url}:${frame.location.lineNumber + 1}:${(frame.location.columnNumber ?? 0) + 1})`;
                 });
-            }, data.profileDuration);
-        });
-    });
+                await session.post('Debugger.resume');
+                const name = `blocked-stack-${id}.txt`;
+                if (writeFile(dir, name, `Heartbeat delayed: ${blockMs}ms\nPID: ${data.pid}\nCaptured: ${now.toISOString()}\n\n${lines.join('\n')}\n`)) {
+                    record.files.push(name);
+                    Atomics.store(view, 4, heartbeat);
+                }
+                else {
+                    record.errors.push('Failed to save blocking stack.');
+                }
+            }
+            else {
+                record.errors.push('No blocking stack received before timeout.');
+            }
+            if (!timedOut) {
+                await session.post('Debugger.disable');
+            }
+        }
+        catch (error: unknown) {
+            record.errors.push(`Stack: ${String(error)}`);
+            // --- 栈采集失败仍尝试恢复主线程，CPU Profile 可以独立完成 ---
+            if (!timedOut) {
+                await session.post('Debugger.resume').catch(() => undefined);
+                await session.post('Debugger.disable').catch(() => undefined);
+            }
+        }
+        const remaining = data.profileDuration - (Number(process.hrtime.bigint() / 1_000_000n) - profileStarted);
+        if (remaining > 0) {
+            await new Promise<void>(resolve => setTimeout(resolve, remaining));
+        }
+        const { profile } = await session.post('Profiler.stop');
+        const name = `blocked-cpu-${id}.cpuprofile`;
+        if (writeFile(dir, name, JSON.stringify(profile))) {
+            record.files.push(name);
+            Atomics.store(view, 4, heartbeat);
+        }
+        else {
+            record.errors.push('Failed to save CPU profile.');
+        }
+        record.status = record.errors.length ? 'partial' : 'complete';
+    }
+    catch (error: unknown) {
+        record.status = record.files.length ? 'partial' : 'failed';
+        record.errors.push(timedOut ? 'Inspector collection timed out.' : String(error));
+    }
+    finally {
+        clearTimeout(timeout);
+        session.disconnect();
+        Atomics.compareExchange(view, 2, 2n, 0n);
+        capturing = false;
+        if (!writeFile(dir, 'blocked-event.json', JSON.stringify(record, null, 2))) {
+            record.errors.push('Failed to update event summary.');
+            record.status = 'partial';
+        }
+        writeLog(`WATCHDOG: Diagnostic ${record.status}, PID:${data.pid}, EVENT:${dir}`);
+        workerThreads.parentPort?.postMessage({ 'type': 'diagnostic', 'heartbeat': Number(heartbeat), dir,
+            'files': record.files.map(name => path.join(dir, name)), 'errors': record.errors, 'status': record.status });
+    }
 }
 
-// --- 主循环：检测心跳 ---
-
+// --- 每秒独立采样；新心跳代表新事件，不让上一事件的冷却吞掉下一次阻塞 ---
 setInterval(() => {
-    const lastHb = Atomics.load(view, 0);
-    const now = Math.floor(Date.now() / 1000);
-    if (lastHb <= 0 || now - lastHb < data.threshold) {
+    const time = Number(process.hrtime.bigint() / 1_000_000n);
+    const cpu = process.cpuUsage();
+    const elapsed = time - lastTime;
+    const heartbeat = Atomics.load(view, 0);
+    const blockMs = time - Number(heartbeat);
+    const cpuPercent = elapsed > 0
+        ? (cpu.user - lastCpu.user + cpu.system - lastCpu.system) / (elapsed * 1_000) * 100 : 0;
+    lastCpu = cpu;
+    lastTime = time;
+    samples.push({ 'time': Date.now(), elapsed, 'cpu': Math.round(cpuPercent * 100) / 100,
+        'rss': process.memoryUsage.rss(), 'heartbeatLag': blockMs });
+    if (samples.length > 60) {
+        samples.shift();
+    }
+    if (heartbeat <= 0n || blockMs < data.threshold || Atomics.load(view, 1) === 1n || Atomics.load(view, 3) === 1n) {
         return;
     }
-    // --- 调试模式下跳过阻塞检测，避免干扰 IDE 调试器 ---
-    if (Atomics.load(view, 1) === 1) {
+    if (capturing || heartbeat === lastAlertHeartbeat && time - lastAlertTime < data.cooldown * 1_000) {
         return;
     }
-    if (now - lastAlertTime < data.cooldown) {
-        return;
-    }
-    lastAlertTime = now;
-    const blockSec = now - lastHb;
-    writeLog(
-        'WATCHDOG: Main thread event loop blocked for ' +
-        blockSec + 's, PID: ' + data.pid,
-    );
-    captureDiag(blockSec);
+    lastAlertHeartbeat = heartbeat;
+    lastAlertTime = time;
+    captureDiag(blockMs, heartbeat).catch((error: unknown) => {
+        writeLog(`WATCHDOG: Unexpected collection failure: ${String(error)}`);
+    });
 }, data.interval);
