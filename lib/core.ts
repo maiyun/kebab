@@ -1363,6 +1363,138 @@ export async function getLog(opt: {
     };
 }
 
+/** --- 已保存监控事件的简短摘要，path 相对于 log/monitor/ --- */
+export interface IMonitorEventSummary {
+    'path': string;
+    'pid': number;
+    'time': number;
+    'source': 'main' | 'watchdog';
+    'status': string;
+    'reasons': string[];
+}
+
+/** --- 监控文件元数据；复杂格式或超过 1 MiB 的文件不提供预览 --- */
+export interface IMonitorFile {
+    'path': string;
+    'name': string;
+    'size': number;
+    /** --- 最后修改时间，单位 ms --- */
+    'mtime': number;
+    'preview': 'json' | 'text' | null;
+}
+
+/** --- 事件原始数据与可读取的文件；data 为 null 时可下载原始记录复盘 --- */
+export interface IMonitorEvent {
+    'summary': IMonitorEventSummary;
+    'data': Record<string, unknown> | null;
+    'recordStatus': 'loaded' | 'missing' | 'too-large' | 'invalid' | 'unreadable';
+    'files': IMonitorFile[];
+}
+
+/**
+ * --- 通过 master RPC 读取已保存的监控数据，不依赖目标 HTTP 子进程 ---
+ * @param action 要读取的监控资源
+ * @param opt 读取参数，host 默认本机
+ * @returns 响应对象；配置或网络错误时返回 false
+ */
+async function requestMonitor(action: 'monitor-events' | 'monitor-event' | 'monitor-file', opt: {
+    'path'?: string;
+    'offset'?: number;
+    'limit'?: number;
+    'preview'?: boolean;
+    'host'?: string;
+}): Promise<lUndiciResponse.Response | false> {
+    if (!Number.isInteger(globalConfig.rpcPort) || typeof globalConfig.rpcSecret !== 'string') {
+        return false;
+    }
+    const command = lCrypto.aesEncrypt(lText.stringifyJson({
+        action, 'time': lTime.stamp(), 'path': opt.path, 'offset': opt.offset,
+        'limit': opt.limit, 'preview': opt.preview,
+    }), globalConfig.rpcSecret);
+    const res = await lUndici.get(`http://${opt.host ?? '127.0.0.1'}:${globalConfig.rpcPort}/${command}`, {
+        'timeout': action === 'monitor-file' ? 300 : 5,
+        'follow': 0,
+    });
+    if (res.error || !res.headers) {
+        await res.getRawStream()?.dump({ 'limit': 4096 });
+        return false;
+    }
+    return res;
+}
+
+/**
+ * --- 获取某天已保存的监控事件，按目录时间倒序分页 ---
+ * @param opt path 为 YYYY/MM/DD，默认目标服务器的当天；offset 默认 0，limit 默认 20、最多 100
+ * @returns 事件列表和总数；无事件时返回空列表，参数、配置或读取错误时返回 false
+ */
+export async function getMonitorEvents(opt: {
+    'path'?: string;
+    'offset'?: number;
+    'limit'?: number;
+    /** --- 与 getLog 相同，使用目标服务器的 RPC 端口和密钥 --- */
+    'host'?: string;
+} = {}): Promise<{ 'list': IMonitorEventSummary[]; 'total': number; } | false> {
+    const res = await requestMonitor('monitor-events', opt);
+    if (res === false) {
+        return false;
+    }
+    const text = await res.getText();
+    if (text === null) {
+        return false;
+    }
+    const result = lText.parseJson<{ 'result': number; 'list': IMonitorEventSummary[]; 'total': number; }>(text);
+    if (!result || result.result !== 1 || !Array.isArray(result.list) || !Number.isSafeInteger(result.total)) {
+        return false;
+    }
+    return { 'list': result.list, 'total': result.total };
+}
+
+/**
+ * --- 读取事件详情和文件清单；只解析事件记录，不解析 Profile 或堆快照 ---
+ * @param opt path 使用 getMonitorEvents 返回的事件路径；host 默认本机
+ * @returns 事件详情；不存在时返回 null，参数、配置或读取错误时返回 false
+ */
+export async function getMonitorEvent(opt: {
+    'path': string;
+    'host'?: string;
+}): Promise<IMonitorEvent | null | false> {
+    const res = await requestMonitor('monitor-event', opt);
+    if (res === false) {
+        return false;
+    }
+    const text = await res.getText();
+    if (text === null) {
+        return false;
+    }
+    const result = lText.parseJson<{ 'result': number; 'data': IMonitorEvent | null; }>(text);
+    if (!result || result.result !== 1 || result.data === undefined) {
+        return false;
+    }
+    return result.data;
+}
+
+/**
+ * --- 获取监控原始文件的响应，可使用 getStream() 下载；小文件可用 getText()/getJson() 预览 ---
+ * @param opt path 使用事件 files 中的文件路径；preview=true 只允许 1 MiB 内的 JSON/调用栈文本；host 默认本机
+ * @returns 文件响应；不存在时返回 null，参数、预览限制、配置或读取错误时返回 false；流消费或销毁由调用方负责
+ */
+export async function getMonitorFile(opt: {
+    'path': string;
+    'preview'?: boolean;
+    'host'?: string;
+}): Promise<lUndiciResponse.Response | null | false> {
+    const res = await requestMonitor('monitor-file', opt);
+    if (res === false) {
+        return false;
+    }
+    if (res.headers?.['http-code'] === 200 && res.headers['x-kebab-monitor-file'] === '1') {
+        return res;
+    }
+    // --- 有界丢弃错误响应；直接 destroy 未消费的 Undici 流会产生未处理的 AbortError ---
+    await res.getRawStream()?.dump({ 'limit': 4096 });
+    return res.headers?.['http-code'] === 404 ? null : false;
+}
+
 /**
  * --- 获取目录内文件/文件夹列表 ---
  * @param opt 参数

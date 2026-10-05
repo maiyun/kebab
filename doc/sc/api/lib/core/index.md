@@ -14,6 +14,9 @@
 
 - [ICookieOptions](interfaces/ICookieOptions.md)
 - [ILogOptions](interfaces/ILogOptions.md)
+- [IMonitorEvent](interfaces/IMonitorEvent.md)
+- [IMonitorEventSummary](interfaces/IMonitorEventSummary.md)
+- [IMonitorFile](interfaces/IMonitorFile.md)
 
 ## Type Aliases
 
@@ -47,6 +50,9 @@
 - [emptyObject](functions/emptyObject.md)
 - [exec](functions/exec.md)
 - [getLog](functions/getLog.md)
+- [getMonitorEvent](functions/getMonitorEvent.md)
+- [getMonitorEvents](functions/getMonitorEvents.md)
+- [getMonitorFile](functions/getMonitorFile.md)
 - [ip](functions/ip.md)
 - [ipLimit](functions/ipLimit.md)
 - [ips](functions/ips.md)

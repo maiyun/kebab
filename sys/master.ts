@@ -8,9 +8,11 @@ import * as os from 'os';
 import * as fs from 'fs';
 import * as http from 'http';
 import * as path from 'path';
+import * as stream from 'stream/promises';
 // --- 库和定义 ---
 import * as kebab from '#kebab/index.js';
 import * as sRoute from '#kebab/sys/route.js';
+import * as sMonitorFiles from '#kebab/sys/monitor/files.js';
 import * as lCore from '#kebab/lib/core.js';
 import * as lFs from '#kebab/lib/fs.js';
 import * as lText from '#kebab/lib/text.js';
@@ -942,6 +944,61 @@ function createRpcListener(): void {
                         'list': rtn,
                         'total': total,
                     }));
+                    return;
+                }
+                case 'monitor-events': {
+                    const result = await sMonitorFiles.getEvents(
+                        path.join(kebab.LOG_CWD, 'monitor'), msg.path ?? lTime.format(null, 'Y/m/d'),
+                        msg.offset ?? 0, msg.limit ?? 20,
+                    );
+                    res.setHeader('cache-control', 'no-store');
+                    res.end(lText.stringifyJson(result === false ? { 'result': 0 } : { 'result': 1, ...result }));
+                    return;
+                }
+                case 'monitor-event': {
+                    const data = await sMonitorFiles.getEvent(path.join(kebab.LOG_CWD, 'monitor'), msg.path);
+                    res.setHeader('cache-control', 'no-store');
+                    res.end(lText.stringifyJson(data === false ? { 'result': 0 } : { 'result': 1, data }));
+                    return;
+                }
+                case 'monitor-file': {
+                    const file = await sMonitorFiles.getFile(path.join(kebab.LOG_CWD, 'monitor'), msg.path);
+                    res.setHeader('cache-control', 'no-store');
+                    if (file === false || msg.preview !== undefined && typeof msg.preview !== 'boolean') {
+                        res.writeHead(400);
+                        res.end();
+                        return;
+                    }
+                    if (file === null) {
+                        res.writeHead(404);
+                        res.end();
+                        return;
+                    }
+                    if (msg.preview && file.info.preview === null) {
+                        res.writeHead(file.stat.size > sMonitorFiles.PREVIEW_LIMIT ? 413 : 415);
+                        res.end();
+                        return;
+                    }
+                    let contentType = 'application/octet-stream';
+                    if (msg.preview) {
+                        contentType = file.info.preview === 'json' ? 'application/json; charset=utf-8' : 'text/plain; charset=utf-8';
+                    }
+                    res.setHeader('content-type', contentType);
+                    res.setHeader('x-content-type-options', 'nosniff');
+                    res.setHeader('x-kebab-monitor-file', '1');
+                    res.setHeader('content-disposition', `attachment; filename="${file.info.name}"`);
+                    res.setHeader('content-length', file.stat.size);
+                    if (file.stat.size === 0) {
+                        res.end();
+                        return;
+                    }
+                    // --- 原始字节直接传输；pipeline 在客户端断开时关闭文件流，不整文件读取或压缩 ---
+                    try {
+                        await stream.pipeline(fs.createReadStream(file.path, { 'start': 0, 'end': file.stat.size - 1 }), res);
+                    }
+                    catch {
+                        res.destroy();
+                    }
                     return;
                 }
                 case 'ls': {

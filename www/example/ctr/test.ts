@@ -1,5 +1,6 @@
 /* eslint-disable max-lines */
 import * as fs from 'fs';
+import * as stream from 'stream/promises';
 // --- 库 ---
 import * as kebab from '#kebab/index.js';
 import * as lCore from '#kebab/lib/core.js';
@@ -311,7 +312,8 @@ export default class extends sCtr.Ctr {
             `<br><br><a href="${this._config.const.urlBase}test/cron">View "test/cron"</a>`,
 
             '<br><br><b>Monitor:</b>',
-            `<br><br><a href="${this._config.const.urlBase}test/monitor-snapshot">View "test/monitor-snapshot"</a>`,
+            `<br><br><a href="${this._config.const.urlBase}test/monitor-events">View "test/monitor-events" (saved events, previews and downloads)</a>`,
+            `<br><a href="${this._config.const.urlBase}test/monitor-snapshot">View "test/monitor-snapshot"</a>`,
             `<br><a href="${this._config.const.urlBase}test/monitor-spike">View "test/monitor-spike" (non-blocking CPU spike)</a>`,
             `<br><a href="${this._config.const.urlBase}test/monitor-spike?mode=block">View "test/monitor-spike?mode=block" (event loop block)</a>`,
 
@@ -4912,6 +4914,265 @@ send.addEventListener('click', async () => {
     // --- Monitor ---
 
     /**
+     * --- 示例只允许本机和框架配置的节点，不能将浏览器输入作为任意 RPC host ---
+     * @param host 请求选择的节点
+     * @returns 节点地址；本机返回 undefined，未配置的节点返回 false
+     */
+    private _monitorHost(host: unknown): string | undefined | false {
+        if (host === undefined || host === null || host === '') {
+            return undefined;
+        }
+        if (typeof host !== 'string' || !(lCore.globalConfig.hosts ?? []).includes(host)) {
+            return false;
+        }
+        return host;
+    }
+
+    /**
+     * --- 演示通过 master RPC 读取事件列表，并选择配置中的远程节点 ---
+     * @returns 事件列表页面或输入/读取错误
+     */
+    public async monitorEvents(): Promise<string | kebab.Json[]> {
+        const input = {
+            'path': this._get['path'] ?? lTime.format(null, 'Y/m/d'),
+            'offset': this._get['offset'] ?? '0',
+            'host': this._get['host'],
+        };
+        const rtn: kebab.Json[] = [];
+        if (!this._checkInput(input, {
+            'path': ['require', 'string', /^\d{4}\/\d{2}\/\d{2}$/, [0, 'Invalid date path.']],
+            'offset': ['require', 'string', /^\d+$/, [0, 'Invalid offset.']],
+            'host': ['string', [0, 'Invalid host.']],
+        }, rtn)) {
+            return rtn;
+        }
+        const host = this._monitorHost(input.host);
+        if (host === false) {
+            return [0, 'Host must be a configured node.'];
+        }
+        const offset = Number(input.offset);
+        const events = await lCore.getMonitorEvents({ 'path': input.path, host, offset, 'limit': 20 });
+        if (events === false) {
+            return [0, 'Failed to read monitor events.'];
+        }
+        const echo = [
+            '<b>Saved Monitor Events</b><hr>',
+            `<form method="get">Date (YYYY/MM/DD): <input name="path" value="${lText.htmlescape(input.path)}"> `,
+            '<select name="host"><option value="">Local</option>',
+        ];
+        for (const node of lCore.globalConfig.hosts ?? []) {
+            echo.push(`<option value="${lText.htmlescape(node)}"${node === host ? ' selected' : ''}>${lText.htmlescape(node)}</option>`);
+        }
+        echo.push('</select> <button>Read events</button></form>',
+            '<pre>await lCore.getMonitorEvents({ path, host, offset, limit: 20 });</pre>',
+            `Total: ${events.total}<table><tr><th>Time</th><th>PID</th><th>Source</th><th>Status</th><th>Reasons</th><th>Details</th></tr>`);
+        for (const event of events.list) {
+            const url = `${this._config.const.urlBase}test/monitor-event?${lText.queryStringify({ 'path': event.path, host })}`;
+            echo.push(`<tr><td>${lTime.format(null, 'Y-m-d H:i:s', new Date(event.time))}</td><td>${event.pid}</td>` +
+                `<td>${event.source}</td><td>${lText.htmlescape(event.status)}</td><td>${lText.htmlescape(event.reasons.join(', '))}</td>` +
+                `<td><a href="${lText.htmlescape(url)}">View event</a></td></tr>`);
+        }
+        echo.push('</table><div>');
+        if (offset > 0) {
+            const query = lText.queryStringify({ 'path': input.path, host, 'offset': Math.max(0, offset - 20) });
+            echo.push(`<a href="?${lText.htmlescape(query)}">Previous</a> `);
+        }
+        if (offset + events.list.length < events.total) {
+            const query = lText.queryStringify({ 'path': input.path, host, 'offset': offset + 20 });
+            echo.push(`<a href="?${lText.htmlescape(query)}">Next</a>`);
+        }
+        echo.push('</div><br>' + this._getEnd());
+        return echo.join('');
+    }
+
+    /**
+     * --- 演示事件详情及取证文件清单，预览和下载链接均指向本应用 ---
+     * @returns 事件详情页面或输入/读取错误
+     */
+    public async monitorEvent(): Promise<string | kebab.Json[]> {
+        const rtn: kebab.Json[] = [];
+        if (!this._checkInput(this._get, {
+            'path': ['require', 'string', [0, 'Missing event path.']],
+            'host': ['string', [0, 'Invalid host.']],
+        }, rtn)) {
+            return rtn;
+        }
+        const host = this._monitorHost(this._get['host']);
+        if (host === false) {
+            return [0, 'Host must be a configured node.'];
+        }
+        const event = await lCore.getMonitorEvent({ 'path': this._get['path'], host });
+        if (event === false) {
+            return [0, 'Failed to read monitor event.'];
+        }
+        if (event === null) {
+            this._httpCode = 404;
+            return [0, 'Monitor event not found.'];
+        }
+        const echo = [
+            '<b>Monitor Event</b><hr>',
+            `<pre>${lText.htmlescape(`await lCore.getMonitorEvent(${lText.stringifyJson({ 'path': this._get['path'], host }, 4)});`)}</pre>`,
+            `<b>Record:</b> ${event.recordStatus}<pre>${lText.htmlescape(lText.stringifyJson(event.data, 4))}</pre>`,
+            '<table><tr><th>File</th><th>Size</th><th>Actions</th></tr>',
+        ];
+        for (const file of event.files) {
+            const query = lText.queryStringify({ 'path': file.path, host });
+            const url = `${this._config.const.urlBase}test/monitor-file?${query}`;
+            echo.push(`<tr><td>${lText.htmlescape(file.name)}</td><td>${lText.sizeFormat(file.size)}</td>` +
+                `<td><a href="${lText.htmlescape(url)}">Download</a>`);
+            if (file.preview) {
+                echo.push(` <a href="${lText.htmlescape(url + '&preview=1')}">Preview</a>`);
+            }
+            echo.push('</td></tr>');
+        }
+        const downloadFile = event.files[0];
+        const previewFile = event.files.find(file => file.preview !== null);
+        const hostCode = `const host = ${host === undefined ? 'undefined' : lText.stringifyJson(host)};`;
+        const pathCode = `// host works like getLog(); undefined means this server.
+${hostCode}
+const events = await lCore.getMonitorEvents({
+    'path': ${lText.stringifyJson(event.summary.path.split('/').slice(0, 3).join('/'))},
+    host
+});
+if (events === false) {
+    return [0, 'Failed to read monitor events.'];
+}
+// Select an event returned by getMonitorEvents().
+// This page uses the following event; request another page if needed.
+const summary = events.list.find(item => item.path === ${lText.stringifyJson(event.summary.path)});
+if (!summary) {
+    return [0, 'Event is not on this page. Adjust offset in getMonitorEvents().'];
+}
+const event = await lCore.getMonitorEvent({ 'path': summary.path, host });
+if (event === false) {
+    return [0, 'Failed to read monitor event.'];
+}
+if (event === null) {
+    return [0, 'Monitor event not found.'];
+}
+// event.files contains each file's path, name, size and preview metadata.
+// Pass event.files[].path to getMonitorFile(); do not construct a path from the PID.`;
+        const downloadCode = `import * as stream from 'stream/promises';
+
+// Continue with the event and host obtained above.
+const entry = event.files[0];
+if (!entry) {
+    return [0, 'No saved files are available for download.'];
+}
+const path = entry.path;
+// Example returned path on this page: ${lText.stringifyJson(downloadFile?.path ?? '')}
+const file = await lCore.getMonitorFile({ path, host });
+if (file === false) {
+    return [0, 'Failed to read monitor file.'];
+}
+if (file === null) {
+    this._httpCode = 404;
+    return [0, 'Monitor file not found.'];
+}
+const body = file.getStream();
+if (!body) {
+    return [0, 'Failed to open download stream.'];
+}
+this._res.setHeader('content-type', 'application/octet-stream');
+this._res.setHeader('content-disposition', file.headers?.['content-disposition'] ?? 'attachment');
+this._res.setHeader('cache-control', 'no-store');
+lCore.writeHead(this._res, 200);
+try {
+    await stream.pipeline(body, this._res);
+}
+catch {
+    this._res.destroy();
+}
+return false;`;
+        const previewCode = `// Continue with the event and host obtained above.
+const entry = event.files.find(item => item.preview !== null);
+if (!entry) {
+    return [0, 'No files in this event support preview.'];
+}
+const path = entry.path;
+// Example returned path on this page: ${lText.stringifyJson(previewFile?.path ?? '')}
+const file = await lCore.getMonitorFile({ path, host, 'preview': true });
+if (file === false) {
+    return [0, 'Failed to read file, or preview is unavailable.'];
+}
+if (file === null) {
+    this._httpCode = 404;
+    return [0, 'Monitor file not found.'];
+}
+const text = await file.getText();
+if (text === null) {
+    return [0, 'Failed to read preview.'];
+}
+return '<pre>' + lText.htmlescape(text) + '</pre>';`;
+        echo.push('</table><br><b>Get file paths (controller):</b>',
+            `<pre style="white-space: pre-wrap; overflow-wrap: anywhere;">${lText.htmlescape(pathCode)}</pre>`,
+            '<b>Download (controller):</b>',
+            `<pre style="white-space: pre-wrap; overflow-wrap: anywhere;">${downloadFile ? lText.htmlescape(downloadCode) : 'No saved files are available for download.'}</pre>`,
+            '<b>Preview (controller):</b>',
+            `<pre style="white-space: pre-wrap; overflow-wrap: anywhere;">${previewFile ? lText.htmlescape(previewCode) : 'No files in this event support preview.'}</pre>`,
+            'JSON preview can also use file.getJson(). Files over 1 MiB, CPU profiles and heap snapshots are download-only.',
+            '<br><br>' + this._getEnd());
+        return echo.join('');
+    }
+
+    /**
+     * --- 小型 JSON/文本预览或原始文件下载；复杂文件直接流式返回 ---
+     * @returns 预览页面或错误；完成流式下载后返回 false
+     */
+    public async monitorFile(): Promise<string | kebab.Json[] | false> {
+        const rtn: kebab.Json[] = [];
+        if (!this._checkInput(this._get, {
+            'path': ['require', 'string', [0, 'Missing file path.']],
+            'host': ['string', [0, 'Invalid host.']],
+            'preview': ['string', ['0', '1'], [0, 'Invalid preview option.']],
+        }, rtn)) {
+            return rtn;
+        }
+        const host = this._monitorHost(this._get['host']);
+        if (host === false) {
+            return [0, 'Host must be a configured node.'];
+        }
+        const preview = this._get['preview'] === '1';
+        const file = await lCore.getMonitorFile({ 'path': this._get['path'], host, preview });
+        if (file === false) {
+            return [0, 'Failed to read file, or preview is unavailable.'];
+        }
+        if (file === null) {
+            this._httpCode = 404;
+            return [0, 'Monitor file not found.'];
+        }
+        if (preview) {
+            const text = await file.getText();
+            if (text === null) {
+                return [0, 'Failed to read preview.'];
+            }
+            const code = `const file = await lCore.getMonitorFile(${lText.stringifyJson({ 'path': this._get['path'], host, 'preview': true }, 4)});`;
+            return `<b>Monitor File Preview</b><hr><pre>${lText.htmlescape(code)}</pre>` +
+                `<pre>${lText.htmlescape(text)}</pre><br><br>` + this._getEnd();
+        }
+        const body = file.getStream();
+        if (!body) {
+            return [0, 'Failed to open download stream.'];
+        }
+        this._res.setHeader('content-type', 'application/octet-stream');
+        this._res.setHeader('content-disposition', file.headers?.['content-disposition'] ?? 'attachment');
+        this._res.setHeader('cache-control', 'no-store');
+        const size = file.headers?.['content-length'];
+        if (size !== undefined) {
+            this._res.setHeader('content-length', size);
+        }
+        lCore.writeHead(this._res, 200);
+        // --- 下载响应已经开始；pipeline 使浏览器断开同时关闭远程读取流 ---
+        try {
+            await stream.pipeline(body, this._res);
+        }
+        catch {
+            this._res.destroy();
+        }
+        return false;
+    }
+
+    /**
      * --- 获取当前性能快照 ---
      */
     public monitorSnapshot(): string {
@@ -5000,7 +5261,7 @@ send.addEventListener('click', async () => {
         );
         echo.push(
             '<br><br>Check <code>log/monitor/YYYY/MM/DD/HHmmss-pid-{pid}/</code> for' +
-            ' diagnostic files.',
+            ` diagnostic files, or <a href="${this._config.const.urlBase}test/monitor-events">view saved events and download files</a>.`,
         );
         echo.push('<br><br>' + this._getEnd());
         return echo.join('');

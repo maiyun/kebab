@@ -322,6 +322,46 @@ if (started === false) {
 
 日志用于查看异常简讯和诊断目录。完整的采样、诊断结果与 Profile 等取证文件保存在下述 `log/monitor/` 目录，不作为普通日志行返回。
 
+## 读取事件和下载文件
+
+`lib/core` 提供三个方法，通过目标服务器的 master RPC 读取已保存数据。目标 HTTP 子进程即使正在阻塞或已经退出，仍可读取磁盘中保留的记录；master 或服务器不可用时则返回读取错误。`host` 与 `getLog` 一样：省略表示本机，传入节点地址表示读取该服务器，使用当前框架配置的 `rpcPort` 和 `rpcSecret`。
+
+| 方法 | 输入 | 返回 |
+| --- | --- | --- |
+| `getMonitorEvents()` | `path` 为 `YYYY/MM/DD`，默认目标服务器当天；`offset` 默认 0，`limit` 默认 20、范围 1–100；可传 `host` | `{ list, total }`；按事件目录时间倒序，摘要包含 `path`、`pid`、`time`、`source`、`status`、`reasons` |
+| `getMonitorEvent()` | `path` 使用列表返回的事件路径；可传 `host` | `{ summary, data, recordStatus, files }`，包含原始事件数据及文件清单 |
+| `getMonitorFile()` | `path` 使用 `files` 中的文件路径；可传 `host`、`preview` | 框架 HTTP `Response`，可通过 `getStream()` 取得原始文件流 |
+
+三个方法发生参数、配置或读取错误时返回 `false`。列表无事件时返回空列表；事件或文件不存在时，详情和文件方法返回 `null`。调用后需要分别检查错误与不存在，不能直接将返回值作为数据使用。
+
+```ts
+import * as lCore from '@maiyunnet/kebab/lib/core.js';
+
+// --- 从自己的节点配置中选取地址；undefined 表示本机 ---
+const host = lCore.globalConfig.hosts[0];
+const events = await lCore.getMonitorEvents({ host, 'limit': 20 });
+if (events !== false && events.list.length > 0) {
+    const event = await lCore.getMonitorEvent({ 'path': events.list[0].path, host });
+    if (event !== false && event !== null) {
+        for (const file of event.files) {
+            console.log(file.path, file.size, file.preview);
+        }
+    }
+}
+```
+
+路径均相对于目标服务器的 `log/monitor/`，应直接使用接口返回的 `path`。文件清单包含主线程事件 `diagnostics` 引用的看门狗取证文件；不需要从日志中的绝对磁盘路径拼接 URL。读取范围限定在监控目录及框架诊断文件名，拒绝目录穿越和符号链接逃逸。
+
+`getMonitorEvent` 最多解析 4 MiB 的事件记录。旧目录没有记录、记录不完整或超过上限时，`data=null`，`recordStatus` 分别说明 `missing`、`invalid`、`too-large` 或 `unreadable`；现有原始文件仍可通过清单下载。
+
+文件的 `preview` 元数据为 `json`、`text` 或 `null`。预览只开放 1 MiB 内的 JSON 和调用栈文本：调用 `getMonitorFile({ path, host, preview: true })` 后可使用 `getText()` 或 `getJson()`。复杂的 `.cpuprofile`、`.heapsnapshot` 即使很小也不提供预览；大 JSON/文本同样只下载。事件读取不会解析 Profile 或堆快照。
+
+下载时省略 `preview` 或设为 `false`，使用 `getStream()` 将原始字节写入本地文件或传给浏览器；调用方负责消费或销毁响应流，不应将大型文件整份读入 Buffer。RPC 不会整文件读取、压缩或转换为 Base64。
+
+浏览器下载地址由应用控制器提供，框架不会自动发布公开文件 URL。开发者应在控制器验证运维权限、限制可选节点，再调用 `getMonitorFile`，设置附件下载响应头并流式输出；不要把 RPC 密钥或内部 RPC 地址交给浏览器。
+
+完整调用演示在 `www/example/ctr/test.ts`：`test/monitor-events` 支持日期、节点选择和分页，`test/monitor-event` 展示详情和文件清单，`test/monitor-file` 提供小文件预览与下载链接，下载过程中断开浏览器会关闭远程文件流。可从示例首页的 Monitor 分组进入。这些演示沿用示例控制器的访问限制，实际运维页面须接入应用自己的权限校验。
+
 ## Node.js 的 OOM 取证
 
 master 创建 HTTP 子进程时已经传入 `--heapsnapshot-near-heap-limit=3`。V8 堆接近上限时，Node.js 会尝试保存最多三份堆快照；这个机制不等待监控的持续异常确认，也不受 `heapSnapshot=false` 控制。该选项不能保证保存满三份快照，生成快照本身也需要额外时间和内存，详见 [Node.js 启动参数文档](https://nodejs.org/api/cli.html#--heapsnapshot-near-heap-limitmax_count)。这些 Node.js 自动生成的快照目前没有关联到监控的 `event.json`。
@@ -1677,7 +1717,7 @@ index/variables/VER.md
 
 # Variable: VER
 
-> `const` **VER**: `"9.21.0"` = `'9.21.0'`
+> `const` **VER**: `"9.21.1"` = `'9.21.1'`
 
 Defined in: [index.ts:10](https://github.com/maiyunnet/kebab/blob/master/index.ts#L10)
 
@@ -3667,7 +3707,7 @@ lib/core/functions/clone.md
 
 > **clone**\<`T`\>(`obj`): `T`
 
-Defined in: [lib/core.ts:1409](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1409)
+Defined in: [lib/core.ts:1541](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1541)
 
 完整的克隆一份数组/对象
 
@@ -3731,7 +3771,7 @@ lib/core/functions/debug.md
 
 > **debug**(`message?`, ...`optionalParams`): `void`
 
-Defined in: [lib/core.ts:1455](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1455)
+Defined in: [lib/core.ts:1587](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1587)
 
 打印调试信息，线上环境不会打印
 
@@ -3766,7 +3806,7 @@ lib/core/functions/display.md
 
 > **display**(`message?`, ...`optionalParams`): `void`
 
-Defined in: [lib/core.ts:1468](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1468)
+Defined in: [lib/core.ts:1600](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1600)
 
 向控制台直接显示内容，一般情况下禁止使用
 
@@ -3934,6 +3974,131 @@ Defined in: [lib/core.ts:1321](https://github.com/maiyunnet/kebab/blob/master/li
 
 `Promise`\<`false` \| \{ `list`: `any`[] \| `string`[][]; `total`: `number`; \}\>
 
+lib/core/functions/getMonitorEvent.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../index.md) / [lib/core](../index.md) / getMonitorEvent
+
+# Function: getMonitorEvent()
+
+> **getMonitorEvent**(`opt`): `Promise`\<`false` \| [`IMonitorEvent`](../interfaces/IMonitorEvent.md) \| `null`\>
+
+Defined in: [lib/core.ts:1457](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1457)
+
+读取事件详情和文件清单；只解析事件记录，不解析 Profile 或堆快照
+
+## Parameters
+
+### opt
+
+path 使用 getMonitorEvents 返回的事件路径；host 默认本机
+
+#### host?
+
+`string`
+
+#### path
+
+`string`
+
+## Returns
+
+`Promise`\<`false` \| [`IMonitorEvent`](../interfaces/IMonitorEvent.md) \| `null`\>
+
+事件详情；不存在时返回 null，参数、配置或读取错误时返回 false
+
+lib/core/functions/getMonitorEvents.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../index.md) / [lib/core](../index.md) / getMonitorEvents
+
+# Function: getMonitorEvents()
+
+> **getMonitorEvents**(`opt?`): `Promise`\<`false` \| \{ `list`: [`IMonitorEventSummary`](../interfaces/IMonitorEventSummary.md)[]; `total`: `number`; \}\>
+
+Defined in: [lib/core.ts:1430](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1430)
+
+获取某天已保存的监控事件，按目录时间倒序分页
+
+## Parameters
+
+### opt?
+
+path 为 YYYY/MM/DD，默认目标服务器的当天；offset 默认 0，limit 默认 20、最多 100
+
+#### host?
+
+`string`
+
+与 getLog 相同，使用目标服务器的 RPC 端口和密钥
+
+#### limit?
+
+`number`
+
+#### offset?
+
+`number`
+
+#### path?
+
+`string`
+
+## Returns
+
+`Promise`\<`false` \| \{ `list`: [`IMonitorEventSummary`](../interfaces/IMonitorEventSummary.md)[]; `total`: `number`; \}\>
+
+事件列表和总数；无事件时返回空列表，参数、配置或读取错误时返回 false
+
+lib/core/functions/getMonitorFile.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../index.md) / [lib/core](../index.md) / getMonitorFile
+
+# Function: getMonitorFile()
+
+> **getMonitorFile**(`opt`): `Promise`\<`false` \| [`Response`](../../undici/response/classes/Response.md) \| `null`\>
+
+Defined in: [lib/core.ts:1481](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1481)
+
+获取监控原始文件的响应，可使用 getStream() 下载；小文件可用 getText()/getJson() 预览
+
+## Parameters
+
+### opt
+
+path 使用事件 files 中的文件路径；preview=true 只允许 1 MiB 内的 JSON/调用栈文本；host 默认本机
+
+#### host?
+
+`string`
+
+#### path
+
+`string`
+
+#### preview?
+
+`boolean`
+
+## Returns
+
+`Promise`\<`false` \| [`Response`](../../undici/response/classes/Response.md) \| `null`\>
+
+文件响应；不存在时返回 null，参数、预览限制、配置或读取错误时返回 false；流消费或销毁由调用方负责
+
 lib/core/functions/ipLimit.md
 ---
 
@@ -4051,7 +4216,7 @@ lib/core/functions/loadEnv.md
 
 > **loadEnv**(`dir`): `Promise`\<`void`\>
 
-Defined in: [lib/core.ts:1539](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1539)
+Defined in: [lib/core.ts:1671](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1671)
 
 加载 .env 文件到 process.env，若文件不存在则跳过
 
@@ -4121,7 +4286,7 @@ lib/core/functions/ls.md
 
 > **ls**(`opt`): `Promise`\<`object`[]\>
 
-Defined in: [lib/core.ts:1370](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1370)
+Defined in: [lib/core.ts:1502](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1502)
 
 获取目录内文件/文件夹列表
 
@@ -4526,7 +4691,7 @@ lib/core/functions/resolveEnvVars.md
 
 > **resolveEnvVars**(`obj`): `void`
 
-Defined in: [lib/core.ts:1569](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1569)
+Defined in: [lib/core.ts:1701](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1701)
 
 将配置对象中的 ${ENV_VAR} 占位符替换为 process.env 的值
 
@@ -5001,7 +5166,7 @@ lib/core/functions/writeEventStreamHead.md
 
 > **writeEventStreamHead**(`res`): `void`
 
-Defined in: [lib/core.ts:1509](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1509)
+Defined in: [lib/core.ts:1641](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1641)
 
 提交服务器发送事件（SSE）响应头
 
@@ -5036,7 +5201,7 @@ lib/core/functions/writeHead.md
 
 > **writeHead**(`res`, `statusCode`, `headers?`): `void`
 
-Defined in: [lib/core.ts:1488](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1488)
+Defined in: [lib/core.ts:1620](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1620)
 
 提交 HTTP 响应状态和头部，兼容 HTTP/1.1 与 HTTP/2
 
@@ -5086,7 +5251,7 @@ lib/core/functions/write.md
 
 > **write**(`res`, `data`): `void`
 
-Defined in: [lib/core.ts:1521](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1521)
+Defined in: [lib/core.ts:1653](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1653)
 
 向 res 发送数据
 
@@ -5127,6 +5292,9 @@ lib/core/index.md
 
 - [ICookieOptions](interfaces/ICookieOptions.md)
 - [ILogOptions](interfaces/ILogOptions.md)
+- [IMonitorEvent](interfaces/IMonitorEvent.md)
+- [IMonitorEventSummary](interfaces/IMonitorEventSummary.md)
+- [IMonitorFile](interfaces/IMonitorFile.md)
 
 ## Type Aliases
 
@@ -5160,6 +5328,9 @@ lib/core/index.md
 - [emptyObject](functions/emptyObject.md)
 - [exec](functions/exec.md)
 - [getLog](functions/getLog.md)
+- [getMonitorEvent](functions/getMonitorEvent.md)
+- [getMonitorEvents](functions/getMonitorEvents.md)
+- [getMonitorFile](functions/getMonitorFile.md)
 - [ip](functions/ip.md)
 - [ipLimit](functions/ipLimit.md)
 - [ips](functions/ips.md)
@@ -5333,6 +5504,173 @@ Defined in: [lib/core.ts:1198](https://github.com/maiyunnet/kebab/blob/master/li
 > `optional` **urlFull?**: `string`
 
 Defined in: [lib/core.ts:1193](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1193)
+
+lib/core/interfaces/IMonitorEvent.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../index.md) / [lib/core](../index.md) / IMonitorEvent
+
+# Interface: IMonitorEvent
+
+Defined in: [lib/core.ts:1387](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1387)
+
+事件原始数据与可读取的文件；data 为 null 时可下载原始记录复盘
+
+## Properties
+
+### data
+
+> **data**: `Record`\<`string`, `unknown`\> \| `null`
+
+Defined in: [lib/core.ts:1389](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1389)
+
+***
+
+### files
+
+> **files**: [`IMonitorFile`](IMonitorFile.md)[]
+
+Defined in: [lib/core.ts:1391](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1391)
+
+***
+
+### recordStatus
+
+> **recordStatus**: `"loaded"` \| `"invalid"` \| `"missing"` \| `"too-large"` \| `"unreadable"`
+
+Defined in: [lib/core.ts:1390](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1390)
+
+***
+
+### summary
+
+> **summary**: [`IMonitorEventSummary`](IMonitorEventSummary.md)
+
+Defined in: [lib/core.ts:1388](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1388)
+
+lib/core/interfaces/IMonitorEventSummary.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../index.md) / [lib/core](../index.md) / IMonitorEventSummary
+
+# Interface: IMonitorEventSummary
+
+Defined in: [lib/core.ts:1367](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1367)
+
+已保存监控事件的简短摘要，path 相对于 log/monitor/
+
+## Properties
+
+### path
+
+> **path**: `string`
+
+Defined in: [lib/core.ts:1368](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1368)
+
+***
+
+### pid
+
+> **pid**: `number`
+
+Defined in: [lib/core.ts:1369](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1369)
+
+***
+
+### reasons
+
+> **reasons**: `string`[]
+
+Defined in: [lib/core.ts:1373](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1373)
+
+***
+
+### source
+
+> **source**: `"main"` \| `"watchdog"`
+
+Defined in: [lib/core.ts:1371](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1371)
+
+***
+
+### status
+
+> **status**: `string`
+
+Defined in: [lib/core.ts:1372](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1372)
+
+***
+
+### time
+
+> **time**: `number`
+
+Defined in: [lib/core.ts:1370](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1370)
+
+lib/core/interfaces/IMonitorFile.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../index.md) / [lib/core](../index.md) / IMonitorFile
+
+# Interface: IMonitorFile
+
+Defined in: [lib/core.ts:1377](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1377)
+
+监控文件元数据；复杂格式或超过 1 MiB 的文件不提供预览
+
+## Properties
+
+### mtime
+
+> **mtime**: `number`
+
+Defined in: [lib/core.ts:1382](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1382)
+
+最后修改时间，单位 ms
+
+***
+
+### name
+
+> **name**: `string`
+
+Defined in: [lib/core.ts:1379](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1379)
+
+***
+
+### path
+
+> **path**: `string`
+
+Defined in: [lib/core.ts:1378](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1378)
+
+***
+
+### preview
+
+> **preview**: `"text"` \| `"json"` \| `null`
+
+Defined in: [lib/core.ts:1383](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1383)
+
+***
+
+### size
+
+> **size**: `number`
+
+Defined in: [lib/core.ts:1380](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1380)
 
 lib/core/namespaces/v/classes/ValiError.md
 ---

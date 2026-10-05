@@ -45,6 +45,46 @@ if (started === false) {
 
 日志用于查看异常简讯和诊断目录。完整的采样、诊断结果与 Profile 等取证文件保存在下述 `log/monitor/` 目录，不作为普通日志行返回。
 
+## 读取事件和下载文件
+
+`lib/core` 提供三个方法，通过目标服务器的 master RPC 读取已保存数据。目标 HTTP 子进程即使正在阻塞或已经退出，仍可读取磁盘中保留的记录；master 或服务器不可用时则返回读取错误。`host` 与 `getLog` 一样：省略表示本机，传入节点地址表示读取该服务器，使用当前框架配置的 `rpcPort` 和 `rpcSecret`。
+
+| 方法 | 输入 | 返回 |
+| --- | --- | --- |
+| `getMonitorEvents()` | `path` 为 `YYYY/MM/DD`，默认目标服务器当天；`offset` 默认 0，`limit` 默认 20、范围 1–100；可传 `host` | `{ list, total }`；按事件目录时间倒序，摘要包含 `path`、`pid`、`time`、`source`、`status`、`reasons` |
+| `getMonitorEvent()` | `path` 使用列表返回的事件路径；可传 `host` | `{ summary, data, recordStatus, files }`，包含原始事件数据及文件清单 |
+| `getMonitorFile()` | `path` 使用 `files` 中的文件路径；可传 `host`、`preview` | 框架 HTTP `Response`，可通过 `getStream()` 取得原始文件流 |
+
+三个方法发生参数、配置或读取错误时返回 `false`。列表无事件时返回空列表；事件或文件不存在时，详情和文件方法返回 `null`。调用后需要分别检查错误与不存在，不能直接将返回值作为数据使用。
+
+```ts
+import * as lCore from '@maiyunnet/kebab/lib/core.js';
+
+// --- 从自己的节点配置中选取地址；undefined 表示本机 ---
+const host = lCore.globalConfig.hosts[0];
+const events = await lCore.getMonitorEvents({ host, 'limit': 20 });
+if (events !== false && events.list.length > 0) {
+    const event = await lCore.getMonitorEvent({ 'path': events.list[0].path, host });
+    if (event !== false && event !== null) {
+        for (const file of event.files) {
+            console.log(file.path, file.size, file.preview);
+        }
+    }
+}
+```
+
+路径均相对于目标服务器的 `log/monitor/`，应直接使用接口返回的 `path`。文件清单包含主线程事件 `diagnostics` 引用的看门狗取证文件；不需要从日志中的绝对磁盘路径拼接 URL。读取范围限定在监控目录及框架诊断文件名，拒绝目录穿越和符号链接逃逸。
+
+`getMonitorEvent` 最多解析 4 MiB 的事件记录。旧目录没有记录、记录不完整或超过上限时，`data=null`，`recordStatus` 分别说明 `missing`、`invalid`、`too-large` 或 `unreadable`；现有原始文件仍可通过清单下载。
+
+文件的 `preview` 元数据为 `json`、`text` 或 `null`。预览只开放 1 MiB 内的 JSON 和调用栈文本：调用 `getMonitorFile({ path, host, preview: true })` 后可使用 `getText()` 或 `getJson()`。复杂的 `.cpuprofile`、`.heapsnapshot` 即使很小也不提供预览；大 JSON/文本同样只下载。事件读取不会解析 Profile 或堆快照。
+
+下载时省略 `preview` 或设为 `false`，使用 `getStream()` 将原始字节写入本地文件或传给浏览器；调用方负责消费或销毁响应流，不应将大型文件整份读入 Buffer。RPC 不会整文件读取、压缩或转换为 Base64。
+
+浏览器下载地址由应用控制器提供，框架不会自动发布公开文件 URL。开发者应在控制器验证运维权限、限制可选节点，再调用 `getMonitorFile`，设置附件下载响应头并流式输出；不要把 RPC 密钥或内部 RPC 地址交给浏览器。
+
+完整调用演示在 `www/example/ctr/test.ts`：`test/monitor-events` 支持日期、节点选择和分页，`test/monitor-event` 展示详情和文件清单，`test/monitor-file` 提供小文件预览与下载链接，下载过程中断开浏览器会关闭远程文件流。可从示例首页的 Monitor 分组进入。这些演示沿用示例控制器的访问限制，实际运维页面须接入应用自己的权限校验。
+
 ## Node.js 的 OOM 取证
 
 master 创建 HTTP 子进程时已经传入 `--heapsnapshot-near-heap-limit=3`。V8 堆接近上限时，Node.js 会尝试保存最多三份堆快照；这个机制不等待监控的持续异常确认，也不受 `heapSnapshot=false` 控制。该选项不能保证保存满三份快照，生成快照本身也需要额外时间和内存，详见 [Node.js 启动参数文档](https://nodejs.org/api/cli.html#--heapsnapshot-near-heap-limitmax_count)。这些 Node.js 自动生成的快照目前没有关联到监控的 `event.json`。
