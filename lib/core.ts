@@ -944,7 +944,7 @@ export async function sendNpm(
             'time': time,
             'path': path
         }), globalConfig.rpcSecret), {
-            'timeout': 300,
+            'timeout': 330,
         });
         const content = await res.getContent();
         if (!content) {
@@ -1071,7 +1071,7 @@ export async function updateCode(
             'action': 'code',
             'time': lTime.stamp()
         }), globalConfig.rpcSecret), fd, {
-            'timeout': 60,
+            'timeout': 180,
         });
         const content = await res.getContent();
         if (!content) {
