@@ -46,3 +46,19 @@ export function getCodeByAccept(accept?: string): string {
     }
     return 'en';
 }
+
+/**
+ * --- 根据框架语言 code 获取浏览器标准语言标识,可用于 HTML lang 和 Intl ---
+ * @param code 框架语言 code,不区分大小写；未传或不支持时回退 en
+ * @returns sc 返回 zh-CN,tc 返回 zh-TW,其余支持的语言返回原 code
+ */
+export function getAcceptByCode(code?: string): string {
+    const lang = code?.toLowerCase() ?? 'en';
+    if (lang === 'sc') {
+        return 'zh-CN';
+    }
+    if (lang === 'tc') {
+        return 'zh-TW';
+    }
+    return codes.includes(lang) ? lang : 'en';
+}

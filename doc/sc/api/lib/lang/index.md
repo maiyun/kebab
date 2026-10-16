@@ -14,4 +14,5 @@
 
 ## Functions
 
+- [getAcceptByCode](functions/getAcceptByCode.md)
 - [getCodeByAccept](functions/getCodeByAccept.md)
