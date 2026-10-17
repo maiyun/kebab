@@ -4,6 +4,7 @@
  * Last: 2020-04-06 20:51:06, 2022-9-29 15:18:16, 2022-12-29 00:01:30, 2024-3-6 17:53:14, 2024-5-31 17:29:52, 2025-6-13 15:47:02, 2025-9-23 12:51:49, 2026-8-22
  */
 import * as net from 'net';
+import * as textJson from '#kebab/abox/text.js';
 import * as kebab from '#kebab/index.js';
 import * as lFs from './fs.js';
 import * as lCore from './core.js';
@@ -293,19 +294,19 @@ export function isEMail(email: string): boolean {
 }
 
 /**
- * --- 是否是 IPv4（基于 Node 原生 net.isIP，严格校验） ---
+ * --- 是否是 IPv4（基于 Node 原生 net.isIPv4，严格校验） ---
  * @param ip
  */
 export function isIPv4(ip: string): boolean {
-    return net.isIP(ip) === 4;
+    return net.isIPv4(ip);
 }
 
 /**
- * --- 是否是 IPv6（基于 Node 原生 net.isIP，严格校验） ---
+ * --- 是否是 IPv6（基于 Node 原生 net.isIPv6，严格校验） ---
  * @param ip
  */
 export function isIPv6(ip: string): boolean {
-    return net.isIP(ip) === 6;
+    return net.isIPv6(ip);
 }
 
 export const REGEXP_DOMAIN = /^.+?\.((?![0-9]).)+$/i;
@@ -695,46 +696,22 @@ export function stringifyResult(rtn: kebab.Json): string {
 }
 
 /**
- * --- 将字符串解析为对象，返回 false 代表解析失败，支持 BigInt ---
+ * --- 解析 JSON，超出安全整数范围的整数字面量转换为 BigInt ---
  * @param str 要解析的 json 字符串
+ * @returns 解析结果，无效 JSON 返回 false；小数及指数形式仍为 number
  */
 export function parseJson<T>(str: string): T | false {
-    try {
-        str = str.replace(/("[\w-]+?" *: *)([-+0-9]+)([ \r\n]*[,}]|$)/g, (v, v1, v2, v3) => {
-            return v1 + '"-mybigint-' + v2 + '"' + v3;
-        });
-        return JSON.parse(str, (k, v) => {
-            if (typeof v !== 'string') {
-                return v;
-            }
-            if (!v.startsWith('-mybigint-')) {
-                return v;
-            }
-            const ints = v.slice(10);
-            const int = parseInt(ints);
-            if ((int >= Number.MIN_SAFE_INTEGER) && (int <= Number.MAX_SAFE_INTEGER)) {
-                return int;
-            }
-            return BigInt(ints);
-        });
-    }
-    catch {
-        return false;
-    }
+    return textJson.parseJson<T>(str);
 }
 
 /**
- * --- 将对象转换为 json 字符串，返回 false 代表解析失败，支持 BigInt ---
+ * --- 将对象转换为 JSON 字符串，BigInt 输出为整数字面量 ---
  * @param obj 要转换的 json 对象
  * @param space 美化方式
+ * @returns JSON 字符串，循环引用等序列化错误沿用 JSON.stringify 异常
  */
 export function stringifyJson(obj: kebab.Json, space?: string | number): string {
-    return JSON.stringify(obj, (k, v) => {
-        if (typeof v === 'bigint') {
-            return '-mybigint-' + v.toString();
-        }
-        return v;
-    }, space).replace(/"-mybigint-([-+0-9]+?)"/g, '$1');
+    return textJson.stringifyJson(obj, space);
 }
 
 /**
