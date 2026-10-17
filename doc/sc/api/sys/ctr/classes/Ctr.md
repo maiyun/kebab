@@ -628,19 +628,9 @@ Defined in: [sys/ctr.ts:1256](https://github.com/maiyunnet/kebab/blob/master/sys
 
 ##### events?
 
+[`IFormDataEvents`](../../route/interfaces/IFormDataEvents.md) = `{}`
+
 文件处理情况
-
-###### onfiledata?
-
-(`chunk`) => `void`
-
-###### onfileend?
-
-() => `void`
-
-###### onfilestart?
-
-(`name`) => `boolean` \| `undefined`
 
 ##### limits?
 
@@ -652,7 +642,7 @@ Defined in: [sys/ctr.ts:1256](https://github.com/maiyunnet/kebab/blob/master/sys
 
 `Promise`\<`boolean`\>
 
-是否解析成功；失败原因通过 limits.onError 通知，连接中断时可能无法发送响应
+是否解析成功；失败原因通过 events.onerror 通知，连接中断时可能无法发送响应
 
 ***
 

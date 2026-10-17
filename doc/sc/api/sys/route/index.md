@@ -9,6 +9,7 @@
 ## Interfaces
 
 - [IFormDataError](interfaces/IFormDataError.md)
+- [IFormDataEvents](interfaces/IFormDataEvents.md)
 - [IFormDataLimits](interfaces/IFormDataLimits.md)
 
 ## Functions

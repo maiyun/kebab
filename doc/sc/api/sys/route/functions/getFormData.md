@@ -8,7 +8,7 @@
 
 > **getFormData**(`req`, `events?`, `limits?`): `Promise`\<`false` \| \{ `files`: `Record`\<`string`, [`IPostFile`](../../../index/interfaces/IPostFile.md) \| [`IPostFile`](../../../index/interfaces/IPostFile.md)[]\>; `post`: `Record`\<`string`, [`Json`](../../../index/type-aliases/Json.md)\>; \}\>
 
-Defined in: [sys/route.ts:1069](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1069)
+Defined in: [sys/route.ts:1079](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1079)
 
 获取 formdata 的 post
 
@@ -22,25 +22,9 @@ Defined in: [sys/route.ts:1069](https://github.com/maiyunnet/kebab/blob/master/s
 
 ### events?
 
+[`IFormDataEvents`](../interfaces/IFormDataEvents.md) = `{}`
+
 文件处理情况
-
-#### onfiledata?
-
-(`chunk`) => `void`
-
-文件上传时触发，仅 start 返回 true 时触发
-
-#### onfileend?
-
-() => `void`
-
-文件上传结束时触发，仅 start 返回 true 时触发
-
-#### onfilestart?
-
-(`name`) => `boolean` \| `undefined`
-
-文件开始上传时触发，返回 true 则跳过该文件的保存
 
 ### limits?
 
@@ -52,4 +36,4 @@ Defined in: [sys/route.ts:1069](https://github.com/maiyunnet/kebab/blob/master/s
 
 `Promise`\<`false` \| \{ `files`: `Record`\<`string`, [`IPostFile`](../../../index/interfaces/IPostFile.md) \| [`IPostFile`](../../../index/interfaces/IPostFile.md)[]\>; `post`: `Record`\<`string`, [`Json`](../../../index/type-aliases/Json.md)\>; \}\>
 
-字段和临时文件；失败返回 false，并通过 limits.onError 通知首次失败原因
+字段和临时文件；失败返回 false，并通过 events.onerror 通知首次失败原因

@@ -56,7 +56,7 @@ async function parse(data, limits = {}, options = {}) {
         req = Readable.from(chunks, { objectMode: false });
     }
     req.headers = { 'content-type': options.contentType ?? `multipart/form-data; boundary=${boundary}` };
-    const result = context.getFormData(req, {}, { ...limits, onError(error) { errors.push(error); } });
+    const result = context.getFormData(req, { onerror(error) { errors.push(error); } }, limits);
     if (options.abort || options.requestError) {
         req.write(data.subarray(0, 250));
         setImmediate(() => req.destroy(options.requestError ? new Error('connection reset') : undefined));

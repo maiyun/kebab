@@ -1251,14 +1251,10 @@ export class Ctr {
      * --- 获取 formdata 的信息 ---
      * @param events 文件处理情况
      * @param limits 上传限制
-     * @returns 是否解析成功；失败原因通过 limits.onError 通知，连接中断时可能无法发送响应
+     * @returns 是否解析成功；失败原因通过 events.onerror 通知，连接中断时可能无法发送响应
      */
     protected async _handleFormData(
-        events: {
-            onfilestart?: (name: string) => boolean | undefined;
-            onfiledata?: (chunk: Buffer) => void;
-            onfileend?: () => void;
-        } = {},
+        events: sRoute.IFormDataEvents = {},
         limits: sRoute.IFormDataLimits = {}
     ): Promise<boolean> {
         const rtn = await sRoute.getFormData(this._req, events, limits);

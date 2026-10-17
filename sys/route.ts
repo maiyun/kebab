@@ -1039,7 +1039,19 @@ export interface IFormDataError {
     'limit'?: number;
 }
 
-/** --- multipart 上传限制及失败通知 --- */
+/** --- multipart 文件处理及失败通知 --- */
+export interface IFormDataEvents {
+    /** --- 文件开始上传时触发，返回 true 则跳过该文件的保存 --- */
+    onfilestart?: (name: string) => boolean | undefined;
+    /** --- 文件上传时触发，仅 start 返回 true 时触发 --- */
+    onfiledata?: (chunk: Buffer) => void;
+    /** --- 文件上传结束时触发，仅 start 返回 true 时触发 --- */
+    onfileend?: () => void;
+    /** --- 首次失败时通知一次；原有 false 返回值不变，连接中断时响应可能无法送达 --- */
+    onerror?: (error: IFormDataError) => void;
+}
+
+/** --- multipart 上传限制 --- */
 export interface IFormDataLimits {
     /** --- 单个文件最大字节数 --- */
     'maxFileSize'?: number;
@@ -1055,8 +1067,6 @@ export interface IFormDataLimits {
     'maxParts'?: number;
     /** --- 整体请求超时时间（毫秒），默认 5 分钟，设为 0 禁用超时 --- */
     'timeout'?: number;
-    /** --- 首次失败时通知一次；原有 false 返回值不变，连接中断时响应可能无法送达 --- */
-    'onError'?: (error: IFormDataError) => void;
 }
 
 /**
@@ -1064,20 +1074,11 @@ export interface IFormDataLimits {
  * @param req 请求头
  * @param events 文件处理情况
  * @param limits 文件上传限制
- * @returns 字段和临时文件；失败返回 false，并通过 limits.onError 通知首次失败原因
+ * @returns 字段和临时文件；失败返回 false，并通过 events.onerror 通知首次失败原因
  */
 export function getFormData(
     req: http2.Http2ServerRequest | http.IncomingMessage,
-    events: {
-        /**
-         * --- 文件开始上传时触发，返回 true 则跳过该文件的保存 ---
-         */
-        onfilestart?: (name: string) => boolean | undefined;
-        /** --- 文件上传时触发，仅 start 返回 true 时触发 --- */
-        onfiledata?: (chunk: Buffer) => void;
-        /** --- 文件上传结束时触发，仅 start 返回 true 时触发 --- */
-        onfileend?: () => void;
-    } = {},
+    events: IFormDataEvents = {},
     limits: IFormDataLimits = {}
 ): Promise<{
     'post': Record<string, kebab.Json>;
@@ -1110,7 +1111,7 @@ export function getFormData(
         /** --- 获取的 boundary 文本 --- */
         const boundary = boundaryMatch[1] ?? boundaryMatch[2];
         if (!boundary || (boundary.length > 200) || /[\r\n]/.test(boundary)) {
-            limits.onError?.({ 'code': 'INVALID_BOUNDARY' });
+            events.onerror?.({ 'code': 'INVALID_BOUNDARY' });
             resolve(false);
             return;
         }
@@ -1162,8 +1163,6 @@ export function getFormData(
         let readEnd: boolean = false;
         /** --- 是否有文件被限制拒绝（整体返回 false） --- */
         let rejected: boolean = false;
-        /** --- 保留首次失败，避免清理产生的流错误覆盖实际原因 --- */
-        let failure: IFormDataError | undefined;
 
         /**
          * --- 拒绝本次上传，继续读取请求以便正常返回错误响应 ---
@@ -1171,12 +1170,11 @@ export function getFormData(
          * @returns 无返回值
          */
         function reject(error: IFormDataError): void {
-            rejected = true;
-            if (failure) {
+            if (rejected) {
                 return;
             }
-            failure = error;
-            limits.onError?.(error);
+            rejected = true;
+            events.onerror?.(error);
             if (error.code !== 'REQUEST_ABORTED') {
                 lCore.log({}, `[ROUTE][GETFORMDATA] rejected: ${error.code}, limit: ${error.limit ?? '-'}`, '-error');
             }
@@ -1247,7 +1245,6 @@ export function getFormData(
                 reject({ 'code': 'TIMEOUT', 'limit': timeoutMs });
                 cleanupActiveFile();
                 lCore.debug('[ROUTE][GETFORMDATA] formdata request timeout');
-                lCore.log({}, '[ROUTE][GETFORMDATA] formdata request timeout after ' + timeoutMs + 'ms', '-error');
                 cleanupFiles();
                 resolve(false);
             }, timeoutMs);
@@ -1368,7 +1365,6 @@ export function getFormData(
                                         ftmpName = '';
                                     }
                                     --writeFileLength;
-                                    req.resume();
                                     lCore.log({}, `[ROUTE][GETFORMDATA] temporary file error: ${error.message}`, '-error');
                                     if (readEnd) {
                                         finalize();
