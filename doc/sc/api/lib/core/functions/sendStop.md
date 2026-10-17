@@ -8,7 +8,7 @@
 
 > **sendStop**(`hosts?`): `Promise`\<`Record`\<`string`, \{ `result`: `boolean`; `return`: `string`; \}\>\>
 
-Defined in: [lib/core.ts:817](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L817)
+Defined in: [lib/core.ts:799](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L799)
 
 向主进程（或局域网同代码机子）发送 stop 操作，停止接收新连接并在现有连接全部结束后退出
 

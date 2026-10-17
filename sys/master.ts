@@ -335,18 +335,22 @@ function createRpcListener(): void {
                         res.end('Path not found');
                         return;
                     }
-                    // --- npm install 上限与 sendNpm 客户端超时一致，超时后终止，避免无限期运行 ---
+                    // --- 两次安装共用 5 分钟预算，给 sendNpm 的 330 秒等待留出回传时间 ---
                     const npmTimeout = 300_000;
+                    const npmDeadline = Date.now() + npmTimeout;
                     let rtn = await lCore.exec('npm i --omit=dev', {
                         'cwd': msg.path,
                         'timeout': npmTimeout,
                     });
                     if (rtn === false) {
                         // --- 部分项目可能存在 peerDependencies 冲突，失败后降级为 legacy-peer-deps 再试一次 ---
-                        rtn = await lCore.exec('npm i --omit=dev --legacy-peer-deps', {
-                            'cwd': msg.path,
-                            'timeout': npmTimeout,
-                        });
+                        const remaining = npmDeadline - Date.now();
+                        if (remaining > 0) {
+                            rtn = await lCore.exec('npm i --omit=dev --legacy-peer-deps', {
+                                'cwd': msg.path,
+                                'timeout': remaining,
+                            });
+                        }
                     }
                     if (rtn === false) {
                         res.end('Exec failed');

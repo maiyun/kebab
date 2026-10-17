@@ -1,6 +1,6 @@
 {
   "name": "@maiyunnet/kebab",
-  "version": "9.22.3",
+  "version": "9.22.4",
   "description": "Simple, easy-to-use, and fully-featured Node.js framework that is ready-to-use out of the box.",
   "type": "module",
   "keywords": [
@@ -14,7 +14,8 @@
   "types": "./index.d.ts",
   "scripts": {
     "build-doc": "bash ./utils/build-doc.sh",
-    "test:formdata": "node abox/test/formdata.mjs"
+    "test:formdata": "node abox/test/formdata.mjs",
+    "test:rpc": "node --test --test-isolation=none abox/test/rpc.mjs"
   },
   "bin": {
     "kebab": "./bin/kebab.js"

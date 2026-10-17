@@ -8,7 +8,7 @@
 
 > **setGlobal**(`key`, `data`, `hosts?`): `Promise`\<`Record`\<`string`, \{ `result`: `boolean`; `return`: `string`; \}\>\>
 
-Defined in: [lib/core.ts:975](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L975)
+Defined in: [lib/core.ts:934](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L934)
 
 设置跨线程/指定的局域网主机的全局变量
 

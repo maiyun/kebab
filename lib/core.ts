@@ -729,31 +729,22 @@ export async function sendReload(hosts?: string[] | 'config'): Promise<Record<st
     if (!hosts?.length) {
         hosts = ['127.0.0.1'];
     }
-    // --- 局域网模式 ---
-    const time = lTime.stamp();
-    /** --- 返回成功的 host --- */
-    const rtn: Record<string, { 'result': boolean; 'return': string; }> = {};
-    for (const host of hosts) {
+    /** --- 并行发送，各主机独立等待，结果保持输入顺序 --- */
+    const results = await Promise.all(hosts.map(async (host) => {
         const res = await lUndici.get('http://' + host + ':' + globalConfig.rpcPort.toString() + '/' + lCrypto.aesEncrypt(lText.stringifyJson({
             'action': 'reload',
-            'time': time
+            'time': lTime.stamp()
         }), globalConfig.rpcSecret), {
             'timeout': 5
         });
         const content = await res.getContent();
         if (!content) {
-            rtn[host] = { 'result': false, 'return': 'Timeout' };
-            continue;
+            return [host, { 'result': false, 'return': 'Timeout' }] as const;
         }
         const str = content.toString();
-        if (str === 'Done') {
-            rtn[host] = { 'result': true, 'return': 'Done' };
-        }
-        else {
-            rtn[host] = { 'result': false, 'return': str };
-        }
-    }
-    return rtn;
+        return [host, { 'result': str === 'Done', 'return': str }] as const;
+    }));
+    return Object.fromEntries(results);
 }
 
 /**
@@ -782,31 +773,22 @@ export async function sendRestart(hosts?: string[] | 'config'): Promise<Record<s
     if (!hosts?.length) {
         hosts = ['127.0.0.1'];
     }
-    // --- 局域网模式 ---
-    const time = lTime.stamp();
-    /** --- 返回成功的 host --- */
-    const rtn: Record<string, { 'result': boolean; 'return': string; }> = {};
-    for (const host of hosts) {
+    /** --- 并行发送，各主机独立等待，结果保持输入顺序 --- */
+    const results = await Promise.all(hosts.map(async (host) => {
         const res = await lUndici.get('http://' + host + ':' + globalConfig.rpcPort.toString() + '/' + lCrypto.aesEncrypt(lText.stringifyJson({
             'action': 'restart',
-            'time': time
+            'time': lTime.stamp()
         }), globalConfig.rpcSecret), {
             'timeout': 5
         });
         const content = await res.getContent();
         if (!content) {
-            rtn[host] = { 'result': false, 'return': 'Timeout' };
-            continue;
+            return [host, { 'result': false, 'return': 'Timeout' }] as const;
         }
         const str = content.toString();
-        if (str === 'Done') {
-            rtn[host] = { 'result': true, 'return': 'Done' };
-        }
-        else {
-            rtn[host] = { 'result': false, 'return': str };
-        }
-    }
-    return rtn;
+        return [host, { 'result': str === 'Done', 'return': str }] as const;
+    }));
+    return Object.fromEntries(results);
 }
 
 /**
@@ -836,31 +818,22 @@ export async function sendStop(hosts?: string[] | 'config'): Promise<Record<stri
     if (!hosts?.length) {
         hosts = ['127.0.0.1'];
     }
-    // --- 局域网模式 ---
-    const time = lTime.stamp();
-    /** --- 返回成功的 host --- */
-    const rtn: Record<string, { 'result': boolean; 'return': string; }> = {};
-    for (const host of hosts) {
+    /** --- 并行发送，各主机独立等待，结果保持输入顺序 --- */
+    const results = await Promise.all(hosts.map(async (host) => {
         const res = await lUndici.get('http://' + host + ':' + globalConfig.rpcPort.toString() + '/' + lCrypto.aesEncrypt(lText.stringifyJson({
             'action': 'stop',
-            'time': time
+            'time': lTime.stamp()
         }), globalConfig.rpcSecret), {
             'timeout': 5
         });
         const content = await res.getContent();
         if (!content) {
-            rtn[host] = { 'result': false, 'return': 'Timeout' };
-            continue;
+            return [host, { 'result': false, 'return': 'Timeout' }] as const;
         }
         const str = content.toString();
-        if (str === 'Done') {
-            rtn[host] = { 'result': true, 'return': 'Done' };
-        }
-        else {
-            rtn[host] = { 'result': false, 'return': str };
-        }
-    }
-    return rtn;
+        return [host, { 'result': str === 'Done', 'return': str }] as const;
+    }));
+    return Object.fromEntries(results);
 }
 
 /** --- PM2 操作类型 --- */
@@ -886,14 +859,11 @@ export async function sendPm2(
     if (!hosts?.length) {
         hosts = ['127.0.0.1'];
     }
-    // --- 局域网模式 ---
-    const time = lTime.stamp();
-    /** --- 返回成功的 host --- */
-    const rtn: Record<string, { 'result': boolean; 'return': string; }> = {};
-    for (const host of hosts) {
+    /** --- 并行发送，各主机独立等待，结果保持输入顺序 --- */
+    const results = await Promise.all(hosts.map(async (host) => {
         const res = await lUndici.get('http://' + host + ':' + globalConfig.rpcPort.toString() + '/' + lCrypto.aesEncrypt(lText.stringifyJson({
             'action': 'pm2',
-            'time': time,
+            'time': lTime.stamp(),
             'name': name,
             'pm2Action': action
         }), globalConfig.rpcSecret), {
@@ -901,19 +871,15 @@ export async function sendPm2(
         });
         const content = await res.getContent();
         if (!content) {
-            rtn[host] = { 'result': false, 'return': 'Timeout' };
-            continue;
+            return [host, { 'result': false, 'return': 'Timeout' }] as const;
         }
         const str = content.toString();
-        if (str === 'Done') {
-            rtn[host] = { 'result': true, 'return': 'Done' };
-        }
-        else {
-            rtn[host] = { 'result': false, 'return': str };
+        if (str !== 'Done') {
             debug('[CORE][sendPm2] rpc server content error:', str);
         }
-    }
-    return rtn;
+        return [host, { 'result': str === 'Done', 'return': str }] as const;
+    }));
+    return Object.fromEntries(results);
 }
 
 /**
@@ -934,33 +900,26 @@ export async function sendNpm(
     if (!hosts?.length) {
         hosts = ['127.0.0.1'];
     }
-    // --- 局域网模式 ---
-    const time = lTime.stamp();
-    /** --- 返回成功的 host --- */
-    const rtn: Record<string, { 'result': boolean; 'return': string; }> = {};
-    for (const host of hosts) {
+    /** --- 并行发送，各主机独立等待，结果保持输入顺序 --- */
+    const results = await Promise.all(hosts.map(async (host) => {
         const res = await lUndici.get('http://' + host + ':' + globalConfig.rpcPort.toString() + '/' + lCrypto.aesEncrypt(lText.stringifyJson({
             'action': 'npm',
-            'time': time,
+            'time': lTime.stamp(),
             'path': path
         }), globalConfig.rpcSecret), {
             'timeout': 330,
         });
         const content = await res.getContent();
         if (!content) {
-            rtn[host] = { 'result': false, 'return': 'Timeout' };
-            continue;
+            return [host, { 'result': false, 'return': 'Timeout' }] as const;
         }
         const str = content.toString();
-        if (str === 'Done') {
-            rtn[host] = { 'result': true, 'return': 'Done' };
-        }
-        else {
-            rtn[host] = { 'result': false, 'return': str };
+        if (str !== 'Done') {
             debug('[CORE][sendNpmInstall] rpc server content error:', str);
         }
-    }
-    return rtn;
+        return [host, { 'result': str === 'Done', 'return': str }] as const;
+    }));
+    return Object.fromEntries(results);
 }
 
 /** --- 跨进程全局变量 --- */
@@ -990,31 +949,24 @@ export async function setGlobal(key: string, data: any, hosts?: string[] | 'conf
     if (hosts === 'config') {
         hosts = globalConfig.hosts;
     }
-    // --- 局域网模式 ---
-    const time = lTime.stamp();
-    /** --- 返回成功的 host --- */
-    const rtn: Record<string, { 'result': boolean; 'return': string; }> = {};
-    for (const host of hosts) {
+    /** --- 并行发送，各主机独立等待，结果保持输入顺序 --- */
+    const results = await Promise.all(hosts.map(async (host) => {
         const res = await lUndici.get('http://' + host + ':' + globalConfig.rpcPort.toString() + '/' + lCrypto.aesEncrypt(lText.stringifyJson({
             'action': 'global',
-            'time': time
+            'time': lTime.stamp(),
+            'key': key,
+            'data': data
         }), globalConfig.rpcSecret), {
             'timeout': 5
         });
         const content = await res.getContent();
         if (!content) {
-            rtn[host] = { 'result': false, 'return': 'Timeout' };
-            continue;
+            return [host, { 'result': false, 'return': 'Timeout' }] as const;
         }
         const str = content.toString();
-        if (str === 'Done') {
-            rtn[host] = { 'result': true, 'return': 'Done' };
-        }
-        else {
-            rtn[host] = { 'result': false, 'return': str };
-        }
-    }
-    return rtn;
+        return [host, { 'result': str === 'Done', 'return': str }] as const;
+    }));
+    return Object.fromEntries(results);
 }
 
 /**
@@ -1054,15 +1006,11 @@ export async function updateCode(
     if (!hosts?.length) {
         hosts = ['127.0.0.1'];
     }
-    /** --- 返回成功的 host --- */
-    const rtn: Record<string, {
-        'result': boolean;
-        'return': string;
-    }> = {};
-    for (const host of hosts) {
+    /** --- 各主机使用独立上传流并行部署，结果保持输入顺序 --- */
+    const results = await Promise.all(hosts.map(async (host) => {
         const fd = lUndici.getFormData();
         if (!await fd.putFile('file', sourcePath)) {
-            continue;
+            return;
         }
         fd.putString('path', path);
         fd.putString('config', config);
@@ -1075,19 +1023,12 @@ export async function updateCode(
         });
         const content = await res.getContent();
         if (!content) {
-            rtn[host] = {
-                'result': false,
-                'return': 'Network error'
-            };
-            continue;
+            return [host, { 'result': false, 'return': 'Network error' }] as const;
         }
         const str = content.toString();
-        rtn[host] = {
-            'result': str === 'Done' ? true : false,
-            'return': str
-        };
-    }
-    return rtn;
+        return [host, { 'result': str === 'Done', 'return': str }] as const;
+    }));
+    return Object.fromEntries(results.filter(result => result !== undefined));
 }
 
 /**
@@ -1110,14 +1051,11 @@ export async function sendProject(
     if (!hosts?.length) {
         hosts = ['127.0.0.1'];
     }
-    // --- 局域网模式 ---
-    const time = lTime.stamp();
-    /** --- 返回成功的 host --- */
-    const rtn: Record<string, { 'result': boolean; 'return': string; }> = {};
-    for (const host of hosts) {
+    /** --- 并行发送，各主机独立等待，结果保持输入顺序 --- */
+    const results = await Promise.all(hosts.map(async (host) => {
         const res = await lUndici.get('http://' + host + ':' + globalConfig.rpcPort.toString() + '/' + lCrypto.aesEncrypt(lText.stringifyJson({
             'action': 'project',
-            'time': time,
+            'time': lTime.stamp(),
             'path': path,
             [key]: value
         }), globalConfig.rpcSecret), {
@@ -1125,19 +1063,15 @@ export async function sendProject(
         });
         const content = await res.getContent();
         if (!content) {
-            rtn[host] = { 'result': false, 'return': 'Timeout' };
-            continue;
+            return [host, { 'result': false, 'return': 'Timeout' }] as const;
         }
         const str = content.toString();
-        if (str === 'Done') {
-            rtn[host] = { 'result': true, 'return': 'Done' };
-        }
-        else {
-            rtn[host] = { 'result': false, 'return': str };
+        if (str !== 'Done') {
             debug('[CORE][sendProject] rpc server content error:', str);
         }
-    }
-    return rtn;
+        return [host, { 'result': str === 'Done', 'return': str }] as const;
+    }));
+    return Object.fromEntries(results);
 }
 
 /**
@@ -1158,33 +1092,26 @@ export async function sendPackage(
     if (!hosts?.length) {
         hosts = ['127.0.0.1'];
     }
-    // --- 局域网模式 ---
-    const time = lTime.stamp();
-    /** --- 返回成功的 host --- */
-    const rtn: Record<string, { 'result': boolean; 'return': string; }> = {};
-    for (const host of hosts) {
+    /** --- 并行发送，各主机独立等待，结果保持输入顺序 --- */
+    const results = await Promise.all(hosts.map(async (host) => {
         const res = await lUndici.get('http://' + host + ':' + globalConfig.rpcPort.toString() + '/' + lCrypto.aesEncrypt(lText.stringifyJson({
             'action': 'package',
-            'time': time,
+            'time': lTime.stamp(),
             'content': content
         }), globalConfig.rpcSecret), {
             'timeout': 5
         });
         const resContent = await res.getContent();
         if (!resContent) {
-            rtn[host] = { 'result': false, 'return': 'Timeout' };
-            continue;
+            return [host, { 'result': false, 'return': 'Timeout' }] as const;
         }
         const str = resContent.toString();
-        if (str === 'Done') {
-            rtn[host] = { 'result': true, 'return': 'Done' };
-        }
-        else {
-            rtn[host] = { 'result': false, 'return': str };
+        if (str !== 'Done') {
             debug('[CORE][sendPackage] rpc server content error:', str);
         }
-    }
-    return rtn;
+        return [host, { 'result': str === 'Done', 'return': str }] as const;
+    }));
+    return Object.fromEntries(results);
 }
 
 /** --- log 设置的选项 --- */
