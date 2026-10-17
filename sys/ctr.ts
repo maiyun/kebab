@@ -1251,6 +1251,7 @@ export class Ctr {
      * --- 获取 formdata 的信息 ---
      * @param events 文件处理情况
      * @param limits 上传限制
+     * @returns 是否解析成功；失败原因通过 limits.onError 通知，连接中断时可能无法发送响应
      */
     protected async _handleFormData(
         events: {
@@ -1258,22 +1259,7 @@ export class Ctr {
             onfiledata?: (chunk: Buffer) => void;
             onfileend?: () => void;
         } = {},
-        limits: {
-            /** --- 单个文件最大字节数 --- */
-            'maxFileSize'?: number;
-            /** --- 允许的文件扩展名（含点号），如 ['.jpg', '.png', '.pdf'] --- */
-            'allowedExts'?: string[];
-            /** --- 单个字段（非文件）最大字节数，默认 1 MB --- */
-            'maxFieldSize'?: number;
-            /** --- 整体请求最大字节数，不设置或设为 0 则不限制 --- */
-            'maxTotalSize'?: number;
-            /** --- 单个 multipart 段头部最大字节数，默认 16 KB --- */
-            'maxHeaderSize'?: number;
-            /** --- multipart 字段与文件总数量，默认 1000 --- */
-            'maxParts'?: number;
-            /** --- 整体请求超时时间（毫秒），默认 5 分钟，设为 0 禁用超时 --- */
-            'timeout'?: number;
-        } = {}
+        limits: sRoute.IFormDataLimits = {}
     ): Promise<boolean> {
         const rtn = await sRoute.getFormData(this._req, events, limits);
         if (!rtn) {

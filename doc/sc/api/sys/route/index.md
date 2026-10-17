@@ -6,6 +6,11 @@
 
 # sys/route
 
+## Interfaces
+
+- [IFormDataError](interfaces/IFormDataError.md)
+- [IFormDataLimits](interfaces/IFormDataLimits.md)
+
 ## Functions
 
 - [clearKebabConfigs](functions/clearKebabConfigs.md)

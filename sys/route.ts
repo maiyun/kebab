@@ -1030,11 +1030,41 @@ export function getPost(
     });
 }
 
+/** --- multipart 解析首次失败的安全诊断，不包含临时路径或异常对象 --- */
+export interface IFormDataError {
+    'code': 'INVALID_BOUNDARY' | 'FILE_TOO_LARGE' | 'TOTAL_TOO_LARGE' | 'FIELD_TOO_LARGE' |
+        'HEADER_TOO_LARGE' | 'TOO_MANY_PARTS' | 'FILE_TYPE' | 'TIMEOUT' | 'TEMP_FILE_ERROR' |
+        'REQUEST_ERROR' | 'REQUEST_ABORTED';
+    /** --- 触发的限制值；大小按字节，超时按毫秒，段数按个 --- */
+    'limit'?: number;
+}
+
+/** --- multipart 上传限制及失败通知 --- */
+export interface IFormDataLimits {
+    /** --- 单个文件最大字节数 --- */
+    'maxFileSize'?: number;
+    /** --- 允许的文件扩展名（含点号），如 ['.jpg', '.png', '.pdf'] --- */
+    'allowedExts'?: string[];
+    /** --- 单个字段（非文件）最大字节数，默认 1 MB --- */
+    'maxFieldSize'?: number;
+    /** --- 整体请求最大字节数，不设置或设为 0 则不限制 --- */
+    'maxTotalSize'?: number;
+    /** --- 单个 multipart 段头部最大字节数，默认 16 KB --- */
+    'maxHeaderSize'?: number;
+    /** --- multipart 字段与文件总数量，默认 1000 --- */
+    'maxParts'?: number;
+    /** --- 整体请求超时时间（毫秒），默认 5 分钟，设为 0 禁用超时 --- */
+    'timeout'?: number;
+    /** --- 首次失败时通知一次；原有 false 返回值不变，连接中断时响应可能无法送达 --- */
+    'onError'?: (error: IFormDataError) => void;
+}
+
 /**
  * --- 获取 formdata 的 post ---
  * @param req 请求头
  * @param events 文件处理情况
  * @param limits 文件上传限制
+ * @returns 字段和临时文件；失败返回 false，并通过 limits.onError 通知首次失败原因
  */
 export function getFormData(
     req: http2.Http2ServerRequest | http.IncomingMessage,
@@ -1048,22 +1078,7 @@ export function getFormData(
         /** --- 文件上传结束时触发，仅 start 返回 true 时触发 --- */
         onfileend?: () => void;
     } = {},
-    limits: {
-        /** --- 单个文件最大字节数 --- */
-        'maxFileSize'?: number;
-        /** --- 允许的文件扩展名（含点号），如 ['.jpg', '.png', '.pdf'] --- */
-        'allowedExts'?: string[];
-        /** --- 单个字段（非文件）最大字节数，默认 1 MB --- */
-        'maxFieldSize'?: number;
-        /** --- 整体请求最大字节数，不设置或设为 0 则不限制 --- */
-        'maxTotalSize'?: number;
-        /** --- 单个 multipart 段头部最大字节数，默认 16 KB --- */
-        'maxHeaderSize'?: number;
-        /** --- multipart 字段与文件总数量，默认 1000 --- */
-        'maxParts'?: number;
-        /** --- 整体请求超时时间（毫秒），默认 5 分钟，设为 0 禁用超时 --- */
-        'timeout'?: number;
-    } = {}
+    limits: IFormDataLimits = {}
 ): Promise<{
     'post': Record<string, kebab.Json>;
     'files': Record<string, kebab.IPostFile | kebab.IPostFile[]>;
@@ -1095,6 +1110,7 @@ export function getFormData(
         /** --- 获取的 boundary 文本 --- */
         const boundary = boundaryMatch[1] ?? boundaryMatch[2];
         if (!boundary || (boundary.length > 200) || /[\r\n]/.test(boundary)) {
+            limits.onError?.({ 'code': 'INVALID_BOUNDARY' });
             resolve(false);
             return;
         }
@@ -1146,10 +1162,56 @@ export function getFormData(
         let readEnd: boolean = false;
         /** --- 是否有文件被限制拒绝（整体返回 false） --- */
         let rejected: boolean = false;
+        /** --- 保留首次失败，避免清理产生的流错误覆盖实际原因 --- */
+        let failure: IFormDataError | undefined;
+
+        /**
+         * --- 拒绝本次上传，继续读取请求以便正常返回错误响应 ---
+         * @param error 首次失败原因及对应限制
+         * @returns 无返回值
+         */
+        function reject(error: IFormDataError): void {
+            rejected = true;
+            if (failure) {
+                return;
+            }
+            failure = error;
+            limits.onError?.(error);
+            if (error.code !== 'REQUEST_ABORTED') {
+                lCore.log({}, `[ROUTE][GETFORMDATA] rejected: ${error.code}, limit: ${error.limit ?? '-'}`, '-error');
+            }
+            req.resume();
+        }
         /** --- 已接收的请求体字节数 --- */
         let totalSize: number = 0;
         /** --- 已解析的字段与文件数量 --- */
         let partCount: number = 0;
+        /** --- 临时文件的写入流，保证拒绝时等待关闭后再删除 --- */
+        const fileStreams = new Map<string, fs.WriteStream>();
+        /** --- 已安排删除的临时文件，避免重复注册关闭回调 --- */
+        const discardedFiles = new Set<string>();
+
+        /**
+         * --- 丢弃临时文件，处理文件尚未完成 open 时的删除竞态 ---
+         * @param filePath 本次上传创建的临时文件路径
+         * @returns 无返回值
+         */
+        function discardFile(filePath: string): void {
+            if (discardedFiles.has(filePath)) {
+                return;
+            }
+            discardedFiles.add(filePath);
+            const fileStream = fileStreams.get(filePath);
+            if (fileStream && !fileStream.closed) {
+                fileStream.once('close', () => {
+                    lFs.unlink(filePath).catch(() => {});
+                });
+                fileStream.destroy();
+            }
+            else {
+                lFs.unlink(filePath).catch(() => {});
+            }
+        }
 
         /** --- 清理 rtn.files 中所有已写入的临时文件 --- */
         function cleanupFiles(): void {
@@ -1159,7 +1221,7 @@ export function getFormData(
                     files = [files];
                 }
                 for (const file of files) {
-                    lFs.unlink(file.path).catch(() => {});
+                    discardFile(file.path);
                 }
             }
         }
@@ -1169,8 +1231,7 @@ export function getFormData(
             if ((state !== EState.FILE) || !ftmpName) {
                 return;
             }
-            ftmpStream.destroy();
-            lFs.unlink(kebab.FTMP_CWD + ftmpName).catch(() => {});
+            discardFile(kebab.FTMP_CWD + ftmpName);
             ftmpName = '';
             --writeFileLength;
         }
@@ -1183,6 +1244,7 @@ export function getFormData(
                     return;
                 }
                 finished = true;
+                reject({ 'code': 'TIMEOUT', 'limit': timeoutMs });
                 cleanupActiveFile();
                 lCore.debug('[ROUTE][GETFORMDATA] formdata request timeout');
                 lCore.log({}, '[ROUTE][GETFORMDATA] formdata request timeout after ' + timeoutMs + 'ms', '-error');
@@ -1193,11 +1255,8 @@ export function getFormData(
 
         /** --- 拒绝当前文件：销毁流、删临时文件、标记 rejected --- */
         function rejectFile(): void {
-            rejected = true;
-            ftmpStream.destroy();
-            lFs.unlink(kebab.FTMP_CWD + ftmpName).catch(() => {});
-            ftmpName = '';
-            --writeFileLength;
+            reject({ 'code': 'FILE_TOO_LARGE', 'limit': limits.maxFileSize });
+            cleanupActiveFile();
         }
 
         /** --- 最终输出 --- */
@@ -1223,7 +1282,7 @@ export function getFormData(
             }
             totalSize += chunk.length;
             if ((limits.maxTotalSize !== undefined) && (limits.maxTotalSize > 0) && (totalSize > limits.maxTotalSize)) {
-                rejected = true;
+                reject({ 'code': 'TOTAL_TOO_LARGE', 'limit': limits.maxTotalSize });
                 cleanupActiveFile();
                 buffer = Buffer.from('');
                 return;
@@ -1236,7 +1295,7 @@ export function getFormData(
                         const io = buffer.indexOf('\r\n\r\n');
                         if (io === -1) {
                             if (buffer.length > (limits.maxHeaderSize ?? 16 * 1024)) {
-                                rejected = true;
+                                reject({ 'code': 'HEADER_TOO_LARGE', 'limit': limits.maxHeaderSize ?? 16 * 1024 });
                                 buffer = Buffer.from('');
                             }
                             return;
@@ -1244,7 +1303,7 @@ export function getFormData(
                         // --- 头部已经读取完毕 ---
                         ++partCount;
                         if (partCount > (limits.maxParts ?? 1000)) {
-                            rejected = true;
+                            reject({ 'code': 'TOO_MANY_PARTS', 'limit': limits.maxParts ?? 1000 });
                             buffer = Buffer.from('');
                             return;
                         }
@@ -1276,7 +1335,7 @@ export function getFormData(
                                 const ext = extIo !== -1 ? fileName.slice(extIo).toLowerCase() : '';
                                 if (!limits.allowedExts.includes(ext)) {
                                     // --- 扩展名不允许，拒绝整体上传 ---
-                                    rejected = true;
+                                    reject({ 'code': 'FILE_TYPE' });
                                     ftmpName = '';
                                     break;
                                 }
@@ -1293,16 +1352,27 @@ export function getFormData(
                                 const activeName = ftmpName;
                                 const activePath = kebab.FTMP_CWD + activeName;
                                 const activeStream = lFs.createWriteStream(activePath);
+                                fileStreams.set(activePath, activeStream);
+                                activeStream.once('close', () => {
+                                    fileStreams.delete(activePath);
+                                });
                                 ftmpStream = activeStream;
                                 activeStream.on('error', (error) => {
-                                    rejected = true;
-                                    lFs.unlink(activePath).catch(() => {});
+                                    // --- 主动拒绝后的销毁错误不重复报告或扣减写入计数 ---
+                                    if (rejected || finished) {
+                                        return;
+                                    }
+                                    reject({ 'code': 'TEMP_FILE_ERROR' });
+                                    discardFile(activePath);
                                     if (ftmpStream === activeStream) {
                                         ftmpName = '';
                                     }
                                     --writeFileLength;
                                     req.resume();
                                     lCore.log({}, `[ROUTE][GETFORMDATA] temporary file error: ${error.message}`, '-error');
+                                    if (readEnd) {
+                                        finalize();
+                                    }
                                 });
                                 ftmpSize = 0;
                             }
@@ -1319,7 +1389,7 @@ export function getFormData(
                             // --- 检查字段大小限制，防止畸形数据导致 buffer 无限增长 ---
                             const maxField = limits.maxFieldSize ?? 1_048_576;
                             if (buffer.length > maxField + boundary.length + 4) {
-                                rejected = true;
+                                reject({ 'code': 'FIELD_TOO_LARGE', 'limit': maxField });
                                 buffer = Buffer.from('');
                                 return;
                             }
@@ -1389,7 +1459,11 @@ export function getFormData(
                             else {
                                 ftmpStream.write(writeBuffer);
                                 ftmpSize += Buffer.byteLength(writeBuffer);
-                                ftmpStream.end(() => {
+                                ftmpStream.end((error?: Error | null) => {
+                                    // --- 写入失败由 error 事件统一拒绝，不能提前当成保存完成 ---
+                                    if (error) {
+                                        return;
+                                    }
                                     --writeFileLength;
                                     if (!readEnd) {
                                         // --- request 没读完，不管 ---
@@ -1448,6 +1522,7 @@ export function getFormData(
                 return;
             }
             finished = true;
+            reject({ 'code': 'REQUEST_ERROR' });
             clearTimer();
             cleanupActiveFile();
             lCore.debug('[ROUTE][GETFORMDATA] request error before getFormData: ' + e.message);
@@ -1463,6 +1538,7 @@ export function getFormData(
             // --- 若数据未读完且连接已关闭，视为传输中断（多数是用户主动取消，无需记录错误） ---
             if (!readEnd) {
                 finished = true;
+                reject({ 'code': 'REQUEST_ABORTED' });
                 clearTimer();
                 cleanupActiveFile();
                 lCore.debug('[ROUTE][GETFORMDATA] connection closed before formdata complete');
@@ -1480,7 +1556,10 @@ export function getFormData(
             }
             if (state === EState.FILE) {
                 if (ftmpName) {
-                    ftmpStream.end(() => {
+                    ftmpStream.end((error?: Error | null) => {
+                        if (error) {
+                            return;
+                        }
                         --writeFileLength;
                         if (!writeFileLength) {
                             // --- 文件也写完了 ---

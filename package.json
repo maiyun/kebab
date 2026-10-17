@@ -13,7 +13,8 @@
   "license": "Apache-2.0",
   "types": "./index.d.ts",
   "scripts": {
-    "build-doc": "bash ./utils/build-doc.sh"
+    "build-doc": "bash ./utils/build-doc.sh",
+    "test:formdata": "node abox/test/formdata.mjs"
   },
   "bin": {
     "kebab": "./bin/kebab.js"
