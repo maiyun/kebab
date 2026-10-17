@@ -529,7 +529,7 @@ function createRpcListener(): void {
                         }
                     }
                     /** --- kebab 子项目中仅允许部署的子文件夹名集合 --- */
-                    const KEBAB_ALLOWED_DIRS = new Set(['ctr', 'data', 'stc', 'view', 'lib']);
+                    const KEBAB_ALLOWED_DIRS = new Set(['ctr', 'data', 'stc', 'view', 'lib', 'abox']);
                     /** --- 常见开发、依赖、缓存、构建产物目录不参与部署 --- */
                     const DEPLOY_EXCLUDE_DIRS = new Set([
                         '.git',
@@ -560,8 +560,13 @@ function createRpcListener(): void {
                         const pat = fpath.slice(1, lio + 1);
                         /** --- 纯文件名，例如 "api.js" --- */
                         const fname = fpath.slice(lio + 1);
-                        if (fpath.slice(1).split('/').slice(0, -1).some(seg => DEPLOY_EXCLUDE_DIRS.has(seg))) {
+                        const dirs = fpath.slice(1).split('/').slice(0, -1);
+                        if (dirs.some(seg => DEPLOY_EXCLUDE_DIRS.has(seg))) {
                             // --- 开发、依赖、缓存、构建产物目录不覆盖 ---
+                            continue;
+                        }
+                        if (dirs.some((seg, index) => seg === 'abox' && ['test', 'tests'].includes(dirs[index + 1]))) {
+                            // --- abox 运行代码参与部署，测试目录不进入线上目录 ---
                             continue;
                         }
                         if (fname === 'kebab.json' && hasSensitiveConfig(ls[archivePath])) {
@@ -597,7 +602,7 @@ function createRpcListener(): void {
                                 continue;
                             }
                         }
-                        // --- 规则 2：kebab 子项目目录中，仅允许部署 ctr/data/stc/view/lib 子文件夹内的内容 ---
+                        // --- 规则 2：kebab 子项目目录中，仅允许部署 ctr/data/stc/view/lib/abox 子文件夹内的内容 ---
                         // --- 快速跳过：zip 中没有 kebab.json 时整个规则无需执行 ---
                         if (kebabProjectDirs.size > 0) {
                             // --- 找最浅（最外层）匹配的 kebab 项目目录 ---
