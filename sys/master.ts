@@ -20,6 +20,7 @@ import * as lCrypto from '#kebab/lib/crypto.js';
 import * as lTime from '#kebab/lib/time.js';
 import * as lZip from '#kebab/lib/zip.js';
 import * as masterLog from '#kebab/abox/master-log.js';
+import * as masterVhost from '#kebab/abox/master-vhost.js';
 
 /**
  * --- 解析一行 CSV，保留空字段，并处理字段里的逗号和引号 ---
@@ -27,6 +28,25 @@ import * as masterLog from '#kebab/abox/master-log.js';
  * @returns 按原顺序排列的字段
  */
 const parseCsvLine: (line: string) => string[] = masterLog.parseCsvLine;
+
+/**
+ * --- 串行替换 vhost 目录；先写临时目录，切换失败时恢复旧目录 ---
+ * @param directory 固定的 vhost 目录
+ * @param files 已通过校验的文件名与 JSON 原文
+ * @param report 记录替换、恢复或临时目录清理失败
+ * @returns 成功返回 Done；失败返回错误信息，恢复失败时包含备份目录
+ */
+const replaceVhost: (
+    directory: string, files: Record<string, string>, report: (message: string, error: unknown) => void
+) => Promise<string> = masterVhost.replace;
+
+/**
+ * --- 校验非空 vhost 文件集合：仅直接 .json 文件名，不允许路径或大小写重名 ---
+ * --- 每份 JSON 为 IVhost 或其数组：domains 为字符串数组，root 为字符串，name/remark 可选字符串 ---
+ * @param files POST 中的文件集合
+ * @returns true 表示所有文件可写入；false 表示整批拒绝，不修改旧配置
+ */
+const isVhostFiles: (files: unknown) => files is Record<string, string> = masterVhost.isFiles;
 
 /** --- 当前运行中的子进程列表 --- */
 const workerList: Record<string, {
@@ -448,6 +468,23 @@ function createRpcListener(): void {
                         return;
                     }
                     break;
+                }
+                case 'vhost': {
+                    if (req.method !== 'POST') {
+                        res.end('Invalid method');
+                        return;
+                    }
+                    const body = await sRoute.getPost(req);
+                    if (body === false || !isVhostFiles(body.raw)) {
+                        res.end('Invalid vhost files');
+                        return;
+                    }
+                    // --- 仅更新磁盘配置，是否 reload 由调用方决定 ---
+                    const result = await replaceVhost(kebab.VHOST_CWD, body.raw, (message, error) => {
+                        lCore.display(`[master] [vhost] ${message}`, error);
+                    });
+                    res.end(result);
+                    return;
                 }
                 case 'code': {
                     // --- 更新 code 代码包 ---

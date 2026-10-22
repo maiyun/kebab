@@ -8,7 +8,7 @@
 
 > **getMonitorFile**(`opt`): `Promise`\<`false` \| [`Response`](../../undici/response/classes/Response.md) \| `null`\>
 
-Defined in: [lib/core.ts:1408](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1408)
+Defined in: [lib/core.ts:1449](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1449)
 
 获取监控原始文件的响应，可使用 getStream() 下载；小文件可用 getText()/getJson() 预览
 

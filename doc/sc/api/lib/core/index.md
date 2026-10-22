@@ -76,6 +76,7 @@
 - [sendReload](functions/sendReload.md)
 - [sendRestart](functions/sendRestart.md)
 - [sendStop](functions/sendStop.md)
+- [sendVhost](functions/sendVhost.md)
 - [setCookie](functions/setCookie.md)
 - [setGlobal](functions/setGlobal.md)
 - [sleep](functions/sleep.md)

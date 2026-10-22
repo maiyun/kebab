@@ -29,6 +29,25 @@
     - `view/`: 视图目录，存放 ejs 文件
     - `ws/`: WebSocket 目录
 
+## 全量更新虚拟主机配置
+
+`lCore.sendVhost(files, hosts?)` 全量替换目标节点的 `conf/vhost/`，未提交的旧文件及子目录会被移除。`files` 是文件名到 JSON 原文的非空集合，仅接受直接 `.json` 文件名，不允许路径及大小写重名；每份 JSON 为 `IVhost` 或 `IVhost[]`。文件原文会被保留。
+
+```ts
+import * as lCore from '@maiyunnet/kebab/lib/core.js';
+
+const results = await lCore.sendVhost({
+    'default.json': '{"domains":["*"],"root":"default/"}',
+    'sites.json': '[{"domains":["example.com"],"root":"example.com/"}]',
+}, 'config');
+```
+
+省略 `hosts` 或传入空列表时更新本机；传入 `'config'` 使用全局 `hosts`，也可指定节点列表。各节点独立返回 `{ result, return }`，失败节点可单独重试。接收端复用 RPC 鉴权，通过 POST body 接收配置（上限为现有 POST 解析的 50 MiB），不传输证书或全局配置。
+
+同一节点串行执行替换。全部文件校验、写入临时目录成功后，才备份旧目录并切换；切换失败会恢复旧目录。若恢复也失败，返回信息会给出保留的备份目录，需人工恢复；目标 `vhost` 本身是软链接或普通文件时拒绝更新。替换包含两次目录重命名，过程中不要同时执行 reload 或手动修改该目录。
+
+此方法不自动 reload，成功仅表示磁盘目录替换完成。确认各节点结果后，自行调用 `sendReload()`；部分节点失败时只向成功节点发送 reload。现有 reload 返回成功表示通知已发送，不代表所有 worker 已加载完成。
+
 ## 请求主机与完整 URL
 
 控制器通过 `this._config.const.hostCanonical` 获取用于 URL 的主机地址：HTTPS 的 443 和 HTTP 的 80 端口会省略，其余端口及 IPv6 方括号保留。`host`、`hostname` 和 `hostport` 保留原有含义。`urlOrigin`、`urlFull` 和 `urlStcFull` 使用 `hostCanonical` 生成，SSR 注入的 `_urlFull`、默认 `_staticPathFull` 同步省略默认端口。

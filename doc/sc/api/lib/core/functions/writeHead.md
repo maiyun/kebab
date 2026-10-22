@@ -8,7 +8,7 @@
 
 > **writeHead**(`res`, `statusCode`, `headers?`): `void`
 
-Defined in: [lib/core.ts:1547](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1547)
+Defined in: [lib/core.ts:1588](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1588)
 
 提交 HTTP 响应状态和头部，兼容 HTTP/1.1 与 HTTP/2
 

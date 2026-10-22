@@ -1114,6 +1114,47 @@ export async function sendPackage(
     return Object.fromEntries(results);
 }
 
+/**
+ * --- 全量替换各节点 conf/vhost/ 中的文件，不自动 reload ---
+ * @param files 文件名与 JSON 原文的非空集合；仅允许直接 .json 文件名，内容为 IVhost 或 IVhost[]
+ * @param hosts 节点列表，config 使用全局 hosts；省略或列表为空时更新本机
+ * @returns 各节点的写入结果；成功表示目录替换完成，需自行调用 sendReload 生效
+ */
+export async function sendVhost(
+    files: Record<string, string>, hosts?: string[] | 'config'
+): Promise<Record<string, {
+        'result': boolean;
+        'return': string;
+    }>> {
+    if (hosts === 'config') {
+        hosts = globalConfig.hosts;
+    }
+    if (!hosts?.length) {
+        hosts = ['127.0.0.1'];
+    }
+    // --- 每个节点独立发送和返回，失败节点可单独重试 ---
+    const results = await Promise.all(hosts.map(async (host) => {
+        try {
+            const res = await lUndici.postJson(`http://${host}:${globalConfig.rpcPort}/${lCrypto.aesEncrypt(lText.stringifyJson({
+                'action': 'vhost',
+                'time': lTime.stamp(),
+            }), globalConfig.rpcSecret)}`, files, {
+                'timeout': 30,
+            });
+            const content = await res.getContent();
+            if (!content) {
+                return [host, { 'result': false, 'return': 'Network error' }] as const;
+            }
+            const str = content.toString();
+            return [host, { 'result': str === 'Done', 'return': str }] as const;
+        }
+        catch {
+            return [host, { 'result': false, 'return': 'Network error' }] as const;
+        }
+    }));
+    return Object.fromEntries(results);
+}
+
 /** --- log 设置的选项 --- */
 export interface ILogOptions {
     'path'?: string;

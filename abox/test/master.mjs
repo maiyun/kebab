@@ -38,6 +38,30 @@ const deferred = () => {
     const promise = new Promise(done => { resolve = done; });
     return { promise, resolve };
 };
+const vhostSource = fs.readFileSync(new URL('../master-vhost.ts', import.meta.url), 'utf8');
+const vhostAst = ts.createSourceFile('master-vhost.ts', vhostSource, ts.ScriptTarget.Latest, true);
+const vhostProgram = ts.transpileModule(vhostAst.statements
+    .filter(node => !ts.isImportDeclaration(node))
+    .map(node => node.getText(vhostAst).replace(/^export /, '')).join('\n'), {
+    compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.None },
+}).outputText;
+function vhostStorage(overrides = {}) {
+    const context = vm.createContext({ fs: { ...fs.promises, ...overrides }, path, lText: text });
+    vm.runInContext(vhostProgram, context);
+    return { replace: context.replace, isFiles: context.isFiles };
+}
+const routeSource = fs.readFileSync(new URL('../../sys/route.ts', import.meta.url), 'utf8');
+const routeAst = ts.createSourceFile('route.ts', routeSource, ts.ScriptTarget.Latest, true);
+const getPostSource = routeAst.statements.find(node => ts.isFunctionDeclaration(node) && node.name?.text === 'getPost');
+const text = {
+    parseJson(value) { try { return JSON.parse(value); } catch { return false; } },
+    stringifyJson: JSON.stringify,
+    trimJson: value => value,
+};
+const postContext = vm.createContext({ Buffer, lText: text });
+vm.runInContext(ts.transpileModule(getPostSource.getText(routeAst).replace(/^export /, ''), {
+    compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.None },
+}).outputText, postContext);
 let nextPid = 100;
 
 class Worker extends EventEmitter {
@@ -110,7 +134,7 @@ function subject(runtimeCluster, globals = {}) {
         cluster: runtimeCluster ?? fakeCluster,
         os: fakeOs,
         lCore: core,
-        masterLog, fs, path,
+        masterLog, masterVhost: vhostStorage(), fs, path,
         ...globals,
         process: { exit: code => exitCodes.push(code) },
         setTimeout, clearTimeout,
@@ -175,6 +199,191 @@ function rpcSubject({ format = 'jsonl', chunks = [], readError } = {}) {
     };
     return target;
 }
+
+async function vhostSubject(t, overrides = {}) {
+    const root = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'kebab-vhost-'));
+    const directory = path.join(root, 'vhost');
+    await fs.promises.mkdir(directory);
+    const old = '{"domains":["old.example"],"root":"old/"}';
+    await fs.promises.writeFile(path.join(directory, 'old.json'), old);
+    let listener;
+    const target = subject(undefined, {
+        kebab: { VHOST_CWD: directory + '/' },
+        masterVhost: vhostStorage(overrides),
+        http: { createServer(callback) { listener = callback; return { listen() {} }; } },
+        lCrypto: { aesDecrypt: value => value },
+        lTime: { stamp: () => 100 },
+        lText: text,
+        sRoute: { getPost: postContext.getPost },
+    });
+    target.core.globalConfig = { rpcSecret: 'fixture' };
+    const worker = new Worker();
+    await target.create(0, worker);
+    target.createRpcListener();
+    t.after(async () => {
+        target.dispose();
+        await fs.promises.rm(root, { recursive: true, force: true });
+    });
+    return {
+        ...target, root, directory, old, worker,
+        async rpc(files, options = {}) {
+            const request = Readable.from([Buffer.from(options.body ?? JSON.stringify(files))]);
+            request.url = '/' + JSON.stringify({ action: 'vhost', time: options.time ?? 100 });
+            request.method = options.method ?? 'POST';
+            request.headers = { 'content-type': 'application/json' };
+            const done = deferred();
+            const response = {
+                headersSent: false,
+                writeHead() { this.headersSent = true; },
+                end(body) { this.body = body; done.resolve(); },
+                destroy() { done.resolve(); },
+            };
+            listener(request, response);
+            await done.promise;
+            request.destroy();
+            assert.deepEqual(worker.sent, [], 'vhost updates must not reload or restart workers');
+            return response.body;
+        },
+    };
+}
+
+const vhostContent = '{"domains":["new.example"],"root":"new/"}';
+
+test('vhost RPC replaces all old files/subdirectories and preserves submitted JSON bytes', async t => {
+    const target = await vhostSubject(t);
+    await fs.promises.mkdir(path.join(target.directory, 'stale'));
+    await fs.promises.writeFile(path.join(target.directory, 'stale', 'ignored.txt'), 'old');
+    const files = {
+        'new.json': ' \n' + vhostContent + '\n ',
+        '站点.json': JSON.stringify([{ domains: ['*.example.com'], root: '${example}', name: '站点', remark: '测试' }]),
+    };
+    assert.equal(await target.rpc(files), 'Done');
+    assert.deepEqual((await fs.promises.readdir(target.directory)).sort(), Object.keys(files).sort());
+    for (const [name, content] of Object.entries(files)) {
+        assert.equal(await fs.promises.readFile(path.join(target.directory, name), 'utf8'), content);
+    }
+    assert.deepEqual(await fs.promises.readdir(target.root), ['vhost']);
+    assert.equal(await target.rpc(files), 'Done', 'repeating a full update is safe');
+});
+
+test('vhost RPC rejects invalid batches before touching the old directory', async t => {
+    const target = await vhostSubject(t);
+    const invalid = [
+        {}, [], null, false, 'not a mapping',
+        { '../escape.json': vhostContent },
+        { '/absolute.json': vhostContent },
+        { 'nested/file.json': vhostContent },
+        { 'nested\\file.json': vhostContent },
+        { 'drive:file.json': vhostContent },
+        { 'null\0.json': vhostContent },
+        { 'file.json\n': vhostContent },
+        { 'file.txt': vhostContent },
+        { 'a.json': vhostContent, 'A.json': vhostContent },
+        { 'first.json': vhostContent, 'bad.json': 'not json' },
+        { 'bad.json': {} },
+        ...['null', 'true', '1', '"text"', '{}', '[null]', '[[{}]]',
+            '{"domains":"*","root":"site/"}', '{"domains":[1],"root":"site/"}',
+            '{"domains":[],"root":1}', '{"domains":[],"root":"site/","name":1}',
+            '{"domains":[],"root":"site/","remark":false}']
+            .map(value => ({ 'bad.json': value })),
+    ];
+    for (const files of invalid) {
+        assert.equal(await target.rpc(files), 'Invalid vhost files', JSON.stringify(files));
+        assert.equal(await fs.promises.readFile(path.join(target.directory, 'old.json'), 'utf8'), target.old);
+        assert.deepEqual(await fs.promises.readdir(target.root), ['vhost']);
+    }
+    assert.equal(await target.rpc({}, { body: '{broken' }), 'Invalid vhost files');
+    assert.equal(await target.rpc({ 'new.json': vhostContent }, { method: 'GET' }), 'Invalid method');
+    assert.equal(await target.rpc({ 'new.json': vhostContent }, { time: 90 }), 'Timeout');
+});
+
+test('vhost RPC can create a missing directory', async t => {
+    const target = await vhostSubject(t);
+    await fs.promises.rm(target.directory, { recursive: true });
+    assert.equal(await target.rpc({ 'new.json': vhostContent }), 'Done');
+    assert.equal(await fs.promises.readFile(path.join(target.directory, 'new.json'), 'utf8'), vhostContent);
+});
+
+test('vhost RPC rejects a symlink or ordinary file as its target', async t => {
+    const target = await vhostSubject(t);
+    const outside = path.join(target.root, 'outside');
+    await fs.promises.mkdir(outside);
+    await fs.promises.writeFile(path.join(outside, 'keep.json'), target.old);
+    await fs.promises.rm(target.directory, { recursive: true });
+    await fs.promises.symlink(outside, target.directory, 'dir');
+    assert.equal(await target.rpc({ 'new.json': vhostContent }), 'Invalid vhost directory');
+    assert.deepEqual(await fs.promises.readdir(outside), ['keep.json']);
+    await fs.promises.unlink(target.directory);
+    await fs.promises.writeFile(target.directory, 'keep');
+    assert.equal(await target.rpc({ 'new.json': vhostContent }), 'Invalid vhost directory');
+    assert.equal(await fs.promises.readFile(target.directory, 'utf8'), 'keep');
+});
+
+test('vhost RPC preserves old files if staging a later file fails', async t => {
+    let writes = 0;
+    const target = await vhostSubject(t, {
+        async writeFile(...args) {
+            if (++writes === 2) throw new Error('disk full');
+            return fs.promises.writeFile(...args);
+        },
+    });
+    assert.equal(await target.rpc({ 'first.json': vhostContent, 'second.json': vhostContent }), 'Failed to replace vhost directory');
+    assert.equal(await fs.promises.readFile(path.join(target.directory, 'old.json'), 'utf8'), target.old);
+    assert.deepEqual(await fs.promises.readdir(target.root), ['vhost']);
+});
+
+test('vhost RPC restores the old directory after a failed switch and accepts a retry', async t => {
+    let renames = 0;
+    const target = await vhostSubject(t, {
+        async rename(...args) {
+            if (++renames === 2) throw new Error('rename failed');
+            return fs.promises.rename(...args);
+        },
+    });
+    assert.equal(await target.rpc({ 'new.json': vhostContent }), 'Failed to replace vhost directory');
+    assert.equal(await fs.promises.readFile(path.join(target.directory, 'old.json'), 'utf8'), target.old);
+    assert.deepEqual(await fs.promises.readdir(target.root), ['vhost']);
+    assert.equal(await target.rpc({ 'new.json': vhostContent }), 'Done');
+});
+
+test('vhost RPC retains and identifies the backup if restoring the old directory also fails', async t => {
+    let renames = 0;
+    const target = await vhostSubject(t, {
+        async rename(...args) {
+            if (++renames > 1) throw new Error('rename failed');
+            return fs.promises.rename(...args);
+        },
+    });
+    const response = await target.rpc({ 'new.json': vhostContent });
+    assert.ok(response.startsWith('Failed to restore vhost directory; backup: '));
+    const backup = response.slice(response.indexOf('; backup: ') + '; backup: '.length);
+    assert.equal(await fs.promises.readFile(path.join(backup, 'old.json'), 'utf8'), target.old);
+});
+
+test('vhost RPC serializes concurrent updates without mixing batches', async t => {
+    const entered = deferred();
+    const release = deferred();
+    const writes = [];
+    const target = await vhostSubject(t, {
+        async writeFile(...args) {
+            writes.push(path.basename(args[0]));
+            if (writes.length === 1) {
+                entered.resolve();
+                await release.promise;
+            }
+            return fs.promises.writeFile(...args);
+        },
+    });
+    const first = target.rpc({ 'first.json': vhostContent });
+    await entered.promise;
+    const second = target.rpc({ 'second.json': vhostContent });
+    await tick();
+    assert.deepEqual(writes, ['first.json']);
+    release.resolve();
+    assert.deepEqual(await Promise.all([first, second]), ['Done', 'Done']);
+    assert.deepEqual(await fs.promises.readdir(target.directory), ['second.json']);
+    assert.deepEqual(await fs.promises.readdir(target.root), ['vhost']);
+});
 
 test('CSV parsing preserves commas, escaped quotes, Unicode and empty fields', () => {
     assert.deepEqual(masterLog.parseCsvLine('"a,b","say ""你好""",,tail,'), ['a,b', 'say "你好"', '', 'tail', '']);

@@ -16,13 +16,14 @@ const cases = [
     ['updateCode', ['/fixture.zip', '/app/'], 'code', 180],
     ['sendProject', ['/app/', 'staticVer', 'fixture'], 'project', 5],
     ['sendPackage', ['{"name":"fixture"}'], 'package', 5],
+    ['sendVhost', [{ 'default.json': '{"domains":["*"],"root":"default/"}' }], 'vhost', 30],
 ];
 const hosts = ['node-a', 'node-b', 'node-c'];
 const master = fs.readFileSync(new URL('../../sys/master.ts', import.meta.url), 'utf8');
 const guard = master.match(/if \(\(typeof msg\.time !== 'number'\) \|\| \(Math\.abs\(msg\.time - time\) > 5\)\) \{\s*res\.end\('Timeout'\);\s*return;\s*\}/)?.[0];
 assert.ok(guard, 'RPC replay window must remain enforced');
 
-function subject(name) {
+function subject(name, configHosts = hosts) {
     const fn = ast.statements.find(node => ts.isFunctionDeclaration(node) && node.name?.text === name);
     assert.ok(fn, name);
     const calls = [];
@@ -44,13 +45,14 @@ function subject(name) {
         return pending;
     }
     const context = vm.createContext({
-        globalConfig: { hosts, rpcPort: 1234, rpcSecret: 'test-only' },
+        globalConfig: { hosts: configHosts, rpcPort: 1234, rpcSecret: 'test-only' },
         lTime: { stamp: () => now },
         lText: { stringifyJson: JSON.stringify },
         lCrypto: { aesEncrypt: value => Buffer.from(value).toString('base64url') },
         lUndici: {
             get: (url, options) => request(url, undefined, options),
             post: request,
+            postJson: request,
             getFormData: () => {
                 const form = {
                     fields: {},
@@ -96,6 +98,13 @@ for (const [name, args, action, timeout] of cases) {
             assert.equal(new Set(target.forms).size, hosts.length);
             for (const call of target.calls) assert.equal(call.body.fields.file, '/fixture.zip');
         }
+        if (name === 'sendVhost') {
+            for (const call of target.calls) {
+                assert.deepEqual(call.body, args[0]);
+                assert.deepEqual(Object.keys(call.msg).sort(), ['action', 'time']);
+            }
+            assert.equal(target.ipc.length, 0, 'updating vhost files must not trigger a reload');
+        }
         target.calls[2].finish({ getContent: async () => Buffer.from('Done') });
         target.calls[1].finish({ getContent: async () => null });
         target.calls[0].finish({ getContent: async () => Buffer.from('Done') });
@@ -107,6 +116,31 @@ for (const [name, args, action, timeout] of cases) {
         assert.equal(target.calls.length, hosts.length, 'failed commands must not retry');
     });
 }
+
+for (const hosts of [undefined, [], 'config']) {
+    test(`sendVhost: empty or omitted hosts use local RPC (${String(hosts)})`, async () => {
+        const target = subject('sendVhost', []);
+        const pending = target.run({ 'default.json': '{"domains":[],"root":""}' }, hosts);
+        assert.deepEqual(target.calls.map(call => call.host), ['127.0.0.1']);
+        target.calls[0].finish({ getContent: async () => Buffer.from('Done') });
+        const result = await pending;
+        assert.equal(result['127.0.0.1'].result, true);
+        assert.equal(target.ipc.length, 0);
+    });
+}
+
+test('sendVhost: a failed response stream does not reject other node results', async () => {
+    const target = subject('sendVhost');
+    const pending = target.run({ 'default.json': '{}' }, 'config');
+    target.calls[0].finish({ getContent: async () => { throw new Error('connection reset'); } });
+    target.calls[1].finish({ getContent: async () => Buffer.from('Not command: vhost') });
+    target.calls[2].finish({ getContent: async () => Buffer.from('Done') });
+    const result = await pending;
+    assert.equal(result['node-a'].return, 'Network error');
+    assert.equal(result['node-b'].result, false);
+    assert.equal(result['node-b'].return, 'Not command: vhost');
+    assert.equal(result['node-c'].result, true);
+});
 
 for (const name of ['sendReload', 'sendRestart', 'sendStop']) {
     test(`${name}: omitted hosts still use local IPC`, async () => {
