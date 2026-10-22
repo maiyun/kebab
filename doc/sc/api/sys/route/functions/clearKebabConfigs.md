@@ -10,7 +10,7 @@
 
 Defined in: [sys/route.ts:29](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L29)
 
-清除已经加载的虚拟主机配置文件
+清空缓存的项目配置，下次请求时重新读取文件
 
 ## Returns
 

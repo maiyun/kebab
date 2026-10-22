@@ -8,7 +8,7 @@
 
 Defined in: [sys/route.ts:1047](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1047)
 
-multipart 解析首次失败的安全诊断，不包含临时路径或异常对象
+解析上传数据时的失败原因，只提供错误码和限制值，不带临时路径或异常对象
 
 ## Properties
 
@@ -26,4 +26,4 @@ Defined in: [sys/route.ts:1048](https://github.com/maiyunnet/kebab/blob/master/s
 
 Defined in: [sys/route.ts:1052](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1052)
 
-触发的限制值；大小按字节，超时按毫秒，段数按个
+超出的限制值：大小用字节，超时用毫秒，字段和文件数量用个

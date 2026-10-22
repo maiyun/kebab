@@ -18,7 +18,7 @@ multipart 文件处理及失败通知
 
 Defined in: [sys/route.ts:1064](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1064)
 
-首次失败时通知一次；原有 false 返回值不变，连接中断时响应可能无法送达
+首次失败时调用一次，getFormData 返回 false；若连接已断开，可能无法回复客户端
 
 #### Parameters
 

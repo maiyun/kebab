@@ -48,7 +48,7 @@ Defined in: [sys/route.ts:1070](https://github.com/maiyunnet/kebab/blob/master/s
 
 Defined in: [sys/route.ts:1078](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1078)
 
-单个 multipart 段头部最大字节数，默认 16 KB
+每个字段或文件的 multipart 头部最多多少字节，默认 16 KB
 
 ***
 
