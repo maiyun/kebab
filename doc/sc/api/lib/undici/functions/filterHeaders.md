@@ -8,7 +8,7 @@
 
 > **filterHeaders**(`headers`, `res?`, `filter?`): `Record`\<`string`, `string` \| `string`[]\>
 
-Defined in: [lib/undici.ts:672](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L672)
+Defined in: [lib/undici.ts:673](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L673)
 
 剔除不代理的 header，返回新的 header
 

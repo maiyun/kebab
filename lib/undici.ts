@@ -202,12 +202,12 @@ export async function postJson(
 }
 
 /**
- * --- 发起请求并解析 JSON 响应，可在解析失败时重新请求 ---
+ * --- 发起请求并解析 JSON 响应，解析失败或重试验证未通过时重新请求 ---
  * @param u 网址
  * @param data 请求数据
  * @param opt 请求选项
  * @param action 日志动作名
- * @returns JSON 数据；请求失败返回 null；JSON 解析失败返回 false
+ * @returns 最后一次响应的 JSON 数据，重试验证未通过也保留；请求或读取失败返回 null；JSON 解析失败返回 false
  */
 async function requestResponseJson(
     u: string,
@@ -237,7 +237,8 @@ async function requestResponseJson(
             const reason = json ? 'retry json handler returned false' : 'parse json failed';
             lCore.log({}, `[UNDICI][${action}] ${reason}, url: ${u}${requestData}, content: ${rtnStr}`, '-neterror');
         }
-        return false;
+        // --- 重试耗尽仍保留本次解析结果，交给调用方判断业务错误 ---
+        return json;
     }
     return false;
 }
@@ -247,7 +248,7 @@ async function requestResponseJson(
  * @param u 网址
  * @param data 数据
  * @param opt 选项
- * @returns JSON 数据；请求失败返回 null；JSON 解析失败返回 false
+ * @returns 最后一次响应的 JSON 数据，重试验证未通过也保留；请求或读取失败返回 null；JSON 解析失败返回 false
  */
 export async function postJsonResponseJson(
     u: string, data: kebab.Json[] | Record<string, kebab.Json>, opt: IRequestOptions = {}
@@ -262,7 +263,7 @@ export async function postJsonResponseJson(
  * @param u 网址
  * @param data 数据
  * @param opt 选项
- * @returns JSON 数据；请求失败返回 null；JSON 解析失败返回 false
+ * @returns 最后一次响应的 JSON 数据，重试验证未通过也保留；请求或读取失败返回 null；JSON 解析失败返回 false
  */
 export async function postResponseJson(
     u: string, data: Record<string, kebab.Json>, opt: IRequestOptions = {}
@@ -275,7 +276,7 @@ export async function postResponseJson(
  * --- 发起 GET 请求并解析 JSON 响应 ---
  * @param u 网址
  * @param opt 选项
- * @returns JSON 数据；请求失败返回 null；JSON 解析失败返回 false
+ * @returns 最后一次响应的 JSON 数据，重试验证未通过也保留；请求或读取失败返回 null；JSON 解析失败返回 false
  */
 export async function getResponseJson(
     u: string,
@@ -904,9 +905,9 @@ export interface IRequestOptions {
     'timeout'?: number;
     /** --- 网络异常后的重试次数，默认 0；流式请求体不可重试，非幂等请求需由调用方保证安全 --- */
     'retry'?: number;
-    /** --- JSON 解析失败后的重试次数，默认 0；仅适用于 ResponseJson 快捷方法，非幂等请求需由调用方保证安全 --- */
+    /** --- JSON 解析失败或重试验证未通过后的重试次数，默认 0；仅适用于 ResponseJson 快捷方法，非幂等请求需由调用方保证安全 --- */
     'retryJson'?: number;
-    /** --- JSON 重试验证方法；返回 false 时按 retryJson 的设置重试，仅适用于 ResponseJson 快捷方法 --- */
+    /** --- JSON 重试验证方法；返回 false 时按 retryJson 的设置重试，耗尽后仍返回最后一次解析结果，业务结果由调用方判断；仅适用于 ResponseJson 快捷方法 --- */
     'retryJsonHandler'?: (json: kebab.Json) => boolean;
     /** --- 追踪 location 次数，0 为不追踪，默认为 0 --- */
     'follow'?: number;
