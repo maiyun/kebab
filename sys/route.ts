@@ -20,11 +20,11 @@ import * as lLang from '#kebab/lib/lang.js';
 import * as sCtr from './ctr.js';
 import * as kebab from '#kebab/index.js';
 
-/** --- 动态层 kebab.json 缓存（文件路径: 最终合并值） --- */
+/** --- 已加载的项目配置，按 kebab.json 的文件路径缓存，已补齐全局默认值 --- */
 let kebabConfigs: Record<string, kebab.IConfig> = {};
 
 /**
- * --- 清除已经加载的虚拟主机配置文件 ---
+ * --- 清空缓存的项目配置，下次请求时重新读取文件 ---
  */
 export function clearKebabConfigs(): void {
     kebabConfigs = {};
@@ -47,7 +47,7 @@ function respond500(res: http2.Http2ServerResponse | http.ServerResponse): void 
 }
 
 /**
- * --- 安全写入外部输入键，避免 __proto__ 等特殊键改变对象原型 ---
+ * --- 保存用户输入的字段名和值，__proto__ 也只作为普通字段，不会改变对象原型 ---
  * @param target 目标对象
  * @param key 键
  * @param value 值
@@ -139,7 +139,7 @@ export async function run(data: {
         if (routeContent) {
             kebabConfigs[data.rootPath + 'kebab.json'].route = lText.parseJson<any>(routeContent);
         }
-        // --- 将全局的项目应用到 vhostConfigs 里，但当 vhostConfigs 有项，则不应用 ---
+        // --- 用全局配置补齐项目中没设置的项，已有设置不覆盖 ---
         for (const name in lCore.globalConfig) {
             if (typeof lCore.globalConfig[name] !== 'object') {
                 if (kebabConfigs[data.rootPath + 'kebab.json'][name] === undefined) {
@@ -164,6 +164,18 @@ export async function run(data: {
     for (const name in configData) {
         config[name] = configData[name];
     }
+    // --- 复制一份 set，后面改资源地址时就不会改动原来的配置 ---
+    config.set = { ...config.set };
+    /** --- host 不带默认端口（HTTP 的 80、HTTPS 的 443）--- */
+    let hostCanonical = data.uri.host ?? '';
+    if (data.uri.protocol === 'https:' && Number(data.uri.port) === 443) {
+        hostCanonical = lText.parseHost(hostCanonical).rawHostname;
+    }
+    else if (data.uri.protocol === 'http:' && Number(data.uri.port) === 80) {
+        hostCanonical = lText.parseHost(hostCanonical).rawHostname;
+    }
+    /** --- 网址开头的协议和 host，如 https://example.com --- */
+    const urlOrigin = `${data.uri.protocol ?? ''}//${hostCanonical}`;
     config.const = {
         'path': data.path,
         'qs': data.uri.query ?? '',
@@ -180,7 +192,8 @@ export async function run(data: {
         'host': data.uri.host ?? '',
         'hostname': data.uri.hostname ?? '',
         'hostport': data.uri.port ? parseInt(data.uri.port) : (data.uri.protocol === 'https:' ? 443 : 80),
-        'urlOrigin': (data.uri.protocol ?? '') + '//' + (data.uri.host ?? ''),
+        'hostCanonical': hostCanonical,
+        'urlOrigin': urlOrigin,
         'uri': data.uri,
 
         // --- 服务端用的路径 ---
@@ -196,7 +209,7 @@ export async function run(data: {
 
         'urlBase': data.urlBase,
         'urlStc': data.urlBase + 'stc/',
-        'urlFull': (data.uri.protocol ?? '') + '//' + (data.uri.host ?? '') + data.urlBase,
+        'urlFull': `${urlOrigin}${data.urlBase}`,
         'urlStcFull': ''
     };
     config.const.urlStcFull = config.const.urlFull + 'stc/';
@@ -212,7 +225,7 @@ export async function run(data: {
     if (path === '') {
         path = '@';
     }
-    /** --- 不做语言跳转、不进入动态处理流程的路径 --- */
+    /** --- 这些静态资源路径不自动跳转到语言页 --- */
     const stcPaths = /^(stc\/.*|favicon.\w+?\??.*|apple[\w-]+?\.png\??.*|[\w-]+?\.(?:txt|html|xml)\??.*)/;
     // --- 检测是否托管语言页面 ---
     const param: string[] = [];
@@ -632,7 +645,7 @@ export async function run(data: {
         data.res.setHeader('expires', new Date(Date.now() + cacheTTL * 1_000).toUTCString());
         data.res.setHeader('cache-control', 'max-age=' + cacheTTL.toString());
     }
-    // --- 记录控制器是否显式设置状态码；未设置时，带 Location 的空响应仍兼容为 302 ---
+    // --- 记录控制器有没有设置状态码；没设置时，带 Location 且无返回内容就用 302 ---
     const hasCustomHttpCode = httpCode !== 0;
     // --- 设置自定义 hcode ---
     if (httpCode === 0) {
@@ -702,7 +715,7 @@ export async function run(data: {
             if (compress) {
                 // --- Node.js 自动设置 transfer-encoding: chunked ---
                 data.res.setHeader('content-encoding', compress.type);
-                // --- 压缩后大小变化，移除 content-length 避免与实际大小不匹配 ---
+                // --- 压缩后大小会变，删掉原来的 content-length ---
                 data.res.removeHeader('content-length');
             }
             lCore.writeHead(data.res, httpCode);
@@ -1030,12 +1043,12 @@ export function getPost(
     });
 }
 
-/** --- multipart 解析首次失败的安全诊断，不包含临时路径或异常对象 --- */
+/** --- 解析上传数据时的失败原因，只提供错误码和限制值，不带临时路径或异常对象 --- */
 export interface IFormDataError {
     'code': 'INVALID_BOUNDARY' | 'FILE_TOO_LARGE' | 'TOTAL_TOO_LARGE' | 'FIELD_TOO_LARGE' |
         'HEADER_TOO_LARGE' | 'TOO_MANY_PARTS' | 'FILE_TYPE' | 'TIMEOUT' | 'TEMP_FILE_ERROR' |
         'REQUEST_ERROR' | 'REQUEST_ABORTED';
-    /** --- 触发的限制值；大小按字节，超时按毫秒，段数按个 --- */
+    /** --- 超出的限制值：大小用字节，超时用毫秒，字段和文件数量用个 --- */
     'limit'?: number;
 }
 
@@ -1047,7 +1060,7 @@ export interface IFormDataEvents {
     onfiledata?: (chunk: Buffer) => void;
     /** --- 文件上传结束时触发，仅 start 返回 true 时触发 --- */
     onfileend?: () => void;
-    /** --- 首次失败时通知一次；原有 false 返回值不变，连接中断时响应可能无法送达 --- */
+    /** --- 首次失败时调用一次，getFormData 返回 false；若连接已断开，可能无法回复客户端 --- */
     onerror?: (error: IFormDataError) => void;
 }
 
@@ -1061,7 +1074,7 @@ export interface IFormDataLimits {
     'maxFieldSize'?: number;
     /** --- 整体请求最大字节数，不设置或设为 0 则不限制 --- */
     'maxTotalSize'?: number;
-    /** --- 单个 multipart 段头部最大字节数，默认 16 KB --- */
+    /** --- 每个字段或文件的 multipart 头部最多多少字节，默认 16 KB --- */
     'maxHeaderSize'?: number;
     /** --- multipart 字段与文件总数量，默认 1000 --- */
     'maxParts'?: number;
@@ -1116,7 +1129,7 @@ export function getFormData(
             return;
         }
 
-        // --- 超时护盾：防止网络静默断开时 Promise 永不 resolve ---
+        // --- 上传一直没结束时，按超时时间返回失败，避免一直等下去 ---
 
         /** --- 超时定时器 --- */
         let timer: NodeJS.Timeout | undefined;
@@ -1130,7 +1143,7 @@ export function getFormData(
             }
         }
 
-        // 一下变量是相对于 data 事件的全局变量 ---
+        // --- 下面的变量记录上传进度，每次收到数据时继续使用 ---
 
         /** --- 当前临时读入的还未处理的 buffer --- */
         let buffer: Buffer = Buffer.from('');
@@ -1155,13 +1168,13 @@ export function getFormData(
         let ftmpName: string = '';
         /** --- 当前正在写入的临时文件流 --- */
         let ftmpStream: fs.WriteStream;
-        /** --- 当前临时文件已写入的流大小 --- */
+        /** --- 当前临时文件已写入的字节数 --- */
         let ftmpSize: number = 0;
         /** --- 当前正在写入的文件数量 --- */
         let writeFileLength: number = 0;
         /** --- 当前读取是否已经完全结束 --- */
         let readEnd: boolean = false;
-        /** --- 是否有文件被限制拒绝（整体返回 false） --- */
+        /** --- 本次上传是否已经失败，失败后返回 false --- */
         let rejected: boolean = false;
 
         /**
@@ -1184,13 +1197,13 @@ export function getFormData(
         let totalSize: number = 0;
         /** --- 已解析的字段与文件数量 --- */
         let partCount: number = 0;
-        /** --- 临时文件的写入流，保证拒绝时等待关闭后再删除 --- */
+        /** --- 临时文件对应的写入流，删除文件前先关闭 --- */
         const fileStreams = new Map<string, fs.WriteStream>();
-        /** --- 已安排删除的临时文件，避免重复注册关闭回调 --- */
+        /** --- 已安排删除的文件，避免给同一个文件重复添加 close 回调 --- */
         const discardedFiles = new Set<string>();
 
         /**
-         * --- 丢弃临时文件，处理文件尚未完成 open 时的删除竞态 ---
+         * --- 等文件流关闭后再删临时文件，避免文件还没创建就先删 ---
          * @param filePath 本次上传创建的临时文件路径
          * @returns 无返回值
          */
@@ -1234,7 +1247,7 @@ export function getFormData(
             --writeFileLength;
         }
 
-        // --- 启动超时定时器（在所有变量声明之后，确保回调闭包可引用） ---
+        // --- 上面的变量准备好后再启动定时器，超时回调会用到它们 ---
         const timeoutMs = limits.timeout ?? 300_000;
         if (timeoutMs > 0) {
             timer = setTimeout(() => {
@@ -1250,7 +1263,7 @@ export function getFormData(
             }, timeoutMs);
         }
 
-        /** --- 拒绝当前文件：销毁流、删临时文件、标记 rejected --- */
+        /** --- 文件太大时，停止保存、删除临时文件，并将本次上传标为失败 --- */
         function rejectFile(): void {
             reject({ 'code': 'FILE_TOO_LARGE', 'limit': limits.maxFileSize });
             cleanupActiveFile();
@@ -1355,7 +1368,7 @@ export function getFormData(
                                 });
                                 ftmpStream = activeStream;
                                 activeStream.on('error', (error) => {
-                                    // --- 主动拒绝后的销毁错误不重复报告或扣减写入计数 ---
+                                    // --- 失败或结束后忽略后续 error，避免重复报错和重复减 writeFileLength ---
                                     if (rejected || finished) {
                                         return;
                                     }
@@ -1456,7 +1469,7 @@ export function getFormData(
                                 ftmpStream.write(writeBuffer);
                                 ftmpSize += Buffer.byteLength(writeBuffer);
                                 ftmpStream.end((error?: Error | null) => {
-                                    // --- 写入失败由 error 事件统一拒绝，不能提前当成保存完成 ---
+                                    // --- 写入报错时交给 error 回调处理，不把这个文件算作已保存 ---
                                     if (error) {
                                         return;
                                     }

@@ -6,7 +6,7 @@
 
 # Interface: IFormDataEvents
 
-Defined in: [sys/route.ts:1043](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1043)
+Defined in: [sys/route.ts:1056](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1056)
 
 multipart 文件处理及失败通知
 
@@ -16,7 +16,7 @@ multipart 文件处理及失败通知
 
 > `optional` **onerror?**: (`error`) => `void`
 
-Defined in: [sys/route.ts:1051](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1051)
+Defined in: [sys/route.ts:1064](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1064)
 
 首次失败时通知一次；原有 false 返回值不变，连接中断时响应可能无法送达
 
@@ -36,7 +36,7 @@ Defined in: [sys/route.ts:1051](https://github.com/maiyunnet/kebab/blob/master/s
 
 > `optional` **onfiledata?**: (`chunk`) => `void`
 
-Defined in: [sys/route.ts:1047](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1047)
+Defined in: [sys/route.ts:1060](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1060)
 
 文件上传时触发，仅 start 返回 true 时触发
 
@@ -56,7 +56,7 @@ Defined in: [sys/route.ts:1047](https://github.com/maiyunnet/kebab/blob/master/s
 
 > `optional` **onfileend?**: () => `void`
 
-Defined in: [sys/route.ts:1049](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1049)
+Defined in: [sys/route.ts:1062](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1062)
 
 文件上传结束时触发，仅 start 返回 true 时触发
 
@@ -70,7 +70,7 @@ Defined in: [sys/route.ts:1049](https://github.com/maiyunnet/kebab/blob/master/s
 
 > `optional` **onfilestart?**: (`name`) => `boolean` \| `undefined`
 
-Defined in: [sys/route.ts:1045](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1045)
+Defined in: [sys/route.ts:1058](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1058)
 
 文件开始上传时触发，返回 true 则跳过该文件的保存
 

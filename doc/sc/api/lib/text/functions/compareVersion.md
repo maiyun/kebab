@@ -8,7 +8,7 @@
 
 > **compareVersion**(`version`, `target`): `0` \| `1` \| `-1` \| `null`
 
-Defined in: [lib/text.ts:35](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L35)
+Defined in: [lib/text.ts:36](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L36)
 
 逐段比较三段正式发行版本 X.Y.Z，不按字符串或浮点数比较
 

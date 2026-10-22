@@ -6,7 +6,7 @@
 
 # Interface: IFormDataError
 
-Defined in: [sys/route.ts:1034](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1034)
+Defined in: [sys/route.ts:1047](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1047)
 
 multipart 解析首次失败的安全诊断，不包含临时路径或异常对象
 
@@ -16,7 +16,7 @@ multipart 解析首次失败的安全诊断，不包含临时路径或异常对�
 
 > **code**: `"INVALID_BOUNDARY"` \| `"FILE_TOO_LARGE"` \| `"TOTAL_TOO_LARGE"` \| `"FIELD_TOO_LARGE"` \| `"HEADER_TOO_LARGE"` \| `"TOO_MANY_PARTS"` \| `"FILE_TYPE"` \| `"TIMEOUT"` \| `"TEMP_FILE_ERROR"` \| `"REQUEST_ERROR"` \| `"REQUEST_ABORTED"`
 
-Defined in: [sys/route.ts:1035](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1035)
+Defined in: [sys/route.ts:1048](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1048)
 
 ***
 
@@ -24,6 +24,6 @@ Defined in: [sys/route.ts:1035](https://github.com/maiyunnet/kebab/blob/master/s
 
 > `optional` **limit?**: `number`
 
-Defined in: [sys/route.ts:1039](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1039)
+Defined in: [sys/route.ts:1052](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1052)
 
 触发的限制值；大小按字节，超时按毫秒，段数按个

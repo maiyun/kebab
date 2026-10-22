@@ -8,7 +8,7 @@
 
 > **int2str**(`int`, `digits?`, `decimal?`): `string`
 
-Defined in: [lib/text.ts:863](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L863)
+Defined in: [lib/text.ts:840](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L840)
 
 为解决精度问题，将整数转换为小数字符串
 以下几个示例都是当 digits 为 3、decimal 为 2 时

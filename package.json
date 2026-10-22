@@ -15,7 +15,8 @@
   "scripts": {
     "build-doc": "bash ./utils/build-doc.sh",
     "test:formdata": "node abox/test/formdata.mjs",
-    "test:rpc": "node --test --test-isolation=none abox/test/rpc.mjs"
+    "test:rpc": "node --test --test-isolation=none abox/test/rpc.mjs",
+    "test:master": "node --test --test-isolation=none abox/test/master.mjs"
   },
   "bin": {
     "kebab": "./bin/kebab.js"

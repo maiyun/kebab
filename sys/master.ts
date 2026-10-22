@@ -19,6 +19,14 @@ import * as lText from '#kebab/lib/text.js';
 import * as lCrypto from '#kebab/lib/crypto.js';
 import * as lTime from '#kebab/lib/time.js';
 import * as lZip from '#kebab/lib/zip.js';
+import * as masterLog from '#kebab/abox/master-log.js';
+
+/**
+ * --- 解析一行 CSV，保留空字段，并处理字段里的逗号和引号 ---
+ * @param line 不含换行符的 CSV 行
+ * @returns 按原顺序排列的字段
+ */
+const parseCsvLine: (line: string) => string[] = masterLog.parseCsvLine;
 
 /** --- 当前运行中的子进程列表 --- */
 const workerList: Record<string, {
@@ -30,14 +38,20 @@ const workerList: Record<string, {
     'hbtime': number;
 }> = {};
 
-/** --- master 是否正在缓动停止 --- */
+/** --- 是否已开始停止整个服务 --- */
 let stopping = false;
 
-/** --- 当前缓动停止任务，避免重复 stop 命令触发 --- */
+/** --- 正在执行的停止任务，重复 stop 时继续等这个任务 --- */
 let stopPromise: Promise<void> | null = null;
 
+/** --- 正在执行的重启任务，重复请求不再另起一轮 --- */
+let restartPromise: Promise<void> | null = null;
+
+/** --- 正在替换失联 worker 的任务，重启时先等它结束 --- */
+let workerCheckPromise: Promise<void> | null = null;
+
 /**
- * --- 判断候选路径是否位于指定根目录内 ---
+ * --- 判断路径是否在指定目录内 ---
  * @param rootPath 已解析的真实根目录
  * @param candidate 候选绝对路径
  */
@@ -47,7 +61,7 @@ function isPathInside(rootPath: string, candidate: string): boolean {
 }
 
 /**
- * --- 解析根目录内的路径，并阻止通过绝对路径、.. 或符号链接逃逸 ---
+ * --- 把输入路径转成完整路径，防止通过 .. 或软链接访问根目录外的文件 ---
  * @param rootPath 限定的根目录
  * @param inputPath 用户输入的相对路径
  */
@@ -65,7 +79,7 @@ async function resolvePathInside(rootPath: string, inputPath: string): Promise<s
         return null;
     }
 
-    /** --- 向上找到已存在的最近父路径，用 realpath 校验其中的符号链接 --- */
+    /** --- 路径还不存在时，往上找已有的部分，检查软链接是否指向根目录外 --- */
     let existingPath = candidate;
     const missingParts: string[] = [];
     while (true) {
@@ -74,7 +88,11 @@ async function resolvePathInside(rootPath: string, inputPath: string): Promise<s
             const resolved = path.resolve(existingReal, ...missingParts);
             return isPathInside(rootReal, resolved) ? resolved : null;
         }
-        catch {
+        catch (e: unknown) {
+            if ((e as NodeJS.ErrnoException).code !== 'ENOENT') {
+                lCore.display('[master] [resolvePathInside]', e);
+                return null;
+            }
             const parent = path.dirname(existingPath);
             if (parent === existingPath) {
                 return null;
@@ -86,8 +104,9 @@ async function resolvePathInside(rootPath: string, inputPath: string): Promise<s
 }
 
 /**
- * --- 规范化 ZIP 条目路径，返回带前导斜杠的安全相对路径 ---
+ * --- 统一 ZIP 文件路径中的斜杠，并拒绝 .. 等不安全写法 ---
  * @param archivePath ZIP 内的原始路径
+ * @returns 以 / 开头的 ZIP 内路径；路径不允许时返回 null
  */
 function normalizeArchivePath(archivePath: string): string | null {
     const normalizedSlashes = archivePath.replace(/\\/g, '/').replace(/^\/+/, '');
@@ -99,15 +118,11 @@ function normalizeArchivePath(archivePath: string): string | null {
     ) {
         return null;
     }
-    const normalized = path.posix.normalize(normalizedSlashes);
-    if (normalized.startsWith('../') || (normalized === '..') || path.posix.isAbsolute(normalized)) {
-        return null;
-    }
-    return `/${normalized}`;
+    return `/${normalizedSlashes}`;
 }
 
 /**
- * --- 递归判断 JSON 内容中是否包含受保护的配置参数 ---
+ * --- 检查 JSON 中有没有 pwd 或 skey，嵌套对象也要检查 ---
  * @param value 待检查的 JSON 值
  * @returns 是否包含 pwd 或 skey 参数
  */
@@ -130,7 +145,7 @@ function hasSensitiveConfigKey(value: unknown): boolean {
 }
 
 /**
- * --- 判断 ZIP 内的 kebab.json 是否包含受保护的配置参数 ---
+ * --- 检查 ZIP 中的 kebab.json 有没有 pwd 或 skey ---
  * @param content ZIP 文件内容
  * @returns 是否包含 pwd 或 skey 参数
  */
@@ -140,7 +155,7 @@ function hasSensitiveConfig(content: Buffer | string): boolean {
 }
 
 /**
- * --- 等待指定 worker 开始监听端口就绪 ---
+ * --- 等待 worker 开始监听端口，超时后继续执行 ---
  * @param worker 要等待的 worker 对象
  * @param timeout 超时时间（毫秒），默认 30 秒
  */
@@ -214,17 +229,30 @@ async function run(): Promise<void> {
             if (!worker.process.pid) {
                 return;
             }
+            const entry = workerList[worker.process.pid];
+            delete workerList[worker.process.pid];
             // --- 有子线程退出 ---
             if (code === 0) {
-                // --- 正常关闭，证明关闭前主进程已经重启新进程了，这里无需在 fork ---
+                // --- 正常退出，无需再启动替代进程 ---
                 lCore.display(`[master] Worker ${worker.process.pid} has been disconnected.`);
             }
             else {
-                // --- 中断，致命错误，需要重新启动一个新线程 ---
+                // --- 异常退出，检查是否需要补一个 worker ---
                 lCore.display(`[master] Worker ${worker.process.pid} has collapsed.`);
-                const cpu = workerList[worker.process.pid].cpu;
-                delete workerList[worker.process.pid];
-                await createChildProcess(cpu);
+                if (!entry) {
+                    return;
+                }
+                // --- 先等正在进行的重启或失联检查结束，免得重复启动 worker ---
+                await Promise.allSettled([restartPromise, workerCheckPromise]);
+                if (stopping) {
+                    return;
+                }
+                for (const current of Object.values(workerList)) {
+                    if (current.cpu === entry.cpu && current.worker.isConnected() && !current.worker.isDead()) {
+                        return;
+                    }
+                }
+                await createChildProcess(entry.cpu);
             }
         })().catch(function(e) {
             lCore.display('[master] [cluster] [exit]', e);
@@ -233,7 +261,7 @@ async function run(): Promise<void> {
 }
 
 /**
- * --- 创建 RPC 监听，用来监听 cmd 或局域网传递过来的数据，并广播给所有子进程，cmd 部分代码在 cmd 中实现 ---
+ * --- 接收并执行本机命令行或其他服务器发来的 RPC 命令 ---
  */
 function createRpcListener(): void {
     http.createServer(function(req: http.IncomingMessage, res: http.ServerResponse) {
@@ -312,7 +340,7 @@ function createRpcListener(): void {
                         res.end('Invalid pm2Action');
                         return;
                     }
-                    // --- 先确认已接收，让调用方完成当前 HTTP 响应，再执行可能终止本进程的 PM2 操作 ---
+                    // --- 先回复 Done 再执行 PM2，避免进程先退出，调用方收不到回复 ---
                     res.end('Done');
                     setTimeout(() => {
                         lCore.exec(`pm2 ${msg.pm2Action} ${msg.name}`).then((rtn) => {
@@ -335,7 +363,7 @@ function createRpcListener(): void {
                         res.end('Path not found');
                         return;
                     }
-                    // --- 两次安装共用 5 分钟预算，给 sendNpm 的 330 秒等待留出回传时间 ---
+                    // --- 安装和重试合计最多 5 分钟，给 sendNpm 留 30 秒接收结果 ---
                     const npmTimeout = 300_000;
                     const npmDeadline = Date.now() + npmTimeout;
                     let rtn = await lCore.exec('npm i --omit=dev', {
@@ -479,7 +507,7 @@ function createRpcListener(): void {
                         return;
                     }
                     const rawList = await zip.getList();
-                    /** --- 经过路径校验并统一为带前导斜杠的 ZIP 文件列表 --- */
+                    /** --- 通过路径检查的 ZIP 文件，路径都以 / 开头 --- */
                     const ls: Record<string, Buffer | string> = {};
                     for (const archivePath in rawList) {
                         const normalizedPath = normalizeArchivePath(archivePath);
@@ -498,14 +526,12 @@ function createRpcListener(): void {
                     /** --- 本次部署涉及到的目录路径集合（不含开头/，含尾部/，根目录为空字符串） --- */
                     const touchedDirs = new Set<string>();
                     for (const scanPath in ls) {
-                        /** --- 带 / 开头的 zip 中文件完整路径，例如 "/www/pika/stc/index.ts" --- */
-                        const scanFpath = scanPath.startsWith('/') ? scanPath : '/' + scanPath;
                         /** --- 纯路径中最后一个 / 的位置索引 --- */
-                        const scanLio = scanFpath.lastIndexOf('/');
+                        const scanLio = scanPath.lastIndexOf('/');
                         /** --- 纯路径，不以 / 开头，以 / 结尾，若是根路径就是空字符串，例如 "www/pika/" --- */
-                        const scanPat = scanFpath.slice(1, scanLio + 1);
+                        const scanPat = scanPath.slice(1, scanLio + 1);
                         /** --- 纯文件名，例如 "index.ts" 或 "pika.cga" --- */
-                        const scanFname = scanFpath.slice(scanLio + 1);
+                        const scanFname = scanPath.slice(scanLio + 1);
                         touchedDirs.add(scanPat);
                         if (scanFname.endsWith('.cga')) {
                             // --- 记录 .cga 锁定的同级目录（去掉 .cga 后缀的名字即为被锁定的目录名）---
@@ -518,7 +544,7 @@ function createRpcListener(): void {
                     }
                     // --- 补充扫描目标目录中现存的 kebab.json，兼容压缩包未携带 kebab.json 的情况 ---
                     for (const dir of touchedDirs) {
-                        /** --- 目录逐级向上回溯时的累积路径列表，优先检查当前目录，再检查父级目录 --- */
+                        /** --- 把目录拆成各级目录名，先检查当前目录，再一层层往上找 --- */
                         const dirs = dir ? dir.split('/').filter(Boolean) : [];
                         for (let i = dirs.length; i >= 0; --i) {
                             /** --- 当前要检查的目录路径，不含开头/，含尾部/，根目录为空字符串 --- */
@@ -556,15 +582,13 @@ function createRpcListener(): void {
                         'temp',
                     ]);
                     for (const archivePath in ls) {
-                        /** --- 带 / 开头的 zip 中文件完整路径，例如 "/www/pika/ctr/api.js" --- */
-                        const fpath = archivePath.startsWith('/') ? archivePath : '/' + archivePath;
                         /** --- 纯路径中最后一个 / 的位置索引 --- */
-                        const lio = fpath.lastIndexOf('/');
+                        const lio = archivePath.lastIndexOf('/');
                         /** --- 纯路径，不以 / 开头，以 / 结尾，若是根路径就是空字符串，例如 "www/pika/ctr/" --- */
-                        const pat = fpath.slice(1, lio + 1);
+                        const pat = archivePath.slice(1, lio + 1);
                         /** --- 纯文件名，例如 "api.js" --- */
-                        const fname = fpath.slice(lio + 1);
-                        const dirs = fpath.slice(1).split('/').slice(0, -1);
+                        const fname = archivePath.slice(lio + 1);
+                        const dirs = archivePath.slice(1).split('/').slice(0, -1);
                         if (dirs.some(seg => DEPLOY_EXCLUDE_DIRS.has(seg))) {
                             // --- 开发、依赖、缓存、构建产物目录不覆盖 ---
                             continue;
@@ -591,9 +615,9 @@ function createRpcListener(): void {
                         }
                         // --- 规则 1：若同级目录存在 xxx.cga，则 xxx 目录下所有内容不部署 ---
                         if (pat) {
-                            /** --- 是否被 .cga 文件锁定阻止 --- */
+                            /** --- 当前目录或上级目录是否有同名 .cga 文件 --- */
                             let cgaBlocked = false;
-                            /** --- 累积路径，逐级拼接，用于逐级检查是否命中 cgaLockedDirs，例如 "a/" -> "a/b/" -> "a/b/c/" --- */
+                            /** --- 逐层拼出的目录路径，如 a/、a/b/，检查是否有同名 .cga 文件 --- */
                             let accumulated = '';
                             for (const seg of pat.split('/').filter(Boolean)) {
                                 accumulated += seg + '/';
@@ -607,16 +631,13 @@ function createRpcListener(): void {
                             }
                         }
                         // --- 规则 2：kebab 子项目目录中，仅允许部署 ctr/data/stc/view/lib/abox 子文件夹内的内容 ---
-                        // --- 快速跳过：zip 中没有 kebab.json 时整个规则无需执行 ---
                         if (kebabProjectDirs.size > 0) {
-                            // --- 找最浅（最外层）匹配的 kebab 项目目录 ---
-                            // --- 以最浅匹配为准，确保根层 kebab 规则优先于嵌套项目 ---
-                            // --- 例如 backup/ 自身也有 kebab.json，longestMatch 会选 backup/，使其根文件通过 ---
-                            // --- 改用 shortestMatch 则选根 ""，backup 的第一段不在白名单中，正确排除 ---
-                            /** --- 当前文件所属的最浅 kebab 子项目目录；无匹配则为 null --- */
+                            // --- 同时属于多个 Kebab 项目时，按最外层项目的部署规则检查 ---
+                            // --- 例如根项目不允许 backup/，backup/ 自带 kebab.json 也不能绕过 ---
+                            /** --- 当前文件所属的最外层 Kebab 项目目录，找不到时为 null --- */
                             let shortestMatch: string | null = null;
                             for (const kdir of kebabProjectDirs) {
-                                /** --- 当前 kdir 是否比已有的 shortestMatch 更浅（路径更短）--- */
+                                /** --- kdir 是否比已选的项目目录更靠外（路径更短）--- */
                                 const isShallower = shortestMatch === null || kdir.length < shortestMatch.length;
                                 if (pat.startsWith(kdir) && isShallower) {
                                     shortestMatch = kdir;
@@ -737,220 +758,68 @@ function createRpcListener(): void {
                         res.end('Invalid offset');
                         return;
                     }
+                    if (msg.search && ((typeof msg.search !== 'string') || (msg.search.length > 500) || msg.search.includes('\0'))) {
+                        res.end('Invalid search');
+                        return;
+                    }
+                    /** --- 搜索词用换行分隔，命中其中一个就算匹配 --- */
+                    const search = msg.search ? (msg.search as string).split('\n') : null;
+                    /** --- CSV 返回字段数组，JSONL 返回解析后的对象 --- */
+                    const list: string[][] | kebab.Json[] = [];
                     let total = 0;
-                    if (msg.search) {
-                        if ((typeof msg.search !== 'string') || (msg.search.length > 500) || msg.search.includes('\0')) {
-                            res.end('Invalid search');
+                    let skipHeader = format === 'csv';
+                    /**
+                     * --- 统计匹配行数并取出当前页，跳过 CSV 表头 ---
+                     * @param line 不含换行符的日志行
+                     * @returns 无返回值
+                     */
+                    const consumeLine = (line: string): void => {
+                        if (skipHeader) {
+                            skipHeader = false;
                             return;
                         }
-                        // === 搜索模式：total 为匹配行数，offset/limit 均基于匹配行 ===
-                        // --- shell 单引号安全转义（防止特殊字符破坏命令）---
-                        const escaped: string = (msg.search as string).replace(/'/g, "'\\''");
-                        // --- 获取匹配行总数（grep -c 无匹配时退出码 1，|| echo 0 兜底）---
-                        const countCmd = format === 'csv'
-                            ? `tail -n +2 "${logPath}" | grep -F -c '${escaped}' || echo 0`
-                            : `grep -F -c '${escaped}' "${logPath}" || echo 0`;
-                        const countRtn = await lCore.exec(countCmd);
-                        if (countRtn !== false) {
-                            total = parseInt(countRtn.trim()) || 0;
-                        }
-                        // --- 获取分页数据：第 offset+1 到 offset+limit 条匹配行（1-indexed）---
-                        const from = offset + 1;
-                        const to = offset + limit;
-                        const dataCmd = format === 'csv'
-                            ? `tail -n +2 "${logPath}" | grep -F '${escaped}' | sed -n '${from},${to}p'`
-                            : `grep -F '${escaped}' "${logPath}" | sed -n '${from},${to}p'`;
-                        const dataRtn = await lCore.exec(dataCmd);
-                        if (dataRtn === false) {
-                            res.end(lText.stringifyJson({
-                                'result': 1,
-                                'list': [],
-                                'total': total,
-                            }));
+                        if (search && !search.some(pattern => line.includes(pattern))) {
                             return;
                         }
-                        /**
-                         * --- csv 格式：string[][] 每行是字段数组，顺序与表头一致 ---
-                         * --- [['H:i:s', unix, url, cookie, session, userAgent, realIp, cfIp, xIp, osMem, procMem, message], ...] ---
-                         * --- jsonl 格式：object[] 每行是解析后的 JSON 对象 ---
-                         * --- [{ time, unix, url, cookie, session, userAgent, realIp, cfIp, xIp, osMem, procMem, message }, ...] ---
-                         */
-                        const sList: string[][] | kebab.Json[] = [];
-                        for (const rawLine of dataRtn.split('\n')) {
-                            if (!rawLine) {
-                                continue;
-                            }
-                            if (format === 'jsonl') {
-                                const obj = lText.parseJson<kebab.Json>(rawLine);
-                                if (obj) {
-                                    (sList as kebab.Json[]).push(obj);
-                                }
-                            }
-                            else {
-                                const result: string[] = [];
-                                let currentField = '';
-                                let inQuotes = false;
-                                for (let i = 0; i < rawLine.length; ++i) {
-                                    const char = rawLine[i];
-                                    if (char === '"') {
-                                        if (inQuotes && rawLine[i + 1] === '"') {
-                                            currentField += '"';
-                                            ++i;
-                                        }
-                                        else {
-                                            inQuotes = !inQuotes;
-                                        }
-                                    }
-                                    else if (char === ',' && !inQuotes) {
-                                        result.push(currentField);
-                                        currentField = '';
-                                    }
-                                    else {
-                                        currentField += char;
-                                    }
-                                }
-                                result.push(currentField);
-                                (sList as string[][]).push(result);
+                        const index = total++;
+                        // --- 搜索时按匹配行数分页，解析失败也占一行 ---
+                        // --- 不搜索时跳过无效 JSON，继续读到当前页填满 ---
+                        if (index < offset || list.length >= limit || search && index >= offset + limit) {
+                            return;
+                        }
+                        if (format === 'jsonl') {
+                            const item = lText.parseJson<kebab.Json>(line);
+                            if (item) {
+                                (list as kebab.Json[]).push(item);
                             }
                         }
-                        res.end(lText.stringifyJson({
-                            'result': 1,
-                            'list': sList,
-                            'total': total,
-                        }));
-                        return;
-                    }
-                    // === 无搜索模式：wc -l 获取总行数，grep -b '^' 定位字节偏移直接跳至 offset ===
-                    const wclRtn = await lCore.exec(`wc -l "${logPath}"`);
-                    if (wclRtn !== false) {
-                        const wclMatch = /^\s*(\d+)/.exec(wclRtn);
-                        if (wclMatch) {
-                            total = parseInt(wclMatch[1]);
-                            if (format === 'csv') {
-                                // --- csv 有表头，数据行数减 1 ---
-                                total = Math.max(0, total - 1);
-                            }
+                        else if (!search || line) {
+                            (list as string[][]).push(parseCsvLine(line));
                         }
-                    }
-                    /**
-                     * --- 用 grep -b '^' 获取目标行的字节偏移，直接传给 createReadStream start 跳过 offset ---
-                     * --- jsonl 无表头：跳过 offset 行，从第 offset+1 行开始读 ---
-                     * --- csv  有表头：跳过表头+offset 行，从第 offset+2 行开始读 ---
-                     */
-                    let startByte = 0;
-                    /** --- offset 定位是否成功（offset=0 直接成功；offset>0 需 grep 定位）--- */
-                    let offsetLocated = offset === 0;
-                    if (offset > 0) {
-                        const skipLines = format === 'jsonl' ? offset : offset + 1;
-                        // --- sed -n '${N}{p;q}' 找到第 N 行后立即退出，使 grep 收到 SIGPIPE 提前终止 ---
-                        const grepRtn = await lCore.exec(`grep -b '^' "${logPath}" | sed -n '${skipLines + 1}{p;q}'`);
-                        if (grepRtn !== false) {
-                            const grepMatch = /^(\d+):/.exec(grepRtn.trim());
-                            if (grepMatch) {
-                                startByte = parseInt(grepMatch[1]);
-                                offsetLocated = true;
-                            }
-                        }
-                    }
-                    if (!offsetLocated) {
-                        // --- offset 超出文件范围，返回空列表 ---
-                        res.end(lText.stringifyJson({
-                            'result': 1,
-                            'list': [],
-                            'total': total,
-                        }));
-                        return;
-                    }
-                    /**
-                     * --- csv 格式：string[][] 每行是字段数组，顺序与表头一致 ---
-                     * --- [['H:i:s', unix, url, cookie, session, userAgent, realIp, cfIp, xIp, osMem, procMem, message], ...] ---
-                     * --- jsonl 格式：object[] 每行是解析后的 JSON 对象 ---
-                     * --- [{ time, unix, url, cookie, session, userAgent, realIp, cfIp, xIp, osMem, procMem, message }, ...] ---
-                     */
-                    const rtn = await new Promise<string[][] | kebab.Json[] | null | false>(resolve => {
-                        const list: string[][] | kebab.Json[] = [];
-                        /** --- 当前行号 --- */
-                        let line = 0;
-                        /** --- 当前行数据 --- */
+                    };
+                    // --- 文件只读一遍，同时统计行数并取出当前页；读失败时返回 500 ---
+                    await new Promise<void>((resolve, reject) => {
                         let packet = '';
-                        lFs.createReadStream(logPath, {
-                            'encoding': 'utf8',
-                            'start': startByte,
-                        }).on('data', buf => {
-                            if (typeof buf !== 'string') {
-                                return;
-                            }
-                            while (true) {
-                                // --- 分包 ---
-                                const index = buf.indexOf('\n');
-                                if (index === -1) {
-                                    // --- 本次包还没有结束 ---
-                                    packet += buf;
-                                    break;
-                                }
-                                // --- 本次行结束了 ---
-                                if (limit === 0) {
-                                    break;
-                                }
-                                packet += buf.slice(0, index);
-                                buf = buf.slice(index + 1);
-                                ++line;
-                                // --- startByte > 0 时已跳过 offset（及 csv 表头），从第一行起均为数据行 ---
-                                // --- startByte === 0 且 csv 时仍需跳过表头（line > 1）---
-                                if (format === 'csv' && startByte === 0 ? line > 1 : line >= 1) {
-                                    if (format === 'jsonl') {
-                                        const obj = lText.parseJson<kebab.Json>(packet);
-                                        if (obj) {
-                                            (list as kebab.Json[]).push(obj);
-                                            --limit;
-                                        }
-                                    }
-                                    else {
-                                        const result: string[] = [];
-                                        let currentField = '';
-                                        let inQuotes = false;
-                                        for (let i = 0; i < packet.length; ++i) {
-                                            const char = packet[i];
-                                            if (char === '"') {
-                                                if (inQuotes && packet[i + 1] === '"') {
-                                                    currentField += '"';
-                                                    ++i;
-                                                }
-                                                else {
-                                                    inQuotes = !inQuotes;
-                                                }
-                                            }
-                                            else if (char === ',' && !inQuotes) {
-                                                result.push(currentField);
-                                                currentField = '';
-                                            }
-                                            else {
-                                                currentField += char;
-                                            }
-                                        }
-                                        result.push(currentField);
-                                        (list as string[][]).push(result);
-                                        --limit;
-                                    }
-                                }
-                                // --- 处理结束 ---
+                        lFs.createReadStream(logPath, { 'encoding': 'utf8' }).on('data', (chunk: string) => {
+                            let start = 0;
+                            let end = chunk.indexOf('\n');
+                            while (end !== -1) {
+                                consumeLine(packet + chunk.slice(start, end));
                                 packet = '';
-                                // --- 看看还有没有后面的粘连包 ---
-                                if (!buf.length) {
-                                    // --- 没粘连包 ---
-                                    break;
-                                }
-                                // --- 有粘连包 ---
+                                start = end + 1;
+                                end = chunk.indexOf('\n', start);
                             }
+                            packet += chunk.slice(start);
                         }).on('end', () => {
-                            resolve(list);
-                        }).on('error', () => {
-                            resolve(false);
-                        });
+                            if (packet) {
+                                consumeLine(packet);
+                            }
+                            resolve();
+                        }).on('error', reject);
                     });
                     res.end(lText.stringifyJson({
                         'result': 1,
-                        'list': rtn,
+                        'list': list,
                         'total': total,
                     }));
                     return;
@@ -1001,7 +870,7 @@ function createRpcListener(): void {
                         res.end();
                         return;
                     }
-                    // --- 原始字节直接传输；pipeline 在客户端断开时关闭文件流，不整文件读取或压缩 ---
+                    // --- 直接发送文件流，不把整个文件读入内存或压缩；客户端断开时 pipeline 会关闭文件流 ---
                     try {
                         await stream.pipeline(fs.createReadStream(file.path, { 'start': 0, 'end': file.stat.size - 1 }), res);
                     }
@@ -1036,16 +905,23 @@ function createRpcListener(): void {
             res.end('Done');
         })().catch(function(e) {
             lCore.display('[master] [createRpcListener]', e);
+            if (res.headersSent) {
+                res.destroy();
+                return;
+            }
+            res.writeHead(500);
+            res.end('Failed');
         });
     }).listen(lCore.globalConfig.rpcPort);
 }
 
 /**
- * --- 通知 worker 停止，并等待其现有连接全部结束后退出 ---
+ * --- 通知 worker 停止接收新连接，等它退出 ---
  * @param worker 要停止的 worker
+ * @param waitForever 是否一直等现有连接结束；stop 为 true，restart 或替换失联 worker 时为 false（最多等一小时）
  * @returns worker 退出后完成
  */
-function stopWorker(worker: cluster.Worker): Promise<void> {
+function stopWorker(worker: cluster.Worker, waitForever = true): Promise<void> {
     if (worker.isDead()) {
         return Promise.resolve();
     }
@@ -1055,7 +931,14 @@ function stopWorker(worker: cluster.Worker): Promise<void> {
             if (worker.isConnected()) {
                 worker.send({
                     'action': 'stop',
-                    'waitForever': true,
+                    'waitForever': waitForever,
+                }, (e: Error | null) => {
+                    if (e) {
+                        lCore.display(`[master] Failed to notify worker ${worker.process.pid ?? 'undefined'} to stop, using SIGTERM.`, e);
+                        if (!worker.isDead()) {
+                            worker.process.kill('SIGTERM');
+                        }
+                    }
                 });
                 return;
             }
@@ -1069,7 +952,7 @@ function stopWorker(worker: cluster.Worker): Promise<void> {
 }
 
 /**
- * --- 停止命令入口和所有 worker，等待整套 Kebab 进程排空后退出 master ---
+ * --- 通知所有 worker 停止，等它们退出后再退出 master ---
  * @returns 全部 worker 退出后完成
  */
 async function gracefulStop(): Promise<void> {
@@ -1079,7 +962,7 @@ async function gracefulStop(): Promise<void> {
     stopping = true;
     stopPromise = (async (): Promise<void> => {
         lCore.display('[master] Graceful stop started.');
-        // --- 包括 restart 时已从 workerList 移除、但仍在排空的旧 worker ---
+        // --- 旧 worker 可能已从 workerList 移除，但还有请求没结束，也要等它退出 ---
         const workers = Object.values(cluster.workers ?? {}).filter(
             (worker): worker is cluster.Worker => worker !== undefined
         );
@@ -1091,13 +974,26 @@ async function gracefulStop(): Promise<void> {
 }
 
 /**
- * --- 零宕机重启所有 worker 进程：先创建新进程并等待监听就绪，再停止旧进程 ---
+ * --- 同时收到多次重启请求时，只执行一次重启 ---
+ * @returns 本次重启完成后结束，旧 worker 可能还在处理请求
  */
-async function restartWorkers(): Promise<void> {
+function restartWorkers(): Promise<void> {
+    restartPromise ??= restartWorkerList().finally(() => {
+        restartPromise = null;
+    });
+    return restartPromise;
+}
+
+/**
+ * --- 重启所有 worker：先启动新进程，等它监听端口后再停止旧进程 ---
+ * @returns 本次重启完成后结束，旧 worker 可能还在处理请求
+ */
+async function restartWorkerList(): Promise<void> {
+    await workerCheckPromise;
     if (stopping) {
         return;
     }
-    // --- 收集旧进程信息（先快照，避免迭代过程中修改 workerList） ---
+    // --- 先把旧 worker 记下来，后面创建新 worker 会改动 workerList ---
     const oldEntries: Array<{
         'pid': string;
         'cpu': number;
@@ -1125,34 +1021,47 @@ async function restartWorkers(): Promise<void> {
         if (stopping) {
             return;
         }
-        entry.worker.send({
-            'action': 'stop'
-        });
         delete workerList[entry.pid];
+        stopWorker(entry.worker, false).catch((e: unknown) => {
+            lCore.display('[master] [restartWorkerList] [stopWorker]', e);
+        });
     }
 }
 
 /**
- * --- 检测是否有死掉丢失的子进程，复活之 ---
+ * --- 检查失联 worker，同一时间只检查一次；重启或停止时跳过 ---
+ * @returns 本次失联检查结束后完成
  */
-async function checkWorkerLost(): Promise<void> {
-    if (stopping) {
-        return;
+function checkWorkerLost(): Promise<void> {
+    if (stopping || restartPromise) {
+        return Promise.resolve();
     }
+    workerCheckPromise ??= recoverLostWorkers().finally(() => {
+        workerCheckPromise = null;
+    });
+    return workerCheckPromise;
+}
+
+/**
+ * --- 替换超过 30 秒没发心跳的 worker ---
+ * @returns 完成失联 worker 的替换
+ */
+async function recoverLostWorkers(): Promise<void> {
     const now = Date.now();
     for (const pid in workerList) {
-        if (now - workerList[pid].hbtime < 30000) {
+        const entry = workerList[pid];
+        if (now - entry.hbtime < 30000) {
             // --- 距离上次心跳，小于 30 秒，正常 ---
             // --- 子线程 10 秒发送一次心跳 ---
             continue;
         }
-        // --- 异常，也可能主线程因为各种原因休眠，不过无论如何都要将原线程关闭，要不然原线程又发心跳包，就捕获不到了 ---
+        // --- 超过 30 秒没收到心跳，停止旧 worker 并启动一个新的，避免旧进程恢复后继续发心跳 ---
         lCore.display(`[master] Worker ${pid} lost.`);
-        workerList[pid].worker.send({
-            'action': 'stop'
-        });
-        await createChildProcess(workerList[pid].cpu);
         delete workerList[pid];
+        stopWorker(entry.worker, false).catch((e: unknown) => {
+            lCore.display('[master] [recoverLostWorkers] [stopWorker]', e);
+        });
+        await createChildProcess(entry.cpu);
     }
 }
 
@@ -1165,6 +1074,10 @@ async function createChildProcess(cpu: number): Promise<cluster.Worker | null> {
         return null;
     }
     const worker = cluster.fork();
+    // --- 先监听 error 再做异步操作，避免 IPC 发送失败时导致 master 退出 ---
+    worker.on('error', (e: Error) => {
+        lCore.display(`[master] Worker ${worker.process.pid ?? 'undefined'} error.`, e);
+    });
     if (!worker.process.pid) {
         return null;
     }
@@ -1272,10 +1185,9 @@ function startFileWatcher(): void {
     /** --- 是否正在重启中 --- */
     let restarting = false;
     /**
-     * --- 不需要监听的目录名集合，在 Linux 上 fs.watch recursive 会为每个子目录注册 inotify ---
-     * --- 这些目录若被监听会大量消耗系统 file watcher 配额（ENOSPC），必须跳过 ---
+     * --- 跳过依赖、日志和临时目录，避免监听太多文件而用完系统额度（ENOSPC）---
      */
-    const SKIP_DIRS = new Set(['.git', '.svn', '.hg', 'node_modules', 'log', 'ftmp']);
+    const SKIP_DIRS = new Set(['node_modules', 'log', 'ftmp']);
 
     /** --- 触发 worker 重载 --- */
     const triggerReload = (formatName: string): void => {
@@ -1301,7 +1213,7 @@ function startFileWatcher(): void {
     };
 
     /**
-     * --- 递归收集指定根目录下所有需要监听的子目录（跳过 SKIP_DIRS 和隐藏目录）---
+     * --- 逐层找出要监听的子目录，跳过 SKIP_DIRS 中的目录和隐藏目录 ---
      * @param dir 当前目录路径
      * @param result 收集结果数组
      */
@@ -1310,7 +1222,8 @@ function startFileWatcher(): void {
         try {
             entries = await fs.promises.readdir(dir, { 'withFileTypes': true });
         }
-        catch {
+        catch (e: unknown) {
+            lCore.display(`[HMR] Cannot scan directory: ${dir}`, e);
             return;
         }
         for (const entry of entries) {
@@ -1328,7 +1241,7 @@ function startFileWatcher(): void {
     };
 
     /**
-     * --- 监听指定目录下所有需要监听的目录（非递归逐个注册，避免 OS 级别监听到 .git 等目录）---
+     * --- 逐个监听筛选后的目录，避免连 .git 等已跳过的目录也一起监听 ---
      * @param dir 要监听的根目录路径
      */
     const watchDir = async (dir: string): Promise<void> => {
@@ -1364,14 +1277,12 @@ function startFileWatcher(): void {
         lCore.display(`[HMR] Watching directory: ${dir} (${dirs.length} dirs)`);
     };
 
-    // --- 监听 www/ 目录（用户项目代码）---
-    watchDir(kebab.WWW_CWD).catch(() => {});
-    // --- 监听 ind/ 目录（独立任务代码）---
-    watchDir(kebab.IND_CWD).catch(() => {});
-    // --- 监听 lib/ 目录（用户自定义库）---
-    watchDir(kebab.LIB_CWD).catch(() => {});
-    // --- 监听 mod/ 目录（用户模型）---
-    watchDir(kebab.MOD_CWD).catch(() => {});
+    // --- 监听用户项目、独立任务、自定义库及模型目录 ---
+    for (const dir of [kebab.WWW_CWD, kebab.IND_CWD, kebab.LIB_CWD, kebab.MOD_CWD]) {
+        watchDir(dir).catch((e: unknown) => {
+            lCore.display(`[HMR] Cannot watch directory: ${dir}`, e);
+        });
+    }
 }
 
 run().catch(function(e): void {

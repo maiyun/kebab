@@ -8,9 +8,9 @@
 
 > **stringifyJson**(`obj`, `space?`): `string`
 
-Defined in: [lib/text.ts:731](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L731)
+Defined in: [lib/text.ts:713](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L713)
 
-将对象转换为 json 字符串，返回 false 代表解析失败，支持 BigInt
+将对象转换为 JSON 字符串，BigInt 输出为整数字面量
 
 ## Parameters
 
@@ -29,3 +29,5 @@ Defined in: [lib/text.ts:731](https://github.com/maiyunnet/kebab/blob/master/lib
 ## Returns
 
 `string`
+
+JSON 字符串，循环引用等序列化错误沿用 JSON.stringify 异常

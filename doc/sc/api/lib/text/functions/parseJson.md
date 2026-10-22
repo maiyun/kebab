@@ -8,9 +8,9 @@
 
 > **parseJson**\<`T`\>(`str`): `false` \| `T`
 
-Defined in: [lib/text.ts:701](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L701)
+Defined in: [lib/text.ts:703](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L703)
 
-将字符串解析为对象，返回 false 代表解析失败，支持 BigInt
+解析 JSON，超出安全整数范围的整数字面量转换为 BigInt
 
 ## Type Parameters
 
@@ -29,3 +29,5 @@ Defined in: [lib/text.ts:701](https://github.com/maiyunnet/kebab/blob/master/lib
 ## Returns
 
 `false` \| `T`
+
+解析结果，无效 JSON 返回 false；小数及指数形式仍为 number

@@ -8,7 +8,7 @@
 
 > **parseVersion**(`value`): \[`number`, `number`, `number`\] \| `null`
 
-Defined in: [lib/text.ts:16](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L16)
+Defined in: [lib/text.ts:17](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L17)
 
 解析三段正式发行版本 X.Y.Z，不接受前导零、预发行和构建后缀
 

@@ -8,6 +8,6 @@
 
 > `const` **REGEXP\_ASCII**: `RegExp`
 
-Defined in: [lib/text.ts:323](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L323)
+Defined in: [lib/text.ts:324](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L324)
 
 可打印的 ascii 字符集
