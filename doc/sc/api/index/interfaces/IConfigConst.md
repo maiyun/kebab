@@ -74,7 +74,7 @@ Defined in: [index.ts:205](https://github.com/maiyunnet/kebab/blob/master/index.
 
 Defined in: [index.ts:199](https://github.com/maiyunnet/kebab/blob/master/index.ts#L199)
 
-请求到达 Kebab 时是否使用 HTTPS；代理通过 HTTP 回源时为 false
+请求到达 Kebab 时是否使用 HTTPS；通过 HTTP 回源时为 false
 
 ***
 
@@ -187,7 +187,7 @@ Defined in: [index.ts:228](https://github.com/maiyunnet/kebab/blob/master/index.
 Defined in: [index.ts:212](https://github.com/maiyunnet/kebab/blob/master/index.ts#L212)
 
 网址的协议与 hostCanonical，如 https://example.com:8443
-协议可能取自代理转发头，不能用它判断请求到达 Kebab 时是否使用 HTTPS。
+协议可能取自转发头，不能用它判断请求到达 Kebab 时是否使用 HTTPS。
 
 ***
 
