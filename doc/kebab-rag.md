@@ -527,7 +527,7 @@ Defined in: [index.ts:183](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **ctrPath**: `string`
 
-Defined in: [index.ts:215](https://github.com/maiyunnet/kebab/blob/master/index.ts#L215)
+Defined in: [index.ts:219](https://github.com/maiyunnet/kebab/blob/master/index.ts#L219)
 
 ***
 
@@ -535,7 +535,7 @@ Defined in: [index.ts:215](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **dataPath**: `string`
 
-Defined in: [index.ts:217](https://github.com/maiyunnet/kebab/blob/master/index.ts#L217)
+Defined in: [index.ts:221](https://github.com/maiyunnet/kebab/blob/master/index.ts#L221)
 
 ***
 
@@ -543,9 +543,9 @@ Defined in: [index.ts:217](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **host**: `string`
 
-Defined in: [index.ts:200](https://github.com/maiyunnet/kebab/blob/master/index.ts#L200)
+Defined in: [index.ts:201](https://github.com/maiyunnet/kebab/blob/master/index.ts#L201)
 
-原始主机地址，保留端口
+请求头中的主机地址，如 example.com、example.com:8443 或 [::1]:8080；不额外补端口
 
 ***
 
@@ -553,9 +553,9 @@ Defined in: [index.ts:200](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **hostCanonical**: `string`
 
-Defined in: [index.ts:206](https://github.com/maiyunnet/kebab/blob/master/index.ts#L206)
+Defined in: [index.ts:207](https://github.com/maiyunnet/kebab/blob/master/index.ts#L207)
 
-用于 URL 的主机地址，仅省略 HTTPS 的 443 和 HTTP 的 80 端口，保留 IPv6 方括号
+用于生成网址的主机地址，仅省略 HTTPS 的 443 和 HTTP 的 80 端口，如 example.com:443 → example.com；保留其他端口和 IPv6 方括号
 
 ***
 
@@ -563,9 +563,9 @@ Defined in: [index.ts:206](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **hostname**: `string`
 
-Defined in: [index.ts:202](https://github.com/maiyunnet/kebab/blob/master/index.ts#L202)
+Defined in: [index.ts:203](https://github.com/maiyunnet/kebab/blob/master/index.ts#L203)
 
-主机名，不含端口或 IPv6 方括号
+主机名，如 example.com 或 ::1，不含端口或 IPv6 方括号
 
 ***
 
@@ -573,9 +573,9 @@ Defined in: [index.ts:202](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **hostport**: `number`
 
-Defined in: [index.ts:204](https://github.com/maiyunnet/kebab/blob/master/index.ts#L204)
+Defined in: [index.ts:205](https://github.com/maiyunnet/kebab/blob/master/index.ts#L205)
 
-请求端口
+请求地址中的端口，如 8443；未指定时 HTTPS 为 443、HTTP 为 80，不取本机监听端口
 
 ***
 
@@ -583,7 +583,9 @@ Defined in: [index.ts:204](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **https**: `boolean`
 
-Defined in: [index.ts:198](https://github.com/maiyunnet/kebab/blob/master/index.ts#L198)
+Defined in: [index.ts:199](https://github.com/maiyunnet/kebab/blob/master/index.ts#L199)
+
+请求到达 Kebab 时是否使用 HTTPS；代理通过 HTTP 回源时为 false
 
 ***
 
@@ -607,7 +609,7 @@ Defined in: [index.ts:195](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **modPath**: `string`
 
-Defined in: [index.ts:214](https://github.com/maiyunnet/kebab/blob/master/index.ts#L214)
+Defined in: [index.ts:218](https://github.com/maiyunnet/kebab/blob/master/index.ts#L218)
 
 ***
 
@@ -645,7 +647,7 @@ Defined in: [index.ts:189](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **rootPath**: `string`
 
-Defined in: [index.ts:213](https://github.com/maiyunnet/kebab/blob/master/index.ts#L213)
+Defined in: [index.ts:217](https://github.com/maiyunnet/kebab/blob/master/index.ts#L217)
 
 ***
 
@@ -669,7 +671,7 @@ Defined in: [index.ts:190](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **uri**: [`IUrlParse`](IUrlParse.md)
 
-Defined in: [index.ts:209](https://github.com/maiyunnet/kebab/blob/master/index.ts#L209)
+Defined in: [index.ts:213](https://github.com/maiyunnet/kebab/blob/master/index.ts#L213)
 
 ***
 
@@ -677,7 +679,7 @@ Defined in: [index.ts:209](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **urlBase**: `string`
 
-Defined in: [index.ts:222](https://github.com/maiyunnet/kebab/blob/master/index.ts#L222)
+Defined in: [index.ts:226](https://github.com/maiyunnet/kebab/blob/master/index.ts#L226)
 
 ***
 
@@ -685,7 +687,7 @@ Defined in: [index.ts:222](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **urlFull**: `string`
 
-Defined in: [index.ts:224](https://github.com/maiyunnet/kebab/blob/master/index.ts#L224)
+Defined in: [index.ts:228](https://github.com/maiyunnet/kebab/blob/master/index.ts#L228)
 
 ***
 
@@ -693,9 +695,10 @@ Defined in: [index.ts:224](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **urlOrigin**: `string`
 
-Defined in: [index.ts:208](https://github.com/maiyunnet/kebab/blob/master/index.ts#L208)
+Defined in: [index.ts:212](https://github.com/maiyunnet/kebab/blob/master/index.ts#L212)
 
-协议与 hostCanonical，如 https://example.com:8443
+网址的协议与 hostCanonical，如 https://example.com:8443
+协议可能取自代理转发头，不能用它判断请求到达 Kebab 时是否使用 HTTPS。
 
 ***
 
@@ -703,7 +706,7 @@ Defined in: [index.ts:208](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **urlStc**: `string`
 
-Defined in: [index.ts:223](https://github.com/maiyunnet/kebab/blob/master/index.ts#L223)
+Defined in: [index.ts:227](https://github.com/maiyunnet/kebab/blob/master/index.ts#L227)
 
 ***
 
@@ -711,7 +714,7 @@ Defined in: [index.ts:223](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **urlStcFull**: `string`
 
-Defined in: [index.ts:225](https://github.com/maiyunnet/kebab/blob/master/index.ts#L225)
+Defined in: [index.ts:229](https://github.com/maiyunnet/kebab/blob/master/index.ts#L229)
 
 ***
 
@@ -719,7 +722,7 @@ Defined in: [index.ts:225](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **viewPath**: `string`
 
-Defined in: [index.ts:216](https://github.com/maiyunnet/kebab/blob/master/index.ts#L216)
+Defined in: [index.ts:220](https://github.com/maiyunnet/kebab/blob/master/index.ts#L220)
 
 ***
 
@@ -735,7 +738,7 @@ Defined in: [index.ts:196](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **wsPath**: `string`
 
-Defined in: [index.ts:218](https://github.com/maiyunnet/kebab/blob/master/index.ts#L218)
+Defined in: [index.ts:222](https://github.com/maiyunnet/kebab/blob/master/index.ts#L222)
 
 index/interfaces/IConfigDb.md
 ---
@@ -1295,7 +1298,7 @@ index/interfaces/IPostFile.md
 
 # Interface: IPostFile
 
-Defined in: [index.ts:237](https://github.com/maiyunnet/kebab/blob/master/index.ts#L237)
+Defined in: [index.ts:241](https://github.com/maiyunnet/kebab/blob/master/index.ts#L241)
 
 上传的文件信息对象
 
@@ -1305,7 +1308,7 @@ Defined in: [index.ts:237](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > `readonly` **name**: `string`
 
-Defined in: [index.ts:238](https://github.com/maiyunnet/kebab/blob/master/index.ts#L238)
+Defined in: [index.ts:242](https://github.com/maiyunnet/kebab/blob/master/index.ts#L242)
 
 ***
 
@@ -1313,7 +1316,7 @@ Defined in: [index.ts:238](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > `readonly` **origin**: `string`
 
-Defined in: [index.ts:239](https://github.com/maiyunnet/kebab/blob/master/index.ts#L239)
+Defined in: [index.ts:243](https://github.com/maiyunnet/kebab/blob/master/index.ts#L243)
 
 ***
 
@@ -1321,7 +1324,7 @@ Defined in: [index.ts:239](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > `readonly` **path**: `string`
 
-Defined in: [index.ts:241](https://github.com/maiyunnet/kebab/blob/master/index.ts#L241)
+Defined in: [index.ts:245](https://github.com/maiyunnet/kebab/blob/master/index.ts#L245)
 
 ***
 
@@ -1329,7 +1332,7 @@ Defined in: [index.ts:241](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > `readonly` **size**: `number`
 
-Defined in: [index.ts:240](https://github.com/maiyunnet/kebab/blob/master/index.ts#L240)
+Defined in: [index.ts:244](https://github.com/maiyunnet/kebab/blob/master/index.ts#L244)
 
 index/interfaces/IUrlParse.md
 ---
@@ -1443,7 +1446,7 @@ index/interfaces/IVhost.md
 
 # Interface: IVhost
 
-Defined in: [index.ts:229](https://github.com/maiyunnet/kebab/blob/master/index.ts#L229)
+Defined in: [index.ts:233](https://github.com/maiyunnet/kebab/blob/master/index.ts#L233)
 
 虚拟机配置对象
 
@@ -1453,7 +1456,7 @@ Defined in: [index.ts:229](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > `readonly` **domains**: `string`[]
 
-Defined in: [index.ts:231](https://github.com/maiyunnet/kebab/blob/master/index.ts#L231)
+Defined in: [index.ts:235](https://github.com/maiyunnet/kebab/blob/master/index.ts#L235)
 
 ***
 
@@ -1461,7 +1464,7 @@ Defined in: [index.ts:231](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > `readonly` `optional` **name?**: `string`
 
-Defined in: [index.ts:230](https://github.com/maiyunnet/kebab/blob/master/index.ts#L230)
+Defined in: [index.ts:234](https://github.com/maiyunnet/kebab/blob/master/index.ts#L234)
 
 ***
 
@@ -1469,7 +1472,7 @@ Defined in: [index.ts:230](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > `readonly` `optional` **remark?**: `string`
 
-Defined in: [index.ts:233](https://github.com/maiyunnet/kebab/blob/master/index.ts#L233)
+Defined in: [index.ts:237](https://github.com/maiyunnet/kebab/blob/master/index.ts#L237)
 
 ***
 
@@ -1477,7 +1480,7 @@ Defined in: [index.ts:233](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > `readonly` **root**: `string`
 
-Defined in: [index.ts:232](https://github.com/maiyunnet/kebab/blob/master/index.ts#L232)
+Defined in: [index.ts:236](https://github.com/maiyunnet/kebab/blob/master/index.ts#L236)
 
 index.md
 ---
@@ -138172,7 +138175,7 @@ sys/route/functions/clearKebabConfigs.md
 
 > **clearKebabConfigs**(): `void`
 
-Defined in: [sys/route.ts:29](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L29)
+Defined in: [sys/route.ts:40](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L40)
 
 清空缓存的项目配置，下次请求时重新读取文件
 
@@ -138193,7 +138196,7 @@ sys/route/functions/getFormData.md
 
 > **getFormData**(`req`, `events?`, `limits?`): `Promise`\<`false` \| \{ `files`: `Record`\<`string`, [`IPostFile`](../../../index/interfaces/IPostFile.md) \| [`IPostFile`](../../../index/interfaces/IPostFile.md)[]\>; `post`: `Record`\<`string`, [`Json`](../../../index/type-aliases/Json.md)\>; \}\>
 
-Defined in: [sys/route.ts:1092](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1092)
+Defined in: [sys/route.ts:1105](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1105)
 
 获取 formdata 的 post
 
@@ -138236,7 +138239,7 @@ sys/route/functions/getPost.md
 
 > **getPost**(`req`): `Promise`\<`false` \| \{ `input`: `string`; `post`: `Record`\<`string`, `any`\>; `raw`: `Record`\<`string`, `any`\>; \}\>
 
-Defined in: [sys/route.ts:927](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L927)
+Defined in: [sys/route.ts:940](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L940)
 
 获取 post 对象（通常已自动获取），如果是文件上传（formdata）的情况则不获取
 
@@ -138267,7 +138270,7 @@ sys/route/functions/run.md
 
 > **run**(`data`): `Promise`\<`boolean`\>
 
-Defined in: [sys/route.ts:100](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L100)
+Defined in: [sys/route.ts:111](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L111)
 
 若为动态路径则执行此函数，此函数不进行判断 kebab.json 是否存在
 
@@ -138354,7 +138357,7 @@ sys/route/functions/unlinkUploadFiles.md
 
 > **unlinkUploadFiles**(`cctr`): `Promise`\<`void`\>
 
-Defined in: [sys/route.ts:885](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L885)
+Defined in: [sys/route.ts:898](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L898)
 
 删除本次请求所有已上传的临时文件
 
@@ -138383,7 +138386,7 @@ sys/route/functions/waitCtr.md
 
 > **waitCtr**(`cctr`): `Promise`\<`void`\>
 
-Defined in: [sys/route.ts:905](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L905)
+Defined in: [sys/route.ts:918](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L918)
 
 等待异步任务结束，并删除临时文件，如果结束后还有事务没关闭，则会在本函数中打印控制台并且写入 log 文件
 此时其实已经给客户端返回了，此处等待不消耗客户端的等待时间
@@ -138437,7 +138440,7 @@ sys/route/interfaces/IFormDataError.md
 
 # Interface: IFormDataError
 
-Defined in: [sys/route.ts:1047](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1047)
+Defined in: [sys/route.ts:1060](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1060)
 
 解析上传数据时的失败原因，只提供错误码和限制值，不带临时路径或异常对象
 
@@ -138447,7 +138450,7 @@ Defined in: [sys/route.ts:1047](https://github.com/maiyunnet/kebab/blob/master/s
 
 > **code**: `"INVALID_BOUNDARY"` \| `"FILE_TOO_LARGE"` \| `"TOTAL_TOO_LARGE"` \| `"FIELD_TOO_LARGE"` \| `"HEADER_TOO_LARGE"` \| `"TOO_MANY_PARTS"` \| `"FILE_TYPE"` \| `"TIMEOUT"` \| `"TEMP_FILE_ERROR"` \| `"REQUEST_ERROR"` \| `"REQUEST_ABORTED"`
 
-Defined in: [sys/route.ts:1048](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1048)
+Defined in: [sys/route.ts:1061](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1061)
 
 ***
 
@@ -138455,7 +138458,7 @@ Defined in: [sys/route.ts:1048](https://github.com/maiyunnet/kebab/blob/master/s
 
 > `optional` **limit?**: `number`
 
-Defined in: [sys/route.ts:1052](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1052)
+Defined in: [sys/route.ts:1065](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1065)
 
 超出的限制值：大小用字节，超时用毫秒，字段和文件数量用个
 
@@ -138470,7 +138473,7 @@ sys/route/interfaces/IFormDataEvents.md
 
 # Interface: IFormDataEvents
 
-Defined in: [sys/route.ts:1056](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1056)
+Defined in: [sys/route.ts:1069](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1069)
 
 multipart 文件处理及失败通知
 
@@ -138480,7 +138483,7 @@ multipart 文件处理及失败通知
 
 > `optional` **onerror?**: (`error`) => `void`
 
-Defined in: [sys/route.ts:1064](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1064)
+Defined in: [sys/route.ts:1077](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1077)
 
 首次失败时调用一次，getFormData 返回 false；若连接已断开，可能无法回复客户端
 
@@ -138500,7 +138503,7 @@ Defined in: [sys/route.ts:1064](https://github.com/maiyunnet/kebab/blob/master/s
 
 > `optional` **onfiledata?**: (`chunk`) => `void`
 
-Defined in: [sys/route.ts:1060](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1060)
+Defined in: [sys/route.ts:1073](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1073)
 
 文件上传时触发，仅 start 返回 true 时触发
 
@@ -138520,7 +138523,7 @@ Defined in: [sys/route.ts:1060](https://github.com/maiyunnet/kebab/blob/master/s
 
 > `optional` **onfileend?**: () => `void`
 
-Defined in: [sys/route.ts:1062](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1062)
+Defined in: [sys/route.ts:1075](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1075)
 
 文件上传结束时触发，仅 start 返回 true 时触发
 
@@ -138534,7 +138537,7 @@ Defined in: [sys/route.ts:1062](https://github.com/maiyunnet/kebab/blob/master/s
 
 > `optional` **onfilestart?**: (`name`) => `boolean` \| `undefined`
 
-Defined in: [sys/route.ts:1058](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1058)
+Defined in: [sys/route.ts:1071](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1071)
 
 文件开始上传时触发，返回 true 则跳过该文件的保存
 
@@ -138559,7 +138562,7 @@ sys/route/interfaces/IFormDataLimits.md
 
 # Interface: IFormDataLimits
 
-Defined in: [sys/route.ts:1068](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1068)
+Defined in: [sys/route.ts:1081](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1081)
 
 multipart 上传限制
 
@@ -138569,7 +138572,7 @@ multipart 上传限制
 
 > `optional` **allowedExts?**: `string`[]
 
-Defined in: [sys/route.ts:1072](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1072)
+Defined in: [sys/route.ts:1085](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1085)
 
 允许的文件扩展名（含点号），如 ['.jpg', '.png', '.pdf']
 
@@ -138579,7 +138582,7 @@ Defined in: [sys/route.ts:1072](https://github.com/maiyunnet/kebab/blob/master/s
 
 > `optional` **maxFieldSize?**: `number`
 
-Defined in: [sys/route.ts:1074](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1074)
+Defined in: [sys/route.ts:1087](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1087)
 
 单个字段（非文件）最大字节数，默认 1 MB
 
@@ -138589,7 +138592,7 @@ Defined in: [sys/route.ts:1074](https://github.com/maiyunnet/kebab/blob/master/s
 
 > `optional` **maxFileSize?**: `number`
 
-Defined in: [sys/route.ts:1070](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1070)
+Defined in: [sys/route.ts:1083](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1083)
 
 单个文件最大字节数
 
@@ -138599,7 +138602,7 @@ Defined in: [sys/route.ts:1070](https://github.com/maiyunnet/kebab/blob/master/s
 
 > `optional` **maxHeaderSize?**: `number`
 
-Defined in: [sys/route.ts:1078](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1078)
+Defined in: [sys/route.ts:1091](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1091)
 
 每个字段或文件的 multipart 头部最多多少字节，默认 16 KB
 
@@ -138609,7 +138612,7 @@ Defined in: [sys/route.ts:1078](https://github.com/maiyunnet/kebab/blob/master/s
 
 > `optional` **maxParts?**: `number`
 
-Defined in: [sys/route.ts:1080](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1080)
+Defined in: [sys/route.ts:1093](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1093)
 
 multipart 字段与文件总数量，默认 1000
 
@@ -138619,7 +138622,7 @@ multipart 字段与文件总数量，默认 1000
 
 > `optional` **maxTotalSize?**: `number`
 
-Defined in: [sys/route.ts:1076](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1076)
+Defined in: [sys/route.ts:1089](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1089)
 
 整体请求最大字节数，不设置或设为 0 则不限制
 
@@ -138629,6 +138632,6 @@ Defined in: [sys/route.ts:1076](https://github.com/maiyunnet/kebab/blob/master/s
 
 > `optional` **timeout?**: `number`
 
-Defined in: [sys/route.ts:1082](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1082)
+Defined in: [sys/route.ts:1095](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1095)
 
 整体请求超时时间（毫秒），默认 5 分钟，设为 0 禁用超时

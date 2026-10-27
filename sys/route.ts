@@ -19,6 +19,17 @@ import * as lWs from '#kebab/lib/ws.js';
 import * as lLang from '#kebab/lib/lang.js';
 import * as sCtr from './ctr.js';
 import * as kebab from '#kebab/index.js';
+import { getPublicProtocol as getPublicProtocolImpl } from '#kebab/abox/request.js';
+
+/**
+ * --- 只用于推导公开 URL；不改变真实 TLS 状态，也不验证转发头来源 ---
+ * @param req HTTP 或 HTTP/2 请求
+ * @param fallback 原协议；Forwarded 首项优先于 X-Forwarded-Proto 首项
+ * @returns 对外 URL 协议；ws/wss 保持原值
+ */
+const getPublicProtocol: (
+    req: Pick<http.IncomingMessage, 'headers'>, fallback: string
+) => string = getPublicProtocolImpl;
 
 /** --- 已加载的项目配置，按 kebab.json 的文件路径缓存，已补齐全局默认值 --- */
 let kebabConfigs: Record<string, kebab.IConfig> = {};
@@ -166,16 +177,18 @@ export async function run(data: {
     }
     // --- 复制一份 set，后面改资源地址时就不会改动原来的配置 ---
     config.set = { ...config.set };
-    /** --- host 不带默认端口（HTTP 的 80、HTTPS 的 443）--- */
+    /** --- 公开 URL 协议仅用于生成地址，不改变原请求协议和 TLS 状态 --- */
+    const publicProtocol = getPublicProtocol(data.req, data.uri.protocol ?? '');
+    /** --- host 不带公开协议的默认端口（HTTP 的 80、HTTPS 的 443）--- */
     let hostCanonical = data.uri.host ?? '';
-    if (data.uri.protocol === 'https:' && Number(data.uri.port) === 443) {
+    if (publicProtocol === 'https:' && Number(data.uri.port) === 443) {
         hostCanonical = lText.parseHost(hostCanonical).rawHostname;
     }
-    else if (data.uri.protocol === 'http:' && Number(data.uri.port) === 80) {
+    else if (publicProtocol === 'http:' && Number(data.uri.port) === 80) {
         hostCanonical = lText.parseHost(hostCanonical).rawHostname;
     }
-    /** --- 网址开头的协议和 host，如 https://example.com --- */
-    const urlOrigin = `${data.uri.protocol ?? ''}//${hostCanonical}`;
+    /** --- 网址开头的公开协议和 host，如 https://example.com --- */
+    const urlOrigin = `${publicProtocol}//${hostCanonical}`;
     config.const = {
         'path': data.path,
         'qs': data.uri.query ?? '',

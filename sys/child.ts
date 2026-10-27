@@ -286,12 +286,6 @@ async function requestHandler(
         res.end('403 Forbidden');
         return;
     }
-    const hostInfo = lText.parseHost(host);
-    host = hostInfo.hostname;
-    if (lText.isIPv6(host)) {
-        host = `[${host}]`;
-    }
-    host = host + ':' + (req.socket.localPort ?? (https ? '443' : '80'));
     const uri = lText.parseUrl(`http${https ? 's' : ''}://${host}${req.url ?? ''}`);
     /** --- 当前的 vhost 配置文件 --- */
     const vhost = await getVhostByHostname(uri.hostname ?? '');

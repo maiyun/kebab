@@ -8,7 +8,7 @@
 
 > **unlinkUploadFiles**(`cctr`): `Promise`\<`void`\>
 
-Defined in: [sys/route.ts:885](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L885)
+Defined in: [sys/route.ts:898](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L898)
 
 删除本次请求所有已上传的临时文件
 

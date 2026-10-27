@@ -53,7 +53,7 @@ for f in "${extra_files[@]}"; do
 done
 
 # --- 合并所有 md 成一个文件，保留模块标题 ---
-find "$API_DOC_OUTPUT_DIR" -name "*.md" | sort | while read file; do
+find "$API_DOC_OUTPUT_DIR" -name "*.md" | LC_ALL=C sort -df | while read file; do
   # --- 计算相对路径（相对于 API_DOC_OUTPUT_DIR） ---
   relpath="${file#$API_DOC_OUTPUT_DIR/}"
   # --- 去掉 .md 扩展名 ---
@@ -63,3 +63,6 @@ find "$API_DOC_OUTPUT_DIR" -name "*.md" | sort | while read file; do
   printf "\n%s\n---\n\n" "$relpath" >> "doc/kebab-rag.md"
   cat "$file" >> "doc/kebab-rag.md"
 done
+
+# --- 合并文档末尾只保留正文换行 ---
+sed -i '${/^$/d;}' doc/kebab-rag.md

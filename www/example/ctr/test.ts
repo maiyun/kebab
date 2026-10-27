@@ -46,7 +46,11 @@ const valibotInputSchema = v.strictObject({
 
 export default class extends sCtr.Ctr {
 
+    /** --- 示例自调用的地址，使用当前连接的协议和监听端口 --- */
     private _internalUrl: string = '';
+
+    /** --- 将示例域名解析到当前服务，避免绕回公网或容器外部 --- */
+    private _internalAddress: string = '';
 
     public onLoad(): Array<string | number> | boolean {
         if (
@@ -56,16 +60,15 @@ export default class extends sCtr.Ctr {
         ) {
             return [0, 'Please use 127.0.0.1 or local to access the file (' + this._config.const.host + ').'];
         }
-        const realIp = lCore.realIP(this);
-        if (
-            (this._config.const.hostname === '127.0.0.1' || this._config.const.hostname === 'localhost') &&
-            (realIp === '172.17.0.1')
-        ) {
-            this._internalUrl = 'http' + (this._config.const.https ? 's' : '') + '://' + realIp + this._config.const.urlBase;
+        const socket = this._req.socket;
+        if (!socket.localAddress || !socket.localPort) {
+            return [0, 'Request socket is unavailable.'];
         }
-        else {
-            this._internalUrl = this._config.const.urlFull;
-        }
+        const url = new URL(this._config.const.urlBase,
+            `http${this._config.const.https ? 's' : ''}://${this._config.const.host}`);
+        url.port = socket.localPort.toString();
+        this._internalUrl = url.href;
+        this._internalAddress = socket.localAddress;
         return true;
     }
 
@@ -2409,8 +2412,8 @@ headers: <pre>${JSON.stringify(res.headers, null, 4)}</pre>
 content: <pre>${(await res.getContent())?.toString() ?? 'null'}</pre>
 error: ${JSON.stringify(res.error)}`);
 
-        const res2 = await lUndici.get(this._internalUrl + 'test?abc');
-        echo.push(`<pre>lUndici.get('${this._internalUrl}test?abc');</pre>
+        const res2 = await lUndici.get(this._internalUrl + 'test?abc', { 'hosts': this._internalAddress });
+        echo.push(`<pre>lUndici.get('${this._internalUrl}test?abc', { 'hosts': this._internalAddress });</pre>
 headers: <pre>${JSON.stringify(res2.headers, null, 4)}</pre>
 content: <pre>${(await res2.getContent())?.toString().slice(0, 500) ?? 'null'}</pre>
 error: ${JSON.stringify(res2.error)}`);
@@ -2438,8 +2441,8 @@ error: ${JSON.stringify(res.error)}
     public async undiciPost(): Promise<kebab.Json> {
         const echo = [];
 
-        const res = await lUndici.post(this._internalUrl + 'test/undiciPost1', { 'a': '1', 'b': '2', 'c': ['1', '2', '3'] });
-        echo.push(`<pre>lUndici.post('${this._internalUrl}test/undiciPost1', { 'a': '1', 'b': '2', 'c': ['1', '2', '3'] });</pre>
+        const res = await lUndici.post(this._internalUrl + 'test/undiciPost1', { 'a': '1', 'b': '2', 'c': ['1', '2', '3'] }, { 'hosts': this._internalAddress });
+        echo.push(`<pre>lUndici.post('${this._internalUrl}test/undiciPost1', { 'a': '1', 'b': '2', 'c': ['1', '2', '3'] }, { 'hosts': this._internalAddress });</pre>
 headers: <pre>${JSON.stringify(res.headers, null, 4)}</pre>
 content: <pre>${(await res.getContent())?.toString() ?? 'null'}</pre>
 error: ${JSON.stringify(res.error)}`);
@@ -2454,8 +2457,8 @@ error: ${JSON.stringify(res.error)}`);
     public async undiciPostString(): Promise<string> {
         const echo = [];
 
-        const res = await lUndici.post(this._internalUrl + 'test/undiciPostString1', 'HeiHei');
-        echo.push(`<pre>lUndici.post('${this._internalUrl}test/undiciPostString1', 'HeiHei');</pre>
+        const res = await lUndici.post(this._internalUrl + 'test/undiciPostString1', 'HeiHei', { 'hosts': this._internalAddress });
+        echo.push(`<pre>lUndici.post('${this._internalUrl}test/undiciPostString1', 'HeiHei', { 'hosts': this._internalAddress });</pre>
 headers: <pre>${JSON.stringify(res.headers, null, 4)}</pre>
 content: <pre>${(await res.getContent())?.toString() ?? 'null'}</pre>
 error: ${JSON.stringify(res.error)}`);
@@ -2470,8 +2473,9 @@ error: ${JSON.stringify(res.error)}`);
     public async undiciOpen(): Promise<kebab.Json> {
         const echo = [];
 
-        const res = await lUndici.open(this._internalUrl + 'test/undiciPost1').post().data({ 'a': '2', 'b': '0', 'c': ['0', '1', '3'] }).request();
-        echo.push(`<pre>lUndici.open('${this._internalUrl}test/undiciPost1').post().data({ 'a': '2', 'b': '0', 'c': ['0', '1', '3'] }).request();</pre>
+        const res = await lUndici.open(this._internalUrl + 'test/undiciPost1')
+            .hosts(this._internalAddress).post().data({ 'a': '2', 'b': '0', 'c': ['0', '1', '3'] }).request();
+        echo.push(`<pre>lUndici.open('${this._internalUrl}test/undiciPost1').hosts(this._internalAddress).post().data({ 'a': '2', 'b': '0', 'c': ['0', '1', '3'] }).request();</pre>
 headers: <pre>${JSON.stringify(res.headers, null, 4)}</pre>
 content: <pre>${(await res.getContent())?.toString() ?? 'null'}</pre>
 error: ${JSON.stringify(res.error)}`);
@@ -2516,13 +2520,13 @@ error: ${JSON.stringify(res.error)}`);
         await fd.putFile('file', kebab.LIB_PATH + 'net/cacert.pem');
         await fd.putFile('multiple', kebab.LIB_PATH + 'net/cacert.pem');
         await fd.putFile('multiple', kebab.LIB_PATH + 'net/cacert.pem');
-        const res = await lUndici.post(this._internalUrl + 'test/undici-upload1', fd);
+        const res = await lUndici.post(this._internalUrl + 'test/undici-upload1', fd, { 'hosts': this._internalAddress });
         echo.push(`<pre>const fd = lUndici.getFormData();
 fd.putString('a', '1');
 await fd.putFile('file', kebab.LIB_PATH + 'net/cacert.pem');
 await fd.putFile('multiple', kebab.LIB_PATH + 'net/cacert.pem');
 await fd.putFile('multiple', kebab.LIB_PATH + 'net/cacert.pem');
-lUndici.post('${this._internalUrl}test/undici-upload1', fd);</pre>
+lUndici.post('${this._internalUrl}test/undici-upload1', fd, { 'hosts': this._internalAddress });</pre>
 headers: <pre>${JSON.stringify(res.headers, null, 4)}</pre>
 content: <pre>${(await res.getContent())?.toString() ?? 'null'}</pre>
 error: ${JSON.stringify(res.error)}`);
@@ -2542,10 +2546,12 @@ error: ${JSON.stringify(res.error)}`);
 
         const cookie = {};
         let res = await lUndici.get(this._internalUrl + 'test/undici-cookie1', {
+            'hosts': this._internalAddress,
             'cookie': cookie
         });
         echo.push(`<pre>const cookie = {};
 lUndici.get(this._internalUrl + 'test/undici-cookie1', {
+    'hosts': this._internalAddress,
     'cookie': cookie
 });</pre>
 headers: <pre>${lText.htmlescape(JSON.stringify(res.headers, null, 4))}</pre>
@@ -2553,9 +2559,11 @@ content: <pre>${(await res.getContent())?.toString() ?? 'null'}</pre>
 cookie: <pre>${JSON.stringify(cookie, null, 4)}</pre><hr>`);
 
         res = await lUndici.get(this._internalUrl + 'test/undici-cookie2', {
+            'hosts': this._internalAddress,
             'cookie': cookie
         });
         echo.push(`<pre>lUndici.get(this._internalUrl + 'test/undici-cookie2', {
+    'hosts': this._internalAddress,
     'cookie': cookie
 });</pre>
 headers: <pre>${JSON.stringify(res.headers, null, 4)}</pre>
@@ -2564,11 +2572,13 @@ content: <pre>${(await res.getContent())?.toString() ?? 'null'}</pre>`);
         lCookie.setCookie(cookie, 'custom1', 'abc1', this._config.const.host);
         lCookie.setCookie(cookie, 'custom2', 'abc2', '172.17.0.1');
         res = await lUndici.get(this._internalUrl + 'test/undici-cookie2', {
+            'hosts': this._internalAddress,
             'cookie': cookie
         });
         echo.push(`<pre>lCookie.setCookie(cookie, 'custom1', 'abc1', ${this._config.const.host});
 lCookie.setCookie(cookie, 'custom2', 'abc2', '172.17.0.1');
 lUndici.get(this._internalUrl + 'test/undici-cookie2', {
+    'hosts': this._internalAddress,
     'cookie': cookie
 });</pre>
 headers: <pre>${JSON.stringify(res.headers, null, 4)}</pre>
@@ -2711,12 +2721,14 @@ error: ${JSON.stringify(res.error)}`);
             'a': '1',
             'b': '2'
         }, {
+            'hosts': this._internalAddress,
             'follow': 5
         });
         echo.push(`<pre>lUndici.post(this._internalUrl + 'test/undici-follow1', {
     'a': '1',
     'b': '2'
 }, {
+    'hosts': this._internalAddress,
     'follow': 5
 });</pre>
 headers: <pre>${JSON.stringify(res.headers, null, 4)}</pre>
@@ -2773,11 +2785,13 @@ error: <pre>${JSON.stringify(res.error, null, 4)}</pre>`);
         const url = `${this._internalUrl}test/undici-retry-source`;
         const time = Date.now();
         const res = await lUndici.get(url, {
+            'hosts': this._internalAddress,
             'retry': 1,
             'log': false,
         });
         const content = await res.getContent();
         return `<pre>const res = await lUndici.get('${url}', {
+    'hosts': this._internalAddress,
     'retry': 1,
     'log': false,
 });
@@ -2813,16 +2827,17 @@ error: <pre>${lText.htmlescape(res.error ? lText.stringifyError(res.error) : 'nu
 
     public async undiciHosts(): Promise<string> {
         const echo = [];
+        const url = new URL('test', this._internalUrl);
+        // --- TLS 保留当前域名以校验证书；HTTP 演示替换域名解析 ---
+        if (!this._config.const.https) {
+            url.hostname = 'nodejs.org';
+        }
 
-        const res = await lUndici.get('http://nodejs.org:' + this._config.const.hostport.toString() + this._config.const.urlBase + 'test', {
-            'hosts': {
-                'nodejs.org': '127.0.0.1'
-            }
+        const res = await lUndici.get(url.href, {
+            'hosts': this._internalAddress,
         });
-        echo.push(`<pre>lUndici.get('http://nodejs.org:${this._config.const.hostport.toString() + this._config.const.urlBase}test', {
-    'hosts': {
-        'nodejs.org': '127.0.0.1'
-    }
+        echo.push(`<pre>lUndici.get('${url.href}', {
+    'hosts': '${this._internalAddress}',
 });</pre>
 headers: <pre>${JSON.stringify(res.headers, null, 4)}</pre>
 content: <pre>${lText.htmlescape((await res.getContent())?.toString() ?? '')}</pre>
@@ -2836,6 +2851,7 @@ error: <pre>${JSON.stringify(res.error, null, 4)}</pre>`);
         const res = await lUndici.postJson(this._internalUrl + 'test/undici-mproxy2', {
             'abc': 'ok',
         }, {
+            'hosts': this._internalAddress,
             'mproxy': {
                 'url': this._internalUrl + 'test/undici-mproxy1',
                 'auth': '123456',
@@ -2843,6 +2859,7 @@ error: <pre>${JSON.stringify(res.error, null, 4)}</pre>`);
             }
         });
         echo.push(`<pre>lUndici.postJson('${this._internalUrl}test/undici-mproxy2', {
+    'hosts': this._internalAddress,
     'mproxy': {
         'url': '${this._internalUrl}test/undici-mproxy1',
         'auth': '123456',
@@ -2859,7 +2876,7 @@ error: <pre>${JSON.stringify(res.error, null, 4)}</pre>`);
     public async undiciMproxy1(): Promise<string | boolean> {
         const data = lUndici.mproxyData(this);
         lCore.debug('Got data', data);
-        const rtn = await lUndici.mproxy(this, '123456');
+        const rtn = await lUndici.mproxy(this, '123456', { 'hosts': this._internalAddress });
         if (rtn > 0) {
             return false;
         }
@@ -2911,6 +2928,7 @@ error: <pre>${JSON.stringify(res.error, null, 4)}</pre>`);
         const echo = [];
         try {
             const res = await lUndici.fetch(this._internalUrl + 'test/undici-fetch1', {
+                'hosts': this._internalAddress,
                 'method': 'POST',
                 'headers': {
                     'content-type': 'application/json',
@@ -2918,6 +2936,7 @@ error: <pre>${JSON.stringify(res.error, null, 4)}</pre>`);
                 'body': JSON.stringify({ 'test': '123' }),
             });
             echo.push(`<pre>lUndici.fetch('${this._internalUrl}test/undici-fetch1', {
+    'hosts': this._internalAddress,
     'method': 'POST',
     'headers': {
         'content-type': 'application/json',
@@ -2935,6 +2954,7 @@ error: <pre>${JSON.stringify(res.error, null, 4)}</pre>`);
 
         try {
             const res = await lUndici.fetch(this._internalUrl + 'test/undici-fetch1', {
+                'hosts': this._internalAddress,
                 'method': 'POST',
                 'headers': {
                     'content-type': 'application/json',
@@ -2947,6 +2967,7 @@ error: <pre>${JSON.stringify(res.error, null, 4)}</pre>`);
                 },
             });
             echo.push(`<pre>lUndici.fetch('${this._internalUrl}test/undici-fetch1', {
+    'hosts': this._internalAddress,
     'method': 'POST',
     'headers': {
         'content-type': 'application/json',
@@ -2977,17 +2998,18 @@ error: <pre>${JSON.stringify(res.error, null, 4)}</pre>`);
     public async undiciGetResponseJson(): Promise<string> {
         const echo = [];
 
-        const json = await lUndici.getResponseJson(this._internalUrl + 'test/undici-get-response-json1');
-        echo.push(`<pre>const json = await lUndici.getResponseJson('${this._internalUrl}test/undici-get-response-json1');</pre>
+        const json = await lUndici.getResponseJson(this._internalUrl + 'test/undici-get-response-json1', { 'hosts': this._internalAddress });
+        echo.push(`<pre>const json = await lUndici.getResponseJson('${this._internalUrl}test/undici-get-response-json1', { 'hosts': this._internalAddress });</pre>
 result: <pre>${lText.htmlescape(JSON.stringify(json, null, 4))}</pre><hr>`);
 
-        const json2 = await lUndici.getResponseJson(this._internalUrl + 'test/undici-get-response-json2');
-        echo.push(`<pre>const json2 = await lUndici.getResponseJson('${this._internalUrl}test/undici-get-response-json2');</pre>
+        const json2 = await lUndici.getResponseJson(this._internalUrl + 'test/undici-get-response-json2', { 'hosts': this._internalAddress });
+        echo.push(`<pre>const json2 = await lUndici.getResponseJson('${this._internalUrl}test/undici-get-response-json2', { 'hosts': this._internalAddress });</pre>
 result: <pre>${lText.htmlescape(JSON.stringify(json2, null, 4))}</pre><hr>`);
 
         /** --- JSON 重试验证方法的执行次数 --- */
         let retryJsonHandlerCount = 0;
         const json3 = await lUndici.getResponseJson(this._internalUrl + 'test/undici-get-response-json1', {
+            'hosts': this._internalAddress,
             'retryJson': 1,
             'retryJsonHandler': (value) => {
                 ++retryJsonHandlerCount;
@@ -2996,6 +3018,7 @@ result: <pre>${lText.htmlescape(JSON.stringify(json2, null, 4))}</pre><hr>`);
         });
         echo.push(`<pre>let retryJsonHandlerCount = 0;
 const json3 = await lUndici.getResponseJson('${this._internalUrl}test/undici-get-response-json1', {
+    'hosts': this._internalAddress,
     'retryJson': 1,
     'retryJsonHandler': (value) => {
         ++retryJsonHandlerCount;
@@ -4204,21 +4227,24 @@ setInterval(() => {
     }
 
     public async wsClient(): Promise<string> {
-        const host = (this._get['ac'] === 'hosts') ? 'www.maiyun.net:' + this._config.const.hostport : this._config.const.host;
-        const ws = await lWs.connect(
-            'ws' + (this._config.const.https ? 's' : '') + '://' + host + '/test',
-            {
-                'mproxy': this._get['ac'] === 'mproxy' ? {
-                    'url': `ws${this._config.const.https ? 's' : ''}://${this._config.const.host}/mproxy`,
-                    'auth': '123456'
-                } : undefined,
-                'hosts': (this._get['ac'] === 'hosts') ? '127.0.0.1' : undefined
-            }
-        );
-        if (!ws) {
-            return '<div>Connect "ws' + (this._config.const.https ? 's' : '') + '://' + host + '/test" failed.</div><br>' + this._getEnd();
+        const url = new URL('test', this._internalUrl);
+        url.protocol = this._config.const.https ? 'wss:' : 'ws:';
+        if (this._get['ac'] === 'hosts' && !this._config.const.https) {
+            url.hostname = 'www.maiyun.net';
         }
-        const echo: string[] = ['<div>Connected "ws' + (this._config.const.https ? 's' : '') + '://' + host + '/test".</div>'];
+        const proxyUrl = new URL('mproxy', this._internalUrl);
+        proxyUrl.protocol = url.protocol;
+        const ws = await lWs.connect(url.href, {
+            'hosts': this._internalAddress,
+            'mproxy': this._get['ac'] === 'mproxy' ? {
+                'url': proxyUrl.href,
+                'auth': '123456',
+            } : undefined,
+        });
+        if (!ws) {
+            return `<div>Connect "${url.href}" failed.</div><br>` + this._getEnd();
+        }
+        const echo: string[] = [`<div>Connected "${url.href}".</div>`];
         // --- 绑定事件 ---
         await new Promise<void>((resolve) => {
             (async () => {

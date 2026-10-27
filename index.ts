@@ -195,16 +195,20 @@ export interface IConfigConst {
     'mobile': boolean;
     'wechat': boolean;
     'miniprogram': '' | 'wechat';
+    /** --- 请求到达 Kebab 时是否使用 HTTPS；通过 HTTP 回源时为 false --- */
     'https': boolean;
-    /** --- 原始主机地址，保留端口 --- */
+    /** --- 请求头中的主机地址，如 example.com、example.com:8443 或 [::1]:8080；不额外补端口 --- */
     'host': string;
-    /** --- 主机名，不含端口或 IPv6 方括号 --- */
+    /** --- 主机名，如 example.com 或 ::1，不含端口或 IPv6 方括号 --- */
     'hostname': string;
-    /** --- 请求端口 --- */
+    /** --- 请求地址中的端口，如 8443；未指定时 HTTPS 为 443、HTTP 为 80，不取本机监听端口 --- */
     'hostport': number;
-    /** --- 用于 URL 的主机地址，仅省略 HTTPS 的 443 和 HTTP 的 80 端口，保留 IPv6 方括号 --- */
+    /** --- 用于生成网址的主机地址，仅省略 HTTPS 的 443 和 HTTP 的 80 端口，如 example.com:443 → example.com；保留其他端口和 IPv6 方括号 --- */
     'hostCanonical': string;
-    /** --- 协议与 hostCanonical，如 https://example.com:8443 --- */
+    /**
+     * --- 网址的协议与 hostCanonical，如 https://example.com:8443 ---
+     * 协议可能取自转发头，不能用它判断请求到达 Kebab 时是否使用 HTTPS。
+     */
     'urlOrigin': string;
     'uri': IUrlParse;
 
