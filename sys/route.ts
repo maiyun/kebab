@@ -24,7 +24,7 @@ import { getPublicProtocol as getPublicProtocolImpl } from '#kebab/abox/request.
 /**
  * --- 只用于推导公开 URL；不改变真实 TLS 状态，也不验证转发头来源 ---
  * @param req HTTP 或 HTTP/2 请求
- * @param fallback 原协议；Forwarded 首项优先于 X-Forwarded-Proto 首项
+ * @param fallback 实际连接协议；X-Forwarded-Proto 首项不是有效的 http/https 时使用
  * @returns 对外 URL 协议；ws/wss 保持原值
  */
 const getPublicProtocol: (

@@ -698,7 +698,7 @@ Defined in: [index.ts:228](https://github.com/maiyunnet/kebab/blob/master/index.
 Defined in: [index.ts:212](https://github.com/maiyunnet/kebab/blob/master/index.ts#L212)
 
 网址的协议与 hostCanonical，如 https://example.com:8443
-协议可能取自转发头，不能用它判断请求到达 Kebab 时是否使用 HTTPS。
+协议可取自 X-Forwarded-Proto，无有效值时使用实际连接协议；不能用它判断实际 TLS 状态。
 
 ***
 
@@ -1759,7 +1759,7 @@ index/variables/VER.md
 
 # Variable: VER
 
-> `const` **VER**: `"9.25.0"` = `'9.25.0'`
+> `const` **VER**: `"9.25.1"` = `'9.25.1'`
 
 Defined in: [index.ts:10](https://github.com/maiyunnet/kebab/blob/master/index.ts#L10)
 

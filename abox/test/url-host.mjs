@@ -100,16 +100,14 @@ try {
     for (const [name, url, headers, origin] of [
         ['HTTPS visitor over HTTP origin', 'http://example.com/docs', { 'x-forwarded-proto': 'https' }, 'https://example.com'],
         ['HTTP visitor over TLS origin', 'https://example.com/docs', { 'x-forwarded-proto': 'http' }, 'http://example.com'],
-        ['standard Forwarded takes precedence', 'https://example.com/docs', { forwarded: 'proto=http', 'x-forwarded-proto': 'https' }, 'http://example.com'],
-        ['quoted and case-insensitive proto', 'http://example.com/docs', { forwarded: 'for=unknown; Proto = "HTTPS"' }, 'https://example.com'],
-        ['first Forwarded hop', 'http://example.com/docs', { forwarded: 'proto=https, proto=http' }, 'https://example.com'],
-        ['delimiters inside quoted values', 'http://example.com/docs', { forwarded: 'for="proto=http,;";proto=https' }, 'https://example.com'],
+        ['Forwarded cannot override XFP', 'http://example.com/docs', { forwarded: 'proto=http', 'x-forwarded-proto': 'https' }, 'https://example.com'],
+        ['Forwarded cannot upgrade XFP', 'https://example.com/docs', { forwarded: 'proto=https', 'x-forwarded-proto': 'http' }, 'http://example.com'],
+        ['case-insensitive XFP with whitespace', 'http://example.com/docs', { 'x-forwarded-proto': ' HTTPS ' }, 'https://example.com'],
         ['first X-Forwarded-Proto hop', 'http://example.com/docs', { 'x-forwarded-proto': 'https, http' }, 'https://example.com'],
-        ['invalid standard proto falls back to XFP', 'http://example.com/docs', { forwarded: 'proto=ftp', 'x-forwarded-proto': 'https' }, 'https://example.com'],
         ['explicit public port stays', 'http://example.com:8443/docs', { 'x-forwarded-proto': 'https' }, 'https://example.com:8443'],
         ['explicit port 80 is not silently removed for HTTPS', 'http://example.com:80/docs', { 'x-forwarded-proto': 'https' }, 'https://example.com:80'],
         ['IPv6 authority stays', 'http://[2001:db8::1]/docs', { 'x-forwarded-proto': 'https' }, 'https://[2001:db8::1]'],
-        ['forwarded authority and port cannot replace Host', 'http://example.com/docs', { forwarded: 'host=attacker.example:1234;proto=https', 'x-forwarded-host': 'attacker.example', 'x-forwarded-port': '1234' }, 'https://example.com'],
+        ['forwarded authority and port cannot replace Host', 'http://example.com/docs', { forwarded: 'host=attacker.example:1234;proto=http', 'x-forwarded-proto': 'https', 'x-forwarded-host': 'attacker.example', 'x-forwarded-port': '1234' }, 'https://example.com'],
     ]) {
         await test(name, async () => {
             const { config, req, res } = await getConfig(url, '/', headers);
@@ -135,20 +133,29 @@ try {
     }
 
     for (const headers of [
+        {},
+        { 'x-forwarded-proto': '' },
+        { 'x-forwarded-proto': '   ' },
         { 'x-forwarded-proto': 'javascript:alert(1)' },
         { 'x-forwarded-proto': 'https://attacker.example' },
+        { 'x-forwarded-proto': '"https"' },
+        { 'x-forwarded-proto': 'ftp, https' },
+        { 'x-forwarded-proto': ', https' },
         { 'x-forwarded-proto': ['https', 'http'] },
         { 'x-forwarded-proto': 'x'.repeat(4097) },
-        { forwarded: 'proto=https;proto=http' },
-        { forwarded: 'for=";proto=https;"' },
-        { forwarded: 'proto="https' },
-        { forwarded: 'x'.repeat(4097) + ';proto=https' },
+        { forwarded: 'proto=https' },
+        { forwarded: 'proto=http' },
+        { forwarded: 'proto=https', 'x-forwarded-proto': 'invalid' },
+        { forwarded: 'proto=http', 'x-forwarded-proto': 'invalid' },
     ]) {
-        await test(`invalid forwarding input uses original origin: ${JSON.stringify(headers).slice(0, 90)}`, async () => {
-            const { config } = await getConfig('http://example.com/docs', '/', headers);
-            assert.equal(config.const.urlFull, 'http://example.com/');
-            assert.equal(config.set.staticPathFull, 'http://example.com/stc/');
-        });
+        for (const protocol of ['http', 'https']) {
+            await test(`missing or invalid XFP keeps ${protocol}: ${JSON.stringify(headers).slice(0, 90)}`, async () => {
+                const { config } = await getConfig(`${protocol}://example.com/docs`, '/', headers);
+                assert.equal(config.const.urlFull, `${protocol}://example.com/`);
+                assert.equal(config.set.staticPathFull, `${protocol}://example.com/stc/`);
+                assert.equal(config.const.https, protocol === 'https');
+            });
+        }
     }
 
     // Exercise the actual compiled request entry without starting framework workers.
