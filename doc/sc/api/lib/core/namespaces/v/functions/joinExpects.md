@@ -24,7 +24,7 @@ The `expects` values.
 
 ### separator
 
-`"&"` \| "\|"
+"\|" \| `"&"`
 
 The separator.
 

@@ -50,6 +50,7 @@
 - [parseVersion](functions/parseVersion.md)
 - [queryParse](functions/queryParse.md)
 - [queryStringify](functions/queryStringify.md)
+- [redact](functions/redact.md)
 - [sizeFormat](functions/sizeFormat.md)
 - [str2int](functions/str2int.md)
 - [stringifyBuffer](functions/stringifyBuffer.md)

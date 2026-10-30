@@ -4,7 +4,7 @@
  * Last: 2020-04-06 20:51:06, 2022-9-29 15:18:16, 2022-12-29 00:01:30, 2024-3-6 17:53:14, 2024-5-31 17:29:52, 2025-6-13 15:47:02, 2025-9-23 12:51:49, 2026-8-22
  */
 import * as net from 'net';
-import * as textJson from '#kebab/abox/text.js';
+import * as textImpl from '#kebab/abox/text.js';
 import * as kebab from '#kebab/index.js';
 import * as lFs from './fs.js';
 import * as lCore from './core.js';
@@ -701,7 +701,7 @@ export function stringifyResult(rtn: kebab.Json): string {
  * @returns 解析结果，无效 JSON 返回 false；小数及指数形式仍为 number
  */
 export function parseJson<T>(str: string): T | false {
-    return textJson.parseJson<T>(str);
+    return textImpl.parseJson<T>(str);
 }
 
 /**
@@ -711,7 +711,7 @@ export function parseJson<T>(str: string): T | false {
  * @returns JSON 字符串，循环引用等序列化错误沿用 JSON.stringify 异常
  */
 export function stringifyJson(obj: kebab.Json, space?: string | number): string {
-    return textJson.stringifyJson(obj, space);
+    return textImpl.stringifyJson(obj, space);
 }
 
 /**
@@ -862,4 +862,22 @@ export function int2str(int: number, digits: number = 4, decimal: number = 2): s
     const decResult = newDecPart.toString().padStart(decimal, '0');
 
     return `${sign}${intNum}${decResult ? `.${decResult}` : ''}`;
+}
+
+/**
+ * --- 将文本中的指定敏感字符串替换为占位文本 ---
+ * @param value 待处理文本
+ * @param secrets 敏感字符串，忽略空项和重复项，不修改数组
+ * @param options 替换选项
+ * @param options.replacement 替换文本，默认 [REDACTED]，按字面量插入且不参与后续匹配
+ * @param options.encoded 是否同时匹配编码形式，默认 true；包括 encodeURIComponent 生成形式
+ * （百分号十六进制不区分大小写）和 JSON.stringify 生成的转义正文，不含外层引号；
+ * 孤立代理项跳过 URI 编码，仍匹配原文及 JSON 转义形式
+ * @returns 处理后的文本；原文区分大小写，从左向右匹配，同一位置优先最长串，匹配范围不重叠
+ */
+export function redact(value: string, secrets: readonly string[], options: {
+    'replacement'?: string;
+    'encoded'?: boolean;
+} = {}): string {
+    return textImpl.redact(value, secrets, options.replacement ?? '[REDACTED]', options.encoded ?? true);
 }
