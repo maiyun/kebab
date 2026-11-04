@@ -10,11 +10,31 @@ Defined in: [lib/session.ts:42](https://github.com/maiyunnet/kebab/blob/master/l
 
 ## Properties
 
+### cookie?
+
+> `optional` **cookie?**: `boolean`
+
+Defined in: [lib/session.ts:53](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L53)
+
+是否读取和写入 Cookie，默认 true；false 时也不会发送 Set-Cookie
+
+***
+
 ### domain?
 
 > `optional` **domain?**: `string`
 
 Defined in: [lib/session.ts:46](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L46)
+
+***
+
+### header?
+
+> `optional` **header?**: `string`
+
+Defined in: [lib/session.ts:51](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L51)
+
+auth 开启时读取的专用头名，值为原始 Session ID；未设置则读取 Authorization / _auth
 
 ***
 
@@ -46,7 +66,9 @@ Defined in: [lib/session.ts:45](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **token?**: `string`
 
-Defined in: [lib/session.ts:48](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L48)
+Defined in: [lib/session.ts:49](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L49)
+
+显式指定 Session ID，优先于请求凭据；空字符串表示新建匿名会话
 
 ***
 

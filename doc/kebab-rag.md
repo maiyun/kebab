@@ -123575,7 +123575,7 @@ lib/session/classes/Session.md
 
 # Class: Session
 
-Defined in: [lib/session.ts:51](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L51)
+Defined in: [lib/session.ts:56](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L56)
 
 ## Constructors
 
@@ -123593,7 +123593,7 @@ Defined in: [lib/session.ts:51](https://github.com/maiyunnet/kebab/blob/master/l
 
 > **getName**(): `string`
 
-Defined in: [lib/session.ts:226](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L226)
+Defined in: [lib/session.ts:249](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L249)
 
 获取当前的 cookie 的 name 值
 
@@ -123607,7 +123607,7 @@ Defined in: [lib/session.ts:226](https://github.com/maiyunnet/kebab/blob/master/
 
 > **getToken**(): `string`
 
-Defined in: [lib/session.ts:219](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L219)
+Defined in: [lib/session.ts:242](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L242)
 
 获取当前的 token 值
 
@@ -123621,7 +123621,7 @@ Defined in: [lib/session.ts:219](https://github.com/maiyunnet/kebab/blob/master/
 
 > **init**(`ctr`, `link`, `auth?`, `opt?`): `Promise`\<`boolean`\>
 
-Defined in: [lib/session.ts:79](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L79)
+Defined in: [lib/session.ts:84](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L84)
 
 初始化函数，相当于 construct
 
@@ -123643,7 +123643,7 @@ Kv 或 Db 实例
 
 `boolean` = `false`
 
-设为 true 则优先从头 Authorization 或 post _auth 值读取 token
+开启请求凭据读取，使用 opt.header 或 Authorization / GET、POST 的 _auth；提供无效凭据不回退 Cookie
 
 ##### opt?
 
@@ -123663,7 +123663,7 @@ false 表示系统错误
 
 > **update**(): `Promise`\<`void`\>
 
-Defined in: [lib/session.ts:233](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L233)
+Defined in: [lib/session.ts:256](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L256)
 
 页面整体结束时，要写入到 Kv 或 数据库
 
@@ -123705,11 +123705,31 @@ Defined in: [lib/session.ts:42](https://github.com/maiyunnet/kebab/blob/master/l
 
 ## Properties
 
+### cookie?
+
+> `optional` **cookie?**: `boolean`
+
+Defined in: [lib/session.ts:53](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L53)
+
+是否读取和写入 Cookie，默认 true；false 时也不会发送 Set-Cookie
+
+***
+
 ### domain?
 
 > `optional` **domain?**: `string`
 
 Defined in: [lib/session.ts:46](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L46)
+
+***
+
+### header?
+
+> `optional` **header?**: `string`
+
+Defined in: [lib/session.ts:51](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L51)
+
+auth 开启时读取的专用头名，值为原始 Session ID；未设置则读取 Authorization / _auth
 
 ***
 
@@ -123741,7 +123761,9 @@ Defined in: [lib/session.ts:45](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **token?**: `string`
 
-Defined in: [lib/session.ts:48](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L48)
+Defined in: [lib/session.ts:49](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L49)
+
+显式指定 Session ID，优先于请求凭据；空字符串表示新建匿名会话
 
 ***
 
@@ -133826,7 +133848,7 @@ Defined in: [sys/ctr.ts:899](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 > `protected` **\_cross**(`opt?`): `boolean`
 
-Defined in: [sys/ctr.ts:1136](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1136)
+Defined in: [sys/ctr.ts:1141](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1141)
 
 开启跨域请求
 
@@ -133908,7 +133930,7 @@ Defined in: [sys/ctr.ts:913](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 > `protected` **\_end**(`code?`, `reason?`): `void`
 
-Defined in: [sys/ctr.ts:1246](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1246)
+Defined in: [sys/ctr.ts:1251](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1251)
 
 主动关闭当前 socket 连接
 
@@ -133964,7 +133986,7 @@ Defined in: [sys/ctr.ts:937](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 > `protected` **\_getLocale**(): `string`
 
-Defined in: [sys/ctr.ts:1127](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1127)
+Defined in: [sys/ctr.ts:1132](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1132)
 
 获取当前语言名
 
@@ -133978,7 +134000,7 @@ Defined in: [sys/ctr.ts:1127](https://github.com/maiyunnet/kebab/blob/master/sys
 
 > `protected` **\_getLocaleJsonString**(): `string`
 
-Defined in: [sys/ctr.ts:1115](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1115)
+Defined in: [sys/ctr.ts:1120](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1120)
 
 根据当前后台语言包设置情况获取 JSON 字符串传输到前台
 
@@ -134030,7 +134052,7 @@ Defined in: [sys/ctr.ts:419](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 > `protected` **\_handleFormData**(`events?`, `limits?`): `Promise`\<`boolean`\>
 
-Defined in: [sys/ctr.ts:1256](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1256)
+Defined in: [sys/ctr.ts:1261](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1261)
 
 获取 formdata 的信息
 
@@ -134060,7 +134082,7 @@ Defined in: [sys/ctr.ts:1256](https://github.com/maiyunnet/kebab/blob/master/sys
 
 > **\_l**(`key`, `data?`): `string`
 
-Defined in: [sys/ctr.ts:1179](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1179)
+Defined in: [sys/ctr.ts:1184](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1184)
 
 获取语言包值
 
@@ -134086,7 +134108,7 @@ Defined in: [sys/ctr.ts:1179](https://github.com/maiyunnet/kebab/blob/master/sys
 
 > `protected` **\_loadData**\<`T`\>(`path`): `Promise`\<`false` \| `T` \| `null`\>
 
-Defined in: [sys/ctr.ts:1013](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1013)
+Defined in: [sys/ctr.ts:1017](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1017)
 
 获取 data JSON 数据
 
@@ -134114,7 +134136,7 @@ Defined in: [sys/ctr.ts:1013](https://github.com/maiyunnet/kebab/blob/master/sys
 
 > `protected` **\_loadLocale**(`loc`, `pkg?`): `Promise`\<`boolean`\>
 
-Defined in: [sys/ctr.ts:1066](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1066)
+Defined in: [sys/ctr.ts:1071](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1071)
 
 设定语言并加载语言包
 
@@ -134203,7 +134225,7 @@ Defined in: [sys/ctr.ts:436](https://github.com/maiyunnet/kebab/blob/master/sys/
 
 > `protected` **\_location**(`location`, `httpCode?`): `false`
 
-Defined in: [sys/ctr.ts:1035](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1035)
+Defined in: [sys/ctr.ts:1039](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1039)
 
 跳转，支持相对本项目根路径的路径或绝对路径
 
@@ -134231,7 +134253,7 @@ HTTP 重定向状态码，默认 302
 
 > `protected` **\_ping**(`data?`): `boolean`
 
-Defined in: [sys/ctr.ts:1229](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1229)
+Defined in: [sys/ctr.ts:1234](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1234)
 
 发送 socket ping
 
@@ -134253,7 +134275,7 @@ Defined in: [sys/ctr.ts:1229](https://github.com/maiyunnet/kebab/blob/master/sys
 
 > `protected` **\_pong**(`data?`): `boolean`
 
-Defined in: [sys/ctr.ts:1237](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1237)
+Defined in: [sys/ctr.ts:1242](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1242)
 
 发送 socket pong
 
@@ -134275,7 +134297,7 @@ Defined in: [sys/ctr.ts:1237](https://github.com/maiyunnet/kebab/blob/master/sys
 
 > `protected` **\_startSession**(`link`, `auth?`, `opt?`): `Promise`\<`boolean`\>
 
-Defined in: [sys/ctr.ts:1050](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1050)
+Defined in: [sys/ctr.ts:1055](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1055)
 
 开启 Session
 
@@ -134291,17 +134313,19 @@ Kv 或 Db 实例
 
 `boolean` = `false`
 
-设为 true 则从头 Authorization 或 post _auth 值读取 token
+开启请求凭据读取，使用 opt.header 或 Authorization / GET、POST 的 _auth；提供无效凭据不回退 Cookie
 
 ##### opt?
 
 [`IOptions`](../../../lib/session/interfaces/IOptions.md) = `{}`
 
-选项
+Session 选项，cookie 为 false 时不读取或写入 Cookie
 
 #### Returns
 
 `Promise`\<`boolean`\>
+
+是否初始化成功，匿名会话也返回 true
 
 ***
 
@@ -134393,7 +134417,7 @@ Valibot 配置、自定义客户端返回值和 XSRF 选项
 
 > `protected` **\_writeBinary**(`data`): `boolean`
 
-Defined in: [sys/ctr.ts:1221](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1221)
+Defined in: [sys/ctr.ts:1226](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1226)
 
 发送 socket 二进制
 
@@ -134415,7 +134439,7 @@ Defined in: [sys/ctr.ts:1221](https://github.com/maiyunnet/kebab/blob/master/sys
 
 > `protected` **\_writeResult**(`data`): `boolean`
 
-Defined in: [sys/ctr.ts:1213](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1213)
+Defined in: [sys/ctr.ts:1218](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1218)
 
 发送结果对象文本
 
@@ -134437,7 +134461,7 @@ Defined in: [sys/ctr.ts:1213](https://github.com/maiyunnet/kebab/blob/master/sys
 
 > `protected` **\_writeText**(`data`): `boolean`
 
-Defined in: [sys/ctr.ts:1205](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1205)
+Defined in: [sys/ctr.ts:1210](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L1210)
 
 发送 socket 文本
 
@@ -134459,13 +134483,15 @@ Defined in: [sys/ctr.ts:1205](https://github.com/maiyunnet/kebab/blob/master/sys
 
 > **getAuthorization**(): `false` \| \{ `pwd`: `string`; `type`: `"basic"`; `user`: `string`; \} \| \{ `token`: `string`; `type`: `"bearer"`; \}
 
-Defined in: [sys/ctr.ts:965](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L965)
+Defined in: [sys/ctr.ts:966](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L966)
 
-通过 header 或 _auth 获取鉴权信息，支持 Basic Auth 和 Bearer Token
+按 Authorization、GET _auth、POST _auth 顺序读取鉴权信息，空值或格式错误不回退
 
 #### Returns
 
 `false` \| \{ `pwd`: `string`; `type`: `"basic"`; `user`: `string`; \} \| \{ `token`: `string`; `type`: `"bearer"`; \}
+
+Basic Auth、Bearer Token 或 false（未提供或格式无效）
 
 ***
 

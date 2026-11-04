@@ -69,7 +69,7 @@ let lastSnapshotCpuTime: number = 0;
 let lastSnapshotOsCpus: os.CpuInfo[] | null = null;
 
 /** --- 事件循环延迟直方图 --- */
-let eloopHistogram: perfHooks.IntervalHistogram | null = null;
+let eloopHistogram: ReturnType<typeof perfHooks.monitorEventLoopDelay> | null = null;
 
 /** --- 各指标首次超阈值的单调时钟时间，不能跨指标累计 --- */
 let spikeSince: { 'cpu': number | null; 'mem': number | null; 'eloop': number | null; } = {

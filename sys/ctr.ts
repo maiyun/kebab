@@ -960,7 +960,8 @@ export class Ctr {
     private _authorization: { 'type': 'basic'; 'user': string; 'pwd': string; } | { 'type': 'bearer'; 'token': string; } | null = null;
 
     /**
-     * --- 通过 header 或 _auth 获取鉴权信息，支持 Basic Auth 和 Bearer Token ---
+     * --- 按 Authorization、GET _auth、POST _auth 顺序读取鉴权信息，空值或格式错误不回退 ---
+     * @returns Basic Auth、Bearer Token 或 false（未提供或格式无效）
      */
     public getAuthorization():
         { 'type': 'basic'; 'user': string; 'pwd': string; } |
@@ -969,13 +970,13 @@ export class Ctr {
             return this._authorization;
         }
         let auth = '';
-        if (this._headers['authorization']) {
+        if (this._headers['authorization'] !== undefined) {
             auth = this._headers['authorization'];
         }
-        else if (this._get['_auth']) {
+        else if (this._get['_auth'] !== undefined) {
             auth = this._get['_auth'];
         }
-        else if (this._post['_auth']) {
+        else if (this._post['_auth'] !== undefined) {
             auth = this._post['_auth'];
         }
         if (typeof auth !== 'string') {
@@ -993,6 +994,9 @@ export class Ctr {
         if (scheme === 'bearer') {
             this._authorization = { 'type': 'bearer', 'token': credential };
             return this._authorization;
+        }
+        if (scheme !== 'basic') {
+            return false;
         }
         // --- Basic Auth: base64(user:pwd) ---
         const decoded = lCrypto.base64Decode(credential);
@@ -1044,8 +1048,9 @@ export class Ctr {
     /**
      * --- 开启 Session ---
      * @param link Kv 或 Db 实例
-     * @param auth 设为 true 则从头 Authorization 或 post _auth 值读取 token
-     * @param opt 选项
+     * @param auth 开启请求凭据读取，使用 opt.header 或 Authorization / GET、POST 的 _auth；提供无效凭据不回退 Cookie
+     * @param opt Session 选项，cookie 为 false 时不读取或写入 Cookie
+     * @returns 是否初始化成功，匿名会话也返回 true
      */
     protected _startSession(
         link: lDb.Pool | lKv.Kv,

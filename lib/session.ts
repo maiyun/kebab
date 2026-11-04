@@ -45,7 +45,12 @@ export interface IOptions {
     'ssl'?: boolean;
     'domain'?: string;
     'sqlPre'?: string;
+    /** --- 显式指定 Session ID，优先于请求凭据；空字符串表示新建匿名会话 --- */
     'token'?: string;
+    /** --- auth 开启时读取的专用头名，值为原始 Session ID；未设置则读取 Authorization / _auth --- */
+    'header'?: string;
+    /** --- 是否读取和写入 Cookie，默认 true；false 时也不会发送 Set-Cookie --- */
+    'cookie'?: boolean;
 }
 
 export class Session {
@@ -72,7 +77,7 @@ export class Session {
      * --- 初始化函数，相当于 construct ---
      * @param ctr 模型实例
      * @param link Kv 或 Db 实例
-     * @param auth 设为 true 则优先从头 Authorization 或 post _auth 值读取 token
+     * @param auth 开启请求凭据读取，使用 opt.header 或 Authorization / GET、POST 的 _auth；提供无效凭据不回退 Cookie
      * @param opt 选项
      * @returns false 表示系统错误
      */
@@ -88,23 +93,39 @@ export class Session {
         this._ttl = opt.ttl ?? config.session.ttl ?? 172800;
         const tim: number = lTime.stamp();
         this._ctr = ctr;
+        this._token = '';
 
-        if (opt.token) {
+        /** --- 用户是否已明确提供了凭据，空值或格式错误也禁止回退 Cookie --- */
+        let supplied = false;
+        if (opt.token !== undefined) {
+            supplied = true;
             this._token = opt.token;
         }
         else if (auth) {
-            const a = ctr.getAuthorization();
-            if (a && a.type === 'bearer') {
-                // --- Authorization: Bearer <token> ---
-                this._token = a.token;
+            const headers = ctr.getPrototype('_headers');
+            if (opt.header !== undefined) {
+                const value = headers[opt.header.toLowerCase()];
+                supplied = value !== undefined;
+                if (typeof value === 'string') {
+                    this._token = value.trim();
+                }
             }
-            else if (a && a.type === 'basic' && a.user === 'token') {
-                // --- Authorization: Basic base64(token:<token>)，兼容旧模式 ---
-                this._token = a.pwd;
+            else {
+                supplied = headers['authorization'] !== undefined ||
+                    ctr.getPrototype('_get')['_auth'] !== undefined ||
+                    ctr.getPrototype('_post')['_auth'] !== undefined;
+                const a = ctr.getAuthorization();
+                if (a && a.type === 'bearer') {
+                    this._token = a.token;
+                }
+                else if (a && a.type === 'basic' && a.user === 'token') {
+                    // --- 已有客户端以 Basic 的密码字段传递 Session ID ---
+                    this._token = a.pwd;
+                }
             }
         }
         const cookie = ctr.getPrototype('_cookie');
-        if ((this._token === '') && cookie[this._name]) {
+        if (opt.cookie !== false && !supplied && cookie[this._name]) {
             this._token = cookie[this._name];
         }
 
@@ -154,12 +175,12 @@ export class Session {
                     needInsert = true;
                 }
             }
-            ctr.setPrototype('_session', session);
         }
         else {
             // --- 全新的机子 ---
             needInsert = true;
         }
+        ctr.setPrototype('_session', session);
         // --- 本来就该添加个新 Session ---
         // --- 内存和数据库里没找到的也该添加个新 Session ---
         // --- 数据库的 Session 已经过期加新 Session ---
@@ -202,13 +223,15 @@ export class Session {
             }
         }
 
-        lCore.setCookie(ctr, this._name, this._token, {
-            'ttl': this._ttl,
-            'domain': opt.domain,
-            'ssl': ssl,
-            'httponly': true,
-            'samesite': 'Lax',
-        });
+        if (opt.cookie !== false) {
+            lCore.setCookie(ctr, this._name, this._token, {
+                'ttl': this._ttl,
+                'domain': opt.domain,
+                'ssl': ssl,
+                'httponly': true,
+                'samesite': 'Lax',
+            });
+        }
 
         return true;
     }

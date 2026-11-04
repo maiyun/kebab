@@ -6,7 +6,7 @@
 
 # Class: Session
 
-Defined in: [lib/session.ts:51](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L51)
+Defined in: [lib/session.ts:56](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L56)
 
 ## Constructors
 
@@ -24,7 +24,7 @@ Defined in: [lib/session.ts:51](https://github.com/maiyunnet/kebab/blob/master/l
 
 > **getName**(): `string`
 
-Defined in: [lib/session.ts:226](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L226)
+Defined in: [lib/session.ts:249](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L249)
 
 获取当前的 cookie 的 name 值
 
@@ -38,7 +38,7 @@ Defined in: [lib/session.ts:226](https://github.com/maiyunnet/kebab/blob/master/
 
 > **getToken**(): `string`
 
-Defined in: [lib/session.ts:219](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L219)
+Defined in: [lib/session.ts:242](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L242)
 
 获取当前的 token 值
 
@@ -52,7 +52,7 @@ Defined in: [lib/session.ts:219](https://github.com/maiyunnet/kebab/blob/master/
 
 > **init**(`ctr`, `link`, `auth?`, `opt?`): `Promise`\<`boolean`\>
 
-Defined in: [lib/session.ts:79](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L79)
+Defined in: [lib/session.ts:84](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L84)
 
 初始化函数，相当于 construct
 
@@ -74,7 +74,7 @@ Kv 或 Db 实例
 
 `boolean` = `false`
 
-设为 true 则优先从头 Authorization 或 post _auth 值读取 token
+开启请求凭据读取，使用 opt.header 或 Authorization / GET、POST 的 _auth；提供无效凭据不回退 Cookie
 
 ##### opt?
 
@@ -94,7 +94,7 @@ false 表示系统错误
 
 > **update**(): `Promise`\<`void`\>
 
-Defined in: [lib/session.ts:233](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L233)
+Defined in: [lib/session.ts:256](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L256)
 
 页面整体结束时，要写入到 Kv 或 数据库
 
