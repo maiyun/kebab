@@ -34,7 +34,7 @@ zip 文件
 
 ### config?
 
-`string` \| `boolean`
+`string` \| `boolean` = `true`
 
 是否自动更新 config 的 set.staticVer 为最新，默认更新，'0'|false-不更新,'1'|true-更新kebab.json若有,'2'|true-更新全局
 

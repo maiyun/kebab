@@ -90,7 +90,7 @@ ORDER BY
 
 ##### d?
 
-`"DESC"` \| `"ASC"`
+`"DESC"` \| `"ASC"` = `'DESC'`
 
 排序规则
 
@@ -688,7 +688,7 @@ Defined in: [lib/sql.ts:841](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 ##### d?
 
-`"DESC"` \| `"ASC"`
+`"DESC"` \| `"ASC"` = `'DESC'`
 
 扫描方向；读取前一批时反转方向并在取回后反转列表
 
@@ -895,7 +895,7 @@ Defined in: [lib/sql.ts:154](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 ##### vs?
 
-[`DbValue`](../../../index/type-aliases/DbValue.md)[] \| [`DbValue`](../../../index/type-aliases/DbValue.md)[][]
+[`DbValue`](../../../index/type-aliases/DbValue.md)[] \| [`DbValue`](../../../index/type-aliases/DbValue.md)[][] = `[]`
 
 [] | [][] 数据
 

@@ -40,7 +40,7 @@ cipher 加密，强烈不建议使用 AES_256_ECB
 
 ### output?
 
-`"buffer"` \| `"base64"`
+`"buffer"` \| `"base64"` = `'base64'`
 
 输出类型
 

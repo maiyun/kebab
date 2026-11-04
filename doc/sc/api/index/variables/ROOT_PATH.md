@@ -8,6 +8,6 @@
 
 > `const` **ROOT\_PATH**: `string`
 
-Defined in: [index.ts:19](https://github.com/maiyunnet/kebab/blob/master/index.ts#L19)
+Defined in: [index.ts:18](https://github.com/maiyunnet/kebab/blob/master/index.ts#L18)
 
 框架根目录，以 / 结尾

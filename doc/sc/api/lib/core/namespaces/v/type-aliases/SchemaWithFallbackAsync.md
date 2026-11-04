@@ -12,6 +12,16 @@ Defined in: node\_modules/valibot/dist/index.d.mts:218
 
 Schema with fallback async type.
 
+## Type Parameters
+
+### TSchema
+
+`TSchema` *extends* [`BaseSchema`](../interfaces/BaseSchema.md)\<`unknown`, `unknown`, [`BaseIssue`](../interfaces/BaseIssue.md)\<`unknown`\>\> \| [`BaseSchemaAsync`](../interfaces/BaseSchemaAsync.md)\<`unknown`, `unknown`, [`BaseIssue`](../interfaces/BaseIssue.md)\<`unknown`\>\>
+
+### TFallback$1
+
+`TFallback$1` *extends* [`FallbackAsync`](FallbackAsync.md)\<`TSchema`\>
+
 ## Type Declaration
 
 ### ~run
@@ -61,13 +71,3 @@ Whether it's async.
 > `readonly` **fallback**: `TFallback$1`
 
 The fallback value.
-
-## Type Parameters
-
-### TSchema
-
-`TSchema` *extends* [`BaseSchema`](../interfaces/BaseSchema.md)\<`unknown`, `unknown`, [`BaseIssue`](../interfaces/BaseIssue.md)\<`unknown`\>\> \| [`BaseSchemaAsync`](../interfaces/BaseSchemaAsync.md)\<`unknown`, `unknown`, [`BaseIssue`](../interfaces/BaseIssue.md)\<`unknown`\>\>
-
-### TFallback$1
-
-`TFallback$1` *extends* [`FallbackAsync`](FallbackAsync.md)\<`TSchema`\>

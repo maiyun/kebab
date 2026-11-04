@@ -14,6 +14,16 @@ Defined in: node\_modules/valibot/dist/index.d.mts:112
 
 Schema with cache async type.
 
+## Type Parameters
+
+### TSchema
+
+`TSchema` *extends* [`BaseSchema`](../interfaces/BaseSchema.md)\<`unknown`, `unknown`, [`BaseIssue`](../interfaces/BaseIssue.md)\<`unknown`\>\> \| [`BaseSchemaAsync`](../interfaces/BaseSchemaAsync.md)\<`unknown`, `unknown`, [`BaseIssue`](../interfaces/BaseIssue.md)\<`unknown`\>\>
+
+### TCacheConfig
+
+`TCacheConfig` *extends* [`CacheConfig`](../interfaces/CacheConfig.md) \| `undefined`
+
 ## Type Declaration
 
 ### ~run
@@ -69,13 +79,3 @@ The cache instance.
 > `readonly` **cacheConfig**: `TCacheConfig`
 
 The cache config.
-
-## Type Parameters
-
-### TSchema
-
-`TSchema` *extends* [`BaseSchema`](../interfaces/BaseSchema.md)\<`unknown`, `unknown`, [`BaseIssue`](../interfaces/BaseIssue.md)\<`unknown`\>\> \| [`BaseSchemaAsync`](../interfaces/BaseSchemaAsync.md)\<`unknown`, `unknown`, [`BaseIssue`](../interfaces/BaseIssue.md)\<`unknown`\>\>
-
-### TCacheConfig
-
-`TCacheConfig` *extends* [`CacheConfig`](../interfaces/CacheConfig.md) \| `undefined`

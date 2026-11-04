@@ -40,7 +40,7 @@ cipher 解密
 
 ### output?
 
-`"buffer"` \| `"binary"`
+`"buffer"` \| `"binary"` = `'binary'`
 
 输出类型
 

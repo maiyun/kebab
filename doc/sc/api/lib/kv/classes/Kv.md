@@ -578,7 +578,7 @@ key 名
 
 ##### mod?
 
-`""` \| `"nx"`
+`""` \| `"nx"` = `''`
 
 空,nx(key不存在才建立)
 
@@ -968,7 +968,7 @@ Defined in: [lib/kv.ts:83](https://github.com/maiyunnet/kebab/blob/master/lib/kv
 
 ##### mod?
 
-`""` \| `"nx"` \| `"xx"`
+`""` \| `"nx"` \| `"xx"` = `''`
 
 设置模式: 空,nx（key不存在才建立）,xx（key存在才修改）
 

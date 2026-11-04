@@ -12,6 +12,12 @@ Defined in: node\_modules/valibot/dist/index.d.mts:504
 
 Schema with pipe type.
 
+## Type Parameters
+
+### TPipe$1
+
+`TPipe$1` *extends* readonly \[[`BaseSchema`](../interfaces/BaseSchema.md)\<`unknown`, `unknown`, [`BaseIssue`](../interfaces/BaseIssue.md)\<`unknown`\>\>, `...PipeItem<any, unknown, BaseIssue<unknown>>[]`\]
+
 ## Type Declaration
 
 ### ~run
@@ -75,9 +81,3 @@ The input, output and issue type.
 > `readonly` **pipe**: `TPipe$1`
 
 The pipe items.
-
-## Type Parameters
-
-### TPipe$1
-
-`TPipe$1` *extends* readonly \[[`BaseSchema`](../interfaces/BaseSchema.md)\<`unknown`, `unknown`, [`BaseIssue`](../interfaces/BaseIssue.md)\<`unknown`\>\>, `...PipeItem<any, unknown, BaseIssue<unknown>>[]`\]

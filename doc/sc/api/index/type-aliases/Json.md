@@ -8,6 +8,6 @@
 
 > **Json** = `any`
 
-Defined in: [index.ts:46](https://github.com/maiyunnet/kebab/blob/master/index.ts#L46)
+Defined in: [index.ts:45](https://github.com/maiyunnet/kebab/blob/master/index.ts#L45)
 
 除非确定是不可知的 Json，否则不能使用

@@ -14,6 +14,16 @@ Defined in: node\_modules/valibot/dist/index.d.mts:64
 
 Schema with cache type.
 
+## Type Parameters
+
+### TSchema
+
+`TSchema` *extends* [`BaseSchema`](../interfaces/BaseSchema.md)\<`unknown`, `unknown`, [`BaseIssue`](../interfaces/BaseIssue.md)\<`unknown`\>\>
+
+### TCacheConfig
+
+`TCacheConfig` *extends* [`CacheConfig`](../interfaces/CacheConfig.md) \| `undefined`
+
 ## Type Declaration
 
 ### cache
@@ -27,13 +37,3 @@ The cache instance.
 > `readonly` **cacheConfig**: `TCacheConfig`
 
 The cache config.
-
-## Type Parameters
-
-### TSchema
-
-`TSchema` *extends* [`BaseSchema`](../interfaces/BaseSchema.md)\<`unknown`, `unknown`, [`BaseIssue`](../interfaces/BaseIssue.md)\<`unknown`\>\>
-
-### TCacheConfig
-
-`TCacheConfig` *extends* [`CacheConfig`](../interfaces/CacheConfig.md) \| `undefined`

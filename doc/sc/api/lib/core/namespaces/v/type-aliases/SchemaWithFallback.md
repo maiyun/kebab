@@ -12,14 +12,6 @@ Defined in: node\_modules/valibot/dist/index.d.mts:194
 
 Schema with fallback type.
 
-## Type Declaration
-
-### fallback
-
-> `readonly` **fallback**: `TFallback$1`
-
-The fallback value.
-
 ## Type Parameters
 
 ### TSchema
@@ -29,3 +21,11 @@ The fallback value.
 ### TFallback$1
 
 `TFallback$1` *extends* [`Fallback`](Fallback.md)\<`TSchema`\>
+
+## Type Declaration
+
+### fallback
+
+> `readonly` **fallback**: `TFallback$1`
+
+The fallback value.

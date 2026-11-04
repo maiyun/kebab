@@ -6,7 +6,7 @@
 
 # Type Alias: Class
 
-> **Class** = (...`args`) => `any`
+> **Class** = new (...`args`) => `any`
 
 Defined in: node\_modules/valibot/dist/index.d.mts:4502
 

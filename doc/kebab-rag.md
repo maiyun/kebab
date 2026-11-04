@@ -484,7 +484,7 @@ index/interfaces/IConfigAi.md
 
 # Interface: IConfigAi
 
-Defined in: [index.ts:120](https://github.com/maiyunnet/kebab/blob/master/index.ts#L120)
+Defined in: [index.ts:119](https://github.com/maiyunnet/kebab/blob/master/index.ts#L119)
 
 AI
 
@@ -494,7 +494,7 @@ AI
 
 > `optional` **endpoint?**: `string`
 
-Defined in: [index.ts:122](https://github.com/maiyunnet/kebab/blob/master/index.ts#L122)
+Defined in: [index.ts:121](https://github.com/maiyunnet/kebab/blob/master/index.ts#L121)
 
 目前只有微软 Azure 有
 
@@ -504,7 +504,7 @@ Defined in: [index.ts:122](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **skey**: `string`
 
-Defined in: [index.ts:123](https://github.com/maiyunnet/kebab/blob/master/index.ts#L123)
+Defined in: [index.ts:122](https://github.com/maiyunnet/kebab/blob/master/index.ts#L122)
 
 index/interfaces/IConfigConst.md
 ---
@@ -517,7 +517,7 @@ index/interfaces/IConfigConst.md
 
 # Interface: IConfigConst
 
-Defined in: [index.ts:183](https://github.com/maiyunnet/kebab/blob/master/index.ts#L183)
+Defined in: [index.ts:182](https://github.com/maiyunnet/kebab/blob/master/index.ts#L182)
 
 常量
 
@@ -527,7 +527,7 @@ Defined in: [index.ts:183](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **ctrPath**: `string`
 
-Defined in: [index.ts:219](https://github.com/maiyunnet/kebab/blob/master/index.ts#L219)
+Defined in: [index.ts:218](https://github.com/maiyunnet/kebab/blob/master/index.ts#L218)
 
 ***
 
@@ -535,7 +535,7 @@ Defined in: [index.ts:219](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **dataPath**: `string`
 
-Defined in: [index.ts:221](https://github.com/maiyunnet/kebab/blob/master/index.ts#L221)
+Defined in: [index.ts:220](https://github.com/maiyunnet/kebab/blob/master/index.ts#L220)
 
 ***
 
@@ -543,7 +543,7 @@ Defined in: [index.ts:221](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **host**: `string`
 
-Defined in: [index.ts:201](https://github.com/maiyunnet/kebab/blob/master/index.ts#L201)
+Defined in: [index.ts:200](https://github.com/maiyunnet/kebab/blob/master/index.ts#L200)
 
 请求头中的主机地址，如 example.com、example.com:8443 或 [::1]:8080；不额外补端口
 
@@ -553,7 +553,7 @@ Defined in: [index.ts:201](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **hostCanonical**: `string`
 
-Defined in: [index.ts:207](https://github.com/maiyunnet/kebab/blob/master/index.ts#L207)
+Defined in: [index.ts:206](https://github.com/maiyunnet/kebab/blob/master/index.ts#L206)
 
 用于生成网址的主机地址，仅省略 HTTPS 的 443 和 HTTP 的 80 端口，如 example.com:443 → example.com；保留其他端口和 IPv6 方括号
 
@@ -563,7 +563,7 @@ Defined in: [index.ts:207](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **hostname**: `string`
 
-Defined in: [index.ts:203](https://github.com/maiyunnet/kebab/blob/master/index.ts#L203)
+Defined in: [index.ts:202](https://github.com/maiyunnet/kebab/blob/master/index.ts#L202)
 
 主机名，如 example.com 或 ::1，不含端口或 IPv6 方括号
 
@@ -573,7 +573,7 @@ Defined in: [index.ts:203](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **hostport**: `number`
 
-Defined in: [index.ts:205](https://github.com/maiyunnet/kebab/blob/master/index.ts#L205)
+Defined in: [index.ts:204](https://github.com/maiyunnet/kebab/blob/master/index.ts#L204)
 
 请求地址中的端口，如 8443；未指定时 HTTPS 为 443、HTTP 为 80，不取本机监听端口
 
@@ -583,7 +583,7 @@ Defined in: [index.ts:205](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **https**: `boolean`
 
-Defined in: [index.ts:199](https://github.com/maiyunnet/kebab/blob/master/index.ts#L199)
+Defined in: [index.ts:198](https://github.com/maiyunnet/kebab/blob/master/index.ts#L198)
 
 请求到达 Kebab 时是否使用 HTTPS；通过 HTTP 回源时为 false
 
@@ -593,7 +593,7 @@ Defined in: [index.ts:199](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **miniprogram**: `""` \| `"wechat"`
 
-Defined in: [index.ts:197](https://github.com/maiyunnet/kebab/blob/master/index.ts#L197)
+Defined in: [index.ts:196](https://github.com/maiyunnet/kebab/blob/master/index.ts#L196)
 
 ***
 
@@ -601,7 +601,7 @@ Defined in: [index.ts:197](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **mobile**: `boolean`
 
-Defined in: [index.ts:195](https://github.com/maiyunnet/kebab/blob/master/index.ts#L195)
+Defined in: [index.ts:194](https://github.com/maiyunnet/kebab/blob/master/index.ts#L194)
 
 ***
 
@@ -609,7 +609,7 @@ Defined in: [index.ts:195](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **modPath**: `string`
 
-Defined in: [index.ts:218](https://github.com/maiyunnet/kebab/blob/master/index.ts#L218)
+Defined in: [index.ts:217](https://github.com/maiyunnet/kebab/blob/master/index.ts#L217)
 
 ***
 
@@ -617,7 +617,7 @@ Defined in: [index.ts:218](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **path**: `string`
 
-Defined in: [index.ts:185](https://github.com/maiyunnet/kebab/blob/master/index.ts#L185)
+Defined in: [index.ts:184](https://github.com/maiyunnet/kebab/blob/master/index.ts#L184)
 
 不以 / 开头，不含 qs
 
@@ -627,7 +627,7 @@ Defined in: [index.ts:185](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **qs**: `string`
 
-Defined in: [index.ts:187](https://github.com/maiyunnet/kebab/blob/master/index.ts#L187)
+Defined in: [index.ts:186](https://github.com/maiyunnet/kebab/blob/master/index.ts#L186)
 
 不含 ? 开头
 
@@ -637,7 +637,7 @@ Defined in: [index.ts:187](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **qss**: `string`
 
-Defined in: [index.ts:189](https://github.com/maiyunnet/kebab/blob/master/index.ts#L189)
+Defined in: [index.ts:188](https://github.com/maiyunnet/kebab/blob/master/index.ts#L188)
 
 含 ? 开头
 
@@ -647,7 +647,7 @@ Defined in: [index.ts:189](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **rootPath**: `string`
 
-Defined in: [index.ts:217](https://github.com/maiyunnet/kebab/blob/master/index.ts#L217)
+Defined in: [index.ts:216](https://github.com/maiyunnet/kebab/blob/master/index.ts#L216)
 
 ***
 
@@ -655,7 +655,7 @@ Defined in: [index.ts:217](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **startMemory**: `number`
 
-Defined in: [index.ts:191](https://github.com/maiyunnet/kebab/blob/master/index.ts#L191)
+Defined in: [index.ts:190](https://github.com/maiyunnet/kebab/blob/master/index.ts#L190)
 
 ***
 
@@ -663,7 +663,7 @@ Defined in: [index.ts:191](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **startTime**: `bigint`
 
-Defined in: [index.ts:190](https://github.com/maiyunnet/kebab/blob/master/index.ts#L190)
+Defined in: [index.ts:189](https://github.com/maiyunnet/kebab/blob/master/index.ts#L189)
 
 ***
 
@@ -671,7 +671,7 @@ Defined in: [index.ts:190](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **uri**: [`IUrlParse`](IUrlParse.md)
 
-Defined in: [index.ts:213](https://github.com/maiyunnet/kebab/blob/master/index.ts#L213)
+Defined in: [index.ts:212](https://github.com/maiyunnet/kebab/blob/master/index.ts#L212)
 
 ***
 
@@ -679,7 +679,7 @@ Defined in: [index.ts:213](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **urlBase**: `string`
 
-Defined in: [index.ts:226](https://github.com/maiyunnet/kebab/blob/master/index.ts#L226)
+Defined in: [index.ts:225](https://github.com/maiyunnet/kebab/blob/master/index.ts#L225)
 
 ***
 
@@ -687,7 +687,7 @@ Defined in: [index.ts:226](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **urlFull**: `string`
 
-Defined in: [index.ts:228](https://github.com/maiyunnet/kebab/blob/master/index.ts#L228)
+Defined in: [index.ts:227](https://github.com/maiyunnet/kebab/blob/master/index.ts#L227)
 
 ***
 
@@ -695,7 +695,7 @@ Defined in: [index.ts:228](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **urlOrigin**: `string`
 
-Defined in: [index.ts:212](https://github.com/maiyunnet/kebab/blob/master/index.ts#L212)
+Defined in: [index.ts:211](https://github.com/maiyunnet/kebab/blob/master/index.ts#L211)
 
 网址的协议与 hostCanonical，如 https://example.com:8443
 协议可取自 X-Forwarded-Proto，无有效值时使用实际连接协议；不能用它判断实际 TLS 状态。
@@ -706,7 +706,7 @@ Defined in: [index.ts:212](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **urlStc**: `string`
 
-Defined in: [index.ts:227](https://github.com/maiyunnet/kebab/blob/master/index.ts#L227)
+Defined in: [index.ts:226](https://github.com/maiyunnet/kebab/blob/master/index.ts#L226)
 
 ***
 
@@ -714,7 +714,7 @@ Defined in: [index.ts:227](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **urlStcFull**: `string`
 
-Defined in: [index.ts:229](https://github.com/maiyunnet/kebab/blob/master/index.ts#L229)
+Defined in: [index.ts:228](https://github.com/maiyunnet/kebab/blob/master/index.ts#L228)
 
 ***
 
@@ -722,7 +722,7 @@ Defined in: [index.ts:229](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **viewPath**: `string`
 
-Defined in: [index.ts:220](https://github.com/maiyunnet/kebab/blob/master/index.ts#L220)
+Defined in: [index.ts:219](https://github.com/maiyunnet/kebab/blob/master/index.ts#L219)
 
 ***
 
@@ -730,7 +730,7 @@ Defined in: [index.ts:220](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **wechat**: `boolean`
 
-Defined in: [index.ts:196](https://github.com/maiyunnet/kebab/blob/master/index.ts#L196)
+Defined in: [index.ts:195](https://github.com/maiyunnet/kebab/blob/master/index.ts#L195)
 
 ***
 
@@ -738,7 +738,7 @@ Defined in: [index.ts:196](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **wsPath**: `string`
 
-Defined in: [index.ts:222](https://github.com/maiyunnet/kebab/blob/master/index.ts#L222)
+Defined in: [index.ts:221](https://github.com/maiyunnet/kebab/blob/master/index.ts#L221)
 
 index/interfaces/IConfigDb.md
 ---
@@ -751,7 +751,7 @@ index/interfaces/IConfigDb.md
 
 # Interface: IConfigDb
 
-Defined in: [index.ts:150](https://github.com/maiyunnet/kebab/blob/master/index.ts#L150)
+Defined in: [index.ts:149](https://github.com/maiyunnet/kebab/blob/master/index.ts#L149)
 
 数据库
 
@@ -761,7 +761,7 @@ Defined in: [index.ts:150](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > `optional` **charset?**: `string`
 
-Defined in: [index.ts:153](https://github.com/maiyunnet/kebab/blob/master/index.ts#L153)
+Defined in: [index.ts:152](https://github.com/maiyunnet/kebab/blob/master/index.ts#L152)
 
 ***
 
@@ -769,7 +769,7 @@ Defined in: [index.ts:153](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **host**: `string`
 
-Defined in: [index.ts:151](https://github.com/maiyunnet/kebab/blob/master/index.ts#L151)
+Defined in: [index.ts:150](https://github.com/maiyunnet/kebab/blob/master/index.ts#L150)
 
 ***
 
@@ -777,7 +777,7 @@ Defined in: [index.ts:151](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > `optional` **name?**: `string`
 
-Defined in: [index.ts:154](https://github.com/maiyunnet/kebab/blob/master/index.ts#L154)
+Defined in: [index.ts:153](https://github.com/maiyunnet/kebab/blob/master/index.ts#L153)
 
 ***
 
@@ -785,7 +785,7 @@ Defined in: [index.ts:154](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **port**: `number`
 
-Defined in: [index.ts:152](https://github.com/maiyunnet/kebab/blob/master/index.ts#L152)
+Defined in: [index.ts:151](https://github.com/maiyunnet/kebab/blob/master/index.ts#L151)
 
 ***
 
@@ -793,7 +793,7 @@ Defined in: [index.ts:152](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **pwd**: `string`
 
-Defined in: [index.ts:157](https://github.com/maiyunnet/kebab/blob/master/index.ts#L157)
+Defined in: [index.ts:156](https://github.com/maiyunnet/kebab/blob/master/index.ts#L156)
 
 ***
 
@@ -801,7 +801,7 @@ Defined in: [index.ts:157](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **user**: `string`
 
-Defined in: [index.ts:156](https://github.com/maiyunnet/kebab/blob/master/index.ts#L156)
+Defined in: [index.ts:155](https://github.com/maiyunnet/kebab/blob/master/index.ts#L155)
 
 index/interfaces/IConfigDns.md
 ---
@@ -814,7 +814,7 @@ index/interfaces/IConfigDns.md
 
 # Interface: IConfigDns
 
-Defined in: [index.ts:161](https://github.com/maiyunnet/kebab/blob/master/index.ts#L161)
+Defined in: [index.ts:160](https://github.com/maiyunnet/kebab/blob/master/index.ts#L160)
 
 DNS
 
@@ -824,7 +824,7 @@ DNS
 
 > **sid**: `string`
 
-Defined in: [index.ts:162](https://github.com/maiyunnet/kebab/blob/master/index.ts#L162)
+Defined in: [index.ts:161](https://github.com/maiyunnet/kebab/blob/master/index.ts#L161)
 
 ***
 
@@ -832,7 +832,7 @@ Defined in: [index.ts:162](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **skey**: `string`
 
-Defined in: [index.ts:163](https://github.com/maiyunnet/kebab/blob/master/index.ts#L163)
+Defined in: [index.ts:162](https://github.com/maiyunnet/kebab/blob/master/index.ts#L162)
 
 index/interfaces/IConfigKv.md
 ---
@@ -845,7 +845,7 @@ index/interfaces/IConfigKv.md
 
 # Interface: IConfigKv
 
-Defined in: [index.ts:167](https://github.com/maiyunnet/kebab/blob/master/index.ts#L167)
+Defined in: [index.ts:166](https://github.com/maiyunnet/kebab/blob/master/index.ts#L166)
 
 kv
 
@@ -855,7 +855,7 @@ kv
 
 > **host**: `string`
 
-Defined in: [index.ts:168](https://github.com/maiyunnet/kebab/blob/master/index.ts#L168)
+Defined in: [index.ts:167](https://github.com/maiyunnet/kebab/blob/master/index.ts#L167)
 
 ***
 
@@ -863,7 +863,7 @@ Defined in: [index.ts:168](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **index**: `number`
 
-Defined in: [index.ts:170](https://github.com/maiyunnet/kebab/blob/master/index.ts#L170)
+Defined in: [index.ts:169](https://github.com/maiyunnet/kebab/blob/master/index.ts#L169)
 
 ***
 
@@ -871,7 +871,7 @@ Defined in: [index.ts:170](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **port**: `number`
 
-Defined in: [index.ts:169](https://github.com/maiyunnet/kebab/blob/master/index.ts#L169)
+Defined in: [index.ts:168](https://github.com/maiyunnet/kebab/blob/master/index.ts#L168)
 
 ***
 
@@ -879,7 +879,7 @@ Defined in: [index.ts:169](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **pre**: `string`
 
-Defined in: [index.ts:171](https://github.com/maiyunnet/kebab/blob/master/index.ts#L171)
+Defined in: [index.ts:170](https://github.com/maiyunnet/kebab/blob/master/index.ts#L170)
 
 ***
 
@@ -887,7 +887,7 @@ Defined in: [index.ts:171](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **pwd**: `string`
 
-Defined in: [index.ts:174](https://github.com/maiyunnet/kebab/blob/master/index.ts#L174)
+Defined in: [index.ts:173](https://github.com/maiyunnet/kebab/blob/master/index.ts#L173)
 
 ***
 
@@ -895,7 +895,7 @@ Defined in: [index.ts:174](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **user**: `string`
 
-Defined in: [index.ts:173](https://github.com/maiyunnet/kebab/blob/master/index.ts#L173)
+Defined in: [index.ts:172](https://github.com/maiyunnet/kebab/blob/master/index.ts#L172)
 
 index/interfaces/IConfigLang.md
 ---
@@ -908,7 +908,7 @@ index/interfaces/IConfigLang.md
 
 # Interface: IConfigLang
 
-Defined in: [index.ts:104](https://github.com/maiyunnet/kebab/blob/master/index.ts#L104)
+Defined in: [index.ts:103](https://github.com/maiyunnet/kebab/blob/master/index.ts#L103)
 
 语言
 
@@ -918,7 +918,7 @@ Defined in: [index.ts:104](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **direct**: `string`[]
 
-Defined in: [index.ts:106](https://github.com/maiyunnet/kebab/blob/master/index.ts#L106)
+Defined in: [index.ts:105](https://github.com/maiyunnet/kebab/blob/master/index.ts#L105)
 
 ***
 
@@ -926,7 +926,7 @@ Defined in: [index.ts:106](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **list**: `string`[]
 
-Defined in: [index.ts:105](https://github.com/maiyunnet/kebab/blob/master/index.ts#L105)
+Defined in: [index.ts:104](https://github.com/maiyunnet/kebab/blob/master/index.ts#L104)
 
 index/interfaces/IConfig.md
 ---
@@ -939,7 +939,7 @@ index/interfaces/IConfig.md
 
 # Interface: IConfig
 
-Defined in: [index.ts:52](https://github.com/maiyunnet/kebab/blob/master/index.ts#L52)
+Defined in: [index.ts:51](https://github.com/maiyunnet/kebab/blob/master/index.ts#L51)
 
 目录配置文件
 
@@ -953,7 +953,7 @@ Defined in: [index.ts:52](https://github.com/maiyunnet/kebab/blob/master/index.t
 
 > **ai**: `Record`\<`string`, [`IConfigAi`](IConfigAi.md)\>
 
-Defined in: [index.ts:83](https://github.com/maiyunnet/kebab/blob/master/index.ts#L83)
+Defined in: [index.ts:82](https://github.com/maiyunnet/kebab/blob/master/index.ts#L82)
 
 ***
 
@@ -961,7 +961,7 @@ Defined in: [index.ts:83](https://github.com/maiyunnet/kebab/blob/master/index.t
 
 > **const**: [`IConfigConst`](IConfigConst.md)
 
-Defined in: [index.ts:64](https://github.com/maiyunnet/kebab/blob/master/index.ts#L64)
+Defined in: [index.ts:63](https://github.com/maiyunnet/kebab/blob/master/index.ts#L63)
 
 ***
 
@@ -969,7 +969,7 @@ Defined in: [index.ts:64](https://github.com/maiyunnet/kebab/blob/master/index.t
 
 > **db**: `Record`\<`string`, \{ `default`: [`IConfigDb`](IConfigDb.md); `read`: [`IConfigDb`](IConfigDb.md); \}\> & `object`
 
-Defined in: [index.ts:65](https://github.com/maiyunnet/kebab/blob/master/index.ts#L65)
+Defined in: [index.ts:64](https://github.com/maiyunnet/kebab/blob/master/index.ts#L64)
 
 #### Type Declaration
 
@@ -983,7 +983,7 @@ Defined in: [index.ts:65](https://github.com/maiyunnet/kebab/blob/master/index.t
 
 > **dns**: `Record`\<`string`, [`IConfigDns`](IConfigDns.md)\>
 
-Defined in: [index.ts:79](https://github.com/maiyunnet/kebab/blob/master/index.ts#L79)
+Defined in: [index.ts:78](https://github.com/maiyunnet/kebab/blob/master/index.ts#L78)
 
 ***
 
@@ -991,7 +991,7 @@ Defined in: [index.ts:79](https://github.com/maiyunnet/kebab/blob/master/index.t
 
 > **kv**: [`IConfigKv`](IConfigKv.md)
 
-Defined in: [index.ts:71](https://github.com/maiyunnet/kebab/blob/master/index.ts#L71)
+Defined in: [index.ts:70](https://github.com/maiyunnet/kebab/blob/master/index.ts#L70)
 
 ***
 
@@ -999,7 +999,7 @@ Defined in: [index.ts:71](https://github.com/maiyunnet/kebab/blob/master/index.t
 
 > **lang**: [`IConfigLang`](IConfigLang.md)
 
-Defined in: [index.ts:80](https://github.com/maiyunnet/kebab/blob/master/index.ts#L80)
+Defined in: [index.ts:79](https://github.com/maiyunnet/kebab/blob/master/index.ts#L79)
 
 ***
 
@@ -1007,7 +1007,7 @@ Defined in: [index.ts:80](https://github.com/maiyunnet/kebab/blob/master/index.t
 
 > **route**: `Record`\<`string`, `string`\>
 
-Defined in: [index.ts:72](https://github.com/maiyunnet/kebab/blob/master/index.ts#L72)
+Defined in: [index.ts:71](https://github.com/maiyunnet/kebab/blob/master/index.ts#L71)
 
 ***
 
@@ -1015,7 +1015,7 @@ Defined in: [index.ts:72](https://github.com/maiyunnet/kebab/blob/master/index.t
 
 > **s3**: `Record`\<`string`, [`IConfigS3`](IConfigS3.md)\>
 
-Defined in: [index.ts:81](https://github.com/maiyunnet/kebab/blob/master/index.ts#L81)
+Defined in: [index.ts:80](https://github.com/maiyunnet/kebab/blob/master/index.ts#L80)
 
 ***
 
@@ -1023,7 +1023,7 @@ Defined in: [index.ts:81](https://github.com/maiyunnet/kebab/blob/master/index.t
 
 > **session**: `object`
 
-Defined in: [index.ts:73](https://github.com/maiyunnet/kebab/blob/master/index.ts#L73)
+Defined in: [index.ts:72](https://github.com/maiyunnet/kebab/blob/master/index.ts#L72)
 
 #### name
 
@@ -1043,7 +1043,7 @@ Defined in: [index.ts:73](https://github.com/maiyunnet/kebab/blob/master/index.t
 
 > **set**: `object`
 
-Defined in: [index.ts:53](https://github.com/maiyunnet/kebab/blob/master/index.ts#L53)
+Defined in: [index.ts:52](https://github.com/maiyunnet/kebab/blob/master/index.ts#L52)
 
 #### Index Signature
 
@@ -1079,7 +1079,7 @@ Defined in: [index.ts:53](https://github.com/maiyunnet/kebab/blob/master/index.t
 
 > **sql**: [`IConfigSql`](IConfigSql.md)
 
-Defined in: [index.ts:78](https://github.com/maiyunnet/kebab/blob/master/index.ts#L78)
+Defined in: [index.ts:77](https://github.com/maiyunnet/kebab/blob/master/index.ts#L77)
 
 ***
 
@@ -1087,7 +1087,7 @@ Defined in: [index.ts:78](https://github.com/maiyunnet/kebab/blob/master/index.t
 
 > **turnstile**: [`IConfigTurnstile`](IConfigTurnstile.md)
 
-Defined in: [index.ts:82](https://github.com/maiyunnet/kebab/blob/master/index.ts#L82)
+Defined in: [index.ts:81](https://github.com/maiyunnet/kebab/blob/master/index.ts#L81)
 
 ***
 
@@ -1095,7 +1095,7 @@ Defined in: [index.ts:82](https://github.com/maiyunnet/kebab/blob/master/index.t
 
 > **vector**: [`IConfigVector`](IConfigVector.md)
 
-Defined in: [index.ts:84](https://github.com/maiyunnet/kebab/blob/master/index.ts#L84)
+Defined in: [index.ts:83](https://github.com/maiyunnet/kebab/blob/master/index.ts#L83)
 
 index/interfaces/IConfigS3.md
 ---
@@ -1108,7 +1108,7 @@ index/interfaces/IConfigS3.md
 
 # Interface: IConfigS3
 
-Defined in: [index.ts:110](https://github.com/maiyunnet/kebab/blob/master/index.ts#L110)
+Defined in: [index.ts:109](https://github.com/maiyunnet/kebab/blob/master/index.ts#L109)
 
 对象存储
 
@@ -1118,7 +1118,7 @@ Defined in: [index.ts:110](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > `optional` **account?**: `string`
 
-Defined in: [index.ts:112](https://github.com/maiyunnet/kebab/blob/master/index.ts#L112)
+Defined in: [index.ts:111](https://github.com/maiyunnet/kebab/blob/master/index.ts#L111)
 
 cf r2 要用
 
@@ -1128,7 +1128,7 @@ cf r2 要用
 
 > **bucket**: `string`
 
-Defined in: [index.ts:116](https://github.com/maiyunnet/kebab/blob/master/index.ts#L116)
+Defined in: [index.ts:115](https://github.com/maiyunnet/kebab/blob/master/index.ts#L115)
 
 ***
 
@@ -1136,7 +1136,7 @@ Defined in: [index.ts:116](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **region**: `string`
 
-Defined in: [index.ts:115](https://github.com/maiyunnet/kebab/blob/master/index.ts#L115)
+Defined in: [index.ts:114](https://github.com/maiyunnet/kebab/blob/master/index.ts#L114)
 
 ***
 
@@ -1144,7 +1144,7 @@ Defined in: [index.ts:115](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **sid**: `string`
 
-Defined in: [index.ts:113](https://github.com/maiyunnet/kebab/blob/master/index.ts#L113)
+Defined in: [index.ts:112](https://github.com/maiyunnet/kebab/blob/master/index.ts#L112)
 
 ***
 
@@ -1152,7 +1152,7 @@ Defined in: [index.ts:113](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **skey**: `string`
 
-Defined in: [index.ts:114](https://github.com/maiyunnet/kebab/blob/master/index.ts#L114)
+Defined in: [index.ts:113](https://github.com/maiyunnet/kebab/blob/master/index.ts#L113)
 
 index/interfaces/IConfigSql.md
 ---
@@ -1165,7 +1165,7 @@ index/interfaces/IConfigSql.md
 
 # Interface: IConfigSql
 
-Defined in: [index.ts:178](https://github.com/maiyunnet/kebab/blob/master/index.ts#L178)
+Defined in: [index.ts:177](https://github.com/maiyunnet/kebab/blob/master/index.ts#L177)
 
 sql
 
@@ -1175,7 +1175,7 @@ sql
 
 > **pre**: `string`
 
-Defined in: [index.ts:179](https://github.com/maiyunnet/kebab/blob/master/index.ts#L179)
+Defined in: [index.ts:178](https://github.com/maiyunnet/kebab/blob/master/index.ts#L178)
 
 index/interfaces/IConfigTurnstile.md
 ---
@@ -1188,7 +1188,7 @@ index/interfaces/IConfigTurnstile.md
 
 # Interface: IConfigTurnstile
 
-Defined in: [index.ts:136](https://github.com/maiyunnet/kebab/blob/master/index.ts#L136)
+Defined in: [index.ts:135](https://github.com/maiyunnet/kebab/blob/master/index.ts#L135)
 
 人机码信息
 
@@ -1198,7 +1198,7 @@ Defined in: [index.ts:136](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **CF**: `object`
 
-Defined in: [index.ts:137](https://github.com/maiyunnet/kebab/blob/master/index.ts#L137)
+Defined in: [index.ts:136](https://github.com/maiyunnet/kebab/blob/master/index.ts#L136)
 
 #### sid
 
@@ -1214,7 +1214,7 @@ Defined in: [index.ts:137](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **TENCENT**: `object`
 
-Defined in: [index.ts:141](https://github.com/maiyunnet/kebab/blob/master/index.ts#L141)
+Defined in: [index.ts:140](https://github.com/maiyunnet/kebab/blob/master/index.ts#L140)
 
 #### aid
 
@@ -1243,7 +1243,7 @@ index/interfaces/IConfigVector.md
 
 # Interface: IConfigVector
 
-Defined in: [index.ts:127](https://github.com/maiyunnet/kebab/blob/master/index.ts#L127)
+Defined in: [index.ts:126](https://github.com/maiyunnet/kebab/blob/master/index.ts#L126)
 
 向量数据库
 
@@ -1253,7 +1253,7 @@ Defined in: [index.ts:127](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **host**: `string`
 
-Defined in: [index.ts:128](https://github.com/maiyunnet/kebab/blob/master/index.ts#L128)
+Defined in: [index.ts:127](https://github.com/maiyunnet/kebab/blob/master/index.ts#L127)
 
 ***
 
@@ -1261,7 +1261,7 @@ Defined in: [index.ts:128](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **name**: `string`
 
-Defined in: [index.ts:130](https://github.com/maiyunnet/kebab/blob/master/index.ts#L130)
+Defined in: [index.ts:129](https://github.com/maiyunnet/kebab/blob/master/index.ts#L129)
 
 ***
 
@@ -1269,7 +1269,7 @@ Defined in: [index.ts:130](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **port**: `number`
 
-Defined in: [index.ts:129](https://github.com/maiyunnet/kebab/blob/master/index.ts#L129)
+Defined in: [index.ts:128](https://github.com/maiyunnet/kebab/blob/master/index.ts#L128)
 
 ***
 
@@ -1277,7 +1277,7 @@ Defined in: [index.ts:129](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **pwd**: `string`
 
-Defined in: [index.ts:132](https://github.com/maiyunnet/kebab/blob/master/index.ts#L132)
+Defined in: [index.ts:131](https://github.com/maiyunnet/kebab/blob/master/index.ts#L131)
 
 ***
 
@@ -1285,7 +1285,7 @@ Defined in: [index.ts:132](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **user**: `string`
 
-Defined in: [index.ts:131](https://github.com/maiyunnet/kebab/blob/master/index.ts#L131)
+Defined in: [index.ts:130](https://github.com/maiyunnet/kebab/blob/master/index.ts#L130)
 
 index/interfaces/IPostFile.md
 ---
@@ -1298,7 +1298,7 @@ index/interfaces/IPostFile.md
 
 # Interface: IPostFile
 
-Defined in: [index.ts:241](https://github.com/maiyunnet/kebab/blob/master/index.ts#L241)
+Defined in: [index.ts:240](https://github.com/maiyunnet/kebab/blob/master/index.ts#L240)
 
 上传的文件信息对象
 
@@ -1308,7 +1308,7 @@ Defined in: [index.ts:241](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > `readonly` **name**: `string`
 
-Defined in: [index.ts:242](https://github.com/maiyunnet/kebab/blob/master/index.ts#L242)
+Defined in: [index.ts:241](https://github.com/maiyunnet/kebab/blob/master/index.ts#L241)
 
 ***
 
@@ -1316,7 +1316,7 @@ Defined in: [index.ts:242](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > `readonly` **origin**: `string`
 
-Defined in: [index.ts:243](https://github.com/maiyunnet/kebab/blob/master/index.ts#L243)
+Defined in: [index.ts:242](https://github.com/maiyunnet/kebab/blob/master/index.ts#L242)
 
 ***
 
@@ -1324,7 +1324,7 @@ Defined in: [index.ts:243](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > `readonly` **path**: `string`
 
-Defined in: [index.ts:245](https://github.com/maiyunnet/kebab/blob/master/index.ts#L245)
+Defined in: [index.ts:244](https://github.com/maiyunnet/kebab/blob/master/index.ts#L244)
 
 ***
 
@@ -1332,7 +1332,7 @@ Defined in: [index.ts:245](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > `readonly` **size**: `number`
 
-Defined in: [index.ts:244](https://github.com/maiyunnet/kebab/blob/master/index.ts#L244)
+Defined in: [index.ts:243](https://github.com/maiyunnet/kebab/blob/master/index.ts#L243)
 
 index/interfaces/IUrlParse.md
 ---
@@ -1345,7 +1345,7 @@ index/interfaces/IUrlParse.md
 
 # Interface: IUrlParse
 
-Defined in: [index.ts:89](https://github.com/maiyunnet/kebab/blob/master/index.ts#L89)
+Defined in: [index.ts:88](https://github.com/maiyunnet/kebab/blob/master/index.ts#L88)
 
 ## Properties
 
@@ -1353,7 +1353,7 @@ Defined in: [index.ts:89](https://github.com/maiyunnet/kebab/blob/master/index.t
 
 > **auth**: `string` \| `null`
 
-Defined in: [index.ts:91](https://github.com/maiyunnet/kebab/blob/master/index.ts#L91)
+Defined in: [index.ts:90](https://github.com/maiyunnet/kebab/blob/master/index.ts#L90)
 
 ***
 
@@ -1361,7 +1361,7 @@ Defined in: [index.ts:91](https://github.com/maiyunnet/kebab/blob/master/index.t
 
 > **hash**: `string` \| `null`
 
-Defined in: [index.ts:100](https://github.com/maiyunnet/kebab/blob/master/index.ts#L100)
+Defined in: [index.ts:99](https://github.com/maiyunnet/kebab/blob/master/index.ts#L99)
 
 ***
 
@@ -1369,7 +1369,7 @@ Defined in: [index.ts:100](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **host**: `string` \| `null`
 
-Defined in: [index.ts:94](https://github.com/maiyunnet/kebab/blob/master/index.ts#L94)
+Defined in: [index.ts:93](https://github.com/maiyunnet/kebab/blob/master/index.ts#L93)
 
 ***
 
@@ -1377,7 +1377,7 @@ Defined in: [index.ts:94](https://github.com/maiyunnet/kebab/blob/master/index.t
 
 > **hostname**: `string` \| `null`
 
-Defined in: [index.ts:95](https://github.com/maiyunnet/kebab/blob/master/index.ts#L95)
+Defined in: [index.ts:94](https://github.com/maiyunnet/kebab/blob/master/index.ts#L94)
 
 ***
 
@@ -1385,7 +1385,7 @@ Defined in: [index.ts:95](https://github.com/maiyunnet/kebab/blob/master/index.t
 
 > **pass**: `string` \| `null`
 
-Defined in: [index.ts:93](https://github.com/maiyunnet/kebab/blob/master/index.ts#L93)
+Defined in: [index.ts:92](https://github.com/maiyunnet/kebab/blob/master/index.ts#L92)
 
 ***
 
@@ -1393,7 +1393,7 @@ Defined in: [index.ts:93](https://github.com/maiyunnet/kebab/blob/master/index.t
 
 > **path**: `string` \| `null`
 
-Defined in: [index.ts:98](https://github.com/maiyunnet/kebab/blob/master/index.ts#L98)
+Defined in: [index.ts:97](https://github.com/maiyunnet/kebab/blob/master/index.ts#L97)
 
 ***
 
@@ -1401,7 +1401,7 @@ Defined in: [index.ts:98](https://github.com/maiyunnet/kebab/blob/master/index.t
 
 > **pathname**: `string`
 
-Defined in: [index.ts:97](https://github.com/maiyunnet/kebab/blob/master/index.ts#L97)
+Defined in: [index.ts:96](https://github.com/maiyunnet/kebab/blob/master/index.ts#L96)
 
 ***
 
@@ -1409,7 +1409,7 @@ Defined in: [index.ts:97](https://github.com/maiyunnet/kebab/blob/master/index.t
 
 > **port**: `string` \| `null`
 
-Defined in: [index.ts:96](https://github.com/maiyunnet/kebab/blob/master/index.ts#L96)
+Defined in: [index.ts:95](https://github.com/maiyunnet/kebab/blob/master/index.ts#L95)
 
 ***
 
@@ -1417,7 +1417,7 @@ Defined in: [index.ts:96](https://github.com/maiyunnet/kebab/blob/master/index.t
 
 > **protocol**: `string` \| `null`
 
-Defined in: [index.ts:90](https://github.com/maiyunnet/kebab/blob/master/index.ts#L90)
+Defined in: [index.ts:89](https://github.com/maiyunnet/kebab/blob/master/index.ts#L89)
 
 ***
 
@@ -1425,7 +1425,7 @@ Defined in: [index.ts:90](https://github.com/maiyunnet/kebab/blob/master/index.t
 
 > **query**: `string` \| `null`
 
-Defined in: [index.ts:99](https://github.com/maiyunnet/kebab/blob/master/index.ts#L99)
+Defined in: [index.ts:98](https://github.com/maiyunnet/kebab/blob/master/index.ts#L98)
 
 ***
 
@@ -1433,7 +1433,7 @@ Defined in: [index.ts:99](https://github.com/maiyunnet/kebab/blob/master/index.t
 
 > **user**: `string` \| `null`
 
-Defined in: [index.ts:92](https://github.com/maiyunnet/kebab/blob/master/index.ts#L92)
+Defined in: [index.ts:91](https://github.com/maiyunnet/kebab/blob/master/index.ts#L91)
 
 index/interfaces/IVhost.md
 ---
@@ -1446,7 +1446,7 @@ index/interfaces/IVhost.md
 
 # Interface: IVhost
 
-Defined in: [index.ts:233](https://github.com/maiyunnet/kebab/blob/master/index.ts#L233)
+Defined in: [index.ts:232](https://github.com/maiyunnet/kebab/blob/master/index.ts#L232)
 
 虚拟机配置对象
 
@@ -1456,7 +1456,7 @@ Defined in: [index.ts:233](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > `readonly` **domains**: `string`[]
 
-Defined in: [index.ts:235](https://github.com/maiyunnet/kebab/blob/master/index.ts#L235)
+Defined in: [index.ts:234](https://github.com/maiyunnet/kebab/blob/master/index.ts#L234)
 
 ***
 
@@ -1464,7 +1464,7 @@ Defined in: [index.ts:235](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > `readonly` `optional` **name?**: `string`
 
-Defined in: [index.ts:234](https://github.com/maiyunnet/kebab/blob/master/index.ts#L234)
+Defined in: [index.ts:233](https://github.com/maiyunnet/kebab/blob/master/index.ts#L233)
 
 ***
 
@@ -1472,7 +1472,7 @@ Defined in: [index.ts:234](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > `readonly` `optional` **remark?**: `string`
 
-Defined in: [index.ts:237](https://github.com/maiyunnet/kebab/blob/master/index.ts#L237)
+Defined in: [index.ts:236](https://github.com/maiyunnet/kebab/blob/master/index.ts#L236)
 
 ***
 
@@ -1480,7 +1480,7 @@ Defined in: [index.ts:237](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > `readonly` **root**: `string`
 
-Defined in: [index.ts:236](https://github.com/maiyunnet/kebab/blob/master/index.ts#L236)
+Defined in: [index.ts:235](https://github.com/maiyunnet/kebab/blob/master/index.ts#L235)
 
 index.md
 ---
@@ -1554,7 +1554,7 @@ index/type-aliases/DbValue.md
 
 > **DbValue** = `string` \| `number` \| `null` \| `Record`\<`string`, [`Json`](Json.md)\>
 
-Defined in: [index.ts:49](https://github.com/maiyunnet/kebab/blob/master/index.ts#L49)
+Defined in: [index.ts:48](https://github.com/maiyunnet/kebab/blob/master/index.ts#L48)
 
 数据库值的类型
 
@@ -1571,7 +1571,7 @@ index/type-aliases/Json.md
 
 > **Json** = `any`
 
-Defined in: [index.ts:46](https://github.com/maiyunnet/kebab/blob/master/index.ts#L46)
+Defined in: [index.ts:45](https://github.com/maiyunnet/kebab/blob/master/index.ts#L45)
 
 除非确定是不可知的 Json，否则不能使用
 
@@ -1588,7 +1588,7 @@ index/variables/CERT_CWD.md
 
 > `const` **CERT\_CWD**: `string`
 
-Defined in: [index.ts:33](https://github.com/maiyunnet/kebab/blob/master/index.ts#L33)
+Defined in: [index.ts:32](https://github.com/maiyunnet/kebab/blob/master/index.ts#L32)
 
 index/variables/CONF_CWD.md
 ---
@@ -1603,7 +1603,7 @@ index/variables/CONF_CWD.md
 
 > `const` **CONF\_CWD**: `string`
 
-Defined in: [index.ts:32](https://github.com/maiyunnet/kebab/blob/master/index.ts#L32)
+Defined in: [index.ts:31](https://github.com/maiyunnet/kebab/blob/master/index.ts#L31)
 
 index/variables/FTMP_CWD.md
 ---
@@ -1618,7 +1618,7 @@ index/variables/FTMP_CWD.md
 
 > `const` **FTMP\_CWD**: `string`
 
-Defined in: [index.ts:40](https://github.com/maiyunnet/kebab/blob/master/index.ts#L40)
+Defined in: [index.ts:39](https://github.com/maiyunnet/kebab/blob/master/index.ts#L39)
 
 index/variables/IND_CWD.md
 ---
@@ -1633,7 +1633,7 @@ index/variables/IND_CWD.md
 
 > `const` **IND\_CWD**: `string`
 
-Defined in: [index.ts:39](https://github.com/maiyunnet/kebab/blob/master/index.ts#L39)
+Defined in: [index.ts:38](https://github.com/maiyunnet/kebab/blob/master/index.ts#L38)
 
 index/variables/LIB_CWD.md
 ---
@@ -1648,7 +1648,7 @@ index/variables/LIB_CWD.md
 
 > `const` **LIB\_CWD**: `string`
 
-Defined in: [index.ts:36](https://github.com/maiyunnet/kebab/blob/master/index.ts#L36)
+Defined in: [index.ts:35](https://github.com/maiyunnet/kebab/blob/master/index.ts#L35)
 
 用户的根 LIB，以 / 结尾
 
@@ -1665,7 +1665,7 @@ index/variables/LIB_PATH.md
 
 > `const` **LIB\_PATH**: `string`
 
-Defined in: [index.ts:21](https://github.com/maiyunnet/kebab/blob/master/index.ts#L21)
+Defined in: [index.ts:20](https://github.com/maiyunnet/kebab/blob/master/index.ts#L20)
 
 框架的 LIB，以 / 结尾
 
@@ -1682,7 +1682,7 @@ index/variables/LOG_CWD.md
 
 > `const` **LOG\_CWD**: `string`
 
-Defined in: [index.ts:37](https://github.com/maiyunnet/kebab/blob/master/index.ts#L37)
+Defined in: [index.ts:36](https://github.com/maiyunnet/kebab/blob/master/index.ts#L36)
 
 index/variables/MOD_CWD.md
 ---
@@ -1697,7 +1697,7 @@ index/variables/MOD_CWD.md
 
 > `const` **MOD\_CWD**: `string`
 
-Defined in: [index.ts:41](https://github.com/maiyunnet/kebab/blob/master/index.ts#L41)
+Defined in: [index.ts:40](https://github.com/maiyunnet/kebab/blob/master/index.ts#L40)
 
 index/variables/ROOT_CWD.md
 ---
@@ -1712,7 +1712,7 @@ index/variables/ROOT_CWD.md
 
 > `const` **ROOT\_CWD**: `string`
 
-Defined in: [index.ts:31](https://github.com/maiyunnet/kebab/blob/master/index.ts#L31)
+Defined in: [index.ts:30](https://github.com/maiyunnet/kebab/blob/master/index.ts#L30)
 
 执行根目录，以 / 结尾
 
@@ -1729,7 +1729,7 @@ index/variables/ROOT_PATH.md
 
 > `const` **ROOT\_PATH**: `string`
 
-Defined in: [index.ts:19](https://github.com/maiyunnet/kebab/blob/master/index.ts#L19)
+Defined in: [index.ts:18](https://github.com/maiyunnet/kebab/blob/master/index.ts#L18)
 
 框架根目录，以 / 结尾
 
@@ -1746,7 +1746,7 @@ index/variables/SYS_PATH.md
 
 > `const` **SYS\_PATH**: `string`
 
-Defined in: [index.ts:22](https://github.com/maiyunnet/kebab/blob/master/index.ts#L22)
+Defined in: [index.ts:21](https://github.com/maiyunnet/kebab/blob/master/index.ts#L21)
 
 index/variables/VER.md
 ---
@@ -1759,9 +1759,9 @@ index/variables/VER.md
 
 # Variable: VER
 
-> `const` **VER**: `"9.25.2"` = `'9.25.2'`
+> `const` **VER**: `"9.26.0"` = `'9.26.0'`
 
-Defined in: [index.ts:10](https://github.com/maiyunnet/kebab/blob/master/index.ts#L10)
+Defined in: [index.ts:9](https://github.com/maiyunnet/kebab/blob/master/index.ts#L9)
 
 当前系统版本号
 
@@ -1778,7 +1778,7 @@ index/variables/VHOST_CWD.md
 
 > `const` **VHOST\_CWD**: `string`
 
-Defined in: [index.ts:34](https://github.com/maiyunnet/kebab/blob/master/index.ts#L34)
+Defined in: [index.ts:33](https://github.com/maiyunnet/kebab/blob/master/index.ts#L33)
 
 index/variables/WWW_CWD.md
 ---
@@ -1793,7 +1793,7 @@ index/variables/WWW_CWD.md
 
 > `const` **WWW\_CWD**: `string`
 
-Defined in: [index.ts:38](https://github.com/maiyunnet/kebab/blob/master/index.ts#L38)
+Defined in: [index.ts:37](https://github.com/maiyunnet/kebab/blob/master/index.ts#L37)
 
 lib/ai/classes/Ai.md
 ---
@@ -5218,7 +5218,7 @@ zip 文件
 
 ### config?
 
-`string` \| `boolean`
+`string` \| `boolean` = `true`
 
 是否自动更新 config 的 set.staticVer 为最新，默认更新，'0'|false-不更新,'1'|true-更新kebab.json若有,'2'|true-更新全局
 
@@ -112124,7 +112124,7 @@ lib/core/namespaces/v/type-aliases/Class.md
 
 # Type Alias: Class
 
-> **Class** = (...`args`) => `any`
+> **Class** = new (...`args`) => `any`
 
 Defined in: node\_modules/valibot/dist/index.d.mts:4502
 
@@ -113591,6 +113591,16 @@ Defined in: node\_modules/valibot/dist/index.d.mts:112
 
 Schema with cache async type.
 
+## Type Parameters
+
+### TSchema
+
+`TSchema` *extends* [`BaseSchema`](../interfaces/BaseSchema.md)\<`unknown`, `unknown`, [`BaseIssue`](../interfaces/BaseIssue.md)\<`unknown`\>\> \| [`BaseSchemaAsync`](../interfaces/BaseSchemaAsync.md)\<`unknown`, `unknown`, [`BaseIssue`](../interfaces/BaseIssue.md)\<`unknown`\>\>
+
+### TCacheConfig
+
+`TCacheConfig` *extends* [`CacheConfig`](../interfaces/CacheConfig.md) \| `undefined`
+
 ## Type Declaration
 
 ### ~run
@@ -113646,16 +113656,6 @@ The cache instance.
 > `readonly` **cacheConfig**: `TCacheConfig`
 
 The cache config.
-
-## Type Parameters
-
-### TSchema
-
-`TSchema` *extends* [`BaseSchema`](../interfaces/BaseSchema.md)\<`unknown`, `unknown`, [`BaseIssue`](../interfaces/BaseIssue.md)\<`unknown`\>\> \| [`BaseSchemaAsync`](../interfaces/BaseSchemaAsync.md)\<`unknown`, `unknown`, [`BaseIssue`](../interfaces/BaseIssue.md)\<`unknown`\>\>
-
-### TCacheConfig
-
-`TCacheConfig` *extends* [`CacheConfig`](../interfaces/CacheConfig.md) \| `undefined`
 
 lib/core/namespaces/v/type-aliases/SchemaWithCache.md
 ---
@@ -113676,6 +113676,16 @@ Defined in: node\_modules/valibot/dist/index.d.mts:64
 
 Schema with cache type.
 
+## Type Parameters
+
+### TSchema
+
+`TSchema` *extends* [`BaseSchema`](../interfaces/BaseSchema.md)\<`unknown`, `unknown`, [`BaseIssue`](../interfaces/BaseIssue.md)\<`unknown`\>\>
+
+### TCacheConfig
+
+`TCacheConfig` *extends* [`CacheConfig`](../interfaces/CacheConfig.md) \| `undefined`
+
 ## Type Declaration
 
 ### cache
@@ -113689,16 +113699,6 @@ The cache instance.
 > `readonly` **cacheConfig**: `TCacheConfig`
 
 The cache config.
-
-## Type Parameters
-
-### TSchema
-
-`TSchema` *extends* [`BaseSchema`](../interfaces/BaseSchema.md)\<`unknown`, `unknown`, [`BaseIssue`](../interfaces/BaseIssue.md)\<`unknown`\>\>
-
-### TCacheConfig
-
-`TCacheConfig` *extends* [`CacheConfig`](../interfaces/CacheConfig.md) \| `undefined`
 
 lib/core/namespaces/v/type-aliases/SchemaWithFallbackAsync.md
 ---
@@ -113716,6 +113716,16 @@ lib/core/namespaces/v/type-aliases/SchemaWithFallbackAsync.md
 Defined in: node\_modules/valibot/dist/index.d.mts:218
 
 Schema with fallback async type.
+
+## Type Parameters
+
+### TSchema
+
+`TSchema` *extends* [`BaseSchema`](../interfaces/BaseSchema.md)\<`unknown`, `unknown`, [`BaseIssue`](../interfaces/BaseIssue.md)\<`unknown`\>\> \| [`BaseSchemaAsync`](../interfaces/BaseSchemaAsync.md)\<`unknown`, `unknown`, [`BaseIssue`](../interfaces/BaseIssue.md)\<`unknown`\>\>
+
+### TFallback$1
+
+`TFallback$1` *extends* [`FallbackAsync`](FallbackAsync.md)\<`TSchema`\>
 
 ## Type Declaration
 
@@ -113767,16 +113777,6 @@ Whether it's async.
 
 The fallback value.
 
-## Type Parameters
-
-### TSchema
-
-`TSchema` *extends* [`BaseSchema`](../interfaces/BaseSchema.md)\<`unknown`, `unknown`, [`BaseIssue`](../interfaces/BaseIssue.md)\<`unknown`\>\> \| [`BaseSchemaAsync`](../interfaces/BaseSchemaAsync.md)\<`unknown`, `unknown`, [`BaseIssue`](../interfaces/BaseIssue.md)\<`unknown`\>\>
-
-### TFallback$1
-
-`TFallback$1` *extends* [`FallbackAsync`](FallbackAsync.md)\<`TSchema`\>
-
 lib/core/namespaces/v/type-aliases/SchemaWithFallback.md
 ---
 
@@ -113794,14 +113794,6 @@ Defined in: node\_modules/valibot/dist/index.d.mts:194
 
 Schema with fallback type.
 
-## Type Declaration
-
-### fallback
-
-> `readonly` **fallback**: `TFallback$1`
-
-The fallback value.
-
 ## Type Parameters
 
 ### TSchema
@@ -113811,6 +113803,14 @@ The fallback value.
 ### TFallback$1
 
 `TFallback$1` *extends* [`Fallback`](Fallback.md)\<`TSchema`\>
+
+## Type Declaration
+
+### fallback
+
+> `readonly` **fallback**: `TFallback$1`
+
+The fallback value.
 
 lib/core/namespaces/v/type-aliases/SchemaWithOmit.md
 ---
@@ -113856,17 +113856,17 @@ Defined in: node\_modules/valibot/dist/index.d.mts:3744
 
 Schema without pipe type.
 
-## Type Declaration
-
-### pipe?
-
-> `optional` **pipe?**: `never`
-
 ## Type Parameters
 
 ### TSchema
 
 `TSchema` *extends* [`BaseSchema`](../interfaces/BaseSchema.md)\<`unknown`, `unknown`, [`BaseIssue`](../interfaces/BaseIssue.md)\<`unknown`\>\> \| [`BaseSchemaAsync`](../interfaces/BaseSchemaAsync.md)\<`unknown`, `unknown`, [`BaseIssue`](../interfaces/BaseIssue.md)\<`unknown`\>\>
+
+## Type Declaration
+
+### pipe?
+
+> `optional` **pipe?**: `never`
 
 lib/core/namespaces/v/type-aliases/SchemaWithPartialAsync.md
 ---
@@ -113966,6 +113966,12 @@ Defined in: node\_modules/valibot/dist/index.d.mts:917
 
 Schema with pipe async type.
 
+## Type Parameters
+
+### TPipe$1
+
+`TPipe$1` *extends* readonly \[[`BaseSchema`](../interfaces/BaseSchema.md)\<`unknown`, `unknown`, [`BaseIssue`](../interfaces/BaseIssue.md)\<`unknown`\>\> \| [`BaseSchemaAsync`](../interfaces/BaseSchemaAsync.md)\<`unknown`, `unknown`, [`BaseIssue`](../interfaces/BaseIssue.md)\<`unknown`\>\>, ...(PipeItem\<any, unknown, BaseIssue\<unknown\>\> \| PipeItemAsync\<any, unknown, BaseIssue\<unknown\>\>)\[\]\]
+
 ## Type Declaration
 
 ### ~run
@@ -114036,12 +114042,6 @@ Whether it's async.
 
 The pipe items.
 
-## Type Parameters
-
-### TPipe$1
-
-`TPipe$1` *extends* readonly \[[`BaseSchema`](../interfaces/BaseSchema.md)\<`unknown`, `unknown`, [`BaseIssue`](../interfaces/BaseIssue.md)\<`unknown`\>\> \| [`BaseSchemaAsync`](../interfaces/BaseSchemaAsync.md)\<`unknown`, `unknown`, [`BaseIssue`](../interfaces/BaseIssue.md)\<`unknown`\>\>, ...(PipeItem\<any, unknown, BaseIssue\<unknown\>\> \| PipeItemAsync\<any, unknown, BaseIssue\<unknown\>\>)\[\]\]
-
 lib/core/namespaces/v/type-aliases/SchemaWithPipe.md
 ---
 
@@ -114058,6 +114058,12 @@ lib/core/namespaces/v/type-aliases/SchemaWithPipe.md
 Defined in: node\_modules/valibot/dist/index.d.mts:504
 
 Schema with pipe type.
+
+## Type Parameters
+
+### TPipe$1
+
+`TPipe$1` *extends* readonly \[[`BaseSchema`](../interfaces/BaseSchema.md)\<`unknown`, `unknown`, [`BaseIssue`](../interfaces/BaseIssue.md)\<`unknown`\>\>, `...PipeItem<any, unknown, BaseIssue<unknown>>[]`\]
 
 ## Type Declaration
 
@@ -114122,12 +114128,6 @@ The input, output and issue type.
 > `readonly` **pipe**: `TPipe$1`
 
 The pipe items.
-
-## Type Parameters
-
-### TPipe$1
-
-`TPipe$1` *extends* readonly \[[`BaseSchema`](../interfaces/BaseSchema.md)\<`unknown`, `unknown`, [`BaseIssue`](../interfaces/BaseIssue.md)\<`unknown`\>\>, `...PipeItem<any, unknown, BaseIssue<unknown>>[]`\]
 
 lib/core/namespaces/v/type-aliases/SchemaWithRequiredAsync.md
 ---
@@ -115839,7 +115839,7 @@ cipher 解密
 
 ### output?
 
-`"buffer"` \| `"binary"`
+`"buffer"` \| `"binary"` = `'binary'`
 
 输出类型
 
@@ -115892,7 +115892,7 @@ cipher 加密，强烈不建议使用 AES_256_ECB
 
 ### output?
 
-`"buffer"` \| `"base64"`
+`"buffer"` \| `"base64"` = `'base64'`
 
 输出类型
 
@@ -119942,7 +119942,7 @@ key 名
 
 ##### mod?
 
-`""` \| `"nx"`
+`""` \| `"nx"` = `''`
 
 空,nx(key不存在才建立)
 
@@ -120332,7 +120332,7 @@ Defined in: [lib/kv.ts:83](https://github.com/maiyunnet/kebab/blob/master/lib/kv
 
 ##### mod?
 
-`""` \| `"nx"` \| `"xx"`
+`""` \| `"nx"` \| `"xx"` = `''`
 
 设置模式: 空,nx（key不存在才建立）,xx（key存在才修改）
 
@@ -124023,7 +124023,7 @@ ORDER BY
 
 ##### d?
 
-`"DESC"` \| `"ASC"`
+`"DESC"` \| `"ASC"` = `'DESC'`
 
 排序规则
 
@@ -124621,7 +124621,7 @@ Defined in: [lib/sql.ts:841](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 ##### d?
 
-`"DESC"` \| `"ASC"`
+`"DESC"` \| `"ASC"` = `'DESC'`
 
 扫描方向；读取前一批时反转方向并在取回后反转列表
 
@@ -124828,7 +124828,7 @@ Defined in: [lib/sql.ts:154](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 ##### vs?
 
-[`DbValue`](../../../index/type-aliases/DbValue.md)[] \| [`DbValue`](../../../index/type-aliases/DbValue.md)[][]
+[`DbValue`](../../../index/type-aliases/DbValue.md)[] \| [`DbValue`](../../../index/type-aliases/DbValue.md)[][] = `[]`
 
 [] | [][] 数据
 
@@ -127236,7 +127236,7 @@ Defined in: [lib/text.ts:339](https://github.com/maiyunnet/kebab/blob/master/lib
 
 ### to?
 
-`string` = '\n'
+`string` = '\\n'
 
 换行替换符
 
@@ -135861,7 +135861,7 @@ ORDER BY
 
 ##### d?
 
-`"DESC"` \| `"ASC"`
+`"DESC"` \| `"ASC"` = `'DESC'`
 
 排序规则
 
@@ -136728,7 +136728,7 @@ Defined in: [sys/mod.ts:1939](https://github.com/maiyunnet/kebab/blob/master/sys
 
 ##### TC
 
-`TC` *extends* (...`args`) => `any`
+`TC` *extends* new (...`args`) => `any`
 
 #### Returns
 

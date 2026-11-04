@@ -6,7 +6,7 @@
 
 # Interface: IUrlParse
 
-Defined in: [index.ts:89](https://github.com/maiyunnet/kebab/blob/master/index.ts#L89)
+Defined in: [index.ts:88](https://github.com/maiyunnet/kebab/blob/master/index.ts#L88)
 
 ## Properties
 
@@ -14,7 +14,7 @@ Defined in: [index.ts:89](https://github.com/maiyunnet/kebab/blob/master/index.t
 
 > **auth**: `string` \| `null`
 
-Defined in: [index.ts:91](https://github.com/maiyunnet/kebab/blob/master/index.ts#L91)
+Defined in: [index.ts:90](https://github.com/maiyunnet/kebab/blob/master/index.ts#L90)
 
 ***
 
@@ -22,7 +22,7 @@ Defined in: [index.ts:91](https://github.com/maiyunnet/kebab/blob/master/index.t
 
 > **hash**: `string` \| `null`
 
-Defined in: [index.ts:100](https://github.com/maiyunnet/kebab/blob/master/index.ts#L100)
+Defined in: [index.ts:99](https://github.com/maiyunnet/kebab/blob/master/index.ts#L99)
 
 ***
 
@@ -30,7 +30,7 @@ Defined in: [index.ts:100](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **host**: `string` \| `null`
 
-Defined in: [index.ts:94](https://github.com/maiyunnet/kebab/blob/master/index.ts#L94)
+Defined in: [index.ts:93](https://github.com/maiyunnet/kebab/blob/master/index.ts#L93)
 
 ***
 
@@ -38,7 +38,7 @@ Defined in: [index.ts:94](https://github.com/maiyunnet/kebab/blob/master/index.t
 
 > **hostname**: `string` \| `null`
 
-Defined in: [index.ts:95](https://github.com/maiyunnet/kebab/blob/master/index.ts#L95)
+Defined in: [index.ts:94](https://github.com/maiyunnet/kebab/blob/master/index.ts#L94)
 
 ***
 
@@ -46,7 +46,7 @@ Defined in: [index.ts:95](https://github.com/maiyunnet/kebab/blob/master/index.t
 
 > **pass**: `string` \| `null`
 
-Defined in: [index.ts:93](https://github.com/maiyunnet/kebab/blob/master/index.ts#L93)
+Defined in: [index.ts:92](https://github.com/maiyunnet/kebab/blob/master/index.ts#L92)
 
 ***
 
@@ -54,7 +54,7 @@ Defined in: [index.ts:93](https://github.com/maiyunnet/kebab/blob/master/index.t
 
 > **path**: `string` \| `null`
 
-Defined in: [index.ts:98](https://github.com/maiyunnet/kebab/blob/master/index.ts#L98)
+Defined in: [index.ts:97](https://github.com/maiyunnet/kebab/blob/master/index.ts#L97)
 
 ***
 
@@ -62,7 +62,7 @@ Defined in: [index.ts:98](https://github.com/maiyunnet/kebab/blob/master/index.t
 
 > **pathname**: `string`
 
-Defined in: [index.ts:97](https://github.com/maiyunnet/kebab/blob/master/index.ts#L97)
+Defined in: [index.ts:96](https://github.com/maiyunnet/kebab/blob/master/index.ts#L96)
 
 ***
 
@@ -70,7 +70,7 @@ Defined in: [index.ts:97](https://github.com/maiyunnet/kebab/blob/master/index.t
 
 > **port**: `string` \| `null`
 
-Defined in: [index.ts:96](https://github.com/maiyunnet/kebab/blob/master/index.ts#L96)
+Defined in: [index.ts:95](https://github.com/maiyunnet/kebab/blob/master/index.ts#L95)
 
 ***
 
@@ -78,7 +78,7 @@ Defined in: [index.ts:96](https://github.com/maiyunnet/kebab/blob/master/index.t
 
 > **protocol**: `string` \| `null`
 
-Defined in: [index.ts:90](https://github.com/maiyunnet/kebab/blob/master/index.ts#L90)
+Defined in: [index.ts:89](https://github.com/maiyunnet/kebab/blob/master/index.ts#L89)
 
 ***
 
@@ -86,7 +86,7 @@ Defined in: [index.ts:90](https://github.com/maiyunnet/kebab/blob/master/index.t
 
 > **query**: `string` \| `null`
 
-Defined in: [index.ts:99](https://github.com/maiyunnet/kebab/blob/master/index.ts#L99)
+Defined in: [index.ts:98](https://github.com/maiyunnet/kebab/blob/master/index.ts#L98)
 
 ***
 
@@ -94,4 +94,4 @@ Defined in: [index.ts:99](https://github.com/maiyunnet/kebab/blob/master/index.t
 
 > **user**: `string` \| `null`
 
-Defined in: [index.ts:92](https://github.com/maiyunnet/kebab/blob/master/index.ts#L92)
+Defined in: [index.ts:91](https://github.com/maiyunnet/kebab/blob/master/index.ts#L91)

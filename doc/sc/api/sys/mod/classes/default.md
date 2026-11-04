@@ -429,7 +429,7 @@ ORDER BY
 
 ##### d?
 
-`"DESC"` \| `"ASC"`
+`"DESC"` \| `"ASC"` = `'DESC'`
 
 排序规则
 
@@ -1296,7 +1296,7 @@ Defined in: [sys/mod.ts:1939](https://github.com/maiyunnet/kebab/blob/master/sys
 
 ##### TC
 
-`TC` *extends* (...`args`) => `any`
+`TC` *extends* new (...`args`) => `any`
 
 #### Returns
 

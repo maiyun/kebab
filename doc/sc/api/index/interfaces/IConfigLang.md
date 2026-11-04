@@ -6,7 +6,7 @@
 
 # Interface: IConfigLang
 
-Defined in: [index.ts:104](https://github.com/maiyunnet/kebab/blob/master/index.ts#L104)
+Defined in: [index.ts:103](https://github.com/maiyunnet/kebab/blob/master/index.ts#L103)
 
 语言
 
@@ -16,7 +16,7 @@ Defined in: [index.ts:104](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **direct**: `string`[]
 
-Defined in: [index.ts:106](https://github.com/maiyunnet/kebab/blob/master/index.ts#L106)
+Defined in: [index.ts:105](https://github.com/maiyunnet/kebab/blob/master/index.ts#L105)
 
 ***
 
@@ -24,4 +24,4 @@ Defined in: [index.ts:106](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **list**: `string`[]
 
-Defined in: [index.ts:105](https://github.com/maiyunnet/kebab/blob/master/index.ts#L105)
+Defined in: [index.ts:104](https://github.com/maiyunnet/kebab/blob/master/index.ts#L104)

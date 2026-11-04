@@ -8,6 +8,6 @@
 
 > **DbValue** = `string` \| `number` \| `null` \| `Record`\<`string`, [`Json`](Json.md)\>
 
-Defined in: [index.ts:49](https://github.com/maiyunnet/kebab/blob/master/index.ts#L49)
+Defined in: [index.ts:48](https://github.com/maiyunnet/kebab/blob/master/index.ts#L48)
 
 数据库值的类型

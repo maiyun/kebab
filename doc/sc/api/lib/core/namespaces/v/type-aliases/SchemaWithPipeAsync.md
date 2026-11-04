@@ -12,6 +12,12 @@ Defined in: node\_modules/valibot/dist/index.d.mts:917
 
 Schema with pipe async type.
 
+## Type Parameters
+
+### TPipe$1
+
+`TPipe$1` *extends* readonly \[[`BaseSchema`](../interfaces/BaseSchema.md)\<`unknown`, `unknown`, [`BaseIssue`](../interfaces/BaseIssue.md)\<`unknown`\>\> \| [`BaseSchemaAsync`](../interfaces/BaseSchemaAsync.md)\<`unknown`, `unknown`, [`BaseIssue`](../interfaces/BaseIssue.md)\<`unknown`\>\>, ...(PipeItem\<any, unknown, BaseIssue\<unknown\>\> \| PipeItemAsync\<any, unknown, BaseIssue\<unknown\>\>)\[\]\]
+
 ## Type Declaration
 
 ### ~run
@@ -81,9 +87,3 @@ Whether it's async.
 > `readonly` **pipe**: `TPipe$1`
 
 The pipe items.
-
-## Type Parameters
-
-### TPipe$1
-
-`TPipe$1` *extends* readonly \[[`BaseSchema`](../interfaces/BaseSchema.md)\<`unknown`, `unknown`, [`BaseIssue`](../interfaces/BaseIssue.md)\<`unknown`\>\> \| [`BaseSchemaAsync`](../interfaces/BaseSchemaAsync.md)\<`unknown`, `unknown`, [`BaseIssue`](../interfaces/BaseIssue.md)\<`unknown`\>\>, ...(PipeItem\<any, unknown, BaseIssue\<unknown\>\> \| PipeItemAsync\<any, unknown, BaseIssue\<unknown\>\>)\[\]\]

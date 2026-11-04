@@ -22,7 +22,7 @@ Defined in: [lib/text.ts:339](https://github.com/maiyunnet/kebab/blob/master/lib
 
 ### to?
 
-`string` = '\n'
+`string` = '\\n'
 
 换行替换符
 
