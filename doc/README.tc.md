@@ -16,188 +16,246 @@
 
 簡單，易用，功能完整開袋即食的 Node.js 框架。
 
+> 專案聲明：本專案於 2019 年 2 月 25 日首次提交到 GitHub（前身 Mutton 框架於 2015 年 7 月 13 日首次提交，且在提交前已開發數年），於 2026 年正式引入 AI 進行輔助開發並進行 AI 適配改造，但專案依然由軟體工程師主導、審查、驗證與測試，並非許願式 AI 自動生成。非中文部分藉助柏軟翻譯進行輔助翻譯，因此語氣可能會有 AI 感。
+
+> GitHub 的發行版本可能不全，2.0.0 之後的版本以 NPM 為準：[NPM](https://www.npmjs.com/package/@maiyunnet/kebab?activeTab=versions)
+
 ## 語言
 
 [简体中文](README.sc.md) | [English](../README.md)
 
 ## 環境
 
-Node 22+
+Node.js 24+
 
-## 安装
+## 安裝
 
-執行 `npm i @maiyunnet/kebab` 安裝最新版，安裝完成後執行 `npx kebab init` 初始化，再執行 `npx kebab` 啟動專案。
+執行 `npm i @maiyunnet/kebab` 安裝最新版，安裝後執行 `npx kebab init` 初始化，再執行 `npx kebab` 啟動專案。
 
 也可以使用 pm2 啟動專案，執行 `pm2 start npx --name "kebab" -- kebab` 即可。
 
-## 庫
+## 程式庫
 
-Ai, Buffer, Captcha, Consistent, Core, Cron, Crypto, Db (MySQL, PostgreSQL), Dns (DNSPod, Alibaba Cloud), Fs, Kv (Redis), Lan, Lang, Net, S3, Scan, Session, Socket, Sql, Ssh (Shell, Sftp), Text, Time, Turnstile (Cloudflare, Tencent Cloud), Vector (Milvus), Ws, Zip, Zlib.
+Ai, Buffer, Captcha, Consistent, Cookie, Core, Cron, Crypto, Db (MySQL, PostgreSQL), Dns (DNSPod, Alibaba Cloud), Fs, Kv (Redis), Lan, Lang, Net, Ratelimit, S3, Scan, Session, Socket, Sql, Ssh (Shell, Sftp), Text, Time, Turnstile (Cloudflare, Tencent Cloud), Undici, Vector (Milvus), Ws, Zip, Zlib.
+
+新的 HTTP 請求建議使用 Undici；Net 保留用於相容舊程式碼。
+
+## 文件
+
+- [快速開始](sc/quick-start.md)
+- [游標分頁與 PostgreSQL 近似總數](sc/query-pagination.md)
+- [效能監控與異常回溯](sc/monitor.md)
+- [API 參考](sc/api/index.md)
 
 ## 部分特性
 
 ### 開袋即食
 
-秉承開袋即食的原則，封裝統一風格的常用類庫。
+秉持開袋即食的原則，封裝統一風格的常用程式庫。
 
 ### 熱更新
 
-透過調用 Sys.restart 方法，您可以在不中斷任何現有業務和連接的情況下平滑的實現新舊代碼交替熱更新。
+呼叫 `lCore.sendRestart()` 發起平滑重啟：新處理程序接收連線，舊處理程序在現有連線全部結束後退出。
 
-### 多進程支援
+### 多處理程序支援
 
-創建基於 CPU 核心數量的多進程模型，充分提高多核 CPU 的利用率。
+根據 CPU 核心數量建立多處理程序模型，充分提高多核心 CPU 的使用率。
 
-### 全域連接池
+### 全域連線池
 
-同一進程中的不同站點如果連接到同一個 db、kv 等伺服器，則共用同一個連接池，最大限度地提高效率並減少開銷。
+同一處理程序中的不同網站若連線到同一個 Db、Kv 等伺服器，便共用同一個連線池，盡可能提高效率並減少開銷。
 
-### 超好用 net 庫
-
-可以這樣用：
+### 超好用 Undici 程式庫
 
 ```typescript
-const res = await lNet.open('https://xxx/test').post().data({ 'a': '1', 'b': '2' }).request();
+import * as lUndici from '@maiyunnet/kebab/lib/undici.js';
+
+const res = await lUndici.open('https://example.com/test').post().data({ 'a': '1', 'b': '2' }).request();
+const content = await res.getContent();
 ```
 
 也可以這樣用：
 
 ```typescript
-const res = await lNet.get('https://xxx/test');
+const res = await lUndici.get('https://example.com/test');
+const content = await res.getContent();
 ```
 
-可以設置自訂的解析結果：
+只需要 JSON 回應時，使用對應的快捷方法；請求或讀取失敗回傳 `null`，JSON 解析失敗回傳 `false`：
 
 ```typescript
-const res = await lNet.get('https://xxx/test', {
-    'hosts': {
-        'xxx': '111.111.111.111'
-    }
+const data = await lUndici.getResponseJson('https://example.com/data');
+```
+
+可以設定自訂的網域名稱解析，`hostsMap` 為呼叫端提供的網域名稱與 IP 對應表：
+
+```typescript
+const res = await lUndici.get('https://example.com/test', {
+    'hosts': hostsMap,
 });
+const content = await res.getContent();
 ```
 
-也可以選擇本地的其他網卡來訪問：
+也可以選擇本機的其他網路介面卡來存取，`localAddress` 為設定中的本機 IP：
 
 ```typescript
-const res = await lNet.get('https://xxx/test', {
-    'local': '123.123.123.123'
+const res = await lUndici.get('https://example.com/test', {
+    'local': localAddress,
 });
+const content = await res.getContent();
 ```
 
-更擁有完整的 Cookie 管理器，可以輕鬆將 Cookie 獲取並存在任何地方，發送請求時，系統也會根據 Cookie 設置的功能變數名稱、路徑等來選擇發送，並且 Set-Cookie 如果有非法跨域設置，也會被捨棄不會被記錄，就像真正的瀏覽器一樣：
+更有完整的 Cookie 管理器，可以將 Cookie 取得並儲存在呼叫端提供的物件中。傳送請求時，系統會根據 Cookie 的網域名稱、路徑等選擇傳送，非法跨網域的 Set-Cookie 會被捨棄：
 
 ```typescript
-const res1 = await lNet.get('https://xxx1.xxx/test1', { 'cookie': cookie });
-const res2 = await lNet.get('https://xxx2.xxx/test2', { 'cookie': cookie });
+import * as lCookie from '@maiyunnet/kebab/lib/cookie.js';
+
+const cookie: Record<string, lCookie.ICookie> = {};
+const res1 = await lUndici.get('https://example.com/login', { 'cookie': cookie });
+await res1.getContent();
+const res2 = await lUndici.get('https://example.com/profile', { 'cookie': cookie });
+await res2.getContent();
 ```
 
-> 提示：net 庫同時支援傳入 options 和 open 鏈式操作，如 await lNet.open('xxx').follow().timeout(60).save(this._config.const.rootPath + 'doc/test.txt').request();
+> 提示：Undici 程式庫同時支援傳入 options 和 open 鏈式操作，例如 `await lUndici.open('https://example.com/file').follow().timeout(60).save(filePath).request()`；`filePath` 為呼叫端提供的本機檔案路徑。
 
-### 好用的 Db 庫
+### 好用的 Db 程式庫
 
-擁有大量好用的介面，可以輕鬆的從資料庫篩選出需要的資料：
+提供許多好用的介面，可以輕鬆地從資料庫篩選出需要的資料。以下控制器方法片段中，`db` 為資料庫連線池，`mOrder`、`mUser` 為應用程式定義的模型：
 
 ```typescript
-const ls = Order.where<Order>(this, db, {
-    'state': '1'
-}).by('id', 'DESC').page(10, 1);
-const list = await ls.all();
-const count = await ls.count();
-const total = await ls.total();
+const query = mOrder.where<mOrder>(db, {
+    'state': '1',
+}, { 'ctr': this }).by('id', 'DESC').page(10, 1);
+const list = await query.all();
+if (list === false) {
+    return [0, 'Query failed.'];
+}
+const count = list.length;
+const total = await query.total();
 ```
 
-獲取一個使用者：
+取得一位使用者：
 
 ```typescript
-const user = await User.select<User>(this, db, ['id', 'user']).filter([
+const user = await mUser.select<mUser>(db, ['id', 'user'], { 'ctr': this }).filter([
     ['time_add', '>=', '1583405134']
 ]).first();
 ```
 
 ### XSRF 檢測
 
-使用 checkXInput 方法，可以進行 XSRF 檢測，防止惡意訪問。
+依賴瀏覽器工作階段 Cookie 的資料修改介面使用 `_valibotx`，在驗證輸入時同時檢測 XSRF，防止跨網站請求偽造。頁面透過 `_enabledXsrf()` 產生 token，提交時攜帶 `_xsrf`；唯讀介面使用 `_valibot`。
 
-### 扫码登录
+### 掃碼登入
 
-借助 scan 庫可以輕鬆實現掃碼登入的功能。
+藉助 Scan 程式庫可以輕鬆實作掃碼登入功能。
 
 ### 反向代理
 
-使用 net 庫的 rproxy 方法，配合路由參數，可輕鬆實現反向代理功能。
+使用 Undici 程式庫的 `rproxy` 方法，傳入目前控制器和路由前綴對應表，即可實作反向代理功能。
 
 #### 還有更多特性等你探索
 
-## 代碼演示
+## 程式碼示範
 
-### 生成 16 位亂數
+### 產生 16 位隨機數字字串
 
 ```typescript
-let str: string = Core.random(16, Core.RANDOM_N)
+import * as lCore from '@maiyunnet/kebab/lib/core.js';
+
+const str = lCore.random(16, lCore.RANDOM_N);
 ```
 
-### 生成驗證碼圖片
+### 產生驗證碼圖片
 
 ```typescript
-Captcha.get(400, 100).getBuffer();
+import * as lCaptcha from '@maiyunnet/kebab/lib/captcha.js';
+
+const captcha = lCaptcha.get(400, 100);
+const svg = captcha.getBuffer();
+const phrase = captcha.getPhrase();
 ```
 
-### 獲取一個清單
+`getBuffer()` 回傳 SVG 字串；`phrase` 為對應的驗證碼，應儲存在伺服器端並用於後續驗證。
+
+### 取得一份清單
 
 ```typescript
-const userList = await User.where<User>(this, db, [
+const userList = await mUser.where<mUser>(db, [
     ['state', '!=', '0'],
     {
         'type': ['1', '2', '3'],
-        'is_lock': '0'
-    }
-]).all();
+        'is_lock': '0',
+    },
+], { 'ctr': this }).all();
 ```
 
-> 提示：所有資料庫操作都已經做了安全防注入處理。
+> 提示：查詢條件中的值透過參數綁定傳入；手寫 SQL 也應綁定使用者輸入，動態資料表名稱和欄位名稱應限制為可信值。
 
-### Sql 庫自動增加表前綴和包裹字元「`」”
+### Sql 程式庫自動處理資料表前綴和識別字包覆
 
 ```typescript
-sql.select(['SUM(user.age) age'], 'order').leftJoin('user', {'order.user_id': lSql.column('user.id')});
+import * as lSql from '@maiyunnet/kebab/lib/sql.js';
+
+const sql = lSql.get({ 'service': lSql.ESERVICE.MYSQL, 'pre': 'test' });
+sql.select(['SUM(user.age) age'], 'order').leftJoin('user', { 'order.user_id': lSql.column('user.id') });
+const statement = sql.getSql();
 ```
 
-將輸出：
+以下為 MySQL、資料表前綴 `test_` 的輸出；PostgreSQL 使用 schema 和雙引號：
 
 ```sql
 SELECT SUM(`test_user`.`age`) AS `age` FROM `test_order` LEFT JOIN `test_user` ON `test_order`.`user_id` = `test_user`.`id`
 ```
 
-寫起來好輕鬆！
+### 在地化
 
-### 本地化
+以下控制器方法片段中，`lang` 為已驗證的語言代碼：
 
 ```typescript
-await this._loadLocale(this._get['lang'], 'test');
+if (!await this._loadLocale(lang, 'test')) {
+    return 'Could not load locale.';
+}
 return this._l('copy');
 ```
 
-根據 lang 值不同，將輸出：Copy、复制、複製、コピー等，在網站目錄 /data/locale/ 中配置。
+根據 lang 值不同，將輸出：Copy、复制、複製、コピー等，在網站目錄 /data/locale/ 中設定。
 
-### 数据校验
+### 資料驗證
 
-根據字串、數位、比對大小甚至是正則，對提交的數據進行直接校驗，方便！
+新介面使用 Valibot 驗證字串、數字、值的範圍及正規表示式，成功後透過 `output` 取得已轉換的資料。規則放在應用程式的模組中重複使用，例如 `lib/schema/input.ts`：
 
 ```typescript
-{
-    'he': ['require', [0, 'The he param does not exist.']],
-    'num': ['> 10', [0, 'The num param must > 10.']],
-    'reg': ['/^[A-CX-Z5-7]+$/', [0, 'The reg param is incorrect.']],
-    'arr': [['a', 'x', 'hehe'], [0, 'The arr param is incorrect.']]
-}
+import * as lCore from '@maiyunnet/kebab/lib/core.js';
+
+const v = lCore.v;
+export const inputSchema = v.strictObject({
+    'he': v.pipe(v.string(), v.nonEmpty()),
+    'num': v.pipe(v.string(), v.toNumber(), v.gtValue(10)),
+    'reg': v.pipe(v.string(), v.regex(/^[A-CX-Z5-7]+$/)),
+    'arr': v.picklist(['a', 'x', 'hehe']),
+});
 ```
 
-參見：/test/ctr-checkinput
+控制器 `ctr/main.ts` 匯入規則，並在方法內驗證：
 
-### 其他演示
+```typescript
+import * as lInputSchema from '../lib/schema/input.js';
 
-你可以訪問 /test/ 來查看更多示例。
+const parsed = this._valibot(lInputSchema.inputSchema, this._post);
+if (!parsed.success) {
+    return parsed.response;
+}
+return [1, parsed.output];
+```
 
-## 許可
+依賴瀏覽器工作階段 Cookie 的資料修改介面改用 `_valibotx`。多語言訊息與 XSRF 用法見[快速開始](sc/quick-start.md#使用-valibot-进行类型安全校验)，實際示範見 `/test/ctr-valibot`。
 
-本框架基於 [Apache-2.0](../LICENSE) 許可。
+### 其他示範
+
+你可以造訪 /test/ 查看更多範例。
+
+## 授權
+
+本框架採用 [Apache-2.0](../LICENSE) 授權。
