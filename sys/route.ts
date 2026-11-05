@@ -336,7 +336,6 @@ export async function run(data: {
     for (const key in data.req.headers) {
         setInputValue(headers, key.toLowerCase(), data.req.headers[key]);
     }
-    headers['authorization'] ??= '';
     /** --- 开发者返回值 --- */
     let rtn: kebab.Json;
 
