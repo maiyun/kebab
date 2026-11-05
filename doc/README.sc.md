@@ -40,13 +40,6 @@ Ai, Buffer, Captcha, Consistent, Cookie, Core, Cron, Crypto, Db (MySQL, PostgreS
 
 新 HTTP 请求推荐使用 Undici；Net 保留用于兼容旧代码。
 
-## 文档
-
-- [快速开始](sc/quick-start.md)
-- [游标分页与 PostgreSQL 近似总数](sc/query-pagination.md)
-- [性能监控与异常复盘](sc/monitor.md)
-- [API 参考](sc/api/index.md)
-
 ## 部分特性
 
 ### 开袋即食

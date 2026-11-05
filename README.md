@@ -40,13 +40,6 @@ Ai, Buffer, Captcha, Consistent, Cookie, Core, Cron, Crypto, Db (MySQL, PostgreS
 
 Use Undici for new HTTP requests; Net remains available for compatibility with existing code.
 
-## Documentation
-
-- [Quick start](doc/sc/quick-start.md)
-- [Cursor pagination and approximate totals in PostgreSQL](doc/sc/query-pagination.md)
-- [Performance monitoring and incident review](doc/sc/monitor.md)
-- [API reference](doc/sc/api/index.md)
-
 ## Selected features
 
 ### Ready to use
