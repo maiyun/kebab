@@ -1266,12 +1266,9 @@ export class Ctr {
         if (!rtn) {
             return false;
         }
-        for (const key in rtn.post) {
-            this._post[key] = rtn.post[key];
-        }
-        for (const key in rtn.files) {
-            this._files[key] = rtn.files[key];
-        }
+        // --- 保留集合引用，特殊字段名也只写成自有属性 ---
+        Object.defineProperties(this._post, Object.getOwnPropertyDescriptors(rtn.post));
+        Object.defineProperties(this._files, Object.getOwnPropertyDescriptors(rtn.files));
         return true;
     }
 

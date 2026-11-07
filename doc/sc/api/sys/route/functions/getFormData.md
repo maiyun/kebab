@@ -8,7 +8,7 @@
 
 > **getFormData**(`req`, `events?`, `limits?`): `Promise`\<`false` \| \{ `files`: `Record`\<`string`, [`IPostFile`](../../../index/interfaces/IPostFile.md) \| [`IPostFile`](../../../index/interfaces/IPostFile.md)[]\>; `post`: `Record`\<`string`, [`Json`](../../../index/type-aliases/Json.md)\>; \}\>
 
-Defined in: [sys/route.ts:1104](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1104)
+Defined in: [sys/route.ts:1103](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1103)
 
 获取 formdata 的 post
 

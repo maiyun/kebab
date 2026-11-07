@@ -17,6 +17,24 @@ import * as sCtr from '#kebab/sys/ctr.js';
 import * as kebab from '#kebab/index.js';
 // --- 初始化 ---
 import * as sRoute from '#kebab/sys/route.js';
+import { createPathGuard } from '#kebab/abox/example.js';
+
+/**
+ * --- 判断现有路径是否属于内置示例，符号链接按实际目标检查 ---
+ * @param candidate 已存在的目录或符号链接路径
+ * @returns 属于示例或无法确认目标时返回 true，由入口拒绝访问
+ */
+const isExamplePath: (candidate: string) => Promise<boolean> = createPathGuard(kebab.ROOT_PATH + 'www/example/');
+
+/**
+ * --- 拒绝生产环境中的示例 HTTP 请求 ---
+ * @param res 响应对象
+ * @returns 无返回值
+ */
+function rejectExample(res: http2.Http2ServerResponse | http.ServerResponse): void {
+    lCore.writeHead(res, 403);
+    res.end('403 Forbidden');
+}
 
 /** --- 10 秒往主线程发送一次心跳的 Timer --- */
 const hbTimer = setInterval(function() {
@@ -296,6 +314,12 @@ async function requestHandler(
         res.end('403 Forbidden');
         return;
     }
+    // --- 配置来自 JSON，仅布尔值 true 开放内置示例 ---
+    const debug: unknown = lCore.globalConfig.debug;
+    if (debug !== true && await isExamplePath(vhost.real)) {
+        rejectExample(res);
+        return;
+    }
     /** --- 请求的路径部分，前导带 / 末尾不一定，用户怎么请求就是什么 --- */
     let path = uri.pathname ?? '/';
     if (path !== '/') {
@@ -318,6 +342,13 @@ async function requestHandler(
                 res.setHeader('content-length', Buffer.byteLength(content));
                 lCore.writeHead(res, 404);
                 res.end(content);
+                return;
+            }
+            if (
+                debug !== true && (stat.isDirectory() || stat.isSymbolicLink()) &&
+                await isExamplePath(vhost.real + now + item)
+            ) {
+                rejectExample(res);
                 return;
             }
             if (stat.isDirectory()) {
@@ -441,6 +472,11 @@ async function upgradeHandler(
         socket.end();
         return;
     }
+    const debug: unknown = lCore.globalConfig.debug;
+    if (debug !== true && await isExamplePath(vhost.real)) {
+        socket.end();
+        return;
+    }
     /** --- 请求的路径部分，前导带 / 末尾不一定，用户怎么请求就是什么 --- */
     let path = uri.pathname ?? '/';
     if (path !== '/') {
@@ -458,6 +494,13 @@ async function upgradeHandler(
             /** --- 'abc' / 'def.json' ---  */
             let stat = await lFs.stats(vhost.real + now + item);
             if (!stat) {
+                socket.end();
+                return;
+            }
+            if (
+                debug !== true && (stat.isDirectory() || stat.isSymbolicLink()) &&
+                await isExamplePath(vhost.real + now + item)
+            ) {
                 socket.end();
                 return;
             }

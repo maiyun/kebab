@@ -162,11 +162,11 @@ try {
     const child = ts.createSourceFile('child.js', await fs.readFile(new URL('../../sys/child.js', import.meta.url), 'utf8'), ts.ScriptTarget.Latest, true);
     const handler = child.statements.find(node => ts.isFunctionDeclaration(node) && node.name?.text === 'requestHandler');
     assert.ok(handler);
-    const requestHandler = new Function('lText', 'lCore', 'sCtr', 'getVhostByHostname', 'lFs', 'sRoute', 'kebab', 'http', 'stopping', `${handler.getText(child)};return requestHandler;`)(
-        text, { log(...args) { throw new Error(JSON.stringify(args)); } }, { isHttpRequestAvailable: () => false },
+    const requestHandler = new Function('lText', 'lCore', 'sCtr', 'getVhostByHostname', 'lFs', 'sRoute', 'kebab', 'http', 'stopping', 'isExamplePath', 'rejectExample', `${handler.getText(child)};return requestHandler;`)(
+        text, { globalConfig: {}, log(...args) { throw new Error(JSON.stringify(args)); } }, { isHttpRequestAvailable: () => false },
         async () => ({ real: rootPath }), { stats: async () => ({ isDirectory: () => true }) },
         { run: async data => { clearTimeout(data.timer.timer); return route.run(data); } },
-        { VER: 'test' }, { ServerResponse: class {} }, false,
+        { VER: 'test' }, { ServerResponse: class {} }, false, async () => false, () => { throw new Error('Unexpected example rejection'); },
     );
     for (const [host, origin] of [
         ['example.com', 'https://example.com'],

@@ -602,15 +602,14 @@ export async function run(data: {
                 data.res.end('');
                 return true;
             }
-            // --- 检测 action 是否存在，以及排除内部方法 ---
-            if (pathRight.startsWith('_') || pathRight === 'onUpgrade' || pathRight === 'onLoad' || pathRight === 'onData' || pathRight === 'onDrain' || pathRight === 'onEnd' || pathRight === 'onClose' || pathRight === 'setPrototype' || pathRight === 'getPrototype' || pathRight === 'getAuthorization') {
-                // --- _ 开头的 action 是内部方法，不允许访问 ---
-                respond404(data.res, config, path);
-                return true;
-            }
             pathRight = pathRight.replace(/-([a-zA-Z0-9])/g, function(t, t1: string): string {
                 return t1.toUpperCase();
             });
+            // --- 按实际调用名检查，框架基类及 Object 原型的成员不能作为 action ---
+            if (pathRight.startsWith('_') || pathRight in sCtr.Ctr.prototype) {
+                respond404(data.res, config, path);
+                return true;
+            }
             if (((cctr as kebab.Json)[pathRight] === undefined) || (typeof (cctr as kebab.Json)[pathRight] !== 'function')) {
                 respond404(data.res, config, path);
                 return true;
@@ -898,7 +897,7 @@ export async function unlinkUploadFiles(
     cctr: sCtr.Ctr | Record<string, kebab.IPostFile | kebab.IPostFile[]>
 ): Promise<void> {
     const cfiles = cctr instanceof sCtr.Ctr ? cctr.getPrototype('_files') : cctr;
-    for (const name in cfiles) {
+    for (const name of Object.keys(cfiles)) {
         let files = cfiles[name];
         if (!Array.isArray(files)) {
             files = [files];
