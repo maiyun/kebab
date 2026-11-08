@@ -164,7 +164,7 @@ Defined in: [lib/ws.ts:118](https://github.com/maiyunnet/kebab/blob/master/lib/w
 
 > `optional` **proxyMode?**: `"reverse"` \| `"request"` \| `"passthrough"`
 
-Defined in: lib/undici/proxy.ts:14
+Defined in: [lib/undici/proxy.ts:14](https://github.com/maiyunnet/kebab/blob/master/lib/undici/proxy.ts#L14)
 
 默认 passthrough 透传；request 使用目标 Host 并清理代理来源头；reverse 保留外部 Host 并生成来源头
 passthrough 使用目标 Host，保留通过基础过滤的来路头，不自动生成来源头。

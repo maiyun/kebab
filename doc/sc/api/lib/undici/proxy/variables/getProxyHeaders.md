@@ -8,7 +8,7 @@
 
 > `const` **getProxyHeaders**: (`req`, `opt?`) => `http.IncomingHttpHeaders` = `buildProxyHeaders`
 
-Defined in: lib/undici/proxy.ts:41
+Defined in: [lib/undici/proxy.ts:41](https://github.com/maiyunnet/kebab/blob/master/lib/undici/proxy.ts#L41)
 
 构造上游请求头，依次执行基础过滤、业务 filter、模式处理及 headers 覆盖
 保留 Cookie、Authorization、Origin、Referer 的业务语义，不保证请求无法被识别为代理。

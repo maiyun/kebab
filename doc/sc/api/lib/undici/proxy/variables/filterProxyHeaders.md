@@ -8,7 +8,7 @@
 
 > `const` **filterProxyHeaders**: (`headers`, `res?`, `filter?`) => `Record`\<`string`, `string` \| `string`[]\> = `filterProxyHeadersImpl`
 
-Defined in: lib/undici/proxy.ts:24
+Defined in: [lib/undici/proxy.ts:24](https://github.com/maiyunnet/kebab/blob/master/lib/undici/proxy.ts#L24)
 
 过滤代理请求或响应的基础头部，不处理来源信息
 

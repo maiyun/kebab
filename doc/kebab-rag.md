@@ -1794,7 +1794,7 @@ index/variables/VER.md
 
 # Variable: VER
 
-> `const` **VER**: `"9.26.3"` = `'9.26.3'`
+> `const` **VER**: `"9.26.4"` = `'9.26.4'`
 
 Defined in: [index.ts:9](https://github.com/maiyunnet/kebab/blob/master/index.ts#L9)
 
@@ -129880,7 +129880,7 @@ Defined in: [lib/undici.ts:949](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **proxyMode?**: `"reverse"` \| `"request"` \| `"passthrough"`
 
-Defined in: lib/undici/proxy.ts:14
+Defined in: [lib/undici/proxy.ts:14](https://github.com/maiyunnet/kebab/blob/master/lib/undici/proxy.ts#L14)
 
 默认 passthrough 透传；request 使用目标 Host 并清理代理来源头；reverse 保留外部 Host 并生成来源头
 passthrough 使用目标 Host，保留通过基础过滤的来路头，不自动生成来源头。
@@ -129962,7 +129962,7 @@ lib/undici/proxy/interfaces/IProxyHeaderOptions.md
 
 # Interface: IProxyHeaderOptions
 
-Defined in: lib/undici/proxy.ts:7
+Defined in: [lib/undici/proxy.ts:7](https://github.com/maiyunnet/kebab/blob/master/lib/undici/proxy.ts#L7)
 
 undici 和 ws 共用请求头模式，mproxy 仅支持 passthrough 和 request
 
@@ -129977,7 +129977,7 @@ undici 和 ws 共用请求头模式，mproxy 仅支持 passthrough 和 request
 
 > `optional` **proxyMode?**: `"reverse"` \| `"request"` \| `"passthrough"`
 
-Defined in: lib/undici/proxy.ts:14
+Defined in: [lib/undici/proxy.ts:14](https://github.com/maiyunnet/kebab/blob/master/lib/undici/proxy.ts#L14)
 
 默认 passthrough 透传；request 使用目标 Host 并清理代理来源头；reverse 保留外部 Host 并生成来源头
 passthrough 使用目标 Host，保留通过基础过滤的来路头，不自动生成来源头。
@@ -129997,7 +129997,7 @@ lib/undici/proxy/variables/filterProxyHeaders.md
 
 > `const` **filterProxyHeaders**: (`headers`, `res?`, `filter?`) => `Record`\<`string`, `string` \| `string`[]\> = `filterProxyHeadersImpl`
 
-Defined in: lib/undici/proxy.ts:24
+Defined in: [lib/undici/proxy.ts:24](https://github.com/maiyunnet/kebab/blob/master/lib/undici/proxy.ts#L24)
 
 过滤代理请求或响应的基础头部，不处理来源信息
 
@@ -130040,7 +130040,7 @@ lib/undici/proxy/variables/getProxyHeaders.md
 
 > `const` **getProxyHeaders**: (`req`, `opt?`) => `http.IncomingHttpHeaders` = `buildProxyHeaders`
 
-Defined in: lib/undici/proxy.ts:41
+Defined in: [lib/undici/proxy.ts:41](https://github.com/maiyunnet/kebab/blob/master/lib/undici/proxy.ts#L41)
 
 构造上游请求头，依次执行基础过滤、业务 filter、模式处理及 headers 覆盖
 保留 Cookie、Authorization、Origin、Referer 的业务语义，不保证请求无法被识别为代理。
@@ -132155,7 +132155,7 @@ Defined in: [lib/ws.ts:118](https://github.com/maiyunnet/kebab/blob/master/lib/w
 
 > `optional` **proxyMode?**: `"reverse"` \| `"request"` \| `"passthrough"`
 
-Defined in: lib/undici/proxy.ts:14
+Defined in: [lib/undici/proxy.ts:14](https://github.com/maiyunnet/kebab/blob/master/lib/undici/proxy.ts#L14)
 
 默认 passthrough 透传；request 使用目标 Host 并清理代理来源头；reverse 保留外部 Host 并生成来源头
 passthrough 使用目标 Host，保留通过基础过滤的来路头，不自动生成来源头。
