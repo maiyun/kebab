@@ -6,7 +6,7 @@
 
 # Class: Socket
 
-Defined in: [lib/ws.ts:163](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L163)
+Defined in: [lib/ws.ts:166](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L166)
 
 ## Constructors
 
@@ -14,7 +14,7 @@ Defined in: [lib/ws.ts:163](https://github.com/maiyunnet/kebab/blob/master/lib/w
 
 > **new Socket**(`request?`, `socket?`, `head?`, `options?`): `Socket`
 
-Defined in: [lib/ws.ts:192](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L192)
+Defined in: [lib/ws.ts:195](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L195)
 
 #### Parameters
 
@@ -52,7 +52,7 @@ Defined in: [lib/ws.ts:192](https://github.com/maiyunnet/kebab/blob/master/lib/w
 
 > **get** **ended**(): `boolean`
 
-Defined in: [lib/ws.ts:664](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L664)
+Defined in: [lib/ws.ts:667](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L667)
 
 当前是否已经结束读取，并且无法继续读取
 
@@ -68,7 +68,7 @@ Defined in: [lib/ws.ts:664](https://github.com/maiyunnet/kebab/blob/master/lib/w
 
 > **get** **finished**(): `boolean`
 
-Defined in: [lib/ws.ts:669](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L669)
+Defined in: [lib/ws.ts:672](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L672)
 
 当前是否已经结束写入，并且无法继续写入
 
@@ -84,7 +84,7 @@ Defined in: [lib/ws.ts:669](https://github.com/maiyunnet/kebab/blob/master/lib/w
 
 > **get** **isServer**(): `boolean`
 
-Defined in: [lib/ws.ts:676](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L676)
+Defined in: [lib/ws.ts:679](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L679)
 
 当前连接是不是服务器连接
 
@@ -100,7 +100,7 @@ Defined in: [lib/ws.ts:676](https://github.com/maiyunnet/kebab/blob/master/lib/w
 
 > **get** **writable**(): `boolean`
 
-Defined in: [lib/ws.ts:659](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L659)
+Defined in: [lib/ws.ts:662](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L662)
 
 当前是否是可写状态
 
@@ -114,7 +114,7 @@ Defined in: [lib/ws.ts:659](https://github.com/maiyunnet/kebab/blob/master/lib/w
 
 > **connect**(`u`, `opt?`): `Promise`\<`Socket` \| `null`\>
 
-Defined in: [lib/ws.ts:225](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L225)
+Defined in: [lib/ws.ts:228](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L228)
 
 以客户端形式发起链接
 
@@ -142,7 +142,7 @@ Defined in: [lib/ws.ts:225](https://github.com/maiyunnet/kebab/blob/master/lib/w
 
 > **destroy**(): `void`
 
-Defined in: [lib/ws.ts:576](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L576)
+Defined in: [lib/ws.ts:579](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L579)
 
 #### Returns
 
@@ -154,7 +154,7 @@ Defined in: [lib/ws.ts:576](https://github.com/maiyunnet/kebab/blob/master/lib/w
 
 > **end**(`code?`, `reason?`): `void`
 
-Defined in: [lib/ws.ts:568](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L568)
+Defined in: [lib/ws.ts:571](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L571)
 
 正常结束 WebSocket 连接
 
@@ -182,7 +182,7 @@ WebSocket 关闭码
 
 > **off**(`event`): `this`
 
-Defined in: [lib/ws.ts:558](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L558)
+Defined in: [lib/ws.ts:561](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L561)
 
 取消监听
 
@@ -204,7 +204,7 @@ Defined in: [lib/ws.ts:558](https://github.com/maiyunnet/kebab/blob/master/lib/w
 
 > **on**(`event`, `cb`): `this`
 
-Defined in: [lib/ws.ts:512](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L512)
+Defined in: [lib/ws.ts:515](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L515)
 
 绑定监听
 
@@ -226,7 +226,7 @@ Defined in: [lib/ws.ts:512](https://github.com/maiyunnet/kebab/blob/master/lib/w
 
 > **on**(`event`, `cb`): `this`
 
-Defined in: [lib/ws.ts:516](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L516)
+Defined in: [lib/ws.ts:519](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L519)
 
 绑定监听
 
@@ -248,7 +248,7 @@ Defined in: [lib/ws.ts:516](https://github.com/maiyunnet/kebab/blob/master/lib/w
 
 > **on**(`event`, `cb`): `this`
 
-Defined in: [lib/ws.ts:517](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L517)
+Defined in: [lib/ws.ts:520](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L520)
 
 绑定监听
 
@@ -270,7 +270,7 @@ Defined in: [lib/ws.ts:517](https://github.com/maiyunnet/kebab/blob/master/lib/w
 
 > **on**(`event`, `cb`): `this`
 
-Defined in: [lib/ws.ts:518](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L518)
+Defined in: [lib/ws.ts:521](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L521)
 
 绑定监听
 
@@ -294,7 +294,7 @@ Defined in: [lib/ws.ts:518](https://github.com/maiyunnet/kebab/blob/master/lib/w
 
 > **pause**(): `void`
 
-Defined in: [lib/ws.ts:582](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L582)
+Defined in: [lib/ws.ts:585](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L585)
 
 暂停向消息监听器派发数据，并暂停底层 TCP 读取
 
@@ -308,7 +308,7 @@ Defined in: [lib/ws.ts:582](https://github.com/maiyunnet/kebab/blob/master/lib/w
 
 > **ping**(`data?`): `boolean`
 
-Defined in: [lib/ws.ts:681](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L681)
+Defined in: [lib/ws.ts:684](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L684)
 
 发送 ping
 
@@ -328,7 +328,7 @@ Defined in: [lib/ws.ts:681](https://github.com/maiyunnet/kebab/blob/master/lib/w
 
 > **pong**(`data?`): `boolean`
 
-Defined in: [lib/ws.ts:686](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L686)
+Defined in: [lib/ws.ts:689](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L689)
 
 发送 ping
 
@@ -348,7 +348,7 @@ Defined in: [lib/ws.ts:686](https://github.com/maiyunnet/kebab/blob/master/lib/w
 
 > **resume**(): `void`
 
-Defined in: [lib/ws.ts:588](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L588)
+Defined in: [lib/ws.ts:591](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L591)
 
 恢复派发缓存消息，并恢复底层 TCP 读取
 
@@ -362,7 +362,7 @@ Defined in: [lib/ws.ts:588](https://github.com/maiyunnet/kebab/blob/master/lib/w
 
 > **writeBinary**(`data`): `boolean`
 
-Defined in: [lib/ws.ts:607](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L607)
+Defined in: [lib/ws.ts:610](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L610)
 
 发送二进制
 
@@ -382,7 +382,7 @@ Defined in: [lib/ws.ts:607](https://github.com/maiyunnet/kebab/blob/master/lib/w
 
 > **writeResult**(`data`): `boolean`
 
-Defined in: [lib/ws.ts:602](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L602)
+Defined in: [lib/ws.ts:605](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L605)
 
 发送结果对象字符串
 
@@ -402,7 +402,7 @@ Defined in: [lib/ws.ts:602](https://github.com/maiyunnet/kebab/blob/master/lib/w
 
 > **writeText**(`data`): `boolean`
 
-Defined in: [lib/ws.ts:597](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L597)
+Defined in: [lib/ws.ts:600](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L600)
 
 发送文本
 

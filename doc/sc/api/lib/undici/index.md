@@ -16,10 +16,13 @@
 
 - [THttpHeaders](type-aliases/THttpHeaders.md)
 
+## Variables
+
+- [filterProxyHeaders](variables/filterProxyHeaders.md)
+
 ## Functions
 
 - [fetch](functions/fetch.md)
-- [filterHeaders](functions/filterHeaders.md)
 - [get](functions/get.md)
 - [getFormData](functions/getFormData.md)
 - [getProxyAgent](functions/getProxyAgent.md)

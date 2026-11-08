@@ -12,6 +12,7 @@ import * as lCore from '#kebab/lib/core.js';
 import * as lCookie from '#kebab/lib/cookie.js';
 import * as lZlib from '#kebab/lib/zlib.js';
 import * as sCtr from '#kebab/sys/ctr.js';
+import * as lProxy from '#kebab/lib/undici/proxy.js';
 // --- 自己 ---
 import * as lFd from './undici/formdata.js';
 import * as lRequest from './undici/request.js';
@@ -658,50 +659,18 @@ export function getFormData(): lFd.FormData {
     return new lFd.FormData();
 }
 
-/** --- proxy 要剔除的基础头部 --- */
-const proxyContinueHeaders = [
-    'host', 'connection', 'keep-alive', 'http-code', 'http-url',
-    'transfer-encoding', 'upgrade', 'proxy-connection'
-];
-
 /**
- * --- 剔除不代理的 header，返回新的 header ---
- * @param headers 剔除前的 header
- * @param res 直接设置头部而不返回，可置空
- * @param filter 返回 true 则留下
+ * --- 过滤代理请求或响应的基础头部，不生成或清理来源信息 ---
+ * @param headers 待过滤的头部
+ * @param res 传入时直接设置响应头并返回空对象，响应头已发送时不再写入
+ * @param filter 业务过滤，返回 true 则保留
+ * @returns 过滤后的头部，不修改输入
  */
-export function filterHeaders(
+export const filterProxyHeaders: (
     headers: http.IncomingHttpHeaders | http2.IncomingHttpHeaders | THttpHeaders,
     res?: http2.Http2ServerResponse | http.ServerResponse,
     filter?: (h: string) => boolean
-): Record<string, string | string[]> {
-    const heads: Record<string, string | string[]> = {};
-    // --- HTTP/2 下响应已发送则跳过 setHeader，避免 ERR_HTTP2_HEADERS_SENT ---
-    const sent = res ? res.headersSent : false;
-    for (const h in headers) {
-        if (proxyContinueHeaders.includes(h)) {
-            continue;
-        }
-        if (h.includes(':') || h.includes('(')) {
-            continue;
-        }
-        const v = headers[h];
-        if (v === undefined) {
-            continue;
-        }
-        if (filter && !filter(h)) {
-            continue;
-        }
-        if (res) {
-            if (!sent) {
-                res.setHeader(h, v);
-            }
-            continue;
-        }
-        heads[h] = v;
-    }
-    return heads;
-}
+) => Record<string, string | string[]> = lProxy.filterProxyHeaders;
 
 /**
  * --- 正向 mproxy 代理，注意提前处理不要自动处理 post 数据，读取 get 的 url 为实际请求地址 ---
@@ -732,7 +701,7 @@ export async function mproxy(
     opt.headers ??= {};
     /** --- 传来的 hosts --- */
     const hosts = lText.parseJson<any>(get['hosts']);
-    const headers = Object.assign(filterHeaders(req.headers, undefined, opt.filter), opt.headers);
+    const headers = lProxy.getProxyHeaders(req, opt);
     // --- 发起请求 ---
     const rres = await request(get['url'], req, {
         ...opt,
@@ -750,7 +719,7 @@ export async function mproxy(
     // --- HTTP/2 下响应可能已被客户端取消，跳过头部设置避免崩溃 ---
     if (!res.headersSent) {
         if (rres.headers) {
-            filterHeaders(rres.headers, res, opt.filter);
+            filterProxyHeaders(rres.headers, res, opt.filter);
         }
         lCore.writeHead(res, rres.headers?.['http-code'] ?? 200);
         await new Promise<void>(resolve => {
@@ -826,7 +795,7 @@ export async function rproxy(
         const lpath = path.slice(key.length);
         (opt as kebab.Json).method = req.method ?? 'GET';
         opt.headers ??= {};
-        const headers = Object.assign(filterHeaders(req.headers, undefined, opt.filter), opt.headers);
+        const headers = lProxy.getProxyHeaders(req, opt);
         // --- 拼接代理目标 URL ---
         let proxyUrl = route[key] + lpath;
         // --- 自定义 GET 查询参数（直接替换整个 query string） ---
@@ -853,7 +822,7 @@ export async function rproxy(
         // --- HTTP/2 下响应可能已被客户端取消，跳过头部设置避免崩溃 ---
         if (!res.headersSent) {
             if (rres.headers) {
-                filterHeaders(rres.headers, res, opt.filter);
+                filterProxyHeaders(rres.headers, res, opt.filter);
             }
             /** --- 上游已压缩则不再压缩，避免双重压缩导致乱码 --- */
             const upstreamEncoded = !!(rres.headers?.['content-encoding']);
@@ -942,6 +911,8 @@ export interface IRequestOptions {
 
 /** --- 正向代理请求的传入参数选项 --- */
 export interface IMproxyOptions {
+    /** --- 默认 passthrough 保留已有来源头；request 清理来源头；两者均使用目标 Host --- */
+    'proxyMode'?: 'passthrough' | 'request';
     /** --- 秒数，默认 300 秒 --- */
     'timeout'?: number;
     'follow'?: number;
@@ -960,7 +931,7 @@ export interface IMproxyOptions {
 }
 
 /** --- 反向代理请求的传入参数选项 --- */
-export interface IRproxyOptions {
+export interface IRproxyOptions extends lProxy.IProxyHeaderOptions {
     /** --- 秒数，默认 300 秒 --- */
     'timeout'?: number;
     'follow'?: number;

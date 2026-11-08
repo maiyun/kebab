@@ -8,7 +8,7 @@
 
 > **get**(`u`, `opt?`): `Promise`\<[`Response`](../response/classes/Response.md)\>
 
-Defined in: [lib/undici.ts:169](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L169)
+Defined in: [lib/undici.ts:170](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L170)
 
 发起一个 get 请求
 

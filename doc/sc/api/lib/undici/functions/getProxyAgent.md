@@ -8,7 +8,7 @@
 
 > **getProxyAgent**(`url`): `ProxyAgent`
 
-Defined in: [lib/undici.ts:21](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L21)
+Defined in: [lib/undici.ts:22](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L22)
 
 获取代理 agent
 

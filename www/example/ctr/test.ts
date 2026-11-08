@@ -2917,10 +2917,10 @@ error: <pre>${JSON.stringify(res.error, null, 4)}</pre>`);
             'authorization': ''
         };
         echo.push(`origin:<pre>${JSON.stringify(headers, null, 4)}</pre>`);
-        const filtered = lUndici.filterHeaders(headers, undefined, h => {
+        const filtered = lUndici.filterProxyHeaders(headers, undefined, h => {
             return !['x-', 'eo-'].some(i => h.startsWith(i));
         });
-        echo.push(`const filtered = lUndici.filterHeaders(headers);<pre>${JSON.stringify(filtered, null, 4)}</pre>`);
+        echo.push(`const filtered = lUndici.filterProxyHeaders(headers);<pre>${JSON.stringify(filtered, null, 4)}</pre>`);
         return echo.join('') + this._getEnd();
     }
 

@@ -14,6 +14,7 @@ import * as lText from '#kebab/lib/text.js';
 import * as lUndici from '#kebab/lib/undici.js';
 import * as lCookie from '#kebab/lib/cookie.js';
 import * as sCtr from '#kebab/sys/ctr.js';
+import * as lProxy from '#kebab/lib/undici/proxy.js';
 
 /** --- 一般用 SIMPLE --- */
 export enum EFrameReceiveMode {
@@ -78,6 +79,8 @@ export interface ISocketCloseInfo {
 
 /** --- 正向代理请求的传入参数选项 --- */
 export interface IMproxyOptions {
+    /** --- 默认 passthrough 保留已有来源头；request 清理来源头；两者均使用目标 Host --- */
+    'proxyMode'?: 'passthrough' | 'request';
     /** --- 秒数 --- */
     'timeout'?: number;
     /** --- 自定义 host 映射，如 {'www.maiyun.net': '127.0.0.1'}，或全部映射到一个 host --- */
@@ -93,7 +96,7 @@ export interface IMproxyOptions {
 }
 
 /** --- 反向代理请求的传入参数选项 --- */
-export interface IRproxyOptions {
+export interface IRproxyOptions extends lProxy.IProxyHeaderOptions {
     /** --- 秒数 --- */
     'timeout'?: number;
     /** --- 自定义 host 映射，如 {'www.maiyun.net': '127.0.0.1'}，或全部映射到一个 host --- */
@@ -979,7 +982,7 @@ export async function mproxy(
         return -1;
     }
     opt.headers ??= {};
-    const headers = Object.assign(lUndici.filterHeaders(req.headers, undefined, opt.filter), opt.headers);
+    const headers = lProxy.getProxyHeaders(req, opt);
     // --- 发起请求 ---
     /** --- 远程端的双向 socket --- */
     const rsocket = await connect(get['url'], {
@@ -1008,7 +1011,7 @@ export async function rproxy(
     /** --- 请求端产生的双向 socket --- */
     const socket = ctr.getPrototype('_socket');
     opt.headers ??= {};
-    const headers = Object.assign(lUndici.filterHeaders(req.headers, undefined, opt.filter), opt.headers);
+    const headers = lProxy.getProxyHeaders(req, opt);
     // --- 发起请求 ---
     /** --- 远程端的双向 socket --- */
     /** --- 目标连接的握手错误 --- */

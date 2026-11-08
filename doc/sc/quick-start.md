@@ -56,6 +56,36 @@ const results = await lCore.sendVhost({
 
 控制器通过 `this._config.const.hostCanonical` 获取用于 URL 的主机地址：HTTPS 的 443 和 HTTP 的 80 端口会省略，其余端口及 IPv6 方括号保留。`host`、`hostname` 和 `hostport` 保留原有含义。`urlOrigin`、`urlFull` 和 `urlStcFull` 使用 `hostCanonical` 生成，SSR 注入的 `_urlFull`、默认 `_staticPathFull` 同步省略默认端口。
 
+## 代理请求头模式
+
+`lib/undici` 和 `lib/ws` 的 `rproxy` 支持三种 `proxyMode`，`mproxy` 支持 `passthrough` 和 `request`：
+
+| 值 | 请求头行为 |
+|---|---|
+| `passthrough`（默认） | 使用目标 Host，其余通过基础过滤的头继续透传，包括已有代理及 CDN 来源头，不自动生成来源头 |
+| `request` | 使用目标 Host，清理已有代理来源头，不主动提供原始访问的主机、协议或 IP |
+| `reverse` | 使用外部 Host（HTTP/2 优先 `:authority`），设置 `X-Forwarded-Host`、`X-Forwarded-Proto`、`X-Forwarded-For`、`X-Real-IP` |
+
+不传 `proxyMode` 等同于 `passthrough`，保留既有行为。透传仍经过基础过滤及业务 `filter`，连接控制头和 HTTP/2 伪头不直接转发。
+
+`reverse` 的协议和 IP 默认来自实际连接；`request` 和 `reverse` 均清理已有来源头，避免把来路自报的信息当成可信代理信息。清理范围见 [getProxyHeaders](api/lib/undici/proxy/variables/getProxyHeaders.md)。原 Host 的非默认端口和 IPv6 方括号原样保留，目标 URL 仍决定连接地址和 TLS 目标名称。
+
+`mproxy` 的入站 Host 是代理入口，目标地址来自 `url` 参数，因此不支持 `reverse`。在提供 `mproxy` 服务的控制器中设置 `proxyMode`；它不属于客户端 `request` 或 `connect` 的 `mproxy` 连接配置。
+
+```ts
+await lUndici.rproxy(this, {
+    '': 'http://origin.example.test/',
+}, {
+    'proxyMode': 'reverse',
+});
+```
+
+`headers` 是业务显式覆盖，优先于模式结果，头名不区分大小写。经过可信 CDN 时，先验证 CDN 身份，再通过 `headers` 提供已验证的外部协议和客户端 IP；不能直接信任公网传入的 `X-Forwarded-*`。Gitea 等应用仍须正确设置自身对外 URL。
+
+`filter` 继续负责来路及响应头过滤；模式仅处理发往上游的请求头，不改变响应头。Cookie、Authorization、Origin、Referer 保留原有业务语义，业务可显式过滤或覆盖。`request` 不保证无法识别代理；旧调用迁入此模式前应确认没有依赖 CDN 来源头。
+
+`lib/undici/proxy.getProxyHeaders(req, opt)` 统一完成请求头的基础过滤、业务 `filter`、模式处理和 `headers` 覆盖。`lib/undici.filterProxyHeaders(headers, res?, filter?)` 仅做基础过滤，也可直接设置响应头；它不处理请求来源模式。
+
 ## 集成 JSON Schema
 
 控制器的 `_checkInput` 方法已集成 JSON Schema（ajv、ajv-formats），可通过 `schema` 参数使用，例如：

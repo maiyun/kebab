@@ -43,6 +43,7 @@
 - [lib/turnstile](lib/turnstile/index.md)
 - [lib/undici](lib/undici/index.md)
 - [lib/undici/formdata](lib/undici/formdata/index.md)
+- [lib/undici/proxy](lib/undici/proxy/index.md)
 - [lib/undici/request](lib/undici/request/index.md)
 - [lib/undici/response](lib/undici/response/index.md)
 - [lib/vector](lib/vector/index.md)

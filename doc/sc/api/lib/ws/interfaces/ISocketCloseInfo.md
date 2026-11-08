@@ -6,7 +6,7 @@
 
 # Interface: ISocketCloseInfo
 
-Defined in: [lib/ws.ts:74](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L74)
+Defined in: [lib/ws.ts:75](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L75)
 
 WebSocket 关闭信息
 
@@ -16,7 +16,7 @@ WebSocket 关闭信息
 
 > **code**: `number`
 
-Defined in: [lib/ws.ts:75](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L75)
+Defined in: [lib/ws.ts:76](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L76)
 
 ***
 
@@ -24,4 +24,4 @@ Defined in: [lib/ws.ts:75](https://github.com/maiyunnet/kebab/blob/master/lib/ws
 
 > **reason**: `string`
 
-Defined in: [lib/ws.ts:76](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L76)
+Defined in: [lib/ws.ts:77](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L77)
