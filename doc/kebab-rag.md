@@ -1763,7 +1763,7 @@ index/variables/VER.md
 
 # Variable: VER
 
-> `const` **VER**: `"9.26.2"` = `'9.26.2'`
+> `const` **VER**: `"9.26.3"` = `'9.26.3'`
 
 Defined in: [index.ts:9](https://github.com/maiyunnet/kebab/blob/master/index.ts#L9)
 
@@ -138282,7 +138282,7 @@ sys/route/functions/getFormData.md
 
 > **getFormData**(`req`, `events?`, `limits?`): `Promise`\<`false` \| \{ `files`: `Record`\<`string`, [`IPostFile`](../../../index/interfaces/IPostFile.md) \| [`IPostFile`](../../../index/interfaces/IPostFile.md)[]\>; `post`: `Record`\<`string`, [`Json`](../../../index/type-aliases/Json.md)\>; \}\>
 
-Defined in: [sys/route.ts:1103](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1103)
+Defined in: [sys/route.ts:1101](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1101)
 
 获取 formdata 的 post
 
@@ -138325,7 +138325,7 @@ sys/route/functions/getPost.md
 
 > **getPost**(`req`): `Promise`\<`false` \| \{ `input`: `string`; `post`: `Record`\<`string`, `any`\>; `raw`: `Record`\<`string`, `any`\>; \}\>
 
-Defined in: [sys/route.ts:938](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L938)
+Defined in: [sys/route.ts:936](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L936)
 
 获取 post 对象（通常已自动获取），如果是文件上传（formdata）的情况则不获取
 
@@ -138356,7 +138356,7 @@ sys/route/functions/run.md
 
 > **run**(`data`): `Promise`\<`boolean`\>
 
-Defined in: [sys/route.ts:111](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L111)
+Defined in: [sys/route.ts:109](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L109)
 
 若为动态路径则执行此函数，此函数不进行判断 kebab.json 是否存在
 
@@ -138443,7 +138443,7 @@ sys/route/functions/unlinkUploadFiles.md
 
 > **unlinkUploadFiles**(`cctr`): `Promise`\<`void`\>
 
-Defined in: [sys/route.ts:896](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L896)
+Defined in: [sys/route.ts:894](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L894)
 
 删除本次请求所有已上传的临时文件
 
@@ -138472,7 +138472,7 @@ sys/route/functions/waitCtr.md
 
 > **waitCtr**(`cctr`): `Promise`\<`void`\>
 
-Defined in: [sys/route.ts:916](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L916)
+Defined in: [sys/route.ts:914](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L914)
 
 等待异步任务结束，并删除临时文件，如果结束后还有事务没关闭，则会在本函数中打印控制台并且写入 log 文件
 此时其实已经给客户端返回了，此处等待不消耗客户端的等待时间
@@ -138526,7 +138526,7 @@ sys/route/interfaces/IFormDataError.md
 
 # Interface: IFormDataError
 
-Defined in: [sys/route.ts:1058](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1058)
+Defined in: [sys/route.ts:1056](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1056)
 
 解析上传数据时的失败原因，只提供错误码和限制值，不带临时路径或异常对象
 
@@ -138536,7 +138536,7 @@ Defined in: [sys/route.ts:1058](https://github.com/maiyunnet/kebab/blob/master/s
 
 > **code**: `"INVALID_BOUNDARY"` \| `"FILE_TOO_LARGE"` \| `"TOTAL_TOO_LARGE"` \| `"FIELD_TOO_LARGE"` \| `"HEADER_TOO_LARGE"` \| `"TOO_MANY_PARTS"` \| `"FILE_TYPE"` \| `"TIMEOUT"` \| `"TEMP_FILE_ERROR"` \| `"REQUEST_ERROR"` \| `"REQUEST_ABORTED"`
 
-Defined in: [sys/route.ts:1059](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1059)
+Defined in: [sys/route.ts:1057](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1057)
 
 ***
 
@@ -138544,7 +138544,7 @@ Defined in: [sys/route.ts:1059](https://github.com/maiyunnet/kebab/blob/master/s
 
 > `optional` **limit?**: `number`
 
-Defined in: [sys/route.ts:1063](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1063)
+Defined in: [sys/route.ts:1061](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1061)
 
 超出的限制值：大小用字节，超时用毫秒，字段和文件数量用个
 
@@ -138559,7 +138559,7 @@ sys/route/interfaces/IFormDataEvents.md
 
 # Interface: IFormDataEvents
 
-Defined in: [sys/route.ts:1067](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1067)
+Defined in: [sys/route.ts:1065](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1065)
 
 multipart 文件处理及失败通知
 
@@ -138569,7 +138569,7 @@ multipart 文件处理及失败通知
 
 > `optional` **onerror?**: (`error`) => `void`
 
-Defined in: [sys/route.ts:1075](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1075)
+Defined in: [sys/route.ts:1073](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1073)
 
 首次失败时调用一次，getFormData 返回 false；若连接已断开，可能无法回复客户端
 
@@ -138589,7 +138589,7 @@ Defined in: [sys/route.ts:1075](https://github.com/maiyunnet/kebab/blob/master/s
 
 > `optional` **onfiledata?**: (`chunk`) => `void`
 
-Defined in: [sys/route.ts:1071](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1071)
+Defined in: [sys/route.ts:1069](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1069)
 
 文件上传时触发，仅 start 返回 true 时触发
 
@@ -138609,7 +138609,7 @@ Defined in: [sys/route.ts:1071](https://github.com/maiyunnet/kebab/blob/master/s
 
 > `optional` **onfileend?**: () => `void`
 
-Defined in: [sys/route.ts:1073](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1073)
+Defined in: [sys/route.ts:1071](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1071)
 
 文件上传结束时触发，仅 start 返回 true 时触发
 
@@ -138623,7 +138623,7 @@ Defined in: [sys/route.ts:1073](https://github.com/maiyunnet/kebab/blob/master/s
 
 > `optional` **onfilestart?**: (`name`) => `boolean` \| `undefined`
 
-Defined in: [sys/route.ts:1069](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1069)
+Defined in: [sys/route.ts:1067](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1067)
 
 文件开始上传时触发，返回 true 则跳过该文件的保存
 
@@ -138648,7 +138648,7 @@ sys/route/interfaces/IFormDataLimits.md
 
 # Interface: IFormDataLimits
 
-Defined in: [sys/route.ts:1079](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1079)
+Defined in: [sys/route.ts:1077](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1077)
 
 multipart 上传限制
 
@@ -138658,7 +138658,7 @@ multipart 上传限制
 
 > `optional` **allowedExts?**: `string`[]
 
-Defined in: [sys/route.ts:1083](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1083)
+Defined in: [sys/route.ts:1081](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1081)
 
 允许的文件扩展名（含点号），如 ['.jpg', '.png', '.pdf']
 
@@ -138668,7 +138668,7 @@ Defined in: [sys/route.ts:1083](https://github.com/maiyunnet/kebab/blob/master/s
 
 > `optional` **maxFieldSize?**: `number`
 
-Defined in: [sys/route.ts:1085](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1085)
+Defined in: [sys/route.ts:1083](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1083)
 
 单个字段（非文件）最大字节数，默认 1 MB
 
@@ -138678,7 +138678,7 @@ Defined in: [sys/route.ts:1085](https://github.com/maiyunnet/kebab/blob/master/s
 
 > `optional` **maxFileSize?**: `number`
 
-Defined in: [sys/route.ts:1081](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1081)
+Defined in: [sys/route.ts:1079](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1079)
 
 单个文件最大字节数
 
@@ -138688,7 +138688,7 @@ Defined in: [sys/route.ts:1081](https://github.com/maiyunnet/kebab/blob/master/s
 
 > `optional` **maxHeaderSize?**: `number`
 
-Defined in: [sys/route.ts:1089](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1089)
+Defined in: [sys/route.ts:1087](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1087)
 
 每个字段或文件的 multipart 头部最多多少字节，默认 16 KB
 
@@ -138698,7 +138698,7 @@ Defined in: [sys/route.ts:1089](https://github.com/maiyunnet/kebab/blob/master/s
 
 > `optional` **maxParts?**: `number`
 
-Defined in: [sys/route.ts:1091](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1091)
+Defined in: [sys/route.ts:1089](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1089)
 
 multipart 字段与文件总数量，默认 1000
 
@@ -138708,7 +138708,7 @@ multipart 字段与文件总数量，默认 1000
 
 > `optional` **maxTotalSize?**: `number`
 
-Defined in: [sys/route.ts:1087](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1087)
+Defined in: [sys/route.ts:1085](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1085)
 
 整体请求最大字节数，不设置或设为 0 则不限制
 
@@ -138718,6 +138718,6 @@ Defined in: [sys/route.ts:1087](https://github.com/maiyunnet/kebab/blob/master/s
 
 > `optional` **timeout?**: `number`
 
-Defined in: [sys/route.ts:1093](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1093)
+Defined in: [sys/route.ts:1091](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1091)
 
 整体请求超时时间（毫秒），默认 5 分钟，设为 0 禁用超时
