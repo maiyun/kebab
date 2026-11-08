@@ -59,9 +59,6 @@ const certList: Map<string, {
 /** --- servername → certList mapKey 索引缓存 --- */
 let certHostIndex: Record<string, string> = {};
 
-/** --- 默认证书 --- */
-let defaultSc: tls.SecureContext | undefined;
-
 /** --- 最后一次加载证书到内存的时间 --- */
 let certLastLoad: number = 0;
 
@@ -161,10 +158,6 @@ async function run(): Promise<void> {
                 // --- 找到 ---
                 cb(null, item.sc);
                 certHostIndex[servername] = mapKey;
-                return;
-            }
-            if (defaultSc) {
-                cb(null, defaultSc);
                 return;
             }
             lCore.display(`[CHILD][SNICallback] CERT NOT FOUND for servername: ${servername}`);
@@ -280,15 +273,14 @@ async function requestHandler(
                 // --- 已经开始输出的，需要用户自行处理 ---
                 return;
             }
-            const content = '<h1>504 Gateway Timeout</h1><hr>Kebab';
+            const content = '<h1>504 Gateway Timeout</h1>';
             res.setHeader('content-length', Buffer.byteLength(content));
             lCore.writeHead(res, 504);
             res.end(content);
         }
     };
     timer.timer = setTimeout(timer.callback, timer.timeout);
-    // --- 设置服务器名版本 ---
-    res.setHeader('Server', 'Kebab/' + kebab.VER);
+    res.setHeader('Server', 'Kebab');
     res.setHeader('expires', 'Mon, 26 Jul 1994 05:00:00 GMT');
     res.setHeader('cache-control', 'no-store');
     // --- 停止中：通知 HTTP/1.1 客户端不要复用此连接（HTTP/2 由 GOAWAY 帧处理） ---
@@ -337,7 +329,7 @@ async function requestHandler(
             /** --- 'abc' / 'def.json' ---  */
             let stat = await lFs.stats(vhost.real + now + item);
             if (!stat) {
-                const content = '<h1>404 Not found</h1><hr>Kebab';
+                const content = '<h1>404 Not found</h1>';
                 res.setHeader('content-type', 'text/html; charset=utf-8');
                 res.setHeader('content-length', Buffer.byteLength(content));
                 lCore.writeHead(res, 404);
@@ -380,7 +372,7 @@ async function requestHandler(
                             'cookie': {},
                             'headers': {},
                         }, '[CHILD][requestHandler][E0]' + lText.stringifyError(e), '-error');
-                        const content = '<h1>500 Server Error</h1><hr>Kebab';
+                        const content = '<h1>500 Server Error</h1>';
                         if (!res.headersSent) {
                             res.setHeader('content-type', 'text/html; charset=utf-8');
                             res.setHeader('content-length', Buffer.byteLength(content));
@@ -423,7 +415,7 @@ async function requestHandler(
                 }
                 catch (e: unknown) {
                     lCore.log({}, '[CHILD][requestHandler][E1]' + lText.stringifyError(e), '-error');
-                    const content = '<h1>500 Server Error</h1><hr>Kebab';
+                    const content = '<h1>500 Server Error</h1>';
                     if (!res.headersSent) {
                         res.setHeader('content-type', 'text/html; charset=utf-8');
                         res.setHeader('content-length', Buffer.byteLength(content));
@@ -446,7 +438,7 @@ async function requestHandler(
             return;
         }
     }
-    const content = '<h1>403 Forbidden</h1><hr>Kebab';
+    const content = '<h1>403 Forbidden</h1>';
     res.setHeader('content-type', 'text/html; charset=utf-8');
     res.setHeader('content-length', Buffer.byteLength(content));
     lCore.writeHead(res, 403);
@@ -646,7 +638,6 @@ async function reloadCert(): Promise<void> {
             }
         }
     }
-    defaultSc = certList.size > 0 ? certList.values().next().value!.sc : undefined;
     certHostIndex = {};
 }
 

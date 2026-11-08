@@ -484,7 +484,7 @@ export async function readToResponse(path: string,
 ): Promise<void> {
     stat ??= await stats(path);
     if (!stat) {
-        const content = '<h1>404 Not found</h1><hr>Kebab';
+        const content = '<h1>404 Not found</h1>';
         res.setHeader('content-length', Buffer.byteLength(content));
         lCore.writeHead(res, 404);
         res.end(req.method === 'HEAD' ? '' : content);

@@ -551,7 +551,7 @@ export class Ctr {
         lCore.debug(`[CTR][_loadReactPage] ${message}`);
         lCore.log(this, `[CTR][_loadReactPage] ${detail}`, '-error');
         this._httpCode = 500;
-        return '<h1>500 Server Error</h1><hr>Kebab';
+        return '<h1>500 Server Error</h1>';
     }
 
     /**
