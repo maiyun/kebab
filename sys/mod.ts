@@ -82,8 +82,8 @@ export default class Mod {
     /** --- 设置后将由 _keyGenerator 函数生成唯一字段 --- */
     protected static _$key: string = '';
 
-    /** --- 若使用 _$key 并且有多个 unique 索引，这里指定 _$key 的索引名 --- */
-    protected static _$index: string = '';
+    /** --- 自动 key 冲突目标：MySQL 为索引名；PGSQL 为唯一字段或字段数组，PG 留空使用 _$key，不支持部分或表达式索引 --- */
+    protected static _$index: string | string[] = '';
 
     /** --- 前缀，MySQL 时为表前缀（如 prefix_），PostgreSQL 时为 Schema 名。顺序：选项前缀 -> 本前缀 -> 配置文件前缀 --- */
     protected static _$pre?: string;
@@ -883,18 +883,36 @@ export default class Mod {
     }
 
     /**
-     * --- 创建数据 ---
-     * @return true-成功,false-报错,null-唯一键非 _$key 键冲突
+     * --- 收集待写字段，保留模型内的原始 JSON 值 ---
+     * @returns 独立的 SQL 数据对象
+     */
+    private _getUpdates(): Record<string, kebab.DbValue> {
+        const updates: Record<string, kebab.DbValue> = {};
+        for (const field in this._updates) {
+            updates[field] = this._jsonUpdates[field] ? lSql.json(this._data[field]) : this._data[field];
+        }
+        return updates;
+    }
+
+    /**
+     * --- 创建数据，自动 key 最多尝试 3 次；PGSQL 仅忽略指定字段的唯一冲突 ---
+     * @return true-成功,false-错误或重试耗尽,null-其他唯一冲突；PGSQL 的 SQL 错误需要回滚事务
      */
     public async create(): Promise<boolean | null> {
         const cstr = this.constructor as any;
-        const updates: Record<string, any> = {};
-        for (const k in this._updates) {
-            updates[k] = this._jsonUpdates[k] ? lSql.json(this._data[k]) : this._data[k];
-        }
+        const updates = this._getUpdates();
 
+        const service = this._db.getService();
+        const keyIndex = cstr._$index as string | string[];
         let r: lDb.IPacket | null = null;
         if ((cstr._$key !== '') && (updates[cstr._$key] === undefined)) {
+            const keyFields = Array.isArray(keyIndex) ? keyIndex : [keyIndex || cstr._$key as string];
+            if (service === lDb.ESERVICE.PGSQL && !keyFields.includes(cstr._$key as string)) {
+                return false;
+            }
+            if (service === lDb.ESERVICE.MYSQL && Array.isArray(keyIndex)) {
+                return false;
+            }
             let count: number = 0;
             while (true) {
                 if (count === 3) {
@@ -905,38 +923,32 @@ export default class Mod {
                 (this as kebab.Json)[cstr._$key] = updates[cstr._$key];
                 this._sql.insert((cstr._$table as string) + (this._index ? ('_' + this._index[0]) : ''));
                 this._sql.values(updates);
+                if (service === lDb.ESERVICE.PGSQL) {
+                    this._sql.append(' ON CONFLICT (' + keyFields.map(field => this._sql.field(field)).join(', ') + ') DO NOTHING');
+                }
                 r = await this._db.execute(this._sql.getSql(), this._sql.getData());
                 ++count;
                 if (!r.error) {
+                    // --- PG 的自动 key 冲突不报错，未插入时换一个候选值 ---
+                    if (service === lDb.ESERVICE.PGSQL && r.packet?.affected === 0) {
+                        continue;
+                    }
                     break;
                 }
                 if (r.error.errno === 1062) {
-                    // --- 与唯一键冲突 ---
-                    if (!cstr._$index) {
-                        // --- 没设置 index，那就当做是本次生成的 key 重复了 ---
-                        continue;
-                    }
-                    if (this._db.getService() === lDb.ESERVICE.MYSQL) {
-                        // --- MYSQL ---
+                    if (service === lDb.ESERVICE.MYSQL) {
+                        if (!keyIndex) {
+                            continue;
+                        }
                         const match = /for key '([\w.]+)'/.exec(r.error.message);
-                        if (match?.[1].includes(cstr._$index)) {
-                            // --- key 索引重复，继续生成 key ---
+                        if (typeof keyIndex === 'string' && match?.[1].includes(keyIndex)) {
                             continue;
                         }
                     }
-                    else {
-                        // --- PGSQL ---
-                        const match = /constraint "([\w.]+)"/.exec(r.error.message);
-                        if (match?.[1].includes(cstr._$index)) {
-                            // --- key 索引重复，继续生成 key ---
-                            continue;
-                        }
-                    }
-                    // --- 1062 非 index 冲突，那需要用户自行处理（可能不允许重复的邮箱） ---
+                    // --- PG 的目标冲突已经被 SQL 处理，剩下的是其他唯一约束冲突 ---
                     return null;
                 }
                 // --- 未处理的错误 ---
-                const service = this._db.getService();
                 lCore.log(this._ctr ?? {}, '[MOD][create0][' + cstr._$table + '] ' + (lText.stringifyJson(r.error?.message ?? '').slice(1, -1) + ' - ' + this._sql.format()).replaceAll('"', '""'), '-error');
                 if (lCore.globalConfig.debug) {
                     lCore.debug('[MOD][create0][' + cstr._$table + ']', service !== null ? lDb.ESERVICE[service] : 'NONE', r);
@@ -974,34 +986,80 @@ export default class Mod {
     }
 
     /**
-     * --- 插入数据，如果存在则更新（UPSERT） ---
-     * @param conflict 冲突字段，不能为 _$key 或 _$primary，应该是你要判断的唯一索引字段
+     * --- 插入数据，如果业务唯一键已存在则更新，保留已有主键和自动 key ---
+     * --- PGSQL 为原子 UPSERT，自动 key 只生成一次，SQL 错误需回滚事务 ---
+     * --- MySQL 分步执行；自动 key 有多个唯一索引时须配置 _$index，整笔原子性由调用方事务保证 ---
+     * @param conflict 已通过 set 赋非 NULL 值的业务唯一字段，不得包含 _$key 或 _$primary；PGSQL 不支持部分或表达式索引
+     * @returns 是否成功；至少需要一个可更新字段，失败保留待写数据
      */
     public async upsert(conflict: string | string[]): Promise<boolean> {
-        // --- 这里没用 mysql 的 INSERT ... ON DUPLICATE KEY UPDATE 或 pgsql 的 ON CONFLICT DO UPDATE ---
-        // --- 因为还要处理 _$key 的自动生成 ---
-        const res = await this.create();
-        if (res) {
-            // --- 创建成功 ---
-            return true;
-        }
-        if (res === false) {
-            // --- 系统错误 ---
+        const cstr = this.constructor as typeof Mod;
+        const conflicts = typeof conflict === 'string' ? [conflict] : conflict;
+        const inserts = this._getUpdates();
+        const updates = { ...inserts };
+        const where: Record<string, kebab.DbValue> = {};
+        if (!conflicts.length) {
             return false;
         }
-        // --- res === null，唯一键冲突，执行更新 ---
-        /** --- 冲突字段列表 --- */
-        const conflicts = typeof conflict === 'string' ? [conflict] : conflict;
-        const where: Record<string, any> = {};
         for (const field of conflicts) {
-            if (!this._updates[field]) {
+            if (!field || field === cstr._$key || field === cstr._$primary ||
+                !this._updates[field] || inserts[field] === null) {
                 return false;
             }
-            where[field] = this._data[field];
-            delete this._updates[field];
-            delete this._jsonUpdates[field];
+            where[field] = inserts[field];
+            delete updates[field];
         }
-        return this.save(where);
+        delete updates[cstr._$primary];
+        delete updates[cstr._$key];
+        if (!Object.keys(updates).length) {
+            return false;
+        }
+
+        const mysql = this._db.getService() === lDb.ESERVICE.MYSQL;
+        const table = cstr._$table + (this._index ? `_${this._index[0]}` : '');
+        const identity = [...new Set([cstr._$primary, cstr._$key].filter(field => field))];
+        if (mysql) {
+            const created = await this.create();
+            if (created !== null) {
+                return created;
+            }
+            // --- 按业务键读取最新目标，事务内锁住该行直到更新完成 ---
+            this._sql.select(identity, table).where(where).limit(1).lock();
+        }
+        else {
+            if (cstr._$key && inserts[cstr._$key] === undefined) {
+                inserts[cstr._$key] = this._keyGenerator();
+            }
+            this._sql.insert(table).values(inserts).upsert(updates, conflicts);
+            this._sql.append(` RETURNING ${identity.map(field => this._sql.field(field)).join(', ')}`);
+        }
+        const result = await this._db.query(this._sql.getSql(), this._sql.getData());
+        if (result.error) {
+            lCore.log(this._ctr ?? {}, `[MOD][upsert][${cstr._$table}] database error: ${result.error.errno}`, '-error');
+            return false;
+        }
+        const row = result.rows?.[0];
+        if (!row) {
+            return false;
+        }
+        if (mysql) {
+            // --- 同时匹配身份字段和业务键，目标变化时不回填旧身份 ---
+            this._sql.update(table, updates).where({ ...where, ...row });
+            const saved = await this._db.execute(this._sql.getSql(), this._sql.getData());
+            if (saved.error) {
+                lCore.log(this._ctr ?? {}, `[MOD][upsert][${cstr._$table}] database error: ${saved.error.errno}`, '-error');
+                return false;
+            }
+            if (!saved.packet?.affected) {
+                return false;
+            }
+        }
+        for (const field of identity) {
+            this._setProperty(field, row[field]);
+        }
+        this._updates = {};
+        this._jsonUpdates = {};
+        return true;
     }
 
     /**
@@ -1038,24 +1096,27 @@ export default class Mod {
 
     /**
      * --- 更新 set 的数据到数据库，有未保存数据时才保存 ---
-     * @param where 自定义筛选条件，默认根据主键筛选
+     * @param where 非空筛选条件，省略时必须有主键
+     * @returns 是否成功，失败保留待写数据
      */
     public async save(where?: any): Promise<boolean> {
         if (Object.keys(this._updates).length === 0) {
             return true;
         }
         const cstr = this.constructor as any;
-        if (!this._data[cstr._$primary]) {
+        if (!this._data[cstr._$primary] && (where === undefined || where === null)) {
             lCore.log(this._ctr ?? {}, '[MOD][save] primary key not found', '-error');
             return false;
         }
-        const updates: Record<string, any> = {};
-        for (const k in this._updates) {
-            updates[k] = this._jsonUpdates[k] ? lSql.json(this._data[k]) : this._data[k];
-        }
-        this._sql.update((cstr._$table as string) + (this._index ? ('_' + this._index[0]) : ''), [updates]).where(where ?? {
+        const updates = this._getUpdates();
+        this._sql.update((cstr._$table as string) + (this._index ? ('_' + this._index[0]) : ''), [updates]);
+        const updateSql = this._sql.getSql();
+        this._sql.where(where ?? {
             [cstr._$primary]: this._data[cstr._$primary]
         });
+        if (this._sql.getSql() === updateSql) {
+            return false;
+        }
         const r = await this._db.execute(this._sql.getSql(), this._sql.getData());
         if (r.packet === null) {
             lCore.log(this._ctr ?? {}, '[MOD][save] ' + (lText.stringifyJson(r.error?.message ?? '').slice(1, -1) + ' - ' + this._sql.format()).replaceAll('"', '""'), '-error');

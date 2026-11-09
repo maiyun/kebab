@@ -14,7 +14,7 @@ CREATE TABLE `m_test`  (
   `time_add` bigint NOT NULL,
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `time_add`(`time_add` ASC) USING BTREE,
-  UNIQUE INDEX `utoken`(`token` ASC) USING BTREE,
+  UNIQUE INDEX `token`(`token` ASC) USING BTREE,
   UNIQUE INDEX `uname`(`name` ASC) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 // --- PGSQL ---
@@ -48,7 +48,7 @@ export default class extends sMod {
 
     protected static _$key = 'token';
 
-    protected static _$index = 'utoken';
+    protected static _$index = 'token';
 
     /* eslint-disable @typescript-eslint/naming-convention */
 

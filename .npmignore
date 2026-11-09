@@ -5,6 +5,7 @@
 .git/
 node_modules/
 test/
+abox/test/
 eslint.config.cjs
 .gitignore
 .npmignore
