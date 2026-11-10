@@ -6,7 +6,7 @@
 
 # Interface: IMessage
 
-Defined in: lib/core/rpc.ts:6
+Defined in: [lib/core/rpc.ts:6](https://github.com/maiyunnet/kebab/blob/master/lib/core/rpc.ts#L6)
 
 经认证的 RPC 命令及请求体摘要
 
@@ -20,7 +20,7 @@ Defined in: lib/core/rpc.ts:6
 
 > **action**: `string`
 
-Defined in: lib/core/rpc.ts:7
+Defined in: [lib/core/rpc.ts:7](https://github.com/maiyunnet/kebab/blob/master/lib/core/rpc.ts#L7)
 
 ***
 
@@ -28,4 +28,4 @@ Defined in: lib/core/rpc.ts:7
 
 > **bodyHash**: `string`
 
-Defined in: lib/core/rpc.ts:8
+Defined in: [lib/core/rpc.ts:8](https://github.com/maiyunnet/kebab/blob/master/lib/core/rpc.ts#L8)

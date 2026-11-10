@@ -8,7 +8,7 @@
 
 > `const` **hashFile**: (`file`) => `Promise`\<`string` \| `false`\> = `implementation.hashFile`
 
-Defined in: lib/core/rpc.ts:31
+Defined in: [lib/core/rpc.ts:31](https://github.com/maiyunnet/kebab/blob/master/lib/core/rpc.ts#L31)
 
 流式计算文件的 SHA-256
 

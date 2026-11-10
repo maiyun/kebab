@@ -8,7 +8,7 @@
 
 > `const` **reject**: (`req`) => `boolean` = `implementation.reject`
 
-Defined in: lib/core/rpc.ts:60
+Defined in: [lib/core/rpc.ts:60](https://github.com/maiyunnet/kebab/blob/master/lib/core/rpc.ts#L60)
 
 记录 socket IP 的失败次数
 

@@ -8,7 +8,7 @@
 
 > `const` **sign**: (`message`, `secret`, `method?`, `bodyHash?`) => `string` = `implementation.sign`
 
-Defined in: lib/core/rpc.ts:41
+Defined in: [lib/core/rpc.ts:41](https://github.com/maiyunnet/kebab/blob/master/lib/core/rpc.ts#L41)
 
 加密认证命令、HTTP 方法和请求体摘要；自动生成时间与 nonce
 

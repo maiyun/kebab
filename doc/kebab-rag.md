@@ -1827,7 +1827,7 @@ index/variables/VER.md
 
 # Variable: VER
 
-> `const` **VER**: `"9.26.5"` = `'9.26.5'`
+> `const` **VER**: `"9.27.0"` = `'9.27.0'`
 
 Defined in: [index.ts:9](https://github.com/maiyunnet/kebab/blob/master/index.ts#L9)
 
@@ -115058,7 +115058,7 @@ lib/core/rpc/interfaces/IMessage.md
 
 # Interface: IMessage
 
-Defined in: lib/core/rpc.ts:6
+Defined in: [lib/core/rpc.ts:6](https://github.com/maiyunnet/kebab/blob/master/lib/core/rpc.ts#L6)
 
 经认证的 RPC 命令及请求体摘要
 
@@ -115072,7 +115072,7 @@ Defined in: lib/core/rpc.ts:6
 
 > **action**: `string`
 
-Defined in: lib/core/rpc.ts:7
+Defined in: [lib/core/rpc.ts:7](https://github.com/maiyunnet/kebab/blob/master/lib/core/rpc.ts#L7)
 
 ***
 
@@ -115080,7 +115080,7 @@ Defined in: lib/core/rpc.ts:7
 
 > **bodyHash**: `string`
 
-Defined in: lib/core/rpc.ts:8
+Defined in: [lib/core/rpc.ts:8](https://github.com/maiyunnet/kebab/blob/master/lib/core/rpc.ts#L8)
 
 lib/core/rpc/variables/authenticate.md
 ---
@@ -115095,7 +115095,7 @@ lib/core/rpc/variables/authenticate.md
 
 > `const` **authenticate**: (`req`, `secret`) => [`IMessage`](../interfaces/IMessage.md) \| `false` = `implementation.authenticate`
 
-Defined in: lib/core/rpc.ts:51
+Defined in: [lib/core/rpc.ts:51](https://github.com/maiyunnet/kebab/blob/master/lib/core/rpc.ts#L51)
 
 校验密钥、方法及距当前时间不超过 5 秒的命令，并登记未使用的 nonce
 
@@ -115132,7 +115132,7 @@ lib/core/rpc/variables/hashFile.md
 
 > `const` **hashFile**: (`file`) => `Promise`\<`string` \| `false`\> = `implementation.hashFile`
 
-Defined in: lib/core/rpc.ts:31
+Defined in: [lib/core/rpc.ts:31](https://github.com/maiyunnet/kebab/blob/master/lib/core/rpc.ts#L31)
 
 流式计算文件的 SHA-256
 
@@ -115163,7 +115163,7 @@ lib/core/rpc/variables/hash.md
 
 > `const` **hash**: (`data`) => `string` = `implementation.hash`
 
-Defined in: lib/core/rpc.ts:24
+Defined in: [lib/core/rpc.ts:24](https://github.com/maiyunnet/kebab/blob/master/lib/core/rpc.ts#L24)
 
 计算内容的 SHA-256
 
@@ -115194,7 +115194,7 @@ lib/core/rpc/variables/readBody.md
 
 > `const` **readBody**: (`req`, `expected`, `directory`, `upload`, `limit`) => `Promise`\<\{ `body?`: `Buffer`; `file?`: `string`; \} \| `false`\> = `implementation.readBody`
 
-Defined in: lib/core/rpc.ts:71
+Defined in: [lib/core/rpc.ts:71](https://github.com/maiyunnet/kebab/blob/master/lib/core/rpc.ts#L71)
 
 按字节上限读取并校验请求体；上传的临时文件由调用方删除
 
@@ -115249,7 +115249,7 @@ lib/core/rpc/variables/reject.md
 
 > `const` **reject**: (`req`) => `boolean` = `implementation.reject`
 
-Defined in: lib/core/rpc.ts:60
+Defined in: [lib/core/rpc.ts:60](https://github.com/maiyunnet/kebab/blob/master/lib/core/rpc.ts#L60)
 
 记录 socket IP 的失败次数
 
@@ -115280,7 +115280,7 @@ lib/core/rpc/variables/sign.md
 
 > `const` **sign**: (`message`, `secret`, `method?`, `bodyHash?`) => `string` = `implementation.sign`
 
-Defined in: lib/core/rpc.ts:41
+Defined in: [lib/core/rpc.ts:41](https://github.com/maiyunnet/kebab/blob/master/lib/core/rpc.ts#L41)
 
 加密认证命令、HTTP 方法和请求体摘要；自动生成时间与 nonce
 
@@ -115329,7 +115329,7 @@ lib/core/rpc/variables/validSecret.md
 
 > `const` **validSecret**: (`secret`) => `secret is string` = `implementation.validSecret`
 
-Defined in: lib/core/rpc.ts:17
+Defined in: [lib/core/rpc.ts:17](https://github.com/maiyunnet/kebab/blob/master/lib/core/rpc.ts#L17)
 
 校验密钥：至少 32 个字符，去除首尾空白后拒绝占位值及短重复模式
 

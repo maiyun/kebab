@@ -8,7 +8,7 @@
 
 > `const` **readBody**: (`req`, `expected`, `directory`, `upload`, `limit`) => `Promise`\<\{ `body?`: `Buffer`; `file?`: `string`; \} \| `false`\> = `implementation.readBody`
 
-Defined in: lib/core/rpc.ts:71
+Defined in: [lib/core/rpc.ts:71](https://github.com/maiyunnet/kebab/blob/master/lib/core/rpc.ts#L71)
 
 按字节上限读取并校验请求体；上传的临时文件由调用方删除
 

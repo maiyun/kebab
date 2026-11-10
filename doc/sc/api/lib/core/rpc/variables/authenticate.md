@@ -8,7 +8,7 @@
 
 > `const` **authenticate**: (`req`, `secret`) => [`IMessage`](../interfaces/IMessage.md) \| `false` = `implementation.authenticate`
 
-Defined in: lib/core/rpc.ts:51
+Defined in: [lib/core/rpc.ts:51](https://github.com/maiyunnet/kebab/blob/master/lib/core/rpc.ts#L51)
 
 校验密钥、方法及距当前时间不超过 5 秒的命令，并登记未使用的 nonce
 

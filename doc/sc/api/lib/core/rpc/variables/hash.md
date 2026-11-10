@@ -8,7 +8,7 @@
 
 > `const` **hash**: (`data`) => `string` = `implementation.hash`
 
-Defined in: lib/core/rpc.ts:24
+Defined in: [lib/core/rpc.ts:24](https://github.com/maiyunnet/kebab/blob/master/lib/core/rpc.ts#L24)
 
 计算内容的 SHA-256
 
