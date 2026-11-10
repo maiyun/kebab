@@ -60,6 +60,14 @@ const results = await lCore.sendVhost({
 
 控制器通过 `this._config.const.hostCanonical` 获取用于 URL 的主机地址：HTTPS 的 443 和 HTTP 的 80 端口会省略，其余端口及 IPv6 方括号保留。`host`、`hostname` 和 `hostport` 保留原有含义。`urlOrigin`、`urlFull` 和 `urlStcFull` 使用 `hostCanonical` 生成，SSR 注入的 `_urlFull`、默认 `_staticPathFull` 同步省略默认端口。
 
+## 访问日志
+
+HTTP 和 WebSocket 请求匹配有效 vhost 后即写入一条 `-visit` 日志，覆盖反代、静态文件、404 和中间件提前响应。记录发生在路由和控制器执行前；`onReqStart()` 返回 `-1` 不影响记录，控制器与 `rproxy()` 不再额外记录。
+
+访问 URL 使用本次连接的协议、请求 Host（HTTP/2 为 `:authority`）及原始路径、查询串；UA 和来源 IP 直接从请求头与连接获取，无需解析请求体。此记录表示请求到达，不包含最终响应状态或耗时。
+
+`Core.log` 不采集 Cookie、Session 或请求体。JSONL 和 CSV 均不包含 Cookie、Session 字段。旧日志内容不变。
+
 ## 代理请求头模式
 
 `lib/undici` 和 `lib/ws` 的 `rproxy` 支持三种 `proxyMode`，`mproxy` 支持 `passthrough` 和 `request`：
@@ -375,7 +383,7 @@ if (started === false) {
 
 ## 监控日志
 
-主线程与看门狗的监控简讯保存到 `log/system-monitor/YYYY/MM/DD/HH.jsonl` 或 `HH.csv`，采用框架的 `logFormat` 配置，默认 `jsonl`。JSONL 字段和 CSV 的 12 列顺序与 `Core.log` 一致，可通过 `Core.getLog` 读取，指定 `hostname='system'`、`fend='-monitor'` 和对应日期、小时的 `path`。看门狗在主线程阻塞时仍独立写盘；热重载后的日志格式随下一次主线程采样同步到看门狗。
+主线程与看门狗的监控简讯保存到 `log/system-monitor/YYYY/MM/DD/HH.jsonl` 或 `HH.csv`，采用框架的 `logFormat` 配置，默认 `jsonl`。JSONL 字段和 CSV 列顺序与 `Core.log` 一致，可通过 `Core.getLog` 读取，指定 `hostname='system'`、`fend='-monitor'` 和对应日期、小时的 `path`。看门狗在主线程阻塞时仍独立写盘；热重载后的日志格式随下一次主线程采样同步到看门狗。
 
 日志用于查看异常简讯和诊断目录。完整的采样、诊断结果与 Profile 等取证文件保存在下述 `log/monitor/` 目录，不作为普通日志行返回。
 
@@ -3784,7 +3792,7 @@ lib/core/functions/clone.md
 
 > **clone**\<`T`\>(`obj`): `T`
 
-Defined in: [lib/core.ts:1509](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1509)
+Defined in: [lib/core.ts:1497](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1497)
 
 完整的克隆一份数组/对象
 
@@ -3848,7 +3856,7 @@ lib/core/functions/debug.md
 
 > **debug**(`message?`, ...`optionalParams`): `void`
 
-Defined in: [lib/core.ts:1555](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1555)
+Defined in: [lib/core.ts:1543](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1543)
 
 打印调试信息，线上环境不会打印
 
@@ -3883,7 +3891,7 @@ lib/core/functions/display.md
 
 > **display**(`message?`, ...`optionalParams`): `void`
 
-Defined in: [lib/core.ts:1568](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1568)
+Defined in: [lib/core.ts:1556](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1556)
 
 向控制台直接显示内容，一般情况下禁止使用
 
@@ -3995,7 +4003,7 @@ lib/core/functions/getLog.md
 
 > **getLog**(`opt`): `Promise`\<`false` \| \{ `list`: `any`[] \| `string`[][]; `total`: `number`; \}\>
 
-Defined in: [lib/core.ts:1289](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1289)
+Defined in: [lib/core.ts:1277](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1277)
 
 获取日志内容为一个数组
 
@@ -4064,7 +4072,7 @@ lib/core/functions/getMonitorEvent.md
 
 > **getMonitorEvent**(`opt`): `Promise`\<`false` \| [`IMonitorEvent`](../interfaces/IMonitorEvent.md) \| `null`\>
 
-Defined in: [lib/core.ts:1425](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1425)
+Defined in: [lib/core.ts:1413](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1413)
 
 读取事件详情和文件清单；只解析事件记录，不解析 Profile 或堆快照
 
@@ -4101,7 +4109,7 @@ lib/core/functions/getMonitorEvents.md
 
 > **getMonitorEvents**(`opt?`): `Promise`\<`false` \| \{ `list`: [`IMonitorEventSummary`](../interfaces/IMonitorEventSummary.md)[]; `total`: `number`; \}\>
 
-Defined in: [lib/core.ts:1398](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1398)
+Defined in: [lib/core.ts:1386](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1386)
 
 获取某天已保存的监控事件，按目录时间倒序分页
 
@@ -4148,7 +4156,7 @@ lib/core/functions/getMonitorFile.md
 
 > **getMonitorFile**(`opt`): `Promise`\<`false` \| [`Response`](../../undici/response/classes/Response.md) \| `null`\>
 
-Defined in: [lib/core.ts:1449](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1449)
+Defined in: [lib/core.ts:1437](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1437)
 
 获取监控原始文件的响应，可使用 getStream() 下载；小文件可用 getText()/getJson() 预览
 
@@ -4293,7 +4301,7 @@ lib/core/functions/loadEnv.md
 
 > **loadEnv**(`dir`): `Promise`\<`void`\>
 
-Defined in: [lib/core.ts:1639](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1639)
+Defined in: [lib/core.ts:1627](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1627)
 
 加载 .env 文件到 process.env，若文件不存在则跳过
 
@@ -4322,9 +4330,9 @@ lib/core/functions/log.md
 
 > **log**(`opt`, `msg`, `fend?`): `void`
 
-Defined in: [lib/core.ts:1176](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1176)
+Defined in: [lib/core.ts:1175](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1175)
 
-写入文件日志
+写入文件日志，不采集 Cookie、Session 或请求体
 
 ## Parameters
 
@@ -4350,6 +4358,8 @@ Defined in: [lib/core.ts:1176](https://github.com/maiyunnet/kebab/blob/master/li
 
 `void`
 
+无返回值
+
 lib/core/functions/ls.md
 ---
 
@@ -4363,7 +4373,7 @@ lib/core/functions/ls.md
 
 > **ls**(`opt`): `Promise`\<`object`[]\>
 
-Defined in: [lib/core.ts:1470](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1470)
+Defined in: [lib/core.ts:1458](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1458)
 
 获取目录内文件/文件夹列表
 
@@ -4768,7 +4778,7 @@ lib/core/functions/resolveEnvVars.md
 
 > **resolveEnvVars**(`obj`): `void`
 
-Defined in: [lib/core.ts:1669](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1669)
+Defined in: [lib/core.ts:1657](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1657)
 
 将配置对象中的 ${ENV_VAR} 占位符替换为 process.env 的值
 
@@ -5280,7 +5290,7 @@ lib/core/functions/writeEventStreamHead.md
 
 > **writeEventStreamHead**(`res`): `void`
 
-Defined in: [lib/core.ts:1609](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1609)
+Defined in: [lib/core.ts:1597](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1597)
 
 提交服务器发送事件（SSE）响应头
 
@@ -5315,7 +5325,7 @@ lib/core/functions/writeHead.md
 
 > **writeHead**(`res`, `statusCode`, `headers?`): `void`
 
-Defined in: [lib/core.ts:1588](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1588)
+Defined in: [lib/core.ts:1576](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1576)
 
 提交 HTTP 响应状态和头部，兼容 HTTP/1.1 与 HTTP/2
 
@@ -5365,7 +5375,7 @@ lib/core/functions/write.md
 
 > **write**(`res`, `data`): `void`
 
-Defined in: [lib/core.ts:1621](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1621)
+Defined in: [lib/core.ts:1609](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1609)
 
 向 res 发送数据
 
@@ -5558,14 +5568,6 @@ log 设置的选项
 
 ## Properties
 
-### cookie?
-
-> `optional` **cookie?**: `Record`\<`string`, `string`\>
-
-Defined in: [lib/core.ts:1165](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1165)
-
-***
-
 ### get?
 
 > `optional` **get?**: `Record`\<`string`, `any`\>
@@ -5578,7 +5580,7 @@ Defined in: [lib/core.ts:1164](https://github.com/maiyunnet/kebab/blob/master/li
 
 > `optional` **headers?**: `IncomingHttpHeaders`
 
-Defined in: [lib/core.ts:1167](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1167)
+Defined in: [lib/core.ts:1165](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1165)
 
 ***
 
@@ -5606,14 +5608,6 @@ Defined in: [lib/core.ts:1163](https://github.com/maiyunnet/kebab/blob/master/li
 
 ***
 
-### session?
-
-> `optional` **session?**: `Record`\<`string`, `any`\>
-
-Defined in: [lib/core.ts:1166](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1166)
-
-***
-
 ### urlFull?
 
 > `optional` **urlFull?**: `string`
@@ -5631,7 +5625,7 @@ lib/core/interfaces/IMonitorEvent.md
 
 # Interface: IMonitorEvent
 
-Defined in: [lib/core.ts:1355](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1355)
+Defined in: [lib/core.ts:1343](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1343)
 
 事件原始数据与可读取的文件；data 为 null 时可下载原始记录复盘
 
@@ -5641,7 +5635,7 @@ Defined in: [lib/core.ts:1355](https://github.com/maiyunnet/kebab/blob/master/li
 
 > **data**: `Record`\<`string`, `unknown`\> \| `null`
 
-Defined in: [lib/core.ts:1357](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1357)
+Defined in: [lib/core.ts:1345](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1345)
 
 ***
 
@@ -5649,7 +5643,7 @@ Defined in: [lib/core.ts:1357](https://github.com/maiyunnet/kebab/blob/master/li
 
 > **files**: [`IMonitorFile`](IMonitorFile.md)[]
 
-Defined in: [lib/core.ts:1359](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1359)
+Defined in: [lib/core.ts:1347](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1347)
 
 ***
 
@@ -5657,7 +5651,7 @@ Defined in: [lib/core.ts:1359](https://github.com/maiyunnet/kebab/blob/master/li
 
 > **recordStatus**: `"loaded"` \| `"invalid"` \| `"missing"` \| `"too-large"` \| `"unreadable"`
 
-Defined in: [lib/core.ts:1358](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1358)
+Defined in: [lib/core.ts:1346](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1346)
 
 ***
 
@@ -5665,7 +5659,7 @@ Defined in: [lib/core.ts:1358](https://github.com/maiyunnet/kebab/blob/master/li
 
 > **summary**: [`IMonitorEventSummary`](IMonitorEventSummary.md)
 
-Defined in: [lib/core.ts:1356](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1356)
+Defined in: [lib/core.ts:1344](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1344)
 
 lib/core/interfaces/IMonitorEventSummary.md
 ---
@@ -5678,7 +5672,7 @@ lib/core/interfaces/IMonitorEventSummary.md
 
 # Interface: IMonitorEventSummary
 
-Defined in: [lib/core.ts:1335](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1335)
+Defined in: [lib/core.ts:1323](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1323)
 
 已保存监控事件的简短摘要，path 相对于 log/monitor/
 
@@ -5688,7 +5682,7 @@ Defined in: [lib/core.ts:1335](https://github.com/maiyunnet/kebab/blob/master/li
 
 > **path**: `string`
 
-Defined in: [lib/core.ts:1336](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1336)
+Defined in: [lib/core.ts:1324](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1324)
 
 ***
 
@@ -5696,7 +5690,7 @@ Defined in: [lib/core.ts:1336](https://github.com/maiyunnet/kebab/blob/master/li
 
 > **pid**: `number`
 
-Defined in: [lib/core.ts:1337](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1337)
+Defined in: [lib/core.ts:1325](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1325)
 
 ***
 
@@ -5704,7 +5698,7 @@ Defined in: [lib/core.ts:1337](https://github.com/maiyunnet/kebab/blob/master/li
 
 > **reasons**: `string`[]
 
-Defined in: [lib/core.ts:1341](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1341)
+Defined in: [lib/core.ts:1329](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1329)
 
 ***
 
@@ -5712,7 +5706,7 @@ Defined in: [lib/core.ts:1341](https://github.com/maiyunnet/kebab/blob/master/li
 
 > **source**: `"main"` \| `"watchdog"`
 
-Defined in: [lib/core.ts:1339](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1339)
+Defined in: [lib/core.ts:1327](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1327)
 
 ***
 
@@ -5720,7 +5714,7 @@ Defined in: [lib/core.ts:1339](https://github.com/maiyunnet/kebab/blob/master/li
 
 > **status**: `string`
 
-Defined in: [lib/core.ts:1340](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1340)
+Defined in: [lib/core.ts:1328](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1328)
 
 ***
 
@@ -5728,7 +5722,7 @@ Defined in: [lib/core.ts:1340](https://github.com/maiyunnet/kebab/blob/master/li
 
 > **time**: `number`
 
-Defined in: [lib/core.ts:1338](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1338)
+Defined in: [lib/core.ts:1326](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1326)
 
 lib/core/interfaces/IMonitorFile.md
 ---
@@ -5741,7 +5735,7 @@ lib/core/interfaces/IMonitorFile.md
 
 # Interface: IMonitorFile
 
-Defined in: [lib/core.ts:1345](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1345)
+Defined in: [lib/core.ts:1333](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1333)
 
 监控文件元数据；复杂格式或超过 1 MiB 的文件不提供预览
 
@@ -5751,7 +5745,7 @@ Defined in: [lib/core.ts:1345](https://github.com/maiyunnet/kebab/blob/master/li
 
 > **mtime**: `number`
 
-Defined in: [lib/core.ts:1350](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1350)
+Defined in: [lib/core.ts:1338](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1338)
 
 最后修改时间，单位 ms
 
@@ -5761,7 +5755,7 @@ Defined in: [lib/core.ts:1350](https://github.com/maiyunnet/kebab/blob/master/li
 
 > **name**: `string`
 
-Defined in: [lib/core.ts:1347](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1347)
+Defined in: [lib/core.ts:1335](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1335)
 
 ***
 
@@ -5769,7 +5763,7 @@ Defined in: [lib/core.ts:1347](https://github.com/maiyunnet/kebab/blob/master/li
 
 > **path**: `string`
 
-Defined in: [lib/core.ts:1346](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1346)
+Defined in: [lib/core.ts:1334](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1334)
 
 ***
 
@@ -5777,7 +5771,7 @@ Defined in: [lib/core.ts:1346](https://github.com/maiyunnet/kebab/blob/master/li
 
 > **preview**: `"text"` \| `"json"` \| `null`
 
-Defined in: [lib/core.ts:1351](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1351)
+Defined in: [lib/core.ts:1339](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1339)
 
 ***
 
@@ -5785,7 +5779,7 @@ Defined in: [lib/core.ts:1351](https://github.com/maiyunnet/kebab/blob/master/li
 
 > **size**: `number`
 
-Defined in: [lib/core.ts:1348](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1348)
+Defined in: [lib/core.ts:1336](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1336)
 
 lib/core/namespaces/v/classes/ValiError.md
 ---
@@ -138524,7 +138518,7 @@ sys/route/functions/getFormData.md
 
 > **getFormData**(`req`, `events?`, `limits?`): `Promise`\<`false` \| \{ `files`: `Record`\<`string`, [`IPostFile`](../../../index/interfaces/IPostFile.md) \| [`IPostFile`](../../../index/interfaces/IPostFile.md)[]\>; `post`: `Record`\<`string`, [`Json`](../../../index/type-aliases/Json.md)\>; \}\>
 
-Defined in: [sys/route.ts:1101](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1101)
+Defined in: [sys/route.ts:1097](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1097)
 
 获取 formdata 的 post
 
@@ -138567,7 +138561,7 @@ sys/route/functions/getPost.md
 
 > **getPost**(`req`): `Promise`\<`false` \| \{ `input`: `string`; `post`: `Record`\<`string`, `any`\>; `raw`: `Record`\<`string`, `any`\>; \}\>
 
-Defined in: [sys/route.ts:936](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L936)
+Defined in: [sys/route.ts:932](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L932)
 
 获取 post 对象（通常已自动获取），如果是文件上传（formdata）的情况则不获取
 
@@ -138685,7 +138679,7 @@ sys/route/functions/unlinkUploadFiles.md
 
 > **unlinkUploadFiles**(`cctr`): `Promise`\<`void`\>
 
-Defined in: [sys/route.ts:894](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L894)
+Defined in: [sys/route.ts:890](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L890)
 
 删除本次请求所有已上传的临时文件
 
@@ -138714,7 +138708,7 @@ sys/route/functions/waitCtr.md
 
 > **waitCtr**(`cctr`): `Promise`\<`void`\>
 
-Defined in: [sys/route.ts:914](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L914)
+Defined in: [sys/route.ts:910](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L910)
 
 等待异步任务结束，并删除临时文件，如果结束后还有事务没关闭，则会在本函数中打印控制台并且写入 log 文件
 此时其实已经给客户端返回了，此处等待不消耗客户端的等待时间
@@ -138768,7 +138762,7 @@ sys/route/interfaces/IFormDataError.md
 
 # Interface: IFormDataError
 
-Defined in: [sys/route.ts:1056](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1056)
+Defined in: [sys/route.ts:1052](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1052)
 
 解析上传数据时的失败原因，只提供错误码和限制值，不带临时路径或异常对象
 
@@ -138778,7 +138772,7 @@ Defined in: [sys/route.ts:1056](https://github.com/maiyunnet/kebab/blob/master/s
 
 > **code**: `"INVALID_BOUNDARY"` \| `"FILE_TOO_LARGE"` \| `"TOTAL_TOO_LARGE"` \| `"FIELD_TOO_LARGE"` \| `"HEADER_TOO_LARGE"` \| `"TOO_MANY_PARTS"` \| `"FILE_TYPE"` \| `"TIMEOUT"` \| `"TEMP_FILE_ERROR"` \| `"REQUEST_ERROR"` \| `"REQUEST_ABORTED"`
 
-Defined in: [sys/route.ts:1057](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1057)
+Defined in: [sys/route.ts:1053](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1053)
 
 ***
 
@@ -138786,7 +138780,7 @@ Defined in: [sys/route.ts:1057](https://github.com/maiyunnet/kebab/blob/master/s
 
 > `optional` **limit?**: `number`
 
-Defined in: [sys/route.ts:1061](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1061)
+Defined in: [sys/route.ts:1057](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1057)
 
 超出的限制值：大小用字节，超时用毫秒，字段和文件数量用个
 
@@ -138801,7 +138795,7 @@ sys/route/interfaces/IFormDataEvents.md
 
 # Interface: IFormDataEvents
 
-Defined in: [sys/route.ts:1065](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1065)
+Defined in: [sys/route.ts:1061](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1061)
 
 multipart 文件处理及失败通知
 
@@ -138811,7 +138805,7 @@ multipart 文件处理及失败通知
 
 > `optional` **onerror?**: (`error`) => `void`
 
-Defined in: [sys/route.ts:1073](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1073)
+Defined in: [sys/route.ts:1069](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1069)
 
 首次失败时调用一次，getFormData 返回 false；若连接已断开，可能无法回复客户端
 
@@ -138831,7 +138825,7 @@ Defined in: [sys/route.ts:1073](https://github.com/maiyunnet/kebab/blob/master/s
 
 > `optional` **onfiledata?**: (`chunk`) => `void`
 
-Defined in: [sys/route.ts:1069](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1069)
+Defined in: [sys/route.ts:1065](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1065)
 
 文件上传时触发，仅 start 返回 true 时触发
 
@@ -138851,7 +138845,7 @@ Defined in: [sys/route.ts:1069](https://github.com/maiyunnet/kebab/blob/master/s
 
 > `optional` **onfileend?**: () => `void`
 
-Defined in: [sys/route.ts:1071](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1071)
+Defined in: [sys/route.ts:1067](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1067)
 
 文件上传结束时触发，仅 start 返回 true 时触发
 
@@ -138865,7 +138859,7 @@ Defined in: [sys/route.ts:1071](https://github.com/maiyunnet/kebab/blob/master/s
 
 > `optional` **onfilestart?**: (`name`) => `boolean` \| `undefined`
 
-Defined in: [sys/route.ts:1067](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1067)
+Defined in: [sys/route.ts:1063](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1063)
 
 文件开始上传时触发，返回 true 则跳过该文件的保存
 
@@ -138890,7 +138884,7 @@ sys/route/interfaces/IFormDataLimits.md
 
 # Interface: IFormDataLimits
 
-Defined in: [sys/route.ts:1077](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1077)
+Defined in: [sys/route.ts:1073](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1073)
 
 multipart 上传限制
 
@@ -138900,7 +138894,7 @@ multipart 上传限制
 
 > `optional` **allowedExts?**: `string`[]
 
-Defined in: [sys/route.ts:1081](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1081)
+Defined in: [sys/route.ts:1077](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1077)
 
 允许的文件扩展名（含点号），如 ['.jpg', '.png', '.pdf']
 
@@ -138910,7 +138904,7 @@ Defined in: [sys/route.ts:1081](https://github.com/maiyunnet/kebab/blob/master/s
 
 > `optional` **maxFieldSize?**: `number`
 
-Defined in: [sys/route.ts:1083](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1083)
+Defined in: [sys/route.ts:1079](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1079)
 
 单个字段（非文件）最大字节数，默认 1 MB
 
@@ -138920,7 +138914,7 @@ Defined in: [sys/route.ts:1083](https://github.com/maiyunnet/kebab/blob/master/s
 
 > `optional` **maxFileSize?**: `number`
 
-Defined in: [sys/route.ts:1079](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1079)
+Defined in: [sys/route.ts:1075](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1075)
 
 单个文件最大字节数
 
@@ -138930,7 +138924,7 @@ Defined in: [sys/route.ts:1079](https://github.com/maiyunnet/kebab/blob/master/s
 
 > `optional` **maxHeaderSize?**: `number`
 
-Defined in: [sys/route.ts:1087](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1087)
+Defined in: [sys/route.ts:1083](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1083)
 
 每个字段或文件的 multipart 头部最多多少字节，默认 16 KB
 
@@ -138940,7 +138934,7 @@ Defined in: [sys/route.ts:1087](https://github.com/maiyunnet/kebab/blob/master/s
 
 > `optional` **maxParts?**: `number`
 
-Defined in: [sys/route.ts:1089](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1089)
+Defined in: [sys/route.ts:1085](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1085)
 
 multipart 字段与文件总数量，默认 1000
 
@@ -138950,7 +138944,7 @@ multipart 字段与文件总数量，默认 1000
 
 > `optional` **maxTotalSize?**: `number`
 
-Defined in: [sys/route.ts:1085](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1085)
+Defined in: [sys/route.ts:1081](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1081)
 
 整体请求最大字节数，不设置或设为 0 则不限制
 
@@ -138960,6 +138954,6 @@ Defined in: [sys/route.ts:1085](https://github.com/maiyunnet/kebab/blob/master/s
 
 > `optional` **timeout?**: `number`
 
-Defined in: [sys/route.ts:1091](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1091)
+Defined in: [sys/route.ts:1087](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1087)
 
 整体请求超时时间（毫秒），默认 5 分钟，设为 0 禁用超时

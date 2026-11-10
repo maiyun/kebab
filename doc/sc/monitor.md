@@ -41,7 +41,7 @@ if (started === false) {
 
 ## 监控日志
 
-主线程与看门狗的监控简讯保存到 `log/system-monitor/YYYY/MM/DD/HH.jsonl` 或 `HH.csv`，采用框架的 `logFormat` 配置，默认 `jsonl`。JSONL 字段和 CSV 的 12 列顺序与 `Core.log` 一致，可通过 `Core.getLog` 读取，指定 `hostname='system'`、`fend='-monitor'` 和对应日期、小时的 `path`。看门狗在主线程阻塞时仍独立写盘；热重载后的日志格式随下一次主线程采样同步到看门狗。
+主线程与看门狗的监控简讯保存到 `log/system-monitor/YYYY/MM/DD/HH.jsonl` 或 `HH.csv`，采用框架的 `logFormat` 配置，默认 `jsonl`。JSONL 字段和 CSV 列顺序与 `Core.log` 一致，可通过 `Core.getLog` 读取，指定 `hostname='system'`、`fend='-monitor'` 和对应日期、小时的 `path`。看门狗在主线程阻塞时仍独立写盘；热重载后的日志格式随下一次主线程采样同步到看门狗。
 
 日志用于查看异常简讯和诊断目录。完整的采样、诊断结果与 Profile 等取证文件保存在下述 `log/monitor/` 目录，不作为普通日志行返回。
 

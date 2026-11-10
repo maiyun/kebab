@@ -12,14 +12,6 @@ log 设置的选项
 
 ## Properties
 
-### cookie?
-
-> `optional` **cookie?**: `Record`\<`string`, `string`\>
-
-Defined in: [lib/core.ts:1165](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1165)
-
-***
-
 ### get?
 
 > `optional` **get?**: `Record`\<`string`, `any`\>
@@ -32,7 +24,7 @@ Defined in: [lib/core.ts:1164](https://github.com/maiyunnet/kebab/blob/master/li
 
 > `optional` **headers?**: `IncomingHttpHeaders`
 
-Defined in: [lib/core.ts:1167](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1167)
+Defined in: [lib/core.ts:1165](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1165)
 
 ***
 
@@ -57,14 +49,6 @@ Defined in: [lib/core.ts:1160](https://github.com/maiyunnet/kebab/blob/master/li
 > `optional` **req?**: `IncomingMessage` \| `Http2ServerRequest` \| `null`
 
 Defined in: [lib/core.ts:1163](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1163)
-
-***
-
-### session?
-
-> `optional` **session?**: `Record`\<`string`, `any`\>
-
-Defined in: [lib/core.ts:1166](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1166)
 
 ***
 

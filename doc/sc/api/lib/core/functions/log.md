@@ -8,9 +8,9 @@
 
 > **log**(`opt`, `msg`, `fend?`): `void`
 
-Defined in: [lib/core.ts:1176](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1176)
+Defined in: [lib/core.ts:1175](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1175)
 
-写入文件日志
+写入文件日志，不采集 Cookie、Session 或请求体
 
 ## Parameters
 
@@ -35,3 +35,5 @@ Defined in: [lib/core.ts:1176](https://github.com/maiyunnet/kebab/blob/master/li
 ## Returns
 
 `void`
+
+无返回值

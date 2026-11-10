@@ -6,7 +6,7 @@
 
 # Interface: IMonitorFile
 
-Defined in: [lib/core.ts:1345](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1345)
+Defined in: [lib/core.ts:1333](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1333)
 
 监控文件元数据；复杂格式或超过 1 MiB 的文件不提供预览
 
@@ -16,7 +16,7 @@ Defined in: [lib/core.ts:1345](https://github.com/maiyunnet/kebab/blob/master/li
 
 > **mtime**: `number`
 
-Defined in: [lib/core.ts:1350](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1350)
+Defined in: [lib/core.ts:1338](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1338)
 
 最后修改时间，单位 ms
 
@@ -26,7 +26,7 @@ Defined in: [lib/core.ts:1350](https://github.com/maiyunnet/kebab/blob/master/li
 
 > **name**: `string`
 
-Defined in: [lib/core.ts:1347](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1347)
+Defined in: [lib/core.ts:1335](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1335)
 
 ***
 
@@ -34,7 +34,7 @@ Defined in: [lib/core.ts:1347](https://github.com/maiyunnet/kebab/blob/master/li
 
 > **path**: `string`
 
-Defined in: [lib/core.ts:1346](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1346)
+Defined in: [lib/core.ts:1334](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1334)
 
 ***
 
@@ -42,7 +42,7 @@ Defined in: [lib/core.ts:1346](https://github.com/maiyunnet/kebab/blob/master/li
 
 > **preview**: `"text"` \| `"json"` \| `null`
 
-Defined in: [lib/core.ts:1351](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1351)
+Defined in: [lib/core.ts:1339](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1339)
 
 ***
 
@@ -50,4 +50,4 @@ Defined in: [lib/core.ts:1351](https://github.com/maiyunnet/kebab/blob/master/li
 
 > **size**: `number`
 
-Defined in: [lib/core.ts:1348](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1348)
+Defined in: [lib/core.ts:1336](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1336)

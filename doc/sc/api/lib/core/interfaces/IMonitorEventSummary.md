@@ -6,7 +6,7 @@
 
 # Interface: IMonitorEventSummary
 
-Defined in: [lib/core.ts:1335](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1335)
+Defined in: [lib/core.ts:1323](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1323)
 
 已保存监控事件的简短摘要，path 相对于 log/monitor/
 
@@ -16,7 +16,7 @@ Defined in: [lib/core.ts:1335](https://github.com/maiyunnet/kebab/blob/master/li
 
 > **path**: `string`
 
-Defined in: [lib/core.ts:1336](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1336)
+Defined in: [lib/core.ts:1324](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1324)
 
 ***
 
@@ -24,7 +24,7 @@ Defined in: [lib/core.ts:1336](https://github.com/maiyunnet/kebab/blob/master/li
 
 > **pid**: `number`
 
-Defined in: [lib/core.ts:1337](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1337)
+Defined in: [lib/core.ts:1325](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1325)
 
 ***
 
@@ -32,7 +32,7 @@ Defined in: [lib/core.ts:1337](https://github.com/maiyunnet/kebab/blob/master/li
 
 > **reasons**: `string`[]
 
-Defined in: [lib/core.ts:1341](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1341)
+Defined in: [lib/core.ts:1329](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1329)
 
 ***
 
@@ -40,7 +40,7 @@ Defined in: [lib/core.ts:1341](https://github.com/maiyunnet/kebab/blob/master/li
 
 > **source**: `"main"` \| `"watchdog"`
 
-Defined in: [lib/core.ts:1339](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1339)
+Defined in: [lib/core.ts:1327](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1327)
 
 ***
 
@@ -48,7 +48,7 @@ Defined in: [lib/core.ts:1339](https://github.com/maiyunnet/kebab/blob/master/li
 
 > **status**: `string`
 
-Defined in: [lib/core.ts:1340](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1340)
+Defined in: [lib/core.ts:1328](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1328)
 
 ***
 
@@ -56,4 +56,4 @@ Defined in: [lib/core.ts:1340](https://github.com/maiyunnet/kebab/blob/master/li
 
 > **time**: `number`
 
-Defined in: [lib/core.ts:1338](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1338)
+Defined in: [lib/core.ts:1326](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1326)

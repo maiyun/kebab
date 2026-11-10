@@ -6,7 +6,7 @@
 
 # Interface: IMonitorEvent
 
-Defined in: [lib/core.ts:1355](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1355)
+Defined in: [lib/core.ts:1343](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1343)
 
 事件原始数据与可读取的文件；data 为 null 时可下载原始记录复盘
 
@@ -16,7 +16,7 @@ Defined in: [lib/core.ts:1355](https://github.com/maiyunnet/kebab/blob/master/li
 
 > **data**: `Record`\<`string`, `unknown`\> \| `null`
 
-Defined in: [lib/core.ts:1357](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1357)
+Defined in: [lib/core.ts:1345](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1345)
 
 ***
 
@@ -24,7 +24,7 @@ Defined in: [lib/core.ts:1357](https://github.com/maiyunnet/kebab/blob/master/li
 
 > **files**: [`IMonitorFile`](IMonitorFile.md)[]
 
-Defined in: [lib/core.ts:1359](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1359)
+Defined in: [lib/core.ts:1347](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1347)
 
 ***
 
@@ -32,7 +32,7 @@ Defined in: [lib/core.ts:1359](https://github.com/maiyunnet/kebab/blob/master/li
 
 > **recordStatus**: `"loaded"` \| `"invalid"` \| `"missing"` \| `"too-large"` \| `"unreadable"`
 
-Defined in: [lib/core.ts:1358](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1358)
+Defined in: [lib/core.ts:1346](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1346)
 
 ***
 
@@ -40,4 +40,4 @@ Defined in: [lib/core.ts:1358](https://github.com/maiyunnet/kebab/blob/master/li
 
 > **summary**: [`IMonitorEventSummary`](IMonitorEventSummary.md)
 
-Defined in: [lib/core.ts:1356](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1356)
+Defined in: [lib/core.ts:1344](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1344)

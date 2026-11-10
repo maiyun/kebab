@@ -306,6 +306,14 @@ async function requestHandler(
         res.end('403 Forbidden');
         return;
     }
+    // --- 匹配虚拟主机后即记录，反代和提前响应也属于访问 ---
+    lCore.log({
+        'req': req,
+        'headers': req.headers,
+        'hostname': uri.hostname ?? '',
+        'urlFull': `${uri.protocol ?? ''}//${uri.host ?? ''}`,
+        'path': uri.path ?? '/',
+    }, '', '-visit');
     // --- 配置来自 JSON，仅布尔值 true 开放内置示例 ---
     const debug: unknown = lCore.globalConfig.debug;
     if (debug !== true && await isExamplePath(vhost.real)) {
@@ -369,7 +377,6 @@ async function requestHandler(
                             'hostname': uri.hostname ?? '',
                             'req': req,
                             'get': uri.query ? lText.queryParse(uri.query) : {},
-                            'cookie': {},
                             'headers': {},
                         }, '[CHILD][requestHandler][E0]' + lText.stringifyError(e), '-error');
                         const content = '<h1>500 Server Error</h1>';
@@ -464,6 +471,13 @@ async function upgradeHandler(
         socket.end();
         return;
     }
+    lCore.log({
+        'req': req,
+        'headers': req.headers,
+        'hostname': uri.hostname ?? '',
+        'urlFull': `${uri.protocol ?? ''}//${uri.host ?? ''}`,
+        'path': uri.path ?? '/',
+    }, '', '-visit');
     const debug: unknown = lCore.globalConfig.debug;
     if (debug !== true && await isExamplePath(vhost.real)) {
         socket.end();

@@ -31,7 +31,7 @@ try {
     const lCore = {
         globalConfig: state.globalConfig,
         writeHead(res, status) { res.status = status; },
-        log(...args) { throw new Error(JSON.stringify(args)); },
+        log(...args) { if (args[2] !== '-visit') throw new Error(JSON.stringify(args)); },
     };
     const lFs = {
         ...frameworkFs,

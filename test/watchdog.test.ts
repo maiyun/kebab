@@ -66,19 +66,18 @@ for (const format of [undefined, 'jsonl', 'csv'] as const) {
             assert.equal(stat.mode & 0o777, 0o600);
             const lines = (await fs.readFile(file, 'utf8')).trimEnd().split('\n');
             const fields = [
-                'time', 'unix', 'url', 'cookie', 'session', 'userAgent', 'realIp', 'cfIp', 'xIp',
+                'time', 'unix', 'url', 'userAgent', 'realIp', 'cfIp', 'xIp',
                 'osMem', 'procMem', 'message',
             ];
             if (format === 'csv') {
-                assert.equal(lines[0], 'TIME,UNIX,URL,COOKIE,SESSION,USER_AGENT,REALIP,CFIP,XIP,OS,PROCESS,MESSAGE');
+                assert.equal(lines[0], 'TIME,UNIX,URL,USER_AGENT,REALIP,CFIP,XIP,OS,PROCESS,MESSAGE');
                 assert.ok(lines.length > 1);
                 for (const line of lines.slice(1)) {
                     const values = [...line.matchAll(/"((?:[^"]|"")*)"(?:,|$)/g)]
                         .map(match => match[1].replace(/""/g, '"'));
-                    assert.equal(values.length, 12);
-                    assert.equal(values[3], '');
-                    assert.equal(values[4], '{}');
-                    assert.ok(values[11].includes(`EVENT:${directory}`));
+                    assert.equal(values.length, 10);
+                    assert.equal(values[3], 'No HTTP_USER_AGENT');
+                    assert.ok(values[9].includes(`EVENT:${directory}`));
                 }
             }
             else {
@@ -86,8 +85,6 @@ for (const format of [undefined, 'jsonl', 'csv'] as const) {
                 for (const line of lines) {
                     const entry = JSON.parse(line) as Record<string, unknown>;
                     assert.deepEqual(Object.keys(entry), fields);
-                    assert.deepEqual(entry.cookie, {});
-                    assert.deepEqual(entry.session, {});
                     assert.equal(typeof entry.unix, 'number');
                     assert.ok(String(entry.message).includes(`EVENT:${directory}`));
                 }

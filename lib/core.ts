@@ -1162,24 +1162,21 @@ export interface ILogOptions {
     'hostname'?: string;
     'req'?: http2.Http2ServerRequest | http.IncomingMessage | null;
     'get'?: Record<string, any>;
-    'cookie'?: Record<string, string>;
-    'session'?: Record<string, any>;
     'headers'?: http.IncomingHttpHeaders;
 }
 
 /**
- * --- 写入文件日志 ---
+ * --- 写入文件日志，不采集 Cookie、Session 或请求体 ---
  * @param opt 选项
  * @param msg 自定义内容
  * @param fend 文件名追加
+ * @returns 无返回值
  */
 export function log(opt: sCtr.Ctr | ILogOptions, msg: string, fend: string = ''): void {
     (async () => {
         let req: http2.Http2ServerRequest | http.IncomingMessage | null;
         let headers: http.IncomingHttpHeaders;
         let get: Record<string, kebab.Json>;
-        let cookie: Record<string, string>;
-        let session: Record<string, any>;
         let wpath: string;
         let urlFull: string;
         let hostname: string;
@@ -1187,8 +1184,6 @@ export function log(opt: sCtr.Ctr | ILogOptions, msg: string, fend: string = '')
             req = opt.getPrototype('_req');
             headers = opt.getPrototype('_headers');
             get = opt.getPrototype('_get');
-            cookie = opt.getPrototype('_cookie');
-            session = opt.getPrototype('_session');
             const config = opt.getPrototype('_config');
             wpath = config.const.path;
             urlFull = config.const.urlFull;
@@ -1198,8 +1193,6 @@ export function log(opt: sCtr.Ctr | ILogOptions, msg: string, fend: string = '')
             req = opt.req ?? null;
             headers = opt.headers ?? {};
             get = opt.get ?? {};
-            cookie = opt.cookie ?? {};
-            session = opt.session ?? {};
             wpath = opt.path ?? '';
             urlFull = opt.urlFull ?? '';
             hostname = opt.hostname ?? '';
@@ -1232,8 +1225,6 @@ export function log(opt: sCtr.Ctr | ILogOptions, msg: string, fend: string = '')
                 'time': lTime.format(null, 'H:i:s', now),
                 'unix': lTime.stamp(now),
                 'url': urlFull + wpath + (Object.keys(get).length ? '?' + lText.queryStringify(get) : ''),
-                'cookie': cookie,
-                'session': session,
                 'userAgent': headers['user-agent'] ?? '',
                 'realIp': realIp,
                 'cfIp': ipss.cf,
@@ -1249,10 +1240,9 @@ export function log(opt: sCtr.Ctr | ILogOptions, msg: string, fend: string = '')
             });
         }
         else {
-            // --- CSV 格式（默认） ---
             path += h + '.csv';
             if (!await lFs.isFile(path)) {
-                if (!await lFs.putContent(path, 'TIME,UNIX,URL,COOKIE,SESSION,USER_AGENT,REALIP,CFIP,XIP,OS,PROCESS,MESSAGE\n', {
+                if (!await lFs.putContent(path, 'TIME,UNIX,URL,USER_AGENT,REALIP,CFIP,XIP,OS,PROCESS,MESSAGE\n', {
                     'encoding': 'utf8',
                     'mode': 0o777
                 })) {
@@ -1263,8 +1253,6 @@ export function log(opt: sCtr.Ctr | ILogOptions, msg: string, fend: string = '')
                 lText.csvescape(lTime.format(null, 'H:i:s', now)) + '","' +
                 lText.csvescape(lTime.stamp(now).toString()) + '","' +
                 lText.csvescape(urlFull + wpath + (Object.keys(get).length ? '?' + lText.queryStringify(get) : '')) + '","' +
-                lText.csvescape(lText.queryStringify(cookie)) + '","' +
-                lText.csvescape(lText.stringifyJson(session)) + '","' +
                 lText.csvescape(headers['user-agent'] ?? 'No HTTP_USER_AGENT') + '","' +
                 lText.csvescape(realIp) + '","' +
                 lText.csvescape(ipss.cf) + '","' +

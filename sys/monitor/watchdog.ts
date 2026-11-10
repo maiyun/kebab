@@ -96,7 +96,7 @@ function writeLog(msg: string): void {
         const entry = {
             'time': `${ts.slice(8, 10)}:${ts.slice(10, 12)}:${ts.slice(12, 14)}`,
             'unix': Math.floor(now.getTime() / 1000),
-            'url': '', 'cookie': {}, 'session': {}, 'userAgent': '',
+            'url': '', 'userAgent': '',
             'realIp': '', 'cfIp': '', 'xIp': '',
             'osMem': `${Math.round((os.totalmem() - os.freemem()) / 1024 / 1024 * 100) / 100}MB`,
             'procMem': `${Math.round(process.memoryUsage.rss() / 1024 / 1024 * 100) / 100}MB`,
@@ -109,11 +109,11 @@ function writeLog(msg: string): void {
         else {
             if (!fs.existsSync(file)) {
                 fs.writeFileSync(file,
-                    'TIME,UNIX,URL,COOKIE,SESSION,USER_AGENT,REALIP,CFIP,XIP,OS,PROCESS,MESSAGE\n',
+                    'TIME,UNIX,URL,USER_AGENT,REALIP,CFIP,XIP,OS,PROCESS,MESSAGE\n',
                     { 'mode': 0o600 });
             }
             const fields = [
-                entry.time, String(entry.unix), entry.url, '', '{}', 'No HTTP_USER_AGENT',
+                entry.time, String(entry.unix), entry.url, 'No HTTP_USER_AGENT',
                 entry.realIp, entry.cfIp, entry.xIp, entry.osMem, entry.procMem, entry.message,
             ];
             content = fields.map(field => `"${field.replace(/"/g, '""')}"`).join(',') + '\n';

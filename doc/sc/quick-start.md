@@ -56,6 +56,14 @@ const results = await lCore.sendVhost({
 
 控制器通过 `this._config.const.hostCanonical` 获取用于 URL 的主机地址：HTTPS 的 443 和 HTTP 的 80 端口会省略，其余端口及 IPv6 方括号保留。`host`、`hostname` 和 `hostport` 保留原有含义。`urlOrigin`、`urlFull` 和 `urlStcFull` 使用 `hostCanonical` 生成，SSR 注入的 `_urlFull`、默认 `_staticPathFull` 同步省略默认端口。
 
+## 访问日志
+
+HTTP 和 WebSocket 请求匹配有效 vhost 后即写入一条 `-visit` 日志，覆盖反代、静态文件、404 和中间件提前响应。记录发生在路由和控制器执行前；`onReqStart()` 返回 `-1` 不影响记录，控制器与 `rproxy()` 不再额外记录。
+
+访问 URL 使用本次连接的协议、请求 Host（HTTP/2 为 `:authority`）及原始路径、查询串；UA 和来源 IP 直接从请求头与连接获取，无需解析请求体。此记录表示请求到达，不包含最终响应状态或耗时。
+
+`Core.log` 不采集 Cookie、Session 或请求体。JSONL 和 CSV 均不包含 Cookie、Session 字段。旧日志内容不变。
+
 ## 代理请求头模式
 
 `lib/undici` 和 `lib/ws` 的 `rproxy` 支持三种 `proxyMode`，`mproxy` 支持 `passthrough` 和 `request`：

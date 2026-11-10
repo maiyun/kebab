@@ -373,8 +373,6 @@ export async function run(data: {
         cctr.setPrototype('_get', get);
         cctr.setPrototype('_cookie', cookies);
 
-        lCore.log(cctr, '', '-visit');
-
         try {
             rtn = await (cctr as kebab.Json).onLoad();
         }
@@ -590,8 +588,6 @@ export async function run(data: {
             cctr.setPrototype('_cacheTTL', middle.getPrototype('_cacheTTL'));
             cctr.setPrototype('_xsrf', middle.getPrototype('_xsrf'));
             cctr.setPrototype('_httpCode', middle.getPrototype('_httpCode'));
-
-            lCore.log(cctr, '', '-visit');
 
             // --- 强制 HTTPS ---
             if (config.set.mustHttps && !config.const.https) {
