@@ -22,6 +22,8 @@ import * as lCrypto from '#kebab/lib/crypto.js';
 import * as lNetResponse from '#kebab/lib/net/response.js';
 import * as lUndiciResponse from '#kebab/lib/undici/response.js';
 import * as sCtr from '#kebab/sys/ctr.js';
+import * as rpc from '#kebab/lib/core/rpc.js';
+import * as nodeFs from 'node:fs';
 
 /** --- Valibot 数据校验工具，业务侧可通过 lCore.v 使用 --- */
 export { valibot as v };
@@ -731,10 +733,10 @@ export async function sendReload(hosts?: string[] | 'config'): Promise<Record<st
     }
     /** --- 并行发送，各主机独立等待，结果保持输入顺序 --- */
     const results = await Promise.all(hosts.map(async (host) => {
-        const res = await lUndici.get('http://' + host + ':' + globalConfig.rpcPort.toString() + '/' + lCrypto.aesEncrypt(lText.stringifyJson({
+        const res = await lUndici.get('http://' + host + ':' + globalConfig.rpcPort.toString() + '/' + rpc.sign({
             'action': 'reload',
             'time': lTime.stamp()
-        }), globalConfig.rpcSecret), {
+        }, globalConfig.rpcSecret), {
             'timeout': 5
         });
         const content = await res.getContent();
@@ -775,10 +777,10 @@ export async function sendRestart(hosts?: string[] | 'config'): Promise<Record<s
     }
     /** --- 并行发送，各主机独立等待，结果保持输入顺序 --- */
     const results = await Promise.all(hosts.map(async (host) => {
-        const res = await lUndici.get('http://' + host + ':' + globalConfig.rpcPort.toString() + '/' + lCrypto.aesEncrypt(lText.stringifyJson({
+        const res = await lUndici.get('http://' + host + ':' + globalConfig.rpcPort.toString() + '/' + rpc.sign({
             'action': 'restart',
             'time': lTime.stamp()
-        }), globalConfig.rpcSecret), {
+        }, globalConfig.rpcSecret), {
             'timeout': 5
         });
         const content = await res.getContent();
@@ -820,10 +822,10 @@ export async function sendStop(hosts?: string[] | 'config'): Promise<Record<stri
     }
     /** --- 并行发送，各主机独立等待，结果保持输入顺序 --- */
     const results = await Promise.all(hosts.map(async (host) => {
-        const res = await lUndici.get('http://' + host + ':' + globalConfig.rpcPort.toString() + '/' + lCrypto.aesEncrypt(lText.stringifyJson({
+        const res = await lUndici.get('http://' + host + ':' + globalConfig.rpcPort.toString() + '/' + rpc.sign({
             'action': 'stop',
             'time': lTime.stamp()
-        }), globalConfig.rpcSecret), {
+        }, globalConfig.rpcSecret), {
             'timeout': 5
         });
         const content = await res.getContent();
@@ -861,12 +863,12 @@ export async function sendPm2(
     }
     /** --- 并行发送，各主机独立等待，结果保持输入顺序 --- */
     const results = await Promise.all(hosts.map(async (host) => {
-        const res = await lUndici.get('http://' + host + ':' + globalConfig.rpcPort.toString() + '/' + lCrypto.aesEncrypt(lText.stringifyJson({
+        const res = await lUndici.get('http://' + host + ':' + globalConfig.rpcPort.toString() + '/' + rpc.sign({
             'action': 'pm2',
             'time': lTime.stamp(),
             'name': name,
             'pm2Action': action
-        }), globalConfig.rpcSecret), {
+        }, globalConfig.rpcSecret), {
             'timeout': 5
         });
         const content = await res.getContent();
@@ -902,11 +904,11 @@ export async function sendNpm(
     }
     /** --- 并行发送，各主机独立等待，结果保持输入顺序 --- */
     const results = await Promise.all(hosts.map(async (host) => {
-        const res = await lUndici.get('http://' + host + ':' + globalConfig.rpcPort.toString() + '/' + lCrypto.aesEncrypt(lText.stringifyJson({
+        const res = await lUndici.get('http://' + host + ':' + globalConfig.rpcPort.toString() + '/' + rpc.sign({
             'action': 'npm',
             'time': lTime.stamp(),
             'path': path
-        }), globalConfig.rpcSecret), {
+        }, globalConfig.rpcSecret), {
             'timeout': 330,
         });
         const content = await res.getContent();
@@ -951,12 +953,12 @@ export async function setGlobal(key: string, data: any, hosts?: string[] | 'conf
     }
     /** --- 并行发送，各主机独立等待，结果保持输入顺序 --- */
     const results = await Promise.all(hosts.map(async (host) => {
-        const res = await lUndici.get('http://' + host + ':' + globalConfig.rpcPort.toString() + '/' + lCrypto.aesEncrypt(lText.stringifyJson({
+        const res = await lUndici.get('http://' + host + ':' + globalConfig.rpcPort.toString() + '/' + rpc.sign({
             'action': 'global',
             'time': lTime.stamp(),
             'key': key,
             'data': data
-        }), globalConfig.rpcSecret), {
+        }, globalConfig.rpcSecret), {
             'timeout': 5
         });
         const content = await res.getContent();
@@ -1006,19 +1008,14 @@ export async function updateCode(
     if (!hosts?.length) {
         hosts = ['127.0.0.1'];
     }
+    const bodyHash = await rpc.hashFile(sourcePath);
+    if (bodyHash === false) {
+        return {};
+    }
     /** --- 各主机使用独立上传流并行部署，结果保持输入顺序 --- */
     const results = await Promise.all(hosts.map(async (host) => {
-        const fd = lUndici.getFormData();
-        if (!await fd.putFile('file', sourcePath)) {
-            return;
-        }
-        fd.putString('path', path);
-        fd.putString('config', config);
-        fd.putString('strict', strict ? '1' : '0');
-        const res = await lUndici.post('http://' + host + ':' + globalConfig.rpcPort.toString() + '/' + lCrypto.aesEncrypt(lText.stringifyJson({
-            'action': 'code',
-            'time': lTime.stamp()
-        }), globalConfig.rpcSecret), fd, {
+        const command = rpc.sign({ 'action': 'code', path, config, strict: strict ? '1' : '0' }, globalConfig.rpcSecret, 'POST', bodyHash);
+        const res = await lUndici.post(`http://${host}:${globalConfig.rpcPort}/${command}`, nodeFs.createReadStream(sourcePath), {
             'timeout': 180,
         });
         const content = await res.getContent();
@@ -1053,12 +1050,12 @@ export async function sendProject(
     }
     /** --- 并行发送，各主机独立等待，结果保持输入顺序 --- */
     const results = await Promise.all(hosts.map(async (host) => {
-        const res = await lUndici.get('http://' + host + ':' + globalConfig.rpcPort.toString() + '/' + lCrypto.aesEncrypt(lText.stringifyJson({
+        const res = await lUndici.get('http://' + host + ':' + globalConfig.rpcPort.toString() + '/' + rpc.sign({
             'action': 'project',
             'time': lTime.stamp(),
             'path': path,
             [key]: value
-        }), globalConfig.rpcSecret), {
+        }, globalConfig.rpcSecret), {
             'timeout': 5
         });
         const content = await res.getContent();
@@ -1094,11 +1091,11 @@ export async function sendPackage(
     }
     /** --- 并行发送，各主机独立等待，结果保持输入顺序 --- */
     const results = await Promise.all(hosts.map(async (host) => {
-        const res = await lUndici.get('http://' + host + ':' + globalConfig.rpcPort.toString() + '/' + lCrypto.aesEncrypt(lText.stringifyJson({
+        const res = await lUndici.get('http://' + host + ':' + globalConfig.rpcPort.toString() + '/' + rpc.sign({
             'action': 'package',
             'time': lTime.stamp(),
             'content': content
-        }), globalConfig.rpcSecret), {
+        }, globalConfig.rpcSecret), {
             'timeout': 5
         });
         const resContent = await res.getContent();
@@ -1135,10 +1132,9 @@ export async function sendVhost(
     // --- 每个节点独立发送和返回，失败节点可单独重试 ---
     const results = await Promise.all(hosts.map(async (host) => {
         try {
-            const res = await lUndici.postJson(`http://${host}:${globalConfig.rpcPort}/${lCrypto.aesEncrypt(lText.stringifyJson({
-                'action': 'vhost',
-                'time': lTime.stamp(),
-            }), globalConfig.rpcSecret)}`, files, {
+            const body = lText.stringifyJson(files);
+            const command = rpc.sign({ 'action': 'vhost' }, globalConfig.rpcSecret, 'POST', rpc.hash(body));
+            const res = await lUndici.post(`http://${host}:${globalConfig.rpcPort}/${command}`, body, {
                 'timeout': 30,
             });
             const content = await res.getContent();
@@ -1296,7 +1292,7 @@ export async function getLog(opt: {
     opt.host ??= '127.0.0.1';
     // --- 局域网模式 ---
     const time = lTime.stamp();
-    const res = await lUndici.getResponseJson('http://' + opt.host + ':' + globalConfig.rpcPort.toString() + '/' + lCrypto.aesEncrypt(lText.stringifyJson({
+    const res = await lUndici.getResponseJson('http://' + opt.host + ':' + globalConfig.rpcPort.toString() + '/' + rpc.sign({
         'action': 'log',
         'time': time,
         'hostname': opt.hostname,
@@ -1305,7 +1301,7 @@ export async function getLog(opt: {
         'search': opt.search,
         'offset': opt.offset,
         'limit': opt.limit,
-    }), globalConfig.rpcSecret), {
+    }, globalConfig.rpcSecret), {
         'timeout': 5
     });
     if (!res) {
@@ -1363,10 +1359,10 @@ async function requestMonitor(action: 'monitor-events' | 'monitor-event' | 'moni
     if (!Number.isInteger(globalConfig.rpcPort) || typeof globalConfig.rpcSecret !== 'string') {
         return false;
     }
-    const command = lCrypto.aesEncrypt(lText.stringifyJson({
+    const command = rpc.sign({
         action, 'time': lTime.stamp(), 'path': opt.path, 'offset': opt.offset,
         'limit': opt.limit, 'preview': opt.preview,
-    }), globalConfig.rpcSecret);
+    }, globalConfig.rpcSecret);
     const res = await lUndici.get(`http://${opt.host ?? '127.0.0.1'}:${globalConfig.rpcPort}/${command}`, {
         'timeout': action === 'monitor-file' ? 300 : 5,
         'follow': 0,
@@ -1456,7 +1452,7 @@ export async function getMonitorFile(opt: {
  * @param opt 参数
  */
 export async function ls(opt: {
-    /** --- 如 2024/08/01/22，无所谓开头结尾是否有 /，不会逃逸出 cwd 路径 --- */
+    /** --- 相对运行根目录的路径，如 2024/08/01/22，可带首尾 /；拒绝越界的 .. 和软链接 --- */
     'path': string;
     'encoding'?: BufferEncoding;
     /** --- 获取局域网服务器的目录列表，为空代表获取本机的 --- */
@@ -1470,12 +1466,12 @@ export async function ls(opt: {
     opt.host ??= '127.0.0.1';
     // --- 局域网模式 ---
     const time = lTime.stamp();
-    const res = await lUndici.get('http://' + opt.host + ':' + globalConfig.rpcPort.toString() + '/' + lCrypto.aesEncrypt(lText.stringifyJson({
+    const res = await lUndici.get('http://' + opt.host + ':' + globalConfig.rpcPort.toString() + '/' + rpc.sign({
         'action': 'ls',
         'time': time,
         'path': opt.path,
         'encoding': opt.encoding,
-    }), globalConfig.rpcSecret), {
+    }, globalConfig.rpcSecret), {
         'timeout': 5
     });
     const content = await res.getContent();

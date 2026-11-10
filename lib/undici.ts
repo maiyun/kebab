@@ -807,6 +807,17 @@ export async function rproxy(
                 : parsed.pathname;
             proxyUrl = prefix + (newQueryStr ? '?' + newQueryStr : '') + (parsed.hash ? '#' + parsed.hash : '');
         }
+        // --- 路径和查询参数不能改变配置的代理目标 ---
+        try {
+            const target = new URL(route[key]);
+            const result = new URL(proxyUrl);
+            if ((target.protocol !== 'http:' && target.protocol !== 'https:') || result.origin !== target.origin) {
+                return false;
+            }
+        }
+        catch {
+            return false;
+        }
         // --- 发起请求（opt.body 优先于原始 req 流） ---
         const rres = await request(proxyUrl, opt.body ?? req, {
             ...opt,

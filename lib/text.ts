@@ -5,6 +5,7 @@
  */
 import * as net from 'net';
 import * as textImpl from '#kebab/abox/text.js';
+import * as textPath from '#kebab/abox/text-path.js';
 import * as kebab from '#kebab/index.js';
 import * as lFs from './fs.js';
 import * as lCore from './core.js';
@@ -186,13 +187,23 @@ export function isSameOrigin(from: string, to: string): boolean {
     );
 }
 
-/** --- 限定结果不能逃逸出基准路径 --- */
+/**
+ * --- 限定结果不能逃逸出基准路径；HTTP 地址按浏览器路径规则比较 ---
+ * @param from 基准路径
+ * @param limit 是否启用限制
+ * @param rtn 已解析的目标地址
+ * @returns 限制后的目标地址或基准目录
+ */
 function urlResolveLimit(from: string, limit: boolean, rtn: string): string {
     if (!limit) {
         return rtn;
     }
-    const base = urlAtom(from).replace(/\/+$/, '') + '/';
-    if ((rtn === base.slice(0, -1)) || rtn.startsWith(base)) {
+    const base = urlAtom(from).split(/[?#]/, 1)[0].replace(/\/+$/, '') + '/';
+    const path = rtn.split(/[?#]/, 1)[0];
+    if (/^https?:\/\//i.test(base)) {
+        return textPath.urlWithinHttpBase(base, rtn) ? rtn : base;
+    }
+    if ((path === base.slice(0, -1)) || path.startsWith(base)) {
         return rtn;
     }
     return base;
@@ -202,7 +213,8 @@ function urlResolveLimit(from: string, limit: boolean, rtn: string): string {
  * --- 将相对路径根据基准路径进行转换 ---
  * @param from 基准路径
  * @param to 相对路径
- * @param limit 是否限定结果不能逃逸出基准路径
+ * @param limit 是否将基准路径视作目录并限定结果不能逃逸，默认 false
+ * @returns 转换后的地址，超出限定目录时返回基准目录
  */
 export function urlResolve(from: string, to: string, limit = false): string {
     from = from.replace(/\\/g, '/');
@@ -210,6 +222,9 @@ export function urlResolve(from: string, to: string, limit = false): string {
     if (limit) {
         // --- 限定模式下，开头的 / 代表从 from 内部开始，而不是系统根目录 ---
         to = to.replace(/^\/+/, '');
+        if (to && !to.startsWith('?') && !to.startsWith('#')) {
+            from = from.replace(/[?#].*$/, '').replace(/\/+$/, '') + '/';
+        }
     }
     // --- to 为空，直接返回 form ---
     if (to === '') {
@@ -234,7 +249,7 @@ export function urlResolve(from: string, to: string, limit = false): string {
     }
     // --- # 或 ? 替换后返回 ---
     if (to.startsWith('#') || to.startsWith('?')) {
-        const sp = from.indexOf(to[0]);
+        const sp = to.startsWith('?') ? from.search(/[?#]/) : from.indexOf('#');
         if (sp !== -1) {
             return urlAtom(from.slice(0, sp) + to);
         }
@@ -268,19 +283,11 @@ export function urlResolve(from: string, to: string, limit = false): string {
 
 /**
  * --- 将路径中的 ../ ./ 都按规范妥善处理 ---
- * @param url 要处理的地址
+ * @param url 要处理的地址；相对路径保留无法抵消的 .. 段
+ * @returns 规范化后的地址，查询和片段保持不变
  */
 export function urlAtom(url: string): string {
-    // --- 删掉 ./ ---
-    while (url.includes('/./')) {
-        url = url.replace(/\/\.\//g, '/');
-    }
-    // --- 删掉 ../ ---
-    while (/\/(?!\.\.)[^/]+\/\.\.\//.test(url)) {
-        url = url.replace(/\/(?!\.\.)[^/]+\/\.\.\//g, '/');
-    }
-    url = url.replace(/\.\.\//g, '');
-    return url;
+    return textPath.urlAtom(url);
 }
 
 export const REGEXP_EMAIL = /^[-_\w.]+@[-_\w.]+\.([a-zA-Z]+)$/i;
@@ -514,55 +521,11 @@ export function queryStringify(query: Record<string, any>, encode: boolean | {
 
 /**
  * --- 将 query string 转换为对象 ---
- * @param query 要转换的字符串
+ * @param query 要转换的字符串，+ 表示空格，%2B 表示加号
+ * @returns 查询参数对象，重复键对应字符串数组
  */
 export function queryParse(query: string): Record<string, string | string[]> {
-    const ret: Record<string, string | string[]> = {};
-    const arrayKeys: Record<string, boolean> = {};
-    const arr = query.split('&');
-    for (const i of arr) {
-        if (!i.length) {
-            continue;
-        }
-        const pos = i.indexOf('=');
-
-        let key: string;
-        try {
-            key = decodeURIComponent(pos === -1 ? i : i.slice(0, pos));
-        }
-        catch {
-            key = pos === -1 ? i : i.slice(0, pos);
-        }
-        let value = '';
-        try {
-            value = pos === -1 ? '' : decodeURIComponent(i.slice(pos + 1));
-        }
-        catch {
-            value = pos === -1 ? '' : i.slice(pos + 1);
-        }
-
-        if (Object.hasOwn(arrayKeys, key)) {
-            (ret[key] as string[]).push(value);
-        }
-        else if (!Object.hasOwn(ret, key)) {
-            Object.defineProperty(ret, key, {
-                'configurable': true,
-                'enumerable': true,
-                'value': value,
-                'writable': true,
-            });
-        }
-        else {
-            ret[key] = [ret[key] as string, value];
-            Object.defineProperty(arrayKeys, key, {
-                'configurable': true,
-                'enumerable': true,
-                'value': true,
-                'writable': true,
-            });
-        }
-    }
-    return ret;
+    return textPath.queryParse(query);
 }
 
 /**

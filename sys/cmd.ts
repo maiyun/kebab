@@ -10,7 +10,8 @@ import * as lFs from '#kebab/lib/fs.js';
 import * as lText from '#kebab/lib/text.js';
 import * as lTime from '#kebab/lib/time.js';
 import * as lCore from '#kebab/lib/core.js';
-import * as lCrypto from '#kebab/lib/crypto.js';
+import * as rpc from '#kebab/lib/core/rpc.js';
+import * as crypto from 'node:crypto';
 import * as kebab from '#kebab/index.js';
 
 // --- 检查语言包：node ./source/main locale -l ./source/www/example/data/locale/sc -d ./source/www/example ---
@@ -79,7 +80,7 @@ async function run(): Promise<void> {
         config.httpPort ??= 8080;
         config.httpsPort ??= 4333;
         config.rpcPort ??= 10630;
-        config.rpcSecret ??= 'MUSTCHANGE';
+        config.rpcSecret ??= crypto.randomBytes(32).toString('hex');
         config.debug ??= true;
         config.max ??= 64;
         config.hosts ??= [];
@@ -612,10 +613,10 @@ async function run(): Promise<void> {
         http.request({
             'hostname': '127.0.0.1',
             'port': config.rpcPort,
-            'path': '/' + lCrypto.aesEncrypt(lText.stringifyJson({
+            'path': '/' + rpc.sign({
                 'action': cmds[0],
                 'time': time
-            }), lCore.globalConfig.rpcSecret)
+            }, lCore.globalConfig.rpcSecret)
         }, function(res: http.IncomingMessage) {
             res.on('data', function(chunk: Buffer) {
                 const str = chunk.toString();

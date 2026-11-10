@@ -6,7 +6,7 @@
 
 # Interface: IFormDataError
 
-Defined in: [sys/route.ts:1052](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1052)
+Defined in: [sys/route.ts:1057](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1057)
 
 解析上传数据时的失败原因，只提供错误码和限制值，不带临时路径或异常对象
 
@@ -16,7 +16,7 @@ Defined in: [sys/route.ts:1052](https://github.com/maiyunnet/kebab/blob/master/s
 
 > **code**: `"INVALID_BOUNDARY"` \| `"FILE_TOO_LARGE"` \| `"TOTAL_TOO_LARGE"` \| `"FIELD_TOO_LARGE"` \| `"HEADER_TOO_LARGE"` \| `"TOO_MANY_PARTS"` \| `"FILE_TYPE"` \| `"TIMEOUT"` \| `"TEMP_FILE_ERROR"` \| `"REQUEST_ERROR"` \| `"REQUEST_ABORTED"`
 
-Defined in: [sys/route.ts:1053](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1053)
+Defined in: [sys/route.ts:1058](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1058)
 
 ***
 
@@ -24,6 +24,6 @@ Defined in: [sys/route.ts:1053](https://github.com/maiyunnet/kebab/blob/master/s
 
 > `optional` **limit?**: `number`
 
-Defined in: [sys/route.ts:1057](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1057)
+Defined in: [sys/route.ts:1062](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1062)
 
 超出的限制值：大小用字节，超时用毫秒，字段和文件数量用个

@@ -8,7 +8,7 @@
 
 > **parseJson**\<`T`\>(`str`): `false` \| `T`
 
-Defined in: [lib/text.ts:703](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L703)
+Defined in: [lib/text.ts:666](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L666)
 
 解析 JSON，超出安全整数范围的整数字面量转换为 BigInt
 

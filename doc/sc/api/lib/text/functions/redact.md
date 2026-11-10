@@ -8,7 +8,7 @@
 
 > **redact**(`value`, `secrets`, `options?`): `string`
 
-Defined in: [lib/text.ts:878](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L878)
+Defined in: [lib/text.ts:841](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L841)
 
 将文本中的指定敏感字符串替换为占位文本
 

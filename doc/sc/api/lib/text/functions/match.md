@@ -8,7 +8,7 @@
 
 > **match**(`str`, `regs`): `boolean`
 
-Defined in: [lib/text.ts:419](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L419)
+Defined in: [lib/text.ts:426](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L426)
 
 传入正则进行匹配 str 是否有一项满足
 

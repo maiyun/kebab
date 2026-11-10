@@ -33,6 +33,18 @@
     - `view/`: 视图目录，存放 ejs 文件
     - `ws/`: WebSocket 目录
 
+## RPC 管理通信
+
+管理端和被管理节点须使用相同的当前 RPC 协议；旧版 ECB 请求不再接受，升级时需同时更新两端。`rpcSecret` 至少 32 个字符，拒绝空白、占位值和明显重复值。初始化缺省值由 32 个随机字节生成，已有配置不会自动替换；各管理节点使用约定的密钥。
+
+命令使用 AES-256-GCM 认证加密，绑定 HTTP 方法及完整请求体的 SHA-256 摘要。接收端在执行动作前验证正文；时间戳允许前后 5 秒，同一 master 进程内的 nonce 在有效期内只接受一次。认证失败统一返回 401，按直连 IP 限制失败尝试并限制审计输出频率。
+
+`updateCode()` 保留公开参数，通过独立文件流向各节点发送 ZIP，压缩包上限 512 MiB；上传先保存到受限临时文件，摘要校验通过后部署，失败或处理结束后清理。`sendVhost()` 的 JSON 正文上限为 50 MiB。
+
+RPC 仍使用 HTTP，正文和响应不提供传输保密，nonce 缓存不跨 master 完全重启或共享密钥的其他节点。管理端口应处于受控网络，或经 VPN/TLS 隧道访问；认证协议不替代网络隔离。
+
+`lCore.ls()` 的路径相对运行根目录，首尾 `/` 可省略；接收端校验真实文件路径，拒绝越界的 `..` 和指向根目录外的软链接。根目录内的软链接仍可使用。
+
 ## 全量更新虚拟主机配置
 
 `lCore.sendVhost(files, hosts?)` 全量替换目标节点的 `conf/vhost/`，未提交的旧文件及子目录会被移除。`files` 是文件名到 JSON 原文的非空集合，仅接受直接 `.json` 文件名，不允许路径及大小写重名；每份 JSON 为 `IVhost` 或 `IVhost[]`。文件原文会被保留。
@@ -46,7 +58,7 @@ const results = await lCore.sendVhost({
 }, 'config');
 ```
 
-省略 `hosts` 或传入空列表时更新本机；传入 `'config'` 使用全局 `hosts`，也可指定节点列表。各节点独立返回 `{ result, return }`，失败节点可单独重试。接收端复用 RPC 鉴权，通过 POST body 接收配置（上限为现有 POST 解析的 50 MiB），不传输证书或全局配置。
+省略 `hosts` 或传入空列表时更新本机；传入 `'config'` 使用全局 `hosts`，也可指定节点列表。各节点独立返回 `{ result, return }`，失败节点可单独重试。接收端复用 RPC 鉴权，通过 POST body 接收配置，不传输证书或全局配置。
 
 同一节点串行执行替换。全部文件校验、写入临时目录成功后，才备份旧目录并切换；切换失败会恢复旧目录。若恢复也失败，返回信息会给出保留的备份目录，需人工恢复；目标 `vhost` 本身是软链接或普通文件时拒绝更新。替换包含两次目录重命名，过程中不要同时执行 reload 或手动修改该目录。
 
@@ -56,6 +68,10 @@ const results = await lCore.sendVhost({
 
 控制器通过 `this._config.const.hostCanonical` 获取用于 URL 的主机地址：HTTPS 的 443 和 HTTP 的 80 端口会省略，其余端口及 IPv6 方括号保留。`host`、`hostname` 和 `hostport` 保留原有含义。`urlOrigin`、`urlFull` 和 `urlStcFull` 使用 `hostCanonical` 生成，SSR 注入的 `_urlFull`、默认 `_staticPathFull` 同步省略默认端口。
 
+`lText.urlAtom()` 按完整路径段处理 `.` 和 `..`，保留普通文件名、查询串和片段中的文本；相对路径中无法抵消的 `..` 会保留。`urlResolve(from, to, true)` 将 `from` 视为目录，越界时返回基准目录；文件系统访问仍须校验真实路径及软链接。
+
+查询串和表单解析中的 `+` 表示空格，需要传递字面加号时使用 `%2B`；重复参数仍返回字符串数组。
+
 ## 访问日志
 
 HTTP 和 WebSocket 请求匹配有效 vhost 后即写入一条 `-visit` 日志，覆盖反代、静态文件、404 和中间件提前响应。记录发生在路由和控制器执行前；`onReqStart()` 返回 `-1` 不影响记录，控制器与 `rproxy()` 不再额外记录。
@@ -64,7 +80,15 @@ HTTP 和 WebSocket 请求匹配有效 vhost 后即写入一条 `-visit` 日志�
 
 `Core.log` 不采集 Cookie、Session 或请求体。JSONL 和 CSV 均不包含 Cookie、Session 字段。旧日志内容不变。
 
+## React 页面与浏览器资源
+
+控制器负责业务数据与权限判断，再将可公开的 props 传入 `_loadReactPage()`。`stc/` 中的 React 页面及组件用于 SSR 和浏览器水合；Node 加载 TypeScript 生成的 `.page.js`，浏览器加载构建生成的 `.page.bundle.js`、共享 chunk 和 CSS。静态资源仍可公开访问，不应在这些组件或水合 props 中放置服务端秘密。
+
+水合数据以 JSON 嵌入页面，框架会转义 `<`，浏览器解析后恢复原始值。`hydrate: false` 仅输出渲染后的 HTML。
+
 ## 代理请求头模式
+
+HTTP `rproxy` 会校验拼接后的目标 URL；协议必须为 HTTP 或 HTTPS，且 origin 必须与配置的上游一致，否则返回 `false`。
 
 `lib/undici` 和 `lib/ws` 的 `rproxy` 支持三种 `proxyMode`，`mproxy` 支持 `passthrough` 和 `request`：
 

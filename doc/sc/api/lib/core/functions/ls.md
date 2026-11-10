@@ -8,7 +8,7 @@
 
 > **ls**(`opt`): `Promise`\<`object`[]\>
 
-Defined in: [lib/core.ts:1458](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1458)
+Defined in: [lib/core.ts:1454](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1454)
 
 获取目录内文件/文件夹列表
 
@@ -32,7 +32,7 @@ Defined in: [lib/core.ts:1458](https://github.com/maiyunnet/kebab/blob/master/li
 
 `string`
 
-如 2024/08/01/22，无所谓开头结尾是否有 /，不会逃逸出 cwd 路径
+相对运行根目录的路径，如 2024/08/01/22，可带首尾 /；拒绝越界的 .. 和软链接
 
 ## Returns
 

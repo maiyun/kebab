@@ -8,7 +8,7 @@
 
 > **urlAtom**(`url`): `string`
 
-Defined in: [lib/text.ts:273](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L273)
+Defined in: [lib/text.ts:289](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L289)
 
 将路径中的 ../ ./ 都按规范妥善处理
 
@@ -18,8 +18,10 @@ Defined in: [lib/text.ts:273](https://github.com/maiyunnet/kebab/blob/master/lib
 
 `string`
 
-要处理的地址
+要处理的地址；相对路径保留无法抵消的 .. 段
 
 ## Returns
 
 `string`
+
+规范化后的地址，查询和片段保持不变

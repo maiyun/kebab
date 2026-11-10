@@ -3,6 +3,8 @@ import http from 'node:http';
 import http2 from 'node:http2';
 import { once } from 'node:events';
 import test from 'node:test';
+import { Readable, Writable } from 'node:stream';
+import { MockAgent } from 'undici';
 import WebSocket from 'ws';
 import * as undiciProxy from '../../lib/undici.js';
 import * as wsProxy from '../../lib/ws.js';
@@ -137,6 +139,47 @@ function verify(headers, mode, targetHost) {
         for (const key of ['forwarded', 'via', 'cf-connecting-ip', 'eo-token', 'true-client-ip']) assert.equal(headers[key], undefined, key);
     }
 }
+
+await test('undici rproxy keeps the configured origin for paths and query overrides', async () => {
+    const agent = new MockAgent();
+    agent.disableNetConnect();
+    const received = [];
+    const target = 'http://upstream.example.test';
+    agent.get(target).intercept({path: /.*/, method: 'GET'}).reply(200, opts => {
+        received.push({url: opts.path, headers: opts.headers});
+        return 'ok';
+    }).persist();
+    agent.get('http://attacker.example').intercept({path: /.*/, method: 'GET'}).reply(200, opts => {
+        received.push({url: opts.path, headers: opts.headers});
+        return 'unexpected';
+    }).persist();
+    const send = async (path, querys) => {
+        const req = Readable.from([]);
+        req.method = 'GET';
+        req.headers = {cookie: 'session=test', authorization: 'Bearer test', 'accept-encoding': 'identity'};
+        const res = new Writable({write(_chunk, _encoding, callback) { callback(); }});
+        res.setHeader = () => {};
+        res.writeHead = () => {};
+        const ctr = {getPrototype: name => ({_req: req, _res: res, _config: {const: {path, qs: 'old=1'}}})[name]};
+        return undiciProxy.rproxy(ctr, {'proxy/': target}, {reuse: agent, querys});
+    };
+    try {
+        assert.equal(await send('proxy/@attacker.example/steal'), false);
+        assert.equal(await send('proxy/@attacker.example/steal', {x: '1'}), false);
+        assert.equal(received.length, 0);
+        assert.equal(await send('proxy//normal', {x: '1'}), true);
+        assert.equal(received.at(-1).url, '/normal?x=1');
+        assert.equal(await send('proxy///normal', {x: '1'}), true);
+        assert.equal(received.at(-1).url, '//normal?x=1');
+        assert.equal(await send('proxy/\\@attacker.example/normal'), true);
+        assert.equal(received.at(-1).url, '/@attacker.example/normal?old=1');
+        assert.equal(received.at(-1).headers.cookie, 'session=test');
+        assert.equal(received.at(-1).headers.authorization, 'Bearer test');
+    }
+    finally {
+        await agent.close();
+    }
+});
 
 for (const kind of ['rproxy', 'mproxy']) {
     await test(`undici ${kind} relays HTTP/1 and HTTP/2 requests and response headers`, async () => {

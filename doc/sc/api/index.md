@@ -13,6 +13,7 @@
 - [lib/consistent](lib/consistent/index.md)
 - [lib/cookie](lib/cookie/index.md)
 - [lib/core](lib/core/index.md)
+- [lib/core/rpc](lib/core/rpc/index.md)
 - [lib/cron](lib/cron/index.md)
 - [lib/crypto](lib/crypto/index.md)
 - [lib/db](lib/db/index.md)

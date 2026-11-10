@@ -8,4 +8,4 @@
 
 > `const` **REGEXP\_DOMAIN**: `RegExp`
 
-Defined in: [lib/text.ts:312](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L312)
+Defined in: [lib/text.ts:319](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L319)

@@ -6,7 +6,7 @@
 
 # Interface: IMproxyOptions
 
-Defined in: [lib/undici.ts:913](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L913)
+Defined in: [lib/undici.ts:924](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L924)
 
 正向代理请求的传入参数选项
 
@@ -16,7 +16,7 @@ Defined in: [lib/undici.ts:913](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **filter?**: (`h`) => `boolean`
 
-Defined in: [lib/undici.ts:928](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L928)
+Defined in: [lib/undici.ts:939](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L939)
 
 过滤 header，返回 true 则留下
 
@@ -36,7 +36,7 @@ Defined in: [lib/undici.ts:928](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **follow?**: `number`
 
-Defined in: [lib/undici.ts:918](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L918)
+Defined in: [lib/undici.ts:929](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L929)
 
 ***
 
@@ -44,7 +44,7 @@ Defined in: [lib/undici.ts:918](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **headers?**: [`THttpHeaders`](../type-aliases/THttpHeaders.md)
 
-Defined in: [lib/undici.ts:922](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L922)
+Defined in: [lib/undici.ts:933](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L933)
 
 ***
 
@@ -52,7 +52,7 @@ Defined in: [lib/undici.ts:922](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **hosts?**: `string` \| `Record`\<`string`, `string`\>
 
-Defined in: [lib/undici.ts:920](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L920)
+Defined in: [lib/undici.ts:931](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L931)
 
 自定义 host 映射，如 {'www.maiyun.net': '127.0.0.1'}，或全部映射到一个 host
 
@@ -62,7 +62,7 @@ Defined in: [lib/undici.ts:920](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **keepAliveTimeout?**: `number`
 
-Defined in: [lib/undici.ts:924](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L924)
+Defined in: [lib/undici.ts:935](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L935)
 
 空闲连接允许复用的最长秒数；非正数或无效值按未设置处理；默认无服务端提示时为 4 秒，有提示时采用提示值减 2 秒且最多 600 秒
 
@@ -72,7 +72,7 @@ Defined in: [lib/undici.ts:924](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **local?**: `string`
 
-Defined in: [lib/undici.ts:921](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L921)
+Defined in: [lib/undici.ts:932](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L932)
 
 ***
 
@@ -80,7 +80,7 @@ Defined in: [lib/undici.ts:921](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **proxyMode?**: `"request"` \| `"passthrough"`
 
-Defined in: [lib/undici.ts:915](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L915)
+Defined in: [lib/undici.ts:926](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L926)
 
 默认 passthrough 保留已有来源头；request 清理来源头；两者均使用目标 Host
 
@@ -90,7 +90,7 @@ Defined in: [lib/undici.ts:915](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **reuse?**: `string` \| `Agent` \| `ProxyAgent`
 
-Defined in: [lib/undici.ts:930](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L930)
+Defined in: [lib/undici.ts:941](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L941)
 
 默认为 default
 
@@ -100,7 +100,7 @@ Defined in: [lib/undici.ts:930](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **reuseTimeout?**: `number`
 
-Defined in: [lib/undici.ts:926](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L926)
+Defined in: [lib/undici.ts:937](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L937)
 
 连接建立后允许承接新请求的最长秒数；非正数或无效值按未设置处理；达到后不再复用但不会中断在途请求，默认不限制
 
@@ -110,6 +110,6 @@ Defined in: [lib/undici.ts:926](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **timeout?**: `number`
 
-Defined in: [lib/undici.ts:917](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L917)
+Defined in: [lib/undici.ts:928](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L928)
 
 秒数，默认 300 秒

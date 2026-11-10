@@ -8,7 +8,7 @@
 
 > **setCookie**(`ctr`, `name`, `value`, `opt?`): `void`
 
-Defined in: [lib/core.ts:67](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L67)
+Defined in: [lib/core.ts:69](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L69)
 
 设置 cookie
 

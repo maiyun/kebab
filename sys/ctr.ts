@@ -530,7 +530,7 @@ export class Ctr {
             if (!hydrate) {
                 return html;
             }
-            const propsJson = lText.stringifyJson(fullProps).replace(/<\/script>/gi, '<\\/script>');
+            const propsJson = lText.stringifyJson(fullProps).replace(/</g, '\\u003c');
             const clientUrl = `${staticPath}${path}.page.bundle.js?v=${this._config.set.staticVer}`;
             const propsScript = `<script id="__kebab_props__" type="application/json">${propsJson}</script>`;
             const hydrateScript = `<script type="module">import'${clientUrl}';</script>`;

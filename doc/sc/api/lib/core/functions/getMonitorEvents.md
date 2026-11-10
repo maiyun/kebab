@@ -8,7 +8,7 @@
 
 > **getMonitorEvents**(`opt?`): `Promise`\<`false` \| \{ `list`: [`IMonitorEventSummary`](../interfaces/IMonitorEventSummary.md)[]; `total`: `number`; \}\>
 
-Defined in: [lib/core.ts:1386](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1386)
+Defined in: [lib/core.ts:1382](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1382)
 
 获取某天已保存的监控事件，按目录时间倒序分页
 

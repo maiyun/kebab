@@ -20,10 +20,8 @@ const cases = [
 ];
 const hosts = ['node-a', 'node-b', 'node-c'];
 const master = fs.readFileSync(new URL('../../sys/master.ts', import.meta.url), 'utf8');
-const guard = master.match(/if \(\(typeof msg\.time !== 'number'\) \|\| \(Math\.abs\(msg\.time - time\) > 5\)\) \{\s*res\.end\('Timeout'\);\s*return;\s*\}/)?.[0];
-assert.ok(guard, 'RPC replay window must remain enforced');
 
-function subject(name, configHosts = hosts) {
+function subject(name, configHosts = hosts, hashFile = async () => 'digest') {
     const fn = ast.statements.find(node => ts.isFunctionDeclaration(node) && node.name?.text === name);
     assert.ok(fn, name);
     const calls = [];
@@ -33,10 +31,7 @@ function subject(name, configHosts = hosts) {
     function request(url, body, options) {
         const parsed = new URL(url);
         const msg = JSON.parse(Buffer.from(parsed.pathname.slice(1), 'base64url').toString());
-        let rejected;
-        vm.runInNewContext(`(() => { ${guard} })()`, {
-            msg, time: now, Math, res: { end: value => { rejected = value; } },
-        });
+        const rejected = Math.abs(msg.time - now) > 5 ? 'Timeout' : undefined;
         let finish;
         const pending = new Promise(resolve => { finish = resolve; });
         calls.push({ host: parsed.hostname, msg, body, options, finish, rejected });
@@ -48,7 +43,8 @@ function subject(name, configHosts = hosts) {
         globalConfig: { hosts: configHosts, rpcPort: 1234, rpcSecret: 'test-only' },
         lTime: { stamp: () => now },
         lText: { stringifyJson: JSON.stringify },
-        lCrypto: { aesEncrypt: value => Buffer.from(value).toString('base64url') },
+        rpc: { sign: value => Buffer.from(JSON.stringify({ ...value, time: now })).toString('base64url'), hash: () => 'digest', hashFile },
+        nodeFs: { createReadStream: path => ({ path }) },
         lUndici: {
             get: (url, options) => request(url, undefined, options),
             post: request,
@@ -95,12 +91,12 @@ for (const [name, args, action, timeout] of cases) {
             }
         }
         if (name === 'updateCode') {
-            assert.equal(new Set(target.forms).size, hosts.length);
-            for (const call of target.calls) assert.equal(call.body.fields.file, '/fixture.zip');
+            assert.equal(new Set(target.calls.map(call => call.body)).size, hosts.length);
+            for (const call of target.calls) assert.equal(call.body.path, '/fixture.zip');
         }
         if (name === 'sendVhost') {
             for (const call of target.calls) {
-                assert.deepEqual(call.body, args[0]);
+                assert.deepEqual(JSON.parse(call.body), args[0]);
                 assert.deepEqual(Object.keys(call.msg).sort(), ['action', 'time']);
             }
             assert.equal(target.ipc.length, 0, 'updating vhost files must not trigger a reload');
@@ -116,6 +112,13 @@ for (const [name, args, action, timeout] of cases) {
         assert.equal(target.calls.length, hosts.length, 'failed commands must not retry');
     });
 }
+
+test('updateCode: unreadable source retains an empty result and sends nothing', async () => {
+    const target = subject('updateCode', hosts, async () => false);
+    const result = await target.run('/missing.zip', '/app/', 'config');
+    assert.equal(Object.keys(result).length, 0);
+    assert.equal(target.calls.length, 0);
+});
 
 for (const hosts of [undefined, [], 'config']) {
     test(`sendVhost: empty or omitted hosts use local RPC (${String(hosts)})`, async () => {

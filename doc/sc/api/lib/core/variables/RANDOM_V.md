@@ -8,6 +8,6 @@
 
 > `const` **RANDOM\_V**: `"ACEFGHJKLMNPRSTWXY34567"` = `'ACEFGHJKLMNPRSTWXY34567'`
 
-Defined in: [lib/core.ts:124](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L124)
+Defined in: [lib/core.ts:126](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L126)
 
 验证码字符集

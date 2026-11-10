@@ -20,6 +20,13 @@ import * as lLang from '#kebab/lib/lang.js';
 import * as sCtr from './ctr.js';
 import * as kebab from '#kebab/index.js';
 import { getPublicProtocol as getPublicProtocolImpl } from '#kebab/abox/request.js';
+import { pipeResponse as pipeResponseImpl } from '#kebab/abox/response.js';
+
+/** --- 将片段依次输出；出错或断连时关闭所有源，回调在输入结束或失败时执行 --- */
+const pipeResponse: (
+    parts: Array<stream.Readable | string | Buffer>, response: stream.Writable,
+    compress?: stream.Transform, onInputDone?: () => void
+) => void = pipeResponseImpl;
 
 /**
  * --- 只用于推导公开 URL；不改变真实 TLS 状态，也不验证转发头来源 ---
@@ -689,9 +696,7 @@ export async function run(data: {
         }
         if (!data.res.writableEnded) {
             if (compress) {
-                compress.compress.write(rtn);
-                compress.compress.pipe(data.res);
-                compress.compress.end();
+                pipeResponse([rtn], data.res, compress.compress);
             }
             else {
                 data.res.end(rtn);
@@ -727,10 +732,10 @@ export async function run(data: {
         }
         if (!data.res.writableEnded) {
             if (compress) {
-                stm.pipe(compress.compress).pipe(data.res);
+                pipeResponse([stm], data.res, compress.compress);
             }
             else {
-                stm.pipe(data.res);
+                pipeResponse([stm], data.res);
             }
         }
     }
@@ -781,9 +786,7 @@ export async function run(data: {
                     }
                     if (!data.res.writableEnded) {
                         if (compress) {
-                            compress.compress.write(writeData);
-                            compress.compress.pipe(data.res);
-                            compress.compress.end();
+                            pipeResponse([writeData], data.res, compress.compress);
                         }
                         else {
                             data.res.end(writeData);
@@ -805,15 +808,19 @@ export async function run(data: {
                         lCore.writeHead(data.res, httpCode);
                     }
                     if (!data.res.writableEnded) {
-                        const passThrough = new stream.PassThrough();
-                        // --- 先进行 pipe 绑定，之后 write 或 pipe 进 pass 的数据，直接就可以消费 ---
-                        if (compress) {
-                            passThrough.pipe(compress.compress).pipe(data.res);
-                        }
-                        else {
-                            passThrough.pipe(data.res);
-                        }
-                        await lCore.passThroughAppend(passThrough, rtn);
+                        const parts = rtn.flatMap((item) => {
+                            if (item instanceof stream.Readable || typeof item === 'string' || item instanceof Buffer) {
+                                return [item];
+                            }
+                            if (item instanceof lNetResponse.Response || item instanceof lUndiciResponse.Response) {
+                                const itemStream = item.getStream();
+                                return itemStream ? [itemStream] : [];
+                            }
+                            return [];
+                        });
+                        await new Promise<void>((resolve) => {
+                            pipeResponse(parts, data.res!, compress?.compress, resolve);
+                        });
                     }
                 }
             }
@@ -835,9 +842,7 @@ export async function run(data: {
             }
             if (!data.res.writableEnded) {
                 if (compress) {
-                    compress.compress.write(writeData);
-                    compress.compress.pipe(data.res);
-                    compress.compress.end();
+                    pipeResponse([writeData], data.res, compress.compress);
                 }
                 else {
                     data.res.end(writeData);

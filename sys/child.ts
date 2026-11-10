@@ -57,7 +57,7 @@ const certList: Map<string, {
 }> = new Map();
 
 /** --- servername → certList mapKey 索引缓存 --- */
-let certHostIndex: Record<string, string> = {};
+const certHostIndex = new Map<string, string>();
 
 /** --- 最后一次加载证书到内存的时间 --- */
 let certLastLoad: number = 0;
@@ -145,7 +145,7 @@ async function run(): Promise<void> {
                     lCore.display('[CHILD][run] reloadCert error', e);
                 });
             }
-            const cachedKey = certHostIndex[servername];
+            const cachedKey = certHostIndex.get(servername);
             if (cachedKey !== undefined) {
                 cb(null, certList.get(cachedKey)!.sc);
                 return;
@@ -157,7 +157,7 @@ async function run(): Promise<void> {
                 }
                 // --- 找到 ---
                 cb(null, item.sc);
-                certHostIndex[servername] = mapKey;
+                certHostIndex.set(servername, mapKey);
                 return;
             }
             lCore.display(`[CHILD][SNICallback] CERT NOT FOUND for servername: ${servername}`);
@@ -652,7 +652,7 @@ async function reloadCert(): Promise<void> {
             }
         }
     }
-    certHostIndex = {};
+    certHostIndex.clear();
 }
 
 /**

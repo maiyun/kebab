@@ -8,7 +8,7 @@
 
 > **parseHost**(`host`): `object`
 
-Defined in: [lib/text.ts:69](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L69)
+Defined in: [lib/text.ts:70](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L70)
 
 解析主机名和端口号
 

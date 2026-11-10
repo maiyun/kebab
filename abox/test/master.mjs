@@ -135,6 +135,11 @@ function subject(runtimeCluster, globals = {}) {
         os: fakeOs,
         lCore: core,
         masterLog, masterVhost: vhostStorage(), fs, path,
+        rpc: {
+            reject: () => true,
+            authenticate: req => { const msg = JSON.parse(req.url.slice(1)); return Math.abs((msg.time ?? 100) - 100) > 5 ? false : msg; },
+            readBody: async req => { const chunks = []; if (req[Symbol.asyncIterator]) for await (const chunk of req) chunks.push(chunk); return { body: Buffer.concat(chunks) }; },
+        },
         ...globals,
         process: { exit: code => exitCodes.push(code) },
         setTimeout, clearTimeout,
@@ -190,7 +195,7 @@ function rpcSubject({ format = 'jsonl', chunks = [], readError } = {}) {
             destroy() { this.destroyed = true; done.resolve(); },
             ...overrides,
         };
-        listener({ url: '/' + JSON.stringify({
+        listener({ socket: {}, url: '/' + JSON.stringify({
             action: 'log', time: 100, hostname: 'fixture', path: '2026/10/21', ...msg,
         }) }, response);
         await done.promise;
@@ -200,7 +205,7 @@ function rpcSubject({ format = 'jsonl', chunks = [], readError } = {}) {
     return target;
 }
 
-async function vhostSubject(t, overrides = {}) {
+async function vhostSubject(t, overrides = {}, secureRpc) {
     const root = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'kebab-vhost-'));
     const directory = path.join(root, 'vhost');
     await fs.promises.mkdir(directory);
@@ -215,8 +220,9 @@ async function vhostSubject(t, overrides = {}) {
         lTime: { stamp: () => 100 },
         lText: text,
         sRoute: { getPost: postContext.getPost },
+        ...(secureRpc ? { rpc: secureRpc } : {}),
     });
-    target.core.globalConfig = { rpcSecret: 'fixture' };
+    target.core.globalConfig = { rpcSecret: secureRpc ? 'c63f09ad6ddbbd239ba311bd390fec57' : 'fixture' };
     const worker = new Worker();
     await target.create(0, worker);
     target.createRpcListener();
@@ -230,6 +236,12 @@ async function vhostSubject(t, overrides = {}) {
             const request = Readable.from([Buffer.from(options.body ?? JSON.stringify(files))]);
             request.url = '/' + JSON.stringify({ action: 'vhost', time: options.time ?? 100 });
             request.method = options.method ?? 'POST';
+            request.socket = { remoteAddress: 'test-client' };
+            if (secureRpc) {
+                const signedBody = JSON.stringify(files);
+                const token = secureRpc.sign({ action: 'vhost' }, target.core.globalConfig.rpcSecret, 'POST', secureRpc.hash(signedBody));
+                request.url = '/' + (options.tamper ? (token[0] === 'A' ? 'B' : 'A') + token.slice(1) : token);
+            }
             request.headers = { 'content-type': 'application/json' };
             const done = deferred();
             const response = {
@@ -246,6 +258,18 @@ async function vhostSubject(t, overrides = {}) {
         },
     };
 }
+
+test('vhost authenticates encrypted command, method and complete body before replacing files', async t => {
+    const secureRpc = await import(new URL('../rpc.js', import.meta.url).href + '#master-test');
+    const target = await vhostSubject(t, {}, secureRpc);
+    const files = { 'new.json': '{"domains":["new.example"],"root":"new/"}' };
+    assert.equal(await target.rpc(files, { tamper: true }), 'Unauthorized');
+    assert.equal(await target.rpc(files, { method: 'GET' }), 'Unauthorized');
+    assert.equal(await target.rpc(files, { body: JSON.stringify({ 'new.json': '{}' }) }), 'Unauthorized');
+    assert.deepEqual(await fs.promises.readdir(target.directory), ['old.json']);
+    assert.equal(await fs.promises.readFile(path.join(target.directory, 'old.json'), 'utf8'), target.old);
+    assert.equal(await target.rpc(files), 'Done');
+});
 
 const vhostContent = '{"domains":["new.example"],"root":"new/"}';
 
@@ -294,7 +318,7 @@ test('vhost RPC rejects invalid batches before touching the old directory', asyn
     }
     assert.equal(await target.rpc({}, { body: '{broken' }), 'Invalid vhost files');
     assert.equal(await target.rpc({ 'new.json': vhostContent }, { method: 'GET' }), 'Invalid method');
-    assert.equal(await target.rpc({ 'new.json': vhostContent }, { time: 90 }), 'Timeout');
+    assert.equal(await target.rpc({ 'new.json': vhostContent }, { time: 90 }), 'Unauthorized');
 });
 
 test('vhost RPC can create a missing directory', async t => {
@@ -454,6 +478,66 @@ test('RPC failure after headers destroys the response without writing another he
     const response = await target.rpc({}, { headersSent: true, writeHead() { assert.fail('headers already sent'); } });
     assert.equal(response.destroyed, true);
     assert.equal(response.body, undefined);
+});
+
+test('ls RPC checks real filesystem boundaries before reading directories', async t => {
+    const base = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'kebab-ls-'));
+    const root = path.join(base, 'root');
+    const outside = path.join(base, 'root-other');
+    await fs.promises.mkdir(path.join(root, 'safe'), { recursive: true });
+    await fs.promises.mkdir(outside);
+    await fs.promises.writeFile(path.join(root, 'safe', 'inside.txt'), 'inside');
+    await fs.promises.writeFile(path.join(outside, 'private.txt'), 'outside');
+    await fs.promises.symlink(outside, path.join(root, 'escape'), 'dir');
+    await fs.promises.symlink(path.join(root, 'safe'), path.join(root, 'alias'), 'dir');
+    const rootAlias = path.join(base, 'root-alias');
+    await fs.promises.symlink(root, rootAlias, 'dir');
+    let listener;
+    const reads = [];
+    const secureRpc = await import(new URL('../rpc.js', import.meta.url).href + '#ls-test');
+    const target = subject(undefined, {
+        kebab: { ROOT_CWD: rootAlias + '/' },
+        rpc: secureRpc,
+        http: { createServer(callback) { listener = callback; return { listen() {} }; } },
+        lText: text,
+        lFs: { readDir: async (directory, encoding) => {
+            reads.push(directory);
+            return fs.promises.readdir(directory, { withFileTypes: true, encoding });
+        } },
+    });
+    target.core.globalConfig = { rpcSecret: 'c63f09ad6ddbbd239ba311bd390fec57' };
+    target.createRpcListener();
+    t.after(async () => {
+        target.dispose();
+        await fs.promises.rm(base, { recursive: true, force: true });
+    });
+    async function list(input) {
+        const request = Readable.from([]);
+        request.url = '/' + secureRpc.sign({ action: 'ls', path: input }, target.core.globalConfig.rpcSecret);
+        request.method = 'GET';
+        request.socket = { remoteAddress: 'ls-test' };
+        const done = deferred();
+        const response = {
+            end(body) { this.body = body; done.resolve(); },
+            writeHead(status) { this.statusCode = status; },
+        };
+        listener(request, response);
+        await done.promise;
+        return response.body;
+    }
+    for (const input of ['..', '../', 'safe/../..', '../root-other', 'escape', 'escape/', 'escape/missing', '..\\root-other', 'C:/outside', 'safe\0']) {
+        assert.equal(await list(input), 'Invalid path', input);
+    }
+    assert.deepEqual(reads, [], 'rejected paths must not reach readDir');
+    for (const input of ['safe', '/safe/', 'safe/../safe', 'alias']) {
+        const result = JSON.parse(await list(input));
+        assert.equal(result.result, 1);
+        assert.deepEqual(result.data.map(item => item.name), ['inside.txt']);
+    }
+    for (const input of ['', '/', '.', 'safe/..']) {
+        assert.equal(JSON.parse(await list(input)).result, 1, input);
+        assert.equal(reads.at(-1), root);
+    }
 });
 
 test('path resolution allows missing descendants but rejects traversal and symlink escape', async t => {

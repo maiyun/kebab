@@ -8,7 +8,7 @@
 
 > **exec**(`command`, `options?`): `Promise`\<`string` \| `false`\>
 
-Defined in: [lib/core.ts:684](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L684)
+Defined in: [lib/core.ts:686](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L686)
 
 执行命令行
 

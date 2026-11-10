@@ -8,7 +8,7 @@
 
 > **urlResolve**(`from`, `to`, `limit?`): `string`
 
-Defined in: [lib/text.ts:207](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L207)
+Defined in: [lib/text.ts:219](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L219)
 
 将相对路径根据基准路径进行转换
 
@@ -30,8 +30,10 @@ Defined in: [lib/text.ts:207](https://github.com/maiyunnet/kebab/blob/master/lib
 
 `boolean` = `false`
 
-是否限定结果不能逃逸出基准路径
+是否将基准路径视作目录并限定结果不能逃逸，默认 false
 
 ## Returns
 
 `string`
+
+转换后的地址，超出限定目录时返回基准目录

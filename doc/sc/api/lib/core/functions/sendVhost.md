@@ -8,7 +8,7 @@
 
 > **sendVhost**(`files`, `hosts?`): `Promise`\<`Record`\<`string`, \{ `result`: `boolean`; `return`: `string`; \}\>\>
 
-Defined in: [lib/core.ts:1123](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1123)
+Defined in: [lib/core.ts:1120](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1120)
 
 全量替换各节点 conf/vhost/ 中的文件，不自动 reload
 

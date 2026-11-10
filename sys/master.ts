@@ -11,12 +11,11 @@ import * as path from 'path';
 import * as stream from 'stream/promises';
 // --- 库和定义 ---
 import * as kebab from '#kebab/index.js';
-import * as sRoute from '#kebab/sys/route.js';
 import * as sMonitorFiles from '#kebab/sys/monitor/files.js';
 import * as lCore from '#kebab/lib/core.js';
 import * as lFs from '#kebab/lib/fs.js';
 import * as lText from '#kebab/lib/text.js';
-import * as lCrypto from '#kebab/lib/crypto.js';
+import * as rpc from '#kebab/lib/core/rpc.js';
 import * as lTime from '#kebab/lib/time.js';
 import * as lZip from '#kebab/lib/zip.js';
 import * as masterLog from '#kebab/abox/master-log.js';
@@ -286,25 +285,30 @@ async function run(): Promise<void> {
 function createRpcListener(): void {
     http.createServer(function(req: http.IncomingMessage, res: http.ServerResponse) {
         (async function() {
-            /** --- 当前时间戳 --- */
-            const time = lTime.stamp();
-            /** --- cmd 数据对象 --- */
-            const cmd = lCrypto.aesDecrypt((req.url ?? '').slice(1), lCore.globalConfig.rpcSecret);
-            if (!cmd) {
-                res.end('Error');
-                return;
-            }
-            const msg = lText.parseJson<any>(cmd);
+            const msg = rpc.authenticate(req, lCore.globalConfig.rpcSecret);
             if (!msg) {
-                res.end('Failed');
+                if (rpc.reject(req)) {
+                    lCore.display('[master] [rpc] authentication rejected', req.socket.remoteAddress ?? 'unknown');
+                }
+                res.statusCode = 401;
+                res.end('Unauthorized');
                 return;
             }
-            if ((typeof msg.time !== 'number') || (Math.abs(msg.time - time) > 5)) {
-                res.end('Timeout');
-                return;
+            const upload = msg.action === 'code' && req.method === 'POST';
+            let bodyLimit = 0;
+            if (upload) {
+                bodyLimit = 512 * 1024 * 1024;
             }
-            if (lCore.globalConfig.rpcSecret === 'MUSTCHANGE') {
-                res.end(`The rpcSecret is not set. It's recommended to set it to: ${lCore.random(32, lCore.RANDOM_LUN)}`);
+            else if (msg.action === 'vhost' && req.method === 'POST') {
+                bodyLimit = 50 * 1024 * 1024;
+            }
+            const body = await rpc.readBody(req, msg.bodyHash, kebab.FTMP_CWD, upload, bodyLimit);
+            if (!body) {
+                if (rpc.reject(req)) {
+                    lCore.display('[master] [rpc] authentication rejected', req.socket.remoteAddress ?? 'unknown');
+                }
+                res.statusCode = 401;
+                res.end('Unauthorized');
                 return;
             }
             switch (msg.action) {
@@ -474,289 +478,277 @@ function createRpcListener(): void {
                         res.end('Invalid method');
                         return;
                     }
-                    const body = await sRoute.getPost(req);
-                    if (body === false || !isVhostFiles(body.raw)) {
+                    const files = lText.parseJson<unknown>(body.body?.toString() ?? '');
+                    if (!isVhostFiles(files)) {
                         res.end('Invalid vhost files');
                         return;
                     }
                     // --- 仅更新磁盘配置，是否 reload 由调用方决定 ---
-                    const result = await replaceVhost(kebab.VHOST_CWD, body.raw, (message, error) => {
+                    const result = await replaceVhost(kebab.VHOST_CWD, files, (message, error) => {
                         lCore.display(`[master] [vhost] ${message}`, error);
                     });
                     res.end(result);
                     return;
                 }
                 case 'code': {
-                    // --- 更新 code 代码包 ---
-                    const rtn = await sRoute.getFormData(req);
-                    if (!rtn) {
-                        res.end('Abnormal');
-                        return;
-                    }
-                    const file = rtn.files['file'];
-                    if (!file || Array.isArray(file)) {
-                        res.end('Abnormal');
-                        await sRoute.unlinkUploadFiles(rtn.files);
-                        return;
-                    }
-                    const inputPath = rtn.post['path'];
-                    if (typeof inputPath !== 'string') {
-                        res.end('Invalid path');
-                        await sRoute.unlinkUploadFiles(rtn.files);
-                        return;
-                    }
-                    /** --- 最终更新的根目录 --- */
-                    const targetPath = await resolvePathInside(kebab.ROOT_CWD, inputPath);
-                    if (!targetPath) {
-                        res.end('Invalid path');
-                        await sRoute.unlinkUploadFiles(rtn.files);
-                        return;
-                    }
-                    const to = targetPath + path.sep;
-                    if (!await lFs.isDir(to)) {
-                        if (rtn.post['strict'] === '1') {
-                            res.end(`[code][0] [${rtn.post['strict']}] Path not found: ${to}`);
-                            await sRoute.unlinkUploadFiles(rtn.files);
+                    try {
+                        // --- 更新 code 代码包 ---
+                        if (!body.file || req.method !== 'POST') {
+                            res.end('Abnormal');
                             return;
                         }
-                        await lFs.mkdir(to);
-                    }
-                    const buf = await lFs.getContent(file.path);
-                    if (!buf) {
-                        res.end('System error');
-                        await sRoute.unlinkUploadFiles(rtn.files);
-                        return;
-                    }
-                    const zip = await lZip.get(buf);
-                    if (!zip) {
-                        res.end('Zip error');
-                        await sRoute.unlinkUploadFiles(rtn.files);
-                        return;
-                    }
-                    const archiveEntries = zip.readDir('/', {
-                        'hasChildren': true,
-                        'hasDir': false,
-                    });
-                    const archiveSize = archiveEntries.reduce((total, item) => total + item.uncompressedSize, 0);
-                    if ((archiveEntries.length > 10_000) || (archiveSize > 512 * 1024 * 1024)) {
-                        res.end('Archive limit exceeded');
-                        await sRoute.unlinkUploadFiles(rtn.files);
-                        return;
-                    }
-                    const rawList = await zip.getList();
-                    /** --- 通过路径检查的 ZIP 文件，路径都以 / 开头 --- */
-                    const ls: Record<string, Buffer | string> = {};
-                    for (const archivePath in rawList) {
-                        const normalizedPath = normalizeArchivePath(archivePath);
-                        if (!normalizedPath || (ls[normalizedPath] !== undefined)) {
-                            res.end('Invalid archive path');
-                            await sRoute.unlinkUploadFiles(rtn.files);
+                        const inputPath = msg.path;
+                        if (typeof inputPath !== 'string') {
+                            res.end('Invalid path');
                             return;
                         }
-                        ls[normalizedPath] = rawList[archivePath];
-                    }
-                    // --- 预扫描：收集 .cga 锁定目录和 kebab 子项目目录 ---
-                    /** --- .cga 锁定的目录集合，key 格式为"父路径/目录名/"（不含开头/，含尾部/），例如 "www/pika/" --- */
-                    const cgaLockedDirs = new Set<string>();
-                    /** --- 含有 kebab.json 的目录路径集合（不含开头/，含尾部/，根目录为空字符串） --- */
-                    const kebabProjectDirs = new Set<string>();
-                    /** --- 本次部署涉及到的目录路径集合（不含开头/，含尾部/，根目录为空字符串） --- */
-                    const touchedDirs = new Set<string>();
-                    for (const scanPath in ls) {
-                        /** --- 纯路径中最后一个 / 的位置索引 --- */
-                        const scanLio = scanPath.lastIndexOf('/');
-                        /** --- 纯路径，不以 / 开头，以 / 结尾，若是根路径就是空字符串，例如 "www/pika/" --- */
-                        const scanPat = scanPath.slice(1, scanLio + 1);
-                        /** --- 纯文件名，例如 "index.ts" 或 "pika.cga" --- */
-                        const scanFname = scanPath.slice(scanLio + 1);
-                        touchedDirs.add(scanPat);
-                        if (scanFname.endsWith('.cga')) {
-                            // --- 记录 .cga 锁定的同级目录（去掉 .cga 后缀的名字即为被锁定的目录名）---
-                            cgaLockedDirs.add(scanPat + scanFname.slice(0, -4) + '/');
+                        /** --- 最终更新的根目录 --- */
+                        const targetPath = await resolvePathInside(kebab.ROOT_CWD, inputPath);
+                        if (!targetPath) {
+                            res.end('Invalid path');
+                            return;
                         }
-                        if (scanFname === 'kebab.json') {
-                            // --- 记录含有 kebab.json 的目录（即 kebab 子项目根目录）---
-                            kebabProjectDirs.add(scanPat);
-                        }
-                    }
-                    // --- 补充扫描目标目录中现存的 kebab.json，兼容压缩包未携带 kebab.json 的情况 ---
-                    for (const dir of touchedDirs) {
-                        /** --- 把目录拆成各级目录名，先检查当前目录，再一层层往上找 --- */
-                        const dirs = dir ? dir.split('/').filter(Boolean) : [];
-                        for (let i = dirs.length; i >= 0; --i) {
-                            /** --- 当前要检查的目录路径，不含开头/，含尾部/，根目录为空字符串 --- */
-                            const currentDir = i ? dirs.slice(0, i).join('/') + '/' : '';
-                            if (kebabProjectDirs.has(currentDir)) {
-                                break;
+                        const to = targetPath + path.sep;
+                        if (!await lFs.isDir(to)) {
+                            if (msg.strict === '1') {
+                                res.end(`[code][0] [${msg.strict}] Path not found: ${to}`);
+                                return;
                             }
-                            if (await lFs.isFile(`${to}${currentDir}kebab.json`)) {
-                                kebabProjectDirs.add(currentDir);
-                                break;
+                            await lFs.mkdir(to);
+                        }
+                        const buf = await lFs.getContent(body.file);
+                        if (!buf) {
+                            res.end('System error');
+                            return;
+                        }
+                        const zip = await lZip.get(buf);
+                        if (!zip) {
+                            res.end('Zip error');
+                            return;
+                        }
+                        const archiveEntries = zip.readDir('/', {
+                            'hasChildren': true,
+                            'hasDir': false,
+                        });
+                        const archiveSize = archiveEntries.reduce((total, item) => total + item.uncompressedSize, 0);
+                        if ((archiveEntries.length > 10_000) || (archiveSize > 512 * 1024 * 1024)) {
+                            res.end('Archive limit exceeded');
+                            return;
+                        }
+                        const rawList = await zip.getList();
+                        /** --- 通过路径检查的 ZIP 文件，路径都以 / 开头 --- */
+                        const ls: Record<string, Buffer | string> = {};
+                        for (const archivePath in rawList) {
+                            const normalizedPath = normalizeArchivePath(archivePath);
+                            if (!normalizedPath || (ls[normalizedPath] !== undefined)) {
+                                res.end('Invalid archive path');
+                                return;
+                            }
+                            ls[normalizedPath] = rawList[archivePath];
+                        }
+                        // --- 预扫描：收集 .cga 锁定目录和 kebab 子项目目录 ---
+                        /** --- .cga 锁定的目录集合，key 格式为"父路径/目录名/"（不含开头/，含尾部/），例如 "www/pika/" --- */
+                        const cgaLockedDirs = new Set<string>();
+                        /** --- 含有 kebab.json 的目录路径集合（不含开头/，含尾部/，根目录为空字符串） --- */
+                        const kebabProjectDirs = new Set<string>();
+                        /** --- 本次部署涉及到的目录路径集合（不含开头/，含尾部/，根目录为空字符串） --- */
+                        const touchedDirs = new Set<string>();
+                        for (const scanPath in ls) {
+                            /** --- 纯路径中最后一个 / 的位置索引 --- */
+                            const scanLio = scanPath.lastIndexOf('/');
+                            /** --- 纯路径，不以 / 开头，以 / 结尾，若是根路径就是空字符串，例如 "www/pika/" --- */
+                            const scanPat = scanPath.slice(1, scanLio + 1);
+                            /** --- 纯文件名，例如 "index.ts" 或 "pika.cga" --- */
+                            const scanFname = scanPath.slice(scanLio + 1);
+                            touchedDirs.add(scanPat);
+                            if (scanFname.endsWith('.cga')) {
+                                // --- 记录 .cga 锁定的同级目录（去掉 .cga 后缀的名字即为被锁定的目录名）---
+                                cgaLockedDirs.add(scanPat + scanFname.slice(0, -4) + '/');
+                            }
+                            if (scanFname === 'kebab.json') {
+                                // --- 记录含有 kebab.json 的目录（即 kebab 子项目根目录）---
+                                kebabProjectDirs.add(scanPat);
                             }
                         }
-                    }
-                    /** --- kebab 子项目中仅允许部署的子文件夹名集合 --- */
-                    const KEBAB_ALLOWED_DIRS = new Set(['ctr', 'data', 'stc', 'view', 'lib', 'abox']);
-                    /** --- 常见开发、依赖、缓存、构建产物目录不参与部署 --- */
-                    const DEPLOY_EXCLUDE_DIRS = new Set([
-                        '.git',
-                        '.svn',
-                        '.hg',
-                        '.vscode',
-                        '.idea',
-                        '.history',
-                        'node_modules',
-                        'bower_components',
-                        '.cache',
-                        '.parcel-cache',
-                        '.turbo',
-                        '.next',
-                        '.nuxt',
-                        '.vite',
-                        'coverage',
-                        '.nyc_output',
-                        'tmp',
-                        'temp',
-                    ]);
-                    for (const archivePath in ls) {
-                        /** --- 纯路径中最后一个 / 的位置索引 --- */
-                        const lio = archivePath.lastIndexOf('/');
-                        /** --- 纯路径，不以 / 开头，以 / 结尾，若是根路径就是空字符串，例如 "www/pika/ctr/" --- */
-                        const pat = archivePath.slice(1, lio + 1);
-                        /** --- 纯文件名，例如 "api.js" --- */
-                        const fname = archivePath.slice(lio + 1);
-                        const dirs = archivePath.slice(1).split('/').slice(0, -1);
-                        if (dirs.some(seg => DEPLOY_EXCLUDE_DIRS.has(seg))) {
-                            // --- 开发、依赖、缓存、构建产物目录不覆盖 ---
-                            continue;
-                        }
-                        if (dirs.some((seg, index) => seg === 'abox' && ['test', 'tests'].includes(dirs[index + 1]))) {
-                            // --- abox 运行代码参与部署，测试目录不进入线上目录 ---
-                            continue;
-                        }
-                        if (fname === 'kebab.json' && hasSensitiveConfig(ls[archivePath])) {
-                            // --- 包含密码或密钥的 kebab.json 不覆盖，避免部署包覆盖现有敏感配置 ---
-                            continue;
-                        }
-                        if (pat === 'conf/' && fname === 'config.json') {
-                            // --- 全局配置文件不能覆盖 ---
-                            continue;
-                        }
-                        if (fname.endsWith('.js.map') || fname.endsWith('.ts') || fname.endsWith('.tsx') || fname.endsWith('.scss') || fname.endsWith('.gitignore') || fname.endsWith('.DS_Store')) {
-                            // --- 测试或开发文件不覆盖 ---
-                            continue;
-                        }
-                        if (fname === 'AGENTS.md') {
-                            // --- 排除文件不部署 ---
-                            continue;
-                        }
-                        // --- 规则 1：若同级目录存在 xxx.cga，则 xxx 目录下所有内容不部署 ---
-                        if (pat) {
-                            /** --- 当前目录或上级目录是否有同名 .cga 文件 --- */
-                            let cgaBlocked = false;
-                            /** --- 逐层拼出的目录路径，如 a/、a/b/，检查是否有同名 .cga 文件 --- */
-                            let accumulated = '';
-                            for (const seg of pat.split('/').filter(Boolean)) {
-                                accumulated += seg + '/';
-                                if (cgaLockedDirs.has(accumulated)) {
-                                    cgaBlocked = true;
+                        // --- 补充扫描目标目录中现存的 kebab.json，兼容压缩包未携带 kebab.json 的情况 ---
+                        for (const dir of touchedDirs) {
+                            /** --- 把目录拆成各级目录名，先检查当前目录，再一层层往上找 --- */
+                            const dirs = dir ? dir.split('/').filter(Boolean) : [];
+                            for (let i = dirs.length; i >= 0; --i) {
+                                /** --- 当前要检查的目录路径，不含开头/，含尾部/，根目录为空字符串 --- */
+                                const currentDir = i ? dirs.slice(0, i).join('/') + '/' : '';
+                                if (kebabProjectDirs.has(currentDir)) {
+                                    break;
+                                }
+                                if (await lFs.isFile(`${to}${currentDir}kebab.json`)) {
+                                    kebabProjectDirs.add(currentDir);
                                     break;
                                 }
                             }
-                            if (cgaBlocked) {
+                        }
+                        /** --- kebab 子项目中仅允许部署的子文件夹名集合 --- */
+                        const KEBAB_ALLOWED_DIRS = new Set(['ctr', 'data', 'stc', 'view', 'lib', 'abox']);
+                        /** --- 常见开发、依赖、缓存、构建产物目录不参与部署 --- */
+                        const DEPLOY_EXCLUDE_DIRS = new Set([
+                            '.git',
+                            '.svn',
+                            '.hg',
+                            '.vscode',
+                            '.idea',
+                            '.history',
+                            'node_modules',
+                            'bower_components',
+                            '.cache',
+                            '.parcel-cache',
+                            '.turbo',
+                            '.next',
+                            '.nuxt',
+                            '.vite',
+                            'coverage',
+                            '.nyc_output',
+                            'tmp',
+                            'temp',
+                        ]);
+                        for (const archivePath in ls) {
+                            /** --- 纯路径中最后一个 / 的位置索引 --- */
+                            const lio = archivePath.lastIndexOf('/');
+                            /** --- 纯路径，不以 / 开头，以 / 结尾，若是根路径就是空字符串，例如 "www/pika/ctr/" --- */
+                            const pat = archivePath.slice(1, lio + 1);
+                            /** --- 纯文件名，例如 "api.js" --- */
+                            const fname = archivePath.slice(lio + 1);
+                            const dirs = archivePath.slice(1).split('/').slice(0, -1);
+                            if (dirs.some(seg => DEPLOY_EXCLUDE_DIRS.has(seg))) {
+                                // --- 开发、依赖、缓存、构建产物目录不覆盖 ---
                                 continue;
                             }
-                        }
-                        // --- 规则 2：kebab 子项目目录中，仅允许部署 ctr/data/stc/view/lib/abox 子文件夹内的内容 ---
-                        if (kebabProjectDirs.size > 0) {
-                            // --- 同时属于多个 Kebab 项目时，按最外层项目的部署规则检查 ---
-                            // --- 例如根项目不允许 backup/，backup/ 自带 kebab.json 也不能绕过 ---
-                            /** --- 当前文件所属的最外层 Kebab 项目目录，找不到时为 null --- */
-                            let shortestMatch: string | null = null;
-                            for (const kdir of kebabProjectDirs) {
-                                /** --- kdir 是否比已选的项目目录更靠外（路径更短）--- */
-                                const isShallower = shortestMatch === null || kdir.length < shortestMatch.length;
-                                if (pat.startsWith(kdir) && isShallower) {
-                                    shortestMatch = kdir;
+                            if (dirs.some((seg, index) => seg === 'abox' && ['test', 'tests'].includes(dirs[index + 1]))) {
+                                // --- abox 运行代码参与部署，测试目录不进入线上目录 ---
+                                continue;
+                            }
+                            if (fname === 'kebab.json' && hasSensitiveConfig(ls[archivePath])) {
+                                // --- 包含密码或密钥的 kebab.json 不覆盖，避免部署包覆盖现有敏感配置 ---
+                                continue;
+                            }
+                            if (pat === 'conf/' && fname === 'config.json') {
+                                // --- 全局配置文件不能覆盖 ---
+                                continue;
+                            }
+                            if (fname.endsWith('.js.map') || fname.endsWith('.ts') || fname.endsWith('.tsx') || fname.endsWith('.scss') || fname.endsWith('.gitignore') || fname.endsWith('.DS_Store')) {
+                                // --- 测试或开发文件不覆盖 ---
+                                continue;
+                            }
+                            if (fname === 'AGENTS.md') {
+                                // --- 排除文件不部署 ---
+                                continue;
+                            }
+                            // --- 规则 1：若同级目录存在 xxx.cga，则 xxx 目录下所有内容不部署 ---
+                            if (pat) {
+                                /** --- 当前目录或上级目录是否有同名 .cga 文件 --- */
+                                let cgaBlocked = false;
+                                /** --- 逐层拼出的目录路径，如 a/、a/b/，检查是否有同名 .cga 文件 --- */
+                                let accumulated = '';
+                                for (const seg of pat.split('/').filter(Boolean)) {
+                                    accumulated += seg + '/';
+                                    if (cgaLockedDirs.has(accumulated)) {
+                                        cgaBlocked = true;
+                                        break;
+                                    }
+                                }
+                                if (cgaBlocked) {
+                                    continue;
                                 }
                             }
-                            if (shortestMatch !== null) {
-                                // --- 取相对于 kebab 项目目录的路径，检查第一级子目录 ---
-                                /** --- 相对路径，例如若 pat 为 "www/pika/ctr/" 且 shortestMatch 为 "www/pika/"，则 relPath 为 "ctr/" --- */
-                                const relPath = pat.slice(shortestMatch.length);
-                                if (relPath) {
-                                    /** --- 路径的第一级子目录名，例如 "ctr" 或 "data"，用于判断是否在允许列表中 --- */
-                                    const firstSeg = relPath.split('/')[0];
-                                    if (!KEBAB_ALLOWED_DIRS.has(firstSeg)) {
-                                        continue;
+                            // --- 规则 2：kebab 子项目目录中，仅允许部署 ctr/data/stc/view/lib/abox 子文件夹内的内容 ---
+                            if (kebabProjectDirs.size > 0) {
+                                // --- 同时属于多个 Kebab 项目时，按最外层项目的部署规则检查 ---
+                                // --- 例如根项目不允许 backup/，backup/ 自带 kebab.json 也不能绕过 ---
+                                /** --- 当前文件所属的最外层 Kebab 项目目录，找不到时为 null --- */
+                                let shortestMatch: string | null = null;
+                                for (const kdir of kebabProjectDirs) {
+                                    /** --- kdir 是否比已选的项目目录更靠外（路径更短）--- */
+                                    const isShallower = shortestMatch === null || kdir.length < shortestMatch.length;
+                                    if (pat.startsWith(kdir) && isShallower) {
+                                        shortestMatch = kdir;
+                                    }
+                                }
+                                if (shortestMatch !== null) {
+                                    // --- 取相对于 kebab 项目目录的路径，检查第一级子目录 ---
+                                    /** --- 相对路径，例如若 pat 为 "www/pika/ctr/" 且 shortestMatch 为 "www/pika/"，则 relPath 为 "ctr/" --- */
+                                    const relPath = pat.slice(shortestMatch.length);
+                                    if (relPath) {
+                                        /** --- 路径的第一级子目录名，例如 "ctr" 或 "data"，用于判断是否在允许列表中 --- */
+                                        const firstSeg = relPath.split('/')[0];
+                                        if (!KEBAB_ALLOWED_DIRS.has(firstSeg)) {
+                                            continue;
+                                        }
                                     }
                                 }
                             }
-                        }
-                        // --- 看文件夹是否存在 ---
-                        const targetDir = await resolvePathInside(to, pat);
-                        if (!targetDir) {
-                            res.end('Invalid archive directory');
-                            await sRoute.unlinkUploadFiles(rtn.files);
-                            return;
-                        }
-                        if (pat && !await lFs.isDir(targetDir)) {
-                            if (rtn.post['strict'] === '1') {
-                                res.end(`[code][1] [${rtn.post['strict']}] Path not found: ${targetDir}`);
-                                await sRoute.unlinkUploadFiles(rtn.files);
+                            // --- 看文件夹是否存在 ---
+                            const targetDir = await resolvePathInside(to, pat);
+                            if (!targetDir) {
+                                res.end('Invalid archive directory');
                                 return;
                             }
-                            await lFs.mkdir(targetDir);
-                        }
-                        const targetFile = await resolvePathInside(to, pat + fname);
-                        if (!targetFile) {
-                            res.end('Invalid archive file');
-                            await sRoute.unlinkUploadFiles(rtn.files);
-                            return;
-                        }
-                        // --- 覆盖或创建文件 ---
-                        if ((rtn.post['strict'] === '1') && !await lFs.isFile(targetFile)) {
-                            res.end(`[code][2] [${rtn.post['strict']}] Path not found: ${targetFile}`);
-                            await sRoute.unlinkUploadFiles(rtn.files);
-                            return;
-                        }
-                        await lFs.putContent(targetFile, ls[archivePath]);
-                    }
-                    await sRoute.unlinkUploadFiles(rtn.files);
-                    // --- 检查是否更新 config ---
-                    const configType = rtn.post['config'];
-                    if (configType === '1') {
-                        /** --- 本次部署要更新的静态版本号 --- */
-                        const staticVer = lTime.format(null, 'YmdHis');
-                        for (const kdir of kebabProjectDirs) {
-                            const projectFile = `${to}${kdir}kebab.json`;
-                            if (!await lFs.isFile(projectFile)) {
-                                continue;
+                            if (pat && !await lFs.isDir(targetDir)) {
+                                if (msg.strict === '1') {
+                                    res.end(`[code][1] [${msg.strict}] Path not found: ${targetDir}`);
+                                    return;
+                                }
+                                await lFs.mkdir(targetDir);
                             }
-                            const projectContent = await lFs.getContent(projectFile, 'utf8');
-                            if (!projectContent) {
-                                continue;
+                            const targetFile = await resolvePathInside(to, pat + fname);
+                            if (!targetFile) {
+                                res.end('Invalid archive file');
+                                return;
                             }
-                            const projectJson = lText.parseJson<any>(projectContent);
-                            if (!projectJson) {
-                                continue;
+                            // --- 覆盖或创建文件 ---
+                            if ((msg.strict === '1') && !await lFs.isFile(targetFile)) {
+                                res.end(`[code][2] [${msg.strict}] Path not found: ${targetFile}`);
+                                return;
                             }
-                            projectJson.set ??= {};
-                            projectJson.set.staticVer = staticVer;
-                            await lFs.putContent(projectFile, lText.stringifyJson(projectJson, 4), {
-                                'encoding': 'utf8'
-                            });
+                            await lFs.putContent(targetFile, ls[archivePath]);
+                        }
+                        // --- 检查是否更新 config ---
+                        const configType = msg.config;
+                        if (configType === '1') {
+                            /** --- 本次部署要更新的静态版本号 --- */
+                            const staticVer = lTime.format(null, 'YmdHis');
+                            for (const kdir of kebabProjectDirs) {
+                                const projectFile = `${to}${kdir}kebab.json`;
+                                if (!await lFs.isFile(projectFile)) {
+                                    continue;
+                                }
+                                const projectContent = await lFs.getContent(projectFile, 'utf8');
+                                if (!projectContent) {
+                                    continue;
+                                }
+                                const projectJson = lText.parseJson<any>(projectContent);
+                                if (!projectJson) {
+                                    continue;
+                                }
+                                projectJson.set ??= {};
+                                projectJson.set.staticVer = staticVer;
+                                await lFs.putContent(projectFile, lText.stringifyJson(projectJson, 4), {
+                                    'encoding': 'utf8'
+                                });
+                            }
+                        }
+                        else if (configType === '2') {
+                            const configContent = await lFs.getContent(kebab.CONF_CWD + 'config.json', 'utf8');
+                            if (configContent) {
+                                await lFs.putContent(kebab.CONF_CWD + 'config.json', configContent.replace(/"staticVer": ".+?"/, `"staticVer": "${lTime.format(null, 'YmdHis')}"`), {
+                                    'encoding': 'utf8'
+                                });
+                            }
+                        }
+                        break;
+                    }
+                    finally {
+                        if (body.file) {
+                            await fs.promises.unlink(body.file).catch(() => {});
                         }
                     }
-                    else if (configType === '2') {
-                        const configContent = await lFs.getContent(kebab.CONF_CWD + 'config.json', 'utf8');
-                        if (configContent) {
-                            await lFs.putContent(kebab.CONF_CWD + 'config.json', configContent.replace(/"staticVer": ".+?"/, `"staticVer": "${lTime.format(null, 'YmdHis')}"`), {
-                                'encoding': 'utf8'
-                            });
-                        }
-                    }
-                    break;
                 }
                 case 'log': {
                     // --- 获取日志信息 ---
@@ -922,7 +914,11 @@ function createRpcListener(): void {
                         res.end('Invalid path');
                         return;
                     }
-                    const targetPath = lText.urlResolve(kebab.ROOT_CWD, msg.path, true);
+                    const targetPath = await resolvePathInside(kebab.ROOT_CWD, msg.path);
+                    if (targetPath === null) {
+                        res.end('Invalid path');
+                        return;
+                    }
                     res.end(lText.stringifyJson({
                         'result': 1,
                         'data': (await lFs.readDir(targetPath, msg.encoding)).map(item => ({
