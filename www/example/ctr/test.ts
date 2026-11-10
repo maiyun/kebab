@@ -31,6 +31,21 @@ import * as sCtr from '#kebab/sys/ctr.js';
 // --- mod ---
 import mTest from '../mod/test.js';
 import mTestData from '../mod/testdata.js';
+import * as coreUpdatecodeTest from '../abox/core-updatecode.js';
+
+/**
+ * --- 创建独立测试目录并预置待覆盖文件 ---
+ * @param root 运行根目录
+ * @returns 相对运行根目录的测试路径；准备失败返回 false
+ */
+const prepareUpdatecodeTest: (root: string) => Promise<string | false> = coreUpdatecodeTest.prepare;
+
+/**
+ * --- 清除 ftmp 下本示例创建的测试目录，保留其他文件及软链接 ---
+ * @param root 运行根目录
+ * @returns 是否全部清理成功，无测试目录时也返回 true
+ */
+const clearUpdatecodeTest: (root: string) => Promise<boolean> = coreUpdatecodeTest.clear;
 
 /** --- Kebab 核心库提供的 Valibot 对象 --- */
 const v = lCore.v;
@@ -209,7 +224,7 @@ export default class extends sCtr.Ctr {
             `<br><a href="${this._config.const.urlBase}test/core-pm2?name=cron&action=restart">View "test/core-pm2"</a>`,
             `<br><a href="${this._config.const.urlBase}test/core-npm">View "test/core-npm"</a>`,
             `<br><a href="${this._config.const.urlBase}test/core-global">View "test/core-global"</a>`,
-            `<br><a href="${this._config.const.urlBase}test/core-updatecode">View "test/core-updatecode"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/core-updatecode">View "test/core-updatecode"</a> <a href="${this._config.const.urlBase}test/core-updatecode?action=clear">clear</a>`,
             `<br><a href="${this._config.const.urlBase}test/core-env">View "test/core-env"</a>`,
 
             '<br><br><b>Crypto:</b>',
@@ -1853,15 +1868,27 @@ for (let i = 0; i < 30000; ++i) {
         return echo.join('') + '<br>' + this._getEnd();
     }
 
+    /**
+     * --- 在独立临时目录测试文件覆盖，或清理本示例的测试结果 ---
+     * @returns 测试或清理结果页面
+     */
     public async coreUpdatecode(): Promise<string> {
+        if (this._get['action'] === 'clear') {
+            const cleared = await clearUpdatecodeTest(kebab.ROOT_CWD);
+            return (cleared ? 'Test files cleared.' : 'Failed to clear test files.') + '<br><br>' + this._getEnd();
+        }
         const zip = `${this._config.const.dataPath}test.zip`;
-        const to = '';
+        const to = await prepareUpdatecodeTest(kebab.ROOT_CWD);
+        if (to === false) {
+            return 'Failed to prepare test files.<br><br>' + this._getEnd();
+        }
         const echo: string[] = [
             `zip: ${zip}<br>
 to: ${to}`
         ];
-        const list = await lCore.updateCode(zip, to);
-        echo.push(`<pre>const list = lCore.updateCode(zip, to);</pre>${JSON.stringify(list)}`);
+        const list = await lCore.updateCode(zip, to, undefined, false, true);
+        echo.push(`<pre>const list = await lCore.updateCode(zip, to, undefined, false, true);</pre>${lText.htmlescape(lText.stringifyJson(list))}`);
+        echo.push(`<br><a href="${this._config.const.urlBase}test/core-updatecode?action=clear">clear</a>`);
         return echo.join('') + '<br><br>' + this._getEnd();
     }
 
