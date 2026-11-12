@@ -136259,7 +136259,7 @@ Defined in: [sys/mod.ts:90](https://github.com/maiyunnet/kebab/blob/master/sys/m
 Defined in: [sys/mod.ts:87](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L87)
 
 表的分区字段名，如 ['time_push']
-save、remove、refresh 默认会把这些字段加入 WHERE 条件，与主键一起查找记录。
+只填分区字段，不用额外填写主键；save、remove、refresh 默认会把主键一起加入 WHERE。
 读取记录后不要修改主键或分区字段；留空时只使用主键。
 
 ***
