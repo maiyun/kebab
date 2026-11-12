@@ -560,7 +560,8 @@ export class Sql {
 
     /**
      * --- 筛选器 ---
-     * --- 标量相等：'city': 'bj', 'type': '2' ---
+     * --- 等值条件：'city': 'bj'；字符串、数字、布尔值、bigint、Date 和 Buffer 均作为单个参数 ---
+     * --- null 生成 IS NULL，数组生成 IN 条件 ---
      * --- 运算符条件：['type', '>', '1'] ---
      * --- 集合条件：['type', 'in', ['1', '2']] 或 'type': ['1', '2'] ---
      * --- 逻辑分组：'$or': [{'city': 'bj'}, {'city': 'sh'}, [['age', '>', '10']]] ---
@@ -757,11 +758,6 @@ export class Sql {
                         // --- NULL 判断 ---
                         sql += this.field(k) + ' IS NULL AND ';
                     }
-                    else if (typeof v === 'string' || typeof v === 'number') {
-                        // --- 标量相等 ---
-                        sql += this.field(k) + ' = ' + this._placeholder() + ' AND ';
-                        data.push(v);
-                    }
                     else if (lSqlValue.isJson(v)) {
                         // --- JSON 相等 ---
                         const result = this._processValue(v);
@@ -772,7 +768,7 @@ export class Sql {
                         // --- 字段相等 ---
                         sql += this.field(k) + ' = ' + this.field(v.value) + ' AND ';
                     }
-                    else {
+                    else if (Array.isArray(v)) {
                         // --- IN 查询，如 'type': ['1', '2'] ---
                         if (v.length > 0) {
                             sql += this.field(k) + ' IN (';
@@ -795,6 +791,11 @@ export class Sql {
                         else {
                             sql += this.field(k) + ' IN (NULL) AND ';
                         }
+                    }
+                    else {
+                        // --- 普通值使用等号比较，原值交给数据库驱动处理 ---
+                        sql += this.field(k) + ' = ' + this._placeholder() + ' AND ';
+                        data.push(v);
                     }
                 }
             }

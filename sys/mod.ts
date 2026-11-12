@@ -79,6 +79,13 @@ export default class Mod {
     /** --- 主键字段名 --- */
     protected static _$primary: string = 'id';
 
+    /**
+     * --- 表的分区字段名，如 ['time_push'] ---
+     * save、remove、refresh 默认会把这些字段加入 WHERE 条件，与主键一起查找记录。
+     * 读取记录后不要修改主键或分区字段；留空时只使用主键。
+     */
+    protected static _$partition: string[] = [];
+
     /** --- 设置后将由 _keyGenerator 函数生成唯一字段 --- */
     protected static _$key: string = '';
 
@@ -825,6 +832,26 @@ export default class Mod {
     // --- 动态方法 ---
 
     /**
+     * --- 构造包含主键和分区字段的 WHERE 条件 ---
+     * @returns 主键及分区字段条件，缺少字段时返回 false
+     */
+    private _getIdentityWhere(): Record<string, unknown> | false {
+        const cstr = this.constructor as typeof Mod;
+        if (!cstr._$partition.length) {
+            return this._data[cstr._$primary] ? { [cstr._$primary]: this._data[cstr._$primary] } : false;
+        }
+        const where: Record<string, unknown> = {};
+        for (const field of new Set([cstr._$primary, ...cstr._$partition])) {
+            const value = this._data[field];
+            if (value === undefined || (field === cstr._$primary && value === null)) {
+                return false;
+            }
+            where[field] = value;
+        }
+        return where;
+    }
+
+    /**
      * --- 设置单个模型属性，并记录是否需要在数据库边界序列化 ---
      * @param key 字段名
      * @param value 字段值
@@ -1017,7 +1044,7 @@ export default class Mod {
 
         const mysql = this._db.getService() === lDb.ESERVICE.MYSQL;
         const table = cstr._$table + (this._index ? `_${this._index[0]}` : '');
-        const identity = [...new Set([cstr._$primary, cstr._$key].filter(field => field))];
+        const identity = [...new Set([cstr._$primary, cstr._$key, ...cstr._$partition].filter(field => field))];
         if (mysql) {
             const created = await this.create();
             if (created !== null) {
@@ -1065,16 +1092,16 @@ export default class Mod {
     /**
      * --- 刷新当前模型获取最新数据 ---
      * @param lock 是否加锁
+     * @returns true 成功，null 记录不存在，false 缺少定位字段或查询失败
      */
     public async refresh(lock: boolean = false): Promise<boolean | null> {
-        const cstr = this.constructor as any;
-        if (!this._data[cstr._$primary]) {
-            lCore.log(this._ctr ?? {}, '[MOD][refresh] primary key not found', '-error');
+        const cstr = this.constructor as typeof Mod;
+        const where = this._getIdentityWhere();
+        if (where === false) {
+            lCore.log(this._ctr ?? {}, '[MOD][refresh] primary or partition field not loaded', '-error');
             return false;
         }
-        this._sql.select('*', (cstr._$table as string) + (this._index ? ('_' + this._index[0]) : '')).where([{
-            [cstr._$primary]: this._data[cstr._$primary]
-        }]);
+        this._sql.select('*', cstr._$table + (this._index ? ('_' + this._index[0]) : '')).where(where);
         if (lock) {
             this._sql.lock();
         }
@@ -1096,24 +1123,23 @@ export default class Mod {
 
     /**
      * --- 更新 set 的数据到数据库，有未保存数据时才保存 ---
-     * @param where 非空筛选条件，省略时必须有主键
-     * @returns 是否成功，失败保留待写数据
+     * @param where 显式非空筛选条件；省略时使用主键和分区字段值
+     * @returns 是否成功，缺少默认定位字段或写入失败返回 false 并保留待写数据
      */
     public async save(where?: any): Promise<boolean> {
         if (Object.keys(this._updates).length === 0) {
             return true;
         }
-        const cstr = this.constructor as any;
-        if (!this._data[cstr._$primary] && (where === undefined || where === null)) {
-            lCore.log(this._ctr ?? {}, '[MOD][save] primary key not found', '-error');
+        const cstr = this.constructor as typeof Mod;
+        const filter = where ?? this._getIdentityWhere();
+        if (filter === false) {
+            lCore.log(this._ctr ?? {}, '[MOD][save] primary or partition field not loaded', '-error');
             return false;
         }
         const updates = this._getUpdates();
-        this._sql.update((cstr._$table as string) + (this._index ? ('_' + this._index[0]) : ''), [updates]);
+        this._sql.update(cstr._$table + (this._index ? ('_' + this._index[0]) : ''), [updates]);
         const updateSql = this._sql.getSql();
-        this._sql.where(where ?? {
-            [cstr._$primary]: this._data[cstr._$primary]
-        });
+        this._sql.where(filter);
         if (this._sql.getSql() === updateSql) {
             return false;
         }
@@ -1133,17 +1159,17 @@ export default class Mod {
     }
 
     /**
-     * --- 移除本条目 ---
+     * --- 按主键和分区字段删除当前记录 ---
+     * @returns 是否成功，缺少定位字段、记录不存在或删除失败返回 false
      */
     public async remove(): Promise<boolean> {
-        const cstr = this.constructor as any;
-        if (!this._data[cstr._$primary]) {
-            lCore.log(this._ctr ?? {}, '[MOD][remove] primary key not found', '-error');
+        const cstr = this.constructor as typeof Mod;
+        const where = this._getIdentityWhere();
+        if (where === false) {
+            lCore.log(this._ctr ?? {}, '[MOD][remove] primary or partition field not loaded', '-error');
             return false;
         }
-        this._sql.delete((cstr._$table as string) + (this._index ? ('_' + this._index[0]) : '')).where([{
-            [cstr._$primary]: this._data[cstr._$primary]
-        }]);
+        this._sql.delete(cstr._$table + (this._index ? ('_' + this._index[0]) : '')).where(where);
         const r = await this._db.execute(this._sql.getSql(), this._sql.getData());
         if (r.packet === null) {
             lCore.log(this._ctr ?? {}, '[MOD][remove] ' + (lText.stringifyJson(r.error?.message ?? '').slice(1, -1) + ' - ' + this._sql.format()).replaceAll('"', '""'), '-error');

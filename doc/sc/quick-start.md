@@ -205,3 +205,26 @@ public create(): kebab.Json[] {
 不传 `response` 时，失败响应默认为 `[0, issues[0].message]`。也可以传固定数组，例如 `{ 'response': [0, '提交参数有误。'] }`。`issues` 含输入上下文，只应在服务端按需记录；返回前端时建议使用 `v.flatten(issues)` 等方式仅提取路径和消息，不要直接回传完整问题对象。
 
 `_valibotx` 默认先校验 `_xsrf`，通过后才运行 schema，且 `_xsrf` 不会被自动加入 schema 输出。仅在已有等效安全机制时才可使用 `{ 'ignoreXsrf': true }`。只读请求使用 `_valibot`。
+
+
+## 原生分区表模型
+
+模型通过 `_$partition` 声明数据库原生分区字段，RANGE、HASH、LIST 采用相同写法；支持多个字段。数据库仍负责根据字段值选择分区，框架不查询分区目录，也不自动创建分区。
+
+```ts
+export default class Order extends sMod {
+    protected static _$table = 'order';
+    protected static _$primary = 'id';
+    protected static _$partition = ['time_push'];
+}
+```
+
+读取模型后，`save()`、`remove()`、`refresh()` 的默认条件自动包含主键与分区字段。例如上面的模型使用 `id = ? AND time_push = ?`。`set()` 仍用于指定待写数据，调用方不必反复填写分区条件。
+
+- 查询时须选出主键及全部分区字段。读取记录后不要修改这些字段，包括通过 `set()` 赋值或直接修改 Date、Buffer 等对象；框架直接使用模型中的当前值构造 WHERE，不保存旧值，也不检查这些字段是否被改动。
+- 创建记录时设置分区字段，主键使用数据库返回的自增 ID；使用数据库默认值、生成列、触发器或 SQL 表达式赋值时，须重新查询取得实际字段值后再使用默认实例操作。`upsert()` 用于更新已有记录时，同样不能改变其分区字段。
+- 缺少主键或分区字段时，默认实例操作返回 `false`。`save()` 没有待写字段时仍直接返回 `true`。
+- 显式 `save(where)` 完整采用调用方提供的条件，不自动附加分区或业务条件。
+- 未声明 `_$partition` 的模型保持仅按主键定位的原行为。静态查询、批量更新、删除等方法仍使用显式条件；租户、软删除和业务状态约束由应用负责。
+
+`_$partition` 用于数据库原生分区，与 `index` 选项按表名后缀访问分表的机制不同。事务提交、回滚及连接生命周期保持原约定。
