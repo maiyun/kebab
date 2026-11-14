@@ -6,7 +6,7 @@
 
 # Interface: ILoginRecord
 
-Defined in: lib/session/login.ts:21
+Defined in: [lib/session/login.ts:21](https://github.com/maiyunnet/kebab/blob/master/lib/session/login.ts#L21)
 
 已保存的登录授权，不包含 Session 凭据
 
@@ -20,7 +20,7 @@ Defined in: lib/session/login.ts:21
 
 > **data**: `Record`\<`string`, [`LoginValue`](../type-aliases/LoginValue.md)\>
 
-Defined in: lib/session/login.ts:33
+Defined in: [lib/session/login.ts:33](https://github.com/maiyunnet/kebab/blob/master/lib/session/login.ts#L33)
 
 登录时保存的附加信息
 
@@ -30,7 +30,7 @@ Defined in: lib/session/login.ts:33
 
 > **scope**: `string`
 
-Defined in: lib/session/login.ts:27
+Defined in: [lib/session/login.ts:27](https://github.com/maiyunnet/kebab/blob/master/lib/session/login.ts#L27)
 
 账号作用域
 
@@ -40,7 +40,7 @@ Defined in: lib/session/login.ts:27
 
 > **subject**: `string`
 
-Defined in: lib/session/login.ts:25
+Defined in: [lib/session/login.ts:25](https://github.com/maiyunnet/kebab/blob/master/lib/session/login.ts#L25)
 
 账号标识
 
@@ -50,7 +50,7 @@ Defined in: lib/session/login.ts:25
 
 > **timeAdd**: `number`
 
-Defined in: lib/session/login.ts:31
+Defined in: [lib/session/login.ts:31](https://github.com/maiyunnet/kebab/blob/master/lib/session/login.ts#L31)
 
 登录时间，Redis 服务端 UTC Unix 秒
 
@@ -60,7 +60,7 @@ Defined in: lib/session/login.ts:31
 
 > **uid**: `string`
 
-Defined in: lib/session/login.ts:23
+Defined in: [lib/session/login.ts:23](https://github.com/maiyunnet/kebab/blob/master/lib/session/login.ts#L23)
 
 本次登录 UID，每次成功登录重新生成
 
@@ -70,6 +70,6 @@ Defined in: lib/session/login.ts:23
 
 > **version**: `string`
 
-Defined in: lib/session/login.ts:29
+Defined in: [lib/session/login.ts:29](https://github.com/maiyunnet/kebab/blob/master/lib/session/login.ts#L29)
 
 业务授权版本，框架不查询业务数据验证此值

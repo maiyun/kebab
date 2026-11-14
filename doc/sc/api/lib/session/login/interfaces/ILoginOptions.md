@@ -6,7 +6,7 @@
 
 # Interface: ILoginOptions
 
-Defined in: lib/session/login.ts:49
+Defined in: [lib/session/login.ts:49](https://github.com/maiyunnet/kebab/blob/master/lib/session/login.ts#L49)
 
 Redis 登录管理选项
 
@@ -16,7 +16,7 @@ Redis 登录管理选项
 
 > `optional` **name?**: `string`
 
-Defined in: lib/session/login.ts:51
+Defined in: [lib/session/login.ts:51](https://github.com/maiyunnet/kebab/blob/master/lib/session/login.ts#L51)
 
 Session 名称；传 token 时必填，传控制器时使用已初始化 Session 的实际名称
 
@@ -26,7 +26,7 @@ Session 名称；传 token 时必填，传控制器时使用已初始化 Session
 
 > `optional` **pre?**: `string`
 
-Defined in: lib/session/login.ts:53
+Defined in: [lib/session/login.ts:53](https://github.com/maiyunnet/kebab/blob/master/lib/session/login.ts#L53)
 
 Session 名称之后的键名前缀，默认 login:；可进一步隔离授权用途
 
@@ -36,6 +36,6 @@ Session 名称之后的键名前缀，默认 login:；可进一步隔离授权�
 
 > `optional` **ttl?**: `number`
 
-Defined in: lib/session/login.ts:55
+Defined in: [lib/session/login.ts:55](https://github.com/maiyunnet/kebab/blob/master/lib/session/login.ts#L55)
 
 有效期秒数，默认 172800；整数 0～2147483647，0 表示永久；与业务 Session 有效期一致

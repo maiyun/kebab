@@ -1913,7 +1913,7 @@ index/variables/VER.md
 
 # Variable: VER
 
-> `const` **VER**: `"9.28.0"` = `'9.28.0'`
+> `const` **VER**: `"9.29.0"` = `'9.29.0'`
 
 Defined in: [index.ts:9](https://github.com/maiyunnet/kebab/blob/master/index.ts#L9)
 
@@ -124434,7 +124434,7 @@ lib/session/login/classes/Login.md
 
 # Class: Login
 
-Defined in: lib/session/login.ts:63
+Defined in: [lib/session/login.ts:63](https://github.com/maiyunnet/kebab/blob/master/lib/session/login.ts#L63)
 
 管理一个账号在多个客户端的登录授权
 基于单节点 Redis；不会修改 Session 数据或 Cookie。业务每次请求须验证账号、权限和授权版本。
@@ -124446,7 +124446,7 @@ Defined in: lib/session/login.ts:63
 
 > **new Login**(`kv`, `ctrToken`, `options?`): `Login`
 
-Defined in: lib/session/login.ts:77
+Defined in: [lib/session/login.ts:77](https://github.com/maiyunnet/kebab/blob/master/lib/session/login.ts#L77)
 
 创建可复用的登录管理器
 
@@ -124480,7 +124480,7 @@ Defined in: lib/session/login.ts:77
 
 > **create**(`identity`, `options?`): `Promise`\<`false` \| [`ILoginRecord`](../interfaces/ILoginRecord.md)\>
 
-Defined in: lib/session/login.ts:97
+Defined in: [lib/session/login.ts:97](https://github.com/maiyunnet/kebab/blob/master/lib/session/login.ts#L97)
 
 创建登录授权并替换同一凭据原来绑定的身份
 每次创建生成新 UID，包括同一账号在同一 Session 重复登录；旧 UID 随即失效。
@@ -124512,7 +124512,7 @@ single 开启时，同账号同作用域以最后执行成功的创建为准；�
 
 > **get**(): `Promise`\<`false` \| [`ILoginRecord`](../interfaces/ILoginRecord.md) \| `null`\>
 
-Defined in: lib/session/login.ts:105
+Defined in: [lib/session/login.ts:105](https://github.com/maiyunnet/kebab/blob/master/lib/session/login.ts#L105)
 
 读取凭据当前绑定的登录授权，不延长有效期
 
@@ -124528,7 +124528,7 @@ Defined in: lib/session/login.ts:105
 
 > **list**(`uid`): `Promise`\<`false` \| [`IListLogin`](../interfaces/IListLogin.md)[] \| `null`\>
 
-Defined in: lib/session/login.ts:133
+Defined in: [lib/session/login.ts:133](https://github.com/maiyunnet/kebab/blob/master/lib/session/login.ts#L133)
 
 列出当前账号、作用域及授权版本一致的有效登录
 返回登录附加信息，业务响应前须筛选可展示字段；适合交互式账号的登录列表，不用于全站会话统计。
@@ -124553,7 +124553,7 @@ get 返回的当前登录 UID
 
 > **remove**(`uid`): `Promise`\<`boolean` \| `null`\>
 
-Defined in: lib/session/login.ts:123
+Defined in: [lib/session/login.ts:123](https://github.com/maiyunnet/kebab/blob/master/lib/session/login.ts#L123)
 
 退出凭据仍绑定的指定登录，保留 Session 本身
 
@@ -124577,7 +124577,7 @@ true 已退出，null 已失效或被替换，false 输入无效或存储失败
 
 > **revoke**(`uid`, `target?`): `Promise`\<`boolean` \| `null`\>
 
-Defined in: lib/session/login.ts:144
+Defined in: [lib/session/login.ts:144](https://github.com/maiyunnet/kebab/blob/master/lib/session/login.ts#L144)
 
 清退当前账号和作用域内的指定登录或其他全部登录
 清退覆盖所有授权版本；可指定当前登录，不能撤销其他账号或作用域的登录。
@@ -124608,7 +124608,7 @@ true 已清退，null 当前或目标登录失效，false 输入无效或存储�
 
 > **touch**(`uid`): `Promise`\<`boolean` \| `null`\>
 
-Defined in: lib/session/login.ts:114
+Defined in: [lib/session/login.ts:114](https://github.com/maiyunnet/kebab/blob/master/lib/session/login.ts#L114)
 
 延长仍与本次请求读取的登录 UID 匹配的授权
 
@@ -124664,7 +124664,7 @@ lib/session/login/interfaces/IListLogin.md
 
 # Interface: IListLogin
 
-Defined in: lib/session/login.ts:37
+Defined in: [lib/session/login.ts:37](https://github.com/maiyunnet/kebab/blob/master/lib/session/login.ts#L37)
 
 登录列表中的记录
 
@@ -124678,7 +124678,7 @@ Defined in: lib/session/login.ts:37
 
 > **current**: `boolean`
 
-Defined in: lib/session/login.ts:39
+Defined in: [lib/session/login.ts:39](https://github.com/maiyunnet/kebab/blob/master/lib/session/login.ts#L39)
 
 是否为当前登录
 
@@ -124688,7 +124688,7 @@ Defined in: lib/session/login.ts:39
 
 > **data**: `Record`\<`string`, [`LoginValue`](../type-aliases/LoginValue.md)\>
 
-Defined in: lib/session/login.ts:33
+Defined in: [lib/session/login.ts:33](https://github.com/maiyunnet/kebab/blob/master/lib/session/login.ts#L33)
 
 登录时保存的附加信息
 
@@ -124702,7 +124702,7 @@ Defined in: lib/session/login.ts:33
 
 > **scope**: `string`
 
-Defined in: lib/session/login.ts:27
+Defined in: [lib/session/login.ts:27](https://github.com/maiyunnet/kebab/blob/master/lib/session/login.ts#L27)
 
 账号作用域
 
@@ -124716,7 +124716,7 @@ Defined in: lib/session/login.ts:27
 
 > **subject**: `string`
 
-Defined in: lib/session/login.ts:25
+Defined in: [lib/session/login.ts:25](https://github.com/maiyunnet/kebab/blob/master/lib/session/login.ts#L25)
 
 账号标识
 
@@ -124730,7 +124730,7 @@ Defined in: lib/session/login.ts:25
 
 > **timeAdd**: `number`
 
-Defined in: lib/session/login.ts:31
+Defined in: [lib/session/login.ts:31](https://github.com/maiyunnet/kebab/blob/master/lib/session/login.ts#L31)
 
 登录时间，Redis 服务端 UTC Unix 秒
 
@@ -124744,7 +124744,7 @@ Defined in: lib/session/login.ts:31
 
 > **uid**: `string`
 
-Defined in: lib/session/login.ts:23
+Defined in: [lib/session/login.ts:23](https://github.com/maiyunnet/kebab/blob/master/lib/session/login.ts#L23)
 
 本次登录 UID，每次成功登录重新生成
 
@@ -124758,7 +124758,7 @@ Defined in: lib/session/login.ts:23
 
 > **version**: `string`
 
-Defined in: lib/session/login.ts:29
+Defined in: [lib/session/login.ts:29](https://github.com/maiyunnet/kebab/blob/master/lib/session/login.ts#L29)
 
 业务授权版本，框架不查询业务数据验证此值
 
@@ -124777,7 +124777,7 @@ lib/session/login/interfaces/ILoginCreateOptions.md
 
 # Interface: ILoginCreateOptions
 
-Defined in: lib/session/login.ts:43
+Defined in: [lib/session/login.ts:43](https://github.com/maiyunnet/kebab/blob/master/lib/session/login.ts#L43)
 
 创建登录时的选项
 
@@ -124787,7 +124787,7 @@ Defined in: lib/session/login.ts:43
 
 > `optional` **single?**: `boolean`
 
-Defined in: lib/session/login.ts:45
+Defined in: [lib/session/login.ts:45](https://github.com/maiyunnet/kebab/blob/master/lib/session/login.ts#L45)
 
 清退同账号、同作用域的其他登录（包含旧版本），默认 false；与创建原子执行
 
@@ -124802,7 +124802,7 @@ lib/session/login/interfaces/ILoginIdentity.md
 
 # Interface: ILoginIdentity
 
-Defined in: lib/session/login.ts:9
+Defined in: [lib/session/login.ts:9](https://github.com/maiyunnet/kebab/blob/master/lib/session/login.ts#L9)
 
 业务验证通过后交给框架保存的登录身份
 
@@ -124812,7 +124812,7 @@ Defined in: lib/session/login.ts:9
 
 > `optional` **data?**: `Record`\<`string`, [`LoginValue`](../type-aliases/LoginValue.md)\>
 
-Defined in: lib/session/login.ts:17
+Defined in: [lib/session/login.ts:17](https://github.com/maiyunnet/kebab/blob/master/lib/session/login.ts#L17)
 
 客户端等附加信息，默认空对象；JSON 编码最多 16 KiB，不保存密码或凭据
 
@@ -124822,7 +124822,7 @@ Defined in: lib/session/login.ts:17
 
 > `optional` **scope?**: `string`
 
-Defined in: lib/session/login.ts:13
+Defined in: [lib/session/login.ts:13](https://github.com/maiyunnet/kebab/blob/master/lib/session/login.ts#L13)
 
 账号作用域，如租户或账号体系；默认空字符串，最多 256 个字符
 
@@ -124832,7 +124832,7 @@ Defined in: lib/session/login.ts:13
 
 > **subject**: `string`
 
-Defined in: lib/session/login.ts:11
+Defined in: [lib/session/login.ts:11](https://github.com/maiyunnet/kebab/blob/master/lib/session/login.ts#L11)
 
 账号标识，非空，最多 256 个字符
 
@@ -124842,7 +124842,7 @@ Defined in: lib/session/login.ts:11
 
 > `optional` **version?**: `string`
 
-Defined in: lib/session/login.ts:15
+Defined in: [lib/session/login.ts:15](https://github.com/maiyunnet/kebab/blob/master/lib/session/login.ts#L15)
 
 授权版本，如密码指纹；默认空字符串，最多 1024 个字符，由业务与当前数据比较
 
@@ -124857,7 +124857,7 @@ lib/session/login/interfaces/ILoginOptions.md
 
 # Interface: ILoginOptions
 
-Defined in: lib/session/login.ts:49
+Defined in: [lib/session/login.ts:49](https://github.com/maiyunnet/kebab/blob/master/lib/session/login.ts#L49)
 
 Redis 登录管理选项
 
@@ -124867,7 +124867,7 @@ Redis 登录管理选项
 
 > `optional` **name?**: `string`
 
-Defined in: lib/session/login.ts:51
+Defined in: [lib/session/login.ts:51](https://github.com/maiyunnet/kebab/blob/master/lib/session/login.ts#L51)
 
 Session 名称；传 token 时必填，传控制器时使用已初始化 Session 的实际名称
 
@@ -124877,7 +124877,7 @@ Session 名称；传 token 时必填，传控制器时使用已初始化 Session
 
 > `optional` **pre?**: `string`
 
-Defined in: lib/session/login.ts:53
+Defined in: [lib/session/login.ts:53](https://github.com/maiyunnet/kebab/blob/master/lib/session/login.ts#L53)
 
 Session 名称之后的键名前缀，默认 login:；可进一步隔离授权用途
 
@@ -124887,7 +124887,7 @@ Session 名称之后的键名前缀，默认 login:；可进一步隔离授权�
 
 > `optional` **ttl?**: `number`
 
-Defined in: lib/session/login.ts:55
+Defined in: [lib/session/login.ts:55](https://github.com/maiyunnet/kebab/blob/master/lib/session/login.ts#L55)
 
 有效期秒数，默认 172800；整数 0～2147483647，0 表示永久；与业务 Session 有效期一致
 
@@ -124902,7 +124902,7 @@ lib/session/login/interfaces/ILoginRecord.md
 
 # Interface: ILoginRecord
 
-Defined in: lib/session/login.ts:21
+Defined in: [lib/session/login.ts:21](https://github.com/maiyunnet/kebab/blob/master/lib/session/login.ts#L21)
 
 已保存的登录授权，不包含 Session 凭据
 
@@ -124916,7 +124916,7 @@ Defined in: lib/session/login.ts:21
 
 > **data**: `Record`\<`string`, [`LoginValue`](../type-aliases/LoginValue.md)\>
 
-Defined in: lib/session/login.ts:33
+Defined in: [lib/session/login.ts:33](https://github.com/maiyunnet/kebab/blob/master/lib/session/login.ts#L33)
 
 登录时保存的附加信息
 
@@ -124926,7 +124926,7 @@ Defined in: lib/session/login.ts:33
 
 > **scope**: `string`
 
-Defined in: lib/session/login.ts:27
+Defined in: [lib/session/login.ts:27](https://github.com/maiyunnet/kebab/blob/master/lib/session/login.ts#L27)
 
 账号作用域
 
@@ -124936,7 +124936,7 @@ Defined in: lib/session/login.ts:27
 
 > **subject**: `string`
 
-Defined in: lib/session/login.ts:25
+Defined in: [lib/session/login.ts:25](https://github.com/maiyunnet/kebab/blob/master/lib/session/login.ts#L25)
 
 账号标识
 
@@ -124946,7 +124946,7 @@ Defined in: lib/session/login.ts:25
 
 > **timeAdd**: `number`
 
-Defined in: lib/session/login.ts:31
+Defined in: [lib/session/login.ts:31](https://github.com/maiyunnet/kebab/blob/master/lib/session/login.ts#L31)
 
 登录时间，Redis 服务端 UTC Unix 秒
 
@@ -124956,7 +124956,7 @@ Defined in: lib/session/login.ts:31
 
 > **uid**: `string`
 
-Defined in: lib/session/login.ts:23
+Defined in: [lib/session/login.ts:23](https://github.com/maiyunnet/kebab/blob/master/lib/session/login.ts#L23)
 
 本次登录 UID，每次成功登录重新生成
 
@@ -124966,7 +124966,7 @@ Defined in: lib/session/login.ts:23
 
 > **version**: `string`
 
-Defined in: lib/session/login.ts:29
+Defined in: [lib/session/login.ts:29](https://github.com/maiyunnet/kebab/blob/master/lib/session/login.ts#L29)
 
 业务授权版本，框架不查询业务数据验证此值
 
@@ -124983,7 +124983,7 @@ lib/session/login/type-aliases/LoginValue.md
 
 > **LoginValue** = `string` \| `number` \| `boolean` \| `null` \| `LoginValue`[] \| \{\[`key`: `string`\]: `LoginValue`; \}
 
-Defined in: lib/session/login.ts:6
+Defined in: [lib/session/login.ts:6](https://github.com/maiyunnet/kebab/blob/master/lib/session/login.ts#L6)
 
 登录附加信息支持的 JSON 值
 

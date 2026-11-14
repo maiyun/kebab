@@ -6,7 +6,7 @@
 
 # Interface: ILoginCreateOptions
 
-Defined in: lib/session/login.ts:43
+Defined in: [lib/session/login.ts:43](https://github.com/maiyunnet/kebab/blob/master/lib/session/login.ts#L43)
 
 创建登录时的选项
 
@@ -16,6 +16,6 @@ Defined in: lib/session/login.ts:43
 
 > `optional` **single?**: `boolean`
 
-Defined in: lib/session/login.ts:45
+Defined in: [lib/session/login.ts:45](https://github.com/maiyunnet/kebab/blob/master/lib/session/login.ts#L45)
 
 清退同账号、同作用域的其他登录（包含旧版本），默认 false；与创建原子执行

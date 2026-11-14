@@ -6,7 +6,7 @@
 
 # Class: Login
 
-Defined in: lib/session/login.ts:63
+Defined in: [lib/session/login.ts:63](https://github.com/maiyunnet/kebab/blob/master/lib/session/login.ts#L63)
 
 管理一个账号在多个客户端的登录授权
 基于单节点 Redis；不会修改 Session 数据或 Cookie。业务每次请求须验证账号、权限和授权版本。
@@ -18,7 +18,7 @@ Defined in: lib/session/login.ts:63
 
 > **new Login**(`kv`, `ctrToken`, `options?`): `Login`
 
-Defined in: lib/session/login.ts:77
+Defined in: [lib/session/login.ts:77](https://github.com/maiyunnet/kebab/blob/master/lib/session/login.ts#L77)
 
 创建可复用的登录管理器
 
@@ -52,7 +52,7 @@ Defined in: lib/session/login.ts:77
 
 > **create**(`identity`, `options?`): `Promise`\<`false` \| [`ILoginRecord`](../interfaces/ILoginRecord.md)\>
 
-Defined in: lib/session/login.ts:97
+Defined in: [lib/session/login.ts:97](https://github.com/maiyunnet/kebab/blob/master/lib/session/login.ts#L97)
 
 创建登录授权并替换同一凭据原来绑定的身份
 每次创建生成新 UID，包括同一账号在同一 Session 重复登录；旧 UID 随即失效。
@@ -84,7 +84,7 @@ single 开启时，同账号同作用域以最后执行成功的创建为准；�
 
 > **get**(): `Promise`\<`false` \| [`ILoginRecord`](../interfaces/ILoginRecord.md) \| `null`\>
 
-Defined in: lib/session/login.ts:105
+Defined in: [lib/session/login.ts:105](https://github.com/maiyunnet/kebab/blob/master/lib/session/login.ts#L105)
 
 读取凭据当前绑定的登录授权，不延长有效期
 
@@ -100,7 +100,7 @@ Defined in: lib/session/login.ts:105
 
 > **list**(`uid`): `Promise`\<`false` \| [`IListLogin`](../interfaces/IListLogin.md)[] \| `null`\>
 
-Defined in: lib/session/login.ts:133
+Defined in: [lib/session/login.ts:133](https://github.com/maiyunnet/kebab/blob/master/lib/session/login.ts#L133)
 
 列出当前账号、作用域及授权版本一致的有效登录
 返回登录附加信息，业务响应前须筛选可展示字段；适合交互式账号的登录列表，不用于全站会话统计。
@@ -125,7 +125,7 @@ get 返回的当前登录 UID
 
 > **remove**(`uid`): `Promise`\<`boolean` \| `null`\>
 
-Defined in: lib/session/login.ts:123
+Defined in: [lib/session/login.ts:123](https://github.com/maiyunnet/kebab/blob/master/lib/session/login.ts#L123)
 
 退出凭据仍绑定的指定登录，保留 Session 本身
 
@@ -149,7 +149,7 @@ true 已退出，null 已失效或被替换，false 输入无效或存储失败
 
 > **revoke**(`uid`, `target?`): `Promise`\<`boolean` \| `null`\>
 
-Defined in: lib/session/login.ts:144
+Defined in: [lib/session/login.ts:144](https://github.com/maiyunnet/kebab/blob/master/lib/session/login.ts#L144)
 
 清退当前账号和作用域内的指定登录或其他全部登录
 清退覆盖所有授权版本；可指定当前登录，不能撤销其他账号或作用域的登录。
@@ -180,7 +180,7 @@ true 已清退，null 当前或目标登录失效，false 输入无效或存储�
 
 > **touch**(`uid`): `Promise`\<`boolean` \| `null`\>
 
-Defined in: lib/session/login.ts:114
+Defined in: [lib/session/login.ts:114](https://github.com/maiyunnet/kebab/blob/master/lib/session/login.ts#L114)
 
 延长仍与本次请求读取的登录 UID 匹配的授权
 
