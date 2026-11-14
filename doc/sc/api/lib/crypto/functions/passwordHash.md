@@ -8,7 +8,7 @@
 
 > **passwordHash**(`password`, `options?`): `Promise`\<`string` \| `false`\>
 
-Defined in: [lib/crypto.ts:488](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L488)
+Defined in: [lib/crypto.ts:487](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L487)
 
 使用 Argon2id 生成包含随机盐和计算参数的密码散列
 需要 Node.js 24.7.0+；固定使用 16 字节随机盐和 32 字节散列，不修改或截断密码。

@@ -10,7 +10,7 @@
 
 > **gcmEncrypt**(`original`, `key`, `output`): `false` \| `Buffer`\<`ArrayBufferLike`\>
 
-Defined in: [lib/crypto.ts:246](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L246)
+Defined in: [lib/crypto.ts:245](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L245)
 
 AES GCM 托管加密
 
@@ -42,7 +42,7 @@ AES GCM 托管加密
 
 > **gcmEncrypt**(`original`, `key`, `output?`): `string` \| `false`
 
-Defined in: [lib/crypto.ts:247](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L247)
+Defined in: [lib/crypto.ts:246](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L246)
 
 AES GCM 托管加密
 
