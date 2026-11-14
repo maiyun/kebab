@@ -10,7 +10,7 @@
 
 > **hashHmacFile**(`algorithm`, `path`, `key?`, `encoding?`): `Promise`\<`string` \| `false`\>
 
-Defined in: [lib/crypto.ts:413](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L413)
+Defined in: [lib/crypto.ts:414](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L414)
 
 hash 或 hmac 加密文件
 
@@ -36,7 +36,7 @@ hash 或 hmac 加密文件
 
 #### encoding?
 
-`"base64"` \| `"hex"` \| `"base64url"`
+`"base64"` \| `"base64url"` \| `"hex"`
 
 ### Returns
 
@@ -46,7 +46,7 @@ hash 或 hmac 加密文件
 
 > **hashHmacFile**(`algorithm`, `path`, `key`, `encoding`): `Promise`\<`false` \| `Buffer`\<`ArrayBufferLike`\>\>
 
-Defined in: [lib/crypto.ts:414](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L414)
+Defined in: [lib/crypto.ts:415](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L415)
 
 hash 或 hmac 加密文件
 

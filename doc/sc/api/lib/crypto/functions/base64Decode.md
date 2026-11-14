@@ -10,7 +10,7 @@
 
 > **base64Decode**(`data`, `encoding`): `Buffer`
 
-Defined in: [lib/crypto.ts:452](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L452)
+Defined in: [lib/crypto.ts:453](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L453)
 
 base64 解码
 
@@ -36,7 +36,7 @@ base64 编码的字符串
 
 > **base64Decode**(`data`, `encoding?`): `string`
 
-Defined in: [lib/crypto.ts:453](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L453)
+Defined in: [lib/crypto.ts:454](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L454)
 
 base64 解码
 

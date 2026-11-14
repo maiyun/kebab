@@ -8,7 +8,7 @@
 
 > **cipherEncrypt**(`original`, `key`, `iv?`, `method?`, `output?`): `string` \| `false` \| `Buffer`\<`ArrayBufferLike`\>
 
-Defined in: [lib/crypto.ts:167](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L167)
+Defined in: [lib/crypto.ts:168](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L168)
 
 cipher 加密，强烈不建议使用 AES_256_ECB
 

@@ -6,6 +6,10 @@
 
 # lib/crypto
 
+## Interfaces
+
+- [IPasswordOptions](interfaces/IPasswordOptions.md)
+
 ## Variables
 
 - [AES\_256\_CBC](variables/AES_256_CBC.md)
@@ -29,6 +33,8 @@
 - [generateKeyPair](functions/generateKeyPair.md)
 - [hashHmac](functions/hashHmac.md)
 - [hashHmacFile](functions/hashHmacFile.md)
+- [passwordHash](functions/passwordHash.md)
+- [passwordVerify](functions/passwordVerify.md)
 - [privateDecrypt](functions/privateDecrypt.md)
 - [privateEncrypt](functions/privateEncrypt.md)
 - [publicDecrypt](functions/publicDecrypt.md)

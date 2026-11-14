@@ -8,7 +8,7 @@
 
 > **verify**(`data`, `object`, `signature`, `algorithm?`): `boolean`
 
-Defined in: [lib/crypto.ts:90](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L90)
+Defined in: [lib/crypto.ts:91](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L91)
 
 非对称验签
 

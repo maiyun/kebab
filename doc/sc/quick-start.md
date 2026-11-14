@@ -228,3 +228,30 @@ export default class Order extends sMod {
 - 未声明 `_$partition` 的模型保持仅按主键定位的原行为。静态查询、批量更新、删除等方法仍使用显式条件；租户、软删除和业务状态约束由应用负责。
 
 `_$partition` 用于数据库原生分区，与 `index` 选项按表名后缀访问分表的机制不同。事务提交、回滚及连接生命周期保持原约定。
+
+## 密码散列
+
+`lib/crypto` 提供异步 Argon2id 密码散列和验证，需要 Node.js 24.7.0+ 的原生 `crypto.argon2` 支持。
+
+```ts
+import * as lCrypto from '@maiyunnet/kebab/lib/crypto.js';
+
+const encoded = await lCrypto.passwordHash(password);
+if (encoded !== false) {
+    const matched = await lCrypto.passwordVerify(password, encoded);
+    // matched 为 true：匹配；false：不匹配或格式无效；null：计算失败。
+}
+
+// 可选：根据服务器资源调整计算成本，未传入的字段仍使用默认值。
+const custom = await lCrypto.passwordHash(password, {
+    'memory': 65536,
+    'passes': 3,
+    'parallelism': 1,
+});
+```
+
+默认使用 64 MiB 内存、3 轮、并行度 1、16 字节随机盐和 32 字节散列。`memory` 单位为 KiB；只开放内存、轮数和并行度，取值范围见 `IPasswordOptions`。这些参数控制每次计算成本，内存和轮数越高，正常登录也越耗资源；调整前应在目标机器测试并发负载。默认值高于 [OWASP 的最低配置](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html)，通常可直接使用。自定义低成本参数不保证相同的抗破解强度。
+
+数据库保存完整的 `$argon2id$v=19$...` 字符串即可，不需要另存盐或参数。验证从该字符串读取参数，默认值调整不会影响旧密码；需要提升旧密码成本时，在验证成功后重新调用 `passwordHash()` 并保存结果。只从可信存储读取待验证散列，不让客户端提供散列或计算参数。
+
+`passwordHash()` 成功返回 PHC 字符串；选项无效、环境不支持、随机数生成或计算失败返回 `false`。`passwordVerify()` 匹配返回 `true`，密码不匹配、格式无效、算法不支持或参数越界返回 `false`，环境不支持或计算失败返回 `null`。调用方用 `=== false`、`=== null` 区分结果，不能把验证时的系统故障当作密码错误。方法不截断、去空格或归一化密码；密码策略、登录限速和数据库更新由应用负责。

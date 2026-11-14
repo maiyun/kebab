@@ -10,7 +10,7 @@
 
 > **sign**(`data`, `privateKey`, `format`, `algorithm?`): `string`
 
-Defined in: [lib/crypto.ts:69](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L69)
+Defined in: [lib/crypto.ts:70](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L70)
 
 非对称加签
 
@@ -48,7 +48,7 @@ Defined in: [lib/crypto.ts:69](https://github.com/maiyunnet/kebab/blob/master/li
 
 > **sign**(`data`, `privateKey`, `format?`, `algorithm?`): `Buffer`
 
-Defined in: [lib/crypto.ts:72](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L72)
+Defined in: [lib/crypto.ts:73](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L73)
 
 非对称加签
 

@@ -233,6 +233,33 @@ export default class Order extends sMod {
 
 `_$partition` 用于数据库原生分区，与 `index` 选项按表名后缀访问分表的机制不同。事务提交、回滚及连接生命周期保持原约定。
 
+## 密码散列
+
+`lib/crypto` 提供异步 Argon2id 密码散列和验证，需要 Node.js 24.7.0+ 的原生 `crypto.argon2` 支持。
+
+```ts
+import * as lCrypto from '@maiyunnet/kebab/lib/crypto.js';
+
+const encoded = await lCrypto.passwordHash(password);
+if (encoded !== false) {
+    const matched = await lCrypto.passwordVerify(password, encoded);
+    // matched 为 true：匹配；false：不匹配或格式无效；null：计算失败。
+}
+
+// 可选：根据服务器资源调整计算成本，未传入的字段仍使用默认值。
+const custom = await lCrypto.passwordHash(password, {
+    'memory': 65536,
+    'passes': 3,
+    'parallelism': 1,
+});
+```
+
+默认使用 64 MiB 内存、3 轮、并行度 1、16 字节随机盐和 32 字节散列。`memory` 单位为 KiB；只开放内存、轮数和并行度，取值范围见 `IPasswordOptions`。这些参数控制每次计算成本，内存和轮数越高，正常登录也越耗资源；调整前应在目标机器测试并发负载。默认值高于 [OWASP 的最低配置](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html)，通常可直接使用。自定义低成本参数不保证相同的抗破解强度。
+
+数据库保存完整的 `$argon2id$v=19$...` 字符串即可，不需要另存盐或参数。验证从该字符串读取参数，默认值调整不会影响旧密码；需要提升旧密码成本时，在验证成功后重新调用 `passwordHash()` 并保存结果。只从可信存储读取待验证散列，不让客户端提供散列或计算参数。
+
+`passwordHash()` 成功返回 PHC 字符串；选项无效、环境不支持、随机数生成或计算失败返回 `false`。`passwordVerify()` 匹配返回 `true`，密码不匹配、格式无效、算法不支持或参数越界返回 `false`，环境不支持或计算失败返回 `null`。调用方用 `=== false`、`=== null` 区分结果，不能把验证时的系统故障当作密码错误。方法不截断、去空格或归一化密码；密码策略、登录限速和数据库更新由应用负责。
+
 query-pagination.md
 ---
 
@@ -115925,7 +115952,7 @@ lib/crypto/functions/aesDecrypt.md
 
 > **aesDecrypt**(`encrypt`, `key`, `iv`, `method`, `output`): `false` \| `Buffer`\<`ArrayBufferLike`\>
 
-Defined in: [lib/crypto.ts:346](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L346)
+Defined in: [lib/crypto.ts:347](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L347)
 
 AES 解密
 
@@ -115967,7 +115994,7 @@ AES 解密
 
 > **aesDecrypt**(`encrypt`, `key`, `iv?`, `method?`, `output?`): `string` \| `false`
 
-Defined in: [lib/crypto.ts:347](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L347)
+Defined in: [lib/crypto.ts:348](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L348)
 
 AES 解密
 
@@ -116020,7 +116047,7 @@ lib/crypto/functions/aesEncrypt.md
 
 > **aesEncrypt**(`original`, `key`, `iv`, `method`, `output`): `false` \| `Buffer`\<`ArrayBufferLike`\>
 
-Defined in: [lib/crypto.ts:230](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L230)
+Defined in: [lib/crypto.ts:231](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L231)
 
 AES 加密
 
@@ -116064,7 +116091,7 @@ AES 加密
 
 > **aesEncrypt**(`original`, `key`, `iv?`, `method?`, `output?`): `string` \| `false`
 
-Defined in: [lib/crypto.ts:231](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L231)
+Defined in: [lib/crypto.ts:232](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L232)
 
 AES 加密
 
@@ -116119,7 +116146,7 @@ lib/crypto/functions/base64Decode.md
 
 > **base64Decode**(`data`, `encoding`): `Buffer`
 
-Defined in: [lib/crypto.ts:452](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L452)
+Defined in: [lib/crypto.ts:453](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L453)
 
 base64 解码
 
@@ -116145,7 +116172,7 @@ base64 编码的字符串
 
 > **base64Decode**(`data`, `encoding?`): `string`
 
-Defined in: [lib/crypto.ts:453](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L453)
+Defined in: [lib/crypto.ts:454](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L454)
 
 base64 解码
 
@@ -116180,7 +116207,7 @@ lib/crypto/functions/base64Encode.md
 
 > **base64Encode**(`data`): `string`
 
-Defined in: [lib/crypto.ts:438](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L438)
+Defined in: [lib/crypto.ts:439](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L439)
 
 base64 编码
 
@@ -116209,7 +116236,7 @@ lib/crypto/functions/cipherDecrypt.md
 
 > **cipherDecrypt**(`encrypt`, `key`, `iv?`, `method?`, `output?`): `string` \| `false` \| `Buffer`\<`ArrayBufferLike`\>
 
-Defined in: [lib/crypto.ts:280](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L280)
+Defined in: [lib/crypto.ts:281](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L281)
 
 cipher 解密
 
@@ -116262,7 +116289,7 @@ lib/crypto/functions/cipherEncrypt.md
 
 > **cipherEncrypt**(`original`, `key`, `iv?`, `method?`, `output?`): `string` \| `false` \| `Buffer`\<`ArrayBufferLike`\>
 
-Defined in: [lib/crypto.ts:167](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L167)
+Defined in: [lib/crypto.ts:168](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L168)
 
 cipher 加密，强烈不建议使用 AES_256_ECB
 
@@ -116317,7 +116344,7 @@ lib/crypto/functions/gcmDecrypt.md
 
 > **gcmDecrypt**(`encrypt`, `key`, `output`): `false` \| `Buffer`\<`ArrayBufferLike`\>
 
-Defined in: [lib/crypto.ts:361](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L361)
+Defined in: [lib/crypto.ts:362](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L362)
 
 AES 解密
 
@@ -116349,7 +116376,7 @@ AES 解密
 
 > **gcmDecrypt**(`encrypt`, `key`, `output?`): `string` \| `false`
 
-Defined in: [lib/crypto.ts:362](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L362)
+Defined in: [lib/crypto.ts:363](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L363)
 
 AES 解密
 
@@ -116392,7 +116419,7 @@ lib/crypto/functions/gcmEncrypt.md
 
 > **gcmEncrypt**(`original`, `key`, `output`): `false` \| `Buffer`\<`ArrayBufferLike`\>
 
-Defined in: [lib/crypto.ts:245](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L245)
+Defined in: [lib/crypto.ts:246](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L246)
 
 AES GCM 托管加密
 
@@ -116424,7 +116451,7 @@ AES GCM 托管加密
 
 > **gcmEncrypt**(`original`, `key`, `output?`): `string` \| `false`
 
-Defined in: [lib/crypto.ts:246](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L246)
+Defined in: [lib/crypto.ts:247](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L247)
 
 AES GCM 托管加密
 
@@ -116465,7 +116492,7 @@ lib/crypto/functions/generateKeyPair.md
 
 > **generateKeyPair**(`type`, `options?`): `Promise`\<\{ `private`: `string` \| `Buffer`\<`ArrayBufferLike`\>; `public`: `string` \| `Buffer`\<`ArrayBufferLike`\>; \}\>
 
-Defined in: [lib/crypto.ts:18](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L18)
+Defined in: [lib/crypto.ts:19](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L19)
 
 创建非对称秘钥
 
@@ -116532,7 +116559,7 @@ lib/crypto/functions/hashHmacFile.md
 
 > **hashHmacFile**(`algorithm`, `path`, `key?`, `encoding?`): `Promise`\<`string` \| `false`\>
 
-Defined in: [lib/crypto.ts:413](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L413)
+Defined in: [lib/crypto.ts:414](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L414)
 
 hash 或 hmac 加密文件
 
@@ -116558,7 +116585,7 @@ hash 或 hmac 加密文件
 
 #### encoding?
 
-`"base64"` \| `"hex"` \| `"base64url"`
+`"base64"` \| `"base64url"` \| `"hex"`
 
 ### Returns
 
@@ -116568,7 +116595,7 @@ hash 或 hmac 加密文件
 
 > **hashHmacFile**(`algorithm`, `path`, `key`, `encoding`): `Promise`\<`false` \| `Buffer`\<`ArrayBufferLike`\>\>
 
-Defined in: [lib/crypto.ts:414](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L414)
+Defined in: [lib/crypto.ts:415](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L415)
 
 hash 或 hmac 加密文件
 
@@ -116615,7 +116642,7 @@ lib/crypto/functions/hashHmac.md
 
 > **hashHmac**(`algorithm`, `data`, `key?`, `format?`): `string`
 
-Defined in: [lib/crypto.ts:394](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L394)
+Defined in: [lib/crypto.ts:395](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L395)
 
 hash 或 hmac 加密
 
@@ -116651,7 +116678,7 @@ hash 或 hmac 加密
 
 > **hashHmac**(`algorithm`, `data`, `key`, `format`): `Buffer`
 
-Defined in: [lib/crypto.ts:395](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L395)
+Defined in: [lib/crypto.ts:396](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L396)
 
 hash 或 hmac 加密
 
@@ -116683,6 +116710,82 @@ hash 或 hmac 加密
 
 `Buffer`
 
+lib/crypto/functions/passwordHash.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../index.md) / [lib/crypto](../index.md) / passwordHash
+
+# Function: passwordHash()
+
+> **passwordHash**(`password`, `options?`): `Promise`\<`string` \| `false`\>
+
+Defined in: [lib/crypto.ts:488](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L488)
+
+使用 Argon2id 生成包含随机盐和计算参数的密码散列
+需要 Node.js 24.7.0+；固定使用 16 字节随机盐和 32 字节散列，不修改或截断密码。
+
+## Parameters
+
+### password
+
+`string`
+
+原始密码，按 UTF-8 编码；长度和强度由应用校验
+
+### options?
+
+[`IPasswordOptions`](../interfaces/IPasswordOptions.md) = `{}`
+
+计算成本，省略时使用 64 MiB 内存、3 轮和并行度 1
+
+## Returns
+
+`Promise`\<`string` \| `false`\>
+
+可直接保存的 PHC 字符串；参数无效、运行环境不支持或计算失败时返回 false
+
+lib/crypto/functions/passwordVerify.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../index.md) / [lib/crypto](../index.md) / passwordVerify
+
+# Function: passwordVerify()
+
+> **passwordVerify**(`password`, `encoded`): `Promise`\<`boolean` \| `null`\>
+
+Defined in: [lib/crypto.ts:499](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L499)
+
+使用散列中保存的参数验证密码
+接受 Argon2id v19，成本范围与 IPasswordOptions 相同，盐为 8～64 字节、散列为 16～64 字节。
+
+## Parameters
+
+### password
+
+`string`
+
+原始密码，按 UTF-8 编码
+
+### encoded
+
+`string`
+
+数据库存储的 PHC 字符串，不接受客户端指定的散列
+
+## Returns
+
+`Promise`\<`boolean` \| `null`\>
+
+匹配返回 true；不匹配、格式不支持或参数越界返回 false；环境不支持或计算失败时返回 null
+
 lib/crypto/functions/privateDecrypt.md
 ---
 
@@ -116696,7 +116799,7 @@ lib/crypto/functions/privateDecrypt.md
 
 > **privateDecrypt**(`key`, `buffer`): `Buffer`
 
-Defined in: [lib/crypto.ts:136](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L136)
+Defined in: [lib/crypto.ts:137](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L137)
 
 非对称私钥解密
 
@@ -116731,7 +116834,7 @@ lib/crypto/functions/privateEncrypt.md
 
 > **privateEncrypt**(`key`, `buffer`): `Buffer`
 
-Defined in: [lib/crypto.ts:114](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L114)
+Defined in: [lib/crypto.ts:115](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L115)
 
 非对称私钥加密
 
@@ -116766,7 +116869,7 @@ lib/crypto/functions/publicDecrypt.md
 
 > **publicDecrypt**(`key`, `buffer`): `Buffer`
 
-Defined in: [lib/crypto.ts:125](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L125)
+Defined in: [lib/crypto.ts:126](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L126)
 
 非对称公钥解密
 
@@ -116801,7 +116904,7 @@ lib/crypto/functions/publicEncrypt.md
 
 > **publicEncrypt**(`key`, `buffer`): `Buffer`
 
-Defined in: [lib/crypto.ts:103](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L103)
+Defined in: [lib/crypto.ts:104](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L104)
 
 非对称公钥加密
 
@@ -116838,7 +116941,7 @@ lib/crypto/functions/sign.md
 
 > **sign**(`data`, `privateKey`, `format`, `algorithm?`): `string`
 
-Defined in: [lib/crypto.ts:69](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L69)
+Defined in: [lib/crypto.ts:70](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L70)
 
 非对称加签
 
@@ -116876,7 +116979,7 @@ Defined in: [lib/crypto.ts:69](https://github.com/maiyunnet/kebab/blob/master/li
 
 > **sign**(`data`, `privateKey`, `format?`, `algorithm?`): `Buffer`
 
-Defined in: [lib/crypto.ts:72](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L72)
+Defined in: [lib/crypto.ts:73](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L73)
 
 非对称加签
 
@@ -116925,7 +117028,7 @@ lib/crypto/functions/sm4Decrypt.md
 
 > **sm4Decrypt**(`encrypt`, `key`, `iv`, `method`, `output`): `false` \| `Buffer`\<`ArrayBufferLike`\>
 
-Defined in: [lib/crypto.ts:379](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L379)
+Defined in: [lib/crypto.ts:380](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L380)
 
 SM4 解密
 
@@ -116967,7 +117070,7 @@ SM4 解密
 
 > **sm4Decrypt**(`encrypt`, `key`, `iv?`, `method?`, `output?`): `string` \| `false`
 
-Defined in: [lib/crypto.ts:380](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L380)
+Defined in: [lib/crypto.ts:381](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L381)
 
 SM4 解密
 
@@ -117020,7 +117123,7 @@ lib/crypto/functions/sm4Encrypt.md
 
 > **sm4Encrypt**(`original`, `key`, `iv`, `method`, `output`): `false` \| `Buffer`\<`ArrayBufferLike`\>
 
-Defined in: [lib/crypto.ts:263](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L263)
+Defined in: [lib/crypto.ts:264](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L264)
 
 SM4 加密
 
@@ -117062,7 +117165,7 @@ SM4 加密
 
 > **sm4Encrypt**(`original`, `key`, `iv?`, `method?`, `output?`): `string` \| `false`
 
-Defined in: [lib/crypto.ts:264](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L264)
+Defined in: [lib/crypto.ts:265](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L265)
 
 SM4 加密
 
@@ -117113,7 +117216,7 @@ lib/crypto/functions/uuid.md
 
 > **uuid**(`options?`): `string`
 
-Defined in: [lib/crypto.ts:466](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L466)
+Defined in: [lib/crypto.ts:467](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L467)
 
 生成 uuid
 
@@ -117142,7 +117245,7 @@ lib/crypto/functions/verify.md
 
 > **verify**(`data`, `object`, `signature`, `algorithm?`): `boolean`
 
-Defined in: [lib/crypto.ts:90](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L90)
+Defined in: [lib/crypto.ts:91](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L91)
 
 非对称验签
 
@@ -117187,6 +117290,10 @@ lib/crypto/index.md
 
 # lib/crypto
 
+## Interfaces
+
+- [IPasswordOptions](interfaces/IPasswordOptions.md)
+
 ## Variables
 
 - [AES\_256\_CBC](variables/AES_256_CBC.md)
@@ -117210,6 +117317,8 @@ lib/crypto/index.md
 - [generateKeyPair](functions/generateKeyPair.md)
 - [hashHmac](functions/hashHmac.md)
 - [hashHmacFile](functions/hashHmacFile.md)
+- [passwordHash](functions/passwordHash.md)
+- [passwordVerify](functions/passwordVerify.md)
 - [privateDecrypt](functions/privateDecrypt.md)
 - [privateEncrypt](functions/privateEncrypt.md)
 - [publicDecrypt](functions/publicDecrypt.md)
@@ -117219,6 +117328,51 @@ lib/crypto/index.md
 - [sm4Encrypt](functions/sm4Encrypt.md)
 - [uuid](functions/uuid.md)
 - [verify](functions/verify.md)
+
+lib/crypto/interfaces/IPasswordOptions.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../index.md) / [lib/crypto](../index.md) / IPasswordOptions
+
+# Interface: IPasswordOptions
+
+Defined in: [lib/crypto.ts:472](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L472)
+
+密码散列的计算成本，未指定的选项使用默认值
+
+## Properties
+
+### memory?
+
+> `optional` **memory?**: `number`
+
+Defined in: [lib/crypto.ts:474](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L474)
+
+内存成本，单位 KiB，默认 65536（64 MiB）；整数，至少为并行度的 8 倍，最多 262144
+
+***
+
+### parallelism?
+
+> `optional` **parallelism?**: `number`
+
+Defined in: [lib/crypto.ts:478](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L478)
+
+并行度，默认 1；整数，范围 1～8
+
+***
+
+### passes?
+
+> `optional` **passes?**: `number`
+
+Defined in: [lib/crypto.ts:476](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L476)
+
+计算轮数，默认 3；整数，范围 1～10
 
 lib/crypto/variables/AES_256_CBC.md
 ---
@@ -117233,7 +117387,7 @@ lib/crypto/variables/AES_256_CBC.md
 
 > `const` **AES\_256\_CBC**: `"aes-256-cbc"` = `'aes-256-cbc'`
 
-Defined in: [lib/crypto.ts:147](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L147)
+Defined in: [lib/crypto.ts:148](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L148)
 
 一般不用，兼容性场景下用
 
@@ -117250,7 +117404,7 @@ lib/crypto/variables/AES_256_CTR.md
 
 > `const` **AES\_256\_CTR**: `"aes-256-ctr"` = `'aes-256-ctr'`
 
-Defined in: [lib/crypto.ts:149](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L149)
+Defined in: [lib/crypto.ts:150](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L150)
 
 设置 iv 会自动切换为 CTR，流式下使用，非流直接使用 GCM
 
@@ -117267,7 +117421,7 @@ lib/crypto/variables/AES_256_ECB.md
 
 > `const` **AES\_256\_ECB**: `"aes-256-ecb"` = `'aes-256-ecb'`
 
-Defined in: [lib/crypto.ts:145](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L145)
+Defined in: [lib/crypto.ts:146](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L146)
 
 勿使用，无 iv 默认，但勿使用
 
@@ -117284,7 +117438,7 @@ lib/crypto/variables/AES_256_GCM.md
 
 > `const` **AES\_256\_GCM**: `"aes-256-gcm"` = `'aes-256-gcm'`
 
-Defined in: [lib/crypto.ts:151](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L151)
+Defined in: [lib/crypto.ts:152](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L152)
 
 非流直接使用 GCM
 
@@ -117301,7 +117455,7 @@ lib/crypto/variables/SM4_CBC.md
 
 > `const` **SM4\_CBC**: `"sm4-cbc"` = `'sm4-cbc'`
 
-Defined in: [lib/crypto.ts:155](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L155)
+Defined in: [lib/crypto.ts:156](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L156)
 
 lib/crypto/variables/SM4_CFB.md
 ---
@@ -117316,7 +117470,7 @@ lib/crypto/variables/SM4_CFB.md
 
 > `const` **SM4\_CFB**: `"sm4-cfb"` = `'sm4-cfb'`
 
-Defined in: [lib/crypto.ts:157](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L157)
+Defined in: [lib/crypto.ts:158](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L158)
 
 SM4 一般用这个，设置 iv，自动就切换成了这个
 
@@ -117333,7 +117487,7 @@ lib/crypto/variables/SM4_ECB.md
 
 > `const` **SM4\_ECB**: `"sm4-ecb"` = `'sm4-ecb'`
 
-Defined in: [lib/crypto.ts:154](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L154)
+Defined in: [lib/crypto.ts:155](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L155)
 
 SM4 如果未设置 iv，则默认这个
 

@@ -1,12 +1,12 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2019-4-2 14:01:06
- * Last: 2020-3-12 14:05:24, 2022-09-12 11:52:35, 2024-9-8 17:09:39, 2024-11-11 00:21:58, 2025-6-18 20:27:47, 2026-07-29 11:51
  */
 import * as crypto from 'crypto';
 // --- 库和定义 ---
 import * as lFs from '#kebab/lib/fs.js';
 import * as lCore from '#kebab/lib/core.js';
+import * as aPassword from '#kebab/abox/crypto-password.js';
 
 // --- 非对称加密 ---
 
@@ -465,4 +465,36 @@ export function base64Decode(data: string, encoding: 'utf8' | 'buffer' = 'utf8')
  */
 export function uuid(options?: crypto.RandomUUIDOptions): string {
     return crypto.randomUUID(options);
+}
+
+/** --- 密码散列的计算成本，未指定的选项使用默认值 --- */
+export interface IPasswordOptions {
+    /** --- 内存成本，单位 KiB，默认 65536（64 MiB）；整数，至少为并行度的 8 倍，最多 262144 --- */
+    'memory'?: number;
+    /** --- 计算轮数，默认 3；整数，范围 1～10 --- */
+    'passes'?: number;
+    /** --- 并行度，默认 1；整数，范围 1～8 --- */
+    'parallelism'?: number;
+}
+
+/**
+ * --- 使用 Argon2id 生成包含随机盐和计算参数的密码散列 ---
+ * 需要 Node.js 24.7.0+；固定使用 16 字节随机盐和 32 字节散列，不修改或截断密码。
+ * @param password 原始密码，按 UTF-8 编码；长度和强度由应用校验
+ * @param options 计算成本，省略时使用 64 MiB 内存、3 轮和并行度 1
+ * @returns 可直接保存的 PHC 字符串；参数无效、运行环境不支持或计算失败时返回 false
+ */
+export function passwordHash(password: string, options: IPasswordOptions = {}): Promise<string | false> {
+    return aPassword.hash(password, options);
+}
+
+/**
+ * --- 使用散列中保存的参数验证密码 ---
+ * 接受 Argon2id v19，成本范围与 IPasswordOptions 相同，盐为 8～64 字节、散列为 16～64 字节。
+ * @param password 原始密码，按 UTF-8 编码
+ * @param encoded 数据库存储的 PHC 字符串，不接受客户端指定的散列
+ * @returns 匹配返回 true；不匹配、格式不支持或参数越界返回 false；环境不支持或计算失败时返回 null
+ */
+export function passwordVerify(password: string, encoded: string): Promise<boolean | null> {
+    return aPassword.verify(password, encoded);
 }

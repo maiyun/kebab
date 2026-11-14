@@ -8,7 +8,7 @@
 
 > **publicEncrypt**(`key`, `buffer`): `Buffer`
 
-Defined in: [lib/crypto.ts:103](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L103)
+Defined in: [lib/crypto.ts:104](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L104)
 
 非对称公钥加密
 
