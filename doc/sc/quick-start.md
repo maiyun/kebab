@@ -255,3 +255,38 @@ const custom = await lCrypto.passwordHash(password, {
 数据库保存完整的 `$argon2id$v=19$...` 字符串即可，不需要另存盐或参数。验证从该字符串读取参数，默认值调整不会影响旧密码；需要提升旧密码成本时，在验证成功后重新调用 `passwordHash()` 并保存结果。只从可信存储读取待验证散列，不让客户端提供散列或计算参数。
 
 `passwordHash()` 成功返回 PHC 字符串；选项无效、环境不支持、随机数生成或计算失败返回 `false`。`passwordVerify()` 匹配返回 `true`，密码不匹配、格式无效、算法不支持或参数越界返回 `false`，环境不支持或计算失败返回 `null`。调用方用 `=== false`、`=== null` 区分结果，不能把验证时的系统故障当作密码错误。方法不截断、去空格或归一化密码；密码策略、登录限速和数据库更新由应用负责。
+
+## 多客户端登录管理
+
+`lSession.Login` 是基于单节点 Redis 的可选登录授权管理器，可以搭配 Header 或 Cookie Session，也可以用于 SQL Session 配合 Redis 授权记录。它不修改 Session 数据、不签发 Session 凭据、不验证密码或权限，不自动限制一个账号的登录数量。
+
+```ts
+import * as lSession from '@maiyunnet/kebab/lib/session.js';
+
+const logins = new lSession.Login(kv, this, { 'ttl': 172800 });
+// 先初始化控制器的 Session；无控制器时，第二个参数可直接传已验证的 token，并在选项中指定 name。
+// 仅在业务已经验证账号后创建授权；无租户项目可省略 scope。
+const login = await logins.create({
+    'subject': account.uid,
+    'scope': tenant.uid,
+    'version': account.authVersion,
+    'data': { 'ip': clientIp, 'client': clientName },
+});
+// login === false 表示创建失败；成功后由各业务请求分别调用读取、续期或清退方法。
+```
+
+- 创建管理器时绑定当前 Session token 和实际 name；显式传 token 时必须在选项中提供非空 `name`，否则操作返回 `false`。传控制器时只读取已初始化的 Session，未初始化则操作返回 `false`。实例不随控制器后来切换 Session 而改变凭据，不应跨请求共用。
+- 默认使用 `kv.pre + Session name + ":login:"`，可通过 `pre` 更换 `login:` 后缀以隔离后台、用户端等授权体系；不需要重复传 Kv 项目前缀。`Kv.getPre()` 可在使用原生 pipeline 时读取该前缀。
+- `subject` 是账号标识，`scope` 是可选作用域；两者共同决定账号归属。`version` 是业务提供的授权版本，例如改密时更新的版本号或密码指纹。框架不从数据库读取版本；业务每次请求调用 `get()`，检查账号状态、当前版本、权限和资源归属，再调用 `touch(uid)` 续期。版本检查与业务写入的强一致性由业务事务决定。
+- `create(identity, { 'single': true })` 原子创建并清退同账号、同作用域的全部旧登录，包含不同版本；默认允许多客户端。重复登录也生成新 UID，旧请求不能续期或删除新授权。并发单登录以 Redis 最后执行成功者为准；要持续保证单登录，所有登录入口都须开启此选项，普通创建仍允许新增客户端。其他账号、作用域不受影响；同一 Session 切换账号仍会替换该 Session 原身份。
+- `create()` 返回记录或 `false`。`get()` 返回记录、`null`（未登录或过期）、`false`（输入无效或存储失败）；`get()` 不续期。`touch()`、`remove()`、`revoke()` 返回 `true`、`null`（授权失效、被替换或目标不存在）、`false`（输入无效或存储失败）。存储失败时拒绝授权；通信失败不证明写入未执行，需重新读取确认。
+- 登录记录包含 `uid`、`subject`、`scope`、`version`、`timeAdd` 和 `data`。`timeAdd` 是 Redis 服务端 UTC Unix 秒。每次创建都产生新的登录 UID，同一 token 的最后一次成功创建替换原身份；旧请求携带旧 UID 时不能续期、退出或清退新身份。并发登录请求按 Redis 执行顺序生效；需要按业务先后顺序限制登录时，由调用方协调。
+- `list(uid)` 从当前有效凭据确定账号，只返回同账号、作用域和版本的记录，并用 `current` 标明当前项。结果包含附加信息，业务接口应筛选允许展示的字段，不能直接返回敏感内部数据。该列表适合账号安全页面，不用于全站会话统计或大规模批量任务。
+- `revoke(uid, targetUid)` 只能清退同账号、同作用域的目标，也可指定当前 UID；省略目标表示清退其他全部登录，包含旧版本。清退不会删除普通 Session 数据；后续请求必须通过本管理器验证授权，不能仅凭 Session 数据中的旧账号字段放行。
+- `ttl` 默认 172800 秒，`0` 表示永久；续期使用管理器配置的 TTL。它不会自动读取业务 Session 的配置，调用方应明确保持二者一致。过期索引会随访问清理，索引有效期覆盖所属登录的最长有效期，支持永久和限时记录混用。
+- 存储采用两层结构：每个客户端一个 `record:<token 摘要>` 字符串 Key，保存登录 UID 和身份并独立设置 TTL；同账号同作用域共用一个 `index:<账号归属摘要>` 有序集合，成员为 token 摘要，分数为过期时间。N 个有效客户端通常占 N+1 个 Key，不含普通 Session。指定 UID 清退时遍历该账号索引查找目标，不扫描整个 Redis。
+- 登录管理键只使用 token 的 SHA-256 摘要，列表不返回 token；这不改变其他 Session 存储原有的键格式。token 必须是服务端签发并验证的高熵凭据，不能直接拿用户输入作为已验证 Session。凭据轮换与跨端传输安全由应用的 Session 流程负责。
+
+附加 `data` 仅接受 JSON 对象，保留空数组、嵌套对象和 `null`，编码上限为 16 KiB。不得保存密码或 Session 凭据。输入边界见 `ILoginIdentity` 和 `ILoginOptions`；所有 Redis 原子操作由框架实现，不需要业务项目自行编写 Lua。本实现依赖单节点 Redis 脚本，不支持 Redis Cluster 的跨槽操作。
+
+回归：`node abox/test/session-login.mjs`；真实 Redis 测试设置 `KEBAB_LOGIN_REDIS_HOST`，可选 `KEBAB_LOGIN_REDIS_PORT`、`KEBAB_LOGIN_REDIS_USER`、`KEBAB_LOGIN_REDIS_PASSWORD`、`KEBAB_LOGIN_REDIS_INDEX`、`KEBAB_LOGIN_REDIS_PRE`（项目 Kv 前缀），在项目前缀后追加随机测试前缀并仅清理该前缀。

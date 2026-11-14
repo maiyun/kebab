@@ -260,6 +260,41 @@ const custom = await lCrypto.passwordHash(password, {
 
 `passwordHash()` 成功返回 PHC 字符串；选项无效、环境不支持、随机数生成或计算失败返回 `false`。`passwordVerify()` 匹配返回 `true`，密码不匹配、格式无效、算法不支持或参数越界返回 `false`，环境不支持或计算失败返回 `null`。调用方用 `=== false`、`=== null` 区分结果，不能把验证时的系统故障当作密码错误。方法不截断、去空格或归一化密码；密码策略、登录限速和数据库更新由应用负责。
 
+## 多客户端登录管理
+
+`lSession.Login` 是基于单节点 Redis 的可选登录授权管理器，可以搭配 Header 或 Cookie Session，也可以用于 SQL Session 配合 Redis 授权记录。它不修改 Session 数据、不签发 Session 凭据、不验证密码或权限，不自动限制一个账号的登录数量。
+
+```ts
+import * as lSession from '@maiyunnet/kebab/lib/session.js';
+
+const logins = new lSession.Login(kv, this, { 'ttl': 172800 });
+// 先初始化控制器的 Session；无控制器时，第二个参数可直接传已验证的 token，并在选项中指定 name。
+// 仅在业务已经验证账号后创建授权；无租户项目可省略 scope。
+const login = await logins.create({
+    'subject': account.uid,
+    'scope': tenant.uid,
+    'version': account.authVersion,
+    'data': { 'ip': clientIp, 'client': clientName },
+});
+// login === false 表示创建失败；成功后由各业务请求分别调用读取、续期或清退方法。
+```
+
+- 创建管理器时绑定当前 Session token 和实际 name；显式传 token 时必须在选项中提供非空 `name`，否则操作返回 `false`。传控制器时只读取已初始化的 Session，未初始化则操作返回 `false`。实例不随控制器后来切换 Session 而改变凭据，不应跨请求共用。
+- 默认使用 `kv.pre + Session name + ":login:"`，可通过 `pre` 更换 `login:` 后缀以隔离后台、用户端等授权体系；不需要重复传 Kv 项目前缀。`Kv.getPre()` 可在使用原生 pipeline 时读取该前缀。
+- `subject` 是账号标识，`scope` 是可选作用域；两者共同决定账号归属。`version` 是业务提供的授权版本，例如改密时更新的版本号或密码指纹。框架不从数据库读取版本；业务每次请求调用 `get()`，检查账号状态、当前版本、权限和资源归属，再调用 `touch(uid)` 续期。版本检查与业务写入的强一致性由业务事务决定。
+- `create(identity, { 'single': true })` 原子创建并清退同账号、同作用域的全部旧登录，包含不同版本；默认允许多客户端。重复登录也生成新 UID，旧请求不能续期或删除新授权。并发单登录以 Redis 最后执行成功者为准；要持续保证单登录，所有登录入口都须开启此选项，普通创建仍允许新增客户端。其他账号、作用域不受影响；同一 Session 切换账号仍会替换该 Session 原身份。
+- `create()` 返回记录或 `false`。`get()` 返回记录、`null`（未登录或过期）、`false`（输入无效或存储失败）；`get()` 不续期。`touch()`、`remove()`、`revoke()` 返回 `true`、`null`（授权失效、被替换或目标不存在）、`false`（输入无效或存储失败）。存储失败时拒绝授权；通信失败不证明写入未执行，需重新读取确认。
+- 登录记录包含 `uid`、`subject`、`scope`、`version`、`timeAdd` 和 `data`。`timeAdd` 是 Redis 服务端 UTC Unix 秒。每次创建都产生新的登录 UID，同一 token 的最后一次成功创建替换原身份；旧请求携带旧 UID 时不能续期、退出或清退新身份。并发登录请求按 Redis 执行顺序生效；需要按业务先后顺序限制登录时，由调用方协调。
+- `list(uid)` 从当前有效凭据确定账号，只返回同账号、作用域和版本的记录，并用 `current` 标明当前项。结果包含附加信息，业务接口应筛选允许展示的字段，不能直接返回敏感内部数据。该列表适合账号安全页面，不用于全站会话统计或大规模批量任务。
+- `revoke(uid, targetUid)` 只能清退同账号、同作用域的目标，也可指定当前 UID；省略目标表示清退其他全部登录，包含旧版本。清退不会删除普通 Session 数据；后续请求必须通过本管理器验证授权，不能仅凭 Session 数据中的旧账号字段放行。
+- `ttl` 默认 172800 秒，`0` 表示永久；续期使用管理器配置的 TTL。它不会自动读取业务 Session 的配置，调用方应明确保持二者一致。过期索引会随访问清理，索引有效期覆盖所属登录的最长有效期，支持永久和限时记录混用。
+- 存储采用两层结构：每个客户端一个 `record:<token 摘要>` 字符串 Key，保存登录 UID 和身份并独立设置 TTL；同账号同作用域共用一个 `index:<账号归属摘要>` 有序集合，成员为 token 摘要，分数为过期时间。N 个有效客户端通常占 N+1 个 Key，不含普通 Session。指定 UID 清退时遍历该账号索引查找目标，不扫描整个 Redis。
+- 登录管理键只使用 token 的 SHA-256 摘要，列表不返回 token；这不改变其他 Session 存储原有的键格式。token 必须是服务端签发并验证的高熵凭据，不能直接拿用户输入作为已验证 Session。凭据轮换与跨端传输安全由应用的 Session 流程负责。
+
+附加 `data` 仅接受 JSON 对象，保留空数组、嵌套对象和 `null`，编码上限为 16 KiB。不得保存密码或 Session 凭据。输入边界见 `ILoginIdentity` 和 `ILoginOptions`；所有 Redis 原子操作由框架实现，不需要业务项目自行编写 Lua。本实现依赖单节点 Redis 脚本，不支持 Redis Cluster 的跨槽操作。
+
+回归：`node abox/test/session-login.mjs`；真实 Redis 测试设置 `KEBAB_LOGIN_REDIS_HOST`，可选 `KEBAB_LOGIN_REDIS_PORT`、`KEBAB_LOGIN_REDIS_USER`、`KEBAB_LOGIN_REDIS_PASSWORD`、`KEBAB_LOGIN_REDIS_INDEX`、`KEBAB_LOGIN_REDIS_PRE`（项目 Kv 前缀），在项目前缀后追加随机测试前缀并仅清理该前缀。
+
 query-pagination.md
 ---
 
@@ -1636,6 +1671,7 @@ index.md
 - [lib/s3](lib/s3/index.md)
 - [lib/scan](lib/scan/index.md)
 - [lib/session](lib/session/index.md)
+- [lib/session/login](lib/session/login/index.md)
 - [lib/socket](lib/socket/index.md)
 - [lib/sql](lib/sql/index.md)
 - [lib/sql/value](lib/sql/value/index.md)
@@ -119964,7 +120000,7 @@ Defined in: [lib/kv.ts:60](https://github.com/maiyunnet/kebab/blob/master/lib/kv
 
 > **add**(`key`, `val`, `ttl?`): `Promise`\<`boolean`\>
 
-Defined in: [lib/kv.ts:115](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L115)
+Defined in: [lib/kv.ts:123](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L123)
 
 添加一个值，存在则不变
 
@@ -119994,7 +120030,7 @@ Defined in: [lib/kv.ts:115](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **append**(`key`, `val`): `Promise`\<`boolean`\>
 
-Defined in: [lib/kv.ts:142](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L142)
+Defined in: [lib/kv.ts:150](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L150)
 
 向已存在的值后追加数据
 
@@ -120022,7 +120058,7 @@ Defined in: [lib/kv.ts:142](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **bLMove**(`sourceKey`, `destKey`, `soo`, `deo`, `timeout`): `Promise`\<`string` \| `false` \| `null`\>
 
-Defined in: [lib/kv.ts:762](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L762)
+Defined in: [lib/kv.ts:770](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L770)
 
 #### Parameters
 
@@ -120056,7 +120092,7 @@ Defined in: [lib/kv.ts:762](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **bRPop**(`key`, `timeout`): `Promise`\<`false` \| `Record`\<`string`, `string`\>\>
 
-Defined in: [lib/kv.ts:801](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L801)
+Defined in: [lib/kv.ts:809](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L809)
 
 #### Parameters
 
@@ -120078,7 +120114,7 @@ Defined in: [lib/kv.ts:801](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **decr**(`key`, `num?`): `Promise`\<`number` \| `false`\>
 
-Defined in: [lib/kv.ts:408](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L408)
+Defined in: [lib/kv.ts:416](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L416)
 
 自减
 
@@ -120104,7 +120140,7 @@ Defined in: [lib/kv.ts:408](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **del**(`keys`): `Promise`\<`boolean`\>
 
-Defined in: [lib/kv.ts:356](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L356)
+Defined in: [lib/kv.ts:364](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L364)
 
 删除已存在的值
 
@@ -120124,7 +120160,7 @@ Defined in: [lib/kv.ts:356](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **exists**(`keys`): `Promise`\<`number`\>
 
-Defined in: [lib/kv.ts:194](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L194)
+Defined in: [lib/kv.ts:202](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L202)
 
 检测 key 是否存在
 
@@ -120146,7 +120182,7 @@ Defined in: [lib/kv.ts:194](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **expire**(`key`, `ttl`): `Promise`\<`boolean`\>
 
-Defined in: [lib/kv.ts:436](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L436)
+Defined in: [lib/kv.ts:444](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L444)
 
 仅修改过期时间不修改值
 
@@ -120170,7 +120206,7 @@ Defined in: [lib/kv.ts:436](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **flushDb**(): `Promise`\<`boolean`\>
 
-Defined in: [lib/kv.ts:503](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L503)
+Defined in: [lib/kv.ts:511](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L511)
 
 清除当前所选数据库的所有内容
 
@@ -120184,7 +120220,7 @@ Defined in: [lib/kv.ts:503](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **get**(`key`): `Promise`\<`string` \| `false` \| `null`\>
 
-Defined in: [lib/kv.ts:218](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L218)
+Defined in: [lib/kv.ts:226](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L226)
 
 获取字符串
 
@@ -120206,7 +120242,7 @@ Defined in: [lib/kv.ts:218](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **getDelJson**(`key`): `Promise`\<`any`\>
 
-Defined in: [lib/kv.ts:335](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L335)
+Defined in: [lib/kv.ts:343](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L343)
 
 原子获取并删除 JSON 对象
 
@@ -120228,7 +120264,7 @@ Defined in: [lib/kv.ts:335](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **getJson**(`key`): `Promise`\<`any`\>
 
-Defined in: [lib/kv.ts:322](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L322)
+Defined in: [lib/kv.ts:330](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L330)
 
 获取 json 对象
 
@@ -120244,11 +120280,27 @@ Defined in: [lib/kv.ts:322](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 ***
 
+### getPre()
+
+> **getPre**(): `string`
+
+Defined in: [lib/kv.ts:68](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L68)
+
+获取当前 Kv 配置的键名前缀
+
+#### Returns
+
+`string`
+
+原生 pipeline 不会自动添加的项目前缀
+
+***
+
 ### hDel()
 
 > **hDel**(`key`, `fields`): `Promise`\<`number` \| `false`\>
 
-Defined in: [lib/kv.ts:664](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L664)
+Defined in: [lib/kv.ts:672](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L672)
 
 删除哈希键
 
@@ -120274,7 +120326,7 @@ Defined in: [lib/kv.ts:664](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **hExists**(`key`, `field`): `Promise`\<`boolean`\>
 
-Defined in: [lib/kv.ts:682](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L682)
+Defined in: [lib/kv.ts:690](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L690)
 
 判断哈希字段是否存在
 
@@ -120298,7 +120350,7 @@ Defined in: [lib/kv.ts:682](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **hGet**(`key`, `field`): `Promise`\<`string` \| `false` \| `null`\>
 
-Defined in: [lib/kv.ts:594](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L594)
+Defined in: [lib/kv.ts:602](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L602)
 
 获取哈希值
 
@@ -120322,7 +120374,7 @@ Defined in: [lib/kv.ts:594](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **hGetAll**(`key`): `Promise`\<`false` \| `Record`\<`string`, `string` \| `null`\>\>
 
-Defined in: [lib/kv.ts:646](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L646)
+Defined in: [lib/kv.ts:654](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L654)
 
 批量获取哈希键值对
 
@@ -120342,7 +120394,7 @@ Defined in: [lib/kv.ts:646](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **hGetJson**(`key`, `field`): `Promise`\<`any`\>
 
-Defined in: [lib/kv.ts:612](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L612)
+Defined in: [lib/kv.ts:620](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L620)
 
 获取哈希 json 对象
 
@@ -120366,7 +120418,7 @@ Defined in: [lib/kv.ts:612](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **hIncr**(`key`, `field`, `increment`): `Promise`\<`number` \| `false`\>
 
-Defined in: [lib/kv.ts:701](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L701)
+Defined in: [lib/kv.ts:709](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L709)
 
 设置哈希自增自减
 
@@ -120400,7 +120452,7 @@ key
 
 > **hKeys**(`key`): `Promise`\<`false` \| `string`[]\>
 
-Defined in: [lib/kv.ts:723](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L723)
+Defined in: [lib/kv.ts:731](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L731)
 
 获取哈希所有字段
 
@@ -120420,7 +120472,7 @@ Defined in: [lib/kv.ts:723](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **hMGet**(`key`, `fields`): `Promise`\<`false` \| `Record`\<`string`, `string` \| `null`\>\>
 
-Defined in: [lib/kv.ts:629](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L629)
+Defined in: [lib/kv.ts:637](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L637)
 
 批量获取哈希值
 
@@ -120444,7 +120496,7 @@ Defined in: [lib/kv.ts:629](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **hMSet**(`key`, `rows`): `Promise`\<`boolean`\>
 
-Defined in: [lib/kv.ts:566](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L566)
+Defined in: [lib/kv.ts:574](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L574)
 
 批量设置哈希值
 
@@ -120472,7 +120524,7 @@ key / val 数组
 
 > **hSet**(`key`, `field`, `val`, `mod?`): `Promise`\<`boolean`\>
 
-Defined in: [lib/kv.ts:540](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L540)
+Defined in: [lib/kv.ts:548](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L548)
 
 设置哈希表值
 
@@ -120512,7 +120564,7 @@ key 名
 
 > **incr**(`key`, `num?`): `Promise`\<`number` \| `false`\>
 
-Defined in: [lib/kv.ts:380](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L380)
+Defined in: [lib/kv.ts:388](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L388)
 
 自增
 
@@ -120538,7 +120590,7 @@ Defined in: [lib/kv.ts:380](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **keys**(`pattern`): `Promise`\<`false` \| `string`[]\>
 
-Defined in: [lib/kv.ts:453](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L453)
+Defined in: [lib/kv.ts:461](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L461)
 
 获取服务器上的所有 key 列表
 
@@ -120558,7 +120610,7 @@ Defined in: [lib/kv.ts:453](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **lLen**(`key`): `Promise`\<`number` \| `false`\>
 
-Defined in: [lib/kv.ts:830](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L830)
+Defined in: [lib/kv.ts:838](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L838)
 
 #### Parameters
 
@@ -120576,7 +120628,7 @@ Defined in: [lib/kv.ts:830](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **lPop**(`key`): `Promise`\<`string` \| `false` \| `null`\>
 
-Defined in: [lib/kv.ts:775](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L775)
+Defined in: [lib/kv.ts:783](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L783)
 
 #### Parameters
 
@@ -120594,7 +120646,7 @@ Defined in: [lib/kv.ts:775](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **lPush**(`key`, `values`): `Promise`\<`number` \| `false`\>
 
-Defined in: [lib/kv.ts:736](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L736)
+Defined in: [lib/kv.ts:744](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L744)
 
 #### Parameters
 
@@ -120616,7 +120668,7 @@ Defined in: [lib/kv.ts:736](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **lRange**(`key`, `start`, `stop`): `Promise`\<`false` \| `string`[]\>
 
-Defined in: [lib/kv.ts:817](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L817)
+Defined in: [lib/kv.ts:825](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L825)
 
 #### Parameters
 
@@ -120642,7 +120694,7 @@ Defined in: [lib/kv.ts:817](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **mGet**(`keys`): `Promise`\<`false` \| `Record`\<`string`, `string` \| `null`\>\>
 
-Defined in: [lib/kv.ts:269](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L269)
+Defined in: [lib/kv.ts:277](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L277)
 
 批量获取值
 
@@ -120664,7 +120716,7 @@ key 序列
 
 > **mSet**(`rows`): `Promise`\<`boolean`\>
 
-Defined in: [lib/kv.ts:298](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L298)
+Defined in: [lib/kv.ts:306](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L306)
 
 批量设置哈希值
 
@@ -120686,7 +120738,7 @@ key / val 数组
 
 > **ping**(): `Promise`\<`string` \| `false`\>
 
-Defined in: [lib/kv.ts:520](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L520)
+Defined in: [lib/kv.ts:528](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L528)
 
 发送 ping
 
@@ -120700,7 +120752,7 @@ Defined in: [lib/kv.ts:520](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **pipeline**(): `Promise`\<`false` \| `IPipelineClient`\>
 
-Defined in: [lib/kv.ts:68](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L68)
+Defined in: [lib/kv.ts:76](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L76)
 
 获取一个 pipeline 操作对象
 
@@ -120716,7 +120768,7 @@ Defined in: [lib/kv.ts:68](https://github.com/maiyunnet/kebab/blob/master/lib/kv
 
 > **prepend**(`key`, `val`): `Promise`\<`boolean`\>
 
-Defined in: [lib/kv.ts:160](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L160)
+Defined in: [lib/kv.ts:168](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L168)
 
 向已存在的值之前追加数据
 
@@ -120740,7 +120792,7 @@ Defined in: [lib/kv.ts:160](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **pttl**(`key`): `Promise`\<`number` \| `null`\>
 
-Defined in: [lib/kv.ts:252](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L252)
+Defined in: [lib/kv.ts:260](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L260)
 
 获取相应的剩余有效期毫秒数
 
@@ -120760,7 +120812,7 @@ Defined in: [lib/kv.ts:252](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **replace**(`key`, `val`, `ttl?`): `Promise`\<`boolean`\>
 
-Defined in: [lib/kv.ts:129](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L129)
+Defined in: [lib/kv.ts:137](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L137)
 
 替换一个存在的值
 
@@ -120794,7 +120846,7 @@ Defined in: [lib/kv.ts:129](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **rPop**(`key`): `Promise`\<`string` \| `false` \| `null`\>
 
-Defined in: [lib/kv.ts:788](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L788)
+Defined in: [lib/kv.ts:796](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L796)
 
 #### Parameters
 
@@ -120812,7 +120864,7 @@ Defined in: [lib/kv.ts:788](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **rPush**(`key`, `values`): `Promise`\<`number` \| `false`\>
 
-Defined in: [lib/kv.ts:749](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L749)
+Defined in: [lib/kv.ts:757](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L757)
 
 #### Parameters
 
@@ -120834,7 +120886,7 @@ Defined in: [lib/kv.ts:749](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **scan**(`cursor?`, `pattern?`, `count?`): `Promise`\<`false` \| `IScanResult`\<`string`\>\>
 
-Defined in: [lib/kv.ts:479](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L479)
+Defined in: [lib/kv.ts:487](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L487)
 
 根据条件获取服务器上的 keys
 
@@ -120866,7 +120918,7 @@ Defined in: [lib/kv.ts:479](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **set**(`key`, `val`, `ttl?`, `mod?`): `Promise`\<`boolean`\>
 
-Defined in: [lib/kv.ts:83](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L83)
+Defined in: [lib/kv.ts:91](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L91)
 
 设定一个值
 
@@ -120902,7 +120954,7 @@ Defined in: [lib/kv.ts:83](https://github.com/maiyunnet/kebab/blob/master/lib/kv
 
 > **ttl**(`key`): `Promise`\<`number` \| `null`\>
 
-Defined in: [lib/kv.ts:235](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L235)
+Defined in: [lib/kv.ts:243](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L243)
 
 获取相应的剩余有效期秒数
 
@@ -120926,7 +120978,7 @@ Defined in: [lib/kv.ts:235](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **zAdd**(`key`, `score`, `member`): `Promise`\<`boolean`\>
 
-Defined in: [lib/kv.ts:849](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L849)
+Defined in: [lib/kv.ts:857](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L857)
 
 添加有序集合元素（单个元素）
 
@@ -120958,7 +121010,7 @@ key 名
 
 > **zAdd**(`key`, `elements`, `options`): `Promise`\<`number` \| `false`\>
 
-Defined in: [lib/kv.ts:856](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L856)
+Defined in: [lib/kv.ts:864](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L864)
 
 添加有序集合元素（多个元素，含 INCR 选项）
 
@@ -120990,7 +121042,7 @@ key 名
 
 > **zAdd**(`key`, `elements`, `options`): `Promise`\<`number` \| `false` \| `null`\>
 
-Defined in: [lib/kv.ts:863](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L863)
+Defined in: [lib/kv.ts:871](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L871)
 
 添加有序集合元素（多个元素，含 INCR 选项，可空）
 
@@ -121022,7 +121074,7 @@ key 名
 
 > **zAdd**(`key`, `elements`, `options?`): `Promise`\<`number` \| `false`\>
 
-Defined in: [lib/kv.ts:870](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L870)
+Defined in: [lib/kv.ts:878](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L878)
 
 添加有序集合元素（多个元素）
 
@@ -121056,7 +121108,7 @@ key 名
 
 > **zRangeWithScores**(`key`, `start`, `stop`, `options?`): `Promise`\<`false` \| `object`[]\>
 
-Defined in: [lib/kv.ts:891](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L891)
+Defined in: [lib/kv.ts:899](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L899)
 
 #### Parameters
 
@@ -121086,7 +121138,7 @@ Defined in: [lib/kv.ts:891](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **zRem**(`key`, `members`): `Promise`\<`number` \| `false`\>
 
-Defined in: [lib/kv.ts:916](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L916)
+Defined in: [lib/kv.ts:924](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L924)
 
 #### Parameters
 
@@ -121115,7 +121167,7 @@ lib/kv/functions/get.md
 
 > **get**(`ctrEtc`, `oetc?`): [`Kv`](../classes/Kv.md)
 
-Defined in: [lib/kv.ts:977](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L977)
+Defined in: [lib/kv.ts:985](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L985)
 
 获取 Kv 对象
 
@@ -121182,7 +121234,7 @@ lib/kv/interfaces/IConnectionInfo.md
 
 # Interface: IConnectionInfo
 
-Defined in: [lib/kv.ts:993](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L993)
+Defined in: [lib/kv.ts:1001](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L1001)
 
 连接信息
 
@@ -121192,7 +121244,7 @@ Defined in: [lib/kv.ts:993](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **conn**: `ICommandClient`
 
-Defined in: [lib/kv.ts:997](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L997)
+Defined in: [lib/kv.ts:1005](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L1005)
 
 ***
 
@@ -121200,7 +121252,7 @@ Defined in: [lib/kv.ts:997](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **host**: `string`
 
-Defined in: [lib/kv.ts:994](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L994)
+Defined in: [lib/kv.ts:1002](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L1002)
 
 ***
 
@@ -121208,7 +121260,7 @@ Defined in: [lib/kv.ts:994](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **index**: `number`
 
-Defined in: [lib/kv.ts:996](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L996)
+Defined in: [lib/kv.ts:1004](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L1004)
 
 ***
 
@@ -121216,7 +121268,7 @@ Defined in: [lib/kv.ts:996](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **port**: `number`
 
-Defined in: [lib/kv.ts:995](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L995)
+Defined in: [lib/kv.ts:1003](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L1003)
 
 lib/kv/interfaces/IZRangeOptions.md
 ---
@@ -124246,6 +124298,48 @@ lib/session/index.md
 
 - [IOptions](interfaces/IOptions.md)
 
+## References
+
+### IListLogin
+
+Re-exports [IListLogin](login/interfaces/IListLogin.md)
+
+***
+
+### ILoginCreateOptions
+
+Re-exports [ILoginCreateOptions](login/interfaces/ILoginCreateOptions.md)
+
+***
+
+### ILoginIdentity
+
+Re-exports [ILoginIdentity](login/interfaces/ILoginIdentity.md)
+
+***
+
+### ILoginOptions
+
+Re-exports [ILoginOptions](login/interfaces/ILoginOptions.md)
+
+***
+
+### ILoginRecord
+
+Re-exports [ILoginRecord](login/interfaces/ILoginRecord.md)
+
+***
+
+### Login
+
+Re-exports [Login](login/classes/Login.md)
+
+***
+
+### LoginValue
+
+Re-exports [LoginValue](login/type-aliases/LoginValue.md)
+
 lib/session/interfaces/IOptions.md
 ---
 
@@ -124328,6 +124422,570 @@ Defined in: [lib/session.ts:49](https://github.com/maiyunnet/kebab/blob/master/l
 > `optional` **ttl?**: `number`
 
 Defined in: [lib/session.ts:44](https://github.com/maiyunnet/kebab/blob/master/lib/session.ts#L44)
+
+lib/session/login/classes/Login.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../../index.md) / [lib/session/login](../index.md) / Login
+
+# Class: Login
+
+Defined in: lib/session/login.ts:63
+
+管理一个账号在多个客户端的登录授权
+基于单节点 Redis；不会修改 Session 数据或 Cookie。业务每次请求须验证账号、权限和授权版本。
+失败返回 false；通信失败不能证明写操作未执行，调用方应重新读取后判断。
+
+## Constructors
+
+### Constructor
+
+> **new Login**(`kv`, `ctrToken`, `options?`): `Login`
+
+Defined in: lib/session/login.ts:77
+
+创建可复用的登录管理器
+
+#### Parameters
+
+##### kv
+
+[`Kv`](../../../kv/classes/Kv.md)
+
+项目 Kv，自动使用其配置前缀
+
+##### ctrToken
+
+`string` \| [`Ctr`](../../../../sys/ctr/classes/Ctr.md)
+
+已初始化 Session 的控制器或服务端验证过的 Session token；未初始化时操作返回 false
+
+##### options?
+
+[`ILoginOptions`](../interfaces/ILoginOptions.md) = `{}`
+
+命名空间和有效期；无效选项使操作返回 false
+
+#### Returns
+
+`Login`
+
+## Methods
+
+### create()
+
+> **create**(`identity`, `options?`): `Promise`\<`false` \| [`ILoginRecord`](../interfaces/ILoginRecord.md)\>
+
+Defined in: lib/session/login.ts:97
+
+创建登录授权并替换同一凭据原来绑定的身份
+每次创建生成新 UID，包括同一账号在同一 Session 重复登录；旧 UID 随即失效。
+single 开启时，同账号同作用域以最后执行成功的创建为准；所有登录入口须采用同一策略。
+
+#### Parameters
+
+##### identity
+
+[`ILoginIdentity`](../interfaces/ILoginIdentity.md)
+
+已由业务验证的账号和附加信息
+
+##### options?
+
+[`ILoginCreateOptions`](../interfaces/ILoginCreateOptions.md) = `{}`
+
+是否仅保留本次登录
+
+#### Returns
+
+`Promise`\<`false` \| [`ILoginRecord`](../interfaces/ILoginRecord.md)\>
+
+新授权；输入无效或存储失败返回 false
+
+***
+
+### get()
+
+> **get**(): `Promise`\<`false` \| [`ILoginRecord`](../interfaces/ILoginRecord.md) \| `null`\>
+
+Defined in: lib/session/login.ts:105
+
+读取凭据当前绑定的登录授权，不延长有效期
+
+#### Returns
+
+`Promise`\<`false` \| [`ILoginRecord`](../interfaces/ILoginRecord.md) \| `null`\>
+
+登录记录；null 表示未登录或已失效，false 表示输入无效或存储失败
+
+***
+
+### list()
+
+> **list**(`uid`): `Promise`\<`false` \| [`IListLogin`](../interfaces/IListLogin.md)[] \| `null`\>
+
+Defined in: lib/session/login.ts:133
+
+列出当前账号、作用域及授权版本一致的有效登录
+返回登录附加信息，业务响应前须筛选可展示字段；适合交互式账号的登录列表，不用于全站会话统计。
+
+#### Parameters
+
+##### uid
+
+`string`
+
+get 返回的当前登录 UID
+
+#### Returns
+
+`Promise`\<`false` \| [`IListLogin`](../interfaces/IListLogin.md)[] \| `null`\>
+
+登录列表；null 当前登录失效或被替换，false 输入无效或存储失败
+
+***
+
+### remove()
+
+> **remove**(`uid`): `Promise`\<`boolean` \| `null`\>
+
+Defined in: lib/session/login.ts:123
+
+退出凭据仍绑定的指定登录，保留 Session 本身
+
+#### Parameters
+
+##### uid
+
+`string`
+
+get 返回的登录 UID
+
+#### Returns
+
+`Promise`\<`boolean` \| `null`\>
+
+true 已退出，null 已失效或被替换，false 输入无效或存储失败
+
+***
+
+### revoke()
+
+> **revoke**(`uid`, `target?`): `Promise`\<`boolean` \| `null`\>
+
+Defined in: lib/session/login.ts:144
+
+清退当前账号和作用域内的指定登录或其他全部登录
+清退覆盖所有授权版本；可指定当前登录，不能撤销其他账号或作用域的登录。
+
+#### Parameters
+
+##### uid
+
+`string`
+
+get 返回的当前登录 UID
+
+##### target?
+
+`string` = `'others'`
+
+目标登录 UID，默认 others 表示除当前登录以外的全部登录
+
+#### Returns
+
+`Promise`\<`boolean` \| `null`\>
+
+true 已清退，null 当前或目标登录失效，false 输入无效或存储失败
+
+***
+
+### touch()
+
+> **touch**(`uid`): `Promise`\<`boolean` \| `null`\>
+
+Defined in: lib/session/login.ts:114
+
+延长仍与本次请求读取的登录 UID 匹配的授权
+
+#### Parameters
+
+##### uid
+
+`string`
+
+get 返回的登录 UID
+
+#### Returns
+
+`Promise`\<`boolean` \| `null`\>
+
+true 成功，null 已失效或被替换，false 输入无效或存储失败
+
+lib/session/login/index.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../index.md) / lib/session/login
+
+# lib/session/login
+
+## Classes
+
+- [Login](classes/Login.md)
+
+## Interfaces
+
+- [IListLogin](interfaces/IListLogin.md)
+- [ILoginCreateOptions](interfaces/ILoginCreateOptions.md)
+- [ILoginIdentity](interfaces/ILoginIdentity.md)
+- [ILoginOptions](interfaces/ILoginOptions.md)
+- [ILoginRecord](interfaces/ILoginRecord.md)
+
+## Type Aliases
+
+- [LoginValue](type-aliases/LoginValue.md)
+
+lib/session/login/interfaces/IListLogin.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../../index.md) / [lib/session/login](../index.md) / IListLogin
+
+# Interface: IListLogin
+
+Defined in: lib/session/login.ts:37
+
+登录列表中的记录
+
+## Extends
+
+- [`ILoginRecord`](ILoginRecord.md)
+
+## Properties
+
+### current
+
+> **current**: `boolean`
+
+Defined in: lib/session/login.ts:39
+
+是否为当前登录
+
+***
+
+### data
+
+> **data**: `Record`\<`string`, [`LoginValue`](../type-aliases/LoginValue.md)\>
+
+Defined in: lib/session/login.ts:33
+
+登录时保存的附加信息
+
+#### Inherited from
+
+[`ILoginRecord`](ILoginRecord.md).[`data`](ILoginRecord.md#data)
+
+***
+
+### scope
+
+> **scope**: `string`
+
+Defined in: lib/session/login.ts:27
+
+账号作用域
+
+#### Inherited from
+
+[`ILoginRecord`](ILoginRecord.md).[`scope`](ILoginRecord.md#scope)
+
+***
+
+### subject
+
+> **subject**: `string`
+
+Defined in: lib/session/login.ts:25
+
+账号标识
+
+#### Inherited from
+
+[`ILoginRecord`](ILoginRecord.md).[`subject`](ILoginRecord.md#subject)
+
+***
+
+### timeAdd
+
+> **timeAdd**: `number`
+
+Defined in: lib/session/login.ts:31
+
+登录时间，Redis 服务端 UTC Unix 秒
+
+#### Inherited from
+
+[`ILoginRecord`](ILoginRecord.md).[`timeAdd`](ILoginRecord.md#timeadd)
+
+***
+
+### uid
+
+> **uid**: `string`
+
+Defined in: lib/session/login.ts:23
+
+本次登录 UID，每次成功登录重新生成
+
+#### Inherited from
+
+[`ILoginRecord`](ILoginRecord.md).[`uid`](ILoginRecord.md#uid)
+
+***
+
+### version
+
+> **version**: `string`
+
+Defined in: lib/session/login.ts:29
+
+业务授权版本，框架不查询业务数据验证此值
+
+#### Inherited from
+
+[`ILoginRecord`](ILoginRecord.md).[`version`](ILoginRecord.md#version)
+
+lib/session/login/interfaces/ILoginCreateOptions.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../../index.md) / [lib/session/login](../index.md) / ILoginCreateOptions
+
+# Interface: ILoginCreateOptions
+
+Defined in: lib/session/login.ts:43
+
+创建登录时的选项
+
+## Properties
+
+### single?
+
+> `optional` **single?**: `boolean`
+
+Defined in: lib/session/login.ts:45
+
+清退同账号、同作用域的其他登录（包含旧版本），默认 false；与创建原子执行
+
+lib/session/login/interfaces/ILoginIdentity.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../../index.md) / [lib/session/login](../index.md) / ILoginIdentity
+
+# Interface: ILoginIdentity
+
+Defined in: lib/session/login.ts:9
+
+业务验证通过后交给框架保存的登录身份
+
+## Properties
+
+### data?
+
+> `optional` **data?**: `Record`\<`string`, [`LoginValue`](../type-aliases/LoginValue.md)\>
+
+Defined in: lib/session/login.ts:17
+
+客户端等附加信息，默认空对象；JSON 编码最多 16 KiB，不保存密码或凭据
+
+***
+
+### scope?
+
+> `optional` **scope?**: `string`
+
+Defined in: lib/session/login.ts:13
+
+账号作用域，如租户或账号体系；默认空字符串，最多 256 个字符
+
+***
+
+### subject
+
+> **subject**: `string`
+
+Defined in: lib/session/login.ts:11
+
+账号标识，非空，最多 256 个字符
+
+***
+
+### version?
+
+> `optional` **version?**: `string`
+
+Defined in: lib/session/login.ts:15
+
+授权版本，如密码指纹；默认空字符串，最多 1024 个字符，由业务与当前数据比较
+
+lib/session/login/interfaces/ILoginOptions.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../../index.md) / [lib/session/login](../index.md) / ILoginOptions
+
+# Interface: ILoginOptions
+
+Defined in: lib/session/login.ts:49
+
+Redis 登录管理选项
+
+## Properties
+
+### name?
+
+> `optional` **name?**: `string`
+
+Defined in: lib/session/login.ts:51
+
+Session 名称；传 token 时必填，传控制器时使用已初始化 Session 的实际名称
+
+***
+
+### pre?
+
+> `optional` **pre?**: `string`
+
+Defined in: lib/session/login.ts:53
+
+Session 名称之后的键名前缀，默认 login:；可进一步隔离授权用途
+
+***
+
+### ttl?
+
+> `optional` **ttl?**: `number`
+
+Defined in: lib/session/login.ts:55
+
+有效期秒数，默认 172800；整数 0～2147483647，0 表示永久；与业务 Session 有效期一致
+
+lib/session/login/interfaces/ILoginRecord.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../../index.md) / [lib/session/login](../index.md) / ILoginRecord
+
+# Interface: ILoginRecord
+
+Defined in: lib/session/login.ts:21
+
+已保存的登录授权，不包含 Session 凭据
+
+## Extended by
+
+- [`IListLogin`](IListLogin.md)
+
+## Properties
+
+### data
+
+> **data**: `Record`\<`string`, [`LoginValue`](../type-aliases/LoginValue.md)\>
+
+Defined in: lib/session/login.ts:33
+
+登录时保存的附加信息
+
+***
+
+### scope
+
+> **scope**: `string`
+
+Defined in: lib/session/login.ts:27
+
+账号作用域
+
+***
+
+### subject
+
+> **subject**: `string`
+
+Defined in: lib/session/login.ts:25
+
+账号标识
+
+***
+
+### timeAdd
+
+> **timeAdd**: `number`
+
+Defined in: lib/session/login.ts:31
+
+登录时间，Redis 服务端 UTC Unix 秒
+
+***
+
+### uid
+
+> **uid**: `string`
+
+Defined in: lib/session/login.ts:23
+
+本次登录 UID，每次成功登录重新生成
+
+***
+
+### version
+
+> **version**: `string`
+
+Defined in: lib/session/login.ts:29
+
+业务授权版本，框架不查询业务数据验证此值
+
+lib/session/login/type-aliases/LoginValue.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../../index.md) / [lib/session/login](../index.md) / LoginValue
+
+# Type Alias: LoginValue
+
+> **LoginValue** = `string` \| `number` \| `boolean` \| `null` \| `LoginValue`[] \| \{\[`key`: `string`\]: `LoginValue`; \}
+
+Defined in: lib/session/login.ts:6
+
+登录附加信息支持的 JSON 值
 
 lib/socket/functions/rwebsocket.md
 ---

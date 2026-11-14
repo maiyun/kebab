@@ -33,6 +33,7 @@
 - [lib/s3](lib/s3/index.md)
 - [lib/scan](lib/scan/index.md)
 - [lib/session](lib/session/index.md)
+- [lib/session/login](lib/session/login/index.md)
 - [lib/socket](lib/socket/index.md)
 - [lib/sql](lib/sql/index.md)
 - [lib/sql/value](lib/sql/value/index.md)

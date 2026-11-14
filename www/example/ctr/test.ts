@@ -11,6 +11,7 @@ import * as lFs from '#kebab/lib/fs.js';
 import * as lText from '#kebab/lib/text.js';
 import * as lCrypto from '#kebab/lib/crypto.js';
 import * as lKv from '#kebab/lib/kv.js';
+import * as lSession from '#kebab/lib/session.js';
 import * as lCaptcha from '#kebab/lib/captcha.js';
 import * as lTime from '#kebab/lib/time.js';
 import * as lScan from '#kebab/lib/scan.js';
@@ -32,6 +33,14 @@ import * as sCtr from '#kebab/sys/ctr.js';
 import mTest from '../mod/test.js';
 import mTestData from '../mod/testdata.js';
 import * as coreUpdatecodeTest from '../abox/core-updatecode.js';
+
+/** --- 当前访问者的登录示例状态，仅保存在示例 Session 中 --- */
+interface ILoginExample {
+    /** --- 隔离示例数据的 Redis 前缀 --- */
+    'pre': string;
+    /** --- 模拟客户端的凭据及前后两次登录 UID --- */
+    'clients': Record<string, { 'token': string; 'uid': string; 'previous': string; }>;
+}
 
 /**
  * --- 创建独立测试目录并预置待覆盖文件 ---
@@ -267,7 +276,8 @@ export default class extends sCtr.Ctr {
             `<br><a href="${this._config.const.urlBase}test/scan?s=kv">View "test/scan?s=kv"</a>`,
 
             '<br><br><b>Session:</b>',
-            `<br><br><a href="${this._config.const.urlBase}test/session?s=db">View "test/session?s=db"</a>`,
+            `<br><br><a href="${this._config.const.urlBase}test/session-login">View "test/session-login"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/session?s=db">View "test/session?s=db"</a>`,
             `<br><a href="${this._config.const.urlBase}test/session?s=kv">View "test/session?s=kv"</a>`,
             `<br><a href="${this._config.const.urlBase}test/session?s=db&auth=1">View "test/session?s=db&auth=1" Header Authorization</a>`,
             `<br><a href="${this._config.const.urlBase}test/session?s=kv&auth=1">View "test/session?s=kv&auth=1" Header Authorization</a>`,
@@ -3257,6 +3267,148 @@ function confirm() {
             link = kv;
         }
         return link;
+    }
+
+    /**
+     * --- 在隔离的三个模拟客户端上演示登录授权的六种操作 ---
+     * @returns 操作代码、返回值和各客户端状态；输入或存储失败时返回错误
+     */
+    public async sessionLogin(): Promise<string | kebab.Json[]> {
+        if (this._req.method !== 'GET' && this._req.method !== 'POST') {
+            return [-405, 'Use GET or POST.'];
+        }
+        const kv = lKv.get(this);
+        if (!await this._startSession(kv, false, { 'ttl': 600 })) {
+            return [-520, 'Could not initialize the example Session.'];
+        }
+        this._enabledXsrf();
+        /** --- 每个访问者独享模拟客户端和 Redis 命名空间，不触碰业务登录 --- */
+        let demo = this._session['loginExample'] as ILoginExample | undefined;
+        if (!demo) {
+            demo = {
+                'pre': `example:login:${lCrypto.uuid()}:`,
+                'clients': {},
+            };
+            for (const name of ['A', 'B', 'C']) {
+                demo.clients[name] = { 'token': lCrypto.uuid(), 'uid': '', 'previous': '' };
+            }
+            this._session['loginExample'] = demo;
+        }
+        let clientName = 'A';
+        let subject = 'alice';
+        let scope = 'shop-1';
+        let version = '1';
+        let uidMode = 'current';
+        let single = 'no';
+        let target = 'others';
+        let code = 'Choose a method below. Opening or refreshing this page only reads login records.';
+        let result: unknown = null;
+        if (this._req.method === 'POST') {
+            const v = lCore.v;
+            const parsed = this._valibotx(v.object({
+                'action': v.picklist(['create', 'get', 'touch', 'remove', 'list', 'revoke']),
+                'client': v.picklist(['A', 'B', 'C']),
+                'subject': v.picklist(['alice', 'bob']),
+                'scope': v.picklist(['shop-1', 'shop-2']),
+                'version': v.picklist(['1', '2']),
+                'uidMode': v.picklist(['current', 'previous']),
+                'single': v.picklist(['no', 'yes']),
+                'target': v.union([v.literal('others'), v.pipe(v.string(), v.regex(/^[a-f0-9]{32}$/))]),
+            }), this._post);
+            if (!parsed.success) {
+                return parsed.response;
+            }
+            const input = parsed.output;
+            clientName = input.client;
+            subject = input.subject;
+            scope = input.scope;
+            version = input.version;
+            uidMode = input.uidMode;
+            single = input.single;
+            target = input.target;
+            const client = demo.clients[clientName];
+            const logins = new lSession.Login(kv, client.token, { 'name': this._sess!.getName(), 'pre': demo.pre, 'ttl': 60 });
+            /** --- 使用前一次登录 UID，可验证换号后旧请求无法影响新授权 --- */
+            const uid = uidMode === 'previous' ? client.previous : client.uid;
+            switch (input.action) {
+                case 'create': {
+                    const identity = { 'subject': subject, 'scope': scope, 'version': version, 'data': { 'client': clientName } };
+                    code = `await logins.create(${JSON.stringify(identity, null, 4)}, { single: ${single === 'yes'} });`;
+                    const login = await logins.create(identity, { 'single': single === 'yes' });
+                    if (login !== false) {
+                        client.previous = client.uid;
+                        client.uid = login.uid;
+                    }
+                    result = login;
+                    break;
+                }
+                case 'get':
+                    code = 'await logins.get();';
+                    result = await logins.get();
+                    break;
+                case 'touch':
+                    code = `await logins.touch('${uid}');`;
+                    result = await logins.touch(uid);
+                    break;
+                case 'remove':
+                    code = `await logins.remove('${uid}');`;
+                    result = await logins.remove(uid);
+                    break;
+                case 'list':
+                    code = `await logins.list('${uid}');`;
+                    result = await logins.list(uid);
+                    break;
+                case 'revoke':
+                    code = `await logins.revoke('${uid}', '${target}');`;
+                    result = await logins.revoke(uid, target);
+                    break;
+            }
+        }
+        const echo = [
+            '<b>Session.Login: multiple clients</b><br><br>',
+            '<a href="' + this._config.const.urlBase + 'test">Return</a><br><br>',
+            'This page simulates three clients in your own test namespace. Login TTL: 60 seconds. Reading does not renew it.',
+            '<pre>import * as lSession from \'@maiyunnet/kebab/lib/session.js\';\n' +
+                'const logins = new lSession.Login(kv, token, { name: this._sess.getName(), pre: examplePrefix, ttl: 60 });\n' +
+                '// In a controller, pass this instead of the simulated token.</pre>',
+            '<p>Create A and B as alice/shop-1/version 1, then list A. Revoke others from A to remove B. ' +
+                'Create A again as bob, then try touch or remove with the previous UID: the result is null.</p>',
+            '<p>Scope separates accounts; version filters the list. In real applications, verify the password before create, ' +
+                'use a server-issued Session token, and check current account state, version and permissions before touch.</p>',
+            '<form method="post" action="' + this._config.const.urlBase + 'test/session-login">',
+            '<input type="hidden" name="_xsrf" value="' + lText.htmlescape(this._xsrf) + '">',
+        ];
+        for (const field of [
+            { 'name': 'client', 'label': 'Client', 'value': clientName, 'values': ['A', 'B', 'C'] },
+            { 'name': 'subject', 'label': 'Account for create', 'value': subject, 'values': ['alice', 'bob'] },
+            { 'name': 'scope', 'label': 'Scope for create', 'value': scope, 'values': ['shop-1', 'shop-2'] },
+            { 'name': 'version', 'label': 'Version for create', 'value': version, 'values': ['1', '2'] },
+            { 'name': 'single', 'label': 'Single login for create', 'value': single, 'values': ['no', 'yes'] },
+            { 'name': 'uidMode', 'label': 'UID for touch/remove/list/revoke', 'value': uidMode, 'values': ['current', 'previous'] },
+        ]) {
+            echo.push(`<label>${field.label}: <select name="${field.name}">`);
+            for (const value of field.values) {
+                echo.push(`<option${value === field.value ? ' selected' : ''}>${value}</option>`);
+            }
+            echo.push('</select></label><br>');
+        }
+        echo.push('<label>Revoke target (others or a login UID): <input name="target" value="' +
+            lText.htmlescape(target) + '"></label><br><br>');
+        for (const action of ['create', 'get', 'touch', 'remove', 'list', 'revoke']) {
+            echo.push(`<button name="action" value="${action}" style="margin-right:8px">${action}</button>`);
+        }
+        echo.push('</form><br><b>Method call:</b><pre>' + lText.htmlescape(code) + '</pre>',
+            '<b>Result:</b><pre>' + lText.htmlescape(JSON.stringify(result, null, 4)) + '</pre>',
+            '<p>true: completed; null: no active login or stale UID; false: invalid input or storage failure. ' +
+                'Before the first create, UID is empty and UID-based methods return false.</p>',
+            '<b>Client snapshots — get(), without renewal:</b>');
+        for (const [name, client] of Object.entries(demo.clients)) {
+            echo.push(`<pre>${lText.htmlescape(JSON.stringify({
+                'client': name, 'currentUid': client.uid, 'previousUid': client.previous,
+                'login': await new lSession.Login(kv, client.token, { 'name': this._sess!.getName(), 'pre': demo.pre, 'ttl': 60 }).get(),
+            }, null, 4))}</pre>`);
+        }
+        return echo.join('') + '<br>' + this._getEnd();
     }
 
     public async session(): Promise<string | kebab.Json[]> {

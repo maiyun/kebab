@@ -286,3 +286,6 @@ export class Session {
     }
 
 }
+
+export { Login } from './session/login.js';
+export type { ILoginCreateOptions, ILoginIdentity, ILoginRecord, IListLogin, ILoginOptions, LoginValue } from './session/login.js';

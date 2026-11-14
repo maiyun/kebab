@@ -2,6 +2,9 @@
 const rules = require('@litert/eslint-plugin-recommended-rules');
 
 module.exports = [
+    {
+        ignores: ['**/abox/**'],
+    },
     ...rules.typescript,
     {
         files: [
@@ -21,6 +24,7 @@ module.exports = [
             '@typescript-eslint/no-this-alias': 'off',
             '@typescript-eslint/unbound-method': 'off',
             '@typescript-eslint/explicit-function-return-type': 'off',
+            '@typescript-eslint/naming-convention': 'off',
             'max-lines': ['warn', 5000],
         }
     },

@@ -62,6 +62,14 @@ export class Kv {
     }
 
     /**
+     * --- 获取当前 Kv 配置的键名前缀 ---
+     * @returns 原生 pipeline 不会自动添加的项目前缀
+     */
+    public getPre(): string {
+        return this._etc.pre;
+    }
+
+    /**
      * --- 获取一个 pipeline 操作对象 ---
      * @returns 失败则返回 false
      */
