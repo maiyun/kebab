@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2019-3-30 12:46:41
