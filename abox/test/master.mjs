@@ -854,3 +854,86 @@ test('real cluster coalesces restarts and drains an active HTTP request before r
     assert.equal(Object.keys(cluster.workers).length, 0);
     assert.deepEqual(target.exitCodes, [0]);
 });
+
+async function codeSubject(t, { failWrite, failDir, config = '0', readConfig = true } = {}) {
+    let listener;
+    const writes = [];
+    const removed = [];
+    const entries = { '/ctr/first.js': 'first', '/ctr/second.js': 'second' };
+    const target = subject(undefined, {
+        Buffer,
+        fs: { promises: {
+            realpath: async value => value,
+            unlink: async value => removed.push(value),
+        } },
+        kebab: { ROOT_CWD: '/fixture/', CONF_CWD: '/fixture/conf/', FTMP_CWD: '/fixture/tmp/' },
+        http: { createServer(callback) { listener = callback; return { listen() {} }; } },
+        rpc: {
+            authenticate: () => ({ action: 'code', path: 'app', strict: '0', config }),
+            readBody: async () => ({ file: '/fixture/tmp/upload.zip' }),
+        },
+        lTime: { format: () => '20261116170000' },
+        lText: text,
+        lZip: { get: async () => ({
+            readDir: () => Object.keys(entries).map(() => ({ uncompressedSize: 5 })),
+            getList: async () => entries,
+        }) },
+        lFs: {
+            isDir: async value => value !== failDir,
+            mkdir: async () => false,
+            isFile: async value => value === '/fixture/app/kebab.json',
+            getContent: async value => value.endsWith('.zip') ? Buffer.from('zip')
+                : readConfig ? '{"set":{"staticVer": "old"},"staticVer": "old"}' : false,
+            putContent: async (value, content) => {
+                writes.push({ path: value, content });
+                return value !== failWrite;
+            },
+        },
+    });
+    target.core.globalConfig = {};
+    target.createRpcListener();
+    t.after(() => target.dispose());
+    const done = deferred();
+    listener({ method: 'POST' }, {
+        headersSent: false,
+        writeHead() {},
+        end: body => done.resolve(body),
+    });
+    const result = await done.promise;
+    await tick();
+    assert.deepEqual(target.logs, [], 'expected failures must not throw');
+    assert.deepEqual(removed, ['/fixture/tmp/upload.zip']);
+    return { result, writes };
+}
+
+test('code write failure stops deployment and returns the failed path', async t => {
+    const target = await codeSubject(t, { failWrite: '/fixture/app/ctr/first.js', config: '1' });
+    assert.equal(target.result, 'Failed to write file: /fixture/app/ctr/first.js');
+    assert.deepEqual(target.writes.map(item => item.path), ['/fixture/app/ctr/first.js']);
+});
+
+for (const failDir of ['/fixture/app/', '/fixture/app/ctr']) {
+    test(`code directory failure stops deployment: ${failDir}`, async t => {
+        const target = await codeSubject(t, { failDir });
+        assert.equal(target.result, `Failed to create directory: ${failDir}`);
+        assert.equal(target.writes.length, 0);
+    });
+}
+
+for (const [config, file] of [['1', '/fixture/app/kebab.json'], ['2', '/fixture/conf/config.json']]) {
+    test(`code config write failure is reported: ${config}`, async t => {
+        const target = await codeSubject(t, { config, failWrite: file });
+        assert.equal(target.result, `Failed to write file: ${file}`);
+        assert.equal(target.writes.length, 3);
+    });
+    test(`code config read failure is reported: ${config}`, async t => {
+        const target = await codeSubject(t, { config, readConfig: false });
+        assert.equal(target.result, `Failed to read file: ${file}`);
+    });
+    test(`code returns Done only after files and config are written: ${config}`, async t => {
+        const target = await codeSubject(t, { config });
+        assert.equal(target.result, 'Done');
+        assert.equal(target.writes.length, 3);
+        assert.match(target.writes[2].content, /20261116170000/);
+    });
+}

@@ -113,10 +113,14 @@ for (const [name, args, action, timeout] of cases) {
     });
 }
 
-test('updateCode: unreadable source retains an empty result and sends nothing', async () => {
+test('updateCode: unreadable source returns failure for every host and sends nothing', async () => {
     const target = subject('updateCode', hosts, async () => false);
     const result = await target.run('/missing.zip', '/app/', 'config');
-    assert.equal(Object.keys(result).length, 0);
+    assert.deepEqual(Object.keys(result), hosts);
+    for (const host of hosts) {
+        assert.equal(result[host].result, false);
+        assert.equal(result[host].return, 'Failed to read deployment archive');
+    }
     assert.equal(target.calls.length, 0);
 });
 

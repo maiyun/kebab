@@ -514,7 +514,10 @@ function createRpcListener(): void {
                                 res.end(`[code][0] [${msg.strict}] Path not found: ${to}`);
                                 return;
                             }
-                            await lFs.mkdir(to);
+                            if (!await lFs.mkdir(to)) {
+                                res.end(`Failed to create directory: ${to}`);
+                                return;
+                            }
                         }
                         const buf = await lFs.getContent(body.file);
                         if (!buf) {
@@ -695,7 +698,10 @@ function createRpcListener(): void {
                                     res.end(`[code][1] [${msg.strict}] Path not found: ${targetDir}`);
                                     return;
                                 }
-                                await lFs.mkdir(targetDir);
+                                if (!await lFs.mkdir(targetDir)) {
+                                    res.end(`Failed to create directory: ${targetDir}`);
+                                    return;
+                                }
                             }
                             const targetFile = await resolvePathInside(to, pat + fname);
                             if (!targetFile) {
@@ -707,7 +713,10 @@ function createRpcListener(): void {
                                 res.end(`[code][2] [${msg.strict}] Path not found: ${targetFile}`);
                                 return;
                             }
-                            await lFs.putContent(targetFile, ls[archivePath]);
+                            if (!await lFs.putContent(targetFile, ls[archivePath])) {
+                                res.end(`Failed to write file: ${targetFile}`);
+                                return;
+                            }
                         }
                         // --- 检查是否更新 config ---
                         const configType = msg.config;
@@ -721,25 +730,35 @@ function createRpcListener(): void {
                                 }
                                 const projectContent = await lFs.getContent(projectFile, 'utf8');
                                 if (!projectContent) {
-                                    continue;
+                                    res.end(`Failed to read file: ${projectFile}`);
+                                    return;
                                 }
                                 const projectJson = lText.parseJson<any>(projectContent);
                                 if (!projectJson) {
-                                    continue;
+                                    res.end(`Invalid config: ${projectFile}`);
+                                    return;
                                 }
                                 projectJson.set ??= {};
                                 projectJson.set.staticVer = staticVer;
-                                await lFs.putContent(projectFile, lText.stringifyJson(projectJson, 4), {
+                                if (!await lFs.putContent(projectFile, lText.stringifyJson(projectJson, 4), {
                                     'encoding': 'utf8'
-                                });
+                                })) {
+                                    res.end(`Failed to write file: ${projectFile}`);
+                                    return;
+                                }
                             }
                         }
                         else if (configType === '2') {
                             const configContent = await lFs.getContent(kebab.CONF_CWD + 'config.json', 'utf8');
-                            if (configContent) {
-                                await lFs.putContent(kebab.CONF_CWD + 'config.json', configContent.replace(/"staticVer": ".+?"/, `"staticVer": "${lTime.format(null, 'YmdHis')}"`), {
-                                    'encoding': 'utf8'
-                                });
+                            if (!configContent) {
+                                res.end(`Failed to read file: ${kebab.CONF_CWD}config.json`);
+                                return;
+                            }
+                            if (!await lFs.putContent(kebab.CONF_CWD + 'config.json', configContent.replace(/"staticVer": ".+?"/, `"staticVer": "${lTime.format(null, 'YmdHis')}"`), {
+                                'encoding': 'utf8'
+                            })) {
+                                res.end(`Failed to write file: ${kebab.CONF_CWD}config.json`);
+                                return;
                             }
                         }
                         break;

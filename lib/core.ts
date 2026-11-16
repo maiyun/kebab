@@ -1010,7 +1010,10 @@ export async function updateCode(
     }
     const bodyHash = await rpc.hashFile(sourcePath);
     if (bodyHash === false) {
-        return {};
+        return Object.fromEntries(hosts.map(host => [host, {
+            'result': false,
+            'return': 'Failed to read deployment archive',
+        }]));
     }
     /** --- 各主机使用独立上传流并行部署，结果保持输入顺序 --- */
     const results = await Promise.all(hosts.map(async (host) => {
