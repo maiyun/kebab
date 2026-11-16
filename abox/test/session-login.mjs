@@ -112,6 +112,20 @@ test('controller binding captures initialized Session token and rejects missing 
     for (const args of calls) assert.equal(args[1], calls[0][1], 'all methods retain bound credential');
 });
 
+test('legacy login timestamps default to zero in get and list', async () => {
+    const old = { uid, subject: 'legacy', scope: '', version: '', data: '{}' };
+    let reply = JSON.stringify(old);
+    const kv = { getPre: () => 'mock:', pipeline: async () => ({ eval() {}, exec: async () => [reply] }) };
+    const login = new Login(kv, 'token', { name: 'TEST' });
+    const record = await login.get();
+    assert.equal(record.timeAdd, 0);
+    assert.equal(record.timeLast, 0);
+    reply = JSON.stringify([{ ...old, timeAdd: 123, current: true }]);
+    const list = await login.list(uid);
+    assert.equal(list[0].timeAdd, 123);
+    assert.equal(list[0].timeLast, 0);
+});
+
 const host = process.env.KEBAB_LOGIN_REDIS_HOST;
 test('isolated Redis login lifecycle', { skip: !host && 'set KEBAB_LOGIN_REDIS_HOST to run integration tests' }, async () => {
     const pre = `${process.env.KEBAB_LOGIN_REDIS_PRE ?? ''}kebab-login-test:${randomBytes(12).toString('hex')}:`;
@@ -129,6 +143,7 @@ test('isolated Redis login lifecycle', { skip: !host && 'set KEBAB_LOGIN_REDIS_H
         assert.equal(first.scope, 'tenant');
         assert.equal(first.version, 'v1');
         assert.ok(Number.isInteger(first.timeAdd) && Math.abs(first.timeAdd - now) < 30, 'Redis time in seconds');
+        assert.equal(first.timeLast, first.timeAdd, 'create initializes both timestamps');
         assert.deepEqual(first.data, data, 'create preserves nested JSON and empty arrays');
         const otherName = new Login(kv, a, { name: 'OTHER', ttl: 60 });
         assert.equal(await otherName.get(), null, 'same token in other Session name is isolated');
@@ -228,6 +243,20 @@ test('isolated Redis login lifecycle', { skip: !host && 'set KEBAB_LOGIN_REDIS_H
         assert.equal(await ttlLogin(ttlToken).touch(ttlRecord.uid), true);
         const afterTouch = await kv.pttl(binding);
         assert.ok(afterTouch > afterGet + 700, 'touch extends ttl');
+        const touched = await ttlLogin(ttlToken).get();
+        assert.equal(touched.timeAdd, ttlRecord.timeAdd);
+        assert.ok(touched.timeLast > ttlRecord.timeLast, 'touch updates last access');
+        assert.equal((await ttlLogin(ttlToken).list(touched.uid))[0].timeLast, touched.timeLast);
+        const legacy = await kv.pipeline();
+        legacy.eval("local r=cjson.decode(redis.call('GET',KEYS[1])); r.timeLast=nil; redis.call('SET',KEYS[1],cjson.encode(r),'KEEPTTL'); return 1",
+            [kv.getPre() + binding], []);
+        await legacy.exec();
+        assert.equal((await ttlLogin(ttlToken).get()).timeLast, 0);
+        assert.equal(await ttlLogin(ttlToken).touch('00000000000000000000000000000000'), null);
+        assert.equal((await ttlLogin(ttlToken).get()).timeLast, 0, 'stale UID cannot update timestamp');
+        assert.equal(await ttlLogin(ttlToken).touch(ttlRecord.uid), true);
+        assert.ok((await ttlLogin(ttlToken).get()).timeLast > 0, 'touch fills legacy timestamp');
+
 
         // Both insertion orders must retain the index for a permanent member.
         for (const permanentFirst of [true, false]) {

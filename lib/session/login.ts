@@ -27,8 +27,10 @@ export interface ILoginRecord {
     'scope': string;
     /** --- 业务授权版本，框架不查询业务数据验证此值 --- */
     'version': string;
-    /** --- 登录时间，Redis 服务端 UTC Unix 秒 --- */
+    /** --- 登录时间，Redis 服务端 UTC Unix 秒，0 表示未记录 --- */
     'timeAdd': number;
+    /** --- 最后访问时间，创建及成功 touch 时更新；Redis 服务端 UTC Unix 秒，0 表示未记录 --- */
+    'timeLast': number;
     /** --- 登录时保存的附加信息 --- */
     'data': Record<string, LoginValue>;
 }
@@ -107,7 +109,7 @@ export class Login {
     }
 
     /**
-     * --- 延长仍与本次请求读取的登录 UID 匹配的授权 ---
+     * --- 更新仍与本次请求读取的登录 UID 匹配的授权访问时间，并延长有效期 ---
      * @param uid get 返回的登录 UID
      * @returns true 成功，null 已失效或被替换，false 输入无效或存储失败
      */

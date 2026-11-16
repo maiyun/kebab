@@ -54,6 +54,7 @@ if op == 'create' then
     end
     local r = cjson.decode(data)
     r.timeAdd = tonumber(redis.call('TIME')[1])
+    r.timeLast = r.timeAdd
     r.index = idx
     redis.call('SET', record(hash), cjson.encode(r))
     expiry(hash, r, ttl)
@@ -69,6 +70,8 @@ if op == 'get' then
 end
 if me.uid ~= ARGV[3] then return nil end
 if op == 'touch' then
+    me.timeLast = tonumber(redis.call('TIME')[1])
+    redis.call('SET', record(hash), cjson.encode(me))
     expiry(hash, me, tonumber(ARGV[4]))
     return 1
 end
@@ -121,7 +124,7 @@ function uidValid(uid: string): boolean {
 
 function record(value: unknown): ILoginRecord {
     const row = value as ILoginRecord & { data: string; };
-    return { ...row, data: JSON.parse(row.data) as ILoginRecord['data'] };
+    return { ...row, timeAdd: row.timeAdd ?? 0, timeLast: row.timeLast ?? 0, data: JSON.parse(row.data) as ILoginRecord['data'] };
 }
 
 function parse(value: unknown): ILoginRecord | IListLogin[] | null | false {
