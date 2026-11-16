@@ -6,7 +6,7 @@
 
 # Interface: IListLogin
 
-Defined in: [lib/session/login.ts:37](https://github.com/maiyunnet/kebab/blob/master/lib/session/login.ts#L37)
+Defined in: [lib/session/login.ts:39](https://github.com/maiyunnet/kebab/blob/master/lib/session/login.ts#L39)
 
 登录列表中的记录
 
@@ -20,7 +20,7 @@ Defined in: [lib/session/login.ts:37](https://github.com/maiyunnet/kebab/blob/ma
 
 > **current**: `boolean`
 
-Defined in: [lib/session/login.ts:39](https://github.com/maiyunnet/kebab/blob/master/lib/session/login.ts#L39)
+Defined in: [lib/session/login.ts:41](https://github.com/maiyunnet/kebab/blob/master/lib/session/login.ts#L41)
 
 是否为当前登录
 
@@ -30,7 +30,7 @@ Defined in: [lib/session/login.ts:39](https://github.com/maiyunnet/kebab/blob/ma
 
 > **data**: `Record`\<`string`, [`LoginValue`](../type-aliases/LoginValue.md)\>
 
-Defined in: [lib/session/login.ts:33](https://github.com/maiyunnet/kebab/blob/master/lib/session/login.ts#L33)
+Defined in: [lib/session/login.ts:35](https://github.com/maiyunnet/kebab/blob/master/lib/session/login.ts#L35)
 
 登录时保存的附加信息
 
@@ -74,11 +74,25 @@ Defined in: [lib/session/login.ts:25](https://github.com/maiyunnet/kebab/blob/ma
 
 Defined in: [lib/session/login.ts:31](https://github.com/maiyunnet/kebab/blob/master/lib/session/login.ts#L31)
 
-登录时间，Redis 服务端 UTC Unix 秒
+登录时间，Redis 服务端 UTC Unix 秒，0 表示未记录
 
 #### Inherited from
 
 [`ILoginRecord`](ILoginRecord.md).[`timeAdd`](ILoginRecord.md#timeadd)
+
+***
+
+### timeLast
+
+> **timeLast**: `number`
+
+Defined in: [lib/session/login.ts:33](https://github.com/maiyunnet/kebab/blob/master/lib/session/login.ts#L33)
+
+最后访问时间，创建及成功 touch 时更新；Redis 服务端 UTC Unix 秒，0 表示未记录
+
+#### Inherited from
+
+[`ILoginRecord`](ILoginRecord.md).[`timeLast`](ILoginRecord.md#timelast)
 
 ***
 

@@ -20,7 +20,7 @@ Defined in: [lib/session/login.ts:21](https://github.com/maiyunnet/kebab/blob/ma
 
 > **data**: `Record`\<`string`, [`LoginValue`](../type-aliases/LoginValue.md)\>
 
-Defined in: [lib/session/login.ts:33](https://github.com/maiyunnet/kebab/blob/master/lib/session/login.ts#L33)
+Defined in: [lib/session/login.ts:35](https://github.com/maiyunnet/kebab/blob/master/lib/session/login.ts#L35)
 
 登录时保存的附加信息
 
@@ -52,7 +52,17 @@ Defined in: [lib/session/login.ts:25](https://github.com/maiyunnet/kebab/blob/ma
 
 Defined in: [lib/session/login.ts:31](https://github.com/maiyunnet/kebab/blob/master/lib/session/login.ts#L31)
 
-登录时间，Redis 服务端 UTC Unix 秒
+登录时间，Redis 服务端 UTC Unix 秒，0 表示未记录
+
+***
+
+### timeLast
+
+> **timeLast**: `number`
+
+Defined in: [lib/session/login.ts:33](https://github.com/maiyunnet/kebab/blob/master/lib/session/login.ts#L33)
+
+最后访问时间，创建及成功 touch 时更新；Redis 服务端 UTC Unix 秒，0 表示未记录
 
 ***
 
