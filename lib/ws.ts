@@ -1058,6 +1058,11 @@ export async function rsocket(
         const ws = ctr.getPrototype('_socket');
         /** --- 对端真实 tcp socket --- */
         const socket = new net.Socket();
+        ws.on('error', (error: unknown) => {
+            lCore.log(ctr, `[WS][RSOCKET][SOURCE ERROR] ${host}:${port}: ${lText.stringifyError(error)}`, '-error');
+        }).on('timeout', () => {
+            lCore.log(ctr, `[WS][RSOCKET][SOURCE TIMEOUT] ${host}:${port}`, '-error');
+        });
         socket.connect(port, host, () => {
             socket.setKeepAlive(true);
             // --- 连接成功 ---
@@ -1096,7 +1101,8 @@ export async function rsocket(
                 ws.end();
                 resolve(true);
             });
-        }).on('error', () => {
+        }).on('error', (error: unknown) => {
+            lCore.log(ctr, `[WS][RSOCKET][TARGET ERROR] ${host}:${port}: ${lText.stringifyError(error)}`, '-error');
             resolve(false);
         });
     });
