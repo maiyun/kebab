@@ -136,6 +136,7 @@ const wsServer = new WebSocketServer({
     'maxPayload': MAX_MESSAGE_BYTES,
     'noServer': true,
     'perMessageDeflate': false,
+    'skipUTF8Validation': true,
 });
 
 wsServer.on('headers', (headers, request) => {
@@ -274,6 +275,7 @@ export class Socket {
                 'maxPayload': MAX_MESSAGE_BYTES,
                 'perMessageDeflate': false,
                 'servername': connectUrl.protocol === 'wss:' ? host : undefined,
+                'skipUTF8Validation': true,
             };
             const cli = new WebSocket(connectUrl, clientOptions);
             this._ws = cli;
@@ -855,7 +857,7 @@ function bindPipe(
         s1.on('message', (msg) => {
             switch (msg.opcode) {
                 case EOpcode.TEXT: {
-                    if (!s2.writeText(msg.data.toString())) {
+                    if (!s2.writeText(msg.data)) {
                         s1.pause();
                     }
                     break;
@@ -907,7 +909,7 @@ function bindPipe(
         s2.on('message', (msg) => {
             switch (msg.opcode) {
                 case EOpcode.TEXT: {
-                    if (!s1.writeText(msg.data.toString())) {
+                    if (!s1.writeText(msg.data)) {
                         s2.pause();
                     }
                     break;

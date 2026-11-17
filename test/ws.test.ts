@@ -230,3 +230,73 @@ await nodeTest.test('WebSocket pipe forwards explicit reasons without exposing t
         await new Promise<void>(resolve => targetServer.close(() => { resolve(); }));
     }
 });
+
+await nodeTest.test('WebSocket rproxy preserves invalid UTF-8 text frame bytes', async () => {
+    const targetServer = http.createServer();
+    const proxyServer = http.createServer();
+    const payload = Buffer.from([0xff, 0x00, 0xfe]);
+    const proxyTasks: Array<Promise<boolean>> = [];
+    let targetSocket: lWs.Socket | undefined;
+    let proxySocket: lWs.Socket | undefined;
+    let client: lWs.Socket | null = null;
+    let targetMessage: { 'opcode': lWs.EOpcode; 'data': Buffer; } | undefined;
+
+    targetServer.on('upgrade', (request, socket, head) => {
+        targetSocket = lWs.createServer(request, socket as net.Socket, head);
+        targetSocket.on('message', message => {
+            targetMessage = message;
+            targetSocket?.writeText(message.data);
+        });
+    });
+    await new Promise<void>((resolve, reject) => {
+        targetServer.once('error', reject);
+        targetServer.listen(0, '127.0.0.1', resolve);
+    });
+    const targetAddress = targetServer.address();
+    assert.ok(targetAddress && typeof targetAddress === 'object');
+
+    proxyServer.on('upgrade', (request, socket, head) => {
+        proxySocket = lWs.createServer(request, socket as net.Socket, head);
+        const values = { '_req': request, '_socket': proxySocket };
+        const ctr = {
+            getPrototype(name: keyof typeof values): typeof values[keyof typeof values] {
+                return values[name];
+            },
+        } as unknown as sCtr.Ctr;
+        proxyTasks.push(lWs.rproxy(ctr, `ws://127.0.0.1:${targetAddress.port}/`));
+    });
+    await new Promise<void>((resolve, reject) => {
+        proxyServer.once('error', reject);
+        proxyServer.listen(0, '127.0.0.1', resolve);
+    });
+
+    try {
+        const proxyAddress = proxyServer.address();
+        assert.ok(proxyAddress && typeof proxyAddress === 'object');
+        const connected = await lWs.connect(`ws://127.0.0.1:${proxyAddress.port}/`);
+        assert.ok(connected);
+        client = connected;
+        const reply = new Promise<{ 'opcode': lWs.EOpcode; 'data': Buffer; }>((resolve, reject) => {
+            const timer = setTimeout(() => { reject(new Error('Timed out waiting for proxied text.')); }, 5_000);
+            connected.on('message', message => {
+                clearTimeout(timer);
+                resolve(message);
+            }).on('error', reject);
+        });
+        connected.writeText(payload);
+        const message = await reply;
+        assert.strictEqual(targetMessage?.opcode, lWs.EOpcode.TEXT);
+        assert.deepStrictEqual(targetMessage.data, payload);
+        assert.strictEqual(message.opcode, lWs.EOpcode.TEXT);
+        assert.deepStrictEqual(message.data, payload);
+        connected.end();
+    }
+    finally {
+        client?.destroy();
+        proxySocket?.destroy();
+        targetSocket?.destroy();
+        await Promise.all(proxyTasks);
+        await new Promise<void>(resolve => proxyServer.close(() => { resolve(); }));
+        await new Promise<void>(resolve => targetServer.close(() => { resolve(); }));
+    }
+});
