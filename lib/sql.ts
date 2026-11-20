@@ -561,9 +561,10 @@ export class Sql {
     /**
      * --- 筛选器 ---
      * --- 等值条件：'city': 'bj'；字符串、数字、布尔值、bigint、Date 和 Buffer 均作为单个参数 ---
-     * --- null 生成 IS NULL，数组生成 IN 条件 ---
+     * --- null 生成 IS NULL，数组和 Set 生成 IN 条件 ---
      * --- 运算符条件：['type', '>', '1'] ---
-     * --- 集合条件：['type', 'in', ['1', '2']] 或 'type': ['1', '2'] ---
+     * --- 集合条件：['type', 'in', ['1', '2']] 或 'type': new Set(['1', '2']) ---
+     * --- IN 和 NOT IN 均接受数组和 Set。空集合的 IN 不匹配任何行，NOT IN 匹配所有行。 ---
      * --- 逻辑分组：'$or': [{'city': 'bj'}, {'city': 'sh'}, [['age', '>', '10']]] ---
      * --- 字段比较：'city_in': column('city_out') ---
      * --- 原始条件：['JSON_CONTAINS(`uid`, ?)', ['hello']] ---
@@ -691,24 +692,8 @@ export class Sql {
                     }
                     sql += this.field(v[0]) + ' ' + opera + ' NULL AND ';
                 }
-                else if (Array.isArray(v[2])) {
-                    // --- IN 等集合比较 ---
-                    sql += this.field(v[0]) + ' ' + v[1].toUpperCase() + ' (';
-                    for (const v1 of v[2]) {
-                        if (Array.isArray(v1)) {
-                            sql += '(';
-                            for (const v2 of v1) {
-                                sql += this._placeholder() + ', ';
-                                data.push(v2);
-                            }
-                            sql = sql.slice(0, -2) + '), ';
-                        }
-                        else {
-                            sql += this._placeholder() + ', ';
-                            data.push(v1);
-                        }
-                    }
-                    sql = sql.slice(0, -2) + ') AND ';
+                else if (Array.isArray(v[2]) || (v[2] instanceof Set && typeof v[1] === 'string' && /^(?:NOT )?IN$/i.test(v[1]))) {
+                    sql += this._whereList(v[0], v[1].toUpperCase(), v[2], data) + ' AND ';
                 }
                 else {
                     // --- 普通运算符或字段比较 ---
@@ -768,29 +753,8 @@ export class Sql {
                         // --- 字段相等 ---
                         sql += this.field(k) + ' = ' + this.field(v.value) + ' AND ';
                     }
-                    else if (Array.isArray(v)) {
-                        // --- IN 查询，如 'type': ['1', '2'] ---
-                        if (v.length > 0) {
-                            sql += this.field(k) + ' IN (';
-                            for (const v1 of v) {
-                                if (Array.isArray(v1)) {
-                                    sql += '(';
-                                    for (const v2 of v1) {
-                                        sql += this._placeholder() + ', ';
-                                        data.push(v2);
-                                    }
-                                    sql = sql.slice(0, -2) + '), ';
-                                }
-                                else {
-                                    sql += this._placeholder() + ', ';
-                                    data.push(v1);
-                                }
-                            }
-                            sql = sql.slice(0, -2) + ') AND ';
-                        }
-                        else {
-                            sql += this.field(k) + ' IN (NULL) AND ';
-                        }
+                    else if (Array.isArray(v) || v instanceof Set) {
+                        sql += this._whereList(k, 'IN', v, data) + ' AND ';
                     }
                     else {
                         // --- 普通值使用等号比较，原值交给数据库驱动处理 ---
@@ -804,6 +768,46 @@ export class Sql {
             return '';
         }
         return sql.slice(0, -5);
+    }
+
+    /**
+     * --- 生成集合比较条件，按迭代顺序追加参数 ---
+     * @param field 参与比较的字段
+     * @param operator 大写 SQL 运算符
+     * @param values 集合成员，每个成员是单值或一行组合值
+     * @param data 接收绑定参数的数组
+     * @returns 集合比较 SQL 片段
+     */
+    private _whereList(
+        field: string | number | [string, string[]], operator: string,
+        values: Array<kebab.DbValue | kebab.DbValue[]> | ReadonlySet<kebab.DbValue | kebab.DbValue[]>,
+        data: kebab.DbValue[],
+    ): string {
+        if (Array.isArray(values) ? values.length === 0 : values.size === 0) {
+            if (operator === 'IN') {
+                return `${this.field(field)} IN (NULL)`;
+            }
+            if (operator === 'NOT IN') {
+                return '1 = 1';
+            }
+        }
+
+        let sql = `${this.field(field)} ${operator} (`;
+        for (const value of values) {
+            if (Array.isArray(value)) {
+                sql += '(';
+                for (const item of value) {
+                    sql += this._placeholder() + ', ';
+                    data.push(item);
+                }
+                sql = sql.slice(0, -2) + '), ';
+            }
+            else {
+                sql += this._placeholder() + ', ';
+                data.push(value);
+            }
+        }
+        return sql.slice(0, -2) + ')';
     }
 
     /**

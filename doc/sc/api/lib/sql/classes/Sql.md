@@ -56,7 +56,7 @@ Defined in: [lib/sql.ts:76](https://github.com/maiyunnet/kebab/blob/master/lib/s
 
 > **append**(`sql`): `this`
 
-Defined in: [lib/sql.ts:1127](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L1127)
+Defined in: [lib/sql.ts:1131](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L1131)
 
 在 sql 最后追加字符串
 
@@ -76,7 +76,7 @@ Defined in: [lib/sql.ts:1127](https://github.com/maiyunnet/kebab/blob/master/lib
 
 > **by**(`c`, `d?`): `this`
 
-Defined in: [lib/sql.ts:814](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L814)
+Defined in: [lib/sql.ts:818](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L818)
 
 ORDER BY
 
@@ -104,7 +104,7 @@ ORDER BY
 
 > **copy**(`f?`, `opt?`): `Sql`
 
-Defined in: [lib/sql.ts:933](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L933)
+Defined in: [lib/sql.ts:937](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L937)
 
 创建一个本对象的一个新的 sql 对象拷贝
 
@@ -206,7 +206,7 @@ Defined in: [lib/sql.ts:420](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **field**(`str`, `pre?`, `suf?`): `string`
 
-Defined in: [lib/sql.ts:1138](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L1138)
+Defined in: [lib/sql.ts:1142](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L1142)
 
 对字段进行包裹
 
@@ -238,7 +238,7 @@ MySQL 时为表前缀，PostgreSQL 时为 Schema 名，仅请在 field 表名时
 
 > **format**(`sql?`, `data?`): `string`
 
-Defined in: [lib/sql.ts:1117](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L1117)
+Defined in: [lib/sql.ts:1121](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L1121)
 
 获取带 data 的 sql 语句
 
@@ -302,7 +302,7 @@ MySQL 时为表前缀，PostgreSQL 时为 Schema 名，仅在 join 非默认前�
 
 > **getData**(): [`DbValue`](../../../index/type-aliases/DbValue.md)[]
 
-Defined in: [lib/sql.ts:1101](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L1101)
+Defined in: [lib/sql.ts:1105](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L1105)
 
 获取全部 data
 
@@ -316,7 +316,7 @@ Defined in: [lib/sql.ts:1101](https://github.com/maiyunnet/kebab/blob/master/lib
 
 > **getPre**(): `string`
 
-Defined in: [lib/sql.ts:1108](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L1108)
+Defined in: [lib/sql.ts:1112](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L1112)
 
 获取定义的 pre
 
@@ -330,7 +330,7 @@ Defined in: [lib/sql.ts:1108](https://github.com/maiyunnet/kebab/blob/master/lib
 
 > **getSql**(): `string`
 
-Defined in: [lib/sql.ts:1081](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L1081)
+Defined in: [lib/sql.ts:1085](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L1085)
 
 获取 sql 语句
 
@@ -344,7 +344,7 @@ Defined in: [lib/sql.ts:1081](https://github.com/maiyunnet/kebab/blob/master/lib
 
 > **group**(`c`): `this`
 
-Defined in: [lib/sql.ts:889](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L889)
+Defined in: [lib/sql.ts:893](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L893)
 
 GROUP BY
 
@@ -585,7 +585,7 @@ MySQL 时为表前缀，PostgreSQL 时为 Schema 名，仅在 join 非默认前�
 
 > **limit**(`a`, `b?`): `this`
 
-Defined in: [lib/sql.ts:909](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L909)
+Defined in: [lib/sql.ts:913](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L913)
 
 LIMIT（limit、offset, limit）
 
@@ -613,7 +613,7 @@ LIMIT（limit、offset, limit）
 
 > **lock**(): `this`
 
-Defined in: [lib/sql.ts:924](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L924)
+Defined in: [lib/sql.ts:928](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L928)
 
 追加消极锁，通常不建议使用
 
@@ -667,7 +667,7 @@ MySQL 时为表前缀，PostgreSQL 时为 Schema 名，仅在 join 非默认前�
 
 > **seek**(`c`, `values?`, `d?`): `this`
 
-Defined in: [lib/sql.ts:842](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L842)
+Defined in: [lib/sql.ts:846](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L846)
 
 按非空、同向排序字段定位游标并设置排序；字段组合须唯一且有匹配索引
 使用行比较，让 PostgreSQL 可以从复合索引边界开始扫描
@@ -909,13 +909,14 @@ Defined in: [lib/sql.ts:154](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **where**(`s`): `this`
 
-Defined in: [lib/sql.ts:573](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L573)
+Defined in: [lib/sql.ts:574](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L574)
 
 筛选器
 等值条件：'city': 'bj'；字符串、数字、布尔值、bigint、Date 和 Buffer 均作为单个参数
-null 生成 IS NULL，数组生成 IN 条件
+null 生成 IS NULL，数组和 Set 生成 IN 条件
 运算符条件：['type', '>', '1']
-集合条件：['type', 'in', ['1', '2']] 或 'type': ['1', '2']
+集合条件：['type', 'in', ['1', '2']] 或 'type': new Set(['1', '2'])
+IN 和 NOT IN 均接受数组和 Set。空集合的 IN 不匹配任何行，NOT IN 匹配所有行。
 逻辑分组：'$or': [{'city': 'bj'}, {'city': 'sh'}, [['age', '>', '10']]]
 字段比较：'city_in': column('city_out')
 原始条件：['JSON_CONTAINS(`uid`, ?)', ['hello']]

@@ -23,6 +23,8 @@ for (const service of [ESERVICE.PGSQL, ESERVICE.MYSQL]) {
         ['null', null, 'IS NULL', []],
         ['list', [1, 2], `IN (${param(1)}, ${param(2)})`, [1, 2]],
         ['empty list', [], 'IN (NULL)', []],
+        ['set', new Set(['a.pdf', 'b.pdf', 'a.pdf']), `IN (${param(1)}, ${param(2)})`, ['a.pdf', 'b.pdf']],
+        ['empty set', new Set(), 'IN (NULL)', []],
         ['tuple list', [[1, 2], [3, 4]], `IN ((${param(1)}, ${param(2)}), (${param(3)}, ${param(4)}))`, [1, 2, 3, 4]],
         ['column', column('other'), `= ${quote('other')}`, []],
         ['json', json({ enabled: true }), `= ${param(1)}${service === ESERVICE.PGSQL ? '::jsonb' : ''}`, ['{"enabled":true}']],
@@ -33,9 +35,22 @@ for (const service of [ESERVICE.PGSQL, ESERVICE.MYSQL]) {
             assert.deepEqual(sql.getData(), data);
         });
     }
+    for (const [operator, values, condition, data] of [
+        ['in', new Set([7]), `${quote('value')} IN (${param(1)})`, [7]],
+        ['not in', new Set([7, 8]), `${quote('value')} NOT IN (${param(1)}, ${param(2)})`, [7, 8]],
+        ['IN', new Set(), `${quote('value')} IN (NULL)`, []],
+        ['NOT IN', new Set(), '1 = 1', []],
+        ['NOT IN', [], '1 = 1', []],
+    ]) {
+        test(`${service}: explicit ${operator} with ${values.size ?? values.length} ${values.constructor.name} values`, () => {
+            const sql = build([['value', operator, values], { state: 2 }]);
+            assert.equal(sql.getSql(), `${prefix}${condition} AND ${quote('state')} = ${param(data.length + 1)}`);
+            assert.deepEqual(sql.getData(), [...data, 2]);
+        });
+    }
     test(`${service}: grouped conditions keep parameter order`, () => {
         const date = new Date('2026-11-01T00:00:00Z');
-        const sql = build({ '$or': [{ enabled: false }, { created: date }], id: [1, 2] });
+        const sql = build({ '$or': [{ enabled: false }, { created: date }], id: new Set([1, 2]) });
         assert.equal(sql.getSql(), `${prefix}(${quote('enabled')} = ${param(1)} OR ${quote('created')} = ${param(2)}) AND ${quote('id')} IN (${param(3)}, ${param(4)})`);
         assert.deepEqual(sql.getData(), [false, date, 1, 2]);
     });
