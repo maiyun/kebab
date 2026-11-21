@@ -578,7 +578,7 @@ export default class Mod {
             };
             'hint'?: string;
         } = {}
-    ): T & Record<string, any> {
+    ): T {
         return new this({
             'db': db,
             'ctr': opt.ctr,
@@ -588,7 +588,7 @@ export default class Mod {
             'alias': opt.alias,
             'contain': opt.contain,
             'hint': opt.hint,
-        }) as T & Record<string, any>;
+        }) as T;
     }
 
     /**
@@ -610,7 +610,7 @@ export default class Mod {
             };
             'hint'?: string;
         } = {}
-    ): T & Record<string, any> {
+    ): T {
         return new this({
             'db': db,
             'ctr': opt.ctr,
@@ -620,7 +620,7 @@ export default class Mod {
             'contain': opt.contain,
             'alias': opt.alias,
             'hint': opt.hint,
-        }) as T & Record<string, any>;
+        }) as T;
     }
 
     /**
@@ -1294,8 +1294,9 @@ export default class Mod {
         return this;
     }
 
-    public async all(): Promise<false | Rows<this>>;
-    public async all(key: string): Promise<false | Record<string, this>>;
+    /** --- 查询后的模型记录可以读取查询结果中的别名字段 --- */
+    public async all(): Promise<false | Rows<this & Record<string, any>>>;
+    public async all(key: string): Promise<false | Record<string, this & Record<string, any>>>;
     /**
      * --- 获取列表 ---
      * @param key 是否以某个字段为主键
