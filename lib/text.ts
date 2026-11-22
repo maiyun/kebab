@@ -675,6 +675,23 @@ export function parseJson<T>(str: string): T | false {
     return textImpl.parseJson<T>(str);
 }
 
+/** --- 严格 JSON 对象的字段值 --- */
+export type JsonValue = string | number | boolean | null | JsonValue[] | IJsonObject;
+
+/** --- 字符串键和 JSON 值组成的对象 --- */
+export interface IJsonObject {
+    [key: string]: JsonValue;
+}
+
+/**
+ * --- 复制严格 JSON 对象，统一各层对象的键序，保留数组元素顺序 ---
+ * @param value 普通对象或无原型对象，各层只接受可枚举的自有字符串数据属性，数组须连续
+ * @returns 无原型的对象副本；循环引用、非有限数字、访问器或其他非 JSON 值返回 false
+ */
+export function normalizeJsonObject(value: unknown): IJsonObject | false {
+    return textImpl.normalizeJsonObject(value);
+}
+
 /**
  * --- 将对象转换为 JSON 字符串，BigInt 输出为整数字面量 ---
  * @param obj 要转换的 json 对象

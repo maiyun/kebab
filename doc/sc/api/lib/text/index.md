@@ -9,9 +9,11 @@
 ## Interfaces
 
 - [IDomain](interfaces/IDomain.md)
+- [IJsonObject](interfaces/IJsonObject.md)
 
 ## Type Aliases
 
+- [JsonValue](type-aliases/JsonValue.md)
 - [TFalsy](type-aliases/TFalsy.md)
 
 ## Variables
@@ -43,6 +45,7 @@
 - [logicalOr](functions/logicalOr.md)
 - [match](functions/match.md)
 - [nlReplace](functions/nlReplace.md)
+- [normalizeJsonObject](functions/normalizeJsonObject.md)
 - [parseDomain](functions/parseDomain.md)
 - [parseHost](functions/parseHost.md)
 - [parseJson](functions/parseJson.md)

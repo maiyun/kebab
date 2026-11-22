@@ -1,3 +1,5 @@
+import type { IJsonObject, JsonValue } from '#kebab/lib/text.js';
+
 // TypeScript's bundled JSON declarations do not yet include these Node 22 APIs.
 const nativeJson = JSON as unknown as {
     parse(text: string, reviver: (key: string, value: unknown, context: { source?: string; }) => unknown): unknown;
@@ -53,4 +55,51 @@ export function stringifyJson(obj: unknown, space?: string | number): string {
     return JSON.stringify(obj, (_key, value: unknown) => {
         return typeof value === 'bigint' ? nativeJson.rawJSON(value.toString()) : value;
     }, space);
+}
+
+function copyJson(value: unknown, ancestors: Set<object>): JsonValue {
+    if (value === null || typeof value === 'string' || typeof value === 'boolean' ||
+        (typeof value === 'number' && Number.isFinite(value))) return value;
+    if (typeof value !== 'object' || ancestors.has(value)) throw new TypeError();
+
+    const array = Array.isArray(value);
+    if (!array) {
+        const proto = Object.getPrototypeOf(value);
+        if (proto !== null && proto !== Object.prototype) throw new TypeError();
+    }
+    ancestors.add(value);
+    const keys = Reflect.ownKeys(value);
+    let result: JsonValue;
+    if (array) {
+        if (keys.length !== value.length + 1) throw new TypeError();
+        const items: JsonValue[] = [];
+        for (let i = 0; i < value.length; ++i) items.push(copyProperty(value, i, ancestors));
+        result = items;
+    }
+    else {
+        const object: IJsonObject = Object.create(null);
+        for (const key of keys.sort()) {
+            if (typeof key !== 'string') throw new TypeError();
+            object[key] = copyProperty(value, key, ancestors);
+        }
+        result = object;
+    }
+    ancestors.delete(value);
+    return result;
+}
+
+function copyProperty(object: object, key: PropertyKey, ancestors: Set<object>): JsonValue {
+    const prop = Object.getOwnPropertyDescriptor(object, key);
+    if (!prop?.enumerable || !Object.hasOwn(prop, 'value')) throw new TypeError();
+    return copyJson(prop.value, ancestors);
+}
+
+export function normalizeJsonObject(value: unknown): IJsonObject | false {
+    try {
+        if (value === null || typeof value !== 'object' || Array.isArray(value)) return false;
+        return copyJson(value, new Set()) as IJsonObject;
+    }
+    catch {
+        return false;
+    }
 }

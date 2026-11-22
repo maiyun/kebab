@@ -128247,7 +128247,7 @@ lib/text/functions/int2str.md
 
 > **int2str**(`int`, `digits?`, `decimal?`): `string`
 
-Defined in: [lib/text.ts:811](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L811)
+Defined in: [lib/text.ts:828](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L828)
 
 为解决精度问题，将整数转换为小数字符串
 以下几个示例都是当 digits 为 3、decimal 为 2 时
@@ -128380,7 +128380,7 @@ lib/text/functions/isFalsy.md
 
 > **isFalsy**(`val`): `val is TFalsy`
 
-Defined in: [lib/text.ts:762](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L762)
+Defined in: [lib/text.ts:779](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L779)
 
 判断一个值是否是虚假的（为 null/undefined/空字符串/false/0）
 
@@ -128585,7 +128585,7 @@ lib/text/functions/isTruthy.md
 
 > **isTruthy**\<`T`\>(`val`): `val is Exclude<T, TFalsy>`
 
-Defined in: [lib/text.ts:770](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L770)
+Defined in: [lib/text.ts:787](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L787)
 
 判断一个值是否是真实的（不为 null/undefined/空字符串/false/0）
 
@@ -128620,7 +128620,7 @@ lib/text/functions/logicalOr.md
 
 > **logicalOr**\<`T`, `T2`\>(`v1`, `v2`): `T` *extends* [`TFalsy`](../type-aliases/TFalsy.md) ? `T2` : `T`
 
-Defined in: [lib/text.ts:779](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L779)
+Defined in: [lib/text.ts:796](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L796)
 
 类似 || 运算符的效果
 
@@ -128721,6 +128721,37 @@ Defined in: [lib/text.ts:346](https://github.com/maiyunnet/kebab/blob/master/lib
 ## Returns
 
 `string`
+
+lib/text/functions/normalizeJsonObject.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../index.md) / [lib/text](../index.md) / normalizeJsonObject
+
+# Function: normalizeJsonObject()
+
+> **normalizeJsonObject**(`value`): `false` \| [`IJsonObject`](../interfaces/IJsonObject.md)
+
+Defined in: [lib/text.ts:691](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L691)
+
+复制严格 JSON 对象，统一各层对象的键序，保留数组元素顺序
+
+## Parameters
+
+### value
+
+`unknown`
+
+普通对象或无原型对象，各层只接受可枚举的自有字符串数据属性，数组须连续
+
+## Returns
+
+`false` \| [`IJsonObject`](../interfaces/IJsonObject.md)
+
+无原型的对象副本；循环引用、非有限数字、访问器或其他非 JSON 值返回 false
 
 lib/text/functions/parseDomain.md
 ---
@@ -129030,7 +129061,7 @@ lib/text/functions/redact.md
 
 > **redact**(`value`, `secrets`, `options?`): `string`
 
-Defined in: [lib/text.ts:849](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L849)
+Defined in: [lib/text.ts:866](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L866)
 
 将文本中的指定敏感字符串替换为占位文本
 
@@ -129120,7 +129151,7 @@ lib/text/functions/str2int.md
 
 > **str2int**(`str`, `digits?`): `number`
 
-Defined in: [lib/text.ts:793](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L793)
+Defined in: [lib/text.ts:810](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L810)
 
 为解决精度问题，将字符串数字转换为整数显示
 以下几个示例都是当 digits 为 2 时
@@ -129160,7 +129191,7 @@ lib/text/functions/stringifyBuffer.md
 
 > **stringifyBuffer**(`buf`): `string`
 
-Defined in: [lib/text.ts:716](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L716)
+Defined in: [lib/text.ts:733](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L733)
 
 输出文本格式的 buffer
 
@@ -129189,7 +129220,7 @@ lib/text/functions/stringifyError.md
 
 > **stringifyError**(`error`): `string`
 
-Defined in: [lib/text.ts:693](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L693)
+Defined in: [lib/text.ts:710](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L710)
 
 将未知异常转换为适合单行日志的文本，Error 优先返回完整堆栈
 
@@ -129220,7 +129251,7 @@ lib/text/functions/stringifyJson.md
 
 > **stringifyJson**(`obj`, `space?`): `string`
 
-Defined in: [lib/text.ts:684](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L684)
+Defined in: [lib/text.ts:701](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L701)
 
 将对象转换为 JSON 字符串，BigInt 输出为整数字面量
 
@@ -129286,7 +129317,7 @@ lib/text/functions/trimJson.md
 
 > **trimJson**(`json`): `any`
 
-Defined in: [lib/text.ts:724](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L724)
+Defined in: [lib/text.ts:741](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L741)
 
 递归删除 json 中的字符串首尾空格，会返回一个新的对象
 
@@ -129388,9 +129419,11 @@ lib/text/index.md
 ## Interfaces
 
 - [IDomain](interfaces/IDomain.md)
+- [IJsonObject](interfaces/IJsonObject.md)
 
 ## Type Aliases
 
+- [JsonValue](type-aliases/JsonValue.md)
 - [TFalsy](type-aliases/TFalsy.md)
 
 ## Variables
@@ -129422,6 +129455,7 @@ lib/text/index.md
 - [logicalOr](functions/logicalOr.md)
 - [match](functions/match.md)
 - [nlReplace](functions/nlReplace.md)
+- [normalizeJsonObject](functions/normalizeJsonObject.md)
 - [parseDomain](functions/parseDomain.md)
 - [parseHost](functions/parseHost.md)
 - [parseJson](functions/parseJson.md)
@@ -129487,6 +129521,42 @@ Defined in: [lib/text.ts:362](https://github.com/maiyunnet/kebab/blob/master/lib
 
 Defined in: [lib/text.ts:359](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L359)
 
+lib/text/interfaces/IJsonObject.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../index.md) / [lib/text](../index.md) / IJsonObject
+
+# Interface: IJsonObject
+
+Defined in: [lib/text.ts:682](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L682)
+
+字符串键和 JSON 值组成的对象
+
+## Indexable
+
+> \[`key`: `string`\]: [`JsonValue`](../type-aliases/JsonValue.md)
+
+lib/text/type-aliases/JsonValue.md
+---
+
+[**Documents for @maiyunnet/kebab**](../../../index.md)
+
+***
+
+[Documents for @maiyunnet/kebab](../../../index.md) / [lib/text](../index.md) / JsonValue
+
+# Type Alias: JsonValue
+
+> **JsonValue** = `string` \| `number` \| `boolean` \| `null` \| `JsonValue`[] \| [`IJsonObject`](../interfaces/IJsonObject.md)
+
+Defined in: [lib/text.ts:679](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L679)
+
+严格 JSON 对象的字段值
+
 lib/text/type-aliases/TFalsy.md
 ---
 
@@ -129500,7 +129570,7 @@ lib/text/type-aliases/TFalsy.md
 
 > **TFalsy** = `false` \| `""` \| `0` \| `null` \| `undefined` \| *typeof* `NaN`
 
-Defined in: [lib/text.ts:756](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L756)
+Defined in: [lib/text.ts:773](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L773)
 
 虚假值类型
 
