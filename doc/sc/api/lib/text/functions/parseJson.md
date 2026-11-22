@@ -6,28 +6,54 @@
 
 # Function: parseJson()
 
-> **parseJson**\<`T`\>(`str`): `false` \| `T`
+## Call Signature
+
+> **parseJson**(`str`): `any`
 
 Defined in: [lib/text.ts:666](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L666)
 
-解析 JSON，超出安全整数范围的整数字面量转换为 BigInt
+解析 JSON，未指定类型时返回动态值
 
-## Type Parameters
+### Parameters
 
-### T
-
-`T`
-
-## Parameters
-
-### str
+#### str
 
 `string`
 
-要解析的 json 字符串
+要解析的 JSON 字符串
 
-## Returns
+### Returns
+
+`any`
+
+解析结果，无效 JSON 返回 false；超出安全整数范围的整数字面量转换为 BigInt
+
+## Call Signature
+
+> **parseJson**\<`T`\>(`str`): `false` \| `T`
+
+Defined in: [lib/text.ts:673](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L673)
+
+解析 JSON，按调用方指定的类型返回结果
+
+### Type Parameters
+
+#### T
+
+`T`
+
+预期的结果类型，解析时只检查 JSON 语法
+
+### Parameters
+
+#### str
+
+`string`
+
+要解析的 JSON 字符串
+
+### Returns
 
 `false` \| `T`
 
-解析结果，无效 JSON 返回 false；小数及指数形式仍为 number
+解析结果，无效 JSON 返回 false；超出安全整数范围的整数字面量转换为 BigInt，小数及指数形式仍为 number

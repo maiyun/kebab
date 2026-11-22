@@ -8,6 +8,6 @@
 
 > **TFalsy** = `false` \| `""` \| `0` \| `null` \| `undefined` \| *typeof* `NaN`
 
-Defined in: [lib/text.ts:748](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L748)
+Defined in: [lib/text.ts:756](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L756)
 
 虚假值类型

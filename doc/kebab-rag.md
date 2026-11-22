@@ -128009,7 +128009,7 @@ lib/text/functions/int2str.md
 
 > **int2str**(`int`, `digits?`, `decimal?`): `string`
 
-Defined in: [lib/text.ts:803](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L803)
+Defined in: [lib/text.ts:811](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L811)
 
 为解决精度问题，将整数转换为小数字符串
 以下几个示例都是当 digits 为 3、decimal 为 2 时
@@ -128142,7 +128142,7 @@ lib/text/functions/isFalsy.md
 
 > **isFalsy**(`val`): `val is TFalsy`
 
-Defined in: [lib/text.ts:754](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L754)
+Defined in: [lib/text.ts:762](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L762)
 
 判断一个值是否是虚假的（为 null/undefined/空字符串/false/0）
 
@@ -128347,7 +128347,7 @@ lib/text/functions/isTruthy.md
 
 > **isTruthy**\<`T`\>(`val`): `val is Exclude<T, TFalsy>`
 
-Defined in: [lib/text.ts:762](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L762)
+Defined in: [lib/text.ts:770](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L770)
 
 判断一个值是否是真实的（不为 null/undefined/空字符串/false/0）
 
@@ -128382,7 +128382,7 @@ lib/text/functions/logicalOr.md
 
 > **logicalOr**\<`T`, `T2`\>(`v1`, `v2`): `T` *extends* [`TFalsy`](../type-aliases/TFalsy.md) ? `T2` : `T`
 
-Defined in: [lib/text.ts:771](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L771)
+Defined in: [lib/text.ts:779](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L779)
 
 类似 || 运算符的效果
 
@@ -128565,31 +128565,57 @@ lib/text/functions/parseJson.md
 
 # Function: parseJson()
 
-> **parseJson**\<`T`\>(`str`): `false` \| `T`
+## Call Signature
+
+> **parseJson**(`str`): `any`
 
 Defined in: [lib/text.ts:666](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L666)
 
-解析 JSON，超出安全整数范围的整数字面量转换为 BigInt
+解析 JSON，未指定类型时返回动态值
 
-## Type Parameters
+### Parameters
 
-### T
-
-`T`
-
-## Parameters
-
-### str
+#### str
 
 `string`
 
-要解析的 json 字符串
+要解析的 JSON 字符串
 
-## Returns
+### Returns
+
+`any`
+
+解析结果，无效 JSON 返回 false；超出安全整数范围的整数字面量转换为 BigInt
+
+## Call Signature
+
+> **parseJson**\<`T`\>(`str`): `false` \| `T`
+
+Defined in: [lib/text.ts:673](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L673)
+
+解析 JSON，按调用方指定的类型返回结果
+
+### Type Parameters
+
+#### T
+
+`T`
+
+预期的结果类型，解析时只检查 JSON 语法
+
+### Parameters
+
+#### str
+
+`string`
+
+要解析的 JSON 字符串
+
+### Returns
 
 `false` \| `T`
 
-解析结果，无效 JSON 返回 false；小数及指数形式仍为 number
+解析结果，无效 JSON 返回 false；超出安全整数范围的整数字面量转换为 BigInt，小数及指数形式仍为 number
 
 lib/text/functions/parseUrl.md
 ---
@@ -128766,7 +128792,7 @@ lib/text/functions/redact.md
 
 > **redact**(`value`, `secrets`, `options?`): `string`
 
-Defined in: [lib/text.ts:841](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L841)
+Defined in: [lib/text.ts:849](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L849)
 
 将文本中的指定敏感字符串替换为占位文本
 
@@ -128856,7 +128882,7 @@ lib/text/functions/str2int.md
 
 > **str2int**(`str`, `digits?`): `number`
 
-Defined in: [lib/text.ts:785](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L785)
+Defined in: [lib/text.ts:793](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L793)
 
 为解决精度问题，将字符串数字转换为整数显示
 以下几个示例都是当 digits 为 2 时
@@ -128896,7 +128922,7 @@ lib/text/functions/stringifyBuffer.md
 
 > **stringifyBuffer**(`buf`): `string`
 
-Defined in: [lib/text.ts:708](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L708)
+Defined in: [lib/text.ts:716](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L716)
 
 输出文本格式的 buffer
 
@@ -128925,7 +128951,7 @@ lib/text/functions/stringifyError.md
 
 > **stringifyError**(`error`): `string`
 
-Defined in: [lib/text.ts:685](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L685)
+Defined in: [lib/text.ts:693](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L693)
 
 将未知异常转换为适合单行日志的文本，Error 优先返回完整堆栈
 
@@ -128956,7 +128982,7 @@ lib/text/functions/stringifyJson.md
 
 > **stringifyJson**(`obj`, `space?`): `string`
 
-Defined in: [lib/text.ts:676](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L676)
+Defined in: [lib/text.ts:684](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L684)
 
 将对象转换为 JSON 字符串，BigInt 输出为整数字面量
 
@@ -129022,7 +129048,7 @@ lib/text/functions/trimJson.md
 
 > **trimJson**(`json`): `any`
 
-Defined in: [lib/text.ts:716](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L716)
+Defined in: [lib/text.ts:724](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L724)
 
 递归删除 json 中的字符串首尾空格，会返回一个新的对象
 
@@ -129236,7 +129262,7 @@ lib/text/type-aliases/TFalsy.md
 
 > **TFalsy** = `false` \| `""` \| `0` \| `null` \| `undefined` \| *typeof* `NaN`
 
-Defined in: [lib/text.ts:748](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L748)
+Defined in: [lib/text.ts:756](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L756)
 
 虚假值类型
 

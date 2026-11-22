@@ -659,10 +659,18 @@ export function stringifyResult(rtn: kebab.Json): string {
 }
 
 /**
- * --- 解析 JSON，超出安全整数范围的整数字面量转换为 BigInt ---
- * @param str 要解析的 json 字符串
- * @returns 解析结果，无效 JSON 返回 false；小数及指数形式仍为 number
+ * --- 解析 JSON，未指定类型时返回动态值 ---
+ * @param str 要解析的 JSON 字符串
+ * @returns 解析结果，无效 JSON 返回 false；超出安全整数范围的整数字面量转换为 BigInt
  */
+export function parseJson(str: string): kebab.Json;
+/**
+ * --- 解析 JSON，按调用方指定的类型返回结果 ---
+ * @typeParam T 预期的结果类型，解析时只检查 JSON 语法
+ * @param str 要解析的 JSON 字符串
+ * @returns 解析结果，无效 JSON 返回 false；超出安全整数范围的整数字面量转换为 BigInt，小数及指数形式仍为 number
+ */
+export function parseJson<T>(str: string): T | false;
 export function parseJson<T>(str: string): T | false {
     return textImpl.parseJson<T>(str);
 }
