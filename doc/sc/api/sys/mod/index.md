@@ -14,9 +14,11 @@
 ## Interfaces
 
 - [ICursorPage](interfaces/ICursorPage.md)
+- [IModOneOptions](interfaces/IModOneOptions.md)
 - [IModUnionItem](interfaces/IModUnionItem.md)
 - [IRows](interfaces/IRows.md)
 
 ## Type Aliases
 
+- [TModRow](type-aliases/TModRow.md)
 - [TOnlyProperties](type-aliases/TOnlyProperties.md)

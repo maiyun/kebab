@@ -19,9 +19,9 @@ export enum ESERVICE {
     'PGSQL',
 }
 
-/** --- query 返回的数据 --- */
-export interface IData {
-    'rows': Array<Record<string, any>> | null;
+/** --- query 返回的数据，未指定行类型时保留动态列访问 --- */
+export interface IData<TRow extends object = Record<string, any>> {
+    'rows': TRow[] | null;
     'fields': Array<{
         /** --- 字段名 --- */
         'name': string;

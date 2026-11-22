@@ -5,6 +5,7 @@
  */
 import * as undici from 'undici';
 import * as zlib from 'zlib';
+import type * as kebab from '#kebab/index.js';
 import * as lUndici from '#kebab/lib/undici.js';
 import * as lBuffer from '#kebab/lib/buffer.js';
 import * as lCore from '#kebab/lib/core.js';
@@ -63,14 +64,24 @@ export class Response {
         }
     }
 
-    /** --- 读取所有内容为 JSON，失败返回 null --- */
-    public async getJson(): Promise<any> {
+    /**
+     * --- 读取并解析 JSON 响应 ---
+     * @returns 解析结果，响应为空或读取失败返回 null，JSON 解析失败返回 false
+     */
+    public getJson(): Promise<kebab.Json>;
+    /**
+     * --- 读取并解析 JSON 响应 ---
+     * @typeParam T 预期的响应类型，解析时只检查 JSON 语法
+     * @returns 解析结果，响应为空或读取失败返回 null，JSON 解析失败返回 false
+     */
+    public getJson<T>(): Promise<T | false | null>;
+    public async getJson<T>(): Promise<T | false | null> {
         try {
             const text = await this.getText();
             if (!text) {
                 return null;
             }
-            return lText.parseJson(text);
+            return lText.parseJson<T>(text);
         }
         catch (e: any) {
             lCore.log({}, '[Undici][Response][getJson] ' + e.message, '-error');

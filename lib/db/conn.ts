@@ -182,10 +182,20 @@ export class Connection {
     /**
      * --- 执行一条 SQL 并获得返回数据 ---
      * @param sql 执行的 SQL 字符串
-     * @param values 要替换的 data 数据
+     * @param values SQL 占位符绑定的值
+     * @returns 查询结果，result = -500 表示查询失败
      */
-    public async query(sql: string, values?: kebab.DbValue[]): Promise<lDb.IData> {
-        const rtn: lDb.IData = {
+    public query(sql: string, values?: kebab.DbValue[]): Promise<lDb.IData>;
+    /**
+     * --- 执行一条 SQL，按指定类型返回数据行 ---
+     * @typeParam TRow SQL 返回的行结构，由调用方根据查询字段指定
+     * @param sql 执行的 SQL 字符串
+     * @param values SQL 占位符绑定的值
+     * @returns 查询结果，result = -500 表示查询失败
+     */
+    public query<TRow extends object>(sql: string, values?: kebab.DbValue[]): Promise<lDb.IData<TRow>>;
+    public async query<TRow extends object>(sql: string, values?: kebab.DbValue[]): Promise<lDb.IData<TRow>> {
+        const rtn: lDb.IData<TRow> = {
             'rows': null,
             'fields': [],
             'error': null,
@@ -203,7 +213,7 @@ export class Connection {
             });
             const time = Date.now();
             if (this._link instanceof pg.Client) {
-                const res = await this._link.query(sql, values);
+                const res = await this._link.query<TRow>(sql, values);
                 rtn.rows = res.rows;
                 rtn.fields = res.fields.map(item => ({
                     'name': item.name,
@@ -212,7 +222,7 @@ export class Connection {
             }
             else {
                 const res = await this._link.query(sql, values);
-                rtn.rows = res[0] as any[];
+                rtn.rows = res[0] as TRow[];
                 if (res[1]) {
                     rtn.fields = res[1].map(item => ({
                         'name': item.orgName || item.name,

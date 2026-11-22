@@ -6,34 +6,78 @@
 
 # Function: postJsonResponseJson()
 
+## Call Signature
+
 > **postJsonResponseJson**(`u`, `data`, `opt?`): `Promise`\<`any`\>
 
 Defined in: [lib/undici.ts:254](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L254)
 
 发起 JSON 请求并解析 JSON 响应
 
-## Parameters
+### Parameters
 
-### u
+#### u
 
 `string`
 
 网址
 
-### data
+#### data
 
 `any`[] \| `Record`\<`string`, `any`\>
 
 数据
 
-### opt?
+#### opt?
 
-[`IRequestOptions`](../interfaces/IRequestOptions.md) = `{}`
+[`IRequestOptions`](../interfaces/IRequestOptions.md)
 
 选项
 
-## Returns
+### Returns
 
 `Promise`\<`any`\>
+
+最后一次响应的 JSON 数据，重试验证未通过也保留；请求或读取失败返回 null；JSON 解析失败返回 false
+
+## Call Signature
+
+> **postJsonResponseJson**\<`T`\>(`u`, `data`, `opt?`): `Promise`\<`false` \| `T` \| `null`\>
+
+Defined in: [lib/undici.ts:265](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L265)
+
+发起 JSON 请求并解析 JSON 响应
+
+### Type Parameters
+
+#### T
+
+`T`
+
+预期的响应类型，解析时只检查 JSON 语法
+
+### Parameters
+
+#### u
+
+`string`
+
+网址
+
+#### data
+
+`any`[] \| `Record`\<`string`, `any`\>
+
+数据
+
+#### opt?
+
+[`IRequestOptions`](../interfaces/IRequestOptions.md)
+
+选项
+
+### Returns
+
+`Promise`\<`false` \| `T` \| `null`\>
 
 最后一次响应的 JSON 数据，重试验证未通过也保留；请求或读取失败返回 null；JSON 解析失败返回 false

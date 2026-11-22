@@ -324,23 +324,40 @@ end`;
     }
 
     /**
-     * --- 获取 json 对象 ---
-     * @param key
+     * --- 读取并解析键中的 JSON ---
+     * @param key 键
+     * @returns 解析结果，键不存在或未取得连接返回 null，读取异常或解析失败返回 false
      */
-    public async getJson(key: string): Promise<any | false | null> {
+    public getJson(key: string): Promise<kebab.Json | false | null>;
+    /**
+     * --- 读取并解析键中的 JSON ---
+     * @typeParam T 预期的结果类型，解析时只检查 JSON 语法
+     * @param key 键
+     * @returns 解析结果，键不存在或未取得连接返回 null，读取异常或解析失败返回 false
+     */
+    public getJson<T>(key: string): Promise<T | false | null>;
+    public async getJson<T>(key: string): Promise<T | false | null> {
         const v = await this.get(key);
         if (v === null || v === false) {
             return v;
         }
-        const r = lText.parseJson(v);
-        return r;
+        return lText.parseJson<T>(v);
     }
 
     /**
-     * --- 原子获取并删除 JSON 对象 ---
+     * --- 原子读取并删除键，再解析 JSON ---
      * @param key 键
+     * @returns 解析结果，键不存在返回 null，Redis 操作或解析失败返回 false
      */
-    public async getDelJson(key: string): Promise<any | false | null> {
+    public getDelJson(key: string): Promise<kebab.Json | false | null>;
+    /**
+     * --- 原子读取并删除键，再解析 JSON ---
+     * @typeParam T 预期的结果类型，解析时只检查 JSON 语法
+     * @param key 键
+     * @returns 解析结果，键不存在返回 null，Redis 操作或解析失败返回 false
+     */
+    public getDelJson<T>(key: string): Promise<T | false | null>;
+    public async getDelJson<T>(key: string): Promise<T | false | null> {
         const conn = await this._getConnection();
         if (!conn) {
             return false;
@@ -350,7 +367,7 @@ end`;
             if (value === null) {
                 return null;
             }
-            return lText.parseJson(value);
+            return lText.parseJson<T>(value);
         }
         catch {
             return false;
@@ -613,11 +630,21 @@ end`;
     }
 
     /**
-     * --- 获取哈希 json 对象 ---
-     * @param key
-     * @param field
+     * --- 读取并解析哈希字段中的 JSON ---
+     * @param key 键
+     * @param field 哈希字段
+     * @returns 解析结果，字段不存在、JSON 无效或值为 JSON false 时返回 null；读取失败返回 false
      */
-    public async hGetJson(key: string, field: string): Promise<any | false | null> {
+    public hGetJson(key: string, field: string): Promise<kebab.Json | false | null>;
+    /**
+     * --- 读取并解析哈希字段中的 JSON ---
+     * @typeParam T 预期的结果类型，解析时只检查 JSON 语法
+     * @param key 键
+     * @param field 哈希字段
+     * @returns 解析结果，字段不存在、JSON 无效或值为 JSON false 时返回 null；读取失败返回 false
+     */
+    public hGetJson<T>(key: string, field: string): Promise<T | false | null>;
+    public async hGetJson<T>(key: string, field: string): Promise<T | false | null> {
         const v = await this.hGet(key, field);
         if (v === false) {
             return false;
@@ -625,8 +652,8 @@ end`;
         if (v === null) {
             return null;
         }
-        const r = lText.parseJson(v);
-        return r === false ? null : v;
+        const r = lText.parseJson<T>(v);
+        return r === false ? null : r;
     }
 
     /**

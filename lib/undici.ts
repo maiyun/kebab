@@ -210,12 +210,12 @@ export async function postJson(
  * @param action 日志动作名
  * @returns 最后一次响应的 JSON 数据，重试验证未通过也保留；请求或读取失败返回 null；JSON 解析失败返回 false
  */
-async function requestResponseJson(
+async function requestResponseJson<T>(
     u: string,
     data: kebab.Json[] | Record<string, kebab.Json> | undefined,
     opt: IRequestOptions,
     action: 'POSTJSONRESPONSEJSON' | 'POSTRESPONSEJSON' | 'GETRESPONSEJSON'
-): Promise<kebab.Json | null | false> {
+): Promise<T | false | null> {
     const retryJson = normalizeRetry(opt.retryJson);
     for (let i = 0; i <= retryJson; ++i) {
         const res = await request(u, data, opt);
@@ -224,7 +224,7 @@ async function requestResponseJson(
             return null;
         }
         const rtnStr = rtn.toString();
-        const json = lText.parseJson(rtnStr);
+        const json = lText.parseJson<T>(rtnStr);
         if (json && (opt.retryJsonHandler?.(json) ?? true)) {
             return json;
         }
@@ -251,12 +251,26 @@ async function requestResponseJson(
  * @param opt 选项
  * @returns 最后一次响应的 JSON 数据，重试验证未通过也保留；请求或读取失败返回 null；JSON 解析失败返回 false
  */
-export async function postJsonResponseJson(
+export function postJsonResponseJson(
+    u: string, data: kebab.Json[] | Record<string, kebab.Json>, opt?: IRequestOptions
+): Promise<kebab.Json | null | false>;
+/**
+ * --- 发起 JSON 请求并解析 JSON 响应 ---
+ * @typeParam T 预期的响应类型，解析时只检查 JSON 语法
+ * @param u 网址
+ * @param data 数据
+ * @param opt 选项
+ * @returns 最后一次响应的 JSON 数据，重试验证未通过也保留；请求或读取失败返回 null；JSON 解析失败返回 false
+ */
+export function postJsonResponseJson<T>(
+    u: string, data: kebab.Json[] | Record<string, kebab.Json>, opt?: IRequestOptions
+): Promise<T | false | null>;
+export async function postJsonResponseJson<T>(
     u: string, data: kebab.Json[] | Record<string, kebab.Json>, opt: IRequestOptions = {}
-): Promise<kebab.Json | null | false> {
+): Promise<T | false | null> {
     opt.method = 'POST';
     opt.type = 'json';
-    return requestResponseJson(u, data, opt, 'POSTJSONRESPONSEJSON');
+    return requestResponseJson<T>(u, data, opt, 'POSTJSONRESPONSEJSON');
 }
 
 /**
@@ -266,11 +280,25 @@ export async function postJsonResponseJson(
  * @param opt 选项
  * @returns 最后一次响应的 JSON 数据，重试验证未通过也保留；请求或读取失败返回 null；JSON 解析失败返回 false
  */
-export async function postResponseJson(
+export function postResponseJson(
+    u: string, data: Record<string, kebab.Json>, opt?: IRequestOptions
+): Promise<kebab.Json | null | false>;
+/**
+ * --- 发起 POST 请求并解析 JSON 响应 ---
+ * @typeParam T 预期的响应类型，解析时只检查 JSON 语法
+ * @param u 网址
+ * @param data 数据
+ * @param opt 选项
+ * @returns 最后一次响应的 JSON 数据，重试验证未通过也保留；请求或读取失败返回 null；JSON 解析失败返回 false
+ */
+export function postResponseJson<T>(
+    u: string, data: Record<string, kebab.Json>, opt?: IRequestOptions
+): Promise<T | false | null>;
+export async function postResponseJson<T>(
     u: string, data: Record<string, kebab.Json>, opt: IRequestOptions = {}
-): Promise<kebab.Json | null | false> {
+): Promise<T | false | null> {
     opt.method = 'POST';
-    return requestResponseJson(u, data, opt, 'POSTRESPONSEJSON');
+    return requestResponseJson<T>(u, data, opt, 'POSTRESPONSEJSON');
 }
 
 /**
@@ -279,11 +307,20 @@ export async function postResponseJson(
  * @param opt 选项
  * @returns 最后一次响应的 JSON 数据，重试验证未通过也保留；请求或读取失败返回 null；JSON 解析失败返回 false
  */
-export async function getResponseJson(
+export function getResponseJson(u: string, opt?: IRequestOptions): Promise<kebab.Json | null | false>;
+/**
+ * --- 发起 GET 请求并解析 JSON 响应 ---
+ * @typeParam T 预期的响应类型，解析时只检查 JSON 语法
+ * @param u 网址
+ * @param opt 选项
+ * @returns 最后一次响应的 JSON 数据，重试验证未通过也保留；请求或读取失败返回 null；JSON 解析失败返回 false
+ */
+export function getResponseJson<T>(u: string, opt?: IRequestOptions): Promise<T | false | null>;
+export async function getResponseJson<T>(
     u: string,
     opt: IRequestOptions = {}
-): Promise<kebab.Json | null | false> {
-    return requestResponseJson(u, undefined, opt, 'GETRESPONSEJSON');
+): Promise<T | false | null> {
+    return requestResponseJson<T>(u, undefined, opt, 'GETRESPONSEJSON');
 }
 
 /**

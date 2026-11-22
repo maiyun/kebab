@@ -48,7 +48,7 @@ Defined in: [lib/db/tran.ts:28](https://github.com/maiyunnet/kebab/blob/master/l
 
 > **commit**(): `Promise`\<`boolean`\>
 
-Defined in: [lib/db/tran.ts:104](https://github.com/maiyunnet/kebab/blob/master/lib/db/tran.ts#L104)
+Defined in: [lib/db/tran.ts:114](https://github.com/maiyunnet/kebab/blob/master/lib/db/tran.ts#L114)
 
 #### Returns
 
@@ -60,7 +60,7 @@ Defined in: [lib/db/tran.ts:104](https://github.com/maiyunnet/kebab/blob/master/
 
 > **execute**(`sql`, `values?`): `Promise`\<[`IPacket`](../../interfaces/IPacket.md)\>
 
-Defined in: [lib/db/tran.ts:85](https://github.com/maiyunnet/kebab/blob/master/lib/db/tran.ts#L85)
+Defined in: [lib/db/tran.ts:95](https://github.com/maiyunnet/kebab/blob/master/lib/db/tran.ts#L95)
 
 执行一条 SQL 并获得影响行数对象 packet，连接失败抛出错误
 
@@ -100,29 +100,69 @@ Defined in: [lib/db/tran.ts:52](https://github.com/maiyunnet/kebab/blob/master/l
 
 ### query()
 
-> **query**(`sql`, `values?`): `Promise`\<[`IData`](../../interfaces/IData.md)\>
+#### Call Signature
 
-Defined in: [lib/db/tran.ts:61](https://github.com/maiyunnet/kebab/blob/master/lib/db/tran.ts#L61)
+> **query**(`sql`, `values?`): `Promise`\<[`IData`](../../interfaces/IData.md)\<`Record`\<`string`, `any`\>\>\>
+
+Defined in: [lib/db/tran.ts:62](https://github.com/maiyunnet/kebab/blob/master/lib/db/tran.ts#L62)
 
 在事务连接中执行一条 SQL
 
-#### Parameters
+##### Parameters
 
-##### sql
+###### sql
 
 `string`
 
 执行的 SQL 字符串
 
-##### values?
+###### values?
 
 [`DbValue`](../../../../index/type-aliases/DbValue.md)[]
 
-要替换的 data 数据
+SQL 占位符绑定的值
 
-#### Returns
+##### Returns
 
-`Promise`\<[`IData`](../../interfaces/IData.md)\>
+`Promise`\<[`IData`](../../interfaces/IData.md)\<`Record`\<`string`, `any`\>\>\>
+
+查询结果，result = -500 表示事务已关闭或查询失败
+
+#### Call Signature
+
+> **query**\<`TRow`\>(`sql`, `values?`): `Promise`\<[`IData`](../../interfaces/IData.md)\<`TRow`\>\>
+
+Defined in: [lib/db/tran.ts:70](https://github.com/maiyunnet/kebab/blob/master/lib/db/tran.ts#L70)
+
+在事务连接中执行一条 SQL，按指定类型返回数据行
+
+##### Type Parameters
+
+###### TRow
+
+`TRow` *extends* `object`
+
+SQL 返回的行结构，由调用方根据查询字段指定
+
+##### Parameters
+
+###### sql
+
+`string`
+
+执行的 SQL 字符串
+
+###### values?
+
+[`DbValue`](../../../../index/type-aliases/DbValue.md)[]
+
+SQL 占位符绑定的值
+
+##### Returns
+
+`Promise`\<[`IData`](../../interfaces/IData.md)\<`TRow`\>\>
+
+查询结果，result = -500 表示事务已关闭或查询失败
 
 ***
 
@@ -130,7 +170,7 @@ Defined in: [lib/db/tran.ts:61](https://github.com/maiyunnet/kebab/blob/master/l
 
 > **rollback**(): `Promise`\<`boolean`\>
 
-Defined in: [lib/db/tran.ts:126](https://github.com/maiyunnet/kebab/blob/master/lib/db/tran.ts#L126)
+Defined in: [lib/db/tran.ts:136](https://github.com/maiyunnet/kebab/blob/master/lib/db/tran.ts#L136)
 
 #### Returns
 

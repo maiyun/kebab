@@ -8,7 +8,7 @@
 
 > **fetch**(`input`, `init?`): `Promise`\<`Response`\>
 
-Defined in: [lib/undici.ts:294](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L294)
+Defined in: [lib/undici.ts:331](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L331)
 
 发起一个完全兼容 fetch 的请求
 

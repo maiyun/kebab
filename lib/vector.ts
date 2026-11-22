@@ -22,6 +22,28 @@ export interface IOptions {
     'pwd'?: string;
 }
 
+/** --- 向量搜索参数 --- */
+export interface ISearchOptions {
+    /** --- 表名 --- */
+    'collection': string;
+    /** --- 查询的向量 --- */
+    'data': number[];
+    /** --- 过滤器，如 word_count > 0 and book_id in [1, 2, 3] --- */
+    'filter'?: string;
+    /** --- 返回的结果数量，默认为 3 --- */
+    'limit'?: number;
+    /** --- 计算两个向量相似度的度量，默认 L2 --- */
+    'metric'?: 'L2' | 'IP' | 'COSINE';
+    /** --- 输出的字段，如 ['book_id', 'word_count']，默认全部 --- */
+    'fields'?: string[];
+}
+
+/** --- 向量搜索命中的固定字段 --- */
+export interface ISearchHit {
+    'id': string | number;
+    'distance': number;
+}
+
 export class Vector {
 
     /** --- 当前的 vector 连接信息 --- */
@@ -31,25 +53,22 @@ export class Vector {
         this._etc = etc;
     }
 
-    /** --- 搜索 --- */
-    public async search(data: {
-        /** --- 表名 --- */
-        'collection': string;
-        /** --- 查询的向量 --- */
-        'data': number[];
-        /** --- 过滤器，如 word_count > 0 and book_id in [1, 2, 3] --- */
-        'filter'?: string;
-        /** --- 返回的结果数量，默认为 3 --- */
-        'limit'?: number;
-        /** --- 计算两个向量相似度的度量，默认 L2 --- */
-        'metric'?: 'L2' | 'IP' | 'COSINE';
-        /** --- 输出的字段，如 ['book_id', 'word_count']，默认全部 --- */
-        'fields'?: string[];
-    }): Promise<Array<{
-        'id': string | number;
-        'distance': number;
-        [key: string]: any;
-    }> | false> {
+    /**
+     * --- 搜索相近向量，允许动态访问输出字段 ---
+     * @param data 查询向量及搜索选项
+     * @returns 搜索命中列表，搜索失败时返回 false
+     */
+    public search(data: ISearchOptions): Promise<Array<ISearchHit & Record<string, any>> | false>;
+    /**
+     * --- 搜索相近向量，按指定类型返回额外字段 ---
+     * @typeParam TExtra 由调用方根据输出字段指定的结构，id 和 distance 保持固定类型
+     * @param data 查询向量及搜索选项
+     * @returns 搜索命中列表，搜索失败时返回 false
+     */
+    public search<TExtra extends object>(
+        data: ISearchOptions
+    ): Promise<Array<ISearchHit & Omit<TExtra, keyof ISearchHit>> | false>;
+    public async search(data: ISearchOptions): Promise<Array<ISearchHit & Record<string, any>> | false> {
         const body: Record<string, kebab.Json> = {
             'dbName': this._etc.name,
             'collectionName': data.collection,

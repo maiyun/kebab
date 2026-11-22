@@ -6,7 +6,7 @@
 
 # Class: Vector
 
-Defined in: [lib/vector.ts:25](https://github.com/maiyunnet/kebab/blob/master/lib/vector.ts#L25)
+Defined in: [lib/vector.ts:47](https://github.com/maiyunnet/kebab/blob/master/lib/vector.ts#L47)
 
 ## Constructors
 
@@ -14,7 +14,7 @@ Defined in: [lib/vector.ts:25](https://github.com/maiyunnet/kebab/blob/master/li
 
 > **new Vector**(`etc`): `Vector`
 
-Defined in: [lib/vector.ts:30](https://github.com/maiyunnet/kebab/blob/master/lib/vector.ts#L30)
+Defined in: [lib/vector.ts:52](https://github.com/maiyunnet/kebab/blob/master/lib/vector.ts#L52)
 
 #### Parameters
 
@@ -32,7 +32,7 @@ Defined in: [lib/vector.ts:30](https://github.com/maiyunnet/kebab/blob/master/li
 
 > **delete**(`data`): `Promise`\<`false` \| \{ `deletedCount`: `number`; \}\>
 
-Defined in: [lib/vector.ts:120](https://github.com/maiyunnet/kebab/blob/master/lib/vector.ts#L120)
+Defined in: [lib/vector.ts:139](https://github.com/maiyunnet/kebab/blob/master/lib/vector.ts#L139)
 
 删除数据
 
@@ -62,7 +62,7 @@ Defined in: [lib/vector.ts:120](https://github.com/maiyunnet/kebab/blob/master/l
 
 > **insert**(`data`): `Promise`\<`false` \| \{ `insertCount`: `number`; `insertIds`: (`string` \| `number`)[]; \}\>
 
-Defined in: [lib/vector.ts:89](https://github.com/maiyunnet/kebab/blob/master/lib/vector.ts#L89)
+Defined in: [lib/vector.ts:108](https://github.com/maiyunnet/kebab/blob/master/lib/vector.ts#L108)
 
 插入数据
 
@@ -90,52 +90,54 @@ Defined in: [lib/vector.ts:89](https://github.com/maiyunnet/kebab/blob/master/li
 
 ### search()
 
-> **search**(`data`): `Promise`\<`false` \| `object`[]\>
+#### Call Signature
 
-Defined in: [lib/vector.ts:35](https://github.com/maiyunnet/kebab/blob/master/lib/vector.ts#L35)
+> **search**(`data`): `Promise`\<`false` \| ([`ISearchHit`](../interfaces/ISearchHit.md) & `Record`\<`string`, `any`\>)[]\>
 
-搜索
+Defined in: [lib/vector.ts:61](https://github.com/maiyunnet/kebab/blob/master/lib/vector.ts#L61)
 
-#### Parameters
+搜索相近向量，允许动态访问输出字段
 
-##### data
-
-###### collection
-
-`string`
-
-表名
+##### Parameters
 
 ###### data
 
-`number`[]
+[`ISearchOptions`](../interfaces/ISearchOptions.md)
 
-查询的向量
+查询向量及搜索选项
 
-###### fields?
+##### Returns
 
-`string`[]
+`Promise`\<`false` \| ([`ISearchHit`](../interfaces/ISearchHit.md) & `Record`\<`string`, `any`\>)[]\>
 
-输出的字段，如 ['book_id', 'word_count']，默认全部
+搜索命中列表，搜索失败时返回 false
 
-###### filter?
+#### Call Signature
 
-`string`
+> **search**\<`TExtra`\>(`data`): `Promise`\<`false` \| ([`ISearchHit`](../interfaces/ISearchHit.md) & `Omit`\<`TExtra`, keyof [`ISearchHit`](../interfaces/ISearchHit.md)\>)[]\>
 
-过滤器，如 word_count > 0 and book_id in [1, 2, 3]
+Defined in: [lib/vector.ts:68](https://github.com/maiyunnet/kebab/blob/master/lib/vector.ts#L68)
 
-###### limit?
+搜索相近向量，按指定类型返回额外字段
 
-`number`
+##### Type Parameters
 
-返回的结果数量，默认为 3
+###### TExtra
 
-###### metric?
+`TExtra` *extends* `object`
 
-`"L2"` \| `"IP"` \| `"COSINE"`
+由调用方根据输出字段指定的结构，id 和 distance 保持固定类型
 
-计算两个向量相似度的度量，默认 L2
+##### Parameters
 
-#### Returns
+###### data
 
-`Promise`\<`false` \| `object`[]\>
+[`ISearchOptions`](../interfaces/ISearchOptions.md)
+
+查询向量及搜索选项
+
+##### Returns
+
+`Promise`\<`false` \| ([`ISearchHit`](../interfaces/ISearchHit.md) & `Omit`\<`TExtra`, keyof [`ISearchHit`](../interfaces/ISearchHit.md)\>)[]\>
+
+搜索命中列表，搜索失败时返回 false

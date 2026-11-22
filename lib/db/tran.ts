@@ -56,9 +56,19 @@ export class Transaction {
     /**
      * --- 在事务连接中执行一条 SQL ---
      * @param sql 执行的 SQL 字符串
-     * @param values 要替换的 data 数据
+     * @param values SQL 占位符绑定的值
+     * @returns 查询结果，result = -500 表示事务已关闭或查询失败
      */
-    public async query(sql: string, values?: kebab.DbValue[]): Promise<lDb.IData> {
+    public query(sql: string, values?: kebab.DbValue[]): Promise<lDb.IData>;
+    /**
+     * --- 在事务连接中执行一条 SQL，按指定类型返回数据行 ---
+     * @typeParam TRow SQL 返回的行结构，由调用方根据查询字段指定
+     * @param sql 执行的 SQL 字符串
+     * @param values SQL 占位符绑定的值
+     * @returns 查询结果，result = -500 表示事务已关闭或查询失败
+     */
+    public query<TRow extends object>(sql: string, values?: kebab.DbValue[]): Promise<lDb.IData<TRow>>;
+    public async query<TRow extends object>(sql: string, values?: kebab.DbValue[]): Promise<lDb.IData<TRow>> {
         if (!this._conn) {
             // --- 当前连接已不可用 ---
             lCore.display('[DB][Transaction][query] has been closed, so you cannot execute SQL: ' + (this._ctr?.getPrototype('_config').const.path ?? 'no ctr') + ': ' + sql);
@@ -74,7 +84,7 @@ export class Transaction {
             };
         }
         ++this._queries;
-        return this._conn.query(sql, values);
+        return this._conn.query<TRow>(sql, values);
     }
 
     /**

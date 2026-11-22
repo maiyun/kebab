@@ -13,6 +13,8 @@
 ## Interfaces
 
 - [IOptions](interfaces/IOptions.md)
+- [ISearchHit](interfaces/ISearchHit.md)
+- [ISearchOptions](interfaces/ISearchOptions.md)
 
 ## Functions
 

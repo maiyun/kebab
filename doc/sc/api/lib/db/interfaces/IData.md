@@ -4,11 +4,17 @@
 
 [Documents for @maiyunnet/kebab](../../../index.md) / [lib/db](../index.md) / IData
 
-# Interface: IData
+# Interface: IData\<TRow\>
 
 Defined in: [lib/db.ts:23](https://github.com/maiyunnet/kebab/blob/master/lib/db.ts#L23)
 
-query 返回的数据
+query 返回的数据，未指定行类型时保留动态列访问
+
+## Type Parameters
+
+### TRow
+
+`TRow` *extends* `object` = `Record`\<`string`, `any`\>
 
 ## Properties
 
@@ -52,6 +58,6 @@ Defined in: [lib/db.ts:36](https://github.com/maiyunnet/kebab/blob/master/lib/db
 
 ### rows
 
-> **rows**: `Record`\<`string`, `any`\>[] \| `null`
+> **rows**: `TRow`[] \| `null`
 
 Defined in: [lib/db.ts:24](https://github.com/maiyunnet/kebab/blob/master/lib/db.ts#L24)

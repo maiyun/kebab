@@ -156,10 +156,19 @@ export class Pool {
     /**
      * --- 执行一条 SQL，无视顺序和相同连接，随用随取 ---
      * @param sql 执行的 SQL 字符串
-     * @param values 要替换的 data 数据
-     * @returns error.errno = -500 表示系统错误
+     * @param values SQL 占位符绑定的值
+     * @returns 查询结果，result = -500 表示系统错误
      */
-    public async query(sql: string, values?: kebab.DbValue[]): Promise<lDb.IData> {
+    public query(sql: string, values?: kebab.DbValue[]): Promise<lDb.IData>;
+    /**
+     * --- 执行一条 SQL，按指定类型返回数据行 ---
+     * @typeParam TRow SQL 返回的行结构，由调用方根据查询字段指定
+     * @param sql 执行的 SQL 字符串
+     * @param values SQL 占位符绑定的值
+     * @returns 查询结果，result = -500 表示系统错误
+     */
+    public query<TRow extends object>(sql: string, values?: kebab.DbValue[]): Promise<lDb.IData<TRow>>;
+    public async query<TRow extends object>(sql: string, values?: kebab.DbValue[]): Promise<lDb.IData<TRow>> {
         ++this._queries;
         // --- 获取并自动 using ---
         const conn = await this._getConnection();
@@ -175,7 +184,7 @@ export class Pool {
             };
         }
         // --- 执行一次后自动解除 using ---
-        return conn.query(sql, values);
+        return conn.query<TRow>(sql, values);
     }
 
     /**

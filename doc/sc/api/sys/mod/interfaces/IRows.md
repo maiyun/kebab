@@ -6,7 +6,7 @@
 
 # Interface: IRows\<T\>
 
-Defined in: [sys/mod.ts:2082](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L2082)
+Defined in: [sys/mod.ts:2123](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L2123)
 
 ## Extends
 
@@ -24,7 +24,7 @@ Defined in: [sys/mod.ts:2082](https://github.com/maiyunnet/kebab/blob/master/sys
 
 > `readonly` **length**: `number`
 
-Defined in: [sys/mod.ts:2083](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L2083)
+Defined in: [sys/mod.ts:2124](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L2124)
 
 ## Methods
 
@@ -32,7 +32,7 @@ Defined in: [sys/mod.ts:2083](https://github.com/maiyunnet/kebab/blob/master/sys
 
 > **item**(`index`): `T`
 
-Defined in: [sys/mod.ts:2084](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L2084)
+Defined in: [sys/mod.ts:2125](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L2125)
 
 #### Parameters
 
@@ -50,7 +50,7 @@ Defined in: [sys/mod.ts:2084](https://github.com/maiyunnet/kebab/blob/master/sys
 
 > **toArray**(): `Record`\<`string`, `any`\>[]
 
-Defined in: [sys/mod.ts:2085](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L2085)
+Defined in: [sys/mod.ts:2126](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L2126)
 
 #### Returns
 

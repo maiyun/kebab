@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { MockAgent } from 'undici';
 import * as undici from '../../lib/undici.js';
+import { Response } from '../../lib/undici/response.js';
 
 const origin = 'https://upstream.example';
 const methods = [
@@ -82,3 +83,17 @@ for (const [name, method, request] of methods) {
         assert.equal(await run(['invalid JSON']), false);
     });
 }
+
+test('Response.getJson parses JSON and preserves empty and malformed results', async () => {
+    const res = new Response(null);
+    assert.equal(await res.getJson(), null);
+
+    res.setContent('');
+    assert.equal(await res.getJson(), null);
+
+    res.setContent('{invalid');
+    assert.equal(await res.getJson(), false);
+
+    res.setContent('[9007199254740993,0,""]');
+    assert.deepEqual(await res.getJson(), [9_007_199_254_740_993n, 0, '']);
+});

@@ -16,8 +16,24 @@ export type TOnlyProperties<T> = {
     [K in keyof T as T[K] extends (...args: any[]) => any ? never : K]: T[K]
 };
 
+/** --- 由 SELECT 决定字段的原生查询行 --- */
+export type TModRow = Record<string, kebab.Json>;
+
+/** --- 按条件查询单条记录的选项 --- */
+export interface IModOneOptions {
+    'ctr'?: sCtr.Ctr;
+    /** --- 加锁时确保 WHERE 条件命中索引，以免锁定过多记录 --- */
+    'lock'?: boolean;
+    /** --- MySQL 表前缀或 PostgreSQL Schema 名 --- */
+    'pre'?: string;
+    'index'?: string | string[];
+    'select'?: string | string[];
+    'by'?: [string | string[], 'DESC' | 'ASC'];
+    'hint'?: string;
+}
+
 /** --- 一批游标查询结果，hasMore 表示扫描方向上还有记录 --- */
-export interface ICursorPage<T extends Record<string, unknown> = Record<string, unknown>> {
+export interface ICursorPage<T extends object = Record<string, unknown>> {
     'list': T[];
     'hasMore': boolean;
     'next': lSql.TCursorValue[] | null;
@@ -43,8 +59,11 @@ export class Rows<T extends Mod> implements IRows<T> {
         return this._items[index];
     }
 
-    /** --- 转换为数组对象，获取的是新创建的数组 --- */
-    public toArray(): Array<Record<string, any>> {
+    /** --- 将模型转换为普通对象数组 --- */
+    public toArray(): TModRow[];
+    /** --- 将模型转换为指定行类型的普通对象数组 --- */
+    public toArray<TRow extends object>(): TRow[];
+    public toArray(): TModRow[] {
         return this._items.map(i => i.toArray());
     }
 
@@ -675,54 +694,29 @@ export default class Mod {
         }) as T & Record<string, any>).first(opt.lock);
     }
 
+    /** --- 按条件读取一条原生记录，查询失败返回 false，未找到返回 null --- */
     public static async one(
         db: lDb.Pool | lDb.Transaction,
         s: string | kebab.Json,
-        opt: {
-            'ctr'?: sCtr.Ctr;
-            'lock'?: boolean;
-            'pre'?: string;
-            'index'?: string | string[];
-            'select'?: string | string[];
-            'by'?: [string | string[], 'DESC' | 'ASC'];
-            'hint'?: string;
-            'array': true;
-        }
-    ): Promise<false | null | Record<string, any>>;
+        opt: IModOneOptions & { 'array': true; }
+    ): Promise<false | null | TModRow>;
+    /** --- 按条件读取一个模型实例，查询失败返回 false，未找到返回 null --- */
     public static async one<T extends Mod>(
         db: lDb.Pool | lDb.Transaction,
         s: string | kebab.Json,
-        opt?: {
-            'ctr'?: sCtr.Ctr;
-            'lock'?: boolean;
-            'pre'?: string;
-            'index'?: string | string[];
-            'select'?: string | string[];
-            'by'?: [string | string[], 'DESC' | 'ASC'];
-            'hint'?: string;
-            'array'?: false;
-        }
-    ): Promise<false | null | (T & Record<string, any>)>;
-    /**
-     * --- 通过 where 条件筛选单条数据 ---
-     * @param db 数据库对象
-     * @param s 筛选条件数组或字符串
-     * @param opt 选项（opt.pre: MySQL 表前缀/PostgreSQL Schema 名；lock 需确保 where 条件命中索引，否则可能退化为表锁）
-     */
-    public static async one<T extends Mod>(
+        opt?: IModOneOptions & { 'array'?: false; }
+    ): Promise<false | null | (T & TModRow)>;
+    /** --- 按条件读取一条指定类型的原生记录，查询失败返回 false，未找到返回 null --- */
+    public static async one<TRow extends object>(
         db: lDb.Pool | lDb.Transaction,
         s: string | kebab.Json,
-        opt: {
-            'ctr'?: sCtr.Ctr;
-            'lock'?: boolean;
-            'pre'?: string;
-            'index'?: string | string[];
-            'select'?: string | string[];
-            'by'?: [string | string[], 'DESC' | 'ASC'];
-            'hint'?: string;
-            'array'?: boolean;
-        } = {}
-    ): Promise<false | null | (T & Record<string, any>) | Record<string, any>> {
+        opt: IModOneOptions & { 'array': true; }
+    ): Promise<false | null | TRow>;
+    public static async one(
+        db: lDb.Pool | lDb.Transaction,
+        s: string | kebab.Json,
+        opt: IModOneOptions & { 'array'?: boolean; } = {}
+    ): Promise<false | null | Mod | TModRow> {
         if (!opt.index) {
             // --- 无 index ---
             const o = new this({
@@ -732,7 +726,7 @@ export default class Mod {
                 'pre': opt.pre,
                 'where': s,
                 'hint': opt.hint,
-            }) as T;
+            });
             if (opt.by) {
                 o.by(opt.by[0], opt.by[1]);
             }
@@ -748,7 +742,7 @@ export default class Mod {
                 'where': s,
                 'index': item,
                 'hint': opt.hint,
-            }) as T;
+            });
             if (opt.by) {
                 row.by(opt.by[0], opt.by[1]);
             }
@@ -768,22 +762,28 @@ export default class Mod {
      * --- 通过 where 条件筛选单条数据返回原生对象 ---
      * @param db 数据库对象
      * @param s 筛选条件数组或字符串
-     * @param opt 选项（opt.pre: MySQL 表前缀/PostgreSQL Schema 名）
+     * @param opt 查询和加锁选项
+     * @returns 原生对象，查询失败返回 false，未找到返回 null
      */
     public static async oneArray(
         db: lDb.Pool | lDb.Transaction,
         s: string | kebab.Json,
-        opt: {
-            'ctr'?: sCtr.Ctr;
-            'lock'?: boolean;
-            'pre'?: string;
-            'index'?: string | string[];
-            'select'?: string | string[];
-            'hint'?: string;
-        } = {}
-    ): Promise<false | null | Record<string, any>> {
-        (opt as kebab.Json).array = true;
-        return this.one(db, s, opt);
+        opt?: Omit<IModOneOptions, 'by'>
+    ): Promise<false | null | TModRow>;
+    /** --- 按条件读取一条指定类型的原生记录，查询失败返回 false，未找到返回 null --- */
+    public static async oneArray<TRow extends object>(
+        db: lDb.Pool | lDb.Transaction,
+        s: string | kebab.Json,
+        opt?: Omit<IModOneOptions, 'by'>
+    ): Promise<false | null | TRow>;
+    public static async oneArray(
+        db: lDb.Pool | lDb.Transaction,
+        s: string | kebab.Json,
+        opt: Omit<IModOneOptions, 'by'> = {}
+    ): Promise<false | null | TModRow> {
+        const queryOptions = opt as IModOneOptions & { 'array': true; };
+        queryOptions.array = true;
+        return this.one(db, s, queryOptions);
     }
 
     /**
@@ -816,13 +816,19 @@ export default class Mod {
     }
 
     /**
-     * --- 将 key val 组成的数据列表转换为原生对象模式，获取的是新创建的数组 ---
-     * @param obj 要转换的 kv 数据列表
+     * --- 将模型字典转换为普通对象字典，沿用原有键 ---
+     * @param obj 要转换的模型字典
+     * @returns 转换后的普通对象字典
      */
     public static toArrayByRecord<T extends Mod>(
         obj: Record<string, T>
-    ): Record<string, Record<string, any>> {
-        const rtn: Record<string, Record<string, any>> = {};
+    ): Record<string, TModRow>;
+    /** --- 将模型字典转换为指定行类型的普通对象字典 --- */
+    public static toArrayByRecord<TRow extends object>(
+        obj: Record<string, Mod>
+    ): Record<string, TRow>;
+    public static toArrayByRecord(obj: Record<string, Mod>): Record<string, TModRow> {
+        const rtn: Record<string, TModRow> = {};
         for (const key in obj) {
             rtn[key] = obj[key].toArray();
         }
@@ -902,10 +908,14 @@ export default class Mod {
     }
 
     /**
-     * --- 获取一个字段值
+     * --- 获取一个已加载的字段值 ---
      * @param n 字段名
+     * @returns 字段值，未加载时返回 undefined
      */
-    public get(n: string): any {
+    public get(n: string): kebab.Json;
+    /** --- 按指定类型获取一个已加载的字段值，未加载时返回 undefined --- */
+    public get<T>(n: string): T | undefined;
+    public get(n: string): kebab.Json {
         return this._data[n];
     }
 
@@ -1183,23 +1193,34 @@ export default class Mod {
         }
     }
 
+    /** --- 获取第一条原生记录，查询失败返回 false，未找到返回 null --- */
     public async first(
         lock: boolean,
         array: true
-    ): Promise<false | null | Record<string, any>>;
+    ): Promise<false | null | TModRow>;
+    /** --- 获取第一个模型实例，查询失败返回 false，未找到返回 null --- */
     public async first(
         lock?: boolean,
         array?: false
-    ): Promise<false | null | (this & Record<string, any>)>;
+    ): Promise<false | null | (this & TModRow)>;
     /**
-     * --- 获取数据库第一个对象 ---
+     * --- 获取指定类型的第一条原生记录 ---
      * @param lock 是否加锁
-     * @param array 是否返回原生对象
+     * @param array 传入 true 返回原生记录
+     * @returns 原生记录，查询失败返回 false，未找到返回 null
      */
+    public async first<TRow extends object>(lock: boolean, array: true): Promise<false | null | TRow>;
+    /**
+     * --- 获取第一个模型实例，并为查询附加的字段指定类型 ---
+     * @param lock 是否加锁
+     * @param array 省略或传入 false 返回模型实例
+     * @returns 模型实例，查询失败返回 false，未找到返回 null
+     */
+    public async first<TExtra extends object>(lock?: boolean, array?: false): Promise<false | null | (this & TExtra)>;
     public async first(
         lock: boolean = false,
         array: boolean = false
-    ): Promise<false | null | (this & Record<string, any>) | Record<string, any>> {
+    ): Promise<false | null | this | TModRow> {
         this._sql.limit(1);
         if (lock) {
             this._sql.lock();
@@ -1220,16 +1241,18 @@ export default class Mod {
             this._data[k] = v;
             (this as unknown as Record<string, any>)[k] = v;
         }
-        return this as this & Record<string, any>;
+        return this;
     }
 
     /**
      * --- 获取数据库第一个原生对象 ---
      * @param lock 是否加锁
+     * @returns 原生对象，查询失败返回 false，未找到返回 null
      */
-    public async firstArray(
-        lock: boolean = false
-    ): Promise<Record<string, any> | false | null> {
+    public async firstArray(lock?: boolean): Promise<false | null | TModRow>;
+    /** --- 获取指定类型的第一条原生记录，查询失败返回 false，未找到返回 null --- */
+    public async firstArray<TRow extends object>(lock?: boolean): Promise<false | null | TRow>;
+    public async firstArray(lock: boolean = false): Promise<false | null | TModRow> {
         return this.first(lock, true);
     }
 
@@ -1294,13 +1317,20 @@ export default class Mod {
         return this;
     }
 
-    /** --- 查询后的模型记录可以读取查询结果中的别名字段 --- */
-    public async all(): Promise<false | Rows<this & Record<string, any>>>;
-    public async all(key: string): Promise<false | Record<string, this & Record<string, any>>>;
+    /** --- 查询模型列表，查询失败返回 false --- */
+    public async all(): Promise<false | Rows<this & TModRow>>;
     /**
-     * --- 获取列表 ---
-     * @param key 是否以某个字段为主键
+     * --- 查询模型字典，查询失败返回 false ---
+     * @param key 用作字典键的结果字段
      */
+    public async all(key: string): Promise<false | Record<string, this & TModRow>>;
+    /** --- 查询模型列表，并为查询附加的字段指定类型，查询失败返回 false --- */
+    public async all<TExtra extends object>(): Promise<false | Rows<this & TExtra>>;
+    /**
+     * --- 查询模型字典，并为查询附加的字段指定类型，查询失败返回 false ---
+     * @param key 用作字典键的结果字段
+     */
+    public async all<TExtra extends object>(key: string): Promise<false | Record<string, this & TExtra>>;
     public async all(key?: string): Promise<false | Rows<this> | Record<string, this>> {
         this._total.length = 0;
         if (this._index && this._index.length > 1) {
@@ -1474,16 +1504,24 @@ export default class Mod {
         return new Rows<this>(list);
     }
 
-    public async allArray(): Promise<false | Array<Record<string, any>>>;
-    public async allArray(key: string): Promise<false | Record<string, Record<string, any>>>;
+    /** --- 查询原生行列表，查询失败返回 false --- */
+    public async allArray(): Promise<false | TModRow[]>;
     /**
-     * --- 获取列表（得到的为原生对象或数组，不是模型） ---
-     * @param key 是否以某个字段为主键
+     * --- 查询原生行字典，查询失败返回 false ---
+     * @param key 用作字典键的结果字段
      */
+    public async allArray(key: string): Promise<false | Record<string, TModRow>>;
+    /** --- 查询指定行类型的原生行列表，查询失败返回 false --- */
+    public async allArray<TRow extends object>(): Promise<false | TRow[]>;
+    /**
+     * --- 查询指定行类型的原生行字典，查询失败返回 false ---
+     * @param key 用作字典键的结果字段
+     */
+    public async allArray<TRow extends object>(key: string): Promise<false | Record<string, TRow>>;
     public async allArray(key?: string): Promise<
         false |
-        Array<Record<string, any>> |
-        Record<string, Record<string, any>>
+        TModRow[] |
+        Record<string, TModRow>
     > {
         this._total.length = 0;
         if (this._index && this._index.length > 1) {
@@ -1723,7 +1761,7 @@ export default class Mod {
      * @param opt.before 是否读取边界前一批，须提供 cursor
      * @returns 列表、首末行游标和扫描方向上的 hasMore，数据库错误返回 false
      */
-    public async allCursor<T extends Record<string, unknown> = Record<string, unknown>>(count: number, opt: {
+    public async allCursor<T extends object = Record<string, unknown>>(count: number, opt: {
         'by': string | string[];
         'keys'?: string[];
         'order'?: 'DESC' | 'ASC';
@@ -1750,11 +1788,11 @@ export default class Mod {
             return false;
         }
         const hasMore = result.rows.length > count;
-        const list = result.rows.slice(0, count) as T[];
+        const list = result.rows.slice(0, count);
         if (opt.before) {
             list.reverse();
         }
-        const boundary = (row: T): lSql.TCursorValue[] => keys.map(key => {
+        const boundary = (row: Record<string, unknown>): lSql.TCursorValue[] => keys.map(key => {
             const value = row[key];
             if ((typeof value !== 'string' && typeof value !== 'number') ||
                 (typeof value === 'number' && (!Number.isFinite(value) || (Number.isInteger(value) && !Number.isSafeInteger(value))))) {
@@ -1763,7 +1801,7 @@ export default class Mod {
             return value;
         });
         return {
-            'list': list,
+            'list': list as T[],
             'hasMore': hasMore,
             'next': list.length ? boundary(list[list.length - 1]) : null,
             'previous': list.length ? boundary(list[0]) : null,
@@ -2021,12 +2059,14 @@ export default class Mod {
         return this._sql.format(sql, data);
     }
 
-    /**
-     * --- 获取值对象，获取的是新创建的数组 ---
-     */
-    public toArray<TC extends abstract new (...args: any) => any>():
-        TOnlyProperties<InstanceType<TC>> & Record<string, any> {
-        return { ...this._data } as any;
+    /** --- 将已加载和已设置的字段复制为一个普通对象 --- */
+    public toArray(): TModRow;
+    /** --- 将字段复制为普通对象，按指定构造器的实例属性提供类型 --- */
+    public toArray<TC extends abstract new (...args: never[]) => object>(): TOnlyProperties<InstanceType<TC>> & TModRow;
+    /** --- 将字段复制为指定类型的普通对象 --- */
+    public toArray<TRow extends object>(): TRow;
+    public toArray(): TModRow {
+        return { ...this._data };
     }
 
     /**

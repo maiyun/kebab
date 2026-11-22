@@ -42,7 +42,7 @@ Defined in: [lib/db/pool.ts:138](https://github.com/maiyunnet/kebab/blob/master/
 
 > **beginTransaction**(`ctr`): `Promise`\<[`Transaction`](../../tran/classes/Transaction.md) \| `null`\>
 
-Defined in: [lib/db/pool.ts:206](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L206)
+Defined in: [lib/db/pool.ts:215](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L215)
 
 开启事务，返回事务对象并锁定连接，别人任何人不可用，有 ctr 的话必传 this，独立执行时可传 null
 
@@ -62,7 +62,7 @@ Defined in: [lib/db/pool.ts:206](https://github.com/maiyunnet/kebab/blob/master/
 
 > **execute**(`sql`, `values?`): `Promise`\<[`IPacket`](../../interfaces/IPacket.md)\>
 
-Defined in: [lib/db/pool.ts:186](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L186)
+Defined in: [lib/db/pool.ts:195](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L195)
 
 执行一条 SQL 并获得影响行数对象 packet，连接失败抛出错误
 
@@ -104,7 +104,7 @@ Defined in: [lib/db/pool.ts:152](https://github.com/maiyunnet/kebab/blob/master/
 
 > **getQueries**(): `number`
 
-Defined in: [lib/db/pool.ts:346](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L346)
+Defined in: [lib/db/pool.ts:355](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L355)
 
 获取 SQL 执行次数
 
@@ -130,28 +130,66 @@ Defined in: [lib/db/pool.ts:147](https://github.com/maiyunnet/kebab/blob/master/
 
 ### query()
 
-> **query**(`sql`, `values?`): `Promise`\<[`IData`](../../interfaces/IData.md)\>
+#### Call Signature
+
+> **query**(`sql`, `values?`): `Promise`\<[`IData`](../../interfaces/IData.md)\<`Record`\<`string`, `any`\>\>\>
 
 Defined in: [lib/db/pool.ts:162](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L162)
 
 执行一条 SQL，无视顺序和相同连接，随用随取
 
-#### Parameters
+##### Parameters
 
-##### sql
+###### sql
 
 `string`
 
 执行的 SQL 字符串
 
-##### values?
+###### values?
 
 [`DbValue`](../../../../index/type-aliases/DbValue.md)[]
 
-要替换的 data 数据
+SQL 占位符绑定的值
 
-#### Returns
+##### Returns
 
-`Promise`\<[`IData`](../../interfaces/IData.md)\>
+`Promise`\<[`IData`](../../interfaces/IData.md)\<`Record`\<`string`, `any`\>\>\>
 
-error.errno = -500 表示系统错误
+查询结果，result = -500 表示系统错误
+
+#### Call Signature
+
+> **query**\<`TRow`\>(`sql`, `values?`): `Promise`\<[`IData`](../../interfaces/IData.md)\<`TRow`\>\>
+
+Defined in: [lib/db/pool.ts:170](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L170)
+
+执行一条 SQL，按指定类型返回数据行
+
+##### Type Parameters
+
+###### TRow
+
+`TRow` *extends* `object`
+
+SQL 返回的行结构，由调用方根据查询字段指定
+
+##### Parameters
+
+###### sql
+
+`string`
+
+执行的 SQL 字符串
+
+###### values?
+
+[`DbValue`](../../../../index/type-aliases/DbValue.md)[]
+
+SQL 占位符绑定的值
+
+##### Returns
+
+`Promise`\<[`IData`](../../interfaces/IData.md)\<`TRow`\>\>
+
+查询结果，result = -500 表示系统错误

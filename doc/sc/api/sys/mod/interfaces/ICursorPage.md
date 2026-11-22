@@ -6,7 +6,7 @@
 
 # Interface: ICursorPage\<T\>
 
-Defined in: [sys/mod.ts:20](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L20)
+Defined in: [sys/mod.ts:36](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L36)
 
 一批游标查询结果，hasMore 表示扫描方向上还有记录
 
@@ -14,7 +14,7 @@ Defined in: [sys/mod.ts:20](https://github.com/maiyunnet/kebab/blob/master/sys/m
 
 ### T
 
-`T` *extends* `Record`\<`string`, `unknown`\> = `Record`\<`string`, `unknown`\>
+`T` *extends* `object` = `Record`\<`string`, `unknown`\>
 
 ## Properties
 
@@ -22,7 +22,7 @@ Defined in: [sys/mod.ts:20](https://github.com/maiyunnet/kebab/blob/master/sys/m
 
 > **hasMore**: `boolean`
 
-Defined in: [sys/mod.ts:22](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L22)
+Defined in: [sys/mod.ts:38](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L38)
 
 ***
 
@@ -30,7 +30,7 @@ Defined in: [sys/mod.ts:22](https://github.com/maiyunnet/kebab/blob/master/sys/m
 
 > **list**: `T`[]
 
-Defined in: [sys/mod.ts:21](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L21)
+Defined in: [sys/mod.ts:37](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L37)
 
 ***
 
@@ -38,7 +38,7 @@ Defined in: [sys/mod.ts:21](https://github.com/maiyunnet/kebab/blob/master/sys/m
 
 > **next**: [`TCursorValue`](../../../lib/sql/type-aliases/TCursorValue.md)[] \| `null`
 
-Defined in: [sys/mod.ts:23](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L23)
+Defined in: [sys/mod.ts:39](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L39)
 
 ***
 
@@ -46,4 +46,4 @@ Defined in: [sys/mod.ts:23](https://github.com/maiyunnet/kebab/blob/master/sys/m
 
 > **previous**: [`TCursorValue`](../../../lib/sql/type-aliases/TCursorValue.md)[] \| `null`
 
-Defined in: [sys/mod.ts:24](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L24)
+Defined in: [sys/mod.ts:40](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L40)

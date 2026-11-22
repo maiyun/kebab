@@ -8,7 +8,7 @@
 
 > **getFormData**(): [`FormData`](../formdata/classes/FormData.md)
 
-Defined in: [lib/undici.ts:658](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L658)
+Defined in: [lib/undici.ts:695](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L695)
 
 创建 FormData 对象
 
