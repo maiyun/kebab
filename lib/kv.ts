@@ -37,7 +37,7 @@ export interface IZRangeOptions {
     'count'?: number;
 }
 
-/** --- 连接列表（同一个 host、port、index 只有一个连接） --- */
+/** --- 相同地址、数据库和凭据共用一次连接初始化 --- */
 const connections: IConnectionInfo[] = [];
 
 /**
@@ -70,7 +70,7 @@ export class Kv {
     }
 
     /**
-     * --- 获取一个 pipeline 操作对象 ---
+     * --- 获取一个使用独立连接的 pipeline，调用方须在 finally 中调用 close() ---
      * @returns 失败则返回 false
      */
     public async pipeline(): Promise<redis.IPipelineClient | false> {
@@ -79,6 +79,26 @@ export class Kv {
             return false;
         }
         return conn.createPipelineClient();
+    }
+
+    /**
+     * --- 在共享连接上执行一个 Redis Lua 脚本 ---
+     * @param script Lua 源码
+     * @param keys 传给 KEYS 的完整键名，调用方需自行添加项目前缀
+     * @param args 传给 ARGV 的参数
+     * @returns Redis 原始结果，nil 返回 null，连接或执行失败返回 false
+     */
+    public async eval(script: string, keys: string[], args: Array<string | Buffer>): Promise<unknown> {
+        const conn = await this._getConnection();
+        if (!conn) {
+            return false;
+        }
+        try {
+            return await conn.eval(script, keys, args);
+        }
+        catch {
+            return false;
+        }
     }
 
     /**
@@ -965,39 +985,39 @@ end`;
      * --- 从连接池中获取一个符合要求的连接 ---
      */
     private async _getConnection(): Promise<redis.ICommandClient | null> {
-        const item = connections.find(item =>
-            (item.host === this._etc.host) && (item.port === this._etc.port) && (item.index === this._etc.index)
+        const { host, port, index, user, pwd } = this._etc;
+        const cached = connections.find(item =>
+            item.host === host && item.port === port && item.index === index && item.user === user && item.pwd === pwd
         );
-        if (item) {
-            return item.conn;
+        if (cached) {
+            return cached.ready;
         }
-        // --- 没有找到合适的连接，创建一个 ---
+        // --- 其他请求须等待同一次认证和选库 ---
+        const ready = this._connect(this._etc).catch(() => null);
+        const item = { host, port, index, user, pwd, ready };
+        connections.push(item);
+        const conn = await ready;
+        if (!conn) {
+            connections.splice(connections.indexOf(item), 1);
+        }
+        return conn;
+    }
+
+    /** --- 建立共享连接，初始化失败时释放已打开的套接字 --- */
+    private async _connect({ host, port, index, user, pwd }: kebab.IConfigKv): Promise<redis.ICommandClient | null> {
+        const conn = redis.createCommandClient({ host, port });
+        conn.on('error', function(err: redis.RedisError): void {
+            lCore.debug('[KV][_getConnection][error]', err);
+        });
         try {
-            const conn = redis.createCommandClient({
-                'host': this._etc.host,
-                'port': this._etc.port,
-            });
-            // --- 认证 ---
-            if (this._etc.pwd) {
-                await conn.auth(this._etc.pwd, this._etc.user || undefined);
+            if (pwd) {
+                await conn.auth(pwd, user || undefined);
             }
-            await conn.select(this._etc.index);
-            conn.on('error', function(err: redis.RedisError): void {
-                lCore.debug('[KV][_getConnection][error]', err);
-            }).on('end', () => {
-                // --- 断线，不重要，会自动重连 ---
-            }).on('close', () => {
-                // --- 断线，不重要，会自动重连 ---
-            });
-            connections.push({
-                'host': this._etc.host,
-                'port': this._etc.port,
-                'index': this._etc.index,
-                'conn': conn,
-            });
+            await conn.select(index);
             return conn;
         }
         catch {
+            await conn.close();
             return null;
         }
     }
@@ -1015,19 +1035,19 @@ export function get(ctrEtc: sCtr.Ctr | kebab.IConfigKv, oetc?: {
     'pwd'?: string;
 }): Kv {
     const etc = ctrEtc instanceof sCtr.Ctr ? ctrEtc.getPrototype('_config').kv : ctrEtc;
-    if (oetc) {
-        Object.assign(etc, oetc);
-    }
-    return new Kv(etc);
+    return new Kv(oetc ? { ...etc, ...oetc } : etc);
 
 }
 
 // --- 类型 ---
 
-/** --- 连接信息 --- */
+/** --- Redis 连接缓存项 --- */
 export interface IConnectionInfo {
     'host': string;
     'port': number;
     'index': number;
-    'conn': redis.ICommandClient;
+    'user': string;
+    'pwd': string;
+    /** --- 并发请求等待同一次建连，成功返回客户端，失败返回 null --- */
+    'ready': Promise<redis.ICommandClient | null>;
 }

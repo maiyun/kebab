@@ -6,25 +6,17 @@
 
 # Interface: IConnectionInfo
 
-Defined in: [lib/kv.ts:1028](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L1028)
+Defined in: [lib/kv.ts:1045](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L1045)
 
-连接信息
+Redis 连接缓存项
 
 ## Properties
-
-### conn
-
-> **conn**: `ICommandClient`
-
-Defined in: [lib/kv.ts:1032](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L1032)
-
-***
 
 ### host
 
 > **host**: `string`
 
-Defined in: [lib/kv.ts:1029](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L1029)
+Defined in: [lib/kv.ts:1046](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L1046)
 
 ***
 
@@ -32,7 +24,7 @@ Defined in: [lib/kv.ts:1029](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **index**: `number`
 
-Defined in: [lib/kv.ts:1031](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L1031)
+Defined in: [lib/kv.ts:1048](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L1048)
 
 ***
 
@@ -40,4 +32,30 @@ Defined in: [lib/kv.ts:1031](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **port**: `number`
 
-Defined in: [lib/kv.ts:1030](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L1030)
+Defined in: [lib/kv.ts:1047](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L1047)
+
+***
+
+### pwd
+
+> **pwd**: `string`
+
+Defined in: [lib/kv.ts:1050](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L1050)
+
+***
+
+### ready
+
+> **ready**: `Promise`\<`ICommandClient` \| `null`\>
+
+Defined in: [lib/kv.ts:1052](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L1052)
+
+并发请求等待同一次建连，成功返回客户端，失败返回 null
+
+***
+
+### user
+
+> **user**: `string`
+
+Defined in: [lib/kv.ts:1049](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L1049)

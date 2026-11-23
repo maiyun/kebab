@@ -1,30 +1,52 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createHash, randomBytes } from 'node:crypto';
+import { createCommandClient } from '@litert/redis';
 import { Login } from '../../lib/session.js';
 import { Ctr } from '../../sys/ctr.js';
 import { Kv } from '../../lib/kv.js';
 
 const token = () => randomBytes(32).toString('hex');
 const uid = '0123456789abcdef0123456789abcdef';
-const invalidKv = { getPre: () => 'mock:', pipeline: async () => false };
+const invalidKv = { getPre: () => 'mock:', eval: async () => false };
 
-for (const [name, kv] of [
-    ['connection unavailable', invalidKv],
-    ['pipeline throws', { ...invalidKv, pipeline: async () => { throw new Error('offline'); } }],
-    ['execution throws', { ...invalidKv, pipeline: async () => ({ eval() {}, exec: async () => { throw new Error('offline'); } }) }],
-    ['Redis command error', { ...invalidKv, pipeline: async () => ({ eval() {}, exec: async () => [new Error('redis')] }) }],
-]) {
-    test(`storage error: ${name}`, async () => {
-        const login = (token => new Login(kv, token, { name: 'TEST' }));
-        assert.equal(await login('token').create({ subject: 'subject' }), false, 'create');
-        assert.equal(await login('token').get(), false, 'get');
-        assert.equal(await login('token').touch(uid), false, 'touch');
-        assert.equal(await login('token').remove(uid), false, 'remove');
-        assert.equal(await login('token').list(uid), false, 'list');
-        assert.equal(await login('token').revoke(uid), false, 'revoke');
+test('all login operations report unavailable storage', async () => {
+    const login = new Login(invalidKv, 'token', { name: 'TEST' });
+    assert.equal(await login.create({ subject: 'subject' }), false, 'create');
+    assert.equal(await login.get(), false, 'get');
+    assert.equal(await login.touch(uid), false, 'touch');
+    assert.equal(await login.remove(uid), false, 'remove');
+    assert.equal(await login.list(uid), false, 'list');
+    assert.equal(await login.revoke(uid), false, 'revoke');
+});
+
+test('login reads and renewals reuse one Redis command client after a command error', async t => {
+    const proto = Object.getPrototypeOf(createCommandClient({}));
+    const credentials = { host: 'session-login.test.invalid', port: 6379, index: 0, pre: 'test:' };
+    const first = new Login(new Kv(credentials), 'token', { name: 'TEST' });
+    const second = new Login(new Kv(credentials), 'token', { name: 'TEST' });
+    const clients = new Set();
+    const commands = [];
+    let fail = false;
+    const pipeline = t.mock.method(proto, 'createPipelineClient', async () => { throw new Error('unexpected pipeline'); });
+    t.mock.method(proto, '_command', async function(command, args) {
+        clients.add(this);
+        commands.push(command);
+        if (command === 'SELECT') return 'OK';
+        if (fail) throw new Error('Redis command failed');
+        assert.equal(args[2], 'test:TEST:login:');
+        return args[3] === 'touch' ? 1 : null;
     });
-}
+    assert.equal(await first.get(), null);
+    assert.equal(await second.touch(uid), true);
+    fail = true;
+    assert.equal(await first.get(), false);
+    fail = false;
+    assert.equal(await second.get(), null);
+    assert.deepEqual(commands, ['SELECT', 'EVAL', 'EVAL', 'EVAL', 'EVAL']);
+    assert.equal(clients.size, 1);
+    assert.equal(pipeline.mock.callCount(), 0);
+});
 
 test('invalid inputs return false without throwing', async () => {
     const login = (token => new Login(invalidKv, token, { name: 'TEST' }));
@@ -48,7 +70,7 @@ test('invalid inputs return false without throwing', async () => {
 
 test('data toJSON must return a JSON object before storage is accessed', async () => {
     let calls = 0;
-    const kv = { getPre: () => 'mock:', pipeline: async () => { ++calls; return false; } };
+    const kv = { getPre: () => 'mock:', eval: async () => { ++calls; return false; } };
     const login = (token => new Login(kv, token, { name: 'TEST' }));
     for (const [name, value] of [['array', []], ['string', 'text'], ['null', null]]) {
         assert.equal(await login('token').create({ subject: 'subject', data: { toJSON: () => value } }), false,
@@ -59,10 +81,10 @@ test('data toJSON must return a JSON object before storage is accessed', async (
 
 test('script receives hashed token and default namespace and ttl', async () => {
     const calls = [];
-    const kv = { getPre: () => 'project:', pipeline: async () => ({
-        eval(script, keys, args) { calls.push({ keys, args }); },
-        exec: async () => [new Error('mock')],
-    }) };
+    const kv = { getPre: () => 'project:', eval: async (script, keys, args) => {
+        calls.push({ keys, args });
+        return false;
+    } };
     const login = (token => new Login(kv, token, { name: 'TEST' }));
     const secret = token();
     await login(secret).create({ subject: 'alice' });
@@ -86,10 +108,11 @@ test('script receives hashed token and default namespace and ttl', async () => {
 test('controller binding captures initialized Session token and rejects missing Session', async () => {
     const keysSeen = [];
     const calls = [];
-    const kv = { getPre: () => 'binding:', pipeline: async () => ({
-        eval(script, keys, args) { calls.push(args); keysSeen.push(keys); },
-        exec: async () => [null],
-    }) };
+    const kv = { getPre: () => 'binding:', eval: async (script, keys, args) => {
+        calls.push(args);
+        keysSeen.push(keys);
+        return null;
+    } };
     const ctr = Object.create(Ctr.prototype);
     ctr.setPrototype('_sess', null);
     const missing = new Login(kv, ctr);
@@ -115,7 +138,7 @@ test('controller binding captures initialized Session token and rejects missing 
 test('legacy login timestamps default to zero in get and list', async () => {
     const old = { uid, subject: 'legacy', scope: '', version: '', data: '{}' };
     let reply = JSON.stringify(old);
-    const kv = { getPre: () => 'mock:', pipeline: async () => ({ eval() {}, exec: async () => [reply] }) };
+    const kv = { getPre: () => 'mock:', eval: async () => reply };
     const login = new Login(kv, 'token', { name: 'TEST' });
     const record = await login.get();
     assert.equal(record.timeAdd, 0);
@@ -247,10 +270,8 @@ test('isolated Redis login lifecycle', { skip: !host && 'set KEBAB_LOGIN_REDIS_H
         assert.equal(touched.timeAdd, ttlRecord.timeAdd);
         assert.ok(touched.timeLast > ttlRecord.timeLast, 'touch updates last access');
         assert.equal((await ttlLogin(ttlToken).list(touched.uid))[0].timeLast, touched.timeLast);
-        const legacy = await kv.pipeline();
-        legacy.eval("local r=cjson.decode(redis.call('GET',KEYS[1])); r.timeLast=nil; redis.call('SET',KEYS[1],cjson.encode(r),'KEEPTTL'); return 1",
-            [kv.getPre() + binding], []);
-        await legacy.exec();
+        assert.equal(await kv.eval("local r=cjson.decode(redis.call('GET',KEYS[1])); r.timeLast=nil; redis.call('SET',KEYS[1],cjson.encode(r),'KEEPTTL'); return 1",
+            [kv.getPre() + binding], []), 1);
         assert.equal((await ttlLogin(ttlToken).get()).timeLast, 0);
         assert.equal(await ttlLogin(ttlToken).touch('00000000000000000000000000000000'), null);
         assert.equal((await ttlLogin(ttlToken).get()).timeLast, 0, 'stale UID cannot update timestamp');
@@ -345,10 +366,8 @@ test('isolated Redis login lifecycle', { skip: !host && 'set KEBAB_LOGIN_REDIS_H
         assert.deepEqual(await single(sa).get(), switched);
         // A stale index member must not expose or remove the token's new account.
         const oldIndex = 'TEST:single:index:' + createHash('sha256').update(JSON.stringify(['shop', 'single-user'])).digest('hex');
-        const pipe = await kv.pipeline();
-        pipe.eval("return redis.call('ZADD', KEYS[1], ARGV[1], ARGV[2])",
-            [kv.getPre() + oldIndex], [String(Math.floor(Date.now() / 1000) + 60), createHash('sha256').update(sa).digest('hex')]);
-        await pipe.exec();
+        assert.equal(await kv.eval("return redis.call('ZADD', KEYS[1], ARGV[1], ARGV[2])",
+            [kv.getPre() + oldIndex], [String(Math.floor(Date.now() / 1000) + 60), createHash('sha256').update(sa).digest('hex')]), 1);
         await single(winnerToken).revoke(winnerSingle.uid);
         assert.deepEqual(await single(sa).get(), switched, 'stale index cannot revoke token after account switch');
 

@@ -157,17 +157,7 @@ export class Store {
 
     private async _run(args: string[]): Promise<unknown | false> {
         if (!this._valid) return false;
-        try {
-            const pipeline = await this._kv.pipeline();
-            if (pipeline === false) return false;
-            pipeline.eval(script, [this._pre], args);
-            const result = await pipeline.exec<unknown[]>();
-            if (result.length !== 1 || result[0] instanceof Error) return false;
-            return result[0];
-        }
-        catch {
-            return false;
-        }
+        return this._kv.eval(script, [this._pre], args);
     }
 
     public async create(token: string, identity: ILoginIdentity, options: ILoginCreateOptions): Promise<ILoginRecord | false> {

@@ -44,7 +44,7 @@ Defined in: [lib/kv.ts:60](https://github.com/maiyunnet/kebab/blob/master/lib/kv
 
 > **add**(`key`, `val`, `ttl?`): `Promise`\<`boolean`\>
 
-Defined in: [lib/kv.ts:123](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L123)
+Defined in: [lib/kv.ts:143](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L143)
 
 添加一个值，存在则不变
 
@@ -74,7 +74,7 @@ Defined in: [lib/kv.ts:123](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **append**(`key`, `val`): `Promise`\<`boolean`\>
 
-Defined in: [lib/kv.ts:150](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L150)
+Defined in: [lib/kv.ts:170](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L170)
 
 向已存在的值后追加数据
 
@@ -102,7 +102,7 @@ Defined in: [lib/kv.ts:150](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **bLMove**(`sourceKey`, `destKey`, `soo`, `deo`, `timeout`): `Promise`\<`string` \| `false` \| `null`\>
 
-Defined in: [lib/kv.ts:797](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L797)
+Defined in: [lib/kv.ts:817](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L817)
 
 #### Parameters
 
@@ -136,7 +136,7 @@ Defined in: [lib/kv.ts:797](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **bRPop**(`key`, `timeout`): `Promise`\<`false` \| `Record`\<`string`, `string`\>\>
 
-Defined in: [lib/kv.ts:836](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L836)
+Defined in: [lib/kv.ts:856](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L856)
 
 #### Parameters
 
@@ -158,7 +158,7 @@ Defined in: [lib/kv.ts:836](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **decr**(`key`, `num?`): `Promise`\<`number` \| `false`\>
 
-Defined in: [lib/kv.ts:433](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L433)
+Defined in: [lib/kv.ts:453](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L453)
 
 自减
 
@@ -184,7 +184,7 @@ Defined in: [lib/kv.ts:433](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **del**(`keys`): `Promise`\<`boolean`\>
 
-Defined in: [lib/kv.ts:381](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L381)
+Defined in: [lib/kv.ts:401](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L401)
 
 删除已存在的值
 
@@ -200,11 +200,47 @@ Defined in: [lib/kv.ts:381](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 ***
 
+### eval()
+
+> **eval**(`script`, `keys`, `args`): `Promise`\<`unknown`\>
+
+Defined in: [lib/kv.ts:91](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L91)
+
+在共享连接上执行一个 Redis Lua 脚本
+
+#### Parameters
+
+##### script
+
+`string`
+
+Lua 源码
+
+##### keys
+
+`string`[]
+
+传给 KEYS 的完整键名，调用方需自行添加项目前缀
+
+##### args
+
+(`string` \| `Buffer`\<`ArrayBufferLike`\>)[]
+
+传给 ARGV 的参数
+
+#### Returns
+
+`Promise`\<`unknown`\>
+
+Redis 原始结果，nil 返回 null，连接或执行失败返回 false
+
+***
+
 ### exists()
 
 > **exists**(`keys`): `Promise`\<`number`\>
 
-Defined in: [lib/kv.ts:202](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L202)
+Defined in: [lib/kv.ts:222](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L222)
 
 检测 key 是否存在
 
@@ -226,7 +262,7 @@ Defined in: [lib/kv.ts:202](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **expire**(`key`, `ttl`): `Promise`\<`boolean`\>
 
-Defined in: [lib/kv.ts:461](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L461)
+Defined in: [lib/kv.ts:481](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L481)
 
 仅修改过期时间不修改值
 
@@ -250,7 +286,7 @@ Defined in: [lib/kv.ts:461](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **flushDb**(): `Promise`\<`boolean`\>
 
-Defined in: [lib/kv.ts:528](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L528)
+Defined in: [lib/kv.ts:548](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L548)
 
 清除当前所选数据库的所有内容
 
@@ -264,7 +300,7 @@ Defined in: [lib/kv.ts:528](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **get**(`key`): `Promise`\<`string` \| `false` \| `null`\>
 
-Defined in: [lib/kv.ts:226](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L226)
+Defined in: [lib/kv.ts:246](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L246)
 
 获取字符串
 
@@ -288,7 +324,7 @@ Defined in: [lib/kv.ts:226](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **getDelJson**(`key`): `Promise`\<`any`\>
 
-Defined in: [lib/kv.ts:352](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L352)
+Defined in: [lib/kv.ts:372](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L372)
 
 原子读取并删除键，再解析 JSON
 
@@ -310,7 +346,7 @@ Defined in: [lib/kv.ts:352](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **getDelJson**\<`T`\>(`key`): `Promise`\<`false` \| `T` \| `null`\>
 
-Defined in: [lib/kv.ts:359](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L359)
+Defined in: [lib/kv.ts:379](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L379)
 
 原子读取并删除键，再解析 JSON
 
@@ -344,7 +380,7 @@ Defined in: [lib/kv.ts:359](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **getJson**(`key`): `Promise`\<`any`\>
 
-Defined in: [lib/kv.ts:331](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L331)
+Defined in: [lib/kv.ts:351](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L351)
 
 读取并解析键中的 JSON
 
@@ -366,7 +402,7 @@ Defined in: [lib/kv.ts:331](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **getJson**\<`T`\>(`key`): `Promise`\<`false` \| `T` \| `null`\>
 
-Defined in: [lib/kv.ts:338](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L338)
+Defined in: [lib/kv.ts:358](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L358)
 
 读取并解析键中的 JSON
 
@@ -414,7 +450,7 @@ Defined in: [lib/kv.ts:68](https://github.com/maiyunnet/kebab/blob/master/lib/kv
 
 > **hDel**(`key`, `fields`): `Promise`\<`number` \| `false`\>
 
-Defined in: [lib/kv.ts:699](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L699)
+Defined in: [lib/kv.ts:719](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L719)
 
 删除哈希键
 
@@ -440,7 +476,7 @@ Defined in: [lib/kv.ts:699](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **hExists**(`key`, `field`): `Promise`\<`boolean`\>
 
-Defined in: [lib/kv.ts:717](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L717)
+Defined in: [lib/kv.ts:737](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L737)
 
 判断哈希字段是否存在
 
@@ -464,7 +500,7 @@ Defined in: [lib/kv.ts:717](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **hGet**(`key`, `field`): `Promise`\<`string` \| `false` \| `null`\>
 
-Defined in: [lib/kv.ts:619](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L619)
+Defined in: [lib/kv.ts:639](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L639)
 
 获取哈希值
 
@@ -488,7 +524,7 @@ Defined in: [lib/kv.ts:619](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **hGetAll**(`key`): `Promise`\<`false` \| `Record`\<`string`, `string` \| `null`\>\>
 
-Defined in: [lib/kv.ts:681](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L681)
+Defined in: [lib/kv.ts:701](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L701)
 
 批量获取哈希键值对
 
@@ -510,7 +546,7 @@ Defined in: [lib/kv.ts:681](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **hGetJson**(`key`, `field`): `Promise`\<`any`\>
 
-Defined in: [lib/kv.ts:638](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L638)
+Defined in: [lib/kv.ts:658](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L658)
 
 读取并解析哈希字段中的 JSON
 
@@ -538,7 +574,7 @@ Defined in: [lib/kv.ts:638](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **hGetJson**\<`T`\>(`key`, `field`): `Promise`\<`false` \| `T` \| `null`\>
 
-Defined in: [lib/kv.ts:646](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L646)
+Defined in: [lib/kv.ts:666](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L666)
 
 读取并解析哈希字段中的 JSON
 
@@ -576,7 +612,7 @@ Defined in: [lib/kv.ts:646](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **hIncr**(`key`, `field`, `increment`): `Promise`\<`number` \| `false`\>
 
-Defined in: [lib/kv.ts:736](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L736)
+Defined in: [lib/kv.ts:756](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L756)
 
 设置哈希自增自减
 
@@ -610,7 +646,7 @@ key
 
 > **hKeys**(`key`): `Promise`\<`false` \| `string`[]\>
 
-Defined in: [lib/kv.ts:758](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L758)
+Defined in: [lib/kv.ts:778](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L778)
 
 获取哈希所有字段
 
@@ -630,7 +666,7 @@ Defined in: [lib/kv.ts:758](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **hMGet**(`key`, `fields`): `Promise`\<`false` \| `Record`\<`string`, `string` \| `null`\>\>
 
-Defined in: [lib/kv.ts:664](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L664)
+Defined in: [lib/kv.ts:684](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L684)
 
 批量获取哈希值
 
@@ -654,7 +690,7 @@ Defined in: [lib/kv.ts:664](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **hMSet**(`key`, `rows`): `Promise`\<`boolean`\>
 
-Defined in: [lib/kv.ts:591](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L591)
+Defined in: [lib/kv.ts:611](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L611)
 
 批量设置哈希值
 
@@ -682,7 +718,7 @@ key / val 数组
 
 > **hSet**(`key`, `field`, `val`, `mod?`): `Promise`\<`boolean`\>
 
-Defined in: [lib/kv.ts:565](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L565)
+Defined in: [lib/kv.ts:585](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L585)
 
 设置哈希表值
 
@@ -722,7 +758,7 @@ key 名
 
 > **incr**(`key`, `num?`): `Promise`\<`number` \| `false`\>
 
-Defined in: [lib/kv.ts:405](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L405)
+Defined in: [lib/kv.ts:425](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L425)
 
 自增
 
@@ -748,7 +784,7 @@ Defined in: [lib/kv.ts:405](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **keys**(`pattern`): `Promise`\<`false` \| `string`[]\>
 
-Defined in: [lib/kv.ts:478](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L478)
+Defined in: [lib/kv.ts:498](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L498)
 
 获取服务器上的所有 key 列表
 
@@ -768,7 +804,7 @@ Defined in: [lib/kv.ts:478](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **lLen**(`key`): `Promise`\<`number` \| `false`\>
 
-Defined in: [lib/kv.ts:865](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L865)
+Defined in: [lib/kv.ts:885](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L885)
 
 #### Parameters
 
@@ -786,7 +822,7 @@ Defined in: [lib/kv.ts:865](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **lPop**(`key`): `Promise`\<`string` \| `false` \| `null`\>
 
-Defined in: [lib/kv.ts:810](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L810)
+Defined in: [lib/kv.ts:830](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L830)
 
 #### Parameters
 
@@ -804,7 +840,7 @@ Defined in: [lib/kv.ts:810](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **lPush**(`key`, `values`): `Promise`\<`number` \| `false`\>
 
-Defined in: [lib/kv.ts:771](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L771)
+Defined in: [lib/kv.ts:791](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L791)
 
 #### Parameters
 
@@ -826,7 +862,7 @@ Defined in: [lib/kv.ts:771](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **lRange**(`key`, `start`, `stop`): `Promise`\<`false` \| `string`[]\>
 
-Defined in: [lib/kv.ts:852](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L852)
+Defined in: [lib/kv.ts:872](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L872)
 
 #### Parameters
 
@@ -852,7 +888,7 @@ Defined in: [lib/kv.ts:852](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **mGet**(`keys`): `Promise`\<`false` \| `Record`\<`string`, `string` \| `null`\>\>
 
-Defined in: [lib/kv.ts:277](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L277)
+Defined in: [lib/kv.ts:297](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L297)
 
 批量获取值
 
@@ -874,7 +910,7 @@ key 序列
 
 > **mSet**(`rows`): `Promise`\<`boolean`\>
 
-Defined in: [lib/kv.ts:306](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L306)
+Defined in: [lib/kv.ts:326](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L326)
 
 批量设置哈希值
 
@@ -896,7 +932,7 @@ key / val 数组
 
 > **ping**(): `Promise`\<`string` \| `false`\>
 
-Defined in: [lib/kv.ts:545](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L545)
+Defined in: [lib/kv.ts:565](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L565)
 
 发送 ping
 
@@ -912,7 +948,7 @@ Defined in: [lib/kv.ts:545](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 Defined in: [lib/kv.ts:76](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L76)
 
-获取一个 pipeline 操作对象
+获取一个使用独立连接的 pipeline，调用方须在 finally 中调用 close()
 
 #### Returns
 
@@ -926,7 +962,7 @@ Defined in: [lib/kv.ts:76](https://github.com/maiyunnet/kebab/blob/master/lib/kv
 
 > **prepend**(`key`, `val`): `Promise`\<`boolean`\>
 
-Defined in: [lib/kv.ts:168](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L168)
+Defined in: [lib/kv.ts:188](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L188)
 
 向已存在的值之前追加数据
 
@@ -950,7 +986,7 @@ Defined in: [lib/kv.ts:168](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **pttl**(`key`): `Promise`\<`number` \| `null`\>
 
-Defined in: [lib/kv.ts:260](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L260)
+Defined in: [lib/kv.ts:280](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L280)
 
 获取相应的剩余有效期毫秒数
 
@@ -970,7 +1006,7 @@ Defined in: [lib/kv.ts:260](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **replace**(`key`, `val`, `ttl?`): `Promise`\<`boolean`\>
 
-Defined in: [lib/kv.ts:137](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L137)
+Defined in: [lib/kv.ts:157](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L157)
 
 替换一个存在的值
 
@@ -1004,7 +1040,7 @@ Defined in: [lib/kv.ts:137](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **rPop**(`key`): `Promise`\<`string` \| `false` \| `null`\>
 
-Defined in: [lib/kv.ts:823](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L823)
+Defined in: [lib/kv.ts:843](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L843)
 
 #### Parameters
 
@@ -1022,7 +1058,7 @@ Defined in: [lib/kv.ts:823](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **rPush**(`key`, `values`): `Promise`\<`number` \| `false`\>
 
-Defined in: [lib/kv.ts:784](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L784)
+Defined in: [lib/kv.ts:804](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L804)
 
 #### Parameters
 
@@ -1044,7 +1080,7 @@ Defined in: [lib/kv.ts:784](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **scan**(`cursor?`, `pattern?`, `count?`): `Promise`\<`false` \| `IScanResult`\<`string`\>\>
 
-Defined in: [lib/kv.ts:504](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L504)
+Defined in: [lib/kv.ts:524](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L524)
 
 根据条件获取服务器上的 keys
 
@@ -1076,7 +1112,7 @@ Defined in: [lib/kv.ts:504](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **set**(`key`, `val`, `ttl?`, `mod?`): `Promise`\<`boolean`\>
 
-Defined in: [lib/kv.ts:91](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L91)
+Defined in: [lib/kv.ts:111](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L111)
 
 设定一个值
 
@@ -1112,7 +1148,7 @@ Defined in: [lib/kv.ts:91](https://github.com/maiyunnet/kebab/blob/master/lib/kv
 
 > **ttl**(`key`): `Promise`\<`number` \| `null`\>
 
-Defined in: [lib/kv.ts:243](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L243)
+Defined in: [lib/kv.ts:263](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L263)
 
 获取相应的剩余有效期秒数
 
@@ -1136,7 +1172,7 @@ Defined in: [lib/kv.ts:243](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **zAdd**(`key`, `score`, `member`): `Promise`\<`boolean`\>
 
-Defined in: [lib/kv.ts:884](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L884)
+Defined in: [lib/kv.ts:904](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L904)
 
 添加有序集合元素（单个元素）
 
@@ -1168,7 +1204,7 @@ key 名
 
 > **zAdd**(`key`, `elements`, `options`): `Promise`\<`number` \| `false`\>
 
-Defined in: [lib/kv.ts:891](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L891)
+Defined in: [lib/kv.ts:911](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L911)
 
 添加有序集合元素（多个元素，含 INCR 选项）
 
@@ -1200,7 +1236,7 @@ key 名
 
 > **zAdd**(`key`, `elements`, `options`): `Promise`\<`number` \| `false` \| `null`\>
 
-Defined in: [lib/kv.ts:898](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L898)
+Defined in: [lib/kv.ts:918](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L918)
 
 添加有序集合元素（多个元素，含 INCR 选项，可空）
 
@@ -1232,7 +1268,7 @@ key 名
 
 > **zAdd**(`key`, `elements`, `options?`): `Promise`\<`number` \| `false`\>
 
-Defined in: [lib/kv.ts:905](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L905)
+Defined in: [lib/kv.ts:925](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L925)
 
 添加有序集合元素（多个元素）
 
@@ -1266,7 +1302,7 @@ key 名
 
 > **zRangeWithScores**(`key`, `start`, `stop`, `options?`): `Promise`\<`false` \| `object`[]\>
 
-Defined in: [lib/kv.ts:926](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L926)
+Defined in: [lib/kv.ts:946](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L946)
 
 #### Parameters
 
@@ -1296,7 +1332,7 @@ Defined in: [lib/kv.ts:926](https://github.com/maiyunnet/kebab/blob/master/lib/k
 
 > **zRem**(`key`, `members`): `Promise`\<`number` \| `false`\>
 
-Defined in: [lib/kv.ts:951](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L951)
+Defined in: [lib/kv.ts:971](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L971)
 
 #### Parameters
 
