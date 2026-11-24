@@ -186,33 +186,13 @@ export class Kv {
      * @param val
      */
     public async prepend(key: string, val: string): Promise<boolean> {
-        const conn = await this._getConnection();
-        if (!conn) {
-            return false;
-        }
-        try {
-            const script: string = `local val = redis.call('GET', KEYS[1])
-if (val == false) then
+        const script = `local value = redis.call('GET', KEYS[1])
+if not value then
     return 0
 end
-local r = redis.call('SET', KEYS[1], ARGV[1]..val)
-if (r) then
-    return 1
-else
-    return 0
-end`;
-            let r = await conn.evalSHA('ea360f3f6508a243824ecda6be15db56df217873', [this._etc.pre + key], [val]);
-            r = parseInt(r);
-            if (r <= 0) {
-                await conn.scriptLoad(script);
-                r = await conn.evalSHA('ea360f3f6508a243824ecda6be15db56df217873', [this._etc.pre + key], [val]);
-                r = parseInt(r);
-            }
-            return r > 0 ? true : false;
-        }
-        catch {
-            return false;
-        }
+redis.call('SET', KEYS[1], ARGV[1] .. value)
+return 1`;
+        return await this.eval(script, [this._etc.pre + key], [val]) === 1;
     }
 
     /**
