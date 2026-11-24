@@ -3,7 +3,9 @@
  * Date: 2025-9-25 16:49:45
  * Last: 2025-9-25 16:49:48
  */
+// --- 系统 ---
 import net from 'net';
+// --- 库和定义 ---
 import * as lUndici from '#kebab/lib/undici.js';
 import * as lTime from '#kebab/lib/time.js';
 import * as lWs from '#kebab/lib/ws.js';
@@ -11,10 +13,13 @@ import * as lCore from '#kebab/lib/core.js';
 import * as lCokie from '#kebab/lib/cookie.js';
 
 export interface IRwebsocketOptions {
-    /** --- 秒数 --- */
+    /** --- 超时秒数 --- */
     'timeout'?: number;
+    /** --- 自定义域名到 IP 映射 --- */
     'hosts'?: Record<string, string>;
+    /** --- 使用的本地网卡 IP --- */
     'local'?: string;
+    /** --- 握手请求头 --- */
     'headers'?: lUndici.THttpHeaders;
     /** --- cookie 托管对象 --- */
     'cookie'?: Record<string, lCokie.ICookie>;

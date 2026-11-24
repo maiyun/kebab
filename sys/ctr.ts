@@ -3,10 +3,13 @@
  * Date: 2020-3-14 17:24:38
  * Last: 2020-3-30 15:31:40, 2022-07-22 16:59:00, 2022-09-12 23:51:56, 2022-09-23 15:53:58, 2022-12-29 01:18:08, 2023-2-28 20:07:57, 2023-12-27 18:39:35, 2024-3-1 19:38:53, 2024-4-9 16:03:58, 2025-2-12 18:55:44, 2025-6-12 16:56:08, 2026-8-22
  */
+// --- 系统 ---
 import * as http from 'http';
 import * as http2 from 'http2';
+// --- 第三方 ---
 import ejs from 'ejs';
 import type * as v from 'valibot';
+// --- 库和定义 ---
 import * as kebab from '#kebab/index.js';
 import * as lCore from '#kebab/lib/core.js';
 import * as lFs from '#kebab/lib/fs.js';
@@ -64,8 +67,8 @@ export interface IValibotOptions<TIssue extends v.BaseIssue<unknown>> {
 
 /** --- XSRF 校验失败的问题描述 --- */
 export interface IValibotXsrfIssue extends v.BaseIssue<unknown> {
-    readonly kind: 'validation';
-    readonly type: 'xsrf';
+    readonly 'kind': 'validation';
+    readonly 'type': 'xsrf';
 }
 
 /** --- 带 XSRF 检测的 Valibot 同步校验选项 --- */
@@ -85,17 +88,17 @@ export type TValibotResult<
     TSchema extends v.GenericSchema,
     TIssue extends v.BaseIssue<unknown> = v.InferIssue<TSchema>
 > = {
-    readonly typed: true;
-    readonly success: true;
-    readonly output: v.InferOutput<TSchema>;
-    readonly issues: undefined;
-    readonly response: undefined;
+    readonly 'typed': true;
+    readonly 'success': true;
+    readonly 'output': v.InferOutput<TSchema>;
+    readonly 'issues': undefined;
+    readonly 'response': undefined;
 } | {
-    readonly typed: boolean;
-    readonly success: false;
-    readonly output: undefined;
-    readonly issues: [TIssue, ...TIssue[]];
-    readonly response: kebab.Json[];
+    readonly 'typed': boolean;
+    readonly 'success': false;
+    readonly 'output': undefined;
+    readonly 'issues': [TIssue, ...TIssue[]];
+    readonly 'response': kebab.Json[];
 };
 
 /** --- React SSR 页面选项 --- */
@@ -665,9 +668,8 @@ export class Ctr {
         input: unknown,
         options?: IValibotXOptions<v.InferIssue<TSchema>>
     ): TValibotResult<TSchema, v.InferIssue<TSchema> | IValibotXsrfIssue> {
-        /** --- 用户提交的 XSRF token --- */
+        // --- 从输入对象中提取并剥离 _xsrf，避免污染业务 schema ---
         let submittedXsrf: unknown;
-        /** --- 移除 XSRF 传输字段后交给业务 schema 的输入 --- */
         let schemaInput = input;
         if ((typeof input === 'object') && (input !== null) && !Array.isArray(input)) {
             const inputRecord = input as Record<string, unknown>;
@@ -675,8 +677,9 @@ export class Ctr {
             schemaInput = { ...inputRecord };
             delete (schemaInput as Record<string, unknown>)['_xsrf'];
         }
+
+        // --- 校验 XSRF token ---
         if (!options?.ignoreXsrf) {
-            /** --- Cookie 中应匹配的 XSRF token --- */
             const expectedXsrf = this._cookie['XSRF-TOKEN'];
             if (!expectedXsrf || (submittedXsrf !== expectedXsrf)) {
                 const issue: IValibotXsrfIssue = {

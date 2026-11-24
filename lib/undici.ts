@@ -1,8 +1,10 @@
-import * as undici from 'undici';
+// --- 系统 ---
 import * as stream from 'stream';
 import * as http from 'http';
 import * as http2 from 'http2';
 import * as dns from 'dns';
+// --- 第三方 ---
+import * as undici from 'undici';
 // --- 库和定义 ---
 import * as kebab from '#kebab/index.js';
 import * as lFs from '#kebab/lib/fs.js';
@@ -678,14 +680,12 @@ export async function request(
     await req.body.dump();
     return request(nextUrl, nextData, {
         ...opt,
-        ...{
-            'method': nextMethod,
-            'type': type,
-            'timeout': timeout,
-            'follow': follow - 1,
-            'hosts': hosts,
-            'headers': headers,
-        },
+        'method': nextMethod,
+        'type': type,
+        'timeout': timeout,
+        'follow': follow - 1,
+        'hosts': hosts,
+        'headers': headers,
     });
 }
 
@@ -743,7 +743,7 @@ export async function mproxy(
     const rres = await request(get['url'], req, {
         ...opt,
         'hosts': lText.logicalOr(hosts, opt.hosts),
-        headers,
+        'headers': headers,
     });
     const stream = rres.getRawStream();
     if (!stream) {
@@ -858,7 +858,7 @@ export async function rproxy(
         // --- 发起请求（opt.body 优先于原始 req 流） ---
         const rres = await request(proxyUrl, opt.body ?? req, {
             ...opt,
-            headers,
+            'headers': headers,
         });
         const stream = rres.getRawStream();
         if (!stream) {
@@ -963,10 +963,13 @@ export interface IMproxyOptions {
     'proxyMode'?: 'passthrough' | 'request';
     /** --- 秒数，默认 300 秒 --- */
     'timeout'?: number;
+    /** --- 追踪 location 次数，0 为不追踪，默认为 0 --- */
     'follow'?: number;
     /** --- 自定义 host 映射，如 {'www.maiyun.net': '127.0.0.1'}，或全部映射到一个 host --- */
     'hosts'?: Record<string, string> | string;
+    /** --- 使用的本地网卡 IP --- */
     'local'?: string;
+    /** --- 自定义请求头 --- */
     'headers'?: THttpHeaders;
     /** --- 空闲连接允许复用的最长秒数；非正数或无效值按未设置处理；默认无服务端提示时为 4 秒，有提示时采用提示值减 2 秒且最多 600 秒 --- */
     'keepAliveTimeout'?: number;
@@ -982,10 +985,13 @@ export interface IMproxyOptions {
 export interface IRproxyOptions extends lProxy.IProxyHeaderOptions {
     /** --- 秒数，默认 300 秒 --- */
     'timeout'?: number;
+    /** --- 追踪 location 次数，0 为不追踪，默认为 0 --- */
     'follow'?: number;
     /** --- 自定义 host 映射，如 {'www.maiyun.net': '127.0.0.1'}，或全部映射到一个 host --- */
     'hosts'?: Record<string, string> | string;
+    /** --- 使用的本地网卡 IP --- */
     'local'?: string;
+    /** --- 自定义请求头 --- */
     'headers'?: THttpHeaders;
     /** --- 空闲连接允许复用的最长秒数；非正数或无效值按未设置处理；默认无服务端提示时为 4 秒，有提示时采用提示值减 2 秒且最多 600 秒 --- */
     'keepAliveTimeout'?: number;
@@ -1010,9 +1016,7 @@ export interface IRproxyOptions extends lProxy.IProxyHeaderOptions {
 }
 
 /** --- http headers --- */
-/* eslint-disable @typescript-eslint/naming-convention */
 export type THttpHeaders = http.IncomingHttpHeaders & {
     'http-code'?: number;
     'http-url'?: string;
 };
-/* eslint-enable */

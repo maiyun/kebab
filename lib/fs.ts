@@ -3,12 +3,15 @@
  * Date: 2019-3-29 23:03:07
  * Last: 2020-3-11 22:21:51, 2022-12-29 01:18:25, 2023-12-13 20:50:09
  */
+// --- 系统 ---
 import * as fs from 'fs';
 import * as crypto from 'crypto';
 import * as http from 'http';
 import * as http2 from 'http2';
 import * as stream from 'stream';
+// --- 第三方 ---
 import * as mime from '@litert/mime';
+// --- 库和定义 ---
 import * as lText from './text.js';
 import * as lCore from './core.js';
 import * as lZlib from './zlib.js';
@@ -36,10 +39,10 @@ export async function getContent(path: string, options?: BufferEncoding | {
     const { encoding, start, end } = typeof options === 'string' ? { 'encoding': options } : options ?? {};
     try {
         if (start === undefined && end === undefined) {
-            return await fs.promises.readFile(path, { encoding });
+            return await fs.promises.readFile(path, { 'encoding': encoding });
         }
         const data: Buffer[] = [];
-        for await (const chunk of createReadStream(path, { start, end }) as AsyncIterable<Buffer>) {
+        for await (const chunk of createReadStream(path, { 'start': start, 'end': end }) as AsyncIterable<Buffer>) {
             data.push(chunk);
         }
         const content = Buffer.concat(data);
@@ -385,14 +388,16 @@ interface IFileRange {
  * @returns 区间列表；false 表示全部越界或区间过多；null 表示忽略请求头
  */
 function parseFileRanges(value: string, size: number): IFileRange[] | false | null {
+    // --- 校验单位与分段上限，防止客户端利用大量小区间放大读取开销 ---
     if (!/^bytes=/i.test(value) || size === 0 || !Number.isSafeInteger(size)) {
         return null;
     }
     const values = value.slice(6).split(',');
-    // --- 防止客户端利用大量小区间放大文件读取与响应开销 ---
     if (value.length > 8192 || values.length > 16) {
         return false;
     }
+
+    // --- 逐段解析字节区间（用 BigInt 避免超大偏移被浮点取整） ---
     const total = BigInt(size);
     const ranges: IFileRange[] = [];
     let count = 0;
@@ -402,11 +407,10 @@ function parseFileRanges(value: string, size: number): IFileRange[] | false | nu
             continue;
         }
         const match = /^(\d*)-(\d*)$/.exec(part);
-        if (!match || match[1] === '' && match[2] === '') {
+        if (!match || (match[1] === '' && match[2] === '')) {
             return null;
         }
         ++count;
-        // --- 先以 BigInt 解析，避免超大偏移被浮点取整后读错字节 ---
         const start = match[1] !== '' ? BigInt(match[1]) : total - BigInt(match[2]);
         const end = match[1] !== '' && match[2] !== '' ? BigInt(match[2]) : total - 1n;
         if (match[1] !== '' && match[2] !== '' && end < start) {
@@ -418,7 +422,7 @@ function parseFileRanges(value: string, size: number): IFileRange[] | false | nu
         ranges.push({
             'start': Number(start < 0n ? 0n : start),
             'end': Number(end >= total ? total - 1n : end),
-            'order': count
+            'order': count,
         });
     }
     if (count === 0) {
@@ -427,6 +431,8 @@ function parseFileRanges(value: string, size: number): IFileRange[] | false | nu
     if (ranges.length === 0) {
         return false;
     }
+
+    // --- 合并重叠或相邻区间，并按客户端请求顺序返回 ---
     ranges.sort((a, b) => a.start - b.start);
     const merged: IFileRange[] = [];
     for (const range of ranges) {
@@ -506,13 +512,15 @@ export async function readToResponse(path: string,
     res.setHeader('accept-ranges', 'bytes');
     if (canCompress) {
         const vary = res.getHeader('vary');
-        const values = (Array.isArray(vary) ? vary.join(',') : String(vary ?? '')).split(',').map((item) => item.trim()).filter(Boolean);
+        const rawVary = Array.isArray(vary) ? vary.join(',') : String(vary ?? '');
+        const values = rawVary.split(',').map((item) => item.trim()).filter(Boolean);
         if (!values.some((item) => item === '*' || item.toLowerCase() === 'accept-encoding')) {
             values.push('Accept-Encoding');
             res.setHeader('vary', values.join(', '));
         }
     }
-    // --- 这些文件可能需要缓存 ---
+
+    // --- 设置静态文件缓存策略 ---
     if (['htm', 'html', 'css', 'js', 'mjs', 'xml', 'jpg', 'jpeg', 'svg', 'gif', 'png', 'json'].includes(mimeData.extension)) {
         /** --- 静态文件默认缓存秒数 --- */
         const cacheTTL = 600;
@@ -522,20 +530,33 @@ export async function readToResponse(path: string,
     else {
         res.setHeader('cache-control', 'no-cache, must-revalidate');
     }
-    // --- 条件请求优先于 Range；弱 ETag 只能用于缓存验证，不能用于 If-Match ---
+
+    // --- 条件请求校验（优先于 Range；弱 ETag 只能用于缓存验证，不能用于 If-Match） ---
     const match = req.headers['if-match'];
     const unmodifiedSince = req.headers['if-unmodified-since'];
-    if (match !== undefined ? match.trim() !== '*' : unmodifiedSince !== undefined && modifiedTime > Date.parse(unmodifiedSince)) {
+    const failedPrecondition = match !== undefined
+        ? match.trim() !== '*'
+        : (unmodifiedSince !== undefined && modifiedTime > Date.parse(unmodifiedSince));
+    if (failedPrecondition) {
         res.setHeader('content-length', 0);
         lCore.writeHead(res, 412);
         res.end();
         return;
     }
+
+    // --- 缓存未变更校验（If-None-Match / If-Modified-Since） ---
     const noneMatch = req.headers['if-none-match'];
     const modifiedSince = req.headers['if-modified-since'];
     const isRead = req.method === 'GET' || req.method === 'HEAD';
-    const unchanged = noneMatch !== undefined ? noneMatch.trim() === '*' || noneMatch.split(',').some((item) => item.trim().replace(/^W\//, '') === hash.slice(2)) :
-        isRead && modifiedSince !== undefined && modifiedTime <= Date.parse(modifiedSince);
+    let unchanged = false;
+    if (noneMatch !== undefined) {
+        const tag = hash.slice(2);
+        unchanged = noneMatch.trim() === '*' ||
+            noneMatch.split(',').some((item) => item.trim().replace(/^W\//, '') === tag);
+    }
+    else if (isRead && modifiedSince !== undefined) {
+        unchanged = modifiedTime <= Date.parse(modifiedSince);
+    }
     if (unchanged) {
         if (!isRead) {
             res.setHeader('content-length', 0);
@@ -544,15 +565,24 @@ export async function readToResponse(path: string,
         res.end();
         return;
     }
+
+    // --- 解析 Range 与 If-Range ---
     const contentType = mimeData.mime + charset;
     res.setHeader('content-type', contentType);
     const rangeHeader = req.headers['range'];
     const ifRange = req.headers['if-range'];
     // --- 日期必须精确匹配且至少早一秒；压缩与原始字节共享的日期不能作强校验，避免跨编码续传 ---
-    const rangeMatches = ifRange === undefined || typeof ifRange === 'string' && !ifRange.includes('"') &&
-        Date.parse(ifRange) === modifiedTime && modifiedTime <= Date.now() - 1_000 && !canCompress;
-    const ranges = req.method === 'GET' && rangeHeader !== undefined &&
-        rangeMatches ? parseFileRanges(rangeHeader, stat.size) : null;
+    const rangeMatches = ifRange === undefined || (
+        typeof ifRange === 'string' &&
+        !ifRange.includes('"') &&
+        Date.parse(ifRange) === modifiedTime &&
+        modifiedTime <= Date.now() - 1_000 &&
+        !canCompress
+    );
+    let ranges: IFileRange[] | false | null = null;
+    if (req.method === 'GET' && rangeHeader !== undefined && rangeMatches) {
+        ranges = parseFileRanges(rangeHeader, stat.size);
+    }
     if (ranges === false) {
         res.setHeader('content-range', `bytes */${stat.size}`);
         res.setHeader('content-length', 0);
@@ -560,10 +590,10 @@ export async function readToResponse(path: string,
         res.end();
         return;
     }
+
     // --- 判断客户端支持的压缩模式 ---
     const encoding = req.headers['accept-encoding'] ?? '';
     if (ranges === null && canCompress && encoding !== '') {
-        // --- 压缩 ---
         const compress = await lZlib.compress(encoding, await getContent(path));
         if (compress) {
             res.setHeader('content-encoding', compress.type);
@@ -573,14 +603,22 @@ export async function readToResponse(path: string,
             return;
         }
     }
+
+    // --- 设置完整响应或 206 部分响应头 ---
     let headers: Buffer[] = [];
     let footer = Buffer.alloc(0);
     if (ranges !== null && ranges.length > 1) {
         const boundary = `kebab-${crypto.randomBytes(16).toString('hex')}`;
-        headers = ranges.map((range) => Buffer.from(`--${boundary}\r\nContent-Type: ${contentType}\r\nContent-Range: bytes ${range.start}-${range.end}/${stat.size}\r\n\r\n`));
+        headers = ranges.map((range) => Buffer.from(
+            `--${boundary}\r\nContent-Type: ${contentType}\r\nContent-Range: bytes ${range.start}-${range.end}/${stat.size}\r\n\r\n`
+        ));
         footer = Buffer.from(`--${boundary}--\r\n`);
         res.setHeader('content-type', `multipart/byteranges; boundary=${boundary}`);
-        res.setHeader('content-length', ranges.reduce((length, range, i) => length + headers[i].length + (range.end - range.start + 1) + 2, footer.length));
+        const totalLength = ranges.reduce(
+            (length, range, i) => length + headers[i].length + (range.end - range.start + 1) + 2,
+            footer.length
+        );
+        res.setHeader('content-length', totalLength);
     }
     else if (ranges !== null) {
         res.setHeader('content-range', `bytes ${ranges[0].start}-${ranges[0].end}/${stat.size}`);
@@ -594,8 +632,11 @@ export async function readToResponse(path: string,
         res.end();
         return;
     }
-    const source = ranges !== null && ranges.length > 1 ?
-        stream.Readable.from(readFileRanges(path, ranges, headers, footer)) : createReadStream(path, ranges?.[0]);
+
+    // --- 流式输出文件内容 ---
+    const source = ranges !== null && ranges.length > 1
+        ? stream.Readable.from(readFileRanges(path, ranges, headers, footer))
+        : createReadStream(path, ranges?.[0]);
     try {
         await stream.promises.pipeline(source, res instanceof http2.Http2ServerResponse ? (res.stream ?? res) : res);
     }

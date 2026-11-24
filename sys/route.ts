@@ -1065,13 +1065,13 @@ export interface IFormDataError {
 /** --- multipart 文件处理及失败通知 --- */
 export interface IFormDataEvents {
     /** --- 文件开始上传时触发，返回 true 则跳过该文件的保存 --- */
-    onfilestart?: (name: string) => boolean | undefined;
+    'onfilestart'?: (name: string) => boolean | undefined;
     /** --- 文件上传时触发，仅 start 返回 true 时触发 --- */
-    onfiledata?: (chunk: Buffer) => void;
+    'onfiledata'?: (chunk: Buffer) => void;
     /** --- 文件上传结束时触发，仅 start 返回 true 时触发 --- */
-    onfileend?: () => void;
+    'onfileend'?: () => void;
     /** --- 首次失败时调用一次，getFormData 返回 false；若连接已断开，可能无法回复客户端 --- */
-    onerror?: (error: IFormDataError) => void;
+    'onerror'?: (error: IFormDataError) => void;
 }
 
 /** --- multipart 上传限制 --- */
@@ -1187,11 +1187,7 @@ export function getFormData(
         /** --- 本次上传是否已经失败，失败后返回 false --- */
         let rejected: boolean = false;
 
-        /**
-         * --- 拒绝本次上传，继续读取请求以便正常返回错误响应 ---
-         * @param error 首次失败原因及对应限制
-         * @returns 无返回值
-         */
+        // --- 拒绝本次上传，继续消费请求流以便正常返回错误响应 ---
         function reject(error: IFormDataError): void {
             if (rejected) {
                 return;
@@ -1212,11 +1208,7 @@ export function getFormData(
         /** --- 已安排删除的文件，避免给同一个文件重复添加 close 回调 --- */
         const discardedFiles = new Set<string>();
 
-        /**
-         * --- 等文件流关闭后再删临时文件，避免文件还没创建就先删 ---
-         * @param filePath 本次上传创建的临时文件路径
-         * @returns 无返回值
-         */
+        // --- 等文件流关闭后再删除临时文件 ---
         function discardFile(filePath: string): void {
             if (discardedFiles.has(filePath)) {
                 return;

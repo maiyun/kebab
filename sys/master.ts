@@ -3,6 +3,7 @@
  * Date: 2019-5-2 21:03:42
  * Last: 2020-3-7 10:33:17, 2022-07-22 13:40:10, 2022-09-06 22:40:58, 2024-2-7 01:44:59, 2024-7-2 15:17:09, 2025-6-13 13:06:43, 2025-12-5 13:15:03, 2026-3-22 00:00:00, 2026-4-30 13:49:44
  */
+// --- 系统 ---
 import cluster from 'cluster';
 import * as os from 'os';
 import * as fs from 'fs';
@@ -46,6 +47,31 @@ const replaceVhost: (
  * @returns true 表示所有文件可写入；false 表示整批拒绝，不修改旧配置
  */
 const isVhostFiles: (files: unknown) => files is Record<string, string> = masterVhost.isFiles;
+
+/** --- kebab 子项目中仅允许部署的子文件夹名集合 --- */
+const KEBAB_ALLOWED_DIRS = new Set(['ctr', 'data', 'stc', 'view', 'lib', 'abox']);
+
+/** --- 常见开发、依赖、缓存、构建产物目录不参与部署 --- */
+const DEPLOY_EXCLUDE_DIRS = new Set([
+    '.git',
+    '.svn',
+    '.hg',
+    '.vscode',
+    '.idea',
+    '.history',
+    'node_modules',
+    'bower_components',
+    '.cache',
+    '.parcel-cache',
+    '.turbo',
+    '.next',
+    '.nuxt',
+    '.vite',
+    'coverage',
+    '.nyc_output',
+    'tmp',
+    'temp',
+]);
 
 /** --- 当前运行中的子进程列表 --- */
 const workerList: Record<string, {
@@ -550,35 +576,29 @@ function createRpcListener(): void {
                             ls[normalizedPath] = rawList[archivePath];
                         }
                         // --- 预扫描：收集 .cga 锁定目录和 kebab 子项目目录 ---
-                        /** --- .cga 锁定的目录集合，key 格式为"父路径/目录名/"（不含开头/，含尾部/），例如 "www/pika/" --- */
+                        /** --- .cga 锁定的目录集合，格式如 "www/pika/" --- */
                         const cgaLockedDirs = new Set<string>();
-                        /** --- 含有 kebab.json 的目录路径集合（不含开头/，含尾部/，根目录为空字符串） --- */
+                        /** --- 含有 kebab.json 的目录集合，格式如 "www/pika/"，根目录为空字符串 --- */
                         const kebabProjectDirs = new Set<string>();
-                        /** --- 本次部署涉及到的目录路径集合（不含开头/，含尾部/，根目录为空字符串） --- */
+                        /** --- 本次部署涉及的目录集合 --- */
                         const touchedDirs = new Set<string>();
                         for (const scanPath in ls) {
-                            /** --- 纯路径中最后一个 / 的位置索引 --- */
                             const scanLio = scanPath.lastIndexOf('/');
-                            /** --- 纯路径，不以 / 开头，以 / 结尾，若是根路径就是空字符串，例如 "www/pika/" --- */
                             const scanPat = scanPath.slice(1, scanLio + 1);
-                            /** --- 纯文件名，例如 "index.ts" 或 "pika.cga" --- */
                             const scanFname = scanPath.slice(scanLio + 1);
                             touchedDirs.add(scanPat);
                             if (scanFname.endsWith('.cga')) {
-                                // --- 记录 .cga 锁定的同级目录（去掉 .cga 后缀的名字即为被锁定的目录名）---
                                 cgaLockedDirs.add(scanPat + scanFname.slice(0, -4) + '/');
                             }
                             if (scanFname === 'kebab.json') {
-                                // --- 记录含有 kebab.json 的目录（即 kebab 子项目根目录）---
                                 kebabProjectDirs.add(scanPat);
                             }
                         }
+
                         // --- 补充扫描目标目录中现存的 kebab.json，兼容压缩包未携带 kebab.json 的情况 ---
                         for (const dir of touchedDirs) {
-                            /** --- 把目录拆成各级目录名，先检查当前目录，再一层层往上找 --- */
                             const dirs = dir ? dir.split('/').filter(Boolean) : [];
                             for (let i = dirs.length; i >= 0; --i) {
-                                /** --- 当前要检查的目录路径，不含开头/，含尾部/，根目录为空字符串 --- */
                                 const currentDir = i ? dirs.slice(0, i).join('/') + '/' : '';
                                 if (kebabProjectDirs.has(currentDir)) {
                                     break;
@@ -589,39 +609,14 @@ function createRpcListener(): void {
                                 }
                             }
                         }
-                        /** --- kebab 子项目中仅允许部署的子文件夹名集合 --- */
-                        const KEBAB_ALLOWED_DIRS = new Set(['ctr', 'data', 'stc', 'view', 'lib', 'abox']);
-                        /** --- 常见开发、依赖、缓存、构建产物目录不参与部署 --- */
-                        const DEPLOY_EXCLUDE_DIRS = new Set([
-                            '.git',
-                            '.svn',
-                            '.hg',
-                            '.vscode',
-                            '.idea',
-                            '.history',
-                            'node_modules',
-                            'bower_components',
-                            '.cache',
-                            '.parcel-cache',
-                            '.turbo',
-                            '.next',
-                            '.nuxt',
-                            '.vite',
-                            'coverage',
-                            '.nyc_output',
-                            'tmp',
-                            'temp',
-                        ]);
+
+                        // --- 按安全与过滤规则逐项写入文件 ---
                         for (const archivePath in ls) {
-                            /** --- 纯路径中最后一个 / 的位置索引 --- */
                             const lio = archivePath.lastIndexOf('/');
-                            /** --- 纯路径，不以 / 开头，以 / 结尾，若是根路径就是空字符串，例如 "www/pika/ctr/" --- */
                             const pat = archivePath.slice(1, lio + 1);
-                            /** --- 纯文件名，例如 "api.js" --- */
                             const fname = archivePath.slice(lio + 1);
                             const dirs = archivePath.slice(1).split('/').slice(0, -1);
                             if (dirs.some(seg => DEPLOY_EXCLUDE_DIRS.has(seg))) {
-                                // --- 开发、依赖、缓存、构建产物目录不覆盖 ---
                                 continue;
                             }
                             if (dirs.some((seg, index) => seg === 'abox' && ['test', 'tests'].includes(dirs[index + 1]))) {
@@ -629,26 +624,27 @@ function createRpcListener(): void {
                                 continue;
                             }
                             if (fname === 'kebab.json' && hasSensitiveConfig(ls[archivePath])) {
-                                // --- 包含密码或密钥的 kebab.json 不覆盖，避免部署包覆盖现有敏感配置 ---
+                                // --- 包含密码或密钥的 kebab.json 不覆盖 ---
                                 continue;
                             }
                             if (pat === 'conf/' && fname === 'config.json') {
-                                // --- 全局配置文件不能覆盖 ---
                                 continue;
                             }
-                            if (fname.endsWith('.js.map') || fname.endsWith('.ts') || fname.endsWith('.tsx') || fname.endsWith('.scss') || fname.endsWith('.gitignore') || fname.endsWith('.DS_Store')) {
-                                // --- 测试或开发文件不覆盖 ---
+                            if (
+                                fname.endsWith('.js.map') ||
+                                fname.endsWith('.ts') ||
+                                fname.endsWith('.tsx') ||
+                                fname.endsWith('.scss') ||
+                                fname.endsWith('.gitignore') ||
+                                fname.endsWith('.DS_Store') ||
+                                fname === 'AGENTS.md'
+                            ) {
                                 continue;
                             }
-                            if (fname === 'AGENTS.md') {
-                                // --- 排除文件不部署 ---
-                                continue;
-                            }
-                            // --- 规则 1：若同级目录存在 xxx.cga，则 xxx 目录下所有内容不部署 ---
+
+                            // --- 规则 1：若同级或上级目录存在 xxx.cga，则 xxx 目录下所有内容不部署 ---
                             if (pat) {
-                                /** --- 当前目录或上级目录是否有同名 .cga 文件 --- */
                                 let cgaBlocked = false;
-                                /** --- 逐层拼出的目录路径，如 a/、a/b/，检查是否有同名 .cga 文件 --- */
                                 let accumulated = '';
                                 for (const seg of pat.split('/').filter(Boolean)) {
                                     accumulated += seg + '/';
@@ -661,25 +657,22 @@ function createRpcListener(): void {
                                     continue;
                                 }
                             }
-                            // --- 规则 2：kebab 子项目目录中，仅允许部署 ctr/data/stc/view/lib/abox 子文件夹内的内容 ---
+
+                            // --- 规则 2：kebab 子项目目录中，仅允许部署 ctr/data/stc/view/lib/abox 子目录 ---
                             if (kebabProjectDirs.size > 0) {
-                                // --- 同时属于多个 Kebab 项目时，按最外层项目的部署规则检查 ---
-                                // --- 例如根项目不允许 backup/，backup/ 自带 kebab.json 也不能绕过 ---
-                                /** --- 当前文件所属的最外层 Kebab 项目目录，找不到时为 null --- */
+                                // --- 同时属于多个 Kebab 项目时，按最外层项目规则检查 ---
                                 let shortestMatch: string | null = null;
                                 for (const kdir of kebabProjectDirs) {
-                                    /** --- kdir 是否比已选的项目目录更靠外（路径更短）--- */
-                                    const isShallower = shortestMatch === null || kdir.length < shortestMatch.length;
-                                    if (pat.startsWith(kdir) && isShallower) {
+                                    if (
+                                        pat.startsWith(kdir) &&
+                                        (shortestMatch === null || kdir.length < shortestMatch.length)
+                                    ) {
                                         shortestMatch = kdir;
                                     }
                                 }
                                 if (shortestMatch !== null) {
-                                    // --- 取相对于 kebab 项目目录的路径，检查第一级子目录 ---
-                                    /** --- 相对路径，例如若 pat 为 "www/pika/ctr/" 且 shortestMatch 为 "www/pika/"，则 relPath 为 "ctr/" --- */
                                     const relPath = pat.slice(shortestMatch.length);
                                     if (relPath) {
-                                        /** --- 路径的第一级子目录名，例如 "ctr" 或 "data"，用于判断是否在允许列表中 --- */
                                         const firstSeg = relPath.split('/')[0];
                                         if (!KEBAB_ALLOWED_DIRS.has(firstSeg)) {
                                             continue;
@@ -816,11 +809,7 @@ function createRpcListener(): void {
                     const list: string[][] | kebab.Json[] = [];
                     let total = 0;
                     let skipHeader = format === 'csv';
-                    /**
-                     * --- 统计匹配行数并取出当前页，跳过 CSV 表头 ---
-                     * @param line 不含换行符的日志行
-                     * @returns 无返回值
-                     */
+                    // --- 统计匹配行数并取出当前页，跳过 CSV 表头 ---
                     const consumeLine = (line: string): void => {
                         if (skipHeader) {
                             skipHeader = false;
@@ -873,24 +862,35 @@ function createRpcListener(): void {
                     return;
                 }
                 case 'monitor-events': {
+                    // --- 按天分页查询监控事件摘要 ---
                     const result = await sMonitorFiles.getEvents(
-                        path.join(kebab.LOG_CWD, 'monitor'), msg.path ?? lTime.format(null, 'Y/m/d'),
-                        msg.offset ?? 0, msg.limit ?? 20,
+                        path.join(kebab.LOG_CWD, 'monitor'),
+                        msg.path ?? lTime.format(null, 'Y/m/d'),
+                        msg.offset ?? 0,
+                        msg.limit ?? 20,
                     );
                     res.setHeader('cache-control', 'no-store');
-                    res.end(lText.stringifyJson(result === false ? { 'result': 0 } : { 'result': 1, ...result }));
+                    res.end(lText.stringifyJson(result === false ? { 'result': 0 } : {
+                        'result': 1,
+                        ...result,
+                    }));
                     return;
                 }
                 case 'monitor-event': {
+                    // --- 查询单条监控事件详情与文件清单 ---
                     const data = await sMonitorFiles.getEvent(path.join(kebab.LOG_CWD, 'monitor'), msg.path);
                     res.setHeader('cache-control', 'no-store');
-                    res.end(lText.stringifyJson(data === false ? { 'result': 0 } : { 'result': 1, data }));
+                    res.end(lText.stringifyJson(data === false ? { 'result': 0 } : {
+                        'result': 1,
+                        'data': data,
+                    }));
                     return;
                 }
                 case 'monitor-file': {
+                    // --- 校验目标诊断文件及预览权限 ---
                     const file = await sMonitorFiles.getFile(path.join(kebab.LOG_CWD, 'monitor'), msg.path);
                     res.setHeader('cache-control', 'no-store');
-                    if (file === false || msg.preview !== undefined && typeof msg.preview !== 'boolean') {
+                    if (file === false || (msg.preview !== undefined && typeof msg.preview !== 'boolean')) {
                         res.writeHead(400);
                         res.end();
                         return;
@@ -905,9 +905,13 @@ function createRpcListener(): void {
                         res.end();
                         return;
                     }
+
+                    // --- 设置响应头并流式输出文件 ---
                     let contentType = 'application/octet-stream';
                     if (msg.preview) {
-                        contentType = file.info.preview === 'json' ? 'application/json; charset=utf-8' : 'text/plain; charset=utf-8';
+                        contentType = file.info.preview === 'json'
+                            ? 'application/json; charset=utf-8'
+                            : 'text/plain; charset=utf-8';
                     }
                     res.setHeader('content-type', contentType);
                     res.setHeader('x-content-type-options', 'nosniff');

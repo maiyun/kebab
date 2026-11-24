@@ -40,10 +40,15 @@ import * as lText from '#kebab/lib/text.js';
 import * as sCtr from '#kebab/sys/ctr.js';
 
 export interface IOptions {
+    /** --- Session 名称，默认取配置 --- */
     'name'?: string;
+    /** --- 有效期秒数，默认 172800 --- */
     'ttl'?: number;
+    /** --- Cookie 是否仅 HTTPS 发送 --- */
     'ssl'?: boolean;
+    /** --- Cookie 生效域名 --- */
     'domain'?: string;
+    /** --- 数据库存储时的表名前缀 --- */
     'sqlPre'?: string;
     /** --- 显式指定 Session ID，优先于请求凭据；空字符串表示新建匿名会话 --- */
     'token'?: string;
@@ -142,7 +147,7 @@ export class Session {
         // --- 初始化 Session 数组 ---
         let session: Record<string, any> = {};
         let needInsert: boolean = false;
-        // --- 有 token 则查看 token 的信息是否存在
+        // --- 有 token 则查看 token 的信息是否存在 ---
         if (this._token !== '') {
             // --- 如果启用了内存加速则在内存找 ---
             if (this._link instanceof lKv.Kv) {

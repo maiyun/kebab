@@ -4,10 +4,12 @@
  * Last: 2024-2-18 18:32:47, 2024-3-16 16:42:27, 2024-5-31 21:36:26, 2024-7-8 00:28:42, 2024-7-19 11:32:43, 2025-6-10 21:45:34, 2025-12-5 23:42:59
  */
 
-// --- 库和定义 ---
+// --- 系统 ---
 import * as stream from 'stream';
+// --- 第三方 ---
 import * as s3 from '@aws-sdk/client-s3';
 import * as ls from '@aws-sdk/lib-storage';
+// --- 库和定义 ---
 import * as sCtr from '#kebab/sys/ctr.js';
 import * as lCore from '#kebab/lib/core.js';
 import * as lText from '#kebab/lib/text.js';
@@ -78,11 +80,13 @@ export interface IPutObjectsItemResult {
 
 export class S3 {
 
+    /** --- S3 客户端实例 --- */
     private readonly _link: s3.S3Client;
 
     /** --- bucket 名 --- */
     private _bucket: string = '';
 
+    /** --- 所属控制器 --- */
     private readonly _ctr: sCtr.Ctr;
 
     public constructor(ctr: sCtr.Ctr, opt: IOptions) {
@@ -155,11 +159,9 @@ export class S3 {
             'signal'?: AbortSignal;
         }, bucket?: string
     ): Promise<s3.CompleteMultipartUploadCommandOutput | false> {
-        /** --- 对象内容类型 --- */
+        // --- 解析上传参数 ---
         let type: string | undefined;
-        /** --- 对象下载方式 --- */
         let disposition: string | undefined;
-        /** --- 调用方传入的取消信号，仅作用于本次上传 --- */
         let signal: AbortSignal | undefined;
         if (typeof length !== 'number') {
             type = length?.type;
@@ -170,40 +172,29 @@ export class S3 {
         }
         bucket ??= this._bucket;
 
-        /** --- 输入流，传入 signal 时在取消或失败后停止读取；字符串与 Buffer 无需释放 --- */
+        // --- 准备取消信号与未完成分片跟踪 ---
         const source = content instanceof stream.Readable ? content : undefined;
-        /**
-         * --- 停止流读取，避免取消时仍阻塞在等待下一块数据的阶段 ---
-         * @returns 无返回值
-         */
         const onAbort = (): void => {
             source?.destroy();
         };
         /** --- 尚未确认合并或清理完成的分片上传 ID，用于失败后的兜底清理 --- */
         let uploadId: string | undefined;
-        /** --- 是否取得有效上传结果，失败时需要释放输入流 --- */
         let success = false;
-        /** --- 分片清理请求的超时毫秒数，避免清理阶段无限等待 --- */
-        const cleanupTimeout = 30000;
+        /** --- 分片清理请求的超时毫秒数 --- */
+        const cleanupTimeout = 30_000;
+
         try {
             if (signal?.aborted) {
                 return false;
             }
             signal?.addEventListener('abort', onAbort, { 'once': true });
-            /** --- 本次上传的客户端入口，共享连接配置但不修改共享客户端的 send --- */
+
+            // --- 传入 signal 时创建独立客户端壳，避免修改共享实例的 send ---
             const client = signal ? Object.create(this._link) as s3.S3Client : this._link;
             if (signal) {
-                /**
-                 * --- 为上传命令传递取消信号，并跟踪未完成的分片上传 ---
-                 * --- Upload.abort() 会提前结束 done()，且不会取消正在发送的请求 ---
-                 * --- 逐条命令传入信号，让 done() 等待分片任务和清理结束 ---
-                 * @param command SDK 上传或分片清理命令；Upload 仅使用 send 的 Promise 调用形式
-                 * @returns SDK 命令结果
-                 */
+                // --- Upload.abort() 不会取消在途请求，这里逐条注入信号并跟踪分片 ID ---
                 client.send = (async (command: Parameters<s3.S3Client['send']>[0]) => {
-                    /** --- 清理请求必须使用独立信号，避免随上传请求一起取消 --- */
                     const isCleanup = command instanceof s3.AbortMultipartUploadCommand;
-                    /** --- 命令成功后再更新分片 ID，失败时保留 ID 供 finally 重试清理 --- */
                     const res = await this._link.send(command, {
                         'abortSignal': isCleanup ? AbortSignal.timeout(cleanupTimeout) : signal,
                     });
@@ -216,7 +207,8 @@ export class S3 {
                     return res;
                 }) as s3.S3Client['send'];
             }
-            /** --- SDK 上传任务，继续由 SDK 管理分片和并发 --- */
+
+            // --- 执行分片上传 ---
             const upload = new ls.Upload({
                 'client': client,
                 'params': {
@@ -226,9 +218,8 @@ export class S3 {
                     'ContentLength': length,
                     'ContentType': type,
                     'ContentDisposition': disposition,
-                }
+                },
             });
-            /** --- 上传结果；取消与上传完成同时发生时仍向调用方返回 false --- */
             const res = await upload.done();
             if (signal?.aborted || !res.Location || !res.Bucket || !res.Key) {
                 return false;
@@ -243,12 +234,11 @@ export class S3 {
             return false;
         }
         finally {
+            // --- 释放监听，并在失败或取消时兜底清理未完成分片 ---
             signal?.removeEventListener('abort', onAbort);
             if (signal && !success) {
                 source?.destroy();
             }
-            // --- SDK 的合并失败分支不会清理分片；SDK 清理失败时也保留 ID，在这里兜底 ---
-            // --- 只清理本次未完成的分片，不删除可能已存在的同名对象 ---
             if (uploadId) {
                 try {
                     await this._link.send(new s3.AbortMultipartUploadCommand({
@@ -307,6 +297,7 @@ export class S3 {
                 }
             }
         };
+        // --- 按并发上限启动 worker 逐项上传 ---
         const workers = Array.from(
             { 'length': Math.min(concurrency, items.length) },
             () => worker()

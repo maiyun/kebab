@@ -1,16 +1,26 @@
 /** --- master 读取落盘监控数据；只读取有界事件 JSON，Profile 和堆快照仅提供文件元数据 --- */
+
+// --- 系统 ---
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import type { Stats } from 'fs';
+// --- 库和定义 ---
 import * as lText from '#kebab/lib/text.js';
 import type { IMonitorEvent, IMonitorEventSummary, IMonitorFile } from '#kebab/lib/core.js';
 
-/** --- 单个事件记录读取上限，避免损坏或异常大的文件占用 master 内存 --- */
+/** --- 单个事件记录读取上限（4MB），避免损坏或异常大的文件占用 master 内存 --- */
 const RECORD_LIMIT = 4 * 1024 * 1024;
-/** --- 小型 JSON/文本预览上限，Profile 和堆快照不预览 --- */
+
+/** --- 小型 JSON/文本预览上限（1MB），Profile 和堆快照不预览 --- */
 export const PREVIEW_LIMIT = 1024 * 1024;
+
+/** --- 日期目录格式，如 2026/10/05 --- */
 const DAY_PATTERN = /^\d{4}\/\d{2}\/\d{2}$/;
+
+/** --- 事件目录名格式，如 123045-pid-1234-1700000000000(-blocked) --- */
 const EVENT_NAME_PATTERN = /^\d{6}-pid-\d+(?:-\d+)?(?:-blocked)?$/;
+
+/** --- 允许读取的诊断文件名白名单 --- */
 const FILE_NAME_PATTERNS = [
     /^(?:event\.json|blocked-event\.json|(?:report|profile)-[\w.-]+\.json)$/,
     /^(?:cpu|blocked-cpu)-[\w.-]+\.cpuprofile$/,
@@ -76,15 +86,17 @@ async function readRecord(directory: string): Promise<{
     for (const name of ['event.json', 'blocked-event.json']) {
         let handle: fs.FileHandle | null = null;
         try {
-            // --- 拒绝事件记录本身的符号链接；读取过程中即使文件增长也不会超过上限 ---
-            const stat = await fs.lstat(path.join(directory, name));
+            // --- 校验文件类型与大小，拒绝符号链接 ---
+            const filePath = path.join(directory, name);
+            const stat = await fs.lstat(filePath);
             if (!stat.isFile() || stat.isSymbolicLink()) {
                 return { 'data': null, 'status': 'unreadable' };
             }
             if (stat.size > RECORD_LIMIT) {
                 return { 'data': null, 'status': 'too-large' };
             }
-            handle = await fs.open(path.join(directory, name), fs.constants.O_RDONLY | fs.constants.O_NOFOLLOW);
+            // --- 读取有界内容并解析 JSON，防止读取过程中文件增长超出上限 ---
+            handle = await fs.open(filePath, fs.constants.O_RDONLY | fs.constants.O_NOFOLLOW);
             const buffer = Buffer.alloc(stat.size + 1);
             const { bytesRead } = await handle.read(buffer, 0, buffer.length, 0);
             if (bytesRead > RECORD_LIMIT) {
@@ -115,11 +127,16 @@ async function readRecord(directory: string): Promise<{
  * @returns 事件摘要
  */
 function summarize(relative: string, record: Awaited<ReturnType<typeof readRecord>>): IMonitorEventSummary {
+    // --- 从相对路径解析基础时间与事件来源 ---
     const [year, month, day, name] = relative.split('/');
     const parts = name.split('-');
-    const time = Number(parts[3]) || new Date(`${year}-${month}-${day}T${parts[0].slice(0, 2)}:${parts[0].slice(2, 4)}:${parts[0].slice(4, 6)}`).getTime();
+    const time = Number(parts[3]) || new Date(
+        `${year}-${month}-${day}T${parts[0].slice(0, 2)}:${parts[0].slice(2, 4)}:${parts[0].slice(4, 6)}`
+    ).getTime();
     const data = record.data;
     const source = name.endsWith('-blocked') ? 'watchdog' : 'main';
+
+    // --- 从事件记录中提取状态、确认时间与触发原因 ---
     let status: string = record.status === 'loaded' ? 'active' : record.status;
     if (typeof data?.endReason === 'string') {
         status = data.endReason;
@@ -141,11 +158,14 @@ function summarize(relative: string, record: Awaited<ReturnType<typeof readRecor
     else if (source === 'watchdog') {
         reasons = ['ELOOP_BLOCKED'];
     }
+
     return {
         'path': relative,
         'pid': typeof data?.pid === 'number' ? data.pid : Number(parts[2]),
         'time': eventTime,
-        source, status, reasons,
+        'source': source,
+        'status': status,
+        'reasons': reasons,
     };
 }
 
@@ -161,10 +181,22 @@ export async function getEvents(root: string, day: unknown, offset: unknown = 0,
     'list': IMonitorEventSummary[];
     'total': number;
 } | false> {
-    if (typeof day !== 'string' || !DAY_PATTERN.test(day) || !Number.isSafeInteger(offset) ||
-        typeof offset !== 'number' || offset < 0 || !Number.isSafeInteger(limit) || typeof limit !== 'number' || limit < 1 || limit > 100) {
+    // --- 校验日期和分页参数 ---
+    if (
+        typeof day !== 'string' ||
+        !DAY_PATTERN.test(day) ||
+        typeof offset !== 'number' ||
+        !Number.isSafeInteger(offset) ||
+        offset < 0 ||
+        typeof limit !== 'number' ||
+        !Number.isSafeInteger(limit) ||
+        limit < 1 ||
+        limit > 100
+    ) {
         return false;
     }
+
+    // --- 定位日期目录 ---
     const directory = await resolveInside(root, day);
     if (directory === false) {
         return false;
@@ -172,17 +204,25 @@ export async function getEvents(root: string, day: unknown, offset: unknown = 0,
     if (directory === null) {
         return { 'list': [], 'total': 0 };
     }
+
+    // --- 读取事件目录并按时间倒序分页生成摘要 ---
     try {
         const entries = await fs.readdir(directory, { 'withFileTypes': true });
-        const names = entries.filter(entry => entry.isDirectory() && EVENT_NAME_PATTERN.test(entry.name))
-            .map(entry => entry.name).sort().reverse();
+        const names = entries
+            .filter(entry => entry.isDirectory() && EVENT_NAME_PATTERN.test(entry.name))
+            .map(entry => entry.name)
+            .sort()
+            .reverse();
         const list: IMonitorEventSummary[] = [];
         for (const name of names.slice(offset, offset + limit)) {
             const relative = `${day}/${name}`;
             const record = await readRecord(path.join(directory, name));
             list.push(summarize(relative, record));
         }
-        return { list, 'total': names.length };
+        return {
+            'list': list,
+            'total': names.length,
+        };
     }
     catch {
         return false;
@@ -200,13 +240,20 @@ export async function getFile(root: string, relative: unknown): Promise<{
     'stat': Stats;
     'info': IMonitorFile;
 } | null | false> {
-    if (typeof relative !== 'string' || !isEventPath(path.posix.dirname(relative)) || !isFileName(path.posix.basename(relative))) {
+    // --- 校验路径格式与允许的文件名 ---
+    if (
+        typeof relative !== 'string' ||
+        !isEventPath(path.posix.dirname(relative)) ||
+        !isFileName(path.posix.basename(relative))
+    ) {
         return false;
     }
     const file = await resolveInside(root, relative);
     if (file === null || file === false) {
         return file;
     }
+
+    // --- 读取文件状态并判断预览类型 ---
     try {
         const stat = await fs.stat(file);
         if (!stat.isFile()) {
@@ -221,9 +268,17 @@ export async function getFile(root: string, relative: unknown): Promise<{
                 preview = 'text';
             }
         }
-        return { 'path': file, stat, 'info': {
-            'path': relative, 'name': path.basename(relative), 'size': stat.size, 'mtime': stat.mtimeMs, preview,
-        } };
+        return {
+            'path': file,
+            'stat': stat,
+            'info': {
+                'path': relative,
+                'name': path.basename(relative),
+                'size': stat.size,
+                'mtime': stat.mtimeMs,
+                'preview': preview,
+            },
+        };
     }
     catch (error: unknown) {
         return (error as NodeJS.ErrnoException).code === 'ENOENT' ? null : false;
@@ -237,6 +292,7 @@ export async function getFile(root: string, relative: unknown): Promise<{
  * @returns 事件详情；不存在返回 null，非法路径或读取错误返回 false
  */
 export async function getEvent(root: string, relative: unknown): Promise<IMonitorEvent | null | false> {
+    // --- 校验并定位事件目录 ---
     if (!isEventPath(relative)) {
         return false;
     }
@@ -244,13 +300,19 @@ export async function getEvent(root: string, relative: unknown): Promise<IMonito
     if (directory === null || directory === false) {
         return directory;
     }
+
     try {
+        // --- 读取事件记录与当前目录下的诊断文件 ---
         const record = await readRecord(directory);
         const entries = await fs.readdir(directory, { 'withFileTypes': true });
-        const candidates = new Set(entries.filter(entry => entry.isFile() && isFileName(entry.name))
-            .map(entry => `${relative}/${entry.name}`));
+        const candidates = new Set(
+            entries
+                .filter(entry => entry.isFile() && isFileName(entry.name))
+                .map(entry => `${relative}/${entry.name}`)
+        );
+
+        // --- 主线程事件会引用另一个阻塞目录，只将监控根目录内的文件加入下载清单 ---
         if (Array.isArray(record.data?.diagnostics)) {
-            // --- 主线程事件会引用另一个阻塞目录；只将监控根目录内的文件加入下载清单 ---
             for (const diagnostic of record.data.diagnostics) {
                 if (diagnostic === null || typeof diagnostic !== 'object') {
                     continue;
@@ -266,6 +328,8 @@ export async function getEvent(root: string, relative: unknown): Promise<IMonito
                 }
             }
         }
+
+        // --- 逐项校验并收集文件元数据 ---
         const files: IMonitorFile[] = [];
         for (const candidate of [...candidates].sort()) {
             const file = await getFile(root, candidate);
@@ -273,7 +337,12 @@ export async function getEvent(root: string, relative: unknown): Promise<IMonito
                 files.push(file.info);
             }
         }
-        return { 'summary': summarize(relative, record), 'data': record.data, 'recordStatus': record.status, files };
+        return {
+            'summary': summarize(relative, record),
+            'data': record.data,
+            'recordStatus': record.status,
+            'files': files,
+        };
     }
     catch {
         return false;

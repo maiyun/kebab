@@ -3,6 +3,7 @@
  * Date: 2019-5-3 23:54
  * Last: 2020-4-11 22:34:58, 2022-10-2 14:13:06, 2022-12-28 20:33:24, 2023-12-15 11:49:02, 2024-7-2 15:23:35, 2025-6-13 19:45:53, 2026-05-20 09:50:00, 2026-8-22
  */
+// --- 系统 ---
 import * as cp from 'child_process';
 import * as http from 'http';
 import * as http2 from 'http2';
@@ -10,9 +11,12 @@ import * as stream from 'stream';
 import * as os from 'os';
 import * as net from 'net';
 import * as crypto from 'crypto';
+import * as nodeFs from 'node:fs';
+// --- 第三方 ---
 import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
 import * as valibot from 'valibot';
+// --- 库和定义 ---
 import * as kebab from '#kebab/index.js';
 import * as lTime from '#kebab/lib/time.js';
 import * as lFs from '#kebab/lib/fs.js';
@@ -23,7 +27,6 @@ import * as lNetResponse from '#kebab/lib/net/response.js';
 import * as lUndiciResponse from '#kebab/lib/undici/response.js';
 import * as sCtr from '#kebab/sys/ctr.js';
 import * as rpc from '#kebab/lib/core/rpc.js';
-import * as nodeFs from 'node:fs';
 
 /** --- Valibot 数据校验工具，业务侧可通过 lCore.v 使用 --- */
 export { valibot as v };
@@ -51,11 +54,17 @@ addFormats(ajv);
 
 /** --- Cookie 设置的选项 --- */
 export interface ICookieOptions {
+    /** --- 有效期秒数，不设或 undefined 表示关闭浏览器失效 --- */
     'ttl'?: number;
+    /** --- 生效路径，默认 / --- */
     'path'?: string;
+    /** --- 生效域名 --- */
     'domain'?: string;
+    /** --- 是否仅 HTTPS 发送 --- */
     'ssl'?: boolean;
+    /** --- 是否禁止前端脚本读取 --- */
     'httponly'?: boolean;
+    /** --- 跨站发送策略 --- */
     'samesite'?: 'None' | 'Lax' | 'Strict';
 }
 
@@ -152,6 +161,7 @@ export function random(length: number = 8, source: string = RANDOM_LN, block: st
     return temp;
 }
 
+/** --- 62 进制编码字符表 --- */
 const CONVERT62_CHAR = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
 /**
@@ -1017,7 +1027,12 @@ export async function updateCode(
     }
     /** --- 各主机使用独立上传流并行部署，结果保持输入顺序 --- */
     const results = await Promise.all(hosts.map(async (host) => {
-        const command = rpc.sign({ 'action': 'code', path, config, strict: strict ? '1' : '0' }, globalConfig.rpcSecret, 'POST', bodyHash);
+        const command = rpc.sign({
+            'action': 'code',
+            'path': path,
+            'config': config,
+            'strict': strict ? '1' : '0',
+        }, globalConfig.rpcSecret, 'POST', bodyHash);
         const res = await lUndici.post(`http://${host}:${globalConfig.rpcPort}/${command}`, nodeFs.createReadStream(sourcePath), {
             'timeout': 180,
         });
@@ -1156,11 +1171,17 @@ export async function sendVhost(
 
 /** --- log 设置的选项 --- */
 export interface ILogOptions {
+    /** --- 当前请求路径 --- */
     'path'?: string;
+    /** --- 站点完整基础 URL --- */
     'urlFull'?: string;
+    /** --- 主机名，用于日志分目录，默认 system --- */
     'hostname'?: string;
+    /** --- 原始 HTTP 请求对象 --- */
     'req'?: http2.Http2ServerRequest | http.IncomingMessage | null;
+    /** --- GET 查询参数 --- */
     'get'?: Record<string, any>;
+    /** --- 请求头 --- */
     'headers'?: http.IncomingHttpHeaders;
 }
 
@@ -1173,6 +1194,7 @@ export interface ILogOptions {
  */
 export function log(opt: sCtr.Ctr | ILogOptions, msg: string, fend: string = ''): void {
     (async () => {
+        // --- 解析请求上下文 ---
         let req: http2.Http2ServerRequest | http.IncomingMessage | null;
         let headers: http.IncomingHttpHeaders;
         let get: Record<string, kebab.Json>;
@@ -1199,15 +1221,14 @@ export function log(opt: sCtr.Ctr | ILogOptions, msg: string, fend: string = '')
         if (hostname === '') {
             hostname = 'system';
         }
-
         hostname = hostname.replace(/:/g, '_');
 
+        // --- 提取客户端 IP 与构建日志目录 ---
         const realIp = req?.socket.remoteAddress ?? '';
         const ipss = req ? ips(headers) : {
             'cf': '',
             'x': ''
         };
-
         /** --- 文件和内容统一使用同一时间点 --- */
         const now = new Date();
         const [y, m, d, h] = lTime.format(null, 'Y-m-d-H', now).split('-');
@@ -1216,6 +1237,8 @@ export function log(opt: sCtr.Ctr | ILogOptions, msg: string, fend: string = '')
         if (!rtn) {
             return;
         }
+
+        // --- 按配置的日志格式追加写入 ---
         const format = globalConfig.logFormat ?? 'jsonl';
         if (format === 'jsonl') {
             // --- JSON Lines 格式 ---
@@ -1320,29 +1343,43 @@ export async function getLog(opt: {
 
 /** --- 已保存监控事件的简短摘要，path 相对于 log/monitor/ --- */
 export interface IMonitorEventSummary {
+    /** --- 事件目录相对路径 --- */
     'path': string;
+    /** --- 触发事件的进程 PID --- */
     'pid': number;
+    /** --- 事件确认时间戳，单位 ms --- */
     'time': number;
+    /** --- 事件来源：主线程监控或看门狗线程 --- */
     'source': 'main' | 'watchdog';
+    /** --- 事件当前状态或结束原因 --- */
     'status': string;
+    /** --- 触发告警的指标原因列表 --- */
     'reasons': string[];
 }
 
 /** --- 监控文件元数据；复杂格式或超过 1 MiB 的文件不提供预览 --- */
 export interface IMonitorFile {
+    /** --- 文件相对路径 --- */
     'path': string;
+    /** --- 文件名 --- */
     'name': string;
+    /** --- 文件字节数 --- */
     'size': number;
     /** --- 最后修改时间，单位 ms --- */
     'mtime': number;
+    /** --- 支持的在线预览格式，不可预览时为 null --- */
     'preview': 'json' | 'text' | null;
 }
 
 /** --- 事件原始数据与可读取的文件；data 为 null 时可下载原始记录复盘 --- */
 export interface IMonitorEvent {
+    /** --- 事件摘要 --- */
     'summary': IMonitorEventSummary;
+    /** --- 事件记录 JSON 数据，未成功加载时为 null --- */
     'data': Record<string, unknown> | null;
+    /** --- 事件记录文件的读取状态 --- */
     'recordStatus': 'loaded' | 'missing' | 'too-large' | 'invalid' | 'unreadable';
+    /** --- 关联的可下载诊断文件清单 --- */
     'files': IMonitorFile[];
 }
 
@@ -1363,8 +1400,12 @@ async function requestMonitor(action: 'monitor-events' | 'monitor-event' | 'moni
         return false;
     }
     const command = rpc.sign({
-        action, 'time': lTime.stamp(), 'path': opt.path, 'offset': opt.offset,
-        'limit': opt.limit, 'preview': opt.preview,
+        'action': action,
+        'time': lTime.stamp(),
+        'path': opt.path,
+        'offset': opt.offset,
+        'limit': opt.limit,
+        'preview': opt.preview,
     }, globalConfig.rpcSecret);
     const res = await lUndici.get(`http://${opt.host ?? '127.0.0.1'}:${globalConfig.rpcPort}/${command}`, {
         'timeout': action === 'monitor-file' ? 300 : 5,

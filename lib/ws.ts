@@ -3,11 +3,12 @@
  * Date: 2019-6-2 20:42
  * Last: 2020-4-9 22:33:11, 2022-09-13 13:32:01, 2022-12-30 19:13:07, 2024-2-6 23:53:45, 2024-12-23 01:33:16, 2025-1-28 21:05:51, 2025-9-23 12:27:48, 2025-10-4 23:20:32
  */
+// --- 系统 ---
 import * as http from 'http';
 import * as net from 'net';
 // --- 第三方 ---
 import WebSocket, { WebSocketServer } from 'ws';
-// --- 库 ---
+// --- 库和定义 ---
 import * as kebab from '#kebab/index.js';
 import * as lCore from '#kebab/lib/core.js';
 import * as lText from '#kebab/lib/text.js';
@@ -687,7 +688,7 @@ export class Socket {
         return this._sendControl('ping', data);
     }
 
-    /** --- 发送 ping --- */
+    /** --- 发送 pong --- */
     public pong(data?: Buffer | string): boolean {
         return this._sendControl('pong', data);
     }
@@ -803,36 +804,29 @@ function bindPipe(
     closeReason?: (info: IPipeCloseInfo) => string
 ): Promise<IPipeCloseInfo> {
     return new Promise<IPipeCloseInfo>(resolve => {
-        /** --- 是否已经完成关闭，防止双向 close 重复处理 --- */
-        let closed: boolean = false;
-        /** --- 来源侧关闭前最后收到的底层事件 --- */
-        let sourceEvent: TPipeCloseEvent = 'close';
-        /** --- 目标侧关闭前最后收到的底层事件 --- */
-        let targetEvent: TPipeCloseEvent = 'close';
-        /** --- 来源侧最后一个错误 --- */
-        let sourceError: unknown;
-        /** --- 目标侧最后一个错误 --- */
-        let targetError: unknown;
-        /** --- 来源侧 WebSocket 关闭信息 --- */
-        let sourceCloseInfo: ISocketCloseInfo | undefined;
-        /** --- 目标侧 WebSocket 关闭信息 --- */
-        let targetCloseInfo: ISocketCloseInfo | undefined;
-        /** --- 销毁已断开侧，并将原因通过关闭帧回传另一侧 --- */
+        let closed = false;
+        /** --- 记录来源侧和目标侧关闭前的底层事件与错误 --- */
+        const state: Record<TPipeSide, {
+            'event': TPipeCloseEvent;
+            'error'?: unknown;
+            'close'?: ISocketCloseInfo;
+        }> = {
+            'source': { 'event': 'close' },
+            'target': { 'event': 'close' },
+        };
+
+        // --- 任一侧关闭时，销毁该侧并将原因通过关闭帧通知另一侧 ---
         const close = (side: TPipeSide): void => {
             if (closed) {
                 return;
             }
             closed = true;
-            const info: IPipeCloseInfo = side === 'source' ? {
+            const cur = state[side];
+            const info: IPipeCloseInfo = {
                 'side': side,
-                'event': sourceEvent,
-                'error': sourceError,
-                ...sourceCloseInfo,
-            } : {
-                'side': side,
-                'event': targetEvent,
-                'error': targetError,
-                ...targetCloseInfo,
+                'event': cur.event,
+                'error': cur.error,
+                ...cur.close,
             };
             const code = isSendableCloseCode(info.code) ? info.code : 1011;
             let reason: string;
@@ -853,110 +847,64 @@ function bindPipe(
             }
             resolve(info);
         };
-        // --- 监听发送端的 ---
-        s1.on('message', (msg) => {
-            switch (msg.opcode) {
-                case EOpcode.TEXT: {
-                    if (!s2.writeText(msg.data)) {
-                        s1.pause();
+
+        // --- 双向转发帧、背压与关闭事件 ---
+        const forward = (from: Socket, to: Socket, side: TPipeSide): void => {
+            from.on('message', (msg) => {
+                switch (msg.opcode) {
+                    case EOpcode.TEXT: {
+                        if (!to.writeText(msg.data)) {
+                            from.pause();
+                        }
+                        break;
                     }
-                    break;
-                }
-                case EOpcode.BINARY: {
-                    if (!s2.writeBinary(msg.data)) {
-                        s1.pause();
+                    case EOpcode.BINARY: {
+                        if (!to.writeBinary(msg.data)) {
+                            from.pause();
+                        }
+                        break;
                     }
-                    break;
-                }
-                case EOpcode.CLOSE: {
-                    close('source');
-                    break;
-                }
-                case EOpcode.PING: {
-                    if (!s2.ping(msg.data)) {
-                        s1.pause();
+                    case EOpcode.CLOSE: {
+                        close(side);
+                        break;
                     }
-                    break;
-                }
-                case EOpcode.PONG: {
-                    if (!s2.pong(msg.data)) {
-                        s1.pause();
+                    case EOpcode.PING: {
+                        if (!to.ping(msg.data)) {
+                            from.pause();
+                        }
+                        break;
                     }
-                    break;
-                }
-                default: {
-                    // --- EOpcode.CONTINUATION ---
-                }
-            }
-        }).on('error', (error: unknown) => {
-            if (sourceEvent !== 'timeout') {
-                sourceEvent = 'error';
-            }
-            sourceError = error;
-        }).on('end', () => {
-            if (sourceEvent === 'close') {
-                sourceEvent = 'end';
-            }
-        }).on('timeout', () => {
-            sourceEvent = 'timeout';
-        }).on('close', (info) => {
-            sourceCloseInfo = info;
-            close('source');
-        }).on('drain', () => {
-            s2.resume();
-        });
-        // --- 监听远程端的 ---
-        s2.on('message', (msg) => {
-            switch (msg.opcode) {
-                case EOpcode.TEXT: {
-                    if (!s1.writeText(msg.data)) {
-                        s2.pause();
+                    case EOpcode.PONG: {
+                        if (!to.pong(msg.data)) {
+                            from.pause();
+                        }
+                        break;
                     }
-                    break;
-                }
-                case EOpcode.BINARY: {
-                    if (!s1.writeBinary(msg.data)) {
-                        s2.pause();
+                    default: {
+                        // --- EOpcode.CONTINUATION ---
                     }
-                    break;
                 }
-                case EOpcode.CLOSE: {
-                    close('target');
-                    break;
+            }).on('error', (error: unknown) => {
+                if (state[side].event !== 'timeout') {
+                    state[side].event = 'error';
                 }
-                case EOpcode.PING: {
-                    if (!s1.ping(msg.data)) {
-                        s2.pause();
-                    }
-                    break;
+                state[side].error = error;
+            }).on('end', () => {
+                if (state[side].event === 'close') {
+                    state[side].event = 'end';
                 }
-                case EOpcode.PONG: {
-                    if (!s1.pong(msg.data)) {
-                        s2.pause();
-                    }
-                    break;
-                }
-                default: {
-                    // --- EOpcode.CONTINUATION ---
-                }
-            }
-        }).on('error', (error: unknown) => {
-            if (targetEvent !== 'timeout') {
-                targetEvent = 'error';
-            }
-            targetError = error;
-        }).on('end', () => {
-            if (targetEvent === 'close') {
-                targetEvent = 'end';
-            }
-        }).on('timeout', () => {
-            targetEvent = 'timeout';
-        }).on('close', (info) => {
-            targetCloseInfo = info;
-            close('target');
-        }).on('drain', () => {
-            s1.resume();
-        });
+            }).on('timeout', () => {
+                state[side].event = 'timeout';
+            }).on('close', (info) => {
+                state[side].close = info;
+                close(side);
+            }).on('drain', () => {
+                to.resume();
+            });
+        };
+
+        forward(s1, s2, 'source');
+        forward(s2, s1, 'target');
     });
 }
 
@@ -989,7 +937,7 @@ export async function mproxy(
     /** --- 远程端的双向 socket --- */
     const rsocket = await connect(get['url'], {
         ...opt,
-        headers
+        'headers': headers,
     });
     if (!rsocket) {
         return -2;
@@ -1015,12 +963,11 @@ export async function rproxy(
     opt.headers ??= {};
     const headers = lProxy.getProxyHeaders(req, opt);
     // --- 发起请求 ---
-    /** --- 远程端的双向 socket --- */
     /** --- 目标连接的握手错误 --- */
     let connectError: unknown;
     const rsocket = await connect(url, {
         ...opt,
-        headers,
+        'headers': headers,
         'onConnectError': (error: unknown): void => {
             connectError = error;
             opt.onConnectError?.(error);

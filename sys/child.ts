@@ -3,12 +3,13 @@
  * Date: 2019-5-3 23:54
  * Last: 2020-3-31 15:01:07, 2020-4-9 22:28:50, 2022-07-22 14:19:46, 2022-9-29 22:11:07, 2023-5-1 18:26:57, 2024-1-12 13:32:00, 2024-3-4 16:49:19, 2026-3-8 16:21:40, 2026-8-22
  */
+// --- 系统 ---
 import * as http2 from 'http2';
 import * as tls from 'tls';
 import * as net from 'net';
 import * as http from 'http';
 import * as crypto from 'crypto';
-// --- 库 ---
+// --- 库和定义 ---
 import * as lFs from '#kebab/lib/fs.js';
 import * as lCore from '#kebab/lib/core.js';
 import * as lText from '#kebab/lib/text.js';
@@ -42,8 +43,8 @@ const hbTimer = setInterval(function() {
         return;
     }
     process.send({
-        action: 'hbtime',
-        pid: process.pid
+        'action': 'hbtime',
+        'pid': process.pid,
     });
 }, 10_000);
 
@@ -674,7 +675,9 @@ async function gracefulStop(waitForever = false): Promise<void> {
             try {
                 session.goaway(http2.constants.NGHTTP2_NO_ERROR);
             }
-            catch {}
+            catch {
+                // --- 忽略已关闭会话的异常 ---
+            }
         }
         httpServer?.close();
         http2Server?.close();
@@ -775,17 +778,16 @@ async function getVhostByHostname(hostname: string): Promise<kebab.IVhost & {
                 // --- 完全匹配 ---
                 const real = getVhostReal(vhost.root);
                 if (await lFs.isDir(real)) {
-                    return { ...vhost, real };
+                    return { ...vhost, 'real': real };
                 }
             }
             if (vSub && vGlobal) {
-                // --- 意味着已经找到了更精准的子域名匹配和全局匹配，后续所有 vhost 和 domain 无需再通过正则或磁盘 IO 进行匹配判断 ---
+                // --- 已同时找到通配符与全局匹配，跳过剩余遍历 ---
                 break vhostLoop;
             }
             if (domain === '*') {
                 // --- 全局泛匹配 ---
                 if (vGlobal) {
-                    // --- 已经有了全局匹配结果，无需重复赋值，跳过后续逻辑以节省性能 ---
                     continue;
                 }
                 const real = getVhostReal(vhost.root);
@@ -797,7 +799,6 @@ async function getVhostByHostname(hostname: string): Promise<kebab.IVhost & {
             else if (domain.includes('*')) {
                 // --- 通配符匹配 ---
                 if (vSub) {
-                    // --- 已经存在子域名通配符匹配结果，按照优先级不再寻找其他通配符匹配，跳过正则计算 ---
                     continue;
                 }
                 const pattern = domain.replace(/\./g, '\\.').replace(/\*/g, '[\\w-]+?');

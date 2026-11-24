@@ -3,8 +3,10 @@
  * Date: 2025-10-27 21:31:06
  * Last: 2025-10-27 21:31:08
  */
+// --- 第三方 ---
 import * as openai from 'openai';
 import * as streaming from 'openai/streaming';
+// --- 库和定义 ---
 import * as kebab from '#kebab/index.js';
 import * as lCore from '#kebab/lib/core.js';
 import * as lText from '#kebab/lib/text.js';
@@ -180,6 +182,17 @@ export class Ai {
         return this._service;
     }
 
+    /** --- 获取阿里云 DashScope 对应区域的域名 --- */
+    private _getDashScopeOrigin(): string {
+        if (this._service === ESERVICE.ALIAS) {
+            return 'https://dashscope-intl.aliyuncs.com';
+        }
+        if (this._service === ESERVICE.ALINE) {
+            return 'https://dashscope-us.aliyuncs.com';
+        }
+        return 'https://dashscope.aliyuncs.com';
+    }
+
     /** --- 创建非流式对话 --- */
     public async chat(
         body: openai.default.Chat.Completions.ChatCompletionCreateParamsNonStreaming
@@ -262,7 +275,7 @@ export class Ai {
         'negative'?: string;
         /** --- 长 x 宽，不同模型要求不同，如 [1664, 928] --- */
         'size': number[];
-        /* --- 生成图片的数量，默认为 1 --- */
+        /** --- 生成图片的数量，默认为 1 --- */
         'n'?: number;
         /** --- 随机种子，默认为随机 --- */
         'seed'?: number;
@@ -286,8 +299,9 @@ export class Ai {
             case ESERVICE.ALICN:
             case ESERVICE.ALIAS:
             case ESERVICE.ALINE: {
+                // --- 阿里云 DashScope 图像生成 ---
                 try {
-                    const res = await this._fetch(`https://dashscope${this._service === ESERVICE.ALIAS ? '-intl' : (this._service === ESERVICE.ALINE ? '-us' : '')}.aliyuncs.com/api/v1/services/aigc/multimodal-generation/generation`, {
+                    const res = await this._fetch(`${this._getDashScopeOrigin()}/api/v1/services/aigc/multimodal-generation/generation`, {
                         'method': 'POST',
                         'headers': {
                             'authorization': `Bearer ${this.link.apiKey}`,
@@ -446,7 +460,7 @@ export class Ai {
         'prompt': string;
         /** --- 文本(默认)、首尾帧、参考图 --- */
         'mode'?: 'text' | 'frame' | 'ref';
-        // --- 参考图，1 张为首帧，2 张为首尾帧
+        /** --- 参考图，1 张为首帧，2 张为首尾帧 --- */
         'imgs'?: string[];
         /** --- 负面提示词，用于引导模型避免生成某些内容 --- */
         'negative'?: string;
@@ -549,8 +563,24 @@ export class Ai {
                 }
             }
         }
+        // --- 按模式组装参考图/首尾帧参数 ---
+        const frameParams: Record<string, string | string[]> = {};
+        if (mode === 'frame') {
+            if (imgs.length > 1) {
+                frameParams['first_frame_url'] = imgs[0];
+                frameParams['last_frame_url'] = imgs[1];
+            }
+            else {
+                frameParams['img_url'] = imgs[0];
+            }
+        }
+        else if (mode !== 'text') {
+            frameParams['reference_urls'] = imgs;
+        }
+
+        // --- 提交异步视频生成任务 ---
         try {
-            const res = await this._fetch(`https://dashscope${this._service === ESERVICE.ALIAS ? '-intl' : (this._service === ESERVICE.ALINE ? '-us' : '')}.aliyuncs.com/api/v1/services/aigc/video-generation/video-synthesis`, {
+            const res = await this._fetch(`${this._getDashScopeOrigin()}/api/v1/services/aigc/video-generation/video-synthesis`, {
                 'method': 'POST',
                 'headers': {
                     'authorization': `Bearer ${this.link.apiKey}`,
@@ -561,9 +591,7 @@ export class Ai {
                     'model': opt.model,
                     'input': {
                         'prompt': opt.prompt.replace(/\[I(\d+)\]/g, 'Character$1'),
-                        ...(typeof audio === 'string' ? {
-                            'audio_url': audio,
-                        } : {})
+                        ...(typeof audio === 'string' ? { 'audio_url': audio } : {}),
                     },
                     'parameters': {
                         'negative_prompt': opt.negative ?? ' ',
@@ -574,18 +602,7 @@ export class Ai {
                         'duration': duration,
                         'shot_type': shot,
                         'prompt_extend': extend,
-                        ...((mode !== 'text') && (mode === 'frame' ? (
-                            imgs.length > 1 ? {
-                                // --- 首尾帧 ---
-                                'first_frame_url': imgs[0],
-                                'last_frame_url': imgs[1],
-                            } : {
-                                // --- 首帧 ---
-                                'img_url': imgs[0],
-                            }
-                        ) : {
-                            'reference_urls': imgs,
-                        })),
+                        ...frameParams,
                     },
                 }),
             });
@@ -635,7 +652,7 @@ export class Ai {
             return false;
         }
         try {
-            const res = await this._fetch(`https://dashscope${this._service === ESERVICE.ALIAS ? '-intl' : (this._service === ESERVICE.ALINE ? '-us' : '')}.aliyuncs.com/api/v1/tasks/${opt.task}`, {
+            const res = await this._fetch(`${this._getDashScopeOrigin()}/api/v1/tasks/${opt.task}`, {
                 'method': 'GET',
                 'headers': {
                     'authorization': `Bearer ${this.link.apiKey}`,

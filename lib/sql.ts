@@ -3,13 +3,13 @@
  * Date: 2019-5-27 20:18:50
  * Last: 2020-3-29 19:37:25, 2022-07-24 22:38:11, 2023-5-24 18:49:18, 2023-6-13 22:20:21, 2023-12-11 13:58:54, 2023-12-14 13:14:40, 2023-12-21 00:04:40, 2024-4-11 19:29:29, 2024-9-2 17:15:28, 2025-8-3 21:28:18, 2025-11-9 16:20:23, 2026-4-30 13:49:44, 2026-6-1 11:30:00
  */
+// --- 第三方 ---
+import * as mysql2 from 'mysql2/promise';
+// --- 库和定义 ---
 import * as kebab from '#kebab/index.js';
 import * as lText from '#kebab/lib/text.js';
 import * as lCore from '#kebab/lib/core.js';
 import * as lSqlValue from '#kebab/lib/sql/value.js';
-// --- 第三方 ---
-import * as mysql2 from 'mysql2/promise';
-// --- 库和定义 ---
 import * as ctr from '#kebab/sys/ctr.js';
 
 /** --- 服务商定义 --- */
@@ -844,6 +844,7 @@ export class Sql {
      * @returns 当前 SQL 对象
      */
     public seek(c: string | string[], values?: TCursorValue[], d: 'DESC' | 'ASC' = 'DESC'): this {
+        // --- 校验排序字段与现有 SQL 结构 ---
         const fields = typeof c === 'string' ? [c] : c;
         if (!fields.length || new Set(fields).size !== fields.length ||
             fields.some(field => !/^[a-zA-Z_][a-zA-Z0-9_]*(\.[a-zA-Z_][a-zA-Z0-9_]*)?$/.test(field)) ||
@@ -853,6 +854,8 @@ export class Sql {
         if (this._sql.some(part => /^ (ORDER BY|LIMIT|GROUP BY|HAVING|UNION|FOR UPDATE)\b/i.test(part))) {
             throw new Error('seek requires an ungrouped query without ordering or pagination');
         }
+
+        // --- 传入边界值时追加行比较 WHERE 条件 ---
         if (values !== undefined) {
             if (values.length !== fields.length || values.some(value =>
                 (typeof value !== 'string' && typeof value !== 'number') ||

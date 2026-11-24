@@ -21,14 +21,19 @@ export type TModRow = Record<string, kebab.Json>;
 
 /** --- 按条件查询单条记录的选项 --- */
 export interface IModOneOptions {
+    /** --- 所属控制器，用于错误日志 --- */
     'ctr'?: sCtr.Ctr;
     /** --- 加锁时确保 WHERE 条件命中索引，以免锁定过多记录 --- */
     'lock'?: boolean;
     /** --- MySQL 表前缀或 PostgreSQL Schema 名 --- */
     'pre'?: string;
+    /** --- 分表后缀 --- */
     'index'?: string | string[];
+    /** --- 指定查询字段 --- */
     'select'?: string | string[];
+    /** --- 排序字段与方向 --- */
     'by'?: [string | string[], 'DESC' | 'ASC'];
+    /** --- SQL 优化提示 --- */
     'hint'?: string;
 }
 
@@ -539,8 +544,8 @@ export default class Mod {
             return true;
         }
 
+        // --- 按组计算分批大小并逐批执行 UPDATE ---
         const tableName = this._$table + (opt.index ? ('_' + opt.index) : '');
-
         for (const [, groupItems] of groups) {
             const cols = Object.keys(groupItems[0]).filter(k => k !== key).sort();
             const allCols = [key, ...cols];
@@ -549,15 +554,11 @@ export default class Mod {
             const maxBatchSize = Math.floor(65000 / allCols.length);
             // --- 控制单条 SQL 的解析、临时数据和持锁规模；PostgreSQL 不应默认吃满协议参数上限 ---
             const defaultBatchSize = service === lDb.ESERVICE.MYSQL ? 200 : 1_000;
-            const requestedBatchSize = opt.batchSize;
-            const normalizedBatchSize =
-                (
-                    requestedBatchSize !== undefined &&
-                    Number.isSafeInteger(requestedBatchSize) &&
-                    requestedBatchSize > 0
-                ) ?
-                    requestedBatchSize : defaultBatchSize;
-            const batchSize = Math.max(1, Math.min(normalizedBatchSize, maxBatchSize));
+            const customBatch = opt.batchSize;
+            const wantedBatch = (customBatch !== undefined && Number.isSafeInteger(customBatch) && customBatch > 0)
+                ? customBatch
+                : defaultBatchSize;
+            const batchSize = Math.max(1, Math.min(wantedBatch, maxBatchSize));
             for (let i = 0; i < groupItems.length; i += batchSize) {
                 const batch = groupItems.slice(i, i + batchSize);
                 const sq = lSql.get({
@@ -1030,6 +1031,7 @@ export default class Mod {
      * @returns 是否成功；至少需要一个可更新字段，失败保留待写数据
      */
     public async upsert(conflict: string | string[]): Promise<boolean> {
+        // --- 校验冲突键并分离 WHERE 条件与待更新字段 ---
         const cstr = this.constructor as typeof Mod;
         const conflicts = typeof conflict === 'string' ? [conflict] : conflict;
         const inserts = this._getUpdates();
@@ -1052,6 +1054,7 @@ export default class Mod {
             return false;
         }
 
+        // --- 按数据库类型执行插入/锁定（MySQL 分步，PGSQL 原子 UPSERT） ---
         const mysql = this._db.getService() === lDb.ESERVICE.MYSQL;
         const table = cstr._$table + (this._index ? `_${this._index[0]}` : '');
         const identity = [...new Set([cstr._$primary, cstr._$key, ...cstr._$partition].filter(field => field))];
@@ -1070,6 +1073,8 @@ export default class Mod {
             this._sql.insert(table).values(inserts).upsert(updates, conflicts);
             this._sql.append(` RETURNING ${identity.map(field => this._sql.field(field)).join(', ')}`);
         }
+
+        // --- 读取目标身份并在 MySQL 下补做更新 ---
         const result = await this._db.query(this._sql.getSql(), this._sql.getData());
         if (result.error) {
             lCore.log(this._ctr ?? {}, `[MOD][upsert][${cstr._$table}] database error: ${result.error.errno}`, '-error');
@@ -1091,6 +1096,8 @@ export default class Mod {
                 return false;
             }
         }
+
+        // --- 回填主键/自动键并清空待写脏字段 ---
         for (const field of identity) {
             this._setProperty(field, row[field]);
         }
@@ -1768,6 +1775,7 @@ export default class Mod {
         'cursor'?: lSql.TCursorValue[];
         'before'?: boolean;
     }): Promise<ICursorPage<T> | false> {
+        // --- 校验分页与游标参数 ---
         if (!Number.isSafeInteger(count) || count < 1 || count >= Number.MAX_SAFE_INTEGER ||
             this._index !== null || this._contain || (opt.before && !opt.cursor) ||
             (opt.order !== undefined && !['ASC', 'DESC'].includes(opt.order))) {
@@ -1778,6 +1786,8 @@ export default class Mod {
         if (keys.length !== fields.length || new Set(keys).size !== keys.length) {
             throw new Error('Cursor result keys must match ordering fields');
         }
+
+        // --- 构造游标查询（多取 1 条判断 hasMore） ---
         const order = opt.order ?? 'DESC';
         const direction = opt.before ? (order === 'DESC' ? 'ASC' : 'DESC') : order;
         const sql = this._sql.copy(undefined, { 'order': false, 'limit': false });
@@ -1787,6 +1797,8 @@ export default class Mod {
             lCore.log(this._ctr ?? {}, '[MOD][allCursor] Query failed', '-error');
             return false;
         }
+
+        // --- 裁剪结果并提取首末行游标 ---
         const hasMore = result.rows.length > count;
         const list = result.rows.slice(0, count);
         if (opt.before) {
@@ -2081,7 +2093,7 @@ export default class Mod {
     }
 
     /**
-     * --- 当前是否设置了未保存 --=
+     * --- 当前是否设置了未保存 ---
      */
     public unsaved(): boolean {
         return Object.keys(this._updates).length ? true : false;
@@ -2120,8 +2132,9 @@ export default class Mod {
 
 // --- 类型 ---
 
+/** --- 模型记录集合接口 --- */
 export interface IRows<T> extends Iterable<T> {
-    readonly length: number;
+    readonly 'length': number;
     item(index: number): T;
     toArray(): Array<Record<string, any>>;
 }

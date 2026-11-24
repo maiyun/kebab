@@ -166,6 +166,7 @@ export class Connection {
             this.refreshLast();
         }
         try {
+            // --- 收窄 pg.Client 与 mysql2.Connection 的联合类型后再调用 query ---
             if (this._link instanceof pg.Client) {
                 await this._link.query('SELECT 1');
             }

@@ -351,15 +351,19 @@ export function nlReplace(str: string, to: string = '\n'): string {
     return str;
 }
 
-/** Tld 列表 */
+/** --- Tld 列表 --- */
 let tldList: string[];
 
-/** 解析后的 domain */
+/** --- 解析后的 domain --- */
 export interface IDomain {
-    tld: string | null;
-    sld: string | null;
-    domain: string | null;
-    sub: string | null;
+    /** --- 顶级域名，如 com、co.uk --- */
+    'tld': string | null;
+    /** --- 二级域名主体 --- */
+    'sld': string | null;
+    /** --- 主域名（sld.tld） --- */
+    'domain': string | null;
+    /** --- 子域名前缀 --- */
+    'sub': string | null;
 }
 
 /**
@@ -368,10 +372,10 @@ export interface IDomain {
  */
 export async function parseDomain(domain: string): Promise<IDomain> {
     const rtn: IDomain = {
-        tld: null,
-        sld: null,
-        domain: null,
-        sub: null
+        'tld': null,
+        'sld': null,
+        'domain': null,
+        'sub': null,
     };
     if (!isDomain(domain)) {
         return rtn;
