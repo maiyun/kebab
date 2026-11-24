@@ -3,6 +3,7 @@ import * as stream from 'stream';
 import * as http from 'http';
 import * as http2 from 'http2';
 import * as dns from 'dns';
+import * as crypto from 'crypto';
 // --- 第三方 ---
 import * as undici from 'undici';
 // --- 库和定义 ---
@@ -184,8 +185,7 @@ export async function post(
     data: Record<string, kebab.Json> | Buffer | string | stream.Readable,
     opt: IRequestOptions = {}
 ): Promise<lResponse.Response> {
-    opt.method = 'POST';
-    return request(u, data, opt);
+    return request(u, data, { ...opt, 'method': 'POST' });
 }
 
 /**
@@ -199,9 +199,7 @@ export async function postJson(
     data: kebab.Json[] | Record<string, kebab.Json>,
     opt: IRequestOptions = {}
 ): Promise<lResponse.Response> {
-    opt.method = 'POST';
-    opt.type = 'json';
-    return request(u, data, opt);
+    return request(u, data, { ...opt, 'method': 'POST', 'type': 'json' });
 }
 
 /**
@@ -270,9 +268,7 @@ export function postJsonResponseJson<T>(
 export async function postJsonResponseJson<T>(
     u: string, data: kebab.Json[] | Record<string, kebab.Json>, opt: IRequestOptions = {}
 ): Promise<T | false | null> {
-    opt.method = 'POST';
-    opt.type = 'json';
-    return requestResponseJson<T>(u, data, opt, 'POSTJSONRESPONSEJSON');
+    return requestResponseJson<T>(u, data, { ...opt, 'method': 'POST', 'type': 'json' }, 'POSTJSONRESPONSEJSON');
 }
 
 /**
@@ -299,8 +295,7 @@ export function postResponseJson<T>(
 export async function postResponseJson<T>(
     u: string, data: Record<string, kebab.Json>, opt: IRequestOptions = {}
 ): Promise<T | false | null> {
-    opt.method = 'POST';
-    return requestResponseJson<T>(u, data, opt, 'POSTRESPONSEJSON');
+    return requestResponseJson<T>(u, data, { ...opt, 'method': 'POST' }, 'POSTRESPONSEJSON');
 }
 
 /**
@@ -494,7 +489,7 @@ function buildDnsLookup(hosts?: Record<string, string> | string) {
     return (hostname: string, opts: dns.LookupOptions, cb: (
         err: NodeJS.ErrnoException | null, address: string | dns.LookupAddress[], family?: number) => void
     ) => {
-        const override = typeof hosts === 'string' ? hosts : hosts[hostname];
+        const override = typeof hosts === 'string' ? hosts : (Object.hasOwn(hosts, hostname) ? hosts[hostname] : undefined);
         if (override) {
             cb(null, [{ 'address': override, 'family': lText.isIPv4(override) ? 4 : 6 }]);
         }
@@ -577,7 +572,7 @@ export async function request(
         }
         if (typeof hosts === 'string' ?
             !hosts :
-            (hosts[hostname] !== undefined && !hosts[hostname])
+            (Object.hasOwn(hosts, hostname) && !hosts[hostname])
         ) {
             const res = new lResponse.Response(null);
             res.error = {
@@ -656,22 +651,43 @@ export async function request(
     }
     // --- 哦，要追踪 ---
     const nextUrl = lText.urlResolve(u, req.headers['location'] as string);
-    if (lText.isSameOrigin(u, nextUrl)) {
+    // --- 仅允许跟随 http/https 跳转，禁止跳向非 HTTP 协议 ---
+    let nextProtocol = '';
+    try {
+        nextProtocol = new URL(nextUrl).protocol;
+    }
+    catch {
+        return res;
+    }
+    if (nextProtocol !== 'http:' && nextProtocol !== 'https:') {
+        return res;
+    }
+    const sameOrigin = lText.isSameOrigin(u, nextUrl);
+    let nextMethod = method;
+    let nextData = data;
+    let nextHosts = hosts;
+    if (sameOrigin) {
         headers['referer'] = u;
     }
     else {
-        // --- 跨域跳转不得携带来源站点凭据 ---
+        // --- 跨域跳转不得携带来源站点凭据、hosts 覆盖与敏感请求体 ---
         delete headers['authorization'];
         delete headers['proxy-authorization'];
         delete headers['cookie'];
         delete headers['referer'];
+        nextHosts = {};
+        if (nextMethod !== 'GET') {
+            delete headers['content-type'];
+            delete headers['content-length'];
+            nextData = undefined;
+        }
     }
-    let nextMethod = method;
-    let nextData = data;
     const status = res.headers['http-code'];
     if (status === 303 || ((status === 301 || status === 302) && method === 'POST')) {
         nextMethod = 'GET';
         nextData = undefined;
+        delete headers['content-type'];
+        delete headers['content-length'];
     }
     if (nextData instanceof stream.Readable) {
         return res;
@@ -684,7 +700,7 @@ export async function request(
         'type': type,
         'timeout': timeout,
         'follow': follow - 1,
-        'hosts': hosts,
+        'hosts': nextHosts,
         'headers': headers,
     });
 }
@@ -728,20 +744,39 @@ export async function mproxy(
     if (req.readableEnded) {
         return -4;
     }
-    if (get['auth'] !== auth) {
+    const suppliedAuth = get['auth'];
+    if (!auth || typeof suppliedAuth !== 'string') {
         return 0;
     }
-    if (!get['url']) {
+    const authBuf = Buffer.from(auth);
+    const suppliedBuf = Buffer.from(suppliedAuth);
+    if (authBuf.length !== suppliedBuf.length || !crypto.timingSafeEqual(authBuf, suppliedBuf)) {
+        return 0;
+    }
+    const targetUrl = get['url'];
+    if (typeof targetUrl !== 'string' || !targetUrl) {
         return -1;
     }
-    (opt as kebab.Json).method = req.method ?? 'GET';
-    opt.headers ??= {};
+    try {
+        const parsedTarget = new URL(targetUrl);
+        if (parsedTarget.protocol !== 'http:' && parsedTarget.protocol !== 'https:') {
+            return -1;
+        }
+    }
+    catch {
+        return -1;
+    }
+    const proxyOpt: IRequestOptions = {
+        ...opt,
+        'method': (req.method ?? 'GET') as IRequestOptions['method'],
+        'headers': opt.headers ?? {},
+    };
     /** --- 传来的 hosts --- */
-    const hosts = lText.parseJson<any>(get['hosts']);
+    const hosts = typeof get['hosts'] === 'string' ? lText.parseJson<any>(get['hosts']) : null;
     const headers = lProxy.getProxyHeaders(req, opt);
     // --- 发起请求 ---
-    const rres = await request(get['url'], req, {
-        ...opt,
+    const rres = await request(targetUrl, req, {
+        ...proxyOpt,
         'hosts': lText.logicalOr(hosts, opt.hosts),
         'headers': headers,
     });
@@ -855,9 +890,11 @@ export async function rproxy(
         catch {
             return false;
         }
-        // --- 发起请求（opt.body 优先于原始 req 流） ---
+        // --- 发起请求（opt.body 优先于原始 req 流；反代强制不自动跨源跟随重定向，防止上游 302 SSRF） ---
         const rres = await request(proxyUrl, opt.body ?? req, {
             ...opt,
+            'method': (req.method ?? 'GET') as IRequestOptions['method'],
+            'follow': 0,
             'headers': headers,
         });
         const stream = rres.getRawStream();

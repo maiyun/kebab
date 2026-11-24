@@ -78,6 +78,9 @@ export class Session {
     /** --- ctr 对象 --- */
     private _ctr!: sCtr.Ctr;
 
+    /** --- Session 是否已完成初始化，失败时禁止 update 写回存储 --- */
+    private _ready: boolean = false;
+
     /**
      * --- 初始化函数，相当于 construct ---
      * @param ctr 模型实例
@@ -99,6 +102,7 @@ export class Session {
         const tim: number = lTime.stamp();
         this._ctr = ctr;
         this._token = '';
+        this._ready = false;
 
         /** --- 用户是否已明确提供了凭据，空值或格式错误也禁止回退 Cookie --- */
         let supplied = false;
@@ -133,6 +137,10 @@ export class Session {
         if (opt.cookie !== false && !supplied && cookie[this._name]) {
             this._token = cookie[this._name];
         }
+        // --- 限制客户端传入 Token 的格式与长度，防止拼接非法存储键或超大键 ---
+        if (this._token !== '' && !/^[A-Za-z0-9_-]{1,128}$/.test(this._token)) {
+            this._token = '';
+        }
 
         this._link = link;
         if (link instanceof lDb.Pool) {
@@ -157,6 +165,7 @@ export class Session {
                     needInsert = true;
                 }
                 else if (data === false) {
+                    this._token = '';
                     return false;
                 }
                 else {
@@ -171,9 +180,15 @@ export class Session {
                 ]);
                 const data = await this._link.query(this._sql.getSql(), this._sql.getData());
                 if (data.rows?.[0]) {
-                    session = lText.parseJson<any>(data.rows[0].data);
+                    const parsed = lText.parseJson<Record<string, any>>(data.rows[0].data);
+                    if (parsed === false || parsed === null || typeof parsed !== 'object' || Array.isArray(parsed)) {
+                        this._token = '';
+                        return false;
+                    }
+                    session = parsed;
                 }
                 else if (data.result === -500) {
+                    this._token = '';
                     return false;
                 }
                 else {
@@ -195,6 +210,7 @@ export class Session {
                 let count = 0;
                 do {
                     if (count === 5) {
+                        this._token = '';
                         return false;
                     }
                     this._token = lCore.random(32, lCore.RANDOM_LUN);
@@ -205,6 +221,7 @@ export class Session {
                 let count = 0;
                 while (true) {
                     if (count === 5) {
+                        this._token = '';
                         return false;
                     }
                     this._token = lCore.random(32, lCore.RANDOM_LUN);
@@ -218,6 +235,7 @@ export class Session {
                     const r = await this._link.execute(this._sql.getSql(), this._sql.getData());
                     if (r.error) {
                         if (r.error.errno !== 1062) {
+                            this._token = '';
                             return false;
                         }
                     }
@@ -238,6 +256,7 @@ export class Session {
             });
         }
 
+        this._ready = true;
         return true;
     }
 
@@ -259,6 +278,9 @@ export class Session {
      * --- 页面整体结束时，要写入到 Kv 或 数据库 ---
      */
     public async update(): Promise<void> {
+        if (!this._ready || !this._token) {
+            return;
+        }
         if (this._link instanceof lKv.Kv) {
             await this._link.set(this._name + '_' + this._token, this._ctr.getPrototype('_session'), this._ttl);
         }

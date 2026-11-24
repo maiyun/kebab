@@ -275,8 +275,8 @@ export async function readDir(path: string, encoding?: BufferEncoding): Promise<
  */
 export async function copyFolder(from: string, to: string, ignore: RegExp[] = []): Promise<number> {
     let num = 0;
-    // --- 如果源目录不存在或不是目录，则直接成功 :) ---
-    if (!await isDir(from)) {
+    // --- 如果源目录不存在、不是目录或为符号链接，则直接返回 0 ---
+    if (!await isDir(from.replace(/\/+$/, '') || from)) {
         return 0;
     }
     // --- 遍历源目录文件和文件夹，准备复制 ---
@@ -489,7 +489,7 @@ export async function readToResponse(path: string,
     stat?: fs.Stats | null
 ): Promise<void> {
     stat ??= await stats(path);
-    if (!stat) {
+    if (!stat?.isFile()) {
         const content = '<h1>404 Not found</h1>';
         res.setHeader('content-length', Buffer.byteLength(content));
         lCore.writeHead(res, 404);
@@ -591,16 +591,42 @@ export async function readToResponse(path: string,
         return;
     }
 
-    // --- 判断客户端支持的压缩模式 ---
+    // --- 判断客户端支持的压缩模式（2 MiB 内缓冲压缩保留精确 Content-Length；大文件走流式压缩防 OOM） ---
     const encoding = req.headers['accept-encoding'] ?? '';
     if (ranges === null && canCompress && encoding !== '') {
-        const compress = await lZlib.compress(encoding, await getContent(path));
-        if (compress) {
-            res.setHeader('content-encoding', compress.type);
-            res.setHeader('content-length', Buffer.byteLength(compress.buffer));
-            lCore.writeHead(res, 200);
-            res.end(req.method === 'HEAD' ? '' : compress.buffer);
-            return;
+        if (stat.size <= 2 * 1024 * 1024) {
+            const compress = await lZlib.compress(encoding, await getContent(path));
+            if (compress) {
+                res.setHeader('content-encoding', compress.type);
+                res.setHeader('content-length', Buffer.byteLength(compress.buffer));
+                lCore.writeHead(res, 200);
+                res.end(req.method === 'HEAD' ? '' : compress.buffer);
+                return;
+            }
+        }
+        else {
+            const compress = lZlib.createCompress(encoding);
+            if (compress) {
+                res.setHeader('content-encoding', compress.type);
+                res.removeHeader('content-length');
+                lCore.writeHead(res, 200);
+                if (req.method === 'HEAD') {
+                    compress.compress.destroy();
+                    res.end();
+                    return;
+                }
+                try {
+                    await stream.promises.pipeline(
+                        createReadStream(path),
+                        compress.compress,
+                        res instanceof http2.Http2ServerResponse ? (res.stream ?? res) : res
+                    );
+                }
+                catch {
+                    res.destroy();
+                }
+                return;
+            }
         }
     }
 

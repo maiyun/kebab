@@ -3,10 +3,12 @@
  * Date: 2019-4-15 13:40
  * Last: 2020-4-14 13:52:00, 2022-09-07 01:43:31, 2023-12-29 17:24:03, 2024-2-7 00:28:50, 2024-6-6 15:15:54, 2025-6-13 19:23:53, 2025-9-22 15:48:53, 2025-9-23 11:26:50, 2025-10-30 17:44:41, 2026-8-22
  */
+// --- 系统 ---
 import * as http from 'http';
 import * as http2 from 'http2';
 import * as net from 'net';
 import * as fs from 'fs';
+import * as nodePath from 'path';
 import * as stream from 'stream';
 // --- 库和定义 ---
 import * as lFs from '#kebab/lib/fs.js';
@@ -77,6 +79,35 @@ function setInputValue<T>(target: Record<string, T>, key: string, value: T): voi
         'value': value,
         'writable': true,
     });
+}
+
+/**
+ * --- 校验并解析控制器模块路径，防止目录穿越、特殊 URL 字符及访问保留 middle 控制器 ---
+ * @param baseDir ctr/ 或 ws/ 绝对目录
+ * @param relName 控制器相对路径（不含 .js）
+ * @param blockMiddle 是否禁止 middle 控制器
+ * @returns 位于基目录内的绝对 .js 路径；不合法返回 null
+ */
+function resolveCtrFile(baseDir: string, relName: string, blockMiddle: boolean): string | null {
+    if (!relName || /[\0\\?#%]/.test(relName) || nodePath.isAbsolute(relName)) {
+        return null;
+    }
+    const segs = relName.split('/');
+    for (const seg of segs) {
+        if (!seg || seg === '.' || seg === '..') {
+            return null;
+        }
+        if (blockMiddle && seg.toLowerCase() === 'middle') {
+            return null;
+        }
+    }
+    const base = nodePath.resolve(baseDir);
+    const target = nodePath.resolve(base, `${relName}.js`);
+    const diff = nodePath.relative(base, target);
+    if (!diff || diff === '..' || diff.startsWith(`..${nodePath.sep}`) || nodePath.isAbsolute(diff)) {
+        return null;
+    }
+    return target;
 }
 
 /**
@@ -248,9 +279,10 @@ export async function run(data: {
     // --- 检测是否托管语言页面 ---
     const param: string[] = [];
     if (config.lang && data.res && !stcPaths.test(path)) {
-        // --- 仅仅 res 模式支持 config.lang ---
-        if (path[2] !== '/') {
-            // --- 不管是首页还是 @ 页，都会到此处（已经有语言目录不会到这里） ---
+        // --- 仅仅 res 模式支持 config.lang；仅当首段在白名单语种中才视为已带语言前缀 ---
+        const langPrefix = path.slice(0, 2);
+        if (path[2] !== '/' || !config.lang.list.includes(langPrefix)) {
+            // --- 不管是首页还是 @ 页，都会到此处（已经有合法语言目录不会到这里） ---
             if (config.lang.direct.every(item => !path.startsWith(item))) {
                 // --- 不放行 ---
                 /** --- 浏览器语种 --- */
@@ -346,10 +378,10 @@ export async function run(data: {
 
     if (data.socket && (data.req instanceof http.IncomingMessage)) {
         // --- socket 模式 ---
-        // --- 判断真实控制器文件是否存在 ---
-        let filePath = config.const.wsPath + pathLeft + '.js';
-        if (!await lFs.isFile(filePath)) {
-            // --- 指定的控制器不存在 ---
+        // --- 判断真实控制器文件是否存在（校验路径在 wsPath 内） ---
+        let filePath = resolveCtrFile(config.const.wsPath, pathLeft, false);
+        if (!filePath || !await lFs.isFile(filePath)) {
+            // --- 指定的控制器不存在，回退默认 handler.js ---
             filePath = config.const.wsPath + 'handler.js';
             if (!await lFs.isFile(filePath)) {
                 // --- 默认 handler 也不存在 ---
@@ -402,19 +434,29 @@ export async function run(data: {
                     wsSocket.on('message', async function(msg): Promise<void> {
                         switch (msg.opcode) {
                             case lWs.EOpcode.CLOSE: {
-                                const r = await (cctr as kebab.Json)['onMessage'](msg.data, msg.opcode);
-                                if (r === false) {
-                                    break;
+                                try {
+                                    const r = await (cctr as kebab.Json)['onMessage'](msg.data, msg.opcode);
+                                    if (r === false) {
+                                        break;
+                                    }
+                                }
+                                catch (e: unknown) {
+                                    lCore.log(cctr, lText.stringifyError(e), '-error');
                                 }
                                 wsSocket.end();
                                 break;
                             }
                             case lWs.EOpcode.PING: {
-                                const r = await (cctr as kebab.Json)['onMessage'](msg.data, msg.opcode);
-                                if (r === false) {
-                                    break;
+                                try {
+                                    const r = await (cctr as kebab.Json)['onMessage'](msg.data, msg.opcode);
+                                    if (r === false) {
+                                        break;
+                                    }
+                                    wsSocket.pong();
                                 }
-                                wsSocket.pong();
+                                catch (e: unknown) {
+                                    lCore.log(cctr, lText.stringifyError(e), '-error');
+                                }
                                 break;
                             }
                             case lWs.EOpcode.BINARY:
@@ -511,6 +553,7 @@ export async function run(data: {
     middle.setPrototype('_headers', headers);
 
     middle.setPrototype('_get', get);
+    middle.setPrototype('_cookie', cookies);
 
     /** --- 是否让框架自动获取 post，1 为自动（默认） --- */
     const reqStartRtn = await middle.onReqStart();
@@ -562,9 +605,9 @@ export async function run(data: {
         cacheTTL = middle.getPrototype('_cacheTTL');
         httpCode = middle.getPrototype('_httpCode');
         if (rtn === undefined || rtn === true) {
-            // --- 判断真实控制器文件是否存在 ---
-            const filePath = config.const.ctrPath + pathLeft + '.js';
-            if (!await lFs.isFile(filePath)) {
+            // --- 判断真实控制器文件是否存在（校验路径在 ctrPath 内且禁止 middle） ---
+            const filePath = resolveCtrFile(config.const.ctrPath, pathLeft, true);
+            if (!filePath || !await lFs.isFile(filePath)) {
                 // --- 指定的控制器不存在 ---
                 respond404(data.res, config);
                 return true;
@@ -596,9 +639,10 @@ export async function run(data: {
             cctr.setPrototype('_xsrf', middle.getPrototype('_xsrf'));
             cctr.setPrototype('_httpCode', middle.getPrototype('_httpCode'));
 
-            // --- 强制 HTTPS ---
+            // --- 强制 HTTPS（构造规范化 https 目标地址，防止死循环与 // 开放重定向） ---
             if (config.set.mustHttps && !config.const.https) {
-                data.res.setHeader('location', data.req.url ?? '');
+                const safePath = `${config.const.urlBase}${config.const.path.replace(/^\/+/, '')}${config.const.qss}`;
+                data.res.setHeader('location', `https://${config.const.hostname}${safePath}`);
                 lCore.writeHead(data.res, 302);
                 data.res.end('');
                 return true;
@@ -1304,12 +1348,18 @@ export function getFormData(
                 switch (state) {
                     case EState.WAIT: {
                         /** --- 中断符位置 --- */
+                        const maxHeader = limits.maxHeaderSize ?? 16 * 1024;
                         const io = buffer.indexOf('\r\n\r\n');
                         if (io === -1) {
-                            if (buffer.length > (limits.maxHeaderSize ?? 16 * 1024)) {
-                                reject({ 'code': 'HEADER_TOO_LARGE', 'limit': limits.maxHeaderSize ?? 16 * 1024 });
+                            if (buffer.length > maxHeader) {
+                                reject({ 'code': 'HEADER_TOO_LARGE', 'limit': maxHeader });
                                 buffer = Buffer.from('');
                             }
+                            return;
+                        }
+                        if (io > maxHeader) {
+                            reject({ 'code': 'HEADER_TOO_LARGE', 'limit': maxHeader });
+                            buffer = Buffer.from('');
                             return;
                         }
                         // --- 头部已经读取完毕 ---
@@ -1341,17 +1391,24 @@ export function getFormData(
                                 ftmpName = '';
                                 break;
                             }
-                            // --- 检查文件扩展名限制 ---
+                            // --- 拒绝含空字符的畸形文件名 ---
+                            if (fileName.includes('\0')) {
+                                reject({ 'code': 'FILE_TYPE' });
+                                ftmpName = '';
+                                break;
+                            }
+                            // --- 检查文件扩展名限制（忽略配置大小写） ---
                             if (limits.allowedExts?.length) {
                                 const extIo = fileName.lastIndexOf('.');
                                 const ext = extIo !== -1 ? fileName.slice(extIo).toLowerCase() : '';
-                                if (!limits.allowedExts.includes(ext)) {
+                                if (!limits.allowedExts.some(item => item.toLowerCase() === ext)) {
                                     // --- 扩展名不允许，拒绝整体上传 ---
                                     reject({ 'code': 'FILE_TYPE' });
                                     ftmpName = '';
                                     break;
                                 }
                             }
+                            ftmpSize = 0;
                             const fr = events.onfilestart?.(name);
                             if (fr !== true) {
                                 // --- 创建文件流 ---
@@ -1385,7 +1442,6 @@ export function getFormData(
                                         finalize();
                                     }
                                 });
-                                ftmpSize = 0;
                             }
                             else {
                                 ftmpName = '';
@@ -1395,15 +1451,20 @@ export function getFormData(
                     }
                     case EState.POST: {
                         // --- POST 模式 ---
+                        const maxField = limits.maxFieldSize ?? 1_048_576;
                         const io = buffer.indexOf('\r\n--' + boundary);
                         if (io === -1) {
                             // --- 检查字段大小限制，防止畸形数据导致 buffer 无限增长 ---
-                            const maxField = limits.maxFieldSize ?? 1_048_576;
                             if (buffer.length > maxField + boundary.length + 4) {
                                 reject({ 'code': 'FIELD_TOO_LARGE', 'limit': maxField });
                                 buffer = Buffer.from('');
                                 return;
                             }
+                            return;
+                        }
+                        if (io > maxField) {
+                            reject({ 'code': 'FIELD_TOO_LARGE', 'limit': maxField });
+                            buffer = Buffer.from('');
                             return;
                         }
                         // --- 找到结束标语，写入 POST ---
@@ -1565,23 +1626,12 @@ export function getFormData(
                 finalize();
                 return;
             }
-            if (state === EState.FILE) {
-                if (ftmpName) {
-                    ftmpStream.end((error?: Error | null) => {
-                        if (error) {
-                            return;
-                        }
-                        --writeFileLength;
-                        if (!writeFileLength) {
-                            // --- 文件也写完了 ---
-                            finalize();
-                        }
-                    });
-                    return;
-                }
-                // --- 跳过该文件 ---
-                events.onfileend?.();
-                --writeFileLength;
+            // --- 未收到结束 boundary 即结束流，视为截断上传，清理临时文件并拒绝 ---
+            if (state !== EState.WAIT) {
+                reject({ 'code': 'REQUEST_ABORTED' });
+                cleanupActiveFile();
+                finalize();
+                return;
             }
             if (writeFileLength) {
                 // --- 文件没写完 ---

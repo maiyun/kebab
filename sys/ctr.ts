@@ -6,6 +6,8 @@
 // --- 系统 ---
 import * as http from 'http';
 import * as http2 from 'http2';
+import * as path from 'path';
+import * as crypto from 'crypto';
 // --- 第三方 ---
 import ejs from 'ejs';
 import type * as v from 'valibot';
@@ -35,6 +37,40 @@ let localeData: Record<
     string, // 文件名
     Record<string, string>
 > = {};
+
+/**
+ * --- 将相对路径安全解析到指定基目录内，禁止目录穿越、空字符与绝对路径 ---
+ * @param baseDir 允许的基目录
+ * @param relPath 相对路径
+ * @returns 位于基目录内的绝对路径；越界或非法返回 null
+ */
+function resolveInsideBase(baseDir: string, relPath: string): string | null {
+    if (!relPath || relPath.includes('\0') || relPath.includes('\\') || path.isAbsolute(relPath)) {
+        return null;
+    }
+    const base = path.resolve(baseDir);
+    const target = path.resolve(base, relPath);
+    const diff = path.relative(base, target);
+    if (!diff || diff === '..' || diff.startsWith(`..${path.sep}`) || path.isAbsolute(diff)) {
+        return null;
+    }
+    return target;
+}
+
+/**
+ * --- 恒定时间字符串比较，避免时序侧信道泄露令牌 ---
+ * @param a 字符串 A
+ * @param b 字符串 B
+ * @returns 是否完全相等
+ */
+function safeEqualString(a: string, b: string): boolean {
+    const ba = Buffer.from(a);
+    const bb = Buffer.from(b);
+    if (ba.length !== bb.length) {
+        return false;
+    }
+    return crypto.timingSafeEqual(ba, bb);
+}
 
 /**
  * --- 清除已经加载的 data 与语言包文件缓存 ---
@@ -436,8 +472,12 @@ export class Ctr {
      * @param path
      * @param data
      */
-    protected async _loadView(path: string, data: kebab.Json = {}): Promise<string> {
-        const content = await lFs.getContent(this._config.const.viewPath + path + '.ejs', 'utf8');
+    protected async _loadView(viewPath: string, data: kebab.Json = {}): Promise<string> {
+        const target = resolveInsideBase(this._config.const.viewPath, `${viewPath}.ejs`);
+        if (!target) {
+            return '';
+        }
+        const content = await lFs.getContent(target, 'utf8');
         if (!content) {
             return '';
         }
@@ -468,14 +508,17 @@ export class Ctr {
         props: Record<string, kebab.Json> = {},
         opt: IReactPageOptions = {}
     ): Promise<string> {
-        // --- 校验服务端组件与客户端水合产物 ---
+        // --- 校验服务端组件与客户端水合产物（防止路径穿越出 stc/） ---
         const hydrate = opt.hydrate !== false;
-        const pagePath = `${this._config.const.rootPath}stc/${path}.page`;
-        const componentPath = `${pagePath}.js`;
+        const stcRoot = `${this._config.const.rootPath}stc/`;
+        const componentPath = resolveInsideBase(stcRoot, `${path}.page.js`);
+        const bundlePath = resolveInsideBase(stcRoot, `${path}.page.bundle.js`);
+        if (!componentPath || !bundlePath) {
+            return this._reactPageError(`invalid page path: ${path}`);
+        }
         if (!await lFs.isFile(componentPath)) {
             return this._reactPageError(`componentPath ${componentPath} is not a file`);
         }
-        const bundlePath = `${pagePath}.bundle.js`;
         if (hydrate && !await lFs.isFile(bundlePath)) {
             return this._reactPageError(
                 `bundlePath ${bundlePath} is not a file; run "npx kebab build -d ${this._config.const.rootPath}stc"`
@@ -535,9 +578,23 @@ export class Ctr {
             }
             const propsJson = lText.stringifyJson(fullProps).replace(/</g, '\\u003c');
             const clientUrl = `${staticPath}${path}.page.bundle.js?v=${this._config.set.staticVer}`;
+            // --- 转义单引号、反斜杠、换行和 <，避免注入跳出 import 语句或 script 标签 ---
+            const safeClientUrl = clientUrl
+                .replace(/\\/g, '\\\\')
+                .replace(/'/g, '\\\'')
+                .replace(/</g, '\\u003c')
+                .replace(/\r/g, '\\r')
+                .replace(/\n/g, '\\n')
+                .replace(/\u2028/g, '\\u2028')
+                .replace(/\u2029/g, '\\u2029');
             const propsScript = `<script id="__kebab_props__" type="application/json">${propsJson}</script>`;
-            const hydrateScript = `<script type="module">import'${clientUrl}';</script>`;
-            return html.replace('</body>', `${propsScript}${hydrateScript}</body>`);
+            const hydrateScript = `<script type="module">import'${safeClientUrl}';</script>`;
+            // --- 使用切片拼接而非 replace，避免 props 中包含 $` / $& / $' 导致 XSS 或水合破坏 ---
+            const bodyClose = html.lastIndexOf('</body>');
+            if (bodyClose === -1) {
+                return html;
+            }
+            return `${html.slice(0, bodyClose)}${propsScript}${hydrateScript}${html.slice(bodyClose)}`;
         }
         catch (e: kebab.Json) {
             return this._reactPageError(e.message ?? '', lText.stringifyError(e));
@@ -681,7 +738,7 @@ export class Ctr {
         // --- 校验 XSRF token ---
         if (!options?.ignoreXsrf) {
             const expectedXsrf = this._cookie['XSRF-TOKEN'];
-            if (!expectedXsrf || (submittedXsrf !== expectedXsrf)) {
+            if (typeof expectedXsrf !== 'string' || !expectedXsrf || typeof submittedXsrf !== 'string' || !safeEqualString(submittedXsrf, expectedXsrf)) {
                 const issue: IValibotXsrfIssue = {
                     'kind': 'validation',
                     'type': 'xsrf',
@@ -797,19 +854,21 @@ export class Ctr {
                         case 'int':
                         case 'integer': {
                             // --- 必须是数字型且是整数 ---
-                            needReturn = input[key] && !Number.isSafeInteger(input[key]);
+                            needReturn = input[key] !== null && input[key] !== '' && !Number.isSafeInteger(input[key]);
                             break;
                         }
                         case 'float':
                         case 'double': {
                             // --- 必须是数字型 ---
-                            needReturn = input[key] && (typeof input[key] !== 'number');
+                            needReturn = input[key] !== null && input[key] !== '' && (typeof input[key] !== 'number' || !Number.isFinite(input[key]));
                             break;
                         }
                         case 'num':
                         case 'number': {
                             // --- 可字符串数字 ---
-                            needReturn = input[key] && (typeof input[key] !== 'number') && !/^[0-9]+\.?[0-9]*$/.test(input[key]);
+                            needReturn = input[key] !== null && input[key] !== '' &&
+                                (typeof input[key] !== 'number' || !Number.isFinite(input[key])) &&
+                                !(typeof input[key] === 'string' && /^[0-9]+\.?[0-9]*$/.test(input[key]));
                             break;
                         }
                         case 'array': {
@@ -841,38 +900,45 @@ export class Ctr {
                                 needReturn = !(new RegExp(v.slice(1, -1))).test(input[key]);
                             }
                             else {
-                                const match = /^([><=]+) *([0-9]+)$/.exec(v);
+                                const match = /^([><=!]+) *([0-9]+)$/.exec(v);
                                 if (match) {
-                                    // --- 判断表达式 ---
-                                    const inputNum = Number(input[key]);
+                                    // --- 判断表达式：先确保输入是有限数值，防止 NaN 绕过大小比较 ---
+                                    const rawVal = input[key];
+                                    const validNum = typeof rawVal === 'number' || (typeof rawVal === 'string' && rawVal.trim() !== '');
+                                    const inputNum = validNum ? Number(rawVal) : NaN;
                                     const num = Number(match[2]);
-                                    switch (match[1]) {
-                                        case '>': {
-                                            needReturn = inputNum <= num;
-                                            break;
-                                        }
-                                        case '<': {
-                                            needReturn = inputNum >= num;
-                                            break;
-                                        }
-                                        case '>=': {
-                                            needReturn = inputNum < num;
-                                            break;
-                                        }
-                                        case '<=': {
-                                            needReturn = inputNum > num;
-                                            break;
-                                        }
-                                        case '=':
-                                        case '==':
-                                        case '===': {
-                                            needReturn = inputNum !== num;
-                                            break;
-                                        }
-                                        case '!=':
-                                        case '<>': {
-                                            needReturn = inputNum === num;
-                                            break;
+                                    if (!Number.isFinite(inputNum)) {
+                                        needReturn = true;
+                                    }
+                                    else {
+                                        switch (match[1]) {
+                                            case '>': {
+                                                needReturn = inputNum <= num;
+                                                break;
+                                            }
+                                            case '<': {
+                                                needReturn = inputNum >= num;
+                                                break;
+                                            }
+                                            case '>=': {
+                                                needReturn = inputNum < num;
+                                                break;
+                                            }
+                                            case '<=': {
+                                                needReturn = inputNum > num;
+                                                break;
+                                            }
+                                            case '=':
+                                            case '==':
+                                            case '===': {
+                                                needReturn = inputNum !== num;
+                                                break;
+                                            }
+                                            case '!=':
+                                            case '<>': {
+                                                needReturn = inputNum === num;
+                                                break;
+                                            }
                                         }
                                     }
                                 }
@@ -903,8 +969,14 @@ export class Ctr {
         input: Record<string, kebab.Json>,
         rule: Record<string, kebab.Json[]>, rtn: kebab.Json[], ignore: boolean = false
     ): boolean {
-        if (!ignore) {
-            rule['_xsrf'] ??= ['require', this._cookie['XSRF-TOKEN'], [0, 'Bad request, no permission.']];
+        if (!ignore && !Object.hasOwn(rule, '_xsrf')) {
+            // --- 直接严格比对 XSRF Token，不把 Cookie 值塞入规则引擎，避免关键字/正则绕过与 ReDoS ---
+            const expected = this._cookie['XSRF-TOKEN'];
+            const submitted = input['_xsrf'];
+            if (typeof expected !== 'string' || !expected || typeof submitted !== 'string' || !safeEqualString(submitted, expected)) {
+                this._setCheckError(rtn, [0, 'Bad request, no permission.']);
+                return false;
+            }
         }
         return this._checkInput(input, rule, rtn);
     }
@@ -917,12 +989,14 @@ export class Ctr {
         'domain'?: string;
     }): void {
         // --- 设置 XSRF 值 ---
-        if (this._cookie['XSRF-TOKEN'] === undefined) {
+        if (!this._cookie['XSRF-TOKEN']) {
             const xsrf = lCore.random(16, lCore.RANDOM_LUN);
             this._xsrf = xsrf;
             lCore.setCookie(this, 'XSRF-TOKEN', xsrf, {
                 'path': '/',
+                'ssl': this._config.const.https,
                 'httponly': true,
+                'samesite': 'Lax',
                 'domain': opt?.domain,
             });
             this._cookie['XSRF-TOKEN'] = xsrf;
@@ -1017,8 +1091,11 @@ export class Ctr {
      * --- 获取 data JSON 数据 ---
      * @param path 文件路径（不含扩展名）
      */
-    protected async _loadData<T>(path: string): Promise<T | false | null> {
-        const realPath = this._config.const.dataPath + path + '.json';
+    protected async _loadData<T>(dataPath: string): Promise<T | false | null> {
+        const realPath = resolveInsideBase(this._config.const.dataPath, `${dataPath}.json`);
+        if (!realPath) {
+            return null;
+        }
         if (loadedData[realPath]) {
             return loadedData[realPath] as T;
         }
@@ -1055,13 +1132,15 @@ export class Ctr {
      * @param opt Session 选项，cookie 为 false 时不读取或写入 Cookie
      * @returns 是否初始化成功，匿名会话也返回 true
      */
-    protected _startSession(
+    protected async _startSession(
         link: lDb.Pool | lKv.Kv,
         auth: boolean = false,
         opt: lSession.IOptions = {}
     ): Promise<boolean> {
-        this._sess = new lSession.Session();
-        return this._sess.init(this, link, auth, opt);
+        const sess = new lSession.Session();
+        const ok = await sess.init(this, link, auth, opt);
+        this._sess = ok ? sess : null;
+        return ok;
     }
 
     // --- 本地化 ---
@@ -1072,6 +1151,13 @@ export class Ctr {
      * @param pkg 包名，为空自动填充为 default
      */
     protected async _loadLocale(loc: string, pkg: string = 'default'): Promise<boolean> {
+        // --- 校验语言码与包名，防止目录穿越与原型污染 ---
+        if (!/^[a-zA-Z0-9_-]+$/.test(loc) || !/^[a-zA-Z0-9_.-]+$/.test(pkg) || pkg.includes('..')) {
+            return false;
+        }
+        if (loc === '__proto__' || loc === 'constructor' || loc === 'prototype') {
+            return false;
+        }
         const lName = loc + '.' + pkg;
         this._locale = loc;
         if (!this._localeFiles.includes(lName)) {
@@ -1155,19 +1241,21 @@ export class Ctr {
             const reqOrigin = this._headers['origin'] ?? '';
             if (opt.origins.includes(reqOrigin)) {
                 this._res.setHeader('access-control-allow-origin', reqOrigin);
-                this._res.setHeader('vary', 'Origin');
             }
-            else {
-                this._res.setHeader('access-control-allow-origin', opt.origins[0]);
-                this._res.setHeader('vary', 'Origin');
+            const vary = this._res.getHeader('vary');
+            const rawVary = Array.isArray(vary) ? vary.join(',') : String(vary ?? '');
+            const varyList = rawVary.split(',').map(item => item.trim()).filter(Boolean);
+            if (!varyList.some(item => item === '*' || item.toLowerCase() === 'origin')) {
+                varyList.push('Origin');
+                this._res.setHeader('vary', varyList.join(', '));
             }
         }
-        else {
+        else if (!opt.credentials) {
             this._res.setHeader('access-control-allow-origin', '*');
         }
         this._res.setHeader('access-control-allow-headers', opt.headers ?? '*');
         this._res.setHeader('access-control-allow-methods', opt.methods ?? '*');
-        if (opt.credentials) {
+        if (opt.credentials && this._res.getHeader('access-control-allow-origin')) {
             this._res.setHeader('access-control-allow-credentials', 'true');
         }
         if (this._req.method === 'OPTIONS') {

@@ -6,6 +6,7 @@
 // --- 系统 ---
 import * as http from 'http';
 import * as net from 'net';
+import * as crypto from 'crypto';
 // --- 第三方 ---
 import WebSocket, { WebSocketServer } from 'ws';
 // --- 库和定义 ---
@@ -262,7 +263,9 @@ export class Socket {
             }
             const host = puri?.hostname ?? uri.hostname ?? '';
             /** --- 真正的连接远程 IP / HOST --- */
-            const rhost = typeof hosts === 'string' ? hosts : hosts[host];
+            const rhost = typeof hosts === 'string'
+                ? hosts
+                : (Object.hasOwn(hosts, host) ? hosts[host] : undefined);
             if (rhost) {
                 headers['host'] ??= connectUrl.host;
                 connectUrl.hostname = lText.isIPv6(rhost) ? `[${rhost}]` : rhost;
@@ -925,17 +928,32 @@ export async function mproxy(
     const socket = ctr.getPrototype('_socket');
     /** --- 客户端请求中的 get 的数据 --- */
     const get = ctr.getPrototype('_get');
-    if (get['auth'] !== auth) {
+    const suppliedAuth = get['auth'];
+    if (!auth || typeof suppliedAuth !== 'string') {
         return 0;
     }
-    if (!get['url']) {
+    const authBuf = Buffer.from(auth);
+    const suppliedBuf = Buffer.from(suppliedAuth);
+    if (authBuf.length !== suppliedBuf.length || !crypto.timingSafeEqual(authBuf, suppliedBuf)) {
+        return 0;
+    }
+    const targetUrl = get['url'];
+    if (typeof targetUrl !== 'string' || !targetUrl) {
         return -1;
     }
-    opt.headers ??= {};
-    const headers = lProxy.getProxyHeaders(req, opt);
+    try {
+        const parsedTarget = new URL(targetUrl);
+        if (parsedTarget.protocol !== 'ws:' && parsedTarget.protocol !== 'wss:') {
+            return -1;
+        }
+    }
+    catch {
+        return -1;
+    }
+    const headers = lProxy.getProxyHeaders(req, { ...opt, 'headers': opt.headers ?? {} });
     // --- 发起请求 ---
     /** --- 远程端的双向 socket --- */
-    const rsocket = await connect(get['url'], {
+    const rsocket = await connect(targetUrl, {
         ...opt,
         'headers': headers,
     });

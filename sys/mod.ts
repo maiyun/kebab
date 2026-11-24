@@ -278,6 +278,9 @@ export default class Mod {
             return r.packet.affected ? true : null;
         }
         // --- 可能是多行 ---
+        if (!vs.length) {
+            return true;
+        }
         if (vs.some(item => !Array.isArray(item))) {
             vs = [vs];
         }
@@ -782,9 +785,7 @@ export default class Mod {
         s: string | kebab.Json,
         opt: Omit<IModOneOptions, 'by'> = {}
     ): Promise<false | null | TModRow> {
-        const queryOptions = opt as IModOneOptions & { 'array': true; };
-        queryOptions.array = true;
-        return this.one(db, s, queryOptions);
+        return this.one(db, s, { ...opt, 'array': true } as IModOneOptions);
     }
 
     /**
@@ -1014,7 +1015,10 @@ export default class Mod {
         if (r.packet?.affected) {
             this._updates = {};
             this._jsonUpdates = {};
-            this._data[cstr._$primary] = r.packet.insert;
+            // --- 非自增主键（如 UUID）时 insertId 为 0，保留调用方已设置的主键值 ---
+            if (r.packet.insert || this._data[cstr._$primary] === undefined || this._data[cstr._$primary] === null) {
+                this._data[cstr._$primary] = r.packet.insert;
+            }
             (this as kebab.Json)[cstr._$primary] = this._data[cstr._$primary];
             return true;
         }
@@ -1379,6 +1383,7 @@ export default class Mod {
                         offset += count;
                         continue;
                     }
+                    offset = -1;
                 }
                 const lsql = sql.replace(/ LIMIT [0-9 ,]+(OFFSET [0-9]+)?/g, ` LIMIT ${remain} OFFSET ${cz}`);
                 const r = await this._db.query(lsql, this._sql.getData());

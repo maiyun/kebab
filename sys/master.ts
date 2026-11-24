@@ -149,6 +149,28 @@ async function resolvePathInside(rootPath: string, inputPath: string): Promise<s
 }
 
 /**
+ * --- 解析并校验目标目录是否位于根目录内（同时兼容相对路径与根目录内的绝对路径） ---
+ * @param rootPath 限定的根目录
+ * @param inputPath 待校验目录路径
+ */
+async function resolveDirInside(rootPath: string, inputPath: string): Promise<string | null> {
+    if ((typeof inputPath !== 'string') || inputPath.includes('\0')) {
+        return null;
+    }
+    const rootReal = await fs.promises.realpath(rootPath);
+    if (path.isAbsolute(inputPath)) {
+        try {
+            const targetReal = await fs.promises.realpath(inputPath);
+            return isPathInside(rootReal, targetReal) ? targetReal : null;
+        }
+        catch {
+            return null;
+        }
+    }
+    return resolvePathInside(rootReal, inputPath);
+}
+
+/**
  * --- 统一 ZIP 文件路径中的斜杠，并拒绝 .. 等不安全写法 ---
  * @param archivePath ZIP 内的原始路径
  * @returns 以 / 开头的 ZIP 内路径；路径不允许时返回 null
@@ -358,6 +380,10 @@ function createRpcListener(): void {
                     break;
                 }
                 case 'global': {
+                    if (typeof msg.key !== 'string' || msg.key === '__proto__' || msg.key === 'constructor' || msg.key === 'prototype') {
+                        res.end('Invalid key');
+                        return;
+                    }
                     // --- 为所有子进程更新 global 变量 ---
                     for (const pid in workerList) {
                         workerList[pid].worker.send({
@@ -404,12 +430,17 @@ function createRpcListener(): void {
                     return;
                 }
                 case 'npm': {
-                    // --- 执行 npm install 操作 ---
+                    // --- 执行 npm install 操作（路径必须位于项目根目录内） ---
                     if (!msg.path || typeof msg.path !== 'string') {
                         res.end('Invalid path');
                         return;
                     }
-                    if (!await lFs.isDir(msg.path)) {
+                    const npmPath = await resolveDirInside(kebab.ROOT_CWD, msg.path);
+                    if (!npmPath) {
+                        res.end('Invalid path');
+                        return;
+                    }
+                    if (!await lFs.isDir(npmPath)) {
                         res.end('Path not found');
                         return;
                     }
@@ -417,7 +448,7 @@ function createRpcListener(): void {
                     const npmTimeout = 300_000;
                     const npmDeadline = Date.now() + npmTimeout;
                     let rtn = await lCore.exec('npm i --omit=dev', {
-                        'cwd': msg.path,
+                        'cwd': npmPath,
                         'timeout': npmTimeout,
                     });
                     if (rtn === false) {
@@ -425,7 +456,7 @@ function createRpcListener(): void {
                         const remaining = npmDeadline - Date.now();
                         if (remaining > 0) {
                             rtn = await lCore.exec('npm i --omit=dev --legacy-peer-deps', {
-                                'cwd': msg.path,
+                                'cwd': npmPath,
                                 'timeout': remaining,
                             });
                         }
@@ -484,6 +515,11 @@ function createRpcListener(): void {
                 case 'package': {
                     // --- 将用户的 package.json 的内容替换掉项目根的 package.json ---
                     if (!msg.content || typeof msg.content !== 'string') {
+                        res.end('Invalid content');
+                        return;
+                    }
+                    const parsedPkg = lText.parseJson<unknown>(msg.content);
+                    if (!parsedPkg || typeof parsedPkg !== 'object' || Array.isArray(parsedPkg)) {
                         res.end('Invalid content');
                         return;
                     }
@@ -587,10 +623,10 @@ function createRpcListener(): void {
                             const scanPat = scanPath.slice(1, scanLio + 1);
                             const scanFname = scanPath.slice(scanLio + 1);
                             touchedDirs.add(scanPat);
-                            if (scanFname.endsWith('.cga')) {
-                                cgaLockedDirs.add(scanPat + scanFname.slice(0, -4) + '/');
+                            if (scanFname.toLowerCase().endsWith('.cga')) {
+                                cgaLockedDirs.add((scanPat + scanFname.slice(0, -4) + '/').toLowerCase());
                             }
-                            if (scanFname === 'kebab.json') {
+                            if (scanFname.toLowerCase() === 'kebab.json') {
                                 kebabProjectDirs.add(scanPat);
                             }
                         }
@@ -610,34 +646,36 @@ function createRpcListener(): void {
                             }
                         }
 
-                        // --- 按安全与过滤规则逐项写入文件 ---
+                        // --- 按安全与过滤规则逐项写入文件（统一小写比对防止大小写绕过） ---
                         for (const archivePath in ls) {
                             const lio = archivePath.lastIndexOf('/');
                             const pat = archivePath.slice(1, lio + 1);
                             const fname = archivePath.slice(lio + 1);
+                            const fnameLower = fname.toLowerCase();
                             const dirs = archivePath.slice(1).split('/').slice(0, -1);
-                            if (dirs.some(seg => DEPLOY_EXCLUDE_DIRS.has(seg))) {
+                            const dirsLower = dirs.map(seg => seg.toLowerCase());
+                            if (dirsLower.some(seg => DEPLOY_EXCLUDE_DIRS.has(seg))) {
                                 continue;
                             }
-                            if (dirs.some((seg, index) => seg === 'abox' && ['test', 'tests'].includes(dirs[index + 1]))) {
+                            if (dirsLower.some((seg, index) => seg === 'abox' && ['test', 'tests'].includes(dirsLower[index + 1]))) {
                                 // --- abox 运行代码参与部署，测试目录不进入线上目录 ---
                                 continue;
                             }
-                            if (fname === 'kebab.json' && hasSensitiveConfig(ls[archivePath])) {
+                            if (fnameLower === 'kebab.json' && hasSensitiveConfig(ls[archivePath])) {
                                 // --- 包含密码或密钥的 kebab.json 不覆盖 ---
                                 continue;
                             }
-                            if (pat === 'conf/' && fname === 'config.json') {
+                            if (pat.toLowerCase() === 'conf/' && fnameLower === 'config.json') {
                                 continue;
                             }
                             if (
-                                fname.endsWith('.js.map') ||
-                                fname.endsWith('.ts') ||
-                                fname.endsWith('.tsx') ||
-                                fname.endsWith('.scss') ||
-                                fname.endsWith('.gitignore') ||
-                                fname.endsWith('.DS_Store') ||
-                                fname === 'AGENTS.md'
+                                fnameLower.endsWith('.js.map') ||
+                                fnameLower.endsWith('.ts') ||
+                                fnameLower.endsWith('.tsx') ||
+                                fnameLower.endsWith('.scss') ||
+                                fnameLower.endsWith('.gitignore') ||
+                                fnameLower.endsWith('.ds_store') ||
+                                fnameLower === 'agents.md'
                             ) {
                                 continue;
                             }
@@ -646,7 +684,7 @@ function createRpcListener(): void {
                             if (pat) {
                                 let cgaBlocked = false;
                                 let accumulated = '';
-                                for (const seg of pat.split('/').filter(Boolean)) {
+                                for (const seg of pat.toLowerCase().split('/').filter(Boolean)) {
                                     accumulated += seg + '/';
                                     if (cgaLockedDirs.has(accumulated)) {
                                         cgaBlocked = true;
@@ -673,7 +711,7 @@ function createRpcListener(): void {
                                 if (shortestMatch !== null) {
                                     const relPath = pat.slice(shortestMatch.length);
                                     if (relPath) {
-                                        const firstSeg = relPath.split('/')[0];
+                                        const firstSeg = relPath.split('/')[0].toLowerCase();
                                         if (!KEBAB_ALLOWED_DIRS.has(firstSeg)) {
                                             continue;
                                         }
@@ -1173,6 +1211,9 @@ async function createChildProcess(cpu: number): Promise<cluster.Worker | null> {
                     break;
                 }
                 case 'global': {
+                    if (typeof msg.key !== 'string' || msg.key === '__proto__' || msg.key === 'constructor' || msg.key === 'prototype') {
+                        break;
+                    }
                     // --- 为所有子进程更新 global 变量 ---
                     for (const pid in workerList) {
                         workerList[pid].worker.send({

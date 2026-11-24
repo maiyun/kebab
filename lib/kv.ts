@@ -78,7 +78,12 @@ export class Kv {
         if (!conn) {
             return false;
         }
-        return conn.createPipelineClient();
+        try {
+            return await conn.createPipelineClient();
+        }
+        catch {
+            return false;
+        }
     }
 
     /**
@@ -190,7 +195,7 @@ export class Kv {
 if not value then
     return 0
 end
-redis.call('SET', KEYS[1], ARGV[1] .. value)
+redis.call('SET', KEYS[1], ARGV[1] .. value, 'KEEPTTL')
 return 1`;
         return await this.eval(script, [this._etc.pre + key], [val]) === 1;
     }
@@ -205,13 +210,8 @@ return 1`;
             return 0;
         }
         try {
-            if (typeof keys === 'string') {
-                keys = [keys];
-            }
-            for (let k = 0; k < keys.length; ++k) {
-                keys[k] = this._etc.pre + keys[k];
-            }
-            return await conn.mExists(keys);
+            const list = (typeof keys === 'string' ? [keys] : keys).map(k => this._etc.pre + k);
+            return await conn.mExists(list);
         }
         catch {
             return 0;
@@ -279,13 +279,11 @@ return 1`;
         if (!conn) {
             return false;
         }
-        for (let k = 0; k < keys.length; ++k) {
-            keys[k] = this._etc.pre + keys[k];
-        }
+        const list = keys.map(k => this._etc.pre + k);
         const rtn: Record<string, string | null> = {};
         try {
             const pl: number = this._etc.pre.length;
-            const r = await conn.mGet(keys);
+            const r = await conn.mGet(list);
             if (pl === 0) {
                 return r;
             }
@@ -383,14 +381,9 @@ return 1`;
         if (!conn) {
             return false;
         }
-        if (typeof keys === 'string') {
-            keys = [keys];
-        }
-        for (let k = 0; k < keys.length; ++k) {
-            keys[k] = this._etc.pre + keys[k];
-        }
+        const list = (typeof keys === 'string' ? [keys] : keys).map(k => this._etc.pre + k);
         try {
-            return await conn.del(keys) > 0 ? true : false;
+            return await conn.del(list) > 0 ? true : false;
         }
         catch {
             return false;
@@ -597,13 +590,12 @@ return 1`;
             return false;
         }
         try {
+            const payload: Record<string, string | number> = {};
             for (const i in rows) {
                 const val = rows[i];
-                if (typeof val === 'object') {
-                    rows[i] = lText.stringifyJson(val);
-                }
+                payload[i] = typeof val === 'object' ? lText.stringifyJson(val) : val;
             }
-            await conn.hMSet(this._etc.pre + key, rows as Record<string, string | number>);
+            await conn.hMSet(this._etc.pre + key, payload);
             return true;
         }
         catch {

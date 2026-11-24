@@ -163,7 +163,7 @@ try {
     const handler = child.statements.find(node => ts.isFunctionDeclaration(node) && node.name?.text === 'requestHandler');
     assert.ok(handler);
     const requestHandler = new Function('lText', 'lCore', 'sCtr', 'getVhostByHostname', 'lFs', 'sRoute', 'kebab', 'http', 'stopping', 'isExamplePath', 'rejectExample', `${handler.getText(child)};return requestHandler;`)(
-        text, { globalConfig: {}, log(...args) { throw new Error(JSON.stringify(args)); } }, { isHttpRequestAvailable: () => false },
+        text, { globalConfig: {}, log(...args) { if (args[2] !== '-visit') throw new Error(JSON.stringify(args)); } }, { isHttpRequestAvailable: () => false },
         async () => ({ real: rootPath }), { stats: async () => ({ isDirectory: () => true }) },
         { run: async data => { clearTimeout(data.timer.timer); return route.run(data); } },
         { VER: 'test' }, { ServerResponse: class {} }, false, async () => false, () => { throw new Error('Unexpected example rejection'); },

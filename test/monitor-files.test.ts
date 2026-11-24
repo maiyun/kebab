@@ -115,7 +115,7 @@ await nodeTest.test('monitor APIs read real master RPC data and serve previews a
         await fs.writeFile(path.join(root, mainPath, 'private.json'), 'not a diagnostic file');
         await fs.writeFile(path.join(directory, 'report-outside.json'), 'outside monitor root');
         await fs.mkdir(path.join(directory, 'conf'));
-        const secret = 'm'.repeat(32);
+        const secret = 'c63f09ad6ddbbd239ba311bd390fec57';
         await fs.writeFile(path.join(directory, 'conf', 'config.json'), lText.stringifyJson({
             'rpcPort': 0, 'rpcSecret': secret, 'max': 0, 'debug': false,
         }));

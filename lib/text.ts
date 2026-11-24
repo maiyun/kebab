@@ -316,7 +316,8 @@ export function isIPv6(ip: string): boolean {
     return net.isIPv6(ip);
 }
 
-export const REGEXP_DOMAIN = /^.+?\.((?![0-9]).)+$/i;
+/** --- 无回溯域名格式正则（支持 Punycode 顶级域，禁止空白/控制字符） --- */
+export const REGEXP_DOMAIN = /^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+(?:[a-z]{2,63}|xn--[a-z0-9-]{2,59})$/i;
 
 /**
  * --- 判断是否是域名 ---
@@ -324,7 +325,7 @@ export const REGEXP_DOMAIN = /^.+?\.((?![0-9]).)+$/i;
  * @return bool
  */
 export function isDomain(domain: string): boolean {
-    return REGEXP_DOMAIN.test(domain);
+    return domain.length <= 253 && REGEXP_DOMAIN.test(domain);
 }
 
 /** --- 可打印的 ascii 字符集 --- */
@@ -451,7 +452,7 @@ export function isPhoneCN(p: string): boolean {
  * @param idcard 身份证号
  */
 export function isIdCardCN(idcard: string): boolean {
-    if (idcard.length !== 18) {
+    if (!/^\d{17}[\dX]$/.test(idcard)) {
         return false;
     }
     // --- 取出本码 ---
@@ -743,19 +744,25 @@ export function stringifyBuffer(buf: Buffer): string {
  * --- 递归删除 json 中的字符串首尾空格，会返回一个新的对象 ---
  */
 export function trimJson(json: kebab.Json): kebab.Json {
+    if (json === null || typeof json !== 'object') {
+        return typeof json === 'string' ? json.trim() : json;
+    }
     json = lCore.clone(json);
     trimJsonRecursion(json);
     return json;
 }
 
-function trimJsonRecursion(json: kebab.Json): kebab.Json {
+function trimJsonRecursion(json: kebab.Json): void {
+    if (json === null || typeof json !== 'object') {
+        return;
+    }
     if (Array.isArray(json)) {
         for (let i = 0; i < json.length; ++i) {
             const val = json[i];
             if (typeof val === 'string') {
                 json[i] = val.trim();
             }
-            else if (typeof val === 'object') {
+            else if (val !== null && typeof val === 'object') {
                 trimJsonRecursion(val);
             }
         }
@@ -766,7 +773,7 @@ function trimJsonRecursion(json: kebab.Json): kebab.Json {
             if (typeof val === 'string') {
                 json[key] = val.trim();
             }
-            else if (typeof val === 'object') {
+            else if (val !== null && typeof val === 'object') {
                 trimJsonRecursion(val);
             }
         }
@@ -843,7 +850,7 @@ export function int2str(int: number, digits: number = 4, decimal: number = 2): s
     /** --- 小数部分字符串 --- */
     const decPart = intStr.slice(intStr.length - digits);
     /** --- 小数部分数字 --- */
-    const decNum = parseInt(decPart);
+    const decNum = decPart ? parseInt(decPart, 10) : 0;
     /** --- 要除的数 --- */
     const div = Math.pow(10, digits - decimal);
     const round = Math.round(decNum / div);
@@ -851,9 +858,12 @@ export function int2str(int: number, digits: number = 4, decimal: number = 2): s
     const newDecPart = round % Math.pow(10, decimal);
 
     const intNum = parseInt(intPart, 10) + carry;
+    if (decimal <= 0) {
+        return `${sign}${intNum}`;
+    }
     const decResult = newDecPart.toString().padStart(decimal, '0');
 
-    return `${sign}${intNum}${decResult ? `.${decResult}` : ''}`;
+    return `${sign}${intNum}.${decResult}`;
 }
 
 /**

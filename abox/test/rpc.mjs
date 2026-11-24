@@ -175,6 +175,8 @@ for (const [label, duration, success, expected] of [
         let now = 0;
         const calls = [];
         const context = vm.createContext({
+            kebab: { ROOT_CWD: '/fixture/' },
+            resolveDirInside: async (_root, input) => input,
             msg: { action: 'npm', path: '/fixture/' },
             Date: { now: () => now },
             lFs: { isDir: async () => true },

@@ -281,81 +281,144 @@ async function requestHandler(
         }
     };
     timer.timer = setTimeout(timer.callback, timer.timeout);
-    res.setHeader('Server', 'Kebab');
-    res.setHeader('expires', 'Mon, 26 Jul 1994 05:00:00 GMT');
-    res.setHeader('cache-control', 'no-store');
-    // --- 停止中：通知 HTTP/1.1 客户端不要复用此连接（HTTP/2 由 GOAWAY 帧处理） ---
-    if (stopping && res instanceof http.ServerResponse) {
-        res.setHeader('connection', 'close');
-    }
-    // --- 当前 uri ---
-    let host = req.headers[':authority'];
-    if (host === undefined || typeof host !== 'string') {
-        host = req.headers['host'];
-    }
-    if (host === undefined) {
-        res.end('403 Forbidden');
-        return;
-    }
-    const uri = lText.parseUrl(`http${https ? 's' : ''}://${host}${req.url ?? ''}`);
-    /** --- 当前的 vhost 配置文件 --- */
-    const vhost = await getVhostByHostname(uri.hostname ?? '');
-    if (!vhost) {
-        res.setHeader('x-kebab-error', '1');
-        lCore.writeHead(res, 403);
-        // --- 不能用 req.socket.destroy() 可能会导致底层复用（如 CDN） 的连接被直接断开 ---
-        res.end('403 Forbidden');
-        return;
-    }
-    // --- 匹配虚拟主机后即记录，反代和提前响应也属于访问 ---
-    lCore.log({
-        'req': req,
-        'headers': req.headers,
-        'hostname': uri.hostname ?? '',
-        'urlFull': `${uri.protocol ?? ''}//${uri.host ?? ''}`,
-        'path': uri.path ?? '/',
-    }, '', '-visit');
-    // --- 配置来自 JSON，仅布尔值 true 开放内置示例 ---
-    const debug: unknown = lCore.globalConfig.debug;
-    if (debug !== true && await isExamplePath(vhost.real)) {
-        rejectExample(res);
-        return;
-    }
-    /** --- 请求的路径部分，前导带 / 末尾不一定，用户怎么请求就是什么 --- */
-    let path = uri.pathname ?? '/';
-    if (path !== '/') {
-        // --- 去除 ../ ./ 之类的 ---
-        path = lText.urlResolve('/', path);
-    }
-    /** --- [''] / ['', 'abc', 'def'] ---  */
-    const pathList = path.split('/');
-    /** --- 当前处理的路径，前导不带 / 末尾带 /，例如 abc/ --- */
-    let now = '';
-    for (let i = 0; i < pathList.length; ++i) {
-        const item = pathList[i];
-        if (item !== '') {
-            // --- 判断 item 是文件还是文件夹 ---
-            /** --- 'abc' / 'def.json' ---  */
-            let stat = await lFs.stats(vhost.real + now + item);
-            if (!stat) {
-                const content = '<h1>404 Not found</h1>';
-                res.setHeader('content-type', 'text/html; charset=utf-8');
-                res.setHeader('content-length', Buffer.byteLength(content));
-                lCore.writeHead(res, 404);
-                res.end(content);
-                return;
+    try {
+        res.setHeader('Server', 'Kebab');
+        res.setHeader('expires', 'Mon, 26 Jul 1994 05:00:00 GMT');
+        res.setHeader('cache-control', 'no-store');
+        // --- 停止中：通知 HTTP/1.1 客户端不要复用此连接（HTTP/2 由 GOAWAY 帧处理） ---
+        if (stopping && res instanceof http.ServerResponse) {
+            res.setHeader('connection', 'close');
+        }
+        // --- 当前 uri ---
+        let host = req.headers[':authority'];
+        if (host === undefined || typeof host !== 'string') {
+            host = req.headers['host'];
+        }
+        if (!host || host.length > 255 || /[\\/?#@\s\u0000-\u001f\u007f]/.test(host)) {
+            lCore.writeHead(res, 403);
+            res.end('403 Forbidden');
+            return;
+        }
+        const rawUrl = req.url ?? '/';
+        const safeUrl = rawUrl.startsWith('/') ? rawUrl : '/' + rawUrl;
+        const uri = lText.parseUrl(`http${https ? 's' : ''}://${host}${safeUrl}`);
+        /** --- 当前的 vhost 配置文件 --- */
+        const vhost = await getVhostByHostname(uri.hostname ?? '');
+        if (!vhost) {
+            res.setHeader('x-kebab-error', '1');
+            lCore.writeHead(res, 403);
+            // --- 不能用 req.socket.destroy() 可能会导致底层复用（如 CDN） 的连接被直接断开 ---
+            res.end('403 Forbidden');
+            return;
+        }
+        // --- 匹配虚拟主机后即记录，反代和提前响应也属于访问 ---
+        lCore.log({
+            'req': req,
+            'headers': req.headers,
+            'hostname': uri.hostname ?? '',
+            'urlFull': `${uri.protocol ?? ''}//${uri.host ?? ''}`,
+            'path': uri.path ?? '/',
+        }, '', '-visit');
+        // --- 配置来自 JSON，仅布尔值 true 开放内置示例 ---
+        const debug: unknown = lCore.globalConfig.debug;
+        if (debug !== true && await isExamplePath(vhost.real)) {
+            rejectExample(res);
+            return;
+        }
+        /** --- 请求的路径部分，前导带 / 末尾不一定，用户怎么请求就是什么 --- */
+        let path = uri.pathname ?? '/';
+        if (path !== '/') {
+            // --- 去除 ../ ./ 之类的 ---
+            path = lText.urlResolve('/', path);
+        }
+        /** --- [''] / ['', 'abc', 'def'] ---  */
+        const pathList = path.split('/');
+        /** --- 当前处理的路径，前导不带 / 末尾带 /，例如 abc/ --- */
+        let now = '';
+        for (let i = 0; i < pathList.length; ++i) {
+            const item = pathList[i];
+            if (item !== '') {
+                // --- 判断 item 是文件还是文件夹 ---
+                /** --- 'abc' / 'def.json' ---  */
+                let stat = await lFs.stats(vhost.real + now + item);
+                if (!stat) {
+                    const content = '<h1>404 Not found</h1>';
+                    res.setHeader('content-type', 'text/html; charset=utf-8');
+                    res.setHeader('content-length', Buffer.byteLength(content));
+                    lCore.writeHead(res, 404);
+                    res.end(content);
+                    return;
+                }
+                if (
+                    debug !== true && (stat.isDirectory() || stat.isSymbolicLink()) &&
+                    await isExamplePath(vhost.real + now + item)
+                ) {
+                    rejectExample(res);
+                    return;
+                }
+                if (stat.isDirectory()) {
+                    now += item + '/';
+                    // --- 判断是不是动态层 ---
+                    stat = await lFs.stats(vhost.real + now + 'kebab.json');
+                    if (stat) {
+                        const subPath = pathList.slice(i + 1).join('/');
+                        // --- 动态层，交给 Route 处理器 ---
+                        try {
+                            if (await sRoute.run({
+                                'req': req,
+                                'res': res,
+                                'uri': uri,
+                                'rootPath': vhost.real + now,
+                                'urlBase': '/' + now,
+                                'path': subPath,
+                                'timer': timer
+                            })) {
+                                return;
+                            }
+                        }
+                        catch (e: unknown) {
+                            lCore.log({
+                                'path': subPath,
+                                'urlFull': (uri.protocol ?? '') + '//' + (uri.host ?? '') + '/' + now,
+                                'hostname': uri.hostname ?? '',
+                                'req': req,
+                                'get': uri.query ? lText.queryParse(uri.query) : {},
+                                'headers': {},
+                            }, '[CHILD][requestHandler][E0]' + lText.stringifyError(e), '-error');
+                            const content = '<h1>500 Server Error</h1>';
+                            if (!res.headersSent) {
+                                res.setHeader('content-type', 'text/html; charset=utf-8');
+                                res.setHeader('content-length', Buffer.byteLength(content));
+                                lCore.writeHead(res, 500);
+                            }
+                            if (!res.writableEnded) {
+                                res.end(content);
+                            }
+                            return;
+                        }
+                    }
+                }
+                else if (stat.isFile()) {
+                    // --- 普通文件，直接输出并结束（拒绝符号链接与特殊文件） ---
+                    await lFs.readToResponse(vhost.real + now + item, req, res, stat);
+                    return;
+                }
+                else {
+                    const content = '<h1>403 Forbidden</h1>';
+                    res.setHeader('content-type', 'text/html; charset=utf-8');
+                    res.setHeader('content-length', Buffer.byteLength(content));
+                    lCore.writeHead(res, 403);
+                    res.end(content);
+                    return;
+                }
             }
-            if (
-                debug !== true && (stat.isDirectory() || stat.isSymbolicLink()) &&
-                await isExamplePath(vhost.real + now + item)
-            ) {
-                rejectExample(res);
-                return;
-            }
-            if (stat.isDirectory()) {
-                now += item + '/';
-                // --- 判断是不是动态层 ---
-                stat = await lFs.stats(vhost.real + now + 'kebab.json');
+            else {
+                // --- item 为空，但是 i 不是 0，则是最后一个空，直接 break ---
+                if (i > 0) {
+                    break;
+                }
+                // --- 本层是根，判断根是不是动态层 ---
+                const stat = await lFs.stats(vhost.real + now + 'kebab.json');
                 if (stat) {
                     // --- 动态层，交给 Route 处理器 ---
                     try {
@@ -365,21 +428,14 @@ async function requestHandler(
                             'uri': uri,
                             'rootPath': vhost.real + now,
                             'urlBase': '/' + now,
-                            'path': path.slice(('/' + pathList.slice(0, i).join('/')).length + 1),
-                            'timer': timer
+                            'path': path.slice(1),
+                            'timer': timer,
                         })) {
                             return;
                         }
                     }
                     catch (e: unknown) {
-                        lCore.log({
-                            'path': path.slice(('/' + pathList.slice(0, i).join('/')).length + 1),
-                            'urlFull': (uri.protocol ?? '') + '//' + (uri.host ?? '') + '/' + now,
-                            'hostname': uri.hostname ?? '',
-                            'req': req,
-                            'get': uri.query ? lText.queryParse(uri.query) : {},
-                            'headers': {},
-                        }, '[CHILD][requestHandler][E0]' + lText.stringifyError(e), '-error');
+                        lCore.log({}, '[CHILD][requestHandler][E1]' + lText.stringifyError(e), '-error');
                         const content = '<h1>500 Server Error</h1>';
                         if (!res.headersSent) {
                             res.setHeader('content-type', 'text/html; charset=utf-8');
@@ -393,64 +449,25 @@ async function requestHandler(
                     }
                 }
             }
-            else {
-                // --- 文件，直接输出并结束 ---
-                await lFs.readToResponse(vhost.real + now + item, req, res, stat);
+        }
+        // --- 最后一层是目录，且不是动态层，判断有没有主页，有则输出，没有则 403 出错 ---
+        const indexFiles: string[] = ['index.html', 'index.htm'];
+        for (const indexFile of indexFiles) {
+            const stat = await lFs.isFile(vhost.real + now + indexFile);
+            if (stat) {
+                await lFs.readToResponse(vhost.real + now + indexFile, req, res, stat);
                 return;
             }
         }
-        else {
-            // --- item 为空，但是 i 不是 0，则是最后一个空，直接 break ---
-            if (i > 0) {
-                break;
-            }
-            // --- 本层是根，判断根是不是动态层 ---
-            const stat = await lFs.stats(vhost.real + now + 'kebab.json');
-            if (stat) {
-                // --- 动态层，交给 Route 处理器 ---
-                try {
-                    if (await sRoute.run({
-                        'req': req,
-                        'res': res,
-                        'uri': uri,
-                        'rootPath': vhost.real + now,
-                        'urlBase': '/' + now,
-                        'path': path.slice(1),
-                        'timer': timer,
-                    })) {
-                        return;
-                    }
-                }
-                catch (e: unknown) {
-                    lCore.log({}, '[CHILD][requestHandler][E1]' + lText.stringifyError(e), '-error');
-                    const content = '<h1>500 Server Error</h1>';
-                    if (!res.headersSent) {
-                        res.setHeader('content-type', 'text/html; charset=utf-8');
-                        res.setHeader('content-length', Buffer.byteLength(content));
-                        lCore.writeHead(res, 500);
-                    }
-                    if (!res.writableEnded) {
-                        res.end(content);
-                    }
-                    return;
-                }
-            }
-        }
+        const content = '<h1>403 Forbidden</h1>';
+        res.setHeader('content-type', 'text/html; charset=utf-8');
+        res.setHeader('content-length', Buffer.byteLength(content));
+        lCore.writeHead(res, 403);
+        res.end(content);
     }
-    // --- 最后一层是目录，且不是动态层，判断有没有主页，有则输出，没有则 403 出错 ---
-    const indexFiles: string[] = ['index.html', 'index.htm'];
-    for (const indexFile of indexFiles) {
-        const stat = await lFs.isFile(vhost.real + now + indexFile);
-        if (stat) {
-            await lFs.readToResponse(vhost.real + now + indexFile, req, res, stat);
-            return;
-        }
+    finally {
+        clearTimeout(timer.timer);
     }
-    const content = '<h1>403 Forbidden</h1>';
-    res.setHeader('content-type', 'text/html; charset=utf-8');
-    res.setHeader('content-length', Buffer.byteLength(content));
-    lCore.writeHead(res, 403);
-    res.end(content);
 }
 
 /**
@@ -465,7 +482,14 @@ async function upgradeHandler(
 ): Promise<void> {
     socket.removeAllListeners('error');
     // --- 当前 uri ---
-    const uri = lText.parseUrl(`ws${https ? 's' : ''}://${req.headers['host'] ?? ''}${req.url ?? ''}`);
+    const host = req.headers['host'] ?? '';
+    if (!host || host.length > 255 || /[\\/?#@\s\u0000-\u001f\u007f]/.test(host)) {
+        socket.end();
+        return;
+    }
+    const rawUrl = req.url ?? '/';
+    const safeUrl = rawUrl.startsWith('/') ? rawUrl : '/' + rawUrl;
+    const uri = lText.parseUrl(`ws${https ? 's' : ''}://${host}${safeUrl}`);
     /** --- 当前的 vhost 配置文件 --- */
     const vhost = await getVhostByHostname(uri.hostname ?? '');
     if (!vhost) {
@@ -524,7 +548,7 @@ async function upgradeHandler(
                         'uri': uri,
                         'rootPath': vhost.real + now,
                         'urlBase': '/' + now,
-                        'path': path.slice(('/' + pathList.slice(0, i).join('/')).length + 1),
+                        'path': pathList.slice(i + 1).join('/'),
                     })) {
                         return;
                     }
@@ -722,14 +746,21 @@ process.on('message', function(msg: kebab.Json) {
                 break;
             }
             case 'global': {
+                if (typeof msg.key !== 'string' || msg.key === '__proto__' || msg.key === 'constructor' || msg.key === 'prototype') {
+                    break;
+                }
                 if (msg.data === undefined || msg.data === null) {
                     delete lCore.global[msg.key];
                     break;
                 }
                 if (msg.key === '__init__') {
                     // --- 初始化 ---
-                    for (const key in msg.data) {
-                        lCore.global[key] = msg.data[key];
+                    if (typeof msg.data === 'object') {
+                        for (const key of Object.keys(msg.data)) {
+                            if (key !== '__proto__' && key !== 'constructor' && key !== 'prototype') {
+                                lCore.global[key] = msg.data[key];
+                            }
+                        }
                     }
                     break;
                 }

@@ -75,7 +75,7 @@ export class Zip {
     public stats(path: string): IZipStats | null {
         path = lText.urlResolve(this._path, path);
         let dirpath = path.endsWith('/') ? path : path + '/';
-        if (!this._list[dirpath]) {
+        if (!Object.hasOwn(this._list, dirpath)) {
             // --- 可能是文件 ---
             if (path.endsWith('/')) {
                 // --- 不可能是文件 ---
@@ -84,11 +84,11 @@ export class Zip {
             const lio = path.lastIndexOf('/') + 1;
             const dpath = path.slice(0, lio);
             const fname = path.slice(lio);
-            if (!this._list[dpath]) {
+            if (!Object.hasOwn(this._list, dpath)) {
                 // --- 上层目录不存在 ---
                 return null;
             }
-            const file = this._list[dpath][fname];
+            const file = Object.hasOwn(this._list[dpath], fname) ? this._list[dpath][fname] : undefined;
             if (!file) {
                 return null;
             }
@@ -115,12 +115,12 @@ export class Zip {
             const lio = dirpath.lastIndexOf('/') + 1;
             const dpath = dirpath.slice(0, lio);
             const fname = dirpath.slice(lio);
-            const pfolder = this._list[dpath];
-            const folder = pfolder[fname];
+            const pfolder = Object.hasOwn(this._list, dpath) ? this._list[dpath] : undefined;
+            const folder = pfolder && Object.hasOwn(pfolder, fname) ? pfolder[fname] : undefined;
             return {
                 'compressedSize': 0,
                 'uncompressedSize': 0,
-                'date': folder.date,
+                'date': folder?.date ?? new Date(0),
                 'isFile': false,
                 'isDirectory': true
             };
@@ -177,16 +177,26 @@ export class Zip {
         if (!folder) {
             return opt.pathAsKey ? {} : [];
         }
-        if (!this._list[path]) {
+        if (!Object.hasOwn(this._list, path)) {
             return opt.pathAsKey ? {} : [];
         }
         if (!opt.hasChildren) {
             if (opt.pathAsKey) {
-                return this._list[path];
+                const res: Record<string, IZipItem> = {};
+                for (const k in this._list[path]) {
+                    const item = this._list[path][k];
+                    if (item.isFile || opt.hasDir) {
+                        res[k] = item;
+                    }
+                }
+                return res;
             }
             const list: IZipItem[] = [];
             for (const k in this._list[path]) {
-                list.push(this._list[path][k]);
+                const item = this._list[path][k];
+                if (item.isFile || opt.hasDir) {
+                    list.push(item);
+                }
             }
             return list;
         }
@@ -281,7 +291,7 @@ export class Zip {
      * --- 重建目录列表缓存 ---
      */
     private _refreshList(): void {
-        const list: Record<string, Record<string, IZipItem>> = {};
+        const list: Record<string, Record<string, IZipItem>> = Object.create(null);
         // eslint-disable-next-line @litert/disable-for-each-method
         this._zip.forEach(function(relativePath: string, item: jszip.JSZipObject) {
             if (relativePath.startsWith('/')) {
@@ -306,8 +316,8 @@ export class Zip {
             if (item.dir) {
                 name = name.slice(0, -1);
             }
-            if (!list[parentPath]) {
-                list[parentPath] = {};
+            if (!Object.hasOwn(list, parentPath)) {
+                list[parentPath] = Object.create(null);
             }
             list[parentPath][name] = {
                 'name': name,
@@ -379,43 +389,34 @@ export class Zip {
                 'hasChildren': true,
                 'hasDir': false
             });
+            if (list.length === 0) {
+                resolve(files);
+                return;
+            }
             let loaded = 0;
             for (const file of list) {
+                const fullPath = file.path + file.name;
                 const mim = mime.getData(file.name);
-                if (['txt', 'json', 'js', 'css', 'xml', 'html'].includes(mim.extension)) {
-                    this.getContent(file.path + file.name, 'string').then(function(fb) {
-                        if (fb) {
-                            files[file.path + file.name] = fb;
-                        }
-                        ++loaded;
-                        if (loaded === list.length) {
-                            resolve(files);
-                        }
-                    }).catch(function() {
-                        ++loaded;
-                        if (loaded === list.length) {
-                            resolve(files);
-                        }
-                    });
-                }
-                else {
-                    this.getContent(file.path + file.name, 'nodebuffer').then(function(fb) {
-                        if (fb) {
-                            files[file.path + file.name] = fb;
-                        }
-                        ++loaded;
-                        if (loaded === list.length) {
-                            resolve(files);
-                        }
-                    }).catch(function() {
-                        ++loaded;
-                        if (loaded === list.length) {
-                            resolve(files);
-                        }
-                    });
-                }
+                const isText = ['txt', 'json', 'js', 'css', 'xml', 'html'].includes(mim.extension);
+                const zipObj = this._zip.file(fullPath.slice(1)) ?? this._zip.file(fullPath);
+                const task = zipObj
+                    ? zipObj.async(isText ? 'string' : 'nodebuffer')
+                    : this.getContent(fullPath, isText ? 'string' : 'nodebuffer');
+                task.then(function(fb) {
+                    if (fb !== null) {
+                        files[fullPath] = fb;
+                    }
+                    ++loaded;
+                    if (loaded === list.length) {
+                        resolve(files);
+                    }
+                }).catch(function() {
+                    ++loaded;
+                    if (loaded === list.length) {
+                        resolve(files);
+                    }
+                });
             }
-            return files;
         });
     }
 

@@ -45,10 +45,12 @@ function isFileName(name: string): boolean {
  */
 async function resolveInside(root: string, relative: string): Promise<string | null | false> {
     try {
-        if ((await fs.lstat(root)).isSymbolicLink()) {
+        // --- 去除末尾斜杠后再 lstat，避免 POSIX 跟随根目录符号链接 ---
+        const normalizedRoot = path.resolve(root);
+        if ((await fs.lstat(normalizedRoot)).isSymbolicLink()) {
             return false;
         }
-        const rootReal = await fs.realpath(root);
+        const rootReal = await fs.realpath(normalizedRoot);
         const target = await fs.realpath(path.join(rootReal, relative));
         const difference = path.relative(rootReal, target);
         if (difference === '..' || difference.startsWith(`..${path.sep}`) || path.isAbsolute(difference)) {
@@ -130,9 +132,10 @@ function summarize(relative: string, record: Awaited<ReturnType<typeof readRecor
     // --- 从相对路径解析基础时间与事件来源 ---
     const [year, month, day, name] = relative.split('/');
     const parts = name.split('-');
-    const time = Number(parts[3]) || new Date(
+    const parsedTime = new Date(
         `${year}-${month}-${day}T${parts[0].slice(0, 2)}:${parts[0].slice(2, 4)}:${parts[0].slice(4, 6)}`
     ).getTime();
+    const time = Number(parts[3]) || (Number.isFinite(parsedTime) ? parsedTime : 0);
     const data = record.data;
     const source = name.endsWith('-blocked') ? 'watchdog' : 'main';
 
@@ -253,8 +256,13 @@ export async function getFile(root: string, relative: unknown): Promise<{
         return file;
     }
 
-    // --- 读取文件状态并判断预览类型 ---
+    // --- 校验目标文件不是符号链接并读取文件状态 ---
     try {
+        const linkPath = path.join(path.resolve(root), relative);
+        const lstat = await fs.lstat(linkPath);
+        if (!lstat.isFile() || lstat.isSymbolicLink()) {
+            return false;
+        }
         const stat = await fs.stat(file);
         if (!stat.isFile()) {
             return false;

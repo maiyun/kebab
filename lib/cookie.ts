@@ -18,7 +18,7 @@ export function setCookie(cookie: Record<string, ICookie>, name: string, value: 
 } = {}): void {
     const tim = lTime.stamp();
     const ttl = opt.ttl ?? 0;
-    domain = lText.parseHost(domain).hostname;
+    domain = lText.parseHost(domain).hostname.toLowerCase();
     const domainN = domain.startsWith('.') ? domain.slice(1) : domain;
 
     let exp = -1992199400;
@@ -33,7 +33,8 @@ export function setCookie(cookie: Record<string, ICookie>, name: string, value: 
         'path': opt['path'] ?? '/',
         'domain': domainN,
         'secure': opt['ssl'] ? true : false,
-        'httponly': opt['httponly'] ? true : false
+        'httponly': opt['httponly'] ? true : false,
+        'hostOnly': !domain.startsWith('.'),
     };
 }
 
@@ -82,10 +83,15 @@ export async function buildCookieObject(
                 cookieTmp[key.toLowerCase()] = val;
             }
         }
+        if (!cookieTmp['name']) {
+            continue;
+        }
         // --- 获取定义的 domain ---
+        const reqHost = (uri.hostname ?? '').toLowerCase();
         let domain = '', domainN = '';
+        let hostOnly = false;
         if (cookieTmp['domain']) {
-            cookieTmp['domain'] = lText.parseHost(cookieTmp['domain']).hostname;
+            cookieTmp['domain'] = lText.parseHost(cookieTmp['domain']).hostname.toLowerCase();
             if (!(cookieTmp['domain'].startsWith('.'))) {
                 domain = '.' + cookieTmp['domain'];
                 domainN = cookieTmp['domain'];
@@ -96,8 +102,9 @@ export async function buildCookieObject(
             }
         }
         else {
-            domain = '.' + (uri.hostname ?? '');
-            domainN = uri.hostname ?? '';
+            hostOnly = true;
+            domain = '.' + reqHost;
+            domainN = reqHost;
         }
         // --- 判断有没有设置 domain 的权限 ---
         // --- uri.hostname vs  domain(domainN) ---
@@ -105,18 +112,18 @@ export async function buildCookieObject(
         // --- ok.xxx.com   vs  .xxx.com: true ---
         // --- z.ok.xxx.com vs  .xxx.com: true ---
         // --- ok.xxx.com   vs  .zz.ok.xxx.com: false ---
-        if (uri.hostname !== domainN) {
+        if (reqHost !== domainN) {
             // --- 设置的域名和当前 host 不相等，如果是 IP、无 . 域名，则直接失败 ---
-            if (!lText.isDomain(uri.hostname ?? '')) {
+            if (!lText.isDomain(reqHost)) {
                 continue;
             }
             const parseDomain: lText.IDomain = await lText.parseDomain(domainN);
-            if (parseDomain.tld === domainN.toLowerCase()) {
+            if (parseDomain.tld === domainN) {
                 // --- 不能给 tld 设置 cookie ---
                 continue;
             }
             // --- 判断访问路径 (uri['host']) 是不是设置域名 (domain) 的孩子，domain 必须是 uriHost 的同级或者父辈 ---
-            if (!((uri.hostname ?? '').endsWith(domain))) {
+            if (!(reqHost.endsWith(domain))) {
                 // --- false 代表进入了，代表失败 ---
                 // --- ok.xxx.com, .xxx.com: true ---
                 // --- ok.xxx.com, .ppp.com: false ---
@@ -126,15 +133,13 @@ export async function buildCookieObject(
         }
         const cookieKey = cookieTmp['name'] + '-' + domainN;
         let exp = -1992199400;
-        if (cookieTmp['max-age'] !== undefined) {
+        if (cookieTmp['max-age'] !== undefined && /^-?\d+$/.test(cookieTmp['max-age'])) {
             const maxAge = Number(cookieTmp['max-age']);
-            if (!(isNaN(maxAge))) {
-                if (maxAge <= 0) {
-                    delete cookie[cookieKey];
-                    continue;
-                }
-                exp = tim + maxAge;
+            if (maxAge <= 0) {
+                delete cookie[cookieKey];
+                continue;
             }
+            exp = tim + maxAge;
         }
         if ((exp === -1992199400) && cookieTmp['expires']) {
             const expires = lTime.stamp(cookieTmp['expires']);
@@ -148,21 +153,19 @@ export async function buildCookieObject(
         }
         // --- path ---
         let path = cookieTmp['path'] ?? '';
-        if (path === '') {
-            const srp = (uri.pathname ?? '').lastIndexOf('/');
-            path = (uri.pathname ?? '').slice(0, srp + 1);
-        }
-        else if (!path.startsWith('/')) {
-            path = '/' + path;
+        if (path === '' || !path.startsWith('/')) {
+            const srp = (uri.pathname ?? '/').lastIndexOf('/');
+            path = (uri.pathname ?? '/').slice(0, srp + 1) || '/';
         }
         cookie[cookieKey] = {
             'name': cookieTmp['name'],
-            'value': cookieTmp['value'],
+            'value': cookieTmp['value'] ?? '',
             'exp': exp,
             'path': path,
             'domain': domainN,
             'secure': cookieTmp['secure'] !== undefined,
-            'httponly': cookieTmp['httponly'] !== undefined
+            'httponly': cookieTmp['httponly'] !== undefined,
+            'hostOnly': hostOnly,
         };
     }
 }
@@ -174,6 +177,9 @@ export async function buildCookieObject(
  */
 export function buildCookieQuery(cookie: Record<string, ICookie>, uri: kebab.IUrlParse): string {
     const tim = lTime.stamp();
+    const reqHost = (uri.hostname ?? '').toLowerCase();
+    const reqPath = uri.pathname ?? uri.path ?? '/';
+    const isSecure = uri.protocol === 'https:' || uri.protocol === 'wss:';
     let cookieStr: string = '';
     for (const key in cookie) {
         const item: ICookie = cookie[key];
@@ -181,30 +187,26 @@ export function buildCookieQuery(cookie: Record<string, ICookie>, uri: kebab.IUr
             delete cookie[key];
             continue;
         }
-        uri.path ??= '/';
-        if (item.secure && (uri.protocol !== 'https:')) {
+        if (item.secure && !isSecure) {
             continue;
         }
-        // --- 判断 path 是否匹配 ---
-        if (!uri.path.startsWith(item.path)) {
+        // --- 按 RFC 6265 路径段边界判断 path 是否匹配（/app 不匹配 /app-evil） ---
+        const cPath = item.path || '/';
+        const pathMatch = reqPath === cPath ||
+            (cPath.endsWith('/') ? reqPath.startsWith(cPath) : reqPath.startsWith(cPath + '/'));
+        if (!pathMatch) {
             continue;
         }
-        const domain: string = '.' + item.domain;
-        // --- 判断 $uri['host'] 必须是 $domain 的同级或子级 ---
-        // --- $uri['host']     vs      $domain ---
-        // --- ok.xxx.com       vs      .ok.xxx.com: true ---
-        // --- ok.xxx.com       vs      .xxx.com: true ---
-        // --- z.ok.xxx.com     vs      .xxx.com: true ---
-        // --- ok.xxx.com       vs      .zz.ok.xxx.com: false ---
-        if ('.' + (uri.hostname ?? '') !== domain) {
-            // --- 域名不相等，那么判断当前域名 host 是不是 domain 的孩子 ---
-            if (!(uri.hostname!.endsWith(domain))) {
-                // --- false 代表进入，被排除了，因为 cookie 的 domain 和当前 host 后半部分，代表不是 domain 的孩子 ---
-                // --- ok.xxx.com, .zz.ok.xxx.com: false ---
-                // --- pp.ok.xxx.com, .zz.ok.xxx.com: false ---
-                // --- q.b.ok.xx.com, .zz.ok.xxx.com: false ---
-                // --- z.ok.xxx.com, .xxx.com: true ---
-                // --- xx.xxx.com, .ok.xxx.com: false ---
+        const itemDomain = item.domain.toLowerCase();
+        if (item.hostOnly) {
+            // --- 未指定 Domain 属性的 host-only Cookie 仅限精确匹配主机 ---
+            if (reqHost !== itemDomain) {
+                continue;
+            }
+        }
+        else if (reqHost !== itemDomain) {
+            // --- 域名不相等时，判断当前 host 是不是 cookie domain 的子域 ---
+            if (!reqHost.endsWith('.' + itemDomain)) {
                 continue;
             }
         }
@@ -225,7 +227,7 @@ export function buildCookieQuery(cookie: Record<string, ICookie>, uri: kebab.IUr
 export function resetCookieSession(cookie: Record<string, ICookie>): void {
     for (const key in cookie) {
         const item = cookie[key];
-        if (item.exp === -1992199400000) {
+        if (item.exp === -1992199400) {
             delete cookie[key];
         }
     }
@@ -243,4 +245,6 @@ export interface ICookie {
     'domain': string;
     'secure': boolean;
     'httponly': boolean;
+    /** --- 是否仅限当前主机（未指定 Domain 属性时为 true） --- */
+    'hostOnly'?: boolean;
 }

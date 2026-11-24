@@ -25,7 +25,7 @@ test('visit logging occurs once at matched HTTP and WS vhosts', async () => {
     assert.doesNotMatch(routeCode, /['"]-visit['"]/);
     const calls = [];
     const lCore = { globalConfig: { debug: true }, log(...args) { calls.push(args); }, writeHead(res, status) { res.status = status; } };
-    const file = { isDirectory: () => false, isSymbolicLink: () => false };
+    const file = { isDirectory: () => false, isFile: () => true, isSymbolicLink: () => false };
     const state = { mode: 'route' };
     const lFs = {
         async stats(path) { if (path.endsWith('kebab.json')) return state.mode === 'route' ? file : null; if (path.endsWith('asset') && state.mode !== 'missing') return file; return null; },

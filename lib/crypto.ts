@@ -166,8 +166,15 @@ export const SM4_CFB = 'sm4-cfb';
  */
 export function cipherEncrypt(original: string | Buffer, key: crypto.KeyLike, iv: string = '', method: string = AES_256_ECB, output: 'base64' | 'buffer' = 'base64'): string | Buffer | false {
     try {
-        if ((typeof key === 'string') && (key.length !== 32)) {
-            key = hashHmac('md5', key, 'MaiyunSalt');
+        if (typeof key === 'string') {
+            if (method.startsWith('sm4-')) {
+                if (Buffer.byteLength(key) !== 16) {
+                    key = hashHmac('md5', key, 'MaiyunSalt', 'buffer');
+                }
+            }
+            else if (key.length !== 32) {
+                key = hashHmac('md5', key, 'MaiyunSalt');
+            }
         }
         if (iv) {
             if (method === AES_256_CTR) {
@@ -279,8 +286,15 @@ export function sm4Encrypt(original: string | Buffer, key: crypto.KeyLike, iv: s
  */
 export function cipherDecrypt(encrypt: string | Buffer, key: crypto.KeyLike, iv: string = '', method: string = AES_256_ECB, output: 'binary' | 'buffer' = 'binary'): string | Buffer | false {
     try {
-        if ((typeof key === 'string') && (key.length !== 32)) {
-            key = hashHmac('md5', key, 'MaiyunSalt');
+        if (typeof key === 'string') {
+            if (method.startsWith('sm4-')) {
+                if (Buffer.byteLength(key) !== 16) {
+                    key = hashHmac('md5', key, 'MaiyunSalt', 'buffer');
+                }
+            }
+            else if (key.length !== 32) {
+                key = hashHmac('md5', key, 'MaiyunSalt');
+            }
         }
         if (iv) {
             if (method === AES_256_CTR) {
@@ -394,7 +408,7 @@ export function sm4Decrypt(encrypt: string | Buffer, key: crypto.KeyLike, iv: st
 export function hashHmac(algorithm: string, data: Buffer | string, key?: crypto.KeyLike, format?: 'hex' | 'base64'): string;
 export function hashHmac(algorithm: string, data: Buffer | string, key: crypto.KeyLike | undefined, format: 'buffer'): Buffer;
 export function hashHmac(algorithm: string, data: Buffer | string, key?: crypto.KeyLike, format: 'hex' | 'base64' | 'buffer' = 'hex'): string | Buffer {
-    const cry = key ? crypto.createHmac(algorithm, key) : crypto.createHash(algorithm);
+    const cry = key !== undefined ? crypto.createHmac(algorithm, key) : crypto.createHash(algorithm);
     cry.update(data);
     if (format === 'buffer') {
         return cry.digest();
@@ -414,7 +428,7 @@ export function hashHmacFile(algorithm: string, path: string, key?: crypto.KeyLi
 export function hashHmacFile(algorithm: string, path: string, key: crypto.KeyLike, encoding: 'buffer'): Promise<Buffer | false>;
 export function hashHmacFile(algorithm: string, path: string, key?: crypto.KeyLike, encoding: 'hex' | 'base64' | 'base64url' | 'buffer' = 'hex'): Promise<string | Buffer | false> {
     return new Promise(function(resolve) {
-        const cry = key ? crypto.createHmac(algorithm, key) : crypto.createHash(algorithm);
+        const cry = key !== undefined ? crypto.createHmac(algorithm, key) : crypto.createHash(algorithm);
         const rs = lFs.createReadStream(path);
         rs.on('data', (chunk) => {
             cry.update(chunk);

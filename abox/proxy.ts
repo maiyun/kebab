@@ -6,6 +6,7 @@ import type { THttpHeaders } from '#kebab/lib/undici.js';
 const excludedHeaders = new Set([
     'host', 'connection', 'keep-alive', 'http-code', 'http-url',
     'transfer-encoding', 'upgrade', 'proxy-connection',
+    'te', 'trailer', 'proxy-authenticate', 'proxy-authorization',
 ]);
 
 const privateHeaders = new Set([
@@ -21,8 +22,22 @@ export function filterProxyHeaders(
 ): Record<string, string | string[]> {
     const result: Record<string, string | string[]> = {};
     const sent = res?.headersSent ?? false;
+    const dynamicHopByHop = new Set<string>();
     for (const name in headers) {
-        if (excludedHeaders.has(name) || name.includes(':') || name.includes('(')) {
+        if (name.toLowerCase() === 'connection') {
+            const raw = headers[name];
+            const text = Array.isArray(raw) ? raw.join(',') : String(raw ?? '');
+            for (const part of text.split(',')) {
+                const token = part.trim().toLowerCase();
+                if (token) {
+                    dynamicHopByHop.add(token);
+                }
+            }
+        }
+    }
+    for (const name in headers) {
+        const lower = name.toLowerCase();
+        if (excludedHeaders.has(lower) || dynamicHopByHop.has(lower) || name.includes(':') || name.includes('(')) {
             continue;
         }
         const value = headers[name];
@@ -50,7 +65,14 @@ export function buildProxyHeaders(
 ): http.IncomingHttpHeaders {
     const headers = filterProxyHeaders(req.headers, undefined, opt.filter);
     if (opt.proxyMode === undefined || opt.proxyMode === 'passthrough') {
-        return Object.assign(headers, opt.headers);
+        const merged: http.IncomingHttpHeaders = {};
+        for (const name in headers) {
+            merged[name.toLowerCase()] = headers[name];
+        }
+        for (const name in opt.headers) {
+            merged[name.toLowerCase()] = opt.headers[name];
+        }
+        return merged;
     }
     const result: http.IncomingHttpHeaders = {};
     for (const name in headers) {

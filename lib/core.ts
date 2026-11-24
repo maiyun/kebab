@@ -80,20 +80,27 @@ export function setCookie(ctr: sCtr.Ctr, name: string, value: string, opt: ICook
     if (!res) {
         return;
     }
+    if (!name || /[;\r\n\u0000-\u001f\u007f=]/.test(name)) {
+        return;
+    }
+    const cleanPath = opt.path ?? '/';
+    if (/[;\r\n\u0000-\u001f\u007f]/.test(cleanPath)) {
+        return;
+    }
+    if (opt.domain && /[;\r\n\u0000-\u001f\u007f]/.test(opt.domain)) {
+        return;
+    }
 
-    /*
-    const expires =  lTime.get(ctr, {
-        'data': lTime.stamp() + ttl
-    }).toUTCString();
-    */
-    const maxAge = opt.ttl === undefined ? '' : `; Max-Age=${opt.ttl}`;
-    const path = `; path=${opt.path ?? '/'}`;
+    const maxAge = (opt.ttl !== undefined && Number.isFinite(opt.ttl)) ? `; Max-Age=${Math.trunc(opt.ttl)}` : '';
+    const path = `; path=${cleanPath}`;
     const domain = opt.domain ? `; domain=${opt.domain}` : '';
     const secure = opt.ssl ? '; secure' : '';
     const httpOnly = opt.httponly ? '; HttpOnly' : '';
     const sameSite = opt.samesite ? '; SameSite=' + opt.samesite : '';
-    const cookies: string[] = res.getHeader('set-cookie') as string[] | undefined ?? [];
-    // cookies.push(`${name}=${encodeURIComponent(value)}; expires=${expires}; Max-Age=${ttl}${path}${domain}${secure}${httpOnly}`);
+    const existing = res.getHeader('set-cookie');
+    const cookies: string[] = Array.isArray(existing)
+        ? existing.map(String)
+        : (existing !== undefined ? [String(existing)] : []);
     cookies.push(`${name}=${encodeURIComponent(value)}${maxAge}${path}${domain}${secure}${httpOnly}${sameSite}`);
     res.setHeader('set-cookie', cookies);
 }

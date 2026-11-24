@@ -37,6 +37,12 @@ export enum EJSON {
     'OVERLAPS' = 'json_overlaps',
 }
 
+/** --- column() 内部私有标记，防止通过外部 JSON 伪造字段对象注入 SQL --- */
+const columnSymbol: unique symbol = Symbol('kebab.sql.column');
+
+/** --- value() 内部私有标记，防止通过外部 JSON 伪造值对象 --- */
+const valueSymbol: unique symbol = Symbol('kebab.sql.value');
+
 /** --- field 用 token --- */
 let columnToken = '';
 
@@ -543,9 +549,10 @@ export class Sql {
                 this._sql.push(' HAVING ' + s);
             }
         }
-        else {
-            // --- array ---
-            if (s.length) {
+        else if (s && typeof s === 'object') {
+            // --- 数组或条件对象 ---
+            const hasCondition = Array.isArray(s) ? s.length > 0 : Object.keys(s).length > 0;
+            if (hasCondition) {
                 const whereSub = this._whereSub(s);
                 if (whereSub !== '') {
                     this._sql.push(' HAVING ' + whereSub);
@@ -723,6 +730,9 @@ export class Sql {
                 // --- 字段映射、逻辑分组与 IN 查询 ---
                 if (k.startsWith('$')) {
                     // --- 逻辑条件分组，如 $or ---
+                    if (!Array.isArray(v) || v.length === 0) {
+                        continue;
+                    }
                     const sp = ' ' + k.slice(1).split('-')[0].toUpperCase() + ' ';
                     sql += '(';
                     for (let v1 of v) {
@@ -1051,7 +1061,7 @@ export class Sql {
                 }
                 table = table.slice(0, -2);
             }
-            sql[0] = sql[0].replace(/FROM [`\w, ]+/, 'FROM ' + table);
+            sql[0] = sql[0].replace(/FROM [`"\w., ]+/, 'FROM ' + table);
         }
         // --- PGSQL: 修改 where 后重新编号 $N 占位符 ---
         if (this._service === ESERVICE.PGSQL && opt.where !== undefined) {
@@ -1263,7 +1273,15 @@ export class Sql {
         'token': string;
         'value': string;
     } {
-        if (arg.type !== 'column' || arg.token !== columnToken || arg.value === undefined) {
+        if (
+            arg === null ||
+            typeof arg !== 'object' ||
+            arg[columnSymbol] !== true ||
+            arg.type !== 'column' ||
+            !columnToken ||
+            arg.token !== columnToken ||
+            arg.value === undefined
+        ) {
             return false;
         }
         return true;
@@ -1278,7 +1296,15 @@ export class Sql {
         'token': string;
         'value': kebab.DbValue;
     } {
-        if (arg === null || typeof arg !== 'object' || arg.type !== 'value' || arg.token !== valueToken || arg.value === undefined) {
+        if (
+            arg === null ||
+            typeof arg !== 'object' ||
+            arg[valueSymbol] !== true ||
+            arg.type !== 'value' ||
+            !valueToken ||
+            arg.token !== valueToken ||
+            arg.value === undefined
+        ) {
             return false;
         }
         return true;
@@ -1316,8 +1342,12 @@ export class Sql {
         }
         else if (Array.isArray(v)) {
             if (
-                v[0]?.x === undefined && typeof v[0] === 'string' &&
-                v[0].includes('(') && v[0].includes(')')
+                v.length > 0 &&
+                v.length <= 2 &&
+                typeof v[0] === 'string' &&
+                v[0].includes('(') &&
+                v[0].includes(')') &&
+                (v.length === 1 || Array.isArray(v[1]))
             ) {
                 // --- 函数式插入，对参数按位置分别处理 ---
                 // --- v: ['POINT(?)', ['20']] ---
@@ -1483,6 +1513,9 @@ export function format(sql: string, data: kebab.DbValue[], service: ESERVICE = E
                 return v;
             }).join(', ')}]`;
         }
+        if (val === undefined) {
+            return 'NULL';
+        }
         return `'${lText.stringifyJson(val).replace(/'/g, "''")}'`;
     });
 }
@@ -1521,9 +1554,14 @@ export function column(field: string): {
         columnToken = lCore.random(8, lCore.RANDOM_LUNS);
     }
     return {
+        [columnSymbol]: true,
         'token': columnToken,
         'type': 'column',
-        'value': field
+        'value': field,
+    } as {
+        'type': 'column';
+        'token': string;
+        'value': string;
     };
 }
 
@@ -1540,9 +1578,14 @@ export function value(val: kebab.DbValue): {
         valueToken = lCore.random(8, lCore.RANDOM_LUNS);
     }
     return {
+        [valueSymbol]: true,
         'token': valueToken,
         'type': 'value',
-        'value': val
+        'value': val,
+    } as {
+        'type': 'value';
+        'token': string;
+        'value': kebab.DbValue;
     };
 }
 
