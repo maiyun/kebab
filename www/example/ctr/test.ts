@@ -4966,7 +4966,7 @@ rtn.push(reader.readBCDString());</pre>${JSON.stringify(rtn)}`);
             }
             default: {
                 // --- CHAT ---
-                let model = ai.service === lAi.ESERVICE.ALICN ? 'qwen-plus' : 'doubao-seed-2-0-mini-260215';
+                let model = ai.service === lAi.ESERVICE.ALICN ? 'qwen3.7-flash' : 'doubao-seed-2-0-mini-260215';
                 if (ai.service === lAi.ESERVICE.AZURE) {
                     model = 'gpt-4.1-nano';
                 }
@@ -4978,7 +4978,7 @@ rtn.push(reader.readBCDString());</pre>${JSON.stringify(rtn)}`);
                     ],
                 });
                 echo.push(`<pre>await ai.chat({
-    'model': ${model},
+    'model': '${model}',
     'messages': [
         { 'role': 'system', 'content': 'You are Kebab, a friendly and knowledgeable assistant based on an open-source Node framework. You do not mention any model names or AI identity. You can chat casually, answer questions, and provide guidance naturally. Respond in a human-like, approachable manner, as if you are a helpful companion rather than a traditional AI assistant.' },
         { 'role': 'user', 'content': '你是谁？' },
