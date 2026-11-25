@@ -1945,7 +1945,7 @@ index/variables/VER.md
 
 # Variable: VER
 
-> `const` **VER**: `"10.0.0"` = `'10.0.0'`
+> `const` **VER**: `"10.1.0"` = `'10.1.0'`
 
 Defined in: [index.ts:10](https://github.com/maiyunnet/kebab/blob/master/index.ts#L10)
 
@@ -136717,6 +136717,8 @@ Defined in: [sys/ctr.ts:1094](https://github.com/maiyunnet/kebab/blob/master/sys
 
 `string`
 
+data 目录下的文件路径（不含 .json 扩展名）
+
 #### Returns
 
 `Promise`\<`false` \| `T` \| `null`\>
@@ -136801,6 +136803,8 @@ Defined in: [sys/ctr.ts:475](https://github.com/maiyunnet/kebab/blob/master/sys/
 ##### viewPath
 
 `string`
+
+视图目录下的文件路径（不含 .ejs 扩展名）
 
 ##### data?
 

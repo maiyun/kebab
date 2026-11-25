@@ -469,7 +469,7 @@ export class Ctr {
 
     /**
      * --- 加载视图 ---
-     * @param path
+     * @param viewPath 视图目录下的文件路径（不含 .ejs 扩展名）
      * @param data
      */
     protected async _loadView(viewPath: string, data: kebab.Json = {}): Promise<string> {
@@ -1089,7 +1089,7 @@ export class Ctr {
 
     /**
      * --- 获取 data JSON 数据 ---
-     * @param path 文件路径（不含扩展名）
+     * @param dataPath data 目录下的文件路径（不含 .json 扩展名）
      */
     protected async _loadData<T>(dataPath: string): Promise<T | false | null> {
         const realPath = resolveInsideBase(this._config.const.dataPath, `${dataPath}.json`);

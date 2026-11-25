@@ -64,8 +64,6 @@ export default class extends sMod {
 
     declare public time_add: number;
 
-    /* eslint-enable */
-
     protected _keyGenerator(): string {
         return 'test_' + lCore.rand(0, 3).toString();
     }
