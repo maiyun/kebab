@@ -6,7 +6,7 @@
 
 # Interface: IConfigVector
 
-Defined in: [index.ts:125](https://github.com/maiyunnet/kebab/blob/master/index.ts#L125)
+Defined in: [index.ts:127](https://github.com/maiyunnet/kebab/blob/master/index.ts#L127)
 
 向量数据库
 
@@ -16,7 +16,7 @@ Defined in: [index.ts:125](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **host**: `string`
 
-Defined in: [index.ts:126](https://github.com/maiyunnet/kebab/blob/master/index.ts#L126)
+Defined in: [index.ts:128](https://github.com/maiyunnet/kebab/blob/master/index.ts#L128)
 
 ***
 
@@ -24,7 +24,7 @@ Defined in: [index.ts:126](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **name**: `string`
 
-Defined in: [index.ts:128](https://github.com/maiyunnet/kebab/blob/master/index.ts#L128)
+Defined in: [index.ts:130](https://github.com/maiyunnet/kebab/blob/master/index.ts#L130)
 
 ***
 
@@ -32,7 +32,7 @@ Defined in: [index.ts:128](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **port**: `number`
 
-Defined in: [index.ts:127](https://github.com/maiyunnet/kebab/blob/master/index.ts#L127)
+Defined in: [index.ts:129](https://github.com/maiyunnet/kebab/blob/master/index.ts#L129)
 
 ***
 
@@ -40,7 +40,7 @@ Defined in: [index.ts:127](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **pwd**: `string`
 
-Defined in: [index.ts:130](https://github.com/maiyunnet/kebab/blob/master/index.ts#L130)
+Defined in: [index.ts:132](https://github.com/maiyunnet/kebab/blob/master/index.ts#L132)
 
 ***
 
@@ -48,4 +48,4 @@ Defined in: [index.ts:130](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > **user**: `string`
 
-Defined in: [index.ts:129](https://github.com/maiyunnet/kebab/blob/master/index.ts#L129)
+Defined in: [index.ts:131](https://github.com/maiyunnet/kebab/blob/master/index.ts#L131)

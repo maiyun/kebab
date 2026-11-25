@@ -6,7 +6,7 @@
 
 # Class: Ai
 
-Defined in: [lib/ai.ts:73](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L73)
+Defined in: [lib/ai.ts:75](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L75)
 
 ## Constructors
 
@@ -14,7 +14,7 @@ Defined in: [lib/ai.ts:73](https://github.com/maiyunnet/kebab/blob/master/lib/ai
 
 > **new Ai**(`ctrEtc`, `opt`): `Ai`
 
-Defined in: [lib/ai.ts:86](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L86)
+Defined in: [lib/ai.ts:88](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L88)
 
 #### Parameters
 
@@ -36,7 +36,7 @@ Defined in: [lib/ai.ts:86](https://github.com/maiyunnet/kebab/blob/master/lib/ai
 
 > `readonly` **link**: `OpenAI`
 
-Defined in: [lib/ai.ts:76](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L76)
+Defined in: [lib/ai.ts:78](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L78)
 
 openai 原生对象
 
@@ -48,7 +48,7 @@ openai 原生对象
 
 > **get** **service**(): [`ESERVICE`](../enumerations/ESERVICE.md)
 
-Defined in: [lib/ai.ts:179](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L179)
+Defined in: [lib/ai.ts:181](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L181)
 
 获取当前服务商
 
@@ -66,7 +66,7 @@ Defined in: [lib/ai.ts:179](https://github.com/maiyunnet/kebab/blob/master/lib/a
 
 > **chat**(`body`): `Promise`\<`false` \| `APIPromise`\<`ChatCompletion`\>\>
 
-Defined in: [lib/ai.ts:184](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L184)
+Defined in: [lib/ai.ts:197](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L197)
 
 创建非流式对话
 
@@ -84,7 +84,7 @@ Defined in: [lib/ai.ts:184](https://github.com/maiyunnet/kebab/blob/master/lib/a
 
 > **chat**(`body`): `Promise`\<`false` \| `APIPromise`\<`Stream`\<`ChatCompletionChunk`\>\>\>
 
-Defined in: [lib/ai.ts:188](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L188)
+Defined in: [lib/ai.ts:201](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L201)
 
 创建流式对话
 
@@ -104,7 +104,7 @@ Defined in: [lib/ai.ts:188](https://github.com/maiyunnet/kebab/blob/master/lib/a
 
 > **embedding**(`body`): `Promise`\<`false` \| `APIPromise`\<`CreateEmbeddingResponse`\>\>
 
-Defined in: [lib/ai.ts:237](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L237)
+Defined in: [lib/ai.ts:250](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L250)
 
 创建向量
 
@@ -124,7 +124,7 @@ Defined in: [lib/ai.ts:237](https://github.com/maiyunnet/kebab/blob/master/lib/a
 
 > **image**(`opt`): `Promise`\<`false` \| \{ `list`: `object`[]; `request`: `string`; `seed`: `number`; \}\>
 
-Defined in: [lib/ai.ts:253](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L253)
+Defined in: [lib/ai.ts:266](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L266)
 
 生成图像，不支持 GEMINI、GROK 服务商
 
@@ -151,6 +151,8 @@ Defined in: [lib/ai.ts:253](https://github.com/maiyunnet/kebab/blob/master/lib/a
 ###### n?
 
 `number`
+
+生成图片的数量，默认为 1
 
 ###### negative?
 
@@ -186,7 +188,7 @@ Defined in: [lib/ai.ts:253](https://github.com/maiyunnet/kebab/blob/master/lib/a
 
 > **poll**(`opt`): `Promise`\<`false` \| \{ `add?`: `number`; `end?`: `number`; `error?`: `string`; `start?`: `number`; `status`: `"PENDING"` \| `"RUNNING"` \| `"SUCCEEDED"` \| `"FAILED"` \| `"CANCELED"` \| `"UNKNOWN"`; `task`: `string`; `url?`: `string`; \}\>
 
-Defined in: [lib/ai.ts:614](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L614)
+Defined in: [lib/ai.ts:631](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L631)
 
 轮询任务
 
@@ -216,7 +218,7 @@ Defined in: [lib/ai.ts:614](https://github.com/maiyunnet/kebab/blob/master/lib/a
 
 > **response**(`body`): `Promise`\<`false` \| `APIPromise`\<`Response`\>\>
 
-Defined in: [lib/ai.ts:211](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L211)
+Defined in: [lib/ai.ts:224](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L224)
 
 创建非流式 Response
 
@@ -234,7 +236,7 @@ Defined in: [lib/ai.ts:211](https://github.com/maiyunnet/kebab/blob/master/lib/a
 
 > **response**(`body`): `Promise`\<`false` \| `APIPromise`\<`Stream`\<`ResponseStreamEvent`\>\>\>
 
-Defined in: [lib/ai.ts:215](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L215)
+Defined in: [lib/ai.ts:228](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L228)
 
 创建流式 Response
 
@@ -254,7 +256,7 @@ Defined in: [lib/ai.ts:215](https://github.com/maiyunnet/kebab/blob/master/lib/a
 
 > **video**(`opt`): `Promise`\<`false` \| \{ `request`: `string`; `seed`: `number`; `status`: `"PENDING"` \| `"RUNNING"` \| `"SUCCEEDED"` \| `"FAILED"` \| `"CANCELED"` \| `"UNKNOWN"`; `task`: `string`; \}\>
 
-Defined in: [lib/ai.ts:443](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L443)
+Defined in: [lib/ai.ts:457](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L457)
 
 异步生成视频，仅支持 ALICN、ALIAS、ALINE
 
@@ -283,6 +285,8 @@ Defined in: [lib/ai.ts:443](https://github.com/maiyunnet/kebab/blob/master/lib/a
 ###### imgs?
 
 `string`[]
+
+参考图，1 张为首帧，2 张为首尾帧
 
 ###### mode?
 

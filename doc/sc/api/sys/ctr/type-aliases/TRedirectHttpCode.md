@@ -8,6 +8,6 @@
 
 > **TRedirectHttpCode** = `301` \| `302` \| `303` \| `307` \| `308`
 
-Defined in: [sys/ctr.ts:53](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L53)
+Defined in: [sys/ctr.ts:92](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L92)
 
 HTTP 重定向状态码

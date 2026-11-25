@@ -8,7 +8,7 @@
 
 > **resolveEnvVars**(`obj`): `void`
 
-Defined in: [lib/core.ts:1656](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1656)
+Defined in: [lib/core.ts:1704](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1704)
 
 将配置对象中的 ${ENV_VAR} 占位符替换为 process.env 的值
 

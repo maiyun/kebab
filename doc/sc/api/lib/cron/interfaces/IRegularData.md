@@ -6,7 +6,7 @@
 
 # Interface: IRegularData
 
-Defined in: [lib/cron.ts:156](https://github.com/maiyunnet/kebab/blob/master/lib/cron.ts#L156)
+Defined in: [lib/cron.ts:149](https://github.com/maiyunnet/kebab/blob/master/lib/cron.ts#L149)
 
 定时任务
 
@@ -20,7 +20,7 @@ Defined in: [lib/cron.ts:156](https://github.com/maiyunnet/kebab/blob/master/lib
 
 > **callback**: (`date`, `immediate`) => `void` \| `Promise`\<`void`\>
 
-Defined in: [lib/cron.ts:153](https://github.com/maiyunnet/kebab/blob/master/lib/cron.ts#L153)
+Defined in: [lib/cron.ts:146](https://github.com/maiyunnet/kebab/blob/master/lib/cron.ts#L146)
 
 任务函数
 
@@ -48,7 +48,7 @@ Defined in: [lib/cron.ts:153](https://github.com/maiyunnet/kebab/blob/master/lib
 
 > **count**: `number`
 
-Defined in: [lib/cron.ts:160](https://github.com/maiyunnet/kebab/blob/master/lib/cron.ts#L160)
+Defined in: [lib/cron.ts:153](https://github.com/maiyunnet/kebab/blob/master/lib/cron.ts#L153)
 
 总执行次数
 
@@ -58,7 +58,7 @@ Defined in: [lib/cron.ts:160](https://github.com/maiyunnet/kebab/blob/master/lib
 
 > **last**: `string`
 
-Defined in: [lib/cron.ts:158](https://github.com/maiyunnet/kebab/blob/master/lib/cron.ts#L158)
+Defined in: [lib/cron.ts:151](https://github.com/maiyunnet/kebab/blob/master/lib/cron.ts#L151)
 
 上次执行时间字符串，格式：YmdHi（系统时区）
 
@@ -68,7 +68,7 @@ Defined in: [lib/cron.ts:158](https://github.com/maiyunnet/kebab/blob/master/lib
 
 > **name**: `string`
 
-Defined in: [lib/cron.ts:149](https://github.com/maiyunnet/kebab/blob/master/lib/cron.ts#L149)
+Defined in: [lib/cron.ts:142](https://github.com/maiyunnet/kebab/blob/master/lib/cron.ts#L142)
 
 任务名称，只能小写字母、数字、短横线、下划线，长度 1-32
 
@@ -82,7 +82,7 @@ Defined in: [lib/cron.ts:149](https://github.com/maiyunnet/kebab/blob/master/lib
 
 > **rcount**: `number`
 
-Defined in: [lib/cron.ts:162](https://github.com/maiyunnet/kebab/blob/master/lib/cron.ts#L162)
+Defined in: [lib/cron.ts:155](https://github.com/maiyunnet/kebab/blob/master/lib/cron.ts#L155)
 
 定时任务重启后的执行次数
 
@@ -92,7 +92,7 @@ Defined in: [lib/cron.ts:162](https://github.com/maiyunnet/kebab/blob/master/lib
 
 > **rule**: `string`
 
-Defined in: [lib/cron.ts:151](https://github.com/maiyunnet/kebab/blob/master/lib/cron.ts#L151)
+Defined in: [lib/cron.ts:144](https://github.com/maiyunnet/kebab/blob/master/lib/cron.ts#L144)
 
 规则，分、时、日、月、星期，与 linux 的 cron 相同（不支持秒）
 

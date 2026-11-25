@@ -13,7 +13,14 @@
 ## Interfaces
 
 - [IConnectionInfo](interfaces/IConnectionInfo.md)
+- [IScanResult](interfaces/IScanResult.md)
+- [IZAddOptions](interfaces/IZAddOptions.md)
 - [IZRangeOptions](interfaces/IZRangeOptions.md)
+
+## Type Aliases
+
+- [TRedisClient](type-aliases/TRedisClient.md)
+- [TRedisMulti](type-aliases/TRedisMulti.md)
 
 ## Functions
 

@@ -8,7 +8,7 @@
 
 > **checkSchema**(`val`, `schema`): `string`
 
-Defined in: [lib/core.ts:308](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L308)
+Defined in: [lib/core.ts:325](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L325)
 
 判断一个对象是否符合 JSON Schema
 

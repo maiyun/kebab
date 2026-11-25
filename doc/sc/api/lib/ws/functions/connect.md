@@ -8,7 +8,7 @@
 
 > **connect**(`u`, `opt?`): `Promise`\<[`Socket`](../classes/Socket.md) \| `null`\>
 
-Defined in: [lib/ws.ts:734](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L734)
+Defined in: [lib/ws.ts:738](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L738)
 
 创建一个 ws 客户端发起 ws 请求
 

@@ -6,7 +6,7 @@
 
 # Interface: IZipInputByType
 
-Defined in: [lib/zip.ts:477](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L477)
+Defined in: [lib/zip.ts:478](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L478)
 
 ## Properties
 
@@ -14,7 +14,7 @@ Defined in: [lib/zip.ts:477](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **array**: `number`[]
 
-Defined in: [lib/zip.ts:482](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L482)
+Defined in: [lib/zip.ts:483](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L483)
 
 ***
 
@@ -22,7 +22,7 @@ Defined in: [lib/zip.ts:482](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **arraybuffer**: `ArrayBuffer`
 
-Defined in: [lib/zip.ts:484](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L484)
+Defined in: [lib/zip.ts:485](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L485)
 
 ***
 
@@ -30,7 +30,7 @@ Defined in: [lib/zip.ts:484](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **base64**: `string`
 
-Defined in: [lib/zip.ts:478](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L478)
+Defined in: [lib/zip.ts:479](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L479)
 
 ***
 
@@ -38,7 +38,7 @@ Defined in: [lib/zip.ts:478](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **binarystring**: `string`
 
-Defined in: [lib/zip.ts:481](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L481)
+Defined in: [lib/zip.ts:482](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L482)
 
 ***
 
@@ -46,7 +46,7 @@ Defined in: [lib/zip.ts:481](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **blob**: `Blob`
 
-Defined in: [lib/zip.ts:485](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L485)
+Defined in: [lib/zip.ts:486](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L486)
 
 ***
 
@@ -54,7 +54,7 @@ Defined in: [lib/zip.ts:485](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **nodebuffer**: `Buffer`
 
-Defined in: [lib/zip.ts:486](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L486)
+Defined in: [lib/zip.ts:487](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L487)
 
 ***
 
@@ -62,7 +62,7 @@ Defined in: [lib/zip.ts:486](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **string**: `string`
 
-Defined in: [lib/zip.ts:479](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L479)
+Defined in: [lib/zip.ts:480](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L480)
 
 ***
 
@@ -70,7 +70,7 @@ Defined in: [lib/zip.ts:479](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **text**: `string`
 
-Defined in: [lib/zip.ts:480](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L480)
+Defined in: [lib/zip.ts:481](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L481)
 
 ***
 
@@ -78,4 +78,4 @@ Defined in: [lib/zip.ts:480](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **uint8array**: `Uint8Array`
 
-Defined in: [lib/zip.ts:483](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L483)
+Defined in: [lib/zip.ts:484](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L484)

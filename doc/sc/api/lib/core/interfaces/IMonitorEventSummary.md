@@ -6,7 +6,7 @@
 
 # Interface: IMonitorEventSummary
 
-Defined in: [lib/core.ts:1322](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1322)
+Defined in: [lib/core.ts:1352](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1352)
 
 已保存监控事件的简短摘要，path 相对于 log/monitor/
 
@@ -16,7 +16,9 @@ Defined in: [lib/core.ts:1322](https://github.com/maiyunnet/kebab/blob/master/li
 
 > **path**: `string`
 
-Defined in: [lib/core.ts:1323](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1323)
+Defined in: [lib/core.ts:1354](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1354)
+
+事件目录相对路径
 
 ***
 
@@ -24,7 +26,9 @@ Defined in: [lib/core.ts:1323](https://github.com/maiyunnet/kebab/blob/master/li
 
 > **pid**: `number`
 
-Defined in: [lib/core.ts:1324](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1324)
+Defined in: [lib/core.ts:1356](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1356)
+
+触发事件的进程 PID
 
 ***
 
@@ -32,7 +36,9 @@ Defined in: [lib/core.ts:1324](https://github.com/maiyunnet/kebab/blob/master/li
 
 > **reasons**: `string`[]
 
-Defined in: [lib/core.ts:1328](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1328)
+Defined in: [lib/core.ts:1364](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1364)
+
+触发告警的指标原因列表
 
 ***
 
@@ -40,7 +46,9 @@ Defined in: [lib/core.ts:1328](https://github.com/maiyunnet/kebab/blob/master/li
 
 > **source**: `"main"` \| `"watchdog"`
 
-Defined in: [lib/core.ts:1326](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1326)
+Defined in: [lib/core.ts:1360](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1360)
+
+事件来源：主线程监控或看门狗线程
 
 ***
 
@@ -48,7 +56,9 @@ Defined in: [lib/core.ts:1326](https://github.com/maiyunnet/kebab/blob/master/li
 
 > **status**: `string`
 
-Defined in: [lib/core.ts:1327](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1327)
+Defined in: [lib/core.ts:1362](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1362)
+
+事件当前状态或结束原因
 
 ***
 
@@ -56,4 +66,6 @@ Defined in: [lib/core.ts:1327](https://github.com/maiyunnet/kebab/blob/master/li
 
 > **time**: `number`
 
-Defined in: [lib/core.ts:1325](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1325)
+Defined in: [lib/core.ts:1358](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1358)
+
+事件确认时间戳，单位 ms

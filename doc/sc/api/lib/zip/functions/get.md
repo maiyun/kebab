@@ -8,7 +8,7 @@
 
 > **get**(`data?`): `Promise`\<[`Zip`](../classes/Zip.md) \| `null`\>
 
-Defined in: [lib/zip.ts:428](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L428)
+Defined in: [lib/zip.ts:429](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L429)
 
 获取 zip 对象
 

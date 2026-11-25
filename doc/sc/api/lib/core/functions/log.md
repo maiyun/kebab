@@ -8,7 +8,7 @@
 
 > **log**(`opt`, `msg`, `fend?`): `void`
 
-Defined in: [lib/core.ts:1174](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1174)
+Defined in: [lib/core.ts:1202](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1202)
 
 写入文件日志，不采集 Cookie、Session 或请求体
 

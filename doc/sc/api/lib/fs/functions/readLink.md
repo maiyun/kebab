@@ -8,7 +8,7 @@
 
 > **readLink**(`path`, `encoding?`): `Promise`\<`string` \| `null`\>
 
-Defined in: [lib/fs.ts:81](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L81)
+Defined in: [lib/fs.ts:84](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L84)
 
 读取链接的 target
 

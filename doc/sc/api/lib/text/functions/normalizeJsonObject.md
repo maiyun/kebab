@@ -8,7 +8,7 @@
 
 > **normalizeJsonObject**(`value`): `false` \| [`IJsonObject`](../interfaces/IJsonObject.md)
 
-Defined in: [lib/text.ts:691](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L691)
+Defined in: [lib/text.ts:696](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L696)
 
 复制严格 JSON 对象，统一各层对象的键序，保留数组元素顺序
 

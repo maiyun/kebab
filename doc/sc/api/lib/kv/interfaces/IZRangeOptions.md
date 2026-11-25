@@ -6,7 +6,9 @@
 
 # Interface: IZRangeOptions
 
-Defined in: [lib/kv.ts:15](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L15)
+Defined in: [lib/kv.ts:1388](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L1388)
+
+ZRANGE 查询选项
 
 ## Properties
 
@@ -14,12 +16,9 @@ Defined in: [lib/kv.ts:15](https://github.com/maiyunnet/kebab/blob/master/lib/kv
 
 > `optional` **by?**: `"SCORE"` \| `"LEX"`
 
-Defined in: [lib/kv.ts:22](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L22)
+Defined in: [lib/kv.ts:1390](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L1390)
 
-Range query type.
-
-- SCORE: Query by score range
-- LEX: Query by lexicographical range
+查询方式：SCORE 按分数范围，LEX 按字典序
 
 ***
 
@@ -27,9 +26,9 @@ Range query type.
 
 > `optional` **count?**: `number`
 
-Defined in: [lib/kv.ts:37](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L37)
+Defined in: [lib/kv.ts:1396](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L1396)
 
-Pagination count. Must be used together with offset.
+分页条数，需与 offset 同用
 
 ***
 
@@ -37,9 +36,9 @@ Pagination count. Must be used together with offset.
 
 > `optional` **offset?**: `number`
 
-Defined in: [lib/kv.ts:32](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L32)
+Defined in: [lib/kv.ts:1394](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L1394)
 
-Pagination offset. Must be used together with count.
+分页偏移量，需与 count 同用
 
 ***
 
@@ -47,6 +46,6 @@ Pagination offset. Must be used together with count.
 
 > `optional` **rev?**: `boolean`
 
-Defined in: [lib/kv.ts:27](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L27)
+Defined in: [lib/kv.ts:1392](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L1392)
 
-Whether to return results in reverse order.
+是否倒序返回

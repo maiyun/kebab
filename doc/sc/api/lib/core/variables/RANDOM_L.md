@@ -8,6 +8,6 @@
 
 > `const` **RANDOM\_L**: `"abcdefghijklmnopqrstuvwxyz"` = `'abcdefghijklmnopqrstuvwxyz'`
 
-Defined in: [lib/core.ts:115](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L115)
+Defined in: [lib/core.ts:131](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L131)
 
 小写字母字符集

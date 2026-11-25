@@ -8,7 +8,7 @@
 
 > **getMonitorEvent**(`opt`): `Promise`\<`false` \| [`IMonitorEvent`](../interfaces/IMonitorEvent.md) \| `null`\>
 
-Defined in: [lib/core.ts:1412](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1412)
+Defined in: [lib/core.ts:1460](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1460)
 
 读取事件详情和文件清单；只解析事件记录，不解析 Profile 或堆快照
 

@@ -6,7 +6,7 @@
 
 # Interface: IZipMetadata
 
-Defined in: [lib/zip.ts:493](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L493)
+Defined in: [lib/zip.ts:494](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L494)
 
 ## Properties
 
@@ -14,7 +14,7 @@ Defined in: [lib/zip.ts:493](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **currentFile**: `string` \| `null`
 
-Defined in: [lib/zip.ts:495](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L495)
+Defined in: [lib/zip.ts:496](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L496)
 
 ***
 
@@ -22,4 +22,4 @@ Defined in: [lib/zip.ts:495](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **percent**: `number`
 
-Defined in: [lib/zip.ts:494](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L494)
+Defined in: [lib/zip.ts:495](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L495)

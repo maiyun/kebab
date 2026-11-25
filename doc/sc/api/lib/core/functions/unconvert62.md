@@ -8,7 +8,7 @@
 
 > **unconvert62**(`n`): `bigint`
 
-Defined in: [lib/core.ts:177](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L177)
+Defined in: [lib/core.ts:194](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L194)
 
 将 62 进制转换为 10 进制
 

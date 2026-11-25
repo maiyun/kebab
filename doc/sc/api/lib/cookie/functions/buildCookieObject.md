@@ -8,7 +8,7 @@
 
 > **buildCookieObject**(`cookie`, `setCookies`, `uri`): `Promise`\<`void`\>
 
-Defined in: [lib/cookie.ts:46](https://github.com/maiyunnet/kebab/blob/master/lib/cookie.ts#L46)
+Defined in: [lib/cookie.ts:47](https://github.com/maiyunnet/kebab/blob/master/lib/cookie.ts#L47)
 
 根据 Set-Cookie 头部转换到 cookie 对象
 

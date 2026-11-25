@@ -10,7 +10,7 @@
 
 > **getResponseJson**(`u`, `opt?`): `Promise`\<`any`\>
 
-Defined in: [lib/undici.ts:310](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L310)
+Defined in: [lib/undici.ts:307](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L307)
 
 发起 GET 请求并解析 JSON 响应
 
@@ -38,7 +38,7 @@ Defined in: [lib/undici.ts:310](https://github.com/maiyunnet/kebab/blob/master/l
 
 > **getResponseJson**\<`T`\>(`u`, `opt?`): `Promise`\<`false` \| `T` \| `null`\>
 
-Defined in: [lib/undici.ts:318](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L318)
+Defined in: [lib/undici.ts:315](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L315)
 
 发起 GET 请求并解析 JSON 响应
 

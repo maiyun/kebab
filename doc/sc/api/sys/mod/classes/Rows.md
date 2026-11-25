@@ -6,7 +6,7 @@
 
 # Class: Rows\<T\>
 
-Defined in: [sys/mod.ts:44](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L44)
+Defined in: [sys/mod.ts:49](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L49)
 
 条数列表
 
@@ -26,7 +26,7 @@ Defined in: [sys/mod.ts:44](https://github.com/maiyunnet/kebab/blob/master/sys/m
 
 > **new Rows**\<`T`\>(`initialItems?`): `Rows`\<`T`\>
 
-Defined in: [sys/mod.ts:48](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L48)
+Defined in: [sys/mod.ts:53](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L53)
 
 #### Parameters
 
@@ -46,7 +46,7 @@ Defined in: [sys/mod.ts:48](https://github.com/maiyunnet/kebab/blob/master/sys/m
 
 > **get** **length**(): `number`
 
-Defined in: [sys/mod.ts:53](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L53)
+Defined in: [sys/mod.ts:58](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L58)
 
 总行数
 
@@ -64,7 +64,7 @@ Defined in: [sys/mod.ts:53](https://github.com/maiyunnet/kebab/blob/master/sys/m
 
 > **\[iterator\]**(): `IterableIterator`\<`T`\>
 
-Defined in: [sys/mod.ts:85](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L85)
+Defined in: [sys/mod.ts:90](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L90)
 
 for of
 
@@ -82,7 +82,7 @@ for of
 
 > **filter**(`predicate`): `Rows`\<`T`\>
 
-Defined in: [sys/mod.ts:71](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L71)
+Defined in: [sys/mod.ts:76](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L76)
 
 根据规则筛掉项，predicate 返回 true 代表保留
 
@@ -102,7 +102,7 @@ Defined in: [sys/mod.ts:71](https://github.com/maiyunnet/kebab/blob/master/sys/m
 
 > **item**(`index`): `T`
 
-Defined in: [sys/mod.ts:58](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L58)
+Defined in: [sys/mod.ts:63](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L63)
 
 通过索引获取一个对象
 
@@ -126,7 +126,7 @@ Defined in: [sys/mod.ts:58](https://github.com/maiyunnet/kebab/blob/master/sys/m
 
 > **map**\<`TU`\>(`callbackfn`): `TU`[]
 
-Defined in: [sys/mod.ts:76](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L76)
+Defined in: [sys/mod.ts:81](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L81)
 
 重塑对象内容为数组
 
@@ -154,7 +154,7 @@ Defined in: [sys/mod.ts:76](https://github.com/maiyunnet/kebab/blob/master/sys/m
 
 > **toArray**(): [`TModRow`](../type-aliases/TModRow.md)[]
 
-Defined in: [sys/mod.ts:63](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L63)
+Defined in: [sys/mod.ts:68](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L68)
 
 将模型转换为普通对象数组
 
@@ -170,7 +170,7 @@ Defined in: [sys/mod.ts:63](https://github.com/maiyunnet/kebab/blob/master/sys/m
 
 > **toArray**\<`TRow`\>(): `TRow`[]
 
-Defined in: [sys/mod.ts:65](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L65)
+Defined in: [sys/mod.ts:70](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L70)
 
 将模型转换为指定行类型的普通对象数组
 

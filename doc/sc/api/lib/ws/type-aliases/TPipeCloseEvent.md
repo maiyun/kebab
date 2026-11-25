@@ -8,6 +8,6 @@
 
 > **TPipeCloseEvent** = `"close"` \| `"end"` \| `"timeout"` \| `"error"`
 
-Defined in: [lib/ws.ts:63](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L63)
+Defined in: [lib/ws.ts:65](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L65)
 
 WebSocket 管道结束前最后收到的底层事件

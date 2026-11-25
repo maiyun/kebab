@@ -6,7 +6,7 @@
 
 # Interface: IPutObjectsOptions
 
-Defined in: [lib/s3.ts:60](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L60)
+Defined in: [lib/s3.ts:62](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L62)
 
 批量上传选项
 
@@ -16,7 +16,7 @@ Defined in: [lib/s3.ts:60](https://github.com/maiyunnet/kebab/blob/master/lib/s3
 
 > `optional` **bucket?**: `string`
 
-Defined in: [lib/s3.ts:64](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L64)
+Defined in: [lib/s3.ts:66](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L66)
 
 bucket 名
 
@@ -26,6 +26,6 @@ bucket 名
 
 > `optional` **concurrency?**: `number`
 
-Defined in: [lib/s3.ts:62](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L62)
+Defined in: [lib/s3.ts:64](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L64)
 
 并发数，默认 5

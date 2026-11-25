@@ -8,7 +8,7 @@
 
 > `const` **filterProxyHeaders**: (`headers`, `res?`, `filter?`) => `Record`\<`string`, `string` \| `string`[]\> = `lProxy.filterProxyHeaders`
 
-Defined in: [lib/undici.ts:706](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L706)
+Defined in: [lib/undici.ts:722](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L722)
 
 过滤代理请求或响应的基础头部，不生成或清理来源信息
 

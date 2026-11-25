@@ -10,7 +10,7 @@
 
 > **postResponseJson**(`u`, `data`, `opt?`): `Promise`\<`any`\>
 
-Defined in: [lib/undici.ts:283](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L283)
+Defined in: [lib/undici.ts:281](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L281)
 
 发起 POST 请求并解析 JSON 响应
 
@@ -44,7 +44,7 @@ Defined in: [lib/undici.ts:283](https://github.com/maiyunnet/kebab/blob/master/l
 
 > **postResponseJson**\<`T`\>(`u`, `data`, `opt?`): `Promise`\<`false` \| `T` \| `null`\>
 
-Defined in: [lib/undici.ts:294](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L294)
+Defined in: [lib/undici.ts:292](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L292)
 
 发起 POST 请求并解析 JSON 响应
 

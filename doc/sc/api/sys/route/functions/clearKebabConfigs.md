@@ -8,7 +8,7 @@
 
 > **clearKebabConfigs**(): `void`
 
-Defined in: [sys/route.ts:47](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L47)
+Defined in: [sys/route.ts:49](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L49)
 
 清空缓存的项目配置，下次请求时重新读取文件
 

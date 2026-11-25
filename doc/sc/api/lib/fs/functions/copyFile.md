@@ -8,7 +8,7 @@
 
 > **copyFile**(`src`, `dest`): `Promise`\<`boolean`\>
 
-Defined in: [lib/fs.ts:316](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L316)
+Defined in: [lib/fs.ts:319](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L319)
 
 复制文件
 

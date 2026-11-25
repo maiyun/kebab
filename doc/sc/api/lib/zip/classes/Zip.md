@@ -34,7 +34,7 @@ Defined in: [lib/zip.ts:17](https://github.com/maiyunnet/kebab/blob/master/lib/z
 
 > **cd**(`dir`): `string`
 
-Defined in: [lib/zip.ts:338](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L338)
+Defined in: [lib/zip.ts:348](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L348)
 
 进入一个目录（不存在也能进入，需要自行判断）
 返回进入后的路径值
@@ -57,7 +57,7 @@ Defined in: [lib/zip.ts:338](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > **generate**\<`T`\>(`options?`): `Promise`\<[`IZipOutputByType`](../interfaces/IZipOutputByType.md)\[`T`\]\>
 
-Defined in: [lib/zip.ts:350](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L350)
+Defined in: [lib/zip.ts:360](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L360)
 
 打包 zip
 
@@ -155,7 +155,7 @@ Defined in: [lib/zip.ts:23](https://github.com/maiyunnet/kebab/blob/master/lib/z
 
 > **getList**(): `Promise`\<`Record`\<`string`, `string` \| `Buffer`\<`ArrayBufferLike`\>\>\>
 
-Defined in: [lib/zip.ts:375](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L375)
+Defined in: [lib/zip.ts:385](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L385)
 
 获取 path 和 string/Buffer 对应的文件列表
 
@@ -263,7 +263,7 @@ Defined in: [lib/zip.ts:51](https://github.com/maiyunnet/kebab/blob/master/lib/z
 
 > **pwd**(): `string`
 
-Defined in: [lib/zip.ts:329](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L329)
+Defined in: [lib/zip.ts:339](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L339)
 
 获取当前目录，末尾不带 /
 

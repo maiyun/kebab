@@ -8,7 +8,7 @@
 
 > **isPhoneCN**(`p`): `boolean`
 
-Defined in: [lib/text.ts:441](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L441)
+Defined in: [lib/text.ts:446](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L446)
 
 判断手机号是否是 11 位，不做真实性校验
 

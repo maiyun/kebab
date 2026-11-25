@@ -6,7 +6,7 @@
 
 # Interface: IRproxyOptions
 
-Defined in: [lib/undici.ts:982](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L982)
+Defined in: [lib/undici.ts:1022](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L1022)
 
 反向代理请求的传入参数选项
 
@@ -20,7 +20,7 @@ Defined in: [lib/undici.ts:982](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **body?**: `string` \| `Buffer`\<`ArrayBufferLike`\> \| `Readable`
 
-Defined in: [lib/undici.ts:1005](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L1005)
+Defined in: [lib/undici.ts:1048](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L1048)
 
 手动传入请求体（优先于原始 req 流），用于 req 流已消费后仍需转发 body 的场景
 
@@ -30,7 +30,7 @@ Defined in: [lib/undici.ts:1005](https://github.com/maiyunnet/kebab/blob/master/
 
 > `optional` **filter?**: (`h`) => `boolean`
 
-Defined in: [lib/undici.ts:995](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L995)
+Defined in: [lib/undici.ts:1038](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L1038)
 
 过滤 header，返回 true 则留下
 
@@ -50,7 +50,9 @@ Defined in: [lib/undici.ts:995](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **follow?**: `number`
 
-Defined in: [lib/undici.ts:985](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L985)
+Defined in: [lib/undici.ts:1026](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L1026)
+
+追踪 location 次数，0 为不追踪，默认为 0
 
 ***
 
@@ -58,7 +60,9 @@ Defined in: [lib/undici.ts:985](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **headers?**: [`THttpHeaders`](../type-aliases/THttpHeaders.md)
 
-Defined in: [lib/undici.ts:989](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L989)
+Defined in: [lib/undici.ts:1032](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L1032)
+
+自定义请求头
 
 ***
 
@@ -66,7 +70,7 @@ Defined in: [lib/undici.ts:989](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **hosts?**: `string` \| `Record`\<`string`, `string`\>
 
-Defined in: [lib/undici.ts:987](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L987)
+Defined in: [lib/undici.ts:1028](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L1028)
 
 自定义 host 映射，如 {'www.maiyun.net': '127.0.0.1'}，或全部映射到一个 host
 
@@ -76,7 +80,7 @@ Defined in: [lib/undici.ts:987](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **keepAliveTimeout?**: `number`
 
-Defined in: [lib/undici.ts:991](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L991)
+Defined in: [lib/undici.ts:1034](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L1034)
 
 空闲连接允许复用的最长秒数；非正数或无效值按未设置处理；默认无服务端提示时为 4 秒，有提示时采用提示值减 2 秒且最多 600 秒
 
@@ -86,7 +90,9 @@ Defined in: [lib/undici.ts:991](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **local?**: `string`
 
-Defined in: [lib/undici.ts:988](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L988)
+Defined in: [lib/undici.ts:1030](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L1030)
+
+使用的本地网卡 IP
 
 ***
 
@@ -94,7 +100,7 @@ Defined in: [lib/undici.ts:988](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **mproxy?**: `object`
 
-Defined in: [lib/undici.ts:997](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L997)
+Defined in: [lib/undici.ts:1040](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L1040)
 
 正向 mproxy 代理，url 如 https://xxx/abc
 
@@ -139,7 +145,7 @@ reverse 的协议和 IP 仅取实际连接，不信任来路代理头；可信�
 
 > `optional` **querys?**: `Record`\<`string`, `any`\>
 
-Defined in: [lib/undici.ts:1007](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L1007)
+Defined in: [lib/undici.ts:1050](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L1050)
 
 自定义 GET 查询参数，传入后直接替换代理目标 URL 的整个 query string
 
@@ -149,7 +155,7 @@ Defined in: [lib/undici.ts:1007](https://github.com/maiyunnet/kebab/blob/master/
 
 > `optional` **reuse?**: `string` \| `Agent` \| `ProxyAgent`
 
-Defined in: [lib/undici.ts:1009](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L1009)
+Defined in: [lib/undici.ts:1052](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L1052)
 
 默认为 default
 
@@ -159,7 +165,7 @@ Defined in: [lib/undici.ts:1009](https://github.com/maiyunnet/kebab/blob/master/
 
 > `optional` **reuseTimeout?**: `number`
 
-Defined in: [lib/undici.ts:993](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L993)
+Defined in: [lib/undici.ts:1036](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L1036)
 
 连接建立后允许承接新请求的最长秒数；非正数或无效值按未设置处理；达到后不再复用但不会中断在途请求，默认不限制
 
@@ -169,6 +175,6 @@ Defined in: [lib/undici.ts:993](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **timeout?**: `number`
 
-Defined in: [lib/undici.ts:984](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L984)
+Defined in: [lib/undici.ts:1024](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L1024)
 
 秒数，默认 300 秒

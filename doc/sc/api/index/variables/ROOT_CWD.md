@@ -8,6 +8,6 @@
 
 > `const` **ROOT\_CWD**: `string`
 
-Defined in: [index.ts:29](https://github.com/maiyunnet/kebab/blob/master/index.ts#L29)
+Defined in: [index.ts:31](https://github.com/maiyunnet/kebab/blob/master/index.ts#L31)
 
 执行根目录，以 / 结尾

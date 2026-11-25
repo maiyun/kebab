@@ -8,7 +8,7 @@
 
 > **rproxy**(`ctr`, `url`, `opt?`): `Promise`\<`boolean`\>
 
-Defined in: [lib/ws.ts:1007](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L1007)
+Defined in: [lib/ws.ts:973](https://github.com/maiyunnet/kebab/blob/master/lib/ws.ts#L973)
 
 反向代理，将本 socket 连接反代到其他网址，在 ws 的 onLoad 事件中使用
 

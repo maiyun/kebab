@@ -8,7 +8,7 @@
 
 > **uuid**(`options?`): `string`
 
-Defined in: [lib/crypto.ts:466](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L466)
+Defined in: [lib/crypto.ts:480](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L480)
 
 生成 uuid
 

@@ -8,7 +8,7 @@
 
 > **loadEnv**(`dir`): `Promise`\<`void`\>
 
-Defined in: [lib/core.ts:1626](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1626)
+Defined in: [lib/core.ts:1674](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1674)
 
 加载 .env 文件到 process.env，若文件不存在则跳过
 

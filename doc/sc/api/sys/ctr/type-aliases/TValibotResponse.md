@@ -8,7 +8,7 @@
 
 > **TValibotResponse**\<`TIssue`\> = [`Json`](../../../index/type-aliases/Json.md)[] \| ((`issues`) => [`Json`](../../../index/type-aliases/Json.md)[])
 
-Defined in: [sys/ctr.ts:46](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L46)
+Defined in: [sys/ctr.ts:85](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L85)
 
 Valibot 校验失败时可直接返回给客户端的内容或生成函数
 

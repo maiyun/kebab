@@ -6,7 +6,7 @@
 
 # Interface: IDomain
 
-Defined in: [lib/text.ts:358](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L358)
+Defined in: [lib/text.ts:359](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L359)
 
 解析后的 domain
 
@@ -16,7 +16,9 @@ Defined in: [lib/text.ts:358](https://github.com/maiyunnet/kebab/blob/master/lib
 
 > **domain**: `string` \| `null`
 
-Defined in: [lib/text.ts:361](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L361)
+Defined in: [lib/text.ts:365](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L365)
+
+主域名（sld.tld）
 
 ***
 
@@ -24,7 +26,9 @@ Defined in: [lib/text.ts:361](https://github.com/maiyunnet/kebab/blob/master/lib
 
 > **sld**: `string` \| `null`
 
-Defined in: [lib/text.ts:360](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L360)
+Defined in: [lib/text.ts:363](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L363)
+
+二级域名主体
 
 ***
 
@@ -32,7 +36,9 @@ Defined in: [lib/text.ts:360](https://github.com/maiyunnet/kebab/blob/master/lib
 
 > **sub**: `string` \| `null`
 
-Defined in: [lib/text.ts:362](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L362)
+Defined in: [lib/text.ts:367](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L367)
+
+子域名前缀
 
 ***
 
@@ -40,4 +46,6 @@ Defined in: [lib/text.ts:362](https://github.com/maiyunnet/kebab/blob/master/lib
 
 > **tld**: `string` \| `null`
 
-Defined in: [lib/text.ts:359](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L359)
+Defined in: [lib/text.ts:361](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L361)
+
+顶级域名，如 com、co.uk

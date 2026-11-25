@@ -6,7 +6,7 @@
 
 # Interface: ILogOptions
 
-Defined in: [lib/core.ts:1158](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1158)
+Defined in: [lib/core.ts:1180](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1180)
 
 log 设置的选项
 
@@ -16,7 +16,9 @@ log 设置的选项
 
 > `optional` **get?**: `Record`\<`string`, `any`\>
 
-Defined in: [lib/core.ts:1163](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1163)
+Defined in: [lib/core.ts:1190](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1190)
+
+GET 查询参数
 
 ***
 
@@ -24,7 +26,9 @@ Defined in: [lib/core.ts:1163](https://github.com/maiyunnet/kebab/blob/master/li
 
 > `optional` **headers?**: `IncomingHttpHeaders`
 
-Defined in: [lib/core.ts:1164](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1164)
+Defined in: [lib/core.ts:1192](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1192)
+
+请求头
 
 ***
 
@@ -32,7 +36,9 @@ Defined in: [lib/core.ts:1164](https://github.com/maiyunnet/kebab/blob/master/li
 
 > `optional` **hostname?**: `string`
 
-Defined in: [lib/core.ts:1161](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1161)
+Defined in: [lib/core.ts:1186](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1186)
+
+主机名，用于日志分目录，默认 system
 
 ***
 
@@ -40,7 +46,9 @@ Defined in: [lib/core.ts:1161](https://github.com/maiyunnet/kebab/blob/master/li
 
 > `optional` **path?**: `string`
 
-Defined in: [lib/core.ts:1159](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1159)
+Defined in: [lib/core.ts:1182](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1182)
+
+当前请求路径
 
 ***
 
@@ -48,7 +56,9 @@ Defined in: [lib/core.ts:1159](https://github.com/maiyunnet/kebab/blob/master/li
 
 > `optional` **req?**: `IncomingMessage` \| `Http2ServerRequest` \| `null`
 
-Defined in: [lib/core.ts:1162](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1162)
+Defined in: [lib/core.ts:1188](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1188)
+
+原始 HTTP 请求对象
 
 ***
 
@@ -56,4 +66,6 @@ Defined in: [lib/core.ts:1162](https://github.com/maiyunnet/kebab/blob/master/li
 
 > `optional` **urlFull?**: `string`
 
-Defined in: [lib/core.ts:1160](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1160)
+Defined in: [lib/core.ts:1184](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L1184)
+
+站点完整基础 URL

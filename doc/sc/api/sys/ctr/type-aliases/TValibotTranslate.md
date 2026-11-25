@@ -8,7 +8,7 @@
 
 > **TValibotTranslate** = (`key`, `issue`) => `string`
 
-Defined in: [sys/ctr.ts:50](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L50)
+Defined in: [sys/ctr.ts:89](https://github.com/maiyunnet/kebab/blob/master/sys/ctr.ts#L89)
 
 在 issue 路径完整后，根据 Kebab 生成的语言键翻译消息
 

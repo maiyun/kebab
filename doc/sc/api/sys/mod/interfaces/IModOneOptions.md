@@ -16,7 +16,9 @@ Defined in: [sys/mod.ts:23](https://github.com/maiyunnet/kebab/blob/master/sys/m
 
 > `optional` **by?**: \[`string` \| `string`[], `"DESC"` \| `"ASC"`\]
 
-Defined in: [sys/mod.ts:31](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L31)
+Defined in: [sys/mod.ts:35](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L35)
+
+排序字段与方向
 
 ***
 
@@ -24,7 +26,9 @@ Defined in: [sys/mod.ts:31](https://github.com/maiyunnet/kebab/blob/master/sys/m
 
 > `optional` **ctr?**: [`Ctr`](../../ctr/classes/Ctr.md)
 
-Defined in: [sys/mod.ts:24](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L24)
+Defined in: [sys/mod.ts:25](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L25)
+
+所属控制器，用于错误日志
 
 ***
 
@@ -32,7 +36,9 @@ Defined in: [sys/mod.ts:24](https://github.com/maiyunnet/kebab/blob/master/sys/m
 
 > `optional` **hint?**: `string`
 
-Defined in: [sys/mod.ts:32](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L32)
+Defined in: [sys/mod.ts:37](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L37)
+
+SQL 优化提示
 
 ***
 
@@ -40,7 +46,9 @@ Defined in: [sys/mod.ts:32](https://github.com/maiyunnet/kebab/blob/master/sys/m
 
 > `optional` **index?**: `string` \| `string`[]
 
-Defined in: [sys/mod.ts:29](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L29)
+Defined in: [sys/mod.ts:31](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L31)
+
+分表后缀
 
 ***
 
@@ -48,7 +56,7 @@ Defined in: [sys/mod.ts:29](https://github.com/maiyunnet/kebab/blob/master/sys/m
 
 > `optional` **lock?**: `boolean`
 
-Defined in: [sys/mod.ts:26](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L26)
+Defined in: [sys/mod.ts:27](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L27)
 
 加锁时确保 WHERE 条件命中索引，以免锁定过多记录
 
@@ -58,7 +66,7 @@ Defined in: [sys/mod.ts:26](https://github.com/maiyunnet/kebab/blob/master/sys/m
 
 > `optional` **pre?**: `string`
 
-Defined in: [sys/mod.ts:28](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L28)
+Defined in: [sys/mod.ts:29](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L29)
 
 MySQL 表前缀或 PostgreSQL Schema 名
 
@@ -68,4 +76,6 @@ MySQL 表前缀或 PostgreSQL Schema 名
 
 > `optional` **select?**: `string` \| `string`[]
 
-Defined in: [sys/mod.ts:30](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L30)
+Defined in: [sys/mod.ts:33](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L33)
+
+指定查询字段

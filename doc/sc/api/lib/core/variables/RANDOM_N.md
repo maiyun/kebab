@@ -8,6 +8,6 @@
 
 > `const` **RANDOM\_N**: `"0123456789"` = `'0123456789'`
 
-Defined in: [lib/core.ts:111](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L111)
+Defined in: [lib/core.ts:127](https://github.com/maiyunnet/kebab/blob/master/lib/core.ts#L127)
 
 数字字符集

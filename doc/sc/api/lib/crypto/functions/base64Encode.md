@@ -8,7 +8,7 @@
 
 > **base64Encode**(`data`): `string`
 
-Defined in: [lib/crypto.ts:438](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L438)
+Defined in: [lib/crypto.ts:452](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L452)
 
 base64 编码
 

@@ -6,7 +6,7 @@
 
 # Interface: IPasswordOptions
 
-Defined in: [lib/crypto.ts:471](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L471)
+Defined in: [lib/crypto.ts:485](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L485)
 
 密码散列的计算成本，未指定的选项使用默认值
 
@@ -16,7 +16,7 @@ Defined in: [lib/crypto.ts:471](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **memory?**: `number`
 
-Defined in: [lib/crypto.ts:473](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L473)
+Defined in: [lib/crypto.ts:487](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L487)
 
 内存成本，单位 KiB，默认 65536（64 MiB）；整数，至少为并行度的 8 倍，最多 262144
 
@@ -26,7 +26,7 @@ Defined in: [lib/crypto.ts:473](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **parallelism?**: `number`
 
-Defined in: [lib/crypto.ts:477](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L477)
+Defined in: [lib/crypto.ts:491](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L491)
 
 并行度，默认 1；整数，范围 1～8
 
@@ -36,6 +36,6 @@ Defined in: [lib/crypto.ts:477](https://github.com/maiyunnet/kebab/blob/master/l
 
 > `optional` **passes?**: `number`
 
-Defined in: [lib/crypto.ts:475](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L475)
+Defined in: [lib/crypto.ts:489](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L489)
 
 计算轮数，默认 3；整数，范围 1～10

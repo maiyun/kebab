@@ -38,7 +38,7 @@ Defined in: [lib/db/conn.ts:64](https://github.com/maiyunnet/kebab/blob/master/l
 
 > **beginTransaction**(`logError?`): `Promise`\<`boolean`\>
 
-Defined in: [lib/db/conn.ts:347](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L347)
+Defined in: [lib/db/conn.ts:348](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L348)
 
 开启事务，只能在独占连接中使用
 
@@ -62,7 +62,7 @@ Defined in: [lib/db/conn.ts:347](https://github.com/maiyunnet/kebab/blob/master/
 
 > **commit**(): `Promise`\<`boolean`\>
 
-Defined in: [lib/db/conn.ts:377](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L377)
+Defined in: [lib/db/conn.ts:378](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L378)
 
 #### Returns
 
@@ -74,7 +74,7 @@ Defined in: [lib/db/conn.ts:377](https://github.com/maiyunnet/kebab/blob/master/
 
 > **end**(): `Promise`\<`boolean`\>
 
-Defined in: [lib/db/conn.ts:330](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L330)
+Defined in: [lib/db/conn.ts:331](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L331)
 
 关闭连接，一般情况下不使用
 
@@ -88,7 +88,7 @@ Defined in: [lib/db/conn.ts:330](https://github.com/maiyunnet/kebab/blob/master/
 
 > **execute**(`sql`, `values?`): `Promise`\<[`IPacket`](../../interfaces/IPacket.md)\>
 
-Defined in: [lib/db/conn.ts:256](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L256)
+Defined in: [lib/db/conn.ts:257](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L257)
 
 执行一条 SQL 并获得影响行数对象 packet
 
@@ -238,7 +238,7 @@ Defined in: [lib/db/conn.ts:123](https://github.com/maiyunnet/kebab/blob/master/
 
 > **query**(`sql`, `values?`): `Promise`\<[`IData`](../../interfaces/IData.md)\<`Record`\<`string`, `any`\>\>\>
 
-Defined in: [lib/db/conn.ts:188](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L188)
+Defined in: [lib/db/conn.ts:189](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L189)
 
 执行一条 SQL 并获得返回数据
 
@@ -266,7 +266,7 @@ SQL 占位符绑定的值
 
 > **query**\<`TRow`\>(`sql`, `values?`): `Promise`\<[`IData`](../../interfaces/IData.md)\<`TRow`\>\>
 
-Defined in: [lib/db/conn.ts:196](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L196)
+Defined in: [lib/db/conn.ts:197](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L197)
 
 执行一条 SQL，按指定类型返回数据行
 
@@ -318,7 +318,7 @@ Defined in: [lib/db/conn.ts:156](https://github.com/maiyunnet/kebab/blob/master/
 
 > **rollback**(): `Promise`\<`boolean`\>
 
-Defined in: [lib/db/conn.ts:397](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L397)
+Defined in: [lib/db/conn.ts:398](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L398)
 
 #### Returns
 

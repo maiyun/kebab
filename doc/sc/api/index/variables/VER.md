@@ -6,8 +6,8 @@
 
 # Variable: VER
 
-> `const` **VER**: `"9.29.6"` = `'9.29.6'`
+> `const` **VER**: `"10.0.0"` = `'10.0.0'`
 
-Defined in: [index.ts:8](https://github.com/maiyunnet/kebab/blob/master/index.ts#L8)
+Defined in: [index.ts:10](https://github.com/maiyunnet/kebab/blob/master/index.ts#L10)
 
 当前系统版本号

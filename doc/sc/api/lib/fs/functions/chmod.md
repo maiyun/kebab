@@ -8,7 +8,7 @@
 
 > **chmod**(`path`, `mod`): `Promise`\<`boolean`\>
 
-Defined in: [lib/fs.ts:224](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L224)
+Defined in: [lib/fs.ts:227](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L227)
 
 修改权限
 

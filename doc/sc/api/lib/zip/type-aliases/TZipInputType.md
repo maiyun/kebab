@@ -8,4 +8,4 @@
 
 > **TZipInputType** = keyof [`IZipInputByType`](../interfaces/IZipInputByType.md)
 
-Defined in: [lib/zip.ts:489](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L489)
+Defined in: [lib/zip.ts:490](https://github.com/maiyunnet/kebab/blob/master/lib/zip.ts#L490)

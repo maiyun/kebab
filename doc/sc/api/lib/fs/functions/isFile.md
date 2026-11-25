@@ -8,7 +8,7 @@
 
 > **isFile**(`path`): `Promise`\<`false` \| `Stats`\>
 
-Defined in: [lib/fs.ts:153](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L153)
+Defined in: [lib/fs.ts:156](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L156)
 
 判断是否是文件或文件是否存在，是的话返回 stats
 

@@ -6,7 +6,7 @@
 
 # Interface: ICookie
 
-Defined in: [lib/cookie.ts:237](https://github.com/maiyunnet/kebab/blob/master/lib/cookie.ts#L237)
+Defined in: [lib/cookie.ts:239](https://github.com/maiyunnet/kebab/blob/master/lib/cookie.ts#L239)
 
 Cookie 对象
 
@@ -16,7 +16,7 @@ Cookie 对象
 
 > **domain**: `string`
 
-Defined in: [lib/cookie.ts:243](https://github.com/maiyunnet/kebab/blob/master/lib/cookie.ts#L243)
+Defined in: [lib/cookie.ts:245](https://github.com/maiyunnet/kebab/blob/master/lib/cookie.ts#L245)
 
 ***
 
@@ -24,9 +24,19 @@ Defined in: [lib/cookie.ts:243](https://github.com/maiyunnet/kebab/blob/master/l
 
 > **exp**: `number`
 
-Defined in: [lib/cookie.ts:241](https://github.com/maiyunnet/kebab/blob/master/lib/cookie.ts#L241)
+Defined in: [lib/cookie.ts:243](https://github.com/maiyunnet/kebab/blob/master/lib/cookie.ts#L243)
 
 有效期秒级时间戳
+
+***
+
+### hostOnly?
+
+> `optional` **hostOnly?**: `boolean`
+
+Defined in: [lib/cookie.ts:249](https://github.com/maiyunnet/kebab/blob/master/lib/cookie.ts#L249)
+
+是否仅限当前主机（未指定 Domain 属性时为 true）
 
 ***
 
@@ -34,7 +44,7 @@ Defined in: [lib/cookie.ts:241](https://github.com/maiyunnet/kebab/blob/master/l
 
 > **httponly**: `boolean`
 
-Defined in: [lib/cookie.ts:245](https://github.com/maiyunnet/kebab/blob/master/lib/cookie.ts#L245)
+Defined in: [lib/cookie.ts:247](https://github.com/maiyunnet/kebab/blob/master/lib/cookie.ts#L247)
 
 ***
 
@@ -42,7 +52,7 @@ Defined in: [lib/cookie.ts:245](https://github.com/maiyunnet/kebab/blob/master/l
 
 > **name**: `string`
 
-Defined in: [lib/cookie.ts:238](https://github.com/maiyunnet/kebab/blob/master/lib/cookie.ts#L238)
+Defined in: [lib/cookie.ts:240](https://github.com/maiyunnet/kebab/blob/master/lib/cookie.ts#L240)
 
 ***
 
@@ -50,7 +60,7 @@ Defined in: [lib/cookie.ts:238](https://github.com/maiyunnet/kebab/blob/master/l
 
 > **path**: `string`
 
-Defined in: [lib/cookie.ts:242](https://github.com/maiyunnet/kebab/blob/master/lib/cookie.ts#L242)
+Defined in: [lib/cookie.ts:244](https://github.com/maiyunnet/kebab/blob/master/lib/cookie.ts#L244)
 
 ***
 
@@ -58,7 +68,7 @@ Defined in: [lib/cookie.ts:242](https://github.com/maiyunnet/kebab/blob/master/l
 
 > **secure**: `boolean`
 
-Defined in: [lib/cookie.ts:244](https://github.com/maiyunnet/kebab/blob/master/lib/cookie.ts#L244)
+Defined in: [lib/cookie.ts:246](https://github.com/maiyunnet/kebab/blob/master/lib/cookie.ts#L246)
 
 ***
 
@@ -66,4 +76,4 @@ Defined in: [lib/cookie.ts:244](https://github.com/maiyunnet/kebab/blob/master/l
 
 > **value**: `string`
 
-Defined in: [lib/cookie.ts:239](https://github.com/maiyunnet/kebab/blob/master/lib/cookie.ts#L239)
+Defined in: [lib/cookie.ts:241](https://github.com/maiyunnet/kebab/blob/master/lib/cookie.ts#L241)

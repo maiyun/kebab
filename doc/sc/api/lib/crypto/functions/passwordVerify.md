@@ -8,7 +8,7 @@
 
 > **passwordVerify**(`password`, `encoded`): `Promise`\<`boolean` \| `null`\>
 
-Defined in: [lib/crypto.ts:498](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L498)
+Defined in: [lib/crypto.ts:512](https://github.com/maiyunnet/kebab/blob/master/lib/crypto.ts#L512)
 
 使用散列中保存的参数验证密码
 接受 Argon2id v19，成本范围与 IPasswordOptions 相同，盐为 8～64 字节、散列为 16～64 字节。

@@ -8,7 +8,7 @@
 
 > **isDir**(`path`): `Promise`\<`false` \| `Stats`\>
 
-Defined in: [lib/fs.ts:144](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L144)
+Defined in: [lib/fs.ts:147](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L147)
 
 判断是否是目录或目录是否存在，是的话返回 stats
 

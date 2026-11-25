@@ -6,7 +6,7 @@
 
 # Interface: IOptions
 
-Defined in: [lib/s3.ts:28](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L28)
+Defined in: [lib/s3.ts:30](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L30)
 
 选项
 
@@ -16,7 +16,7 @@ Defined in: [lib/s3.ts:28](https://github.com/maiyunnet/kebab/blob/master/lib/s3
 
 > `optional` **account?**: `string`
 
-Defined in: [lib/s3.ts:32](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L32)
+Defined in: [lib/s3.ts:34](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L34)
 
 cf r2 使用
 
@@ -26,7 +26,7 @@ cf r2 使用
 
 > `optional` **bucket?**: `string`
 
-Defined in: [lib/s3.ts:40](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L40)
+Defined in: [lib/s3.ts:42](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L42)
 
 预定义 bucket
 
@@ -36,7 +36,7 @@ Defined in: [lib/s3.ts:40](https://github.com/maiyunnet/kebab/blob/master/lib/s3
 
 > `optional` **region?**: `string`
 
-Defined in: [lib/s3.ts:38](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L38)
+Defined in: [lib/s3.ts:40](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L40)
 
 区域
 
@@ -46,7 +46,7 @@ Defined in: [lib/s3.ts:38](https://github.com/maiyunnet/kebab/blob/master/lib/s3
 
 > `optional` **secretId?**: `string`
 
-Defined in: [lib/s3.ts:34](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L34)
+Defined in: [lib/s3.ts:36](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L36)
 
 密钥键
 
@@ -56,7 +56,7 @@ Defined in: [lib/s3.ts:34](https://github.com/maiyunnet/kebab/blob/master/lib/s3
 
 > `optional` **secretKey?**: `string`
 
-Defined in: [lib/s3.ts:36](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L36)
+Defined in: [lib/s3.ts:38](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L38)
 
 密钥值
 
@@ -66,6 +66,6 @@ Defined in: [lib/s3.ts:36](https://github.com/maiyunnet/kebab/blob/master/lib/s3
 
 > **service**: [`ESERVICE`](../enumerations/ESERVICE.md)
 
-Defined in: [lib/s3.ts:30](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L30)
+Defined in: [lib/s3.ts:32](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L32)
 
 服务商 -

@@ -8,7 +8,7 @@
 
 > **buildCookieQuery**(`cookie`, `uri`): `string`
 
-Defined in: [lib/cookie.ts:175](https://github.com/maiyunnet/kebab/blob/master/lib/cookie.ts#L175)
+Defined in: [lib/cookie.ts:178](https://github.com/maiyunnet/kebab/blob/master/lib/cookie.ts#L178)
 
 对象转换为 Cookie 拼接字符串（会自动筛掉不能发送的 cookie）
 

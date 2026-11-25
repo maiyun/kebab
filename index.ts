@@ -7,7 +7,7 @@
 import type * as tls from 'node:tls';
 
 /** --- 当前系统版本号 --- */
-export const VER = '9.29.6';
+export const VER = '10.0.0';
 
 // --- 服务端用的路径 ---
 

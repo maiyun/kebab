@@ -6,7 +6,7 @@
 
 # Interface: IPutObjectItem
 
-Defined in: [lib/s3.ts:44](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L44)
+Defined in: [lib/s3.ts:46](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L46)
 
 批量上传单项
 
@@ -16,7 +16,7 @@ Defined in: [lib/s3.ts:44](https://github.com/maiyunnet/kebab/blob/master/lib/s3
 
 > `optional` **bucket?**: `string`
 
-Defined in: [lib/s3.ts:56](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L56)
+Defined in: [lib/s3.ts:58](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L58)
 
 bucket 名，优先级高于 options.bucket
 
@@ -26,7 +26,7 @@ bucket 名，优先级高于 options.bucket
 
 > **content**: `string` \| `Buffer`\<`ArrayBufferLike`\> \| `Readable`
 
-Defined in: [lib/s3.ts:48](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L48)
+Defined in: [lib/s3.ts:50](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L50)
 
 内容
 
@@ -36,7 +36,7 @@ Defined in: [lib/s3.ts:48](https://github.com/maiyunnet/kebab/blob/master/lib/s3
 
 > `optional` **disposition?**: `string`
 
-Defined in: [lib/s3.ts:54](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L54)
+Defined in: [lib/s3.ts:56](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L56)
 
 content-disposition
 
@@ -46,7 +46,7 @@ content-disposition
 
 > **key**: `string`
 
-Defined in: [lib/s3.ts:46](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L46)
+Defined in: [lib/s3.ts:48](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L48)
 
 对象路径
 
@@ -56,7 +56,7 @@ Defined in: [lib/s3.ts:46](https://github.com/maiyunnet/kebab/blob/master/lib/s3
 
 > `optional` **length?**: `number`
 
-Defined in: [lib/s3.ts:50](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L50)
+Defined in: [lib/s3.ts:52](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L52)
 
 contentLength，流模式需要设置
 
@@ -66,6 +66,6 @@ contentLength，流模式需要设置
 
 > `optional` **type?**: `string`
 
-Defined in: [lib/s3.ts:52](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L52)
+Defined in: [lib/s3.ts:54](https://github.com/maiyunnet/kebab/blob/master/lib/s3.ts#L54)
 
 content-type，如 application/javascript

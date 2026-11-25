@@ -6,7 +6,7 @@
 
 # Interface: IFormDataLimits
 
-Defined in: [sys/route.ts:1078](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1078)
+Defined in: [sys/route.ts:1122](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1122)
 
 multipart 上传限制
 
@@ -16,7 +16,7 @@ multipart 上传限制
 
 > `optional` **allowedExts?**: `string`[]
 
-Defined in: [sys/route.ts:1082](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1082)
+Defined in: [sys/route.ts:1126](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1126)
 
 允许的文件扩展名（含点号），如 ['.jpg', '.png', '.pdf']
 
@@ -26,7 +26,7 @@ Defined in: [sys/route.ts:1082](https://github.com/maiyunnet/kebab/blob/master/s
 
 > `optional` **maxFieldSize?**: `number`
 
-Defined in: [sys/route.ts:1084](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1084)
+Defined in: [sys/route.ts:1128](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1128)
 
 单个字段（非文件）最大字节数，默认 1 MB
 
@@ -36,7 +36,7 @@ Defined in: [sys/route.ts:1084](https://github.com/maiyunnet/kebab/blob/master/s
 
 > `optional` **maxFileSize?**: `number`
 
-Defined in: [sys/route.ts:1080](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1080)
+Defined in: [sys/route.ts:1124](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1124)
 
 单个文件最大字节数
 
@@ -46,7 +46,7 @@ Defined in: [sys/route.ts:1080](https://github.com/maiyunnet/kebab/blob/master/s
 
 > `optional` **maxHeaderSize?**: `number`
 
-Defined in: [sys/route.ts:1088](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1088)
+Defined in: [sys/route.ts:1132](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1132)
 
 每个字段或文件的 multipart 头部最多多少字节，默认 16 KB
 
@@ -56,7 +56,7 @@ Defined in: [sys/route.ts:1088](https://github.com/maiyunnet/kebab/blob/master/s
 
 > `optional` **maxParts?**: `number`
 
-Defined in: [sys/route.ts:1090](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1090)
+Defined in: [sys/route.ts:1134](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1134)
 
 multipart 字段与文件总数量，默认 1000
 
@@ -66,7 +66,7 @@ multipart 字段与文件总数量，默认 1000
 
 > `optional` **maxTotalSize?**: `number`
 
-Defined in: [sys/route.ts:1086](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1086)
+Defined in: [sys/route.ts:1130](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1130)
 
 整体请求最大字节数，不设置或设为 0 则不限制
 
@@ -76,6 +76,6 @@ Defined in: [sys/route.ts:1086](https://github.com/maiyunnet/kebab/blob/master/s
 
 > `optional` **timeout?**: `number`
 
-Defined in: [sys/route.ts:1092](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1092)
+Defined in: [sys/route.ts:1136](https://github.com/maiyunnet/kebab/blob/master/sys/route.ts#L1136)
 
 整体请求超时时间（毫秒），默认 5 分钟，设为 0 禁用超时

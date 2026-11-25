@@ -8,7 +8,7 @@
 
 > **postJson**(`u`, `data`, `opt?`): `Promise`\<[`Response`](../response/classes/Response.md)\>
 
-Defined in: [lib/undici.ts:195](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L195)
+Defined in: [lib/undici.ts:197](https://github.com/maiyunnet/kebab/blob/master/lib/undici.ts#L197)
 
 发起 JSON 请求
 

@@ -24,7 +24,7 @@
 
 > **getContent**(`path`, `options?`): `Promise`\<`Buffer`\<`ArrayBufferLike`\> \| `null`\>
 
-Defined in: [lib/fs.ts:16](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L16)
+Defined in: [lib/fs.ts:19](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L19)
 
 ### Parameters
 
@@ -50,7 +50,7 @@ Defined in: [lib/fs.ts:16](https://github.com/maiyunnet/kebab/blob/master/lib/fs
 
 > **getContent**(`path`, `options`): `Promise`\<`string` \| `null`\>
 
-Defined in: [lib/fs.ts:20](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L20)
+Defined in: [lib/fs.ts:23](https://github.com/maiyunnet/kebab/blob/master/lib/fs.ts#L23)
 
 ### Parameters
 
