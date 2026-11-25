@@ -14,6 +14,7 @@
 
 - [IData](interfaces/IData.md)
 - [IPacket](interfaces/IPacket.md)
+- [IQueryOptions](interfaces/IQueryOptions.md)
 
 ## Functions
 

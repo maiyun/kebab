@@ -72,6 +72,16 @@ MySQL 表前缀或 PostgreSQL Schema 名
 
 ***
 
+### read?
+
+> `optional` **read?**: `boolean`
+
+Defined in: [sys/mod.ts:39](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L39)
+
+是否优先使用只读从库，默认 false（走主库）；加锁或事务内仍走主库
+
+***
+
 ### select?
 
 > `optional` **select?**: `string` \| `string`[]

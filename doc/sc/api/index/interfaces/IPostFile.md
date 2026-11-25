@@ -6,7 +6,7 @@
 
 # Interface: IPostFile
 
-Defined in: [index.ts:251](https://github.com/maiyunnet/kebab/blob/master/index.ts#L251)
+Defined in: [index.ts:252](https://github.com/maiyunnet/kebab/blob/master/index.ts#L252)
 
 上传的文件信息对象
 
@@ -16,7 +16,7 @@ Defined in: [index.ts:251](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > `readonly` **name**: `string`
 
-Defined in: [index.ts:252](https://github.com/maiyunnet/kebab/blob/master/index.ts#L252)
+Defined in: [index.ts:253](https://github.com/maiyunnet/kebab/blob/master/index.ts#L253)
 
 ***
 
@@ -24,7 +24,7 @@ Defined in: [index.ts:252](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > `readonly` **origin**: `string`
 
-Defined in: [index.ts:253](https://github.com/maiyunnet/kebab/blob/master/index.ts#L253)
+Defined in: [index.ts:254](https://github.com/maiyunnet/kebab/blob/master/index.ts#L254)
 
 ***
 
@@ -32,7 +32,7 @@ Defined in: [index.ts:253](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > `readonly` **path**: `string`
 
-Defined in: [index.ts:255](https://github.com/maiyunnet/kebab/blob/master/index.ts#L255)
+Defined in: [index.ts:256](https://github.com/maiyunnet/kebab/blob/master/index.ts#L256)
 
 ***
 
@@ -40,4 +40,4 @@ Defined in: [index.ts:255](https://github.com/maiyunnet/kebab/blob/master/index.
 
 > `readonly` **size**: `number`
 
-Defined in: [index.ts:254](https://github.com/maiyunnet/kebab/blob/master/index.ts#L254)
+Defined in: [index.ts:255](https://github.com/maiyunnet/kebab/blob/master/index.ts#L255)

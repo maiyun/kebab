@@ -35,6 +35,8 @@ export interface IModOneOptions {
     'by'?: [string | string[], 'DESC' | 'ASC'];
     /** --- SQL 优化提示 --- */
     'hint'?: string;
+    /** --- 是否优先使用只读从库，默认 false（走主库）；加锁或事务内仍走主库 --- */
+    'read'?: boolean;
 }
 
 /** --- 一批游标查询结果，hasMore 表示扫描方向上还有记录 --- */
@@ -152,6 +154,9 @@ export default class Mod {
     /** --- 主表筛选前缀，优先 alias，其次表名 --- */
     protected _fieldPrefix: string = '';
 
+    /** --- 当前查询是否优先使用只读从库 --- */
+    protected _read: boolean = false;
+
     /**
      * --- 构造函数 ---
      * @param opt 选项
@@ -173,11 +178,14 @@ export default class Mod {
         'hint'?: string;
         /** --- MySQL 表前缀或 PostgreSQL Schema 名，优先级：选项 > 类属性 > 配置 --- */
         'pre'?: string;
+        /** --- 是否优先使用只读从库，默认 false（走主库） --- */
+        'read'?: boolean;
     }) {
         /** --- 导入 ctr 对象 --- */
         this._ctr = opt.ctr;
         /** --- 导入数据库连接 --- */
         this._db = opt.db;
+        this._read = Boolean(opt.read);
         /** --- 新建 sql 对象 --- */
         this._sql = lSql.get({
             'service': this._db.getService() ?? lDb.ESERVICE.PGSQL,
@@ -600,6 +608,7 @@ export default class Mod {
                 'list': string[];
             };
             'hint'?: string;
+            'read'?: boolean;
         } = {}
     ): T {
         return new this({
@@ -611,6 +620,7 @@ export default class Mod {
             'alias': opt.alias,
             'contain': opt.contain,
             'hint': opt.hint,
+            'read': opt.read,
         }) as T;
     }
 
@@ -632,6 +642,7 @@ export default class Mod {
                 'list': string[];
             };
             'hint'?: string;
+            'read'?: boolean;
         } = {}
     ): T {
         return new this({
@@ -643,6 +654,7 @@ export default class Mod {
             'contain': opt.contain,
             'alias': opt.alias,
             'hint': opt.hint,
+            'read': opt.read,
         }) as T;
     }
 
@@ -680,6 +692,8 @@ export default class Mod {
             /** --- 通过 key 字段获取，默认为 false，即从主键获取 --- */
             'key'?: boolean;
             'hint'?: string;
+            /** --- 是否优先使用只读从库，默认 false（走主库）；加锁或事务内仍走主库 --- */
+            'read'?: boolean;
         } = {}
     ): Promise<false | null | (T & Record<string, any>)> {
         if (opt.key && !this._$key) {
@@ -695,6 +709,7 @@ export default class Mod {
             }],
             'index': opt.index,
             'hint': opt.hint,
+            'read': opt.read,
         }) as T & Record<string, any>).first(opt.lock);
     }
 
@@ -730,6 +745,7 @@ export default class Mod {
                 'pre': opt.pre,
                 'where': s,
                 'hint': opt.hint,
+                'read': opt.read,
             });
             if (opt.by) {
                 o.by(opt.by[0], opt.by[1]);
@@ -746,6 +762,7 @@ export default class Mod {
                 'where': s,
                 'index': item,
                 'hint': opt.hint,
+                'read': opt.read,
             });
             if (opt.by) {
                 row.by(opt.by[0], opt.by[1]);
@@ -797,7 +814,7 @@ export default class Mod {
     public static async primarys(
         db: lDb.Pool | lDb.Transaction,
         where: string | kebab.Json = '',
-        opt: { 'ctr'?: sCtr.Ctr; 'pre'?: string; 'index'?: string; } = {}
+        opt: { 'ctr'?: sCtr.Ctr; 'pre'?: string; 'index'?: string; 'read'?: boolean; } = {}
     ): Promise<any[] | false> {
         const sq = lSql.get({
             'service': db.getService() ?? lDb.ESERVICE.PGSQL,
@@ -805,7 +822,7 @@ export default class Mod {
             'pre': opt.pre ?? this._$pre,
         });
         sq.select(this._$primary, this._$table + (opt.index ? ('_' + opt.index) : '')).where(where);
-        const r = await db.query(sq.getSql(), sq.getData());
+        const r = await db.query(sq.getSql(), sq.getData(), { 'read': opt.read });
         if (r.rows === null) {
             lCore.log(opt.ctr ?? {}, '[MOD][PRIMARYS] ' + (lText.stringifyJson(r.error?.message ?? '').slice(1, -1) + ' - ' + sq.format()).replaceAll('"', '""'), '-error');
             return false;
@@ -1204,6 +1221,15 @@ export default class Mod {
         }
     }
 
+    /**
+     * --- 设置当前查询是否优先使用只读从库（加锁查询或事务内仍走主库） ---
+     * @param enable 是否使用只读从库，默认 true
+     */
+    public read(enable: boolean = true): this {
+        this._read = enable;
+        return this;
+    }
+
     /** --- 获取第一条原生记录，查询失败返回 false，未找到返回 null --- */
     public async first(
         lock: boolean,
@@ -1236,7 +1262,7 @@ export default class Mod {
         if (lock) {
             this._sql.lock();
         }
-        const r = await this._db.query(this._sql.getSql(), this._sql.getData());
+        const r = await this._db.query(this._sql.getSql(), this._sql.getData(), { 'read': !lock && this._read });
         if (r.rows === null) {
             lCore.log(this._ctr ?? {}, '[MOD][first] ' + (lText.stringifyJson(r.error?.message ?? '').slice(1, -1) + ' - ' + this._sql.format()).replaceAll('"', '""'), '-error');
             return false;
@@ -1252,6 +1278,8 @@ export default class Mod {
             this._data[k] = v;
             (this as unknown as Record<string, any>)[k] = v;
         }
+        // --- 返回实体后清除只读查询标记，避免后续实例操作沿用 ---
+        this._read = false;
         return this;
     }
 
@@ -1361,7 +1389,7 @@ export default class Mod {
                     sql = sql.replace(/(FROM [a-zA-Z0-9`"_.]+?_)[\w]+/, '$1' + this._index[i]);
                 }
                 const tsql = this._formatTotal(sql);
-                const tr = await this._db.query(tsql, this._sql.getData());
+                const tr = await this._db.query(tsql, this._sql.getData(), { 'read': this._read });
                 if (tr.rows === null) {
                     return false;
                 }
@@ -1386,7 +1414,7 @@ export default class Mod {
                     offset = -1;
                 }
                 const lsql = sql.replace(/ LIMIT [0-9 ,]+(OFFSET [0-9]+)?/g, ` LIMIT ${remain} OFFSET ${cz}`);
-                const r = await this._db.query(lsql, this._sql.getData());
+                const r = await this._db.query(lsql, this._sql.getData(), { 'read': this._read });
                 if (r.rows === null) {
                     lCore.log(this._ctr ?? {}, '[MOD][all] ' + (lText.stringifyJson(r.error?.message ?? '').slice(1, -1) + ' - ' + this._sql.format()).replaceAll('"', '""'), '-error');
                     return false;
@@ -1427,7 +1455,7 @@ export default class Mod {
         // --- 单表 ---
         /** --- 要追加的 values --- */
         const contain = this._contain ? lCore.clone(this._contain.list) : null;
-        const r = await this._db.query(this._sql.getSql(), this._sql.getData());
+        const r = await this._db.query(this._sql.getSql(), this._sql.getData(), { 'read': this._read });
         if (r.rows === null) {
             lCore.log(this._ctr ?? {}, '[MOD][all] ' + (lText.stringifyJson(r.error?.message ?? '').slice(1, -1) + ' - ' + this._sql.format()).replaceAll('"', '""'), '-error');
             return false;
@@ -1449,7 +1477,7 @@ export default class Mod {
                     [this._getContainWhereKey()]: contain,
                 }
             });
-            cr = await this._db.query(csql.getSql(), csql.getData());
+            cr = await this._db.query(csql.getSql(), csql.getData(), { 'read': this._read });
             if (cr.rows === null) {
                 lCore.log(this._ctr ?? {}, '[MOD][all] ' + (lText.stringifyJson(cr.    error?.message ?? '').slice(1, -1) + ' - ' + csql.format()).replaceAll('"', '""'), '-error');
             }
@@ -1553,7 +1581,7 @@ export default class Mod {
                     sql = sql.replace(/(FROM [a-zA-Z0-9`"_.]+?_)[\w]+/, '$1' + this._index[i]);
                 }
                 const tsql = this._formatTotal(sql);
-                const tr = await this._db.query(tsql, this._sql.getData());
+                const tr = await this._db.query(tsql, this._sql.getData(), { 'read': this._read });
                 if (tr.rows === null) {
                     return false;
                 }
@@ -1579,7 +1607,7 @@ export default class Mod {
                     offset = -1;
                 }
                 const lsql = sql.replace(/ LIMIT [0-9 ,]+(OFFSET [0-9]+)?/g, ` LIMIT ${remain} OFFSET ${cz}`);
-                const r = await this._db.query(lsql, this._sql.getData());
+                const r = await this._db.query(lsql, this._sql.getData(), { 'read': this._read });
                 if (r.rows === null) {
                     lCore.log(this._ctr ?? {}, '[MOD][allArray] ' + (lText.stringifyJson(r.error?.message ?? '').slice(1, -1) + ' - ' + this._sql.format()).replaceAll('"', '""'), '-error');
                     return false;
@@ -1601,7 +1629,7 @@ export default class Mod {
         }
         // --- 单表 ---
         const contain = this._contain ? lCore.clone(this._contain.list) : null;
-        const r = await this._db.query(this._sql.getSql(), this._sql.getData());
+        const r = await this._db.query(this._sql.getSql(), this._sql.getData(), { 'read': this._read });
         if (r.rows === null) {
             lCore.log(this._ctr ?? {}, '[MOD][allArray] ' + (lText.stringifyJson(r.error?.message ?? '').slice(1, -1) + ' - ' + this._sql.format()).replaceAll('"', '""'), '-error');
             return false;
@@ -1623,7 +1651,7 @@ export default class Mod {
                     [this._getContainWhereKey()]: contain,
                 }
             });
-            cr = await this._db.query(csql.getSql(), csql.getData());
+            cr = await this._db.query(csql.getSql(), csql.getData(), { 'read': this._read });
             if (cr.rows === null) {
                 lCore.log(this._ctr ?? {}, '[MOD][allArray] ' + (lText.stringifyJson(cr.    error?.message ?? '').slice(1, -1) + ' - ' + csql.format()).replaceAll('"', '""'), '-error');
             }
@@ -1657,7 +1685,7 @@ export default class Mod {
      * @param all 是否获取完全的情况，默认不获取，只返回扫描情况
      */
     public async explain(all: boolean = false): Promise<false | string | Record<string, any>> {
-        const r = await this._db.query('EXPLAIN ' + this._sql.getSql(), this._sql.getData());
+        const r = await this._db.query('EXPLAIN ' + this._sql.getSql(), this._sql.getData(), { 'read': this._read });
         if (r.rows === null) {
             lCore.log(this._ctr ?? {}, '[MOD][explain] ' + (lText.stringifyJson(r.error?.message ?? '').slice(1, -1) + ' - ' + this._sql.format()).replaceAll('"', '""'), '-error');
             return false;
@@ -1717,7 +1745,7 @@ export default class Mod {
             return count;
         }
         const sql: string = this._formatTotal(this._sql.getSql(), f);
-        const r = await this._db.query(sql, this._sql.getData());
+        const r = await this._db.query(sql, this._sql.getData(), { 'read': this._read });
         if (r.rows === null) {
             lCore.log(this._ctr ?? {}, '[MOD][total] ' + (lText.stringifyJson(r.error?.message ?? '').slice(1, -1) + ' - ' + this._sql.format()).replaceAll('"', '""'), '-error');
             return 0;
@@ -1739,7 +1767,7 @@ export default class Mod {
             return false;
         }
         const sql = this._sql.copy(undefined, { 'order': false, 'limit': false });
-        const result = await this._db.query('EXPLAIN (FORMAT JSON) ' + sql.getSql(), sql.getData());
+        const result = await this._db.query('EXPLAIN (FORMAT JSON) ' + sql.getSql(), sql.getData(), { 'read': this._read });
         if (result.rows === null) {
             lCore.log(this._ctr ?? {}, '[MOD][totalEstimate] Query failed', '-error');
             return false;
@@ -1797,7 +1825,7 @@ export default class Mod {
         const direction = opt.before ? (order === 'DESC' ? 'ASC' : 'DESC') : order;
         const sql = this._sql.copy(undefined, { 'order': false, 'limit': false });
         sql.seek(fields, opt.cursor, direction).limit(count + 1);
-        const result = await this._db.query(sql.getSql(), sql.getData());
+        const result = await this._db.query(sql.getSql(), sql.getData(), { 'read': this._read });
         if (result.rows === null) {
             lCore.log(this._ctr ?? {}, '[MOD][allCursor] Query failed', '-error');
             return false;
@@ -1834,7 +1862,7 @@ export default class Mod {
                 'SELECT COUNT(0) AS `count` FROM' :
                 'SELECT COUNT(0) AS "count" FROM'
             );
-        const r = await this._db.query(sql, this._sql.getData());
+        const r = await this._db.query(sql, this._sql.getData(), { 'read': this._read });
         if (r.rows === null) {
             lCore.log(this._ctr ?? {}, '[MOD][count] ' + (lText.stringifyJson(r.error?.message ?? '').slice(1, -1) + ' - ' + this._sql.format()).replaceAll('"', '""'), '-error');
             return 0;

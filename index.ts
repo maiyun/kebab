@@ -64,7 +64,8 @@ export interface IConfig {
     'const': IConfigConst;
     'db': Record<string, {
         'default': IConfigDb;
-        'read': IConfigDb;
+        /** --- 可选只读从库配置，支持单节点或节点数组；省略的字段自动继承 default --- */
+        'read'?: Partial<IConfigDb> | Array<Partial<IConfigDb>>;
     }> & {
         'default': 'MYSQL' | 'PGSQL';
     };

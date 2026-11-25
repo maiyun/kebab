@@ -48,7 +48,7 @@ Defined in: [lib/db/tran.ts:28](https://github.com/maiyunnet/kebab/blob/master/l
 
 > **commit**(): `Promise`\<`boolean`\>
 
-Defined in: [lib/db/tran.ts:114](https://github.com/maiyunnet/kebab/blob/master/lib/db/tran.ts#L114)
+Defined in: [lib/db/tran.ts:123](https://github.com/maiyunnet/kebab/blob/master/lib/db/tran.ts#L123)
 
 #### Returns
 
@@ -60,7 +60,7 @@ Defined in: [lib/db/tran.ts:114](https://github.com/maiyunnet/kebab/blob/master/
 
 > **execute**(`sql`, `values?`): `Promise`\<[`IPacket`](../../interfaces/IPacket.md)\>
 
-Defined in: [lib/db/tran.ts:95](https://github.com/maiyunnet/kebab/blob/master/lib/db/tran.ts#L95)
+Defined in: [lib/db/tran.ts:104](https://github.com/maiyunnet/kebab/blob/master/lib/db/tran.ts#L104)
 
 执行一条 SQL 并获得影响行数对象 packet，连接失败抛出错误
 
@@ -102,11 +102,11 @@ Defined in: [lib/db/tran.ts:52](https://github.com/maiyunnet/kebab/blob/master/l
 
 #### Call Signature
 
-> **query**(`sql`, `values?`): `Promise`\<[`IData`](../../interfaces/IData.md)\<`Record`\<`string`, `any`\>\>\>
+> **query**(`sql`, `values?`, `opt?`): `Promise`\<[`IData`](../../interfaces/IData.md)\<`Record`\<`string`, `any`\>\>\>
 
-Defined in: [lib/db/tran.ts:62](https://github.com/maiyunnet/kebab/blob/master/lib/db/tran.ts#L62)
+Defined in: [lib/db/tran.ts:63](https://github.com/maiyunnet/kebab/blob/master/lib/db/tran.ts#L63)
 
-在事务连接中执行一条 SQL
+在事务连接中执行一条 SQL（事务内始终走当前主库连接，忽略 read 选项）
 
 ##### Parameters
 
@@ -122,6 +122,12 @@ Defined in: [lib/db/tran.ts:62](https://github.com/maiyunnet/kebab/blob/master/l
 
 SQL 占位符绑定的值
 
+###### opt?
+
+[`IQueryOptions`](../../interfaces/IQueryOptions.md)
+
+查询选项（事务内忽略）
+
 ##### Returns
 
 `Promise`\<[`IData`](../../interfaces/IData.md)\<`Record`\<`string`, `any`\>\>\>
@@ -130,11 +136,11 @@ SQL 占位符绑定的值
 
 #### Call Signature
 
-> **query**\<`TRow`\>(`sql`, `values?`): `Promise`\<[`IData`](../../interfaces/IData.md)\<`TRow`\>\>
+> **query**\<`TRow`\>(`sql`, `values?`, `opt?`): `Promise`\<[`IData`](../../interfaces/IData.md)\<`TRow`\>\>
 
-Defined in: [lib/db/tran.ts:70](https://github.com/maiyunnet/kebab/blob/master/lib/db/tran.ts#L70)
+Defined in: [lib/db/tran.ts:72](https://github.com/maiyunnet/kebab/blob/master/lib/db/tran.ts#L72)
 
-在事务连接中执行一条 SQL，按指定类型返回数据行
+在事务连接中执行一条 SQL，按指定类型返回数据行（事务内始终走当前主库连接，忽略 read 选项）
 
 ##### Type Parameters
 
@@ -158,6 +164,12 @@ SQL 返回的行结构，由调用方根据查询字段指定
 
 SQL 占位符绑定的值
 
+###### opt?
+
+[`IQueryOptions`](../../interfaces/IQueryOptions.md)
+
+查询选项（事务内忽略）
+
 ##### Returns
 
 `Promise`\<[`IData`](../../interfaces/IData.md)\<`TRow`\>\>
@@ -170,7 +182,7 @@ SQL 占位符绑定的值
 
 > **rollback**(): `Promise`\<`boolean`\>
 
-Defined in: [lib/db/tran.ts:136](https://github.com/maiyunnet/kebab/blob/master/lib/db/tran.ts#L136)
+Defined in: [lib/db/tran.ts:145](https://github.com/maiyunnet/kebab/blob/master/lib/db/tran.ts#L145)
 
 #### Returns
 

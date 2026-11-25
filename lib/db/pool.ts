@@ -132,15 +132,21 @@ export class Pool {
     /** --- 当前服务商 --- */
     private readonly _service: lDb.ESERVICE;
 
-    /** --- 当前 Pool 对象的数据库连接信息 --- */
+    /** --- 当前 Pool 对象的主库连接信息 --- */
     private readonly _etc: kebab.IConfigDb;
+
+    /** --- 当前 Pool 对象的只读从库连接列表 --- */
+    private readonly _read: kebab.IConfigDb[];
 
     public constructor(etc: kebab.IConfigDb, opt: {
         /** --- 服务商 --- */
         'service': lDb.ESERVICE;
+        /** --- 可选只读从库连接列表 --- */
+        'read'?: kebab.IConfigDb[];
     }) {
         this._etc = etc;
         this._service = opt.service;
+        this._read = (opt.read ?? []).filter(item => Boolean(item.host));
     }
 
     /** --- 获取当前连接的服务商 --- */
@@ -157,21 +163,31 @@ export class Pool {
      * --- 执行一条 SQL，无视顺序和相同连接，随用随取 ---
      * @param sql 执行的 SQL 字符串
      * @param values SQL 占位符绑定的值
+     * @param opt 查询选项，read 为 true 且已配置从库时路由到只读从库
      * @returns 查询结果，result = -500 表示系统错误
      */
-    public query(sql: string, values?: kebab.DbValue[]): Promise<lDb.IData>;
+    public query(sql: string, values?: kebab.DbValue[], opt?: lDb.IQueryOptions): Promise<lDb.IData>;
     /**
      * --- 执行一条 SQL，按指定类型返回数据行 ---
      * @typeParam TRow SQL 返回的行结构，由调用方根据查询字段指定
      * @param sql 执行的 SQL 字符串
      * @param values SQL 占位符绑定的值
+     * @param opt 查询选项，read 为 true 且已配置从库时路由到只读从库
      * @returns 查询结果，result = -500 表示系统错误
      */
-    public query<TRow extends object>(sql: string, values?: kebab.DbValue[]): Promise<lDb.IData<TRow>>;
-    public async query<TRow extends object>(sql: string, values?: kebab.DbValue[]): Promise<lDb.IData<TRow>> {
+    public query<TRow extends object>(
+        sql: string,
+        values?: kebab.DbValue[],
+        opt?: lDb.IQueryOptions
+    ): Promise<lDb.IData<TRow>>;
+    public async query<TRow extends object>(
+        sql: string,
+        values?: kebab.DbValue[],
+        opt: lDb.IQueryOptions = {}
+    ): Promise<lDb.IData<TRow>> {
         ++this._queries;
         // --- 获取并自动 using ---
-        const conn = await this._getConnection();
+        const conn = await this._getConnection(this._pickEtc(opt.read));
         if (!conn) {
             return {
                 'rows': null,
@@ -231,18 +247,34 @@ export class Pool {
     }
 
     /**
-     * --- 获取一个连接，自动变为 using 状态，；连接失败会返回 null ---
+     * --- 按读写标志选择本次目标连接配置；未开启 read 或未配置从库时返回主库 ---
+     * @param read 是否优先使用只读从库
+     * @returns 目标数据库连接配置
      */
-    private async _getConnection(): Promise<Connection | null> {
+    private _pickEtc(read?: boolean): kebab.IConfigDb {
+        if (!read || this._read.length === 0) {
+            return this._etc;
+        }
+        if (this._read.length === 1) {
+            return this._read[0];
+        }
+        return this._read[Math.floor(Math.random() * this._read.length)];
+    }
+
+    /**
+     * --- 获取一个连接，自动变为 using 状态；连接失败会返回 null ---
+     * @param targetEtc 目标连接配置，默认使用主库
+     */
+    private async _getConnection(targetEtc: kebab.IConfigDb = this._etc): Promise<Connection | null> {
         let conn: Connection | null = null;
         for (const connection of connections) {
             const etc = connection.getEtc();
             const service = connection.getService();
             if (
-                (etc.host !== this._etc.host) ||
-                (etc.port !== this._etc.port) ||
-                (etc.name !== this._etc.name) ||
-                (etc.user !== this._etc.user) ||
+                (etc.host !== targetEtc.host) ||
+                (etc.port !== targetEtc.port) ||
+                (etc.name !== targetEtc.name) ||
+                (etc.user !== targetEtc.user) ||
                 (service !== this._service)
             ) {
                 // --- 配置项连接项不匹配 ---
@@ -264,12 +296,12 @@ export class Pool {
                         case lDb.ESERVICE.MYSQL: {
                             // --- MYSQL ---
                             const link = await mysql2.createConnection({
-                                'host': this._etc.host,
-                                'port': this._etc.port,
-                                'charset': this._etc.charset,
-                                'database': this._etc.name,
-                                'user': this._etc.user,
-                                'password': this._etc.pwd,
+                                'host': targetEtc.host,
+                                'port': targetEtc.port,
+                                'charset': targetEtc.charset,
+                                'database': targetEtc.name,
+                                'user': targetEtc.user,
+                                'password': targetEtc.pwd,
                                 'connectTimeout': 3_000,
                                 typeCast: (field, next) => {
                                     if (field.type !== 'GEOMETRY') {
@@ -288,7 +320,7 @@ export class Pool {
                                     return geo[0];
                                 },
                             });
-                            const c = new Connection(this._etc, link);
+                            const c = new Connection(targetEtc, link);
                             c.using();
                             link.on('error', function(err: mysql2.QueryError): void {
                                 c.setLost();
@@ -309,15 +341,15 @@ export class Pool {
                         case lDb.ESERVICE.PGSQL: {
                             // --- PGSQL ---
                             const link = new pg.Client({
-                                'host': this._etc.host,
-                                'port': this._etc.port,
-                                'database': this._etc.name,
-                                'user': this._etc.user,
-                                'password': this._etc.pwd,
+                                'host': targetEtc.host,
+                                'port': targetEtc.port,
+                                'database': targetEtc.name,
+                                'user': targetEtc.user,
+                                'password': targetEtc.pwd,
                                 'connectionTimeoutMillis': 3_000,
                             });
                             await link.connect();
-                            const c = new Connection(this._etc, link);
+                            const c = new Connection(targetEtc, link);
                             c.using();
                             link.on('error', err => {
                                 c.setLost();
@@ -339,7 +371,7 @@ export class Pool {
                         await lCore.sleep(300);
                         continue;
                     }
-                    const msg = `[DB][_getConnection][${lDb.ESERVICE[this._service]}] ${message}(${this._etc.host}:${this._etc.port})`;
+                    const msg = `[DB][_getConnection][${lDb.ESERVICE[this._service]}] ${message}(${targetEtc.host}:${targetEtc.port})`;
                     lCore.debug(msg);
                     lCore.log({}, msg, '-error');
                     break;

@@ -6,7 +6,7 @@
 
 # Interface: IRows\<T\>
 
-Defined in: [sys/mod.ts:2141](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L2141)
+Defined in: [sys/mod.ts:2169](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L2169)
 
 模型记录集合接口
 
@@ -26,7 +26,7 @@ Defined in: [sys/mod.ts:2141](https://github.com/maiyunnet/kebab/blob/master/sys
 
 > `readonly` **length**: `number`
 
-Defined in: [sys/mod.ts:2142](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L2142)
+Defined in: [sys/mod.ts:2170](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L2170)
 
 ## Methods
 
@@ -34,7 +34,7 @@ Defined in: [sys/mod.ts:2142](https://github.com/maiyunnet/kebab/blob/master/sys
 
 > **item**(`index`): `T`
 
-Defined in: [sys/mod.ts:2143](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L2143)
+Defined in: [sys/mod.ts:2171](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L2171)
 
 #### Parameters
 
@@ -52,7 +52,7 @@ Defined in: [sys/mod.ts:2143](https://github.com/maiyunnet/kebab/blob/master/sys
 
 > **toArray**(): `Record`\<`string`, `any`\>[]
 
-Defined in: [sys/mod.ts:2144](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L2144)
+Defined in: [sys/mod.ts:2172](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L2172)
 
 #### Returns
 

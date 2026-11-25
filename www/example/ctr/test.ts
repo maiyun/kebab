@@ -241,7 +241,7 @@ export default class extends sCtr.Ctr {
 
             '<br><br><b>Db:</b>',
             `<br><br><a href="${this._config.const.urlBase}test/db">View "test/db"</a> <a href="${this._config.const.urlBase}test/db?s=pgsql">pgsql</a>`,
-            `<br><a href="${this._config.const.urlBase}test/db-read">View "test/db-read"</a>`,
+            `<br><a href="${this._config.const.urlBase}test/db-read">View "test/db-read"</a> <a href="${this._config.const.urlBase}test/db-read?s=pgsql">pgsql</a>`,
 
             `<br><br><b>Vector:</b>`,
             `<br><br><a href="${this._config.const.urlBase}test/vector">View "test/vector"</a>`,
@@ -2183,16 +2183,38 @@ exec: ${JSON.stringify(exec)}<br><br>`);
     /**
      * --- 数据库读写分离测试 ---
      */
-    public dbRead(): string {
+    public async dbRead(): Promise<string> {
         const echo: string[] = [];
-        echo.push('<b>DB Read Separation Test</b><hr>');
-        echo.push('<pre>const db = lDb.get(this);\nconst dbRead = lDb.get(this, { \'read\': true });</pre>');
+        const isPgsql = this._get['s'] === 'pgsql';
+        const service = isPgsql ? 'PGSQL' : 'MYSQL';
+        const db = lDb.get(this, {
+            'service': isPgsql ? lDb.ESERVICE.PGSQL : lDb.ESERVICE.MYSQL,
+        });
+        const sql = isPgsql ?
+            'SELECT * FROM "m"."test" ORDER BY "id" DESC LIMIT 10;' :
+            'SELECT * FROM `m_test` ORDER BY `id` DESC LIMIT 10;';
         const config = this._config;
-        const service = config.db.default;
+        const readCfg = config.db[service]?.read;
+        const readHosts = (Array.isArray(readCfg) ? readCfg : (readCfg ? [readCfg] : []))
+            .map(item => item.host)
+            .filter((host): host is string => Boolean(host));
+
+        echo.push('<b>DB Read Separation Test</b><hr>');
+        echo.push(`<pre>const db = lDb.get(this, { 'service': lDb.ESERVICE.${service} });
+const stmt = await db.query('${sql}', [], { 'read': true });</pre>`);
         echo.push(`Service: ${service}`);
         echo.push(`<br>Default host: ${config.db[service]?.default?.host ?? '(not configured)'}`);
-        echo.push(`<br>Read host: ${config.db[service]?.read?.host ?? '(not configured, will fallback to default)'}`);
-        return echo.join('') + '<br><br>' + this._getEnd();
+        echo.push(`<br>Read host: ${readHosts.length ? readHosts.join(', ') : '(not configured, will fallback to default)'}<br><br>`);
+
+        const stmt = await db.query(sql, [], { 'read': true });
+        if (stmt.rows) {
+            this._dbTable(stmt, echo);
+        }
+        else {
+            echo.push(`Query error: ${lText.htmlescape(stmt.error ? `${stmt.error.message} (${stmt.error.errno})` : 'Failed')}<br>`);
+        }
+
+        return echo.join('') + `<br>queries: ${db.getQueries()}<br><br>` + this._getEnd();
     }
 
     private _dbTable(stmt: lDb.IData, echo: kebab.Json[]): void {

@@ -59,30 +59,70 @@ export interface IPacket {
     'result': number;
 }
 
+/** --- query 查询选项 --- */
+export interface IQueryOptions {
+    /** --- 是否优先使用只读从库，默认 false（走主库）；未配置从库时自动走主库 --- */
+    'read'?: boolean;
+}
+
 /**
- * --- 获取 Db Pool 对象 ---
- * @param ctrEtc 控制器对象或数据库配置信息
+ * --- 将只读从库配置规范化为完整连接列表，省略字段自动继承主库 ---
+ * @param primary 主库连接配置
+ * @param read 只读从库配置（单对象或数组）
+ * @returns 有效的只读从库连接列表
+ */
+function normalizeReadConfigs(
+    primary: kebab.IConfigDb,
+    read?: Partial<kebab.IConfigDb> | Array<Partial<kebab.IConfigDb>>
+): kebab.IConfigDb[] {
+    if (!read) {
+        return [];
+    }
+    const items = Array.isArray(read) ? read : [read];
+    const list: kebab.IConfigDb[] = [];
+    for (const item of items) {
+        if (!item?.host) {
+            continue;
+        }
+        list.push({
+            'host': item.host,
+            'port': item.port ?? primary.port,
+            'charset': item.charset ?? primary.charset,
+            'name': item.name ?? primary.name,
+            'user': item.user ?? primary.user,
+            'pwd': item.pwd ?? primary.pwd,
+        });
+    }
+    return list;
+}
+
+/**
+ * --- 获取 Db Pool 对象（单 Pool 内同时管理主库和可选只读从库） ---
+ * @param ctrEtc 控制器对象或主库连接配置
  * @param opt 选项
  * @returns Db Pool 对象
  */
 export function get(ctrEtc: sCtr.Ctr | kebab.IConfigDb, opt: {
-    /** --- 服务商，默认 PGSQL --- */
+    /** --- 服务商，未传时从控制器配置读取，直接传配置时默认 PGSQL --- */
     'service'?: ESERVICE;
-    /** --- 是否使用只读库，默认 false --- */
-    'read'?: boolean;
+    /** --- 可选只读从库配置，传入时覆盖控制器配置中的 read --- */
+    'read'?: Partial<kebab.IConfigDb> | Array<Partial<kebab.IConfigDb>>;
 } = {}): Pool {
     if (ctrEtc instanceof sCtr.Ctr) {
         // --- 从 ctr 中读取连接信息 ---
         const config = ctrEtc.getPrototype('_config');
-        const service = opt.service ? ESERVICE[opt.service] : config.db.default;
-        /** --- 读写分离：若 read 为 true 且存在 read 配置且 read 配置的 host 不为空，则使用 read 库 --- */
-        const dbKey = (opt.read && config.db[service].read?.host) ? 'read' : 'default';
-        return new Pool(config.db[service][dbKey], {
+        const service = opt.service !== undefined ? ESERVICE[opt.service] : config.db.default;
+        const primary = config.db[service].default;
+        const read = normalizeReadConfigs(primary, opt.read ?? config.db[service].read);
+        return new Pool(primary, {
             'service': service === 'MYSQL' ? ESERVICE.MYSQL : ESERVICE.PGSQL,
+            'read': read,
         });
     }
+    const read = normalizeReadConfigs(ctrEtc, opt.read);
     return new Pool(ctrEtc, {
         'service': opt.service ?? ESERVICE.PGSQL,
+        'read': read,
     });
 }
 

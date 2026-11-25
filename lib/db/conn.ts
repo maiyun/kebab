@@ -184,18 +184,27 @@ export class Connection {
      * --- 执行一条 SQL 并获得返回数据 ---
      * @param sql 执行的 SQL 字符串
      * @param values SQL 占位符绑定的值
+     * @param opt 查询选项（单连接模式下忽略）
      * @returns 查询结果，result = -500 表示查询失败
      */
-    public query(sql: string, values?: kebab.DbValue[]): Promise<lDb.IData>;
+    public query(sql: string, values?: kebab.DbValue[], opt?: lDb.IQueryOptions): Promise<lDb.IData>;
     /**
      * --- 执行一条 SQL，按指定类型返回数据行 ---
      * @typeParam TRow SQL 返回的行结构，由调用方根据查询字段指定
      * @param sql 执行的 SQL 字符串
      * @param values SQL 占位符绑定的值
+     * @param opt 查询选项（单连接模式下忽略）
      * @returns 查询结果，result = -500 表示查询失败
      */
-    public query<TRow extends object>(sql: string, values?: kebab.DbValue[]): Promise<lDb.IData<TRow>>;
-    public async query<TRow extends object>(sql: string, values?: kebab.DbValue[]): Promise<lDb.IData<TRow>> {
+    public query<TRow extends object>(
+        sql: string,
+        values?: kebab.DbValue[],
+        opt?: lDb.IQueryOptions
+    ): Promise<lDb.IData<TRow>>;
+    public async query<TRow extends object>(
+        sql: string,
+        values?: kebab.DbValue[]
+    ): Promise<lDb.IData<TRow>> {
         const rtn: lDb.IData<TRow> = {
             'rows': null,
             'fields': [],

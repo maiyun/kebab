@@ -16,7 +16,7 @@ Defined in: [lib/db/pool.ts:127](https://github.com/maiyunnet/kebab/blob/master/
 
 > **new Pool**(`etc`, `opt`): `Pool`
 
-Defined in: [lib/db/pool.ts:138](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L138)
+Defined in: [lib/db/pool.ts:141](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L141)
 
 #### Parameters
 
@@ -25,6 +25,12 @@ Defined in: [lib/db/pool.ts:138](https://github.com/maiyunnet/kebab/blob/master/
 [`IConfigDb`](../../../../index/interfaces/IConfigDb.md)
 
 ##### opt
+
+###### read?
+
+[`IConfigDb`](../../../../index/interfaces/IConfigDb.md)[]
+
+可选只读从库连接列表
 
 ###### service
 
@@ -42,7 +48,7 @@ Defined in: [lib/db/pool.ts:138](https://github.com/maiyunnet/kebab/blob/master/
 
 > **beginTransaction**(`ctr`): `Promise`\<[`Transaction`](../../tran/classes/Transaction.md) \| `null`\>
 
-Defined in: [lib/db/pool.ts:215](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L215)
+Defined in: [lib/db/pool.ts:231](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L231)
 
 开启事务，返回事务对象并锁定连接，别人任何人不可用，有 ctr 的话必传 this，独立执行时可传 null
 
@@ -62,7 +68,7 @@ Defined in: [lib/db/pool.ts:215](https://github.com/maiyunnet/kebab/blob/master/
 
 > **execute**(`sql`, `values?`): `Promise`\<[`IPacket`](../../interfaces/IPacket.md)\>
 
-Defined in: [lib/db/pool.ts:195](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L195)
+Defined in: [lib/db/pool.ts:211](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L211)
 
 执行一条 SQL 并获得影响行数对象 packet，连接失败抛出错误
 
@@ -90,7 +96,7 @@ Defined in: [lib/db/pool.ts:195](https://github.com/maiyunnet/kebab/blob/master/
 
 > **getName**(): `string`
 
-Defined in: [lib/db/pool.ts:152](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L152)
+Defined in: [lib/db/pool.ts:158](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L158)
 
 获取当前连接的数据库名称
 
@@ -104,7 +110,7 @@ Defined in: [lib/db/pool.ts:152](https://github.com/maiyunnet/kebab/blob/master/
 
 > **getQueries**(): `number`
 
-Defined in: [lib/db/pool.ts:355](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L355)
+Defined in: [lib/db/pool.ts:387](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L387)
 
 获取 SQL 执行次数
 
@@ -118,7 +124,7 @@ Defined in: [lib/db/pool.ts:355](https://github.com/maiyunnet/kebab/blob/master/
 
 > **getService**(): [`ESERVICE`](../../enumerations/ESERVICE.md)
 
-Defined in: [lib/db/pool.ts:147](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L147)
+Defined in: [lib/db/pool.ts:153](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L153)
 
 获取当前连接的服务商
 
@@ -132,9 +138,9 @@ Defined in: [lib/db/pool.ts:147](https://github.com/maiyunnet/kebab/blob/master/
 
 #### Call Signature
 
-> **query**(`sql`, `values?`): `Promise`\<[`IData`](../../interfaces/IData.md)\<`Record`\<`string`, `any`\>\>\>
+> **query**(`sql`, `values?`, `opt?`): `Promise`\<[`IData`](../../interfaces/IData.md)\<`Record`\<`string`, `any`\>\>\>
 
-Defined in: [lib/db/pool.ts:162](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L162)
+Defined in: [lib/db/pool.ts:169](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L169)
 
 执行一条 SQL，无视顺序和相同连接，随用随取
 
@@ -152,6 +158,12 @@ Defined in: [lib/db/pool.ts:162](https://github.com/maiyunnet/kebab/blob/master/
 
 SQL 占位符绑定的值
 
+###### opt?
+
+[`IQueryOptions`](../../interfaces/IQueryOptions.md)
+
+查询选项，read 为 true 且已配置从库时路由到只读从库
+
 ##### Returns
 
 `Promise`\<[`IData`](../../interfaces/IData.md)\<`Record`\<`string`, `any`\>\>\>
@@ -160,9 +172,9 @@ SQL 占位符绑定的值
 
 #### Call Signature
 
-> **query**\<`TRow`\>(`sql`, `values?`): `Promise`\<[`IData`](../../interfaces/IData.md)\<`TRow`\>\>
+> **query**\<`TRow`\>(`sql`, `values?`, `opt?`): `Promise`\<[`IData`](../../interfaces/IData.md)\<`TRow`\>\>
 
-Defined in: [lib/db/pool.ts:170](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L170)
+Defined in: [lib/db/pool.ts:178](https://github.com/maiyunnet/kebab/blob/master/lib/db/pool.ts#L178)
 
 执行一条 SQL，按指定类型返回数据行
 
@@ -187,6 +199,12 @@ SQL 返回的行结构，由调用方根据查询字段指定
 [`DbValue`](../../../../index/type-aliases/DbValue.md)[]
 
 SQL 占位符绑定的值
+
+###### opt?
+
+[`IQueryOptions`](../../interfaces/IQueryOptions.md)
+
+查询选项，read 为 true 且已配置从库时路由到只读从库
 
 ##### Returns
 

@@ -315,13 +315,6 @@ async function run(): Promise<void> {
         config.db['MYSQL'].default.name ??= 'maiyun';
         config.db['MYSQL'].default.user ??= 'root';
         config.db['MYSQL'].default.pwd ??= 'DashAdmin';
-        config.db['MYSQL'].read ??= {};
-        config.db['MYSQL'].read.host ??= '127.0.0.1';
-        config.db['MYSQL'].read.port ??= 3306;
-        config.db['MYSQL'].read.charset ??= 'utf8mb4';
-        config.db['MYSQL'].read.name ??= 'maiyun';
-        config.db['MYSQL'].read.user ??= 'root';
-        config.db['MYSQL'].read.pwd ??= 'DashAdmin';
         config.db['PGSQL'] ??= {};
         config.db['PGSQL'].default ??= {};
         config.db['PGSQL'].default.host ??= '127.0.0.1';
@@ -329,12 +322,6 @@ async function run(): Promise<void> {
         config.db['PGSQL'].default.name ??= 'maiyun';
         config.db['PGSQL'].default.user ??= 'root';
         config.db['PGSQL'].default.pwd ??= 'DashAdmin';
-        config.db['PGSQL'].read ??= {};
-        config.db['PGSQL'].read.host ??= '127.0.0.1';
-        config.db['PGSQL'].read.port ??= 5432;
-        config.db['PGSQL'].read.name ??= 'maiyun';
-        config.db['PGSQL'].read.user ??= 'root';
-        config.db['PGSQL'].read.pwd ??= 'DashAdmin';
         // --- config - dns ---
         config.dns ??= {};
         config.dns['DNSPOD'] ??= {};

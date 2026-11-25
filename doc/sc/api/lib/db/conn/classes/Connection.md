@@ -38,7 +38,7 @@ Defined in: [lib/db/conn.ts:64](https://github.com/maiyunnet/kebab/blob/master/l
 
 > **beginTransaction**(`logError?`): `Promise`\<`boolean`\>
 
-Defined in: [lib/db/conn.ts:348](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L348)
+Defined in: [lib/db/conn.ts:357](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L357)
 
 开启事务，只能在独占连接中使用
 
@@ -62,7 +62,7 @@ Defined in: [lib/db/conn.ts:348](https://github.com/maiyunnet/kebab/blob/master/
 
 > **commit**(): `Promise`\<`boolean`\>
 
-Defined in: [lib/db/conn.ts:378](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L378)
+Defined in: [lib/db/conn.ts:387](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L387)
 
 #### Returns
 
@@ -74,7 +74,7 @@ Defined in: [lib/db/conn.ts:378](https://github.com/maiyunnet/kebab/blob/master/
 
 > **end**(): `Promise`\<`boolean`\>
 
-Defined in: [lib/db/conn.ts:331](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L331)
+Defined in: [lib/db/conn.ts:340](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L340)
 
 关闭连接，一般情况下不使用
 
@@ -88,7 +88,7 @@ Defined in: [lib/db/conn.ts:331](https://github.com/maiyunnet/kebab/blob/master/
 
 > **execute**(`sql`, `values?`): `Promise`\<[`IPacket`](../../interfaces/IPacket.md)\>
 
-Defined in: [lib/db/conn.ts:257](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L257)
+Defined in: [lib/db/conn.ts:266](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L266)
 
 执行一条 SQL 并获得影响行数对象 packet
 
@@ -236,9 +236,9 @@ Defined in: [lib/db/conn.ts:123](https://github.com/maiyunnet/kebab/blob/master/
 
 #### Call Signature
 
-> **query**(`sql`, `values?`): `Promise`\<[`IData`](../../interfaces/IData.md)\<`Record`\<`string`, `any`\>\>\>
+> **query**(`sql`, `values?`, `opt?`): `Promise`\<[`IData`](../../interfaces/IData.md)\<`Record`\<`string`, `any`\>\>\>
 
-Defined in: [lib/db/conn.ts:189](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L189)
+Defined in: [lib/db/conn.ts:190](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L190)
 
 执行一条 SQL 并获得返回数据
 
@@ -256,6 +256,12 @@ Defined in: [lib/db/conn.ts:189](https://github.com/maiyunnet/kebab/blob/master/
 
 SQL 占位符绑定的值
 
+###### opt?
+
+[`IQueryOptions`](../../interfaces/IQueryOptions.md)
+
+查询选项（单连接模式下忽略）
+
 ##### Returns
 
 `Promise`\<[`IData`](../../interfaces/IData.md)\<`Record`\<`string`, `any`\>\>\>
@@ -264,9 +270,9 @@ SQL 占位符绑定的值
 
 #### Call Signature
 
-> **query**\<`TRow`\>(`sql`, `values?`): `Promise`\<[`IData`](../../interfaces/IData.md)\<`TRow`\>\>
+> **query**\<`TRow`\>(`sql`, `values?`, `opt?`): `Promise`\<[`IData`](../../interfaces/IData.md)\<`TRow`\>\>
 
-Defined in: [lib/db/conn.ts:197](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L197)
+Defined in: [lib/db/conn.ts:199](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L199)
 
 执行一条 SQL，按指定类型返回数据行
 
@@ -291,6 +297,12 @@ SQL 返回的行结构，由调用方根据查询字段指定
 [`DbValue`](../../../../index/type-aliases/DbValue.md)[]
 
 SQL 占位符绑定的值
+
+###### opt?
+
+[`IQueryOptions`](../../interfaces/IQueryOptions.md)
+
+查询选项（单连接模式下忽略）
 
 ##### Returns
 
@@ -318,7 +330,7 @@ Defined in: [lib/db/conn.ts:156](https://github.com/maiyunnet/kebab/blob/master/
 
 > **rollback**(): `Promise`\<`boolean`\>
 
-Defined in: [lib/db/conn.ts:398](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L398)
+Defined in: [lib/db/conn.ts:407](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L407)
 
 #### Returns
 
