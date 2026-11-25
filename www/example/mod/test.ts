@@ -50,8 +50,6 @@ export default class extends sMod {
 
     protected static _$index = 'token';
 
-    /* eslint-disable @typescript-eslint/naming-convention */
-
     declare public id: number;
 
     declare public name: string;
