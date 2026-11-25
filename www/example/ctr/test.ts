@@ -2375,28 +2375,28 @@ echo.push('Added.');</pre>`);
 
             echo.push('<pre>JSON.stringify(await kv.scan());</pre>' + JSON.stringify(await kv.scan()));
 
-            echo.push(`<pre>let cursor = 0;
+            echo.push(`<pre>let cursor = '0';
 while (true) {
     echo.push('WHILE (' + JSON.stringify(cursor) + ')&lt;br&gt;');
     const r = await kv.scan(cursor, '*2*', 5);
-    if (r === false || r.nextCursor === 0) {
+    if (r === false || r.cursor === '0') {
         echo.push('DONE&lt;br&gt;');
         break;
     }
     echo.push(JSON.stringify(r.items) + '&lt;br&gt;');
-    cursor = r.nextCursor;
+    cursor = r.cursor;
 }
 echo[echo.length - 1] = echo[echo.length - 1].slice(0, -4);</pre>`);
-            let cursor = 0;
+            let cursor = '0';
             while (true) {
                 echo.push('WHILE (' + JSON.stringify(cursor) + ')<br>');
                 const r = await kv.scan(cursor, '*2*', 5);
-                if (r === false || r.nextCursor === 0) {
+                if (r === false || r.cursor === '0') {
                     echo.push('DONE<br>');
                     break;
                 }
                 echo.push(JSON.stringify(r.items) + '<br>');
-                cursor = r.nextCursor;
+                cursor = r.cursor;
             }
             echo[echo.length - 1] = echo[echo.length - 1].slice(0, -4);
         }

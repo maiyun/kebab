@@ -1,7 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import net from 'node:net';
+import { once } from 'node:events';
 import { createHash, randomBytes } from 'node:crypto';
-import { createCommandClient } from '@litert/redis';
 import { Login } from '../../lib/session.js';
 import { Ctr } from '../../sys/ctr.js';
 import { Kv } from '../../lib/kv.js';
@@ -20,32 +21,74 @@ test('all login operations report unavailable storage', async () => {
     assert.equal(await login.revoke(uid), false, 'revoke');
 });
 
-test('login reads and renewals reuse one Redis command client after a command error', async t => {
-    const proto = Object.getPrototypeOf(createCommandClient({}));
-    const credentials = { host: 'session-login.test.invalid', port: 6379, index: 0, pre: 'test:' };
-    const first = new Login(new Kv(credentials), 'token', { name: 'TEST' });
-    const second = new Login(new Kv(credentials), 'token', { name: 'TEST' });
-    const clients = new Set();
+test('login reads and renewals reuse one Redis command client after a command error', async () => {
+    const sockets = new Set();
     const commands = [];
     let fail = false;
-    const pipeline = t.mock.method(proto, 'createPipelineClient', async () => { throw new Error('unexpected pipeline'); });
-    t.mock.method(proto, '_command', async function(command, args) {
-        clients.add(this);
-        commands.push(command);
-        if (command === 'SELECT') return 'OK';
-        if (fail) throw new Error('Redis command failed');
-        assert.equal(args[2], 'test:TEST:login:');
-        return args[3] === 'touch' ? 1 : null;
+    const server = net.createServer(socket => {
+        sockets.add(socket);
+        let buf = '';
+        socket.on('data', chunk => {
+            buf += chunk.toString('utf8');
+            while (buf.length > 0) {
+                const nl = buf.indexOf('\r\n');
+                if (nl === -1) return;
+                const count = Number.parseInt(buf.slice(1, nl), 10);
+                let pos = nl + 2;
+                const args = [];
+                let complete = true;
+                for (let i = 0; i < count; ++i) {
+                    const lenEnd = buf.indexOf('\r\n', pos);
+                    if (lenEnd === -1) { complete = false; break; }
+                    const byteLen = Number.parseInt(buf.slice(pos + 1, lenEnd), 10);
+                    const valStart = lenEnd + 2;
+                    const valEnd = valStart + byteLen;
+                    if (buf.length < valEnd + 2) { complete = false; break; }
+                    args.push(buf.slice(valStart, valEnd));
+                    pos = valEnd + 2;
+                }
+                if (!complete) return;
+                buf = buf.slice(pos);
+                const cmd = args[0].toUpperCase();
+                commands.push(cmd);
+                if (cmd === 'EVAL') {
+                    if (fail) {
+                        socket.write('-ERR Redis command failed\r\n');
+                        continue;
+                    }
+                    assert.equal(args[3], 'test:TEST:login:');
+                    socket.write(args[4] === 'touch' ? ':1\r\n' : '$-1\r\n');
+                }
+                else {
+                    socket.write('+OK\r\n');
+                }
+            }
+        });
     });
-    assert.equal(await first.get(), null);
-    assert.equal(await second.touch(uid), true);
-    fail = true;
-    assert.equal(await first.get(), false);
-    fail = false;
-    assert.equal(await second.get(), null);
-    assert.deepEqual(commands, ['SELECT', 'EVAL', 'EVAL', 'EVAL', 'EVAL']);
-    assert.equal(clients.size, 1);
-    assert.equal(pipeline.mock.callCount(), 0);
+    server.listen(0, '127.0.0.1');
+    await once(server, 'listening');
+    const port = server.address().port;
+    const credentials = { host: '127.0.0.1', port, index: 0, pre: 'test:', user: '', pwd: '' };
+    const kv1 = new Kv(credentials);
+    const kv2 = new Kv(credentials);
+    try {
+        const first = new Login(kv1, 'token', { name: 'TEST' });
+        const second = new Login(kv2, 'token', { name: 'TEST' });
+        assert.equal(await first.get(), null);
+        assert.equal(await second.touch(uid), true);
+        fail = true;
+        assert.equal(await first.get(), false);
+        fail = false;
+        assert.equal(await second.get(), null);
+        assert.deepEqual(commands, ['EVAL', 'EVAL', 'EVAL', 'EVAL']);
+        assert.equal(sockets.size, 1);
+    }
+    finally {
+        const client = await kv1.getClient();
+        client?.destroy();
+        for (const s of sockets) s.destroy();
+        await new Promise(resolve => server.close(resolve));
+    }
 });
 
 test('invalid inputs return false without throwing', async () => {

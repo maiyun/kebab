@@ -4,6 +4,8 @@
  * --- 本文件用来定义每个目录实体地址的常量 ---
  */
 
+import type * as tls from 'node:tls';
+
 /** --- 当前系统版本号 --- */
 export const VER = '9.29.6';
 
@@ -163,13 +165,23 @@ export interface IConfigDns {
 
 /** --- kv --- */
 export interface IConfigKv {
+    /** --- 服务端地址（IP 或域名） --- */
     'host': string;
+    /** --- 服务端端口 --- */
     'port': number;
+    /** --- 数据库编号（0 起） --- */
     'index': number;
+    /** --- 业务键名前缀 --- */
     'pre': string;
 
+    /** --- ACL 用户名（留空则走传统单密码认证） --- */
     'user': string;
+    /** --- 认证密码或 Kvrocks namespace token --- */
     'pwd': string;
+    /** --- 为 true 时将非 0 的 index 折算为键名前缀（如 db1:），不再向服务端发 SELECT --- */
+    'dbPre'?: boolean;
+    /** --- 是否启用 TLS 连接；传入对象时自动启用 TLS 并透传证书/SNI 等参数（如 servername、ca） --- */
+    'tls'?: boolean | tls.ConnectionOptions;
 }
 
 /** --- sql --- */

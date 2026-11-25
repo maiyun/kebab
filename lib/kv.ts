@@ -1,47 +1,118 @@
 /**
  * Project: Kebab, User: JianSuoQiYue
  * Date: 2019-5-30 19:25:22
- * Last: 2020-3-28 18:54:04, 2022-09-12 23:24:45, 2022-09-22 01:06:22, 2024-2-21 13:32:56, 2024-8-21 16:59:57, 2025-11-6 14:56:45
  */
 
+// --- 原生 ---
+import type * as tls from 'node:tls';
 // --- 第三方 ---
-import * as redis from '@litert/redis';
+import * as redis from 'redis';
 // --- 库和定义 ---
 import * as kebab from '#kebab/index.js';
 import * as lText from '#kebab/lib/text.js';
 import * as lCore from '#kebab/lib/core.js';
 import * as sCtr from '#kebab/sys/ctr.js';
 
-export interface IZRangeOptions {
-    /**
-     * Range query type.
-     *
-     * - SCORE: Query by score range
-     * - LEX: Query by lexicographical range
-     */
-    'by'?: 'SCORE' | 'LEX';
-
-    /**
-     * Whether to return results in reverse order.
-     */
-    'rev'?: boolean;
-
-    /**
-     * Pagination offset. Must be used together with count.
-     */
-    'offset'?: number;
-
-    /**
-     * Pagination count. Must be used together with offset.
-     */
-    'count'?: number;
-}
-
 /** --- 相同地址、数据库和凭据共用一次连接初始化 --- */
 const connections: IConnectionInfo[] = [];
 
 /**
- * --- 键值存储操作类 ---
+ * --- 生成 TLS 配置的缓存区分键，避免不同证书或 servername 误用同一连接 ---
+ * @param tlsOpt TLS 配置
+ */
+function getTlsKey(tlsOpt?: boolean | tls.ConnectionOptions): string {
+    if (!tlsOpt) {
+        return '';
+    }
+    if (tlsOpt === true) {
+        return '1';
+    }
+    const keys = Object.keys(tlsOpt).sort();
+    const normalized: Record<string, unknown> = {};
+    for (const key of keys) {
+        const val = (tlsOpt as Record<string, unknown>)[key];
+        normalized[key] = Buffer.isBuffer(val) ? val.toString('base64') : val;
+    }
+    return lText.stringifyJson(normalized);
+}
+
+/**
+ * --- 解析 CONFIG GET 返回值中的目标配置项 ---
+ * @param reply RESP2 数组或键值对象
+ * @param key 配置项名
+ */
+function readConfigValue(reply: unknown, key: string): string | null {
+    if (Array.isArray(reply)) {
+        for (let i = 0; i + 1 < reply.length; i += 2) {
+            if (String(reply[i]).toLowerCase() === key) {
+                return String(reply[i + 1]);
+            }
+        }
+        return null;
+    }
+    if (reply && typeof reply === 'object') {
+        const record = reply as Record<string, unknown>;
+        if (Object.hasOwn(record, key)) {
+            return String(record[key]);
+        }
+    }
+    return null;
+}
+
+/**
+ * --- 校验非 0 库在 Kvrocks 上是否真实支持多库隔离，防止静默串库 ---
+ * @param conn 已建连客户端
+ * @param dbIndex 目标数据库编号（> 0）
+ */
+async function verifyMultiDbSupport(conn: TRedisClient, dbIndex: number): Promise<boolean> {
+    let info: unknown;
+    try {
+        info = await conn.sendCommand(['INFO', 'server']);
+    }
+    catch {
+        // --- 部分受限 Redis 环境禁用了 INFO，按常规 Redis 放行 ---
+        return true;
+    }
+    if (typeof info !== 'string' || !info.includes('kvrocks_version:')) {
+        return true;
+    }
+    // --- 确认是 Kvrocks 后，校验 redis-databases 配置 ---
+    try {
+        const reply = await conn.sendCommand(['CONFIG', 'GET', 'redis-databases']);
+        const raw = readConfigValue(reply, 'redis-databases');
+        const count = raw === null ? NaN : Number.parseInt(raw, 10);
+        if (Number.isInteger(count)) {
+            if (count <= 0 || dbIndex >= count) {
+                lCore.display(
+                    `[KV] Kvrocks redis-databases=${count} does not support index=${dbIndex}; ` +
+                    'enable redis-databases in Kvrocks or set kv.dbPre=true.'
+                );
+                return false;
+            }
+            return true;
+        }
+    }
+    catch {
+        // --- CONFIG 被禁用时，退化检查 CLIENT INFO 中的 namespace ---
+    }
+    try {
+        const clientInfo = await conn.sendCommand(['CLIENT', 'INFO']);
+        if (typeof clientInfo === 'string' && new RegExp(`(?:^|\\s)namespace=db${dbIndex}(?:\\s|$)`).test(clientInfo)) {
+            return true;
+        }
+    }
+    catch {
+        // --- 忽略，进入安全拒绝 ---
+    }
+    lCore.display(
+        `[KV] Unable to confirm Kvrocks multi-db isolation for index=${dbIndex}; ` +
+        'enable redis-databases in Kvrocks or set kv.dbPre=true.'
+    );
+    return false;
+}
+
+/**
+ * --- 键值存储操作类（兼容 Redis 与 Kvrocks） ---
  *
  * @example
  * ```ts
@@ -57,29 +128,47 @@ export class Kv {
     /** --- 当前的 kv 连接信息 --- */
     private readonly _etc: kebab.IConfigKv;
 
+    /** --- 实际向服务端选择的数据库编号 --- */
+    private readonly _db: number;
+
+    /** --- 实际生效的键名前缀（启用 dbPre 且 index > 0 时自动附带 db{index}:） --- */
+    private readonly _pre: string;
+
     public constructor(etc: kebab.IConfigKv) {
         this._etc = etc;
+        const index = etc.index || 0;
+        const useDbPre = Boolean(etc.dbPre && index > 0);
+        this._db = useDbPre ? 0 : index;
+        this._pre = useDbPre ? `db${index}:${etc.pre ?? ''}` : (etc.pre ?? '');
     }
 
     /**
-     * --- 获取当前 Kv 配置的键名前缀 ---
-     * @returns 原生 pipeline 不会自动添加的项目前缀
+     * --- 获取当前 Kv 实际生效的键名前缀 ---
+     * @returns 原生 pipeline / eval 不会自动添加的项目前缀
      */
     public getPre(): string {
-        return this._etc.pre;
+        return this._pre;
     }
 
     /**
-     * --- 获取一个使用独立连接的 pipeline，调用方须在 finally 中调用 close() ---
+     * --- 获取底层官方 redis 客户端实例（用于执行原生扩展命令） ---
+     * @returns 连接失败返回 null
+     */
+    public async getClient(): Promise<TRedisClient | null> {
+        return this._getConnection();
+    }
+
+    /**
+     * --- 获取一个绑定在共享连接上的原生 multi / pipeline 对象（通过 execAsPipeline() 或 exec() 执行，无需关闭） ---
      * @returns 失败则返回 false
      */
-    public async pipeline(): Promise<redis.IPipelineClient | false> {
+    public async pipeline(): Promise<TRedisMulti | false> {
         const conn = await this._getConnection();
         if (!conn) {
             return false;
         }
         try {
-            return await conn.createPipelineClient();
+            return conn.multi();
         }
         catch {
             return false;
@@ -99,7 +188,10 @@ export class Kv {
             return false;
         }
         try {
-            return await conn.eval(script, keys, args);
+            return await conn.eval(script, {
+                'keys': keys,
+                'arguments': args,
+            });
         }
         catch {
             return false;
@@ -108,31 +200,41 @@ export class Kv {
 
     /**
      * --- 设定一个值 ---
-     * @param key
-     * @param val
+     * @param key 键
+     * @param val 值
      * @param ttl 秒，0 为不限制
      * @param mod 设置模式: 空,nx（key不存在才建立）,xx（key存在才修改）
      */
-    public async set(key: string, val: object | string | number, ttl: number = 0, mod: '' | 'nx' | 'xx' = ''): Promise<boolean> {
+    public async set(
+        key: string,
+        val: object | string | number,
+        ttl: number = 0,
+        mod: '' | 'nx' | 'xx' = ''
+    ): Promise<boolean> {
         const conn = await this._getConnection();
         if (!conn) {
             return false;
         }
-        if (typeof val !== 'string') {
-            val = lText.stringifyJson(val);
+        const payload = typeof val === 'string' ? val : lText.stringifyJson(val);
+        const options: {
+            'expiration'?: { 'type': 'EX'; 'value': number; };
+            'condition'?: 'NX' | 'XX';
+        } = {};
+        if (ttl > 0) {
+            options.expiration = {
+                'type': 'EX',
+                'value': ttl,
+            };
+        }
+        if (mod === 'nx') {
+            options.condition = 'NX';
+        }
+        else if (mod === 'xx') {
+            options.condition = 'XX';
         }
         try {
-            switch (mod) {
-                case '': {
-                    return await conn.set(this._etc.pre + key, val, ttl === 0 ? undefined : ttl);
-                }
-                case 'nx': {
-                    return await conn.setNX(this._etc.pre + key, val, ttl === 0 ? undefined : ttl);
-                }
-                case 'xx': {
-                    return await conn.replace(this._etc.pre + key, val, ttl === 0 ? undefined : ttl);
-                }
-            }
+            const res = await conn.set(this._pre + key, payload, options);
+            return res === 'OK';
         }
         catch {
             return false;
@@ -141,8 +243,8 @@ export class Kv {
 
     /**
      * --- 添加一个值，存在则不变 ---
-     * @param key
-     * @param val
+     * @param key 键
+     * @param val 值
      * @param ttl 秒，0 为不限制
      */
     public async add(
@@ -178,7 +280,7 @@ export class Kv {
             return false;
         }
         try {
-            return await conn.append(this._etc.pre + key, val) > 0 ? true : false;
+            return (await conn.append(this._pre + key, val)) > 0;
         }
         catch {
             return false;
@@ -187,8 +289,8 @@ export class Kv {
 
     /**
      * --- 向已存在的值之前追加数据 ---
-     * @param key
-     * @param val
+     * @param key 键
+     * @param val 值
      */
     public async prepend(key: string, val: string): Promise<boolean> {
         const script = `local value = redis.call('GET', KEYS[1])
@@ -197,7 +299,7 @@ if not value then
 end
 redis.call('SET', KEYS[1], ARGV[1] .. value, 'KEEPTTL')
 return 1`;
-        return await this.eval(script, [this._etc.pre + key], [val]) === 1;
+        return await this.eval(script, [this._pre + key], [val]) === 1;
     }
 
     /**
@@ -205,13 +307,16 @@ return 1`;
      * @param keys 单个或序列
      */
     public async exists(keys: string | string[]): Promise<number> {
+        const list = (typeof keys === 'string' ? [keys] : keys).map(k => this._pre + k);
+        if (list.length === 0) {
+            return 0;
+        }
         const conn = await this._getConnection();
         if (!conn) {
             return 0;
         }
         try {
-            const list = (typeof keys === 'string' ? [keys] : keys).map(k => this._etc.pre + k);
-            return await conn.mExists(list);
+            return await conn.exists(list);
         }
         catch {
             return 0;
@@ -220,7 +325,7 @@ return 1`;
 
     /**
      * --- 获取字符串 ---
-     * @param key
+     * @param key 键
      * @returns 字符串 / false / null（即使存入时是 number，这个方法也只会返回字符串）
      */
     public async get(key: string): Promise<string | false | null> {
@@ -229,7 +334,7 @@ return 1`;
             return null;
         }
         try {
-            return await conn.get(this._etc.pre + key);
+            return await conn.get(this._pre + key);
         }
         catch {
             return false;
@@ -238,7 +343,7 @@ return 1`;
 
     /**
      * --- 获取相应的剩余有效期秒数 ---
-     * @param key
+     * @param key 键
      */
     public async ttl(key: string): Promise<number | null> {
         const conn = await this._getConnection();
@@ -246,7 +351,7 @@ return 1`;
             return null;
         }
         try {
-            return await conn.ttl(this._etc.pre + key);
+            return await conn.ttl(this._pre + key);
         }
         catch {
             return null;
@@ -255,7 +360,7 @@ return 1`;
 
     /**
      * --- 获取相应的剩余有效期毫秒数 ---
-     * @param key
+     * @param key 键
      */
     public async pttl(key: string): Promise<number | null> {
         const conn = await this._getConnection();
@@ -263,7 +368,7 @@ return 1`;
             return null;
         }
         try {
-            return await conn.pTTL(this._etc.pre + key);
+            return await conn.pTTL(this._pre + key);
         }
         catch {
             return null;
@@ -275,20 +380,19 @@ return 1`;
      * @param keys key 序列
      */
     public async mGet(keys: string[]): Promise<Record<string, string | null> | false> {
+        if (keys.length === 0) {
+            return {};
+        }
         const conn = await this._getConnection();
         if (!conn) {
             return false;
         }
-        const list = keys.map(k => this._etc.pre + k);
+        const list = keys.map(k => this._pre + k);
         const rtn: Record<string, string | null> = {};
         try {
-            const pl: number = this._etc.pre.length;
-            const r = await conn.mGet(list);
-            if (pl === 0) {
-                return r;
-            }
-            for (const k in r) {
-                rtn[k.slice(pl)] = r[k];
+            const values = await conn.mGet(list);
+            for (let i = 0; i < keys.length; ++i) {
+                rtn[keys[i]] = values[i] ?? null;
             }
         }
         catch {
@@ -298,22 +402,23 @@ return 1`;
     }
 
     /**
-     * --- 批量设置哈希值 ---
-     * @param rows key / val 数组
+     * --- 批量设置键值 ---
+     * @param rows key / val 对象
      */
     public async mSet(
         rows: Record<string, string | Buffer>
     ): Promise<boolean> {
+        const entries = Object.entries(rows);
+        if (entries.length === 0) {
+            return true;
+        }
         const conn = await this._getConnection();
         if (!conn) {
             return false;
         }
         try {
-            const rtn: Record<string, string | Buffer> = {};
-            for (const key in rows) {
-                rtn[this._etc.pre + key] = rows[key];
-            }
-            await conn.mSet(rtn);
+            const payload: Array<[string, string | Buffer]> = entries.map(([k, v]) => [this._pre + k, v]);
+            await conn.mSet(payload);
             return true;
         }
         catch {
@@ -361,7 +466,7 @@ return 1`;
             return false;
         }
         try {
-            const value = await conn.getAndDel(this._etc.pre + key);
+            const value = await conn.getDel(this._pre + key);
             if (value === null) {
                 return null;
             }
@@ -374,16 +479,19 @@ return 1`;
 
     /**
      * --- 删除已存在的值 ---
-     * @param keys
+     * @param keys 单个或序列
      */
     public async del(keys: string | string[]): Promise<boolean> {
+        const list = (typeof keys === 'string' ? [keys] : keys).map(k => this._pre + k);
+        if (list.length === 0) {
+            return false;
+        }
         const conn = await this._getConnection();
         if (!conn) {
             return false;
         }
-        const list = (typeof keys === 'string' ? [keys] : keys).map(k => this._etc.pre + k);
         try {
-            return await conn.del(list) > 0 ? true : false;
+            return (await conn.del(list)) > 0;
         }
         catch {
             return false;
@@ -392,7 +500,7 @@ return 1`;
 
     /**
      * --- 自增 ---
-     * @param key
+     * @param key 键
      * @param num 整数或浮点正数
      */
     public async incr(key: string, num: number = 1): Promise<number | false> {
@@ -403,14 +511,14 @@ return 1`;
         try {
             if (Number.isInteger(num)) {
                 if (num === 1) {
-                    return await conn.incr(this._etc.pre + key);
+                    return await conn.incr(this._pre + key);
                 }
                 else {
-                    return await conn.incr(this._etc.pre + key, num);
+                    return await conn.incrBy(this._pre + key, num);
                 }
             }
             else {
-                return await conn.incrByFloat(this._etc.pre + key, num);
+                return Number(await conn.incrByFloat(this._pre + key, num));
             }
         }
         catch {
@@ -420,7 +528,7 @@ return 1`;
 
     /**
      * --- 自减 ---
-     * @param key
+     * @param key 键
      * @param num 整数或浮点正数
      */
     public async decr(key: string, num: number = 1): Promise<number | false> {
@@ -431,14 +539,14 @@ return 1`;
         try {
             if (Number.isInteger(num)) {
                 if (num === 1) {
-                    return await conn.decr(this._etc.pre + key);
+                    return await conn.decr(this._pre + key);
                 }
                 else {
-                    return await conn.decr(this._etc.pre + key, num);
+                    return await conn.decrBy(this._pre + key, num);
                 }
             }
             else {
-                return await conn.incrByFloat(this._etc.pre + key, -num);
+                return Number(await conn.incrByFloat(this._pre + key, -num));
             }
         }
         catch {
@@ -448,8 +556,8 @@ return 1`;
 
     /**
      * --- 仅修改过期时间不修改值 ---
-     * @param key
-     * @param ttl
+     * @param key 键
+     * @param ttl 秒
      */
     public async expire(key: string, ttl: number): Promise<boolean> {
         const conn = await this._getConnection();
@@ -457,7 +565,7 @@ return 1`;
             return false;
         }
         try {
-            return await conn.expire(this._etc.pre + key, ttl);
+            return (await conn.expire(this._pre + key, ttl)) === 1;
         }
         catch {
             return false;
@@ -466,7 +574,7 @@ return 1`;
 
     /**
      * --- 获取服务器上的所有 key 列表 ---
-     * @param pattern
+     * @param pattern 匹配模式
      */
     public async keys(pattern: string): Promise<string[] | false> {
         const conn = await this._getConnection();
@@ -474,12 +582,10 @@ return 1`;
             return false;
         }
         try {
-            const r = await conn.keys(this._etc.pre + pattern);
-            const pl = this._etc.pre.length;
+            const r = await conn.keys(this._pre + pattern);
+            const pl = this._pre.length;
             if (pl > 0) {
-                for (let k = 0; k < r.length; ++k) {
-                    r[k] = r[k].slice(pl);
-                }
+                return r.map(k => k.slice(pl));
             }
             return r;
         }
@@ -489,26 +595,31 @@ return 1`;
     }
 
     /**
-     * --- 根据条件获取服务器上的 keys ---
-     * @param cursor
+     * --- 根据条件获取服务器上的 keys（兼容 Redis 数字串游标与 Kvrocks 字符串游标） ---
+     * @param cursor 游标，首次传 '0'（或 0）
      * @param pattern 例如 *
      * @param count 获取的条数
      */
     public async scan(
-        cursor: number = 0,
+        cursor: string | number = '0',
         pattern: string = '*',
         count: number = 10
-    ): Promise<redis.IScanResult<string> | false> {
+    ): Promise<IScanResult | false> {
         const conn = await this._getConnection();
         if (!conn) {
             return false;
         }
         try {
-            const r = await conn.scan(cursor, this._etc.pre + pattern, count);
-            for (let i = 0; i < r.items.length; ++i) {
-                r.items[i] = r.items[i].slice(this._etc.pre.length);
-            }
-            return r;
+            const r = await conn.scan(String(cursor), {
+                'MATCH': this._pre + pattern,
+                'COUNT': count,
+            });
+            const pl = this._pre.length;
+            const items = pl > 0 ? r.keys.map(k => k.slice(pl)) : r.keys;
+            return {
+                'cursor': r.cursor,
+                'items': items,
+            };
         }
         catch {
             return false;
@@ -553,22 +664,26 @@ return 1`;
      * @param key key 名
      * @param field 字段名
      * @param val 值
-     * @param mod 空,nx(key不存在才建立)
+     * @param mod 空,nx(field不存在才建立)
      */
-    public async hSet(key: string, field: string, val: object | string | number, mod: '' | 'nx' = ''): Promise<boolean> {
+    public async hSet(
+        key: string,
+        field: string,
+        val: object | string | number,
+        mod: '' | 'nx' = ''
+    ): Promise<boolean> {
         const conn = await this._getConnection();
         if (!conn) {
             return false;
         }
         try {
-            if (typeof val !== 'string') {
-                val = lText.stringifyJson(val);
-            }
+            const payload = typeof val === 'string' ? val : lText.stringifyJson(val);
             if (mod === 'nx') {
-                return await conn.hSetNX(this._etc.pre + key, field, val);
+                return (await conn.hSetNX(this._pre + key, field, payload)) === 1;
             }
             else {
-                return await conn.hSet(this._etc.pre + key, field, val);
+                await conn.hSet(this._pre + key, field, payload);
+                return true;
             }
         }
         catch {
@@ -579,23 +694,26 @@ return 1`;
     /**
      * --- 批量设置哈希值 ---
      * @param key key 名
-     * @param rows key / val 数组
+     * @param rows field / val 对象
      */
     public async hMSet(
         key: string,
         rows: Record<string, object | string | number>
     ): Promise<boolean> {
+        const entries = Object.entries(rows);
+        if (entries.length === 0) {
+            return true;
+        }
         const conn = await this._getConnection();
         if (!conn) {
             return false;
         }
         try {
             const payload: Record<string, string | number> = {};
-            for (const i in rows) {
-                const val = rows[i];
-                payload[i] = typeof val === 'object' ? lText.stringifyJson(val) : val;
+            for (const [k, val] of entries) {
+                payload[k] = typeof val === 'object' ? lText.stringifyJson(val) : val;
             }
-            await conn.hMSet(this._etc.pre + key, payload);
+            await conn.hSet(this._pre + key, payload);
             return true;
         }
         catch {
@@ -605,8 +723,8 @@ return 1`;
 
     /**
      * --- 获取哈希值 ---
-     * @param key
-     * @param field
+     * @param key 键
+     * @param field 字段
      */
     public async hGet(key: string, field: string): Promise<string | false | null> {
         const conn = await this._getConnection();
@@ -614,7 +732,8 @@ return 1`;
             return false;
         }
         try {
-            return await conn.hGet(this._etc.pre + key, field);
+            const v = await conn.hGet(this._pre + key, field);
+            return v ?? null;
         }
         catch {
             return false;
@@ -650,16 +769,24 @@ return 1`;
 
     /**
      * --- 批量获取哈希值 ---
-     * @param key
-     * @param fields
+     * @param key 键
+     * @param fields 字段列表
      */
     public async hMGet(key: string, fields: string[]): Promise<Record<string, string | null> | false> {
+        if (fields.length === 0) {
+            return {};
+        }
         const conn = await this._getConnection();
         if (!conn) {
             return false;
         }
         try {
-            return await conn.hMGet(this._etc.pre + key, fields);
+            const values = await conn.hmGet(this._pre + key, fields);
+            const rtn: Record<string, string | null> = {};
+            for (let i = 0; i < fields.length; ++i) {
+                rtn[fields[i]] = values[i] ?? null;
+            }
+            return rtn;
         }
         catch {
             return false;
@@ -668,7 +795,7 @@ return 1`;
 
     /**
      * --- 批量获取哈希键值对 ---
-     * @param key
+     * @param key 键
      */
     public async hGetAll(key: string): Promise<Record<string, string | null> | false> {
         const conn = await this._getConnection();
@@ -676,7 +803,7 @@ return 1`;
             return false;
         }
         try {
-            return await conn.hGetAll(this._etc.pre + key);
+            return await conn.hGetAll(this._pre + key);
         }
         catch {
             return false;
@@ -685,16 +812,19 @@ return 1`;
 
     /**
      * --- 删除哈希键 ---
-     * @param key
-     * @param fields 值序列
+     * @param key 键
+     * @param fields 字段序列
      */
     public async hDel(key: string, fields: string | string[]): Promise<number | false> {
+        if (Array.isArray(fields) && fields.length === 0) {
+            return 0;
+        }
         const conn = await this._getConnection();
         if (!conn) {
             return false;
         }
         try {
-            return await conn.hDel(this._etc.pre + key, fields);
+            return await conn.hDel(this._pre + key, fields);
         }
         catch {
             return false;
@@ -703,8 +833,8 @@ return 1`;
 
     /**
      * --- 判断哈希字段是否存在 ---
-     * @param key
-     * @param field
+     * @param key 键
+     * @param field 字段
      */
     public async hExists(key: string, field: string): Promise<boolean> {
         const conn = await this._getConnection();
@@ -712,7 +842,7 @@ return 1`;
             return false;
         }
         try {
-            return await conn.hExists(this._etc.pre + key, field);
+            return (await conn.hExists(this._pre + key, field)) === 1;
         }
         catch {
             return false;
@@ -732,10 +862,10 @@ return 1`;
         }
         try {
             if (Number.isInteger(increment)) {
-                return await conn.hIncr(this._etc.pre + key, field, increment);
+                return await conn.hIncrBy(this._pre + key, field, increment);
             }
             else {
-                return await conn.hIncrByFloat(this._etc.pre + key, field, increment);
+                return Number(await conn.hIncrByFloat(this._pre + key, field, increment));
             }
         }
         catch {
@@ -745,7 +875,7 @@ return 1`;
 
     /**
      * --- 获取哈希所有字段 ---
-     * @param key
+     * @param key 键
      */
     public async hKeys(key: string): Promise<string[] | false> {
         const conn = await this._getConnection();
@@ -753,114 +883,162 @@ return 1`;
             return false;
         }
         try {
-            return await conn.hKeys(this._etc.pre + key);
+            return await conn.hKeys(this._pre + key);
         }
         catch {
             return false;
         }
     }
 
+    /**
+     * --- 从列表左侧推入元素 ---
+     * @param key 键
+     * @param values 元素数组
+     */
     public async lPush(key: string, values: Array<string | Buffer>): Promise<number | false> {
+        if (values.length === 0) {
+            return 0;
+        }
         const conn = await this._getConnection();
         if (!conn) {
             return false;
         }
         try {
-            return await conn.lPush(this._etc.pre + key, values);
+            return await conn.lPush(this._pre + key, values);
         }
         catch {
             return false;
         }
     }
 
+    /**
+     * --- 从列表右侧推入元素 ---
+     * @param key 键
+     * @param values 元素数组
+     */
     public async rPush(key: string, values: Array<string | Buffer>): Promise<number | false> {
+        if (values.length === 0) {
+            return 0;
+        }
         const conn = await this._getConnection();
         if (!conn) {
             return false;
         }
         try {
-            return await conn.rPush(this._etc.pre + key, values);
+            return await conn.rPush(this._pre + key, values);
         }
         catch {
             return false;
         }
     }
 
-    public async bLMove(sourceKey: string, destKey: string, soo: 'LEFT' | 'RIGHT', deo: 'LEFT' | 'RIGHT', timeout: number): Promise<string | null | false> {
-        const conn = await this._getConnection();
-        if (!conn) {
-            return false;
-        }
-        try {
-            return await conn.bLMove(this._etc.pre + sourceKey, this._etc.pre + destKey, soo, deo, timeout);
-        }
-        catch {
-            return false;
-        }
+    /**
+     * --- 阻塞式在两个列表间移动元素（使用独立连接，避免阻塞共享连接） ---
+     * @param sourceKey 源列表键
+     * @param destKey 目标列表键
+     * @param soo 源端方向
+     * @param deo 目标端方向
+     * @param timeout 超时秒数，0 为无限等待
+     */
+    public async bLMove(
+        sourceKey: string,
+        destKey: string,
+        soo: 'LEFT' | 'RIGHT',
+        deo: 'LEFT' | 'RIGHT',
+        timeout: number
+    ): Promise<string | null | false> {
+        return this._runBlocking(timeout, async (blocking) => {
+            return blocking.blMove(this._pre + sourceKey, this._pre + destKey, soo, deo, timeout);
+        });
     }
 
+    /**
+     * --- 从列表左侧弹出元素 ---
+     * @param key 键
+     */
     public async lPop(key: string): Promise<string | null | false> {
         const conn = await this._getConnection();
         if (!conn) {
             return false;
         }
         try {
-            return await conn.lPop(this._etc.pre + key);
+            return await conn.lPop(this._pre + key);
         }
         catch {
             return false;
         }
     }
 
+    /**
+     * --- 从列表右侧弹出元素 ---
+     * @param key 键
+     */
     public async rPop(key: string): Promise<string | null | false> {
         const conn = await this._getConnection();
         if (!conn) {
             return false;
         }
         try {
-            return await conn.rPop(this._etc.pre + key);
+            return await conn.rPop(this._pre + key);
         }
         catch {
             return false;
         }
     }
 
+    /**
+     * --- 阻塞式从列表右侧弹出元素（使用独立连接，避免阻塞共享连接） ---
+     * @param key 单个或序列键
+     * @param timeout 超时秒数，0 为无限等待
+     */
     public async bRPop(key: string | string[], timeout: number): Promise<Record<string, string> | false> {
-        const conn = await this._getConnection();
-        if (!conn) {
-            return false;
+        const list = (typeof key === 'string' ? [key] : key).map(item => this._pre + item);
+        if (list.length === 0) {
+            return {};
         }
-        try {
-            if (typeof key === 'string') {
-                key = [key];
+        return this._runBlocking(timeout, async (blocking) => {
+            const res = await blocking.brPop(list, timeout);
+            if (!res) {
+                return {};
             }
-            return await conn.bRPop(key.map(item => this._etc.pre + item), timeout);
-        }
-        catch {
-            return false;
-        }
+            const pl = this._pre.length;
+            const outKey = pl > 0 && res.key.startsWith(this._pre) ? res.key.slice(pl) : res.key;
+            return {
+                [outKey]: res.element,
+            };
+        });
     }
 
+    /**
+     * --- 获取列表指定区间元素 ---
+     * @param key 键
+     * @param start 起始位置
+     * @param stop 结束位置
+     */
     public async lRange(key: string, start: number, stop: number): Promise<string[] | false> {
         const conn = await this._getConnection();
         if (!conn) {
             return false;
         }
         try {
-            return await conn.lRange(this._etc.pre + key, start, stop);
+            return await conn.lRange(this._pre + key, start, stop);
         }
         catch {
             return false;
         }
     }
 
+    /**
+     * --- 获取列表长度 ---
+     * @param key 键
+     */
     public async lLen(key: string): Promise<number | false> {
         const conn = await this._getConnection();
         if (!conn) {
             return false;
         }
         try {
-            return await conn.lLen(this._etc.pre + key);
+            return await conn.lLen(this._pre + key);
         }
         catch {
             return false;
@@ -878,75 +1056,70 @@ return 1`;
      * --- 添加有序集合元素（多个元素，含 INCR 选项） ---
      * @param key key 名
      * @param elements 元素数组
-     * @param options 选项，需要 INCR
+     * @param options 选项（INCR 为 true 时返回新分数，条件未满足时返回 null）
      */
-    public async zAdd(key: string, elements: Array<{ 'score': number; 'member': string | Buffer; }>, options: redis.IZAddOptionsIncr): Promise<number | false>;
-    /**
-     * --- 添加有序集合元素（多个元素，含 INCR 选项，可空） ---
-     * @param key key 名
-     * @param elements 元素数组
-     * @param options 选项，需要 INCR Nullable
-     */
-    public async zAdd(key: string, elements: Array<{ 'score': number; 'member': string | Buffer; }>, options: redis.IZAddOptionsIncrNullable): Promise<number | null | false>;
+    public async zAdd(
+        key: string,
+        elements: Array<{ 'score': number; 'member': string | Buffer; }>,
+        options: IZAddOptions & { 'INCR': true; }
+    ): Promise<number | null | false>;
     /**
      * --- 添加有序集合元素（多个元素） ---
      * @param key key 名
      * @param elements 元素数组
      * @param options 选项
      */
-    public async zAdd(key: string, elements: Array<{ 'score': number; 'member': string | Buffer; }>, options?: redis.IZAddOptions): Promise<number | false>;
+    public async zAdd(
+        key: string,
+        elements: Array<{ 'score': number; 'member': string | Buffer; }>,
+        options?: IZAddOptions
+    ): Promise<number | false>;
     /**
      * --- 添加有序集合元素 ---
      */
     public async zAdd(
         key: string,
         scoreOrItems: number | Array<{ 'score': number; 'member': string | Buffer; }>,
-        memberOrOptions?: string | Buffer | redis.IZAddOptions | redis.IZAddOptionsIncr | redis.IZAddOptionsIncrNullable
+        memberOrOptions?: string | Buffer | IZAddOptions
     ): Promise<boolean | number | null | false> {
         const conn = await this._getConnection();
         if (!conn) {
             return false;
         }
         try {
-            return await conn.zAdd(this._etc.pre + key, scoreOrItems as any, memberOrOptions as any);
-        }
-        catch {
-            return false;
-        }
-    }
-
-    public async zRangeWithScores(
-        key: string,
-        start: number, stop: number,
-        options?: IZRangeOptions
-    ): Promise<Array<{
-        member: string;
-        score: number;
-    }> | false> {
-        const conn = await this._getConnection();
-        if (!conn) {
-            return false;
-        }
-        try {
-            return await conn.zRangeWithScores(this._etc.pre + key, start, stop, {
-                'by': options?.by,
-                'reverse': options?.rev,
-                'offset': options?.offset,
-                'count': options?.count,
-            });
-        }
-        catch {
-            return false;
-        }
-    }
-
-    public async zRem(key: string, members: Array<string | Buffer>): Promise<number | false> {
-        const conn = await this._getConnection();
-        if (!conn) {
-            return false;
-        }
-        try {
-            return await conn.zRem(this._etc.pre + key, members);
+            if (typeof scoreOrItems === 'number') {
+                const count = await conn.zAdd(this._pre + key, {
+                    'score': scoreOrItems,
+                    'value': memberOrOptions as string | Buffer,
+                });
+                return count > 0;
+            }
+            if (scoreOrItems.length === 0) {
+                return 0;
+            }
+            const items = scoreOrItems.map(item => ({
+                'score': item.score,
+                'value': item.member,
+            }));
+            const rawOpt = memberOrOptions as IZAddOptions | undefined;
+            const opts: {
+                'condition'?: 'NX' | 'XX';
+                'comparison'?: 'GT' | 'LT';
+                'CH'?: boolean;
+            } = {};
+            if (rawOpt?.condition) {
+                opts.condition = rawOpt.condition;
+            }
+            if (rawOpt?.comparison) {
+                opts.comparison = rawOpt.comparison;
+            }
+            if (rawOpt?.CH) {
+                opts.CH = true;
+            }
+            if (rawOpt?.INCR) {
+                return await conn.zAddIncr(this._pre + key, items, opts);
+            }
+            return await conn.zAdd(this._pre + key, items, opts);
         }
         catch {
             return false;
@@ -954,42 +1127,213 @@ return 1`;
     }
 
     /**
-     * --- 从连接池中获取一个符合要求的连接 ---
+     * --- 查询有序集合成员及分数 ---
+     * @param key 键
+     * @param start 起点
+     * @param stop 终点
+     * @param options 范围与分页选项
      */
-    private async _getConnection(): Promise<redis.ICommandClient | null> {
-        const { host, port, index, user, pwd } = this._etc;
+    public async zRangeWithScores(
+        key: string,
+        start: number | string,
+        stop: number | string,
+        options?: IZRangeOptions
+    ): Promise<Array<{
+        'member': string;
+        'score': number;
+    }> | false> {
+        const conn = await this._getConnection();
+        if (!conn) {
+            return false;
+        }
+        try {
+            const opts: {
+                'BY'?: 'SCORE' | 'LEX';
+                'REV'?: boolean;
+                'LIMIT'?: { 'offset': number; 'count': number; };
+            } = {};
+            if (options?.by) {
+                opts.BY = options.by;
+            }
+            if (options?.rev) {
+                opts.REV = true;
+            }
+            if (options?.offset !== undefined && options?.count !== undefined) {
+                opts.LIMIT = {
+                    'offset': options.offset,
+                    'count': options.count,
+                };
+            }
+            const rows = await conn.zRangeWithScores(this._pre + key, start, stop, opts);
+            return rows.map(row => ({
+                'member': row.value,
+                'score': row.score,
+            }));
+        }
+        catch {
+            return false;
+        }
+    }
+
+    /**
+     * --- 移除有序集合成员 ---
+     * @param key 键
+     * @param members 成员列表
+     */
+    public async zRem(key: string, members: Array<string | Buffer>): Promise<number | false> {
+        if (members.length === 0) {
+            return 0;
+        }
+        const conn = await this._getConnection();
+        if (!conn) {
+            return false;
+        }
+        try {
+            return await conn.zRem(this._pre + key, members);
+        }
+        catch {
+            return false;
+        }
+    }
+
+    /**
+     * --- 在独立副本连接上执行阻塞命令，避免阻塞共享连接和触发默认 5 秒命令超时 ---
+     * @param timeout 阻塞超时秒数，0 为无限等待
+     * @param fn 实际执行函数
+     */
+    private async _runBlocking<T>(
+        timeout: number,
+        fn: (blocking: TRedisClient) => Promise<T>
+    ): Promise<T | false> {
+        const conn = await this._getConnection();
+        if (!conn) {
+            return false;
+        }
+        const blocking = conn.duplicate({
+            'commandOptions': {
+                'timeout': timeout > 0 ? timeout * 1000 + 5_000 : undefined,
+            },
+            'socket': {
+                ...conn.options?.socket,
+                'reconnectStrategy': false,
+            },
+        });
+        blocking.on('error', function(err: Error): void {
+            lCore.debug('[KV][_runBlocking][error]', err);
+        });
+        try {
+            await blocking.connect();
+            return await fn(blocking);
+        }
+        catch {
+            return false;
+        }
+        finally {
+            blocking.destroy();
+        }
+    }
+
+    /**
+     * --- 从连接池中获取一个符合要求的共享连接 ---
+     */
+    private async _getConnection(): Promise<TRedisClient | null> {
+        const { host, port, user, pwd, tls: tlsOpt } = this._etc;
+        const db = this._db;
+        const tlsKey = getTlsKey(tlsOpt);
         const cached = connections.find(item =>
-            item.host === host && item.port === port && item.index === index && item.user === user && item.pwd === pwd
+            item.host === host && item.port === port && item.index === db &&
+            item.user === user && item.pwd === pwd && item.tls === tlsKey
         );
         if (cached) {
-            return cached.ready;
+            const conn = await cached.ready;
+            if (conn?.isOpen) {
+                return conn;
+            }
+            const idx = connections.indexOf(cached);
+            if (idx !== -1) {
+                connections.splice(idx, 1);
+            }
+            if (!conn) {
+                return null;
+            }
         }
-        // --- 其他请求须等待同一次认证和选库 ---
-        const ready = this._connect(this._etc).catch(() => null);
-        const item = { host, port, index, user, pwd, ready };
+        // --- 并发首次建连共用同一次初始化 ---
+        const ready = this._connect(host, port, db, user, pwd, tlsOpt).catch(() => null);
+        const item: IConnectionInfo = {
+            'host': host,
+            'port': port,
+            'index': db,
+            'user': user,
+            'pwd': pwd,
+            'tls': tlsKey,
+            'ready': ready,
+        };
         connections.push(item);
         const conn = await ready;
         if (!conn) {
-            connections.splice(connections.indexOf(item), 1);
+            const idx = connections.indexOf(item);
+            if (idx !== -1) {
+                connections.splice(idx, 1);
+            }
         }
         return conn;
     }
 
-    /** --- 建立共享连接，初始化失败时释放已打开的套接字 --- */
-    private async _connect({ host, port, index, user, pwd }: kebab.IConfigKv): Promise<redis.ICommandClient | null> {
-        const conn = redis.createCommandClient({ host, port });
-        conn.on('error', function(err: redis.RedisError): void {
+    /**
+     * --- 建立共享连接，统一走 RESP2 兼容 Redis 与 Kvrocks，并在非 0 库时校验 Kvrocks 多库隔离 ---
+     */
+    private async _connect(
+        host: string,
+        port: number,
+        index: number,
+        user: string,
+        pwd: string,
+        tlsOpt?: boolean | tls.ConnectionOptions
+    ): Promise<TRedisClient | null> {
+        let initialized = false;
+        const reconnectStrategy = (retries: number): number | false => {
+            // --- 首次建连（含 AUTH / SELECT）失败立即返回，由上层按需重试，避免请求无限挂起 ---
+            if (!initialized) {
+                return false;
+            }
+            // --- 已就绪连接断线后自动退避重连，node-redis 会自动重发 AUTH / SELECT ---
+            return Math.min(retries * 100, 3_000);
+        };
+        const conn: TRedisClient = redis.createClient({
+            'RESP': 2,
+            'disableClientInfo': true,
+            'maintNotifications': 'disabled',
+            'database': index,
+            'username': user || undefined,
+            'password': pwd || undefined,
+            'socket': tlsOpt
+                ? {
+                    ...(typeof tlsOpt === 'object' ? tlsOpt : {}),
+                    'host': host,
+                    'port': port,
+                    'tls': true,
+                    'reconnectStrategy': reconnectStrategy,
+                }
+                : {
+                    'host': host,
+                    'port': port,
+                    'reconnectStrategy': reconnectStrategy,
+                },
+        });
+        conn.on('error', function(err: Error): void {
             lCore.debug('[KV][_getConnection][error]', err);
         });
         try {
-            if (pwd) {
-                await conn.auth(pwd, user || undefined);
+            await conn.connect();
+            if (index > 0 && !await verifyMultiDbSupport(conn, index)) {
+                conn.destroy();
+                return null;
             }
-            await conn.select(index);
+            initialized = true;
             return conn;
         }
         catch {
-            await conn.close();
+            conn.destroy();
             return null;
         }
     }
@@ -999,27 +1343,85 @@ return 1`;
 /**
  * --- 获取 Kv 对象 ---
  * @param ctrEtc 控制器或配置信息
- * @param oetc 可用来覆盖 ctr 的一些选项，如 index
+ * @param oetc 可用来覆盖 ctr 的部分连接选项
  */
 export function get(ctrEtc: sCtr.Ctr | kebab.IConfigKv, oetc?: {
+    /** --- 数据库编号（0 起） --- */
     'index'?: number;
+    /** --- ACL 用户名（留空则走传统单密码认证） --- */
     'user'?: string;
+    /** --- 认证密码或 Kvrocks namespace token --- */
     'pwd'?: string;
+    /** --- 业务键名前缀 --- */
+    'pre'?: string;
+    /** --- 为 true 时将非 0 的 index 折算为键名前缀（如 db1:），不再发 SELECT --- */
+    'dbPre'?: boolean;
+    /** --- 启用 TLS；传对象时自动开启 TLS 并透传 servername、ca 等参数 --- */
+    'tls'?: boolean | tls.ConnectionOptions;
 }): Kv {
     const etc = ctrEtc instanceof sCtr.Ctr ? ctrEtc.getPrototype('_config').kv : ctrEtc;
     return new Kv(oetc ? { ...etc, ...oetc } : etc);
-
 }
 
 // --- 类型 ---
 
+/** --- 底层官方 redis 客户端类型（固定 RESP2） --- */
+export type TRedisClient = redis.RedisClientType<
+    Record<string, never>,
+    Record<string, never>,
+    Record<string, never>,
+    2
+>;
+
+/** --- 底层原生 multi / pipeline 类型 --- */
+export type TRedisMulti = ReturnType<TRedisClient['multi']>;
+
+/** --- SCAN 分页结果 --- */
+export interface IScanResult<T = string> {
+    /** --- 下一页游标（'0' 表示结束；兼容 Redis 数字串与 Kvrocks 原生字符串游标） --- */
+    'cursor': string;
+    /** --- 当前页匹配到的键名列表（已去除项目前缀） --- */
+    'items': T[];
+}
+
+/** --- ZRANGE 查询选项 --- */
+export interface IZRangeOptions {
+    /** --- 查询方式：SCORE 按分数范围，LEX 按字典序 --- */
+    'by'?: 'SCORE' | 'LEX';
+    /** --- 是否倒序返回 --- */
+    'rev'?: boolean;
+    /** --- 分页偏移量，需与 count 同用 --- */
+    'offset'?: number;
+    /** --- 分页条数，需与 offset 同用 --- */
+    'count'?: number;
+}
+
+/** --- ZADD 选项 --- */
+export interface IZAddOptions {
+    /** --- 写入条件：NX 仅添加不存在的成员，XX 仅更新已存在的成员 --- */
+    'condition'?: 'NX' | 'XX';
+    /** --- 分数比较条件：GT 仅新分数大于旧分数时更新，LT 仅新分数小于旧分数时更新（不影响新增成员） --- */
+    'comparison'?: 'GT' | 'LT';
+    /** --- 返回值改为受影响总数（新增 + 分数变化的成员数），默认仅返回新增成员数 --- */
+    'CH'?: boolean;
+    /** --- 改为在原分数上累加（类似 ZINCRBY，仅支持单个成员），返回更新后的新分数 --- */
+    'INCR'?: boolean;
+}
+
 /** --- Redis 连接缓存项 --- */
 export interface IConnectionInfo {
+    /** --- 服务端地址（IP 或域名） --- */
     'host': string;
+    /** --- 服务端端口 --- */
     'port': number;
+    /** --- 实际选择的数据库编号 --- */
     'index': number;
+    /** --- ACL 用户名 --- */
     'user': string;
+    /** --- 认证密码或 Kvrocks namespace token --- */
     'pwd': string;
+    /** --- TLS 配置区分键（空串表示明文，'1' 表示默认 TLS，其余为对象序列化键） --- */
+    'tls': string;
     /** --- 并发请求等待同一次建连，成功返回客户端，失败返回 null --- */
-    'ready': Promise<redis.ICommandClient | null>;
+    'ready': Promise<TRedisClient | null>;
 }

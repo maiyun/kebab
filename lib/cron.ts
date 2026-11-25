@@ -131,14 +131,7 @@ async function saveCronData(obj: IRegularData): Promise<void> {
  * --- 获取 Kv 实例（内部使用，用于分布式锁） ---
  */
 function get(): lKv.Kv {
-    return lKv.get({
-        'host': lCore.globalConfig.kv.host,
-        'port': lCore.globalConfig.kv.port,
-        'index': lCore.globalConfig.kv.index,
-        'pre': lCore.globalConfig.kv.pre,
-        'user': lCore.globalConfig.kv.user,
-        'pwd': lCore.globalConfig.kv.pwd,
-    });
+    return lKv.get({ ...lCore.globalConfig.kv });
 }
 
 // --- 类型 ---

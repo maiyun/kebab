@@ -1,53 +1,282 @@
 import assert from 'node:assert/strict';
+import net from 'node:net';
+import { once } from 'node:events';
 import test from 'node:test';
-import { ProtocolClient } from '@litert/redis/lib/ProtocolClient.js';
 import { get } from '../../lib/kv.js';
 
-const config = { host: 'pool.test.invalid', port: 6379, index: 0, pre: 'a:', user: 'test', pwd: 'example' };
+function encodeResp(value) {
+    if (value === null) return '$-1\r\n';
+    if (value instanceof Error) return `-${value.message}\r\n`;
+    if (typeof value === 'number') return `:${value}\r\n`;
+    if (typeof value === 'string') {
+        return `$${Buffer.byteLength(value)}\r\n${value}\r\n`;
+    }
+    if (value && typeof value === 'object' && 'simple' in value) {
+        return `+${value.simple}\r\n`;
+    }
+    if (Array.isArray(value)) {
+        return `*${value.length}\r\n${value.map(encodeResp).join('')}`;
+    }
+    throw new Error(`Unsupported RESP value: ${String(value)}`);
+}
 
-test('concurrent first use shares initialized Redis clients only across matching database and credentials', async t => {
-    const history = new Map();
-    t.mock.method(ProtocolClient.prototype, '_command', async function(cmd, args) {
-        if (!history.has(this)) history.set(this, []);
-        history.get(this).push([cmd, ...args]);
-        return cmd === 'PING' ? 'PONG' : 'OK';
+async function createMockServer(handler) {
+    const sockets = new Set();
+    const connections = [];
+    const server = net.createServer(socket => {
+        sockets.add(socket);
+        const history = [];
+        const connState = { socket, history };
+        connections.push(connState);
+        let buf = Buffer.alloc(0);
+        socket.on('data', chunk => {
+            buf = Buffer.concat([buf, chunk]);
+            while (buf.length > 0) {
+                const nl = buf.indexOf('\r\n');
+                if (nl === -1) return;
+                const count = Number.parseInt(buf.subarray(1, nl).toString('utf8'), 10);
+                let pos = nl + 2;
+                const args = [];
+                let complete = true;
+                for (let i = 0; i < count; ++i) {
+                    const lenEnd = buf.indexOf('\r\n', pos);
+                    if (lenEnd === -1) { complete = false; break; }
+                    const byteLen = Number.parseInt(buf.subarray(pos + 1, lenEnd).toString('utf8'), 10);
+                    const valStart = lenEnd + 2;
+                    const valEnd = valStart + byteLen;
+                    if (buf.length < valEnd + 2) { complete = false; break; }
+                    args.push(buf.subarray(valStart, valEnd).toString('utf8'));
+                    pos = valEnd + 2;
+                }
+                if (!complete) return;
+                buf = buf.subarray(pos);
+                history.push(args);
+                const reply = handler(args, connState);
+                if (reply && typeof reply.then === 'function') {
+                    reply.then(r => {
+                        if (!socket.destroyed) socket.write(encodeResp(r));
+                    });
+                }
+                else {
+                    socket.write(encodeResp(reply));
+                }
+            }
+        });
     });
+    server.listen(0, '127.0.0.1');
+    await once(server, 'listening');
+    const port = server.address().port;
+    return {
+        port,
+        connections,
+        async close(clients = []) {
+            for (const c of clients) {
+                c?.destroy();
+            }
+            for (const s of sockets) s.destroy();
+            await new Promise(resolve => server.close(resolve));
+        },
+    };
+}
+
+test('concurrent first use shares initialized Redis clients only across matching database and credentials', async () => {
+    const server = await createMockServer(args => {
+        const cmd = args[0].toUpperCase();
+        if (cmd === 'PING') return { simple: 'PONG' };
+        if (cmd === 'INFO') return '# Server\r\nredis_version:7.2.0\r\n';
+        return { simple: 'OK' };
+    });
+    const config = { host: '127.0.0.1', port: server.port, index: 0, pre: 'a:', user: 'test', pwd: 'example' };
     const first = get(config);
     const second = get({ ...config, pre: 'b:' });
     const otherDb = get(config, { index: 2 });
     const otherUser = get(config, { user: 'second' });
     const otherPassword = get(config, { pwd: 'rotated' });
-    assert.deepEqual(await Promise.all([first, second, otherDb, otherUser, otherPassword].map(kv => kv.ping())),
-        Array(5).fill('PONG'));
-    assert.equal(await first.ping(), 'PONG');
-    const sequence = (user, pwd, db, pings) =>
-        [['AUTH', user, pwd], ['SELECT', db], ...Array.from({ length: pings }, () => ['PING'])];
-    assert.deepEqual([...history.values()], [
-        sequence('test', 'example', 0, 3),
-        sequence('test', 'example', 2, 1),
-        sequence('second', 'example', 0, 1),
-        sequence('test', 'rotated', 0, 1),
-    ]);
+    try {
+        assert.deepEqual(
+            await Promise.all([first, second, otherDb, otherUser, otherPassword].map(kv => kv.ping())),
+            Array(5).fill('PONG')
+        );
+        assert.equal(await first.ping(), 'PONG');
+        assert.equal(server.connections.length, 4);
+        // Verify RESP2 AUTH + SELECT (no HELLO, no CLIENT SETINFO)
+        for (const conn of server.connections) {
+            const cmds = conn.history.map(a => a[0].toUpperCase());
+            assert.equal(cmds.includes('HELLO'), false);
+            assert.equal(cmds.includes('CLIENT'), false);
+        }
+        const db2Conn = server.connections.find(c => c.history.some(a => a[0] === 'SELECT' && a[1] === '2'));
+        assert.ok(db2Conn, 'index 2 must send SELECT 2');
+        assert.ok(db2Conn.history.some(a => a[0] === 'INFO' && a[1] === 'server'));
+    }
+    finally {
+        await server.close(await Promise.all([first, otherDb, otherUser, otherPassword].map(k => k.getClient())));
+    }
 });
 
 for (const failure of ['AUTH', 'SELECT']) {
-    test(`shared ${failure} failure closes the client once and a new attempt can succeed`, async t => {
-        const clients = new Set();
-        const closed = [];
+    test(`shared ${failure} failure closes the client once and a new attempt can succeed`, async () => {
         let failing = true;
-        t.mock.method(ProtocolClient.prototype, '_command', async function(cmd) {
-            clients.add(this);
-            if (failing && cmd === failure) throw new Error(failure);
-            return cmd === 'PING' ? 'PONG' : 'OK';
+        const server = await createMockServer(args => {
+            const cmd = args[0].toUpperCase();
+            if (failing && cmd === failure) return new Error(`ERR ${failure} failed`);
+            if (cmd === 'PING') return { simple: 'PONG' };
+            if (cmd === 'INFO') return '# Server\r\nredis_version:7.2.0\r\n';
+            return { simple: 'OK' };
         });
-        t.mock.method(ProtocolClient.prototype, 'close', function() { closed.push(this); });
-        const kv = get({ ...config, host: `${failure}.test.invalid` });
-        assert.deepEqual(await Promise.all([kv.ping(), kv.ping()]), [false, false]);
-        assert.equal(clients.size, 1);
-        assert.deepEqual(closed, [...clients]);
-        failing = false;
-        assert.deepEqual(await Promise.all([kv.ping(), kv.ping()]), ['PONG', 'PONG']);
-        assert.equal(clients.size, 2);
-        assert.equal(closed.length, 1);
+        const kv = get({ host: '127.0.0.1', port: server.port, index: failure === 'SELECT' ? 1 : 0, pre: 'f:', user: '', pwd: 'secret' });
+        try {
+            assert.deepEqual(await Promise.all([kv.ping(), kv.ping()]), [false, false]);
+            assert.equal(server.connections.length, 1);
+            failing = false;
+            assert.deepEqual(await Promise.all([kv.ping(), kv.ping()]), ['PONG', 'PONG']);
+            assert.equal(server.connections.length, 2);
+        }
+        finally {
+            await server.close([await kv.getClient()]);
+        }
     });
 }
+
+test('Kvrocks multi-db safety check rejects index > 0 when redis-databases=0 and accepts when enabled or dbPre=true', async () => {
+    let redisDatabases = '0';
+    let configDisabled = false;
+    let clientNamespace = '__namespace';
+    const kvStore = new Map();
+    const server = await createMockServer(args => {
+        const cmd = args[0].toUpperCase();
+        if (cmd === 'INFO') return '# Server\r\nkvrocks_version:2.17.0\r\n';
+        if (cmd === 'CONFIG' && args[1]?.toUpperCase() === 'GET' && args[2] === 'redis-databases') {
+            if (configDisabled) return new Error('ERR unknown command CONFIG');
+            return ['redis-databases', redisDatabases];
+        }
+        if (cmd === 'CLIENT' && args[1]?.toUpperCase() === 'INFO') {
+            return `id=1 addr=127.0.0.1:1234 namespace=${clientNamespace}\n`;
+        }
+        if (cmd === 'PING') return { simple: 'PONG' };
+        if (cmd === 'SET') {
+            kvStore.set(args[1], args[2]);
+            return { simple: 'OK' };
+        }
+        if (cmd === 'GET') return kvStore.get(args[1]) ?? null;
+        return { simple: 'OK' };
+    });
+    const clientsToClose = [];
+    try {
+        // 1. Kvrocks default redis-databases=0 + index=1 => rejected!
+        const kvBlocked = get({ host: '127.0.0.1', port: server.port, index: 1, pre: 'app:', user: '', pwd: '' });
+        assert.equal(await kvBlocked.ping(), false);
+
+        // 2. Kvrocks dbPre=true + index=1 => uses DB 0 + db1:app: prefix, succeeds!
+        const kvPrefix = get({ host: '127.0.0.1', port: server.port, index: 1, pre: 'app:', user: '', pwd: '', dbPre: true });
+        assert.equal(kvPrefix.getPre(), 'db1:app:');
+        assert.equal(await kvPrefix.set('k', 'v1'), true);
+        assert.equal(kvStore.get('db1:app:k'), 'v1');
+        assert.equal(await kvPrefix.get('k'), 'v1');
+        clientsToClose.push(await kvPrefix.getClient());
+
+        // 3. Kvrocks redis-databases=16 + index=1 => accepted, index=16 => rejected!
+        redisDatabases = '16';
+        const kvOk = get({ host: '127.0.0.1', port: server.port, index: 1, pre: 'app:', user: '', pwd: '' });
+        assert.equal(await kvOk.ping(), 'PONG');
+        clientsToClose.push(await kvOk.getClient());
+
+        const kvOutOfRange = get({ host: '127.0.0.1', port: server.port, index: 16, pre: 'app:', user: '', pwd: '' });
+        assert.equal(await kvOutOfRange.ping(), false);
+
+        // 4. CONFIG disabled fallback via CLIENT INFO namespace
+        configDisabled = true;
+        clientNamespace = '__namespace';
+        const kvFallbackReject = get({ host: '127.0.0.1', port: server.port, index: 2, pre: 'app:', user: '', pwd: '' });
+        assert.equal(await kvFallbackReject.ping(), false);
+
+        clientNamespace = 'db2';
+        const kvFallbackOk = get({ host: '127.0.0.1', port: server.port, index: 2, pre: 'app:', user: '', pwd: '' });
+        assert.equal(await kvFallbackOk.ping(), 'PONG');
+        clientsToClose.push(await kvFallbackOk.getClient());
+    }
+    finally {
+        await server.close(clientsToClose);
+    }
+});
+
+test('redis v6 command bridging: scan string cursor, pipeline, mGet/hMGet, floats, zAdd/zRangeWithScores, and isolated blocking', async () => {
+    let blockingRelease;
+    const blockingStarted = new Promise(resolve => { blockingRelease = resolve; });
+    let brpopCalls = 0;
+    const server = await createMockServer(args => {
+        const cmd = args[0].toUpperCase();
+        if (cmd === 'PING') return { simple: 'PONG' };
+        if (cmd === 'SET') return args.includes('NX') && args[1] === 'p:exists' ? null : { simple: 'OK' };
+        if (cmd === 'MGET') return ['v1', null];
+        if (cmd === 'HMGET') return ['hv1', null];
+        if (cmd === 'INCRBYFLOAT') return '3.5';
+        if (cmd === 'HINCRBYFLOAT') return '2.25';
+        if (cmd === 'EXPIRE') return 1;
+        if (cmd === 'HEXISTS') return 1;
+        if (cmd === 'HSETNX') return 0;
+        if (cmd === 'HSET') return 1;
+        if (cmd === 'SCAN') {
+            if (args[1] === '0') return ['k_next_cursor', ['p:k1', 'p:k2']];
+            return ['0', ['p:k3']];
+        }
+        if (cmd === 'ZADD') {
+            if (args.includes('INCR')) return '15.5';
+            return 2;
+        }
+        if (cmd === 'ZRANGE') return ['m1', '10', 'm2', '20.5'];
+        if (cmd === 'BRPOP') {
+            ++brpopCalls;
+            blockingRelease();
+            return new Promise(resolve => {
+                setTimeout(() => resolve(['p:q', 'job-1']), 40);
+            });
+        }
+        return { simple: 'OK' };
+    });
+    const kv = get({ host: '127.0.0.1', port: server.port, index: 0, pre: 'p:', user: '', pwd: '' });
+    try {
+        assert.equal(await kv.set('a', '1', 60), true);
+        assert.equal(await kv.add('exists', '1'), false);
+        assert.deepEqual(await kv.mGet(['a', 'missing']), { a: '1' === '1' ? 'v1' : '', missing: null });
+        assert.deepEqual(await kv.hMGet('h', ['f1', 'f2']), { f1: 'hv1', f2: null });
+        assert.equal(await kv.incr('c', 1.5), 3.5);
+        assert.equal(await kv.hIncr('h', 'c', 0.25), 2.25);
+        assert.equal(await kv.expire('a', 30), true);
+        assert.equal(await kv.hExists('h', 'f1'), true);
+        assert.equal(await kv.hSet('h', 'f1', 'v', 'nx'), false);
+        assert.equal(await kv.hSet('h', 'f1', 'v'), true);
+
+        // Kvrocks native string cursor scan
+        const page1 = await kv.scan('0', '*', 2);
+        assert.deepEqual(page1, { cursor: 'k_next_cursor', items: ['k1', 'k2'] });
+        const page2 = await kv.scan(page1.cursor, '*', 2);
+        assert.deepEqual(page2, { cursor: '0', items: ['k3'] });
+
+        // Native pipeline via multi().execAsPipeline()
+        const pipe = await kv.pipeline();
+        assert.ok(pipe);
+        pipe.ping();
+        pipe.set(kv.getPre() + 'x', '1');
+        assert.deepEqual(await pipe.execAsPipeline(), ['PONG', 'OK']);
+
+        // ZSet member <-> value mapping
+        assert.equal(await kv.zAdd('z', [{ score: 1, member: 'a' }, { score: 2, member: 'b' }]), 2);
+        assert.equal(await kv.zAdd('z', [{ score: 5.5, member: 'a' }], { INCR: true }), 15.5);
+        assert.deepEqual(await kv.zRangeWithScores('z', 0, -1, { rev: true, offset: 0, count: 2 }), [
+            { member: 'm1', score: 10 },
+            { member: 'm2', score: 20.5 },
+        ]);
+
+        // Blocking bRPop runs on duplicate connection and does not block shared ping()
+        const brpopPromise = kv.bRPop('q', 10);
+        await blockingStarted;
+        assert.equal(await kv.ping(), 'PONG');
+        assert.deepEqual(await brpopPromise, { q: 'job-1' });
+        assert.equal(brpopCalls, 1);
+        assert.equal(server.connections.length, 2, 'blocking command must use an isolated duplicate connection');
+    }
+    finally {
+        await server.close([await kv.getClient()]);
+    }
+});

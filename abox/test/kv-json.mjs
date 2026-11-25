@@ -7,7 +7,7 @@ test('Kv JSON reads preserve missing and failure results and getDelJson consumes
     const values = new Map([['test:user', '{"uid":"user"}'], ['test:malformed', '{invalid']]);
     kv._getConnection = async () => ({
         get: async key => values.get(key) ?? null,
-        getAndDel: async key => {
+        getDel: async key => {
             const value = values.get(key) ?? null;
             values.delete(key);
             return value;
