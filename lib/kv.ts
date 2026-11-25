@@ -4,6 +4,7 @@
  */
 
 // --- 原生 ---
+import * as crypto from 'node:crypto';
 import type * as tls from 'node:tls';
 // --- 第三方 ---
 import * as redis from 'redis';
@@ -15,6 +16,40 @@ import * as sCtr from '#kebab/sys/ctr.js';
 
 /** --- 相同地址、数据库和凭据共用一次连接初始化 --- */
 const connections: IConnectionInfo[] = [];
+
+/** --- 缓存已加载的 Lua 源码与其 SHA-1（LRU 上限 256 条），后续直接走 EVALSHA --- */
+const evalShaCache = new Map<string, string>();
+
+/**
+ * --- 读取并刷新 Lua 源码的缓存 SHA-1（LRU） ---
+ * @param script Lua 源码
+ * @returns 已缓存的 40 位 SHA-1，未缓存返回 null
+ */
+function getCachedScriptSha(script: string): string | null {
+    const cached = evalShaCache.get(script);
+    if (!cached) {
+        return null;
+    }
+    evalShaCache.delete(script);
+    evalShaCache.set(script, cached);
+    return cached;
+}
+
+/**
+ * --- 计算并记录 Lua 源码的 SHA-1 到定长 LRU 缓存 ---
+ * @param script Lua 源码
+ */
+function cacheScriptSha(script: string): void {
+    const sha = crypto.createHash('sha1').update(script).digest('hex');
+    evalShaCache.delete(script);
+    if (evalShaCache.size >= 256) {
+        const oldest = evalShaCache.keys().next().value;
+        if (oldest !== undefined) {
+            evalShaCache.delete(oldest);
+        }
+    }
+    evalShaCache.set(script, sha);
+}
 
 /**
  * --- 生成 TLS 配置的缓存区分键，避免不同证书或 servername 误用同一连接 ---
@@ -176,7 +211,7 @@ export class Kv {
     }
 
     /**
-     * --- 在共享连接上执行一个 Redis Lua 脚本 ---
+     * --- 在共享连接上执行一个 Redis Lua 脚本，首次走 EVAL 加载，后续走 EVALSHA 并在 NOSCRIPT 时自动回退 ---
      * @param script Lua 源码
      * @param keys 传给 KEYS 的完整键名，调用方需自行添加项目前缀
      * @param args 传给 ARGV 的参数
@@ -187,13 +222,34 @@ export class Kv {
         if (!conn) {
             return false;
         }
-        try {
-            return await conn.eval(script, {
-                'keys': keys,
-                'arguments': args,
-            });
+        const options = {
+            'keys': keys,
+            'arguments': args,
+        };
+        const sha = getCachedScriptSha(script);
+        if (!sha) {
+            try {
+                const res = await conn.eval(script, options);
+                cacheScriptSha(script);
+                return res;
+            }
+            catch {
+                return false;
+            }
         }
-        catch {
+        try {
+            return await conn.evalSha(sha, options);
+        }
+        catch (err) {
+            // --- 服务端重启或清理脚本缓存后返回 NOSCRIPT，回退 EVAL 重新加载 ---
+            if (err instanceof Error && err.message.startsWith('NOSCRIPT')) {
+                try {
+                    return await conn.eval(script, options);
+                }
+                catch {
+                    return false;
+                }
+            }
             return false;
         }
     }

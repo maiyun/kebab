@@ -280,3 +280,41 @@ test('redis v6 command bridging: scan string cursor, pipeline, mGet/hMGet, float
         await server.close([await kv.getClient()]);
     }
 });
+
+test('kv.eval loads via EVAL on first run, uses EVALSHA thereafter, falls back on NOSCRIPT, and does not retry script errors', async () => {
+    let flushed = false;
+    const seen = [];
+    const server = await createMockServer(args => {
+        const cmd = args[0].toUpperCase();
+        if (cmd === 'EVAL') {
+            seen.push([cmd, args[1]]);
+            flushed = false;
+            return [1, 1700000060];
+        }
+        if (cmd === 'EVALSHA') {
+            seen.push([cmd, args[1]]);
+            if (args[3] === 'p:err') return new Error('ERR invalid counter');
+            if (flushed) return new Error('NOSCRIPT No matching script. Please use EVAL.');
+            return [2, 1700000060];
+        }
+        return { simple: 'OK' };
+    });
+    const kv = get({ host: '127.0.0.1', port: server.port, index: 0, pre: 'p:', user: '', pwd: '' });
+    try {
+        const lua = 'return {1, 1700000060}';
+        // 1. 首次调用直接走 EVAL 加载（1 次 RTT）
+        assert.deepEqual(await kv.eval(lua, ['p:k'], ['1000']), [1, 1700000060]);
+        // 2. 第二次命中本地缓存，直接走 EVALSHA
+        assert.deepEqual(await kv.eval(lua, ['p:k'], ['1000']), [2, 1700000060]);
+        // 3. 服务端清缓存/重启后返回 NOSCRIPT，自动回退 EVAL 重新加载
+        flushed = true;
+        assert.deepEqual(await kv.eval(lua, ['p:k'], ['1000']), [1, 1700000060]);
+        // 4. 非 NOSCRIPT 错误直接返回 false，不回退 EVAL
+        assert.equal(await kv.eval(lua, ['p:err'], ['1000']), false);
+        assert.deepEqual(seen.map(item => item[0]), ['EVAL', 'EVALSHA', 'EVALSHA', 'EVAL', 'EVALSHA']);
+        assert.match(seen[1][1], /^[0-9a-f]{40}$/);
+    }
+    finally {
+        await server.close([await kv.getClient()]);
+    }
+});

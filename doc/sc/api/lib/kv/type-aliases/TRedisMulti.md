@@ -8,6 +8,6 @@
 
 > **TRedisMulti** = `ReturnType`\<[`TRedisClient`](TRedisClient.md)\[`"multi"`\]\>
 
-Defined in: [lib/kv.ts:1377](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L1377)
+Defined in: [lib/kv.ts:1433](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L1433)
 
 底层原生 multi / pipeline 类型

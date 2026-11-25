@@ -8,9 +8,9 @@
 
 > **checkFixed**(`kv`, `key`, `opt?`): `Promise`\<[`ICheckResult`](../interfaces/ICheckResult.md)\>
 
-Defined in: [lib/ratelimit.ts:77](https://github.com/maiyunnet/kebab/blob/master/lib/ratelimit.ts#L77)
+Defined in: [lib/ratelimit.ts:27](https://github.com/maiyunnet/kebab/blob/master/lib/ratelimit.ts#L27)
 
-简易固定窗口限速检查（性能更高，精度较低）
+检查指定 key 是否超出固定窗口限额，窗口从首次请求开始且超限请求同样计入次数
 
 ## Parameters
 
@@ -28,26 +28,12 @@ KV 实例
 
 ### opt?
 
+[`ICheckOptions`](../interfaces/ICheckOptions.md) = `{}`
+
 限速选项
-
-#### max?
-
-`number`
-
-窗口内最大请求数，默认 60
-
-#### pre?
-
-`string`
-
-key 前缀，默认 rl:
-
-#### window?
-
-`number`
-
-窗口时间（秒），默认 60
 
 ## Returns
 
 `Promise`\<[`ICheckResult`](../interfaces/ICheckResult.md)\>
+
+检查结果；后续请求沿用首次请求设置的过期时间，Redis 无法检查时默认放行并标记 unavailable，failClosed 为 true 时拒绝

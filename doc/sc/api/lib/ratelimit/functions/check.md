@@ -8,9 +8,9 @@
 
 > **check**(`kv`, `key`, `opt?`): `Promise`\<[`ICheckResult`](../interfaces/ICheckResult.md)\>
 
-Defined in: [lib/ratelimit.ts:18](https://github.com/maiyunnet/kebab/blob/master/lib/ratelimit.ts#L18)
+Defined in: [lib/ratelimit.ts:16](https://github.com/maiyunnet/kebab/blob/master/lib/ratelimit.ts#L16)
 
-检查指定 key 是否超速，使用多段近似滑动窗口算法
+检查指定 key 是否超出近似滑动窗口限额，超限请求同样计入次数
 
 ## Parameters
 
@@ -28,28 +28,12 @@ KV 实例
 
 ### opt?
 
+[`ICheckOptions`](../interfaces/ICheckOptions.md) = `{}`
+
 限速选项
-
-#### max?
-
-`number`
-
-窗口内最大请求数，默认 60
-
-#### pre?
-
-`string`
-
-key 前缀，默认 rl:
-
-#### window?
-
-`number`
-
-窗口时间（秒），默认 60
 
 ## Returns
 
 `Promise`\<[`ICheckResult`](../interfaces/ICheckResult.md)\>
 
-返回结果对象
+检查结果；窗口开头最多多计一个时间段，Redis 无法检查时默认放行并标记 unavailable，failClosed 为 true 时拒绝

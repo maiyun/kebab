@@ -6,7 +6,7 @@
 
 # Interface: ICheckResult
 
-Defined in: [lib/ratelimit.ts:117](https://github.com/maiyunnet/kebab/blob/master/lib/ratelimit.ts#L117)
+Defined in: [lib/ratelimit.ts:46](https://github.com/maiyunnet/kebab/blob/master/lib/ratelimit.ts#L46)
 
 限速检查结果
 
@@ -16,7 +16,7 @@ Defined in: [lib/ratelimit.ts:117](https://github.com/maiyunnet/kebab/blob/maste
 
 > **allowed**: `boolean`
 
-Defined in: [lib/ratelimit.ts:119](https://github.com/maiyunnet/kebab/blob/master/lib/ratelimit.ts#L119)
+Defined in: [lib/ratelimit.ts:48](https://github.com/maiyunnet/kebab/blob/master/lib/ratelimit.ts#L48)
 
 是否允许通过
 
@@ -26,7 +26,7 @@ Defined in: [lib/ratelimit.ts:119](https://github.com/maiyunnet/kebab/blob/maste
 
 > **limit**: `number`
 
-Defined in: [lib/ratelimit.ts:123](https://github.com/maiyunnet/kebab/blob/master/lib/ratelimit.ts#L123)
+Defined in: [lib/ratelimit.ts:52](https://github.com/maiyunnet/kebab/blob/master/lib/ratelimit.ts#L52)
 
 总限额
 
@@ -36,9 +36,9 @@ Defined in: [lib/ratelimit.ts:123](https://github.com/maiyunnet/kebab/blob/maste
 
 > **remaining**: `number`
 
-Defined in: [lib/ratelimit.ts:121](https://github.com/maiyunnet/kebab/blob/master/lib/ratelimit.ts#L121)
+Defined in: [lib/ratelimit.ts:50](https://github.com/maiyunnet/kebab/blob/master/lib/ratelimit.ts#L50)
 
-剩余可用次数
+当前剩余可用次数
 
 ***
 
@@ -46,6 +46,16 @@ Defined in: [lib/ratelimit.ts:121](https://github.com/maiyunnet/kebab/blob/maste
 
 > **reset**: `number`
 
-Defined in: [lib/ratelimit.ts:125](https://github.com/maiyunnet/kebab/blob/master/lib/ratelimit.ts#L125)
+Defined in: [lib/ratelimit.ts:54](https://github.com/maiyunnet/kebab/blob/master/lib/ratelimit.ts#L54)
 
-窗口重置时间（Unix 时间戳秒）
+预计恢复额度的 Unix 秒，滑动窗口按此后没有新请求估算
+
+***
+
+### unavailable?
+
+> `optional` **unavailable?**: `true`
+
+Defined in: [lib/ratelimit.ts:56](https://github.com/maiyunnet/kebab/blob/master/lib/ratelimit.ts#L56)
+
+Redis 无法检查限额时为 true

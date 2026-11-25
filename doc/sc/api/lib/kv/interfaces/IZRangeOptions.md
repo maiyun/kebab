@@ -6,7 +6,7 @@
 
 # Interface: IZRangeOptions
 
-Defined in: [lib/kv.ts:1388](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L1388)
+Defined in: [lib/kv.ts:1444](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L1444)
 
 ZRANGE 查询选项
 
@@ -16,7 +16,7 @@ ZRANGE 查询选项
 
 > `optional` **by?**: `"SCORE"` \| `"LEX"`
 
-Defined in: [lib/kv.ts:1390](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L1390)
+Defined in: [lib/kv.ts:1446](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L1446)
 
 查询方式：SCORE 按分数范围，LEX 按字典序
 
@@ -26,7 +26,7 @@ Defined in: [lib/kv.ts:1390](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > `optional` **count?**: `number`
 
-Defined in: [lib/kv.ts:1396](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L1396)
+Defined in: [lib/kv.ts:1452](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L1452)
 
 分页条数，需与 offset 同用
 
@@ -36,7 +36,7 @@ Defined in: [lib/kv.ts:1396](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > `optional` **offset?**: `number`
 
-Defined in: [lib/kv.ts:1394](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L1394)
+Defined in: [lib/kv.ts:1450](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L1450)
 
 分页偏移量，需与 count 同用
 
@@ -46,6 +46,6 @@ Defined in: [lib/kv.ts:1394](https://github.com/maiyunnet/kebab/blob/master/lib/
 
 > `optional` **rev?**: `boolean`
 
-Defined in: [lib/kv.ts:1392](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L1392)
+Defined in: [lib/kv.ts:1448](https://github.com/maiyunnet/kebab/blob/master/lib/kv.ts#L1448)
 
 是否倒序返回

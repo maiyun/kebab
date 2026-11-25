@@ -8,6 +8,7 @@
 
 ## Interfaces
 
+- [ICheckOptions](interfaces/ICheckOptions.md)
 - [ICheckResult](interfaces/ICheckResult.md)
 
 ## Functions
