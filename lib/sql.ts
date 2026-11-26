@@ -43,6 +43,84 @@ const columnSymbol: unique symbol = Symbol('kebab.sql.column');
 /** --- value() 内部私有标记，防止通过外部 JSON 伪造值对象 --- */
 const valueSymbol: unique symbol = Symbol('kebab.sql.value');
 
+/** --- raw() 内部私有标记，防止通过外部 JSON 伪造原始 SQL 表达式 --- */
+const rawSymbol: unique symbol = Symbol('kebab.sql.raw');
+
+/** --- 显式标记的原始 SQL 表达式及其绑定参数 --- */
+export interface IRawValue {
+    readonly [rawSymbol]: true;
+    readonly 'sql': string;
+    readonly 'params': kebab.DbValue[];
+    readonly 'invalid'?: string;
+}
+
+/** --- 允许的 WHERE 运算符白名单 --- */
+const WHERE_OPERATORS = new Set([
+    '=', '!=', '<>', '>', '>=', '<', '<=', '<=>',
+    'LIKE', 'NOT LIKE', 'ILIKE', 'NOT ILIKE',
+    'IN', 'NOT IN', 'IS', 'IS NOT', 'IS DISTINCT FROM', 'IS NOT DISTINCT FROM',
+    'REGEXP', 'NOT REGEXP', 'RLIKE', 'NOT RLIKE',
+    '~', '~*', '!~', '!~*',
+    '@>', '<@', '&&', '?', '?|', '?&',
+    '&', '|', '^', '<<', '>>',
+]);
+
+/** --- 允许的 UPDATE 赋值运算符白名单 --- */
+const UPDATE_OPERATORS = new Set([
+    '=', '+', '-', '*', '/', '%', '||', '&', '|', '^', '<<', '>>',
+]);
+
+/** --- 允许的 JOIN 类型白名单 --- */
+const JOIN_TYPES = new Set([
+    'INNER', 'LEFT', 'RIGHT', 'FULL', 'CROSS',
+    'LEFT OUTER', 'RIGHT OUTER', 'FULL OUTER',
+    'NATURAL', 'NATURAL LEFT', 'NATURAL RIGHT',
+]);
+
+/** --- 允许的 UNION 类型白名单 --- */
+const UNION_TYPES = new Set(['', 'ALL', 'DISTINCT']);
+
+/**
+ * --- 校验并规范化 ORDER BY 排序方向 ---
+ * @param dir 排序方向
+ * @returns 大写的 ASC 或 DESC，不合法返回 null
+ */
+function parseOrderDir(dir: unknown): 'ASC' | 'DESC' | null {
+    if (typeof dir === 'string') {
+        const upper = dir.trim().toUpperCase();
+        if (upper === 'ASC' || upper === 'DESC') {
+            return upper;
+        }
+    }
+    return null;
+}
+
+/**
+ * --- 校验并规范化 WHERE 运算符 ---
+ * @param op 运算符
+ * @returns 规范化后的大写运算符，不合法返回 null
+ */
+function parseWhereOp(op: unknown): string | null {
+    if (typeof op !== 'string') {
+        return null;
+    }
+    const val = op.trim().replace(/\s+/g, ' ').toUpperCase();
+    return WHERE_OPERATORS.has(val) ? val : null;
+}
+
+/**
+ * --- 校验并规范化 UPDATE 运算符 ---
+ * @param op 运算符
+ * @returns 规范化后的运算符，不合法返回 null
+ */
+function parseUpdateOp(op: unknown): string | null {
+    if (typeof op !== 'string') {
+        return null;
+    }
+    const val = op.trim();
+    return UPDATE_OPERATORS.has(val) ? val : null;
+}
+
 /** --- field 用 token --- */
 let columnToken = '';
 
@@ -78,6 +156,12 @@ export class Sql {
     /** --- MySQL 优化器 Hint，如 INDEX(table idx) --- */
     private _hint: string = '';
 
+    /** --- 当前构建器的粘性错误；非空时 getSql() 返回空串、getData() 返回空数组 --- */
+    private _error: string = '';
+
+    /** --- hint() 独立错误，避免先 hint() 再 select() 时被重置覆盖 --- */
+    private _hintError: string = '';
+
     // --- 实例化 ---
     public constructor(opt: {
         'service': ESERVICE;
@@ -101,6 +185,19 @@ export class Sql {
         if (opt.alias) {
             this._alias = opt.alias;
         }
+    }
+
+    /** --- 记录构建错误并写入错误日志，保持首个错误不被覆盖 --- */
+    private _setError(msg: string): void {
+        if (!this._error) {
+            this._error = msg;
+        }
+        lCore.log(this._ctr ?? {}, `[SQL] ${msg}`, '-error');
+    }
+
+    /** --- 获取当前构建错误，正常时为空字符串 --- */
+    public getError(): string {
+        return this._error;
     }
 
     /**
@@ -127,6 +224,13 @@ export class Sql {
      * // --- 官方文档: https://dev.mysql.com/doc/refman/8.0/en/optimizer-hints.html ---
      */
     public hint(h: string): this {
+        if (typeof h !== 'string' || h.includes('/*') || h.includes('*/')) {
+            this._hint = '';
+            this._hintError = 'Invalid SQL optimizer hint';
+            this._setError(this._hintError);
+            return this;
+        }
+        this._hintError = '';
         this._hint = h;
         return this;
     }
@@ -139,6 +243,7 @@ export class Sql {
      * @param ignore 是否忽略错误（MySQL: INSERT IGNORE, PGSQL: ON CONFLICT DO NOTHING）
      */
     public insert(table: string, ignore: boolean = false): this {
+        this._error = this._hintError;
         this._data = [];
         this._placeholderCounter = 1;
         this._alias.length = 0;
@@ -257,6 +362,7 @@ export class Sql {
      * @param rows 数据行数组，每行顺序为 [keyVal, col1Val, col2Val, ...]（与 [key, ...cols] 对应）
      */
     public updateByValues(table: string, key: string, cols: string[], rows: any[][]): this {
+        this._error = this._hintError;
         this._data = [];
         this._placeholderCounter = 1;
         const allCols = [key, ...cols];
@@ -315,6 +421,7 @@ export class Sql {
      * @param f 表，允许多张表
      */
     public select(c: string | Array<string | any[]>, f: string | string[]): this {
+        this._error = this._hintError;
         this._data = [];
         this._placeholderCounter = 1;
         let sql = 'SELECT ';
@@ -356,6 +463,7 @@ export class Sql {
      * @param s 设定 update 的值
      */
     public update(f: string, s: kebab.Json): this {
+        this._error = this._hintError;
         this._data = [];
         this._placeholderCounter = 1;
         const table = this.field(f, this._pre);
@@ -377,7 +485,7 @@ export class Sql {
             {
                 'type': '6',
                 'type': column('type2'),
-                'type': ['(CASE `id` WHEN 1 THEN ? WHEN 2 THEN ? END)', ['val1', 'val2']],
+                'type': raw('(CASE `id` WHEN 1 THEN ? WHEN 2 THEN ? END)', ['val1', 'val2']),
                 'point': { 'x': 0, 'y': 0 },
                 'polygon': [ [ { 'x': 0, 'y': 0 }, { ... } ], [ ... ] ],
                 'json': json({ 'a': 1, 'b': { 'c': 2 }, 'c': [ { 'c': 2 } ] }),
@@ -385,44 +493,42 @@ export class Sql {
             }
         ]
         */
-        s = aoMix(s);
         let sql = '';
-        for (const k in s) {
-            const v = s[k];
-            if (/^[0-9]+$/.test(k)) {
-                // --- 数组运算式：[字段, 运算符, 值] ---
-                const nv = v[2];
-                const isf = this._isField(nv);
-                if (isf) {
-                    if (v[1] === '=') {
-                        sql += this.field(v[0]) + ' = ' + this.field(nv.value) + ', ';
-                    }
-                    else {
-                        sql += this.field(v[0]) + ' = ' + this.field(v[0]) + ' ' + v[1] + ' ' + this.field(nv.value) + ', ';
-                    }
+        const items: unknown[] = Array.isArray(s) ? s : [s];
+        for (const item of items) {
+            if (Array.isArray(item)) {
+                // --- 数组运算式：[字段, 运算符, 值]，仅在外层为数组时识别 ---
+                const op = parseUpdateOp(item[1]);
+                if (op === null) {
+                    this._setError(`Invalid SQL UPDATE operator: ${String(item[1])}`);
+                    return '';
+                }
+                const val = item[2];
+                if (this._isField(val)) {
+                    const col = this.field(item[0]);
+                    const target = this.field(val.value);
+                    sql += op === '=' ? `${col} = ${target}, ` : `${col} = ${col} ${op} ${target}, `;
                 }
                 else {
-                    /** --- JSON 标记值需要生成 ::jsonb；普通运算值保持原占位符行为 --- */
-                    const result = lSqlValue.isJson(nv) ? this._processValue(nv) : {
+                    // --- JSON 标记值需要生成 ::jsonb；普通运算值保持原占位符行为 ---
+                    const res = lSqlValue.isJson(val) ? this._processValue(val) : {
                         'sql': this._placeholder(),
-                        'data': [nv],
+                        'data': [val],
                     };
-                    if (v[1] === '=') {
-                        sql += this.field(v[0]) + ' = ' + result.sql + ', ';
-                    }
-                    else {
-                        sql += this.field(v[0]) + ' = ' + this.field(v[0]) + ' ' + v[1] + ' ' + result.sql + ', ';
-                    }
-                    this._data.push(...result.data);
+                    const col = this.field(item[0]);
+                    sql += op === '=' ? `${col} = ${res.sql}, ` : `${col} = ${col} ${op} ${res.sql}, `;
+                    this._data.push(...res.data);
                 }
             }
-            else {
-                // --- 对象赋值式：{字段: 值} ---
-                sql += this.field(k) + ' = ';
-                const result = this._processValue(v, k, undefined, table);
-                sql += result.sql + ', ';
-                if (result.data !== undefined) {
-                    this._data.push(...result.data);
+            else if (item && typeof item === 'object') {
+                // --- 对象赋值式：{字段: 值}；数字键同样按列名处理，避免 JSON 伪造运算式 ---
+                const obj = item as Record<string, kebab.Json>;
+                for (const key in obj) {
+                    const res = this._processValue(obj[key], key, undefined, table);
+                    sql += `${this.field(key)} = ${res.sql}, `;
+                    if (res.data !== undefined) {
+                        this._data.push(...res.data);
+                    }
                 }
             }
         }
@@ -435,6 +541,7 @@ export class Sql {
      * @param f 表名
      */
     public delete(f: string): this {
+        this._error = this._hintError;
         this._data = [];
         this._placeholderCounter = 1;
         this._sql = ['DELETE FROM ' + this.field(f, this._pre)];
@@ -447,9 +554,22 @@ export class Sql {
      * @param type 类型
      */
     public union(lsql: Sql, type: string = ''): this {
+        if (lsql.getError()) {
+            this._setError(lsql.getError());
+            return this;
+        }
+        if (typeof type !== 'string') {
+            this._setError('Invalid SQL UNION type');
+            return this;
+        }
+        const kind = type.trim().toUpperCase();
+        if (!UNION_TYPES.has(kind)) {
+            this._setError(`Invalid SQL UNION type: ${type}`);
+            return this;
+        }
         const offset = this._data.length;
         this._data = this._data.concat(lsql.getData());
-        this._sql.push(' UNION ' + (type ? type + ' ' : ''));
+        this._sql.push(kind ? ` UNION ${kind} ` : ' UNION ');
         let unionSql = lsql.getSql();
         // --- PGSQL: 偏移 $N 占位符编号 ---
         if (this._service === ESERVICE.PGSQL && offset > 0) {
@@ -477,7 +597,16 @@ export class Sql {
      * @param pre MySQL 时为表前缀，PostgreSQL 时为 Schema 名，仅在 join 非默认前缀时填写
      */
     public join(f: string, s: kebab.Json = [], type: string = 'INNER', suf: string = '', pre: string = ''): this {
-        let field = this.field(f, pre || this._pre, suf ? ('#' + suf) : '');
+        if (typeof type !== 'string') {
+            this._setError('Invalid SQL JOIN type');
+            return this;
+        }
+        const kind = type.trim().replace(/\s+/g, ' ').toUpperCase();
+        if (!JOIN_TYPES.has(kind)) {
+            this._setError(`Invalid SQL JOIN type: ${type}`);
+            return this;
+        }
+        let field = this.field(f, pre || this._pre, suf ? `#${suf}` : '');
         if (pre) {
             // --- 处理不同 pre 的 as 前缀问题 ---
             if (this._service === ESERVICE.MYSQL) {
@@ -487,7 +616,7 @@ export class Sql {
                 field = field.replace(new RegExp(`AS "${pre}"."(.+?)"`), `AS "${this._pre}"."$1"`);
             }
         }
-        let sql = ' ' + type + ' JOIN ' + field;
+        let sql = ` ${kind} JOIN ${field}`;
         if (Array.isArray(s) ? s.length : Object.keys(s).length) {
             sql += ' ON ' + this._whereSub(s);
         }
@@ -622,166 +751,201 @@ export class Sql {
         return this;
     }
 
-    private _whereSub(s: kebab.Json, data?: any[]): string {
-        data ??= this._data;
-        s = aoMix(s);
-        let sql = '';
-        for (const k in s) {
-            const v = s[k];
-            if (/^[0-9]+$/.test(k)) {
-                // --- 数组条件或原始 SQL 条件 ---
-                if (v[2] === undefined) {
-                    // --- 原始 SQL 条件及参数 ---
-                    sql += this.field(v[0]) + ' AND ';
-                    if (v[1] !== undefined) {
-                        data.push(...v[1]);
-                    }
+    /**
+     * --- 统计条件项数量，决定逻辑分组内是否需要外层括号 ---
+     * @param cond 条件对象或数组
+     * @returns 条件条数
+     */
+    private _countConditions(cond: kebab.Json): number {
+        if (Array.isArray(cond)) {
+            let count = 0;
+            for (const item of cond) {
+                if (Array.isArray(item)) {
+                    ++count;
                 }
-                else if (typeof v[1] === 'string' && ['json', 'json_in', 'json_key', 'json_any', 'json_all', 'json_overlaps'].includes(v[1].toLowerCase())) {
-                    // --- JSON 操作符条件 ---
-                    const op = v[1].toLowerCase();
-                    const nv = lSqlValue.unwrapJson(v[2]);
-                    if (op === 'json') {
-                        if (this._service === ESERVICE.MYSQL) {
-                            sql += `JSON_CONTAINS(${this.field(v[0])}, ${this._placeholder()}) AND `;
-                            data.push(lText.stringifyJson(nv));
-                        }
-                        else {
-                            sql += `${this.field(v[0])} @> ${this._placeholder()} AND `;
-                            data.push(lText.stringifyJson(nv));
-                        }
-                    }
-                    else if (op === 'json_in') {
-                        if (this._service === ESERVICE.MYSQL) {
-                            sql += `JSON_CONTAINS(${this._placeholder()}, ${this.field(v[0])}) AND `;
-                            data.push(lText.stringifyJson(nv));
-                        }
-                        else {
-                            sql += `${this.field(v[0])} <@ ${this._placeholder()} AND `;
-                            data.push(lText.stringifyJson(nv));
-                        }
-                    }
-                    else if (op === 'json_overlaps') {
-                        if (this._service === ESERVICE.MYSQL) {
-                            sql += `JSON_OVERLAPS(${this.field(v[0])}, ${this._placeholder()}) AND `;
-                            data.push(lText.stringifyJson(nv));
-                        }
-                        else {
-                            sql += `${this.field(v[0])} && ${this._placeholder()} AND `;
-                            data.push(nv);
-                        }
-                    }
-                    else {
-                        // --- json_key, json_any, json_all ---
-                        const keys: string[] = Array.isArray(nv) ? nv : [nv];
-                        if (this._service === ESERVICE.MYSQL) {
-                            const type = op === 'json_all' ? 'all' : 'one';
-                            let pathSql = '';
-                            for (const k of keys) {
-                                pathSql += ', ' + this._placeholder();
-                                data.push(k.startsWith('$') ? k : `$.${k}`);
-                            }
-                            sql += `JSON_CONTAINS_PATH(${this.field(v[0])}, '${type}'${pathSql}) AND `;
-                        }
-                        else {
-                            if (op === 'json_key' && keys.length === 1) {
-                                sql += `${this.field(v[0])} ? ${this._placeholder()} AND `;
-                                data.push(keys[0]);
-                            }
-                            else {
-                                const pgOp = op === 'json_all' ? '?&' : '?|';
-                                sql += `${this.field(v[0])} ${pgOp} ${this._placeholder()} AND `;
-                                data.push(keys);
-                            }
-                        }
-                    }
-                }
-                else if (v[2] === null) {
-                    // --- NULL 比较 ---
-                    let opera = v[1];
-                    if (opera === '!=' || opera === '!==' || opera === '<>') {
-                        opera = 'IS NOT';
-                    }
-                    else if (opera === '=' || opera === '==' || opera === '===') {
-                        opera = 'IS';
-                    }
-                    else {
-                        opera = opera.toUpperCase();
-                    }
-                    sql += this.field(v[0]) + ' ' + opera + ' NULL AND ';
-                }
-                else if (Array.isArray(v[2]) || (v[2] instanceof Set && typeof v[1] === 'string' && /^(?:NOT )?IN$/i.test(v[1]))) {
-                    sql += this._whereList(v[0], v[1].toUpperCase(), v[2], data) + ' AND ';
-                }
-                else {
-                    // --- 普通运算符或字段比较 ---
-                    const nv = v[2];
-                    // --- v[0] 也可以是 value() 包裹的字面量值，而不一定是字段名 ---
-                    const isv0 = this._isValue(v[0]);
-                    const v0sql = isv0 ? this._placeholder() : this.field(v[0]);
-                    if (isv0) {
-                        data.push(v[0].value);
-                    }
-                    const isf = this._isField(nv);
-                    if (isf) {
-                        // --- 字段比较 ---
-                        sql += v0sql + ' ' + v[1] + ' ' + this.field(nv.value) + ' AND ';
-                    }
-                    else {
-                        const result = lSqlValue.isJson(nv) ? this._processValue(nv) : {
-                            'sql': this._placeholder(),
-                            'data': [nv],
-                        };
-                        sql += v0sql + ' ' + v[1] + ' ' + result.sql + ' AND ';
-                        data.push(...result.data);
-                    }
+                else if (item && typeof item === 'object') {
+                    count += Object.keys(item).length;
                 }
             }
-            else {
-                // --- 字段映射、逻辑分组与 IN 查询 ---
-                if (k.startsWith('$')) {
-                    // --- 逻辑条件分组，如 $or ---
-                    if (!Array.isArray(v) || v.length === 0) {
-                        continue;
-                    }
-                    const sp = ' ' + k.slice(1).split('-')[0].toUpperCase() + ' ';
-                    sql += '(';
-                    for (let v1 of v) {
-                        // --- v1 是 {'city': 'bj'} ---
-                        v1 = aoMix(v1);
-                        if (Object.keys(v1).length > 1) {
-                            sql += '(' + this._whereSub(v1, data) + ')' + sp;
-                        }
-                        else {
-                            sql += this._whereSub(v1, data) + sp;
-                        }
-                    }
-                    sql = sql.slice(0, -sp.length) + ') AND ';
+            return count;
+        }
+        if (cond && typeof cond === 'object') {
+            return Object.keys(cond).length;
+        }
+        return 0;
+    }
+
+    /**
+     * --- 生成单条数组条件 SQL 片段 ---
+     * @param item 数组条件项
+     * @param data 绑定参数列表
+     * @returns 带尾随 AND 的 SQL 片段，校验失败返回空字符串
+     */
+    private _whereArrayItem(item: kebab.Json[], data: kebab.DbValue[]): string {
+        // --- 原始 SQL 条件及参数 ---
+        if (item[2] === undefined) {
+            if (item[1] !== undefined) {
+                data.push(...item[1]);
+            }
+            return `${this.field(item[0])} AND `;
+        }
+        // --- JSON 操作符条件 ---
+        if (typeof item[1] === 'string' && ['json', 'json_in', 'json_key', 'json_any', 'json_all', 'json_overlaps'].includes(item[1].toLowerCase())) {
+            const op = item[1].toLowerCase();
+            const val = lSqlValue.unwrapJson(item[2]);
+            if (op === 'json') {
+                data.push(lText.stringifyJson(val));
+                return this._service === ESERVICE.MYSQL ?
+                    `JSON_CONTAINS(${this.field(item[0])}, ${this._placeholder()}) AND ` :
+                    `${this.field(item[0])} @> ${this._placeholder()} AND `;
+            }
+            if (op === 'json_in') {
+                data.push(lText.stringifyJson(val));
+                return this._service === ESERVICE.MYSQL ?
+                    `JSON_CONTAINS(${this._placeholder()}, ${this.field(item[0])}) AND ` :
+                    `${this.field(item[0])} <@ ${this._placeholder()} AND `;
+            }
+            if (op === 'json_overlaps') {
+                if (this._service === ESERVICE.MYSQL) {
+                    data.push(lText.stringifyJson(val));
+                    return `JSON_OVERLAPS(${this.field(item[0])}, ${this._placeholder()}) AND `;
                 }
-                else {
-                    // --- 单字段条件 ---
-                    if (v === null) {
-                        // --- NULL 判断 ---
-                        sql += this.field(k) + ' IS NULL AND ';
-                    }
-                    else if (lSqlValue.isJson(v)) {
-                        // --- JSON 相等 ---
-                        const result = this._processValue(v);
-                        sql += this.field(k) + ' = ' + result.sql + ' AND ';
-                        data.push(...result.data);
-                    }
-                    else if (this._isField(v)) {
-                        // --- 字段相等 ---
-                        sql += this.field(k) + ' = ' + this.field(v.value) + ' AND ';
-                    }
-                    else if (Array.isArray(v) || v instanceof Set) {
-                        sql += this._whereList(k, 'IN', v, data) + ' AND ';
-                    }
-                    else {
-                        // --- 普通值使用等号比较，原值交给数据库驱动处理 ---
-                        sql += this.field(k) + ' = ' + this._placeholder() + ' AND ';
-                        data.push(v);
-                    }
+                data.push(val);
+                return `${this.field(item[0])} && ${this._placeholder()} AND `;
+            }
+            // --- json_key, json_any, json_all ---
+            const keys: string[] = Array.isArray(val) ? val : [val];
+            if (this._service === ESERVICE.MYSQL) {
+                const mode = op === 'json_all' ? 'all' : 'one';
+                let pathSql = '';
+                for (const key of keys) {
+                    pathSql += `, ${this._placeholder()}`;
+                    data.push(key.startsWith('$') ? key : `$.${key}`);
+                }
+                return `JSON_CONTAINS_PATH(${this.field(item[0])}, '${mode}'${pathSql}) AND `;
+            }
+            if (op === 'json_key' && keys.length === 1) {
+                data.push(keys[0]);
+                return `${this.field(item[0])} ? ${this._placeholder()} AND `;
+            }
+            const pgOp = op === 'json_all' ? '?&' : '?|';
+            data.push(keys);
+            return `${this.field(item[0])} ${pgOp} ${this._placeholder()} AND `;
+        }
+        // --- NULL 比较 ---
+        if (item[2] === null) {
+            let op: string | null;
+            if (item[1] === '!=' || item[1] === '!==' || item[1] === '<>') {
+                op = 'IS NOT';
+            }
+            else if (item[1] === '=' || item[1] === '==' || item[1] === '===') {
+                op = 'IS';
+            }
+            else {
+                op = parseWhereOp(item[1]);
+            }
+            if (op === null) {
+                this._setError(`Invalid SQL WHERE operator: ${String(item[1])}`);
+                return '';
+            }
+            return `${this.field(item[0])} ${op} NULL AND `;
+        }
+        // --- 集合比较 ---
+        if (Array.isArray(item[2]) || (item[2] instanceof Set && typeof item[1] === 'string' && /^(?:NOT )?IN$/i.test(item[1]))) {
+            const op = parseWhereOp(item[1]);
+            if (op === null) {
+                this._setError(`Invalid SQL WHERE operator: ${String(item[1])}`);
+                return '';
+            }
+            return `${this._whereList(item[0], op, item[2], data)} AND `;
+        }
+        // --- 普通运算符或字段比较 ---
+        const op = parseWhereOp(item[1]);
+        if (op === null) {
+            this._setError(`Invalid SQL WHERE operator: ${String(item[1])}`);
+            return '';
+        }
+        const val = item[2];
+        // --- item[0] 也可以是 value() 包裹的字面量值 ---
+        const isVal0 = this._isValue(item[0]);
+        const leftSql = isVal0 ? this._placeholder() : this.field(item[0]);
+        if (isVal0) {
+            data.push(item[0].value);
+        }
+        if (this._isField(val)) {
+            return `${leftSql} ${op} ${this.field(val.value)} AND `;
+        }
+        const res = lSqlValue.isJson(val) ? this._processValue(val) : {
+            'sql': this._placeholder(),
+            'data': [val],
+        };
+        data.push(...res.data);
+        return `${leftSql} ${op} ${res.sql} AND `;
+    }
+
+    /**
+     * --- 生成单个对象键的条件 SQL 片段 ---
+     * @param key 字段名或 $or/$and 逻辑分组键
+     * @param val 条件值
+     * @param data 绑定参数列表
+     * @returns 带尾随 AND 的 SQL 片段，校验失败或空分组返回空字符串
+     */
+    private _whereObjectEntry(key: string, val: kebab.Json, data: kebab.DbValue[]): string {
+        if (key.startsWith('$')) {
+            // --- 逻辑条件分组，仅允许 $or / $and（可带 - 后缀区分多组） ---
+            if (!Array.isArray(val) || val.length === 0) {
+                return '';
+            }
+            const logic = key.slice(1).split('-')[0].toUpperCase();
+            if (logic !== 'OR' && logic !== 'AND') {
+                this._setError(`Invalid SQL logical operator: ${key}`);
+                return '';
+            }
+            const sep = ` ${logic} `;
+            let sql = '(';
+            for (const sub of val) {
+                const subSql = this._whereSub(sub, data);
+                sql += this._countConditions(sub) > 1 ? `(${subSql})${sep}` : `${subSql}${sep}`;
+            }
+            return `${sql.slice(0, -sep.length)}) AND `;
+        }
+        // --- 单字段条件 ---
+        if (val === null) {
+            return `${this.field(key)} IS NULL AND `;
+        }
+        if (lSqlValue.isJson(val)) {
+            const res = this._processValue(val);
+            data.push(...res.data);
+            return `${this.field(key)} = ${res.sql} AND `;
+        }
+        if (this._isField(val)) {
+            return `${this.field(key)} = ${this.field(val.value)} AND `;
+        }
+        if (Array.isArray(val) || val instanceof Set) {
+            return `${this._whereList(key, 'IN', val, data)} AND `;
+        }
+        data.push(val);
+        return `${this.field(key)} = ${this._placeholder()} AND `;
+    }
+
+    /**
+     * --- 生成 WHERE / HAVING / ON 条件子句 ---
+     * @param s 条件对象或条件数组
+     * @param data 接收绑定参数的数组，默认使用当前实例的 _data
+     * @returns 条件 SQL 片段，无有效条件时返回空字符串
+     */
+    private _whereSub(s: kebab.Json, data?: kebab.DbValue[]): string {
+        data ??= this._data;
+        let sql = '';
+        const items: unknown[] = Array.isArray(s) ? s : [s];
+        for (const item of items) {
+            if (Array.isArray(item)) {
+                sql += this._whereArrayItem(item, data);
+            }
+            else if (item && typeof item === 'object') {
+                const obj = item as Record<string, kebab.Json>;
+                for (const key in obj) {
+                    sql += this._whereObjectEntry(key, obj[key], data);
                 }
             }
         }
@@ -837,17 +1001,27 @@ export class Sql {
      * @param d 排序规则
      */
     public by(c: string | Array<string | string[]>, d: 'DESC' | 'ASC' = 'DESC'): this {
-        let sql: string = ' ORDER BY ';
+        const dir = parseOrderDir(d);
+        if (dir === null) {
+            this._setError('Invalid SQL ORDER BY direction');
+            return this;
+        }
+        let sql = ' ORDER BY ';
         if (typeof c === 'string') {
-            sql += this.field(c) + ' ' + d;
+            sql += `${this.field(c)} ${dir}`;
         }
         else {
-            for (const v of c) {
-                if (typeof v === 'string' || typeof v === 'number') {
-                    sql += this.field(v) + ' ' + d + ', ';
+            for (const item of c) {
+                if (typeof item === 'string' || typeof item === 'number') {
+                    sql += `${this.field(item)} ${dir}, `;
                 }
                 else {
-                    sql += this.field(v[0]) + ' ' + v[1] + ', ';
+                    const subDir = parseOrderDir(item[1]);
+                    if (subDir === null) {
+                        this._setError('Invalid SQL ORDER BY direction');
+                        return this;
+                    }
+                    sql += `${this.field(item[0])} ${subDir}, `;
                 }
             }
             sql = sql.slice(0, -2);
@@ -862,52 +1036,56 @@ export class Sql {
      * @param c 排序字段，支持表别名；不支持表达式、GROUP BY 或 UNION
      * @param values 上一页末行的字段值，省略时读取首批
      * @param d 扫描方向；读取前一批时反转方向并在取回后反转列表
-     * @returns 当前 SQL 对象
+     * @returns 当前 SQL 对象；参数非法时记录构建错误并失败关闭
      */
     public seek(c: string | string[], values?: TCursorValue[], d: 'DESC' | 'ASC' = 'DESC'): this {
         // --- 校验排序字段与现有 SQL 结构 ---
         const fields = typeof c === 'string' ? [c] : c;
+        const dir = parseOrderDir(d);
         if (!fields.length || new Set(fields).size !== fields.length ||
             fields.some(field => !/^[a-zA-Z_][a-zA-Z0-9_]*(\.[a-zA-Z_][a-zA-Z0-9_]*)?$/.test(field)) ||
-            !['ASC', 'DESC'].includes(d)) {
-            throw new Error('Invalid cursor ordering');
+            dir === null) {
+            this._setError('Invalid cursor ordering');
+            return this;
         }
         if (this._sql.some(part => /^ (ORDER BY|LIMIT|GROUP BY|HAVING|UNION|FOR UPDATE)\b/i.test(part))) {
-            throw new Error('seek requires an ungrouped query without ordering or pagination');
+            this._setError('seek requires an ungrouped query without ordering or pagination');
+            return this;
         }
 
         // --- 传入边界值时追加行比较 WHERE 条件 ---
         if (values !== undefined) {
-            if (values.length !== fields.length || values.some(value =>
-                (typeof value !== 'string' && typeof value !== 'number') ||
-                (typeof value === 'number' && (!Number.isFinite(value) || (Number.isInteger(value) && !Number.isSafeInteger(value))))
+            if (values.length !== fields.length || values.some(val =>
+                (typeof val !== 'string' && typeof val !== 'number') ||
+                (typeof val === 'number' && (!Number.isFinite(val) || (Number.isInteger(val) && !Number.isSafeInteger(val))))
             )) {
-                throw new Error('Invalid cursor values; use strings for large integers');
+                this._setError('Invalid cursor values; use strings for large integers');
+                return this;
             }
-            const columns = fields.map(field => this.field(field));
-            const placeholders = values.map(() => this._placeholder());
-            const left = columns.length === 1 ? columns[0] : `(${columns.join(', ')})`;
-            const right = placeholders.length === 1 ? placeholders[0] : `(${placeholders.join(', ')})`;
-            let condition = `${left} ${d === 'DESC' ? '<' : '>'} ${right}`;
-            if (columns.length > 1) {
+            const cols = fields.map(field => this.field(field));
+            const holders = values.map(() => this._placeholder());
+            const left = cols.length === 1 ? cols[0] : `(${cols.join(', ')})`;
+            const right = holders.length === 1 ? holders[0] : `(${holders.join(', ')})`;
+            let cond = `${left} ${dir === 'DESC' ? '<' : '>'} ${right}`;
+            if (cols.length > 1) {
                 // --- 显式收紧首列边界，避免已有较宽范围条件让 PG 在索引内遍历到行比较边界 ---
-                condition += ` AND ${columns[0]} ${d === 'DESC' ? '<=' : '>='} ${this._placeholder()}`;
+                cond += ` AND ${cols[0]} ${dir === 'DESC' ? '<=' : '>='} ${this._placeholder()}`;
             }
-            const index = this._sql.findIndex(part => part.startsWith(' WHERE '));
-            if (index === -1) {
+            const idx = this._sql.findIndex(part => part.startsWith(' WHERE '));
+            if (idx === -1) {
                 this._whereDataPosition[0] = this._data.length;
-                this._sql.push(' WHERE ' + condition);
+                this._sql.push(` WHERE ${cond}`);
             }
             else {
-                this._sql[index] = ` WHERE (${this._sql[index].slice(7)}) AND ${condition}`;
+                this._sql[idx] = ` WHERE (${this._sql[idx].slice(7)}) AND ${cond}`;
             }
             this._data.push(...values);
-            if (columns.length > 1) {
+            if (cols.length > 1) {
                 this._data.push(values[0]);
             }
             this._whereDataPosition[1] = this._data.length;
         }
-        return this.by(fields, d);
+        return this.by(fields, dir);
     }
 
     /**
@@ -931,17 +1109,23 @@ export class Sql {
 
     /**
      * --- LIMIT（limit、offset, limit） ---
-     * @param a 起始（offset）
+     * @param a 起始（offset）或仅传单参时的长度（limit）
      * @param b 长度（limit）
      */
     public limit(a: number, b: number = 0): this {
-        if (b) {
+        const first = lText.parseSafeInt(a, { 'min': 0 });
+        const second = lText.parseSafeInt(b, { 'min': 0 });
+        if (first === null || second === null) {
+            this._setError('Invalid SQL limit: must be an integer >= 0');
+            return this;
+        }
+        if (second) {
             // --- offset, limit ---
-            this._sql.push(` LIMIT ${b} OFFSET ${a}`);
+            this._sql.push(` LIMIT ${second} OFFSET ${first}`);
         }
         else {
             // --- limit ---
-            this._sql.push(` LIMIT ${a}`);
+            this._sql.push(` LIMIT ${first}`);
         }
         return this;
     }
@@ -1094,7 +1278,16 @@ export class Sql {
             'data': data,
             'sql': sql,
             'alias': lCore.clone(this._alias),
-        }).hint(this._hint);
+        });
+        if (this._hint) {
+            result.hint(this._hint);
+        }
+        if (this._hintError) {
+            result._hintError = this._hintError;
+        }
+        if (this._error) {
+            result._error = this._error;
+        }
         if (opt.where === undefined) {
             result._whereDataPosition = [...this._whereDataPosition];
         }
@@ -1104,9 +1297,12 @@ export class Sql {
     // --- 操作 ---
 
     /**
-     * --- 获取 sql 语句 ---
+     * --- 获取 sql 语句；存在构建错误时返回空字符串 ---
      */
-    public getSql(): string  {
+    public getSql(): string {
+        if (this._error) {
+            return '';
+        }
         let sql = this._sql.join('');
         // --- 注入优化器 Hint 到 SELECT 关键字后 ---
         if (this._hint && !sql.includes('/*+')) {
@@ -1124,9 +1320,12 @@ export class Sql {
     }
 
     /**
-     * --- 获取全部 data ---
+     * --- 获取全部 data；存在构建错误时返回空数组 ---
      */
     public getData(): kebab.DbValue[] {
+        if (this._error) {
+            return [];
+        }
         return lSqlValue.serializeList(this._data) ?? [];
     }
 
@@ -1321,6 +1520,18 @@ export class Sql {
         return true;
     }
 
+    /**
+     * --- 判断传入值是否是 raw 表达式对象（由 raw() 函数创建） ---
+     * @param arg 待判断的值
+     */
+    private _isRaw(arg: unknown): arg is IRawValue {
+        return arg !== null &&
+            typeof arg === 'object' &&
+            (arg as Record<symbol, unknown>)[rawSymbol] === true &&
+            typeof (arg as IRawValue).sql === 'string' &&
+            Array.isArray((arg as IRawValue).params);
+    }
+
     /** --- 获取占位符 --- */
     private _placeholder(): string {
         return this._service === ESERVICE.MYSQL ? '?' : `$${this._placeholderCounter++}`;
@@ -1370,42 +1581,45 @@ export class Sql {
         else if (typeof v === 'string' || typeof v === 'number') {
             return { 'sql': this._placeholder(), 'data': [v] };
         }
-        else if (Array.isArray(v)) {
-            if (
-                v.length > 0 &&
-                v.length <= 2 &&
-                typeof v[0] === 'string' &&
-                v[0].includes('(') &&
-                v[0].includes(')') &&
-                (v.length === 1 || Array.isArray(v[1]))
-            ) {
-                // --- 函数式插入，对参数按位置分别处理 ---
-                // --- v: ['POINT(?)', ['20']] ---
-                // --- v: ['(CASE `id` WHEN 1 THEN ? WHEN 2 THEN ? END)', ['val1', 'val2']] ---
-                /** --- 函数 SQL 字符串 --- */
-                const sql = v[0];
-                /** --- 函数参数数组 --- */
-                const ps = v[1] ?? [];
-                /** --- 所有处理后的 SQL 片段 --- */
-                const sqls: string[] = [];
-                /** --- 所有处理后的数据 --- */
-                const ds: any[] = [];
-
-                for (const p of ps) {
-                    const res = this._processValue(p, field, row, table, `${parameter ?? ''}[${sqls.length + 1}]`);
-                    sqls.push(res.sql);
-                    ds.push(...res.data);
-                }
-
-                let i = 0;
-                const replacedSql = sql.replace(/\?/g, () => sqls[i++]);
-
-                return {
-                    'sql': this.field(replacedSql),
-                    'data': ds
-                };
+        else if (this._isRaw(v)) {
+            // --- 显式原始 SQL 表达式，对参数按位置分别处理 ---
+            // --- v: raw('POINT(?)', ['20']) ---
+            // --- v: raw('(CASE `id` WHEN 1 THEN ? WHEN 2 THEN ? END)', ['val1', 'val2']) ---
+            if (v.invalid) {
+                this._setError(v.invalid);
+                return { 'sql': 'NULL', 'data': [] };
             }
-            else if (v[0]?.y !== undefined) {
+            const sqls: string[] = [];
+            const ds: kebab.DbValue[] = [];
+            for (const p of v.params) {
+                const res = this._processValue(p, field, row, table, `${parameter ?? ''}[${sqls.length + 1}]`);
+                sqls.push(res.sql);
+                ds.push(...res.data);
+            }
+            let i = 0;
+            let overflow = false;
+            const replacedSql = v.sql.replace(/\?/g, () => {
+                if (i >= sqls.length) {
+                    overflow = true;
+                    return 'NULL';
+                }
+                return sqls[i++];
+            });
+            if (overflow) {
+                this._setError('Raw SQL placeholder count exceeds parameter count');
+                return { 'sql': 'NULL', 'data': [] };
+            }
+            if (i !== sqls.length) {
+                this._setError('Raw SQL parameter count does not match placeholders');
+                return { 'sql': 'NULL', 'data': [] };
+            }
+            return {
+                'sql': this.field(replacedSql),
+                'data': ds,
+            };
+        }
+        else if (Array.isArray(v)) {
+            if (v[0]?.y !== undefined) {
                 // --- v: [{'x': 1, 'y': 2}, { ... }, { ... }, ... ]---
                 if (this._service === ESERVICE.MYSQL) {
                     // --- MYSQL ---
@@ -1626,4 +1840,35 @@ export function value(val: kebab.DbValue): {
  */
 export function json<T>(obj: T): T {
     return lSqlValue.json(obj) as T;
+}
+
+/**
+ * --- 创建显式 SQL 表达式值，用于 INSERT / UPDATE 写入原生 SQL 函数或 CASE 表达式 ---
+ * --- 使用内部私有 Symbol 标记，外部 JSON 无法伪造；普通数组不再自动识别为 SQL 表达式 ---
+ * @param sql 原生 SQL 表达式，参数位置使用 ? 占位
+ * @param params 绑定参数列表
+ * @returns SQL 表达式包装对象
+ */
+export function raw(sql: string, params: kebab.DbValue[] = []): IRawValue {
+    if (typeof sql !== 'string' || !sql.trim()) {
+        return {
+            [rawSymbol]: true,
+            'sql': '',
+            'params': [],
+            'invalid': 'Invalid raw SQL expression',
+        };
+    }
+    if (!Array.isArray(params)) {
+        return {
+            [rawSymbol]: true,
+            'sql': '',
+            'params': [],
+            'invalid': 'Invalid raw SQL parameters',
+        };
+    }
+    return {
+        [rawSymbol]: true,
+        'sql': sql,
+        'params': params,
+    };
 }

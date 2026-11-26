@@ -61,14 +61,19 @@ await nodeTest.test('Sql.seek supports MySQL, ASC and a single ordering field', 
 
 await nodeTest.test('Sql.seek rejects null, unsafe integers, expression injection, non-unique fields and grouped queries', () => {
     const make = (): lSql.Sql => lSql.get({ 'service': lSql.ESERVICE.PGSQL }).select('*', 'message');
-    assert.throws(() => make().seek('id', [null as unknown as number]));
-    assert.throws(() => make().seek('id', [Number.MAX_SAFE_INTEGER + 1]));
-    assert.throws(() => make().seek('id', [NaN]));
-    assert.throws(() => make().seek('id; DROP TABLE message', [1]));
-    assert.throws(() => make().seek(['id', 'id'], [1, 1]));
-    assert.throws(() => make().seek(['time_add', 'id'], [1]));
-    assert.throws(() => make().group('id').seek('id', [1]));
-    assert.throws(() => make().by('id').seek('id', [1]));
+    const assertInvalid = (s: lSql.Sql): void => {
+        assert.notStrictEqual(s.getError(), '');
+        assert.strictEqual(s.getSql(), '');
+        assert.deepStrictEqual(s.getData(), []);
+    };
+    assertInvalid(make().seek('id', [null as unknown as number]));
+    assertInvalid(make().seek('id', [Number.MAX_SAFE_INTEGER + 1]));
+    assertInvalid(make().seek('id', [NaN]));
+    assertInvalid(make().seek('id; DROP TABLE message', [1]));
+    assertInvalid(make().seek(['id', 'id'], [1, 1]));
+    assertInvalid(make().seek(['time_add', 'id'], [1]));
+    assertInvalid(make().group('id').seek('id', [1]));
+    assertInvalid(make().by('id').seek('id', [1]));
 });
 
 await nodeTest.test('Mod.allCursor trims the probe row and preserves timestamp ties and large IDs', async () => {
@@ -132,14 +137,15 @@ await nodeTest.test('Mod.allCursor handles empty, terminal and failed queries wi
 await nodeTest.test('Mod.allCursor rejects unsupported query modes and invalid result boundaries', async () => {
     const db = new FakeDb();
     const query = CursorTestMod.select(db as unknown as lDb.Pool, '*');
-    await assert.rejects(query.allCursor(0, { 'by': 'id' }));
-    await assert.rejects(query.allCursor(1, { 'by': 'id', 'before': true }));
-    await assert.rejects(query.allCursor(1, { 'by': ['id', 'time_add'], 'keys': ['id'] }));
-    await assert.rejects(CursorTestMod.select(db as unknown as lDb.Pool, '*', { 'index': ['a', 'b'] }).allCursor(1, { 'by': 'id' }));
+    assert.strictEqual(await query.allCursor(0, { 'by': 'id' }), false);
+    assert.strictEqual(await query.allCursor(1, { 'by': 'id', 'before': true }), false);
+    assert.strictEqual(await query.allCursor(1, { 'by': ['id', 'time_add'], 'keys': ['id'] }), false);
+    assert.strictEqual(await CursorTestMod.select(db as unknown as lDb.Pool, '*', { 'index': ['a', 'b'] }).allCursor(1, { 'by': 'id' }), false);
+    assert.strictEqual(db.calls.length, 0);
     db.rows = [{ 'id': null }];
-    await assert.rejects(query.allCursor(1, { 'by': 'id' }));
+    assert.strictEqual(await query.allCursor(1, { 'by': 'id' }), false);
     db.rows = [{ 'id': Number.MAX_SAFE_INTEGER + 1 }];
-    await assert.rejects(query.allCursor(1, { 'by': 'id' }));
+    assert.strictEqual(await query.allCursor(1, { 'by': 'id' }), false);
 });
 
 await nodeTest.test('Mod.totalEstimate uses top-level cardinality, not partial worker rows, and never executes COUNT', async () => {

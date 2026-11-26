@@ -3545,18 +3545,18 @@ Result:<pre id="result">Nothing.</pre>`);
 <b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
 <b>format() :</b> ${sql.format(s, sd)}<hr>`);
 
-                // --- insert 中使用函数 ---
+                // --- insert 中使用函数（必须用 lSql.raw 显式标记，普通数组按普通值绑定） ---
 
-                s = sql.insert('geo').values({ 'point': ['ST_POINTFROMTEXT(?)', ['POINT(122.147775 30.625014)']] }).getSql();
+                s = sql.insert('geo').values({ 'point': lSql.raw('ST_POINTFROMTEXT(?)', ['POINT(122.147775 30.625014)']) }).getSql();
                 sd = sql.getData();
-                echo.push(`<pre>sql.insert('geo').values({ 'point': ['ST_POINTFROMTEXT(?)', ['POINT(122.147775 30.625014)']] });</pre>
+                echo.push(`<pre>sql.insert('geo').values({ 'point': lSql.raw('ST_POINTFROMTEXT(?)', ['POINT(122.147775 30.625014)']) });</pre>
 <b>getSql() :</b> ${s}<br>
 <b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
 <b>format() :</b> ${sql.format(s, sd)}<hr>`);
 
                 s = sql.insert('geo').values(['name', 'point', 'point2', 'polygon', 'json'], [
                     [
-                        'POINT A', ['ST_POINTFROMTEXT(?)', ['POINT(122.147775 30.625015)']], { 'x': 1, 'y': 1 }, [
+                        'POINT A', lSql.raw('ST_POINTFROMTEXT(?)', ['POINT(122.147775 30.625015)']), { 'x': 1, 'y': 1 }, [
                             { 'x': 1, 'y': 1 },
                             { 'x': 2, 'y': 2 },
                             { 'x': 3, 'y': 3 },
@@ -3565,13 +3565,13 @@ Result:<pre id="result">Nothing.</pre>`);
                         lSql.json({ 'x': { 'y': 'ghi' } })
                     ],
                     [
-                        'POINT B', ['ST_POINTFROMTEXT(?)', ['POINT(123.147775 30.625016)']], { 'x': 1, 'y': 1 }, null, null
+                        'POINT B', lSql.raw('ST_POINTFROMTEXT(?)', ['POINT(123.147775 30.625016)']), { 'x': 1, 'y': 1 }, null, null
                     ]
                 ]).getSql();
                 sd = sql.getData();
                 echo.push(`<pre>sql.insert('geo').values(['name', 'point', 'point2', 'polygon', 'json'], [
     [
-        'POINT A', ['ST_POINTFROMTEXT(?)', ['POINT(122.147775 30.625015)']], { 'x': 1, 'y': 1 }, [
+        'POINT A', lSql.raw('ST_POINTFROMTEXT(?)', ['POINT(122.147775 30.625015)']), { 'x': 1, 'y': 1 }, [
             { 'x': 1, 'y': 1 },
             { 'x': 2, 'y': 2 },
             { 'x': 3, 'y': 3 },
@@ -3580,7 +3580,7 @@ Result:<pre id="result">Nothing.</pre>`);
         lSql.json({ 'x': { 'y': 'ghi' } })
     ],
     [
-        'POINT B', ['ST_POINTFROMTEXT(?)', ['POINT(123.147775 30.625016)']], { 'x': 1, 'y': 1 }, null, null
+        'POINT B', lSql.raw('ST_POINTFROMTEXT(?)', ['POINT(123.147775 30.625016)']), { 'x': 1, 'y': 1 }, null, null
     ]
 ]);</pre>
 <b>getSql() :</b> ${s}<br>
@@ -3674,11 +3674,19 @@ Result:<pre id="result">Nothing.</pre>`);
 <b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
 <b>format() :</b> ${sql.format(s, sd)}<hr>`);
 
-                // --- 3 ---
+                // --- 3：原生 SQL 表达式使用 lSql.raw() 显式标记；普通数组（即使含括号）一律按普通参数绑定 ---
 
-                s = sql.update('user', { 'name': 'Serene', 'type': ['(CASE `id` WHEN 1 THEN ? WHEN 2 THEN ? END)', ['val1', 'val2']] }).where({ 'name': 'Ah' }).getSql();
+                s = sql.update('user', {
+                    'name': 'Serene',
+                    'type': lSql.raw('(CASE `id` WHEN 1 THEN ? WHEN 2 THEN ? END)', ['val1', 'val2']),
+                    'tags': ['Item (1)']
+                }).where({ 'name': 'Ah' }).getSql();
                 sd = sql.getData();
-                echo.push(`<pre>sql.update('user', { 'name': 'Serene', 'type': ['(CASE \`id\` WHEN 1 THEN ? WHEN 2 THEN ? END)', ['val1', 'val2']] }).where({ 'name': 'Ah' });</pre>
+                echo.push(`<pre>sql.update('user', {
+    'name': 'Serene',
+    'type': lSql.raw('(CASE \`id\` WHEN 1 THEN ? WHEN 2 THEN ? END)', ['val1', 'val2']),
+    'tags': ['Item (1)']
+}).where({ 'name': 'Ah' });</pre>
 <b>getSql() :</b> ${s}<br>
 <b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
 <b>format() :</b> ${sql.format(s, sd)}<hr>`);

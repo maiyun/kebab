@@ -251,6 +251,11 @@ export default class Mod {
         return lSql.json(obj);
     }
 
+    /** --- 创建显式 SQL 表达式值，用于写入函数或 CASE 等原生表达式 --- */
+    public static raw(sql: string, params: kebab.DbValue[] = []): lSql.IRawValue {
+        return lSql.raw(sql, params);
+    }
+
     /**
      * --- 添加一个序列（允许超过 65536 的占位符会被拆分多次执行） ---
      * @param db 数据库对象
@@ -278,6 +283,9 @@ export default class Mod {
             // --- 单行 ---
             sq.insert(this._$table + (opt.index ? ('_' + opt.index) : ''), opt.ignore);
             sq.values(cs);
+            if (sq.getError()) {
+                return false;
+            }
             const r = await db.execute(sq.getSql(), sq.getData());
             if (r.packet === null) {
                 lCore.log(opt.ctr ?? {}, '[MOD][insert] ' + (lText.stringifyJson(r.error?.message ?? '').slice(1, -1) + '-' + sq.format()).replaceAll('"', '""'), '-error');
@@ -301,6 +309,9 @@ export default class Mod {
         for (let i = 0; i < batch; ++i) {
             sq.insert(this._$table + (opt.index ? ('_' + opt.index) : ''), opt.ignore);
             sq.values(cs, vs.slice(i * line, (i + 1) * line));
+            if (sq.getError()) {
+                return false;
+            }
             const r = await db.execute(sq.getSql(), sq.getData());
             if (r.packet === null) {
                 lCore.log(opt.ctr ?? {}, '[MOD][insert] ' + (lText.stringifyJson(r.error?.message ?? '').slice(1, -1) + '-' + sq.format()).replaceAll('"', '""'), '-error');
@@ -372,6 +383,9 @@ export default class Mod {
             }
             if (opt.limit) {
                 sq.limit(opt.limit[0], opt.limit[1]);
+            }
+            if (sq.getError()) {
+                return false;
             }
             const r = await db.execute(sq.getSql(), sq.getData());
             if (r.packet === null) {
@@ -450,6 +464,9 @@ export default class Mod {
             }
             if (opt.limit) {
                 sq.limit(opt.limit[0], opt.limit[1]);
+            }
+            if (sq.getError()) {
+                return false;
             }
             const r = await db.execute(sq.getSql(), sq.getData());
             if (r.packet === null) {
@@ -579,6 +596,9 @@ export default class Mod {
                 });
                 const rows: any[][] = batch.map(item => allCols.map(c => item[c] ?? null));
                 sq.updateByValues(tableName, key, cols, rows);
+                if (sq.getError()) {
+                    return false;
+                }
                 const r = await db.execute(sq.getSql(), sq.getData());
                 if (r.packet === null) {
                     lCore.log(opt.ctr ?? {}, '[MOD][updateList] ' + (lText.stringifyJson(r.error?.message ?? '').slice(1, -1) + ' - ' + sq.format()).replaceAll('"', '""'), '-error');
@@ -822,6 +842,9 @@ export default class Mod {
             'pre': opt.pre ?? this._$pre,
         });
         sq.select(this._$primary, this._$table + (opt.index ? ('_' + opt.index) : '')).where(where);
+        if (sq.getError()) {
+            return false;
+        }
         const r = await db.query(sq.getSql(), sq.getData(), { 'read': opt.read });
         if (r.rows === null) {
             lCore.log(opt.ctr ?? {}, '[MOD][PRIMARYS] ' + (lText.stringifyJson(r.error?.message ?? '').slice(1, -1) + ' - ' + sq.format()).replaceAll('"', '""'), '-error');
@@ -895,14 +918,17 @@ export default class Mod {
         (this as kebab.Json)[key] = rawValue;
     }
 
-    public set<T extends this, TK extends keyof T>(n: Record<TK, T[TK] | undefined>): void;
-    public set<T extends this, TK extends keyof T>(n: TK, v: T[TK]): void;
+    public set<T extends this, TK extends keyof T>(n: Record<TK, T[TK] | lSql.IRawValue | undefined>): void;
+    public set<T extends this, TK extends keyof T>(n: TK, v: T[TK] | lSql.IRawValue): void;
     /**
      * --- 设置一个/多个属性，值为 undefined 则不会被更新 ---
      * @param n 字符串或键/值
      * @param v 可能是数字
      */
-    public set<T extends this, TK extends keyof T>(n: TK | Record<TK, T[TK] | undefined>, v?: T[TK]): void {
+    public set<T extends this, TK extends keyof T>(
+        n: TK | Record<TK, T[TK] | lSql.IRawValue | undefined>,
+        v?: T[TK] | lSql.IRawValue
+    ): void {
         if (typeof n === 'object') {
             // --- { x: y } ---
             for (const k in n) {
@@ -982,6 +1008,9 @@ export default class Mod {
                 if (service === lDb.ESERVICE.PGSQL) {
                     this._sql.append(' ON CONFLICT (' + keyFields.map(field => this._sql.field(field)).join(', ') + ') DO NOTHING');
                 }
+                if (this._sql.getError()) {
+                    return false;
+                }
                 r = await this._db.execute(this._sql.getSql(), this._sql.getData());
                 ++count;
                 if (!r.error) {
@@ -1016,6 +1045,9 @@ export default class Mod {
         else {
             this._sql.insert((cstr._$table as string) + (this._index ? ('_' + this._index[0]) : ''));
             this._sql.values(updates);
+            if (this._sql.getError()) {
+                return false;
+            }
             r = await this._db.execute(this._sql.getSql(), this._sql.getData());
             if (r.error) {
                 if (r.error.errno !== 1062) {
@@ -1096,6 +1128,9 @@ export default class Mod {
         }
 
         // --- 读取目标身份并在 MySQL 下补做更新 ---
+        if (this._sql.getError()) {
+            return false;
+        }
         const result = await this._db.query(this._sql.getSql(), this._sql.getData());
         if (result.error) {
             lCore.log(this._ctr ?? {}, `[MOD][upsert][${cstr._$table}] database error: ${result.error.errno}`, '-error');
@@ -1108,6 +1143,9 @@ export default class Mod {
         if (mysql) {
             // --- 同时匹配身份字段和业务键，目标变化时不回填旧身份 ---
             this._sql.update(table, updates).where({ ...where, ...row });
+            if (this._sql.getError()) {
+                return false;
+            }
             const saved = await this._db.execute(this._sql.getSql(), this._sql.getData());
             if (saved.error) {
                 lCore.log(this._ctr ?? {}, `[MOD][upsert][${cstr._$table}] database error: ${saved.error.errno}`, '-error');
@@ -1178,7 +1216,7 @@ export default class Mod {
         this._sql.update(cstr._$table + (this._index ? ('_' + this._index[0]) : ''), [updates]);
         const updateSql = this._sql.getSql();
         this._sql.where(filter);
-        if (this._sql.getSql() === updateSql) {
+        if (this._sql.getError() || this._sql.getSql() === updateSql) {
             return false;
         }
         const r = await this._db.execute(this._sql.getSql(), this._sql.getData());
@@ -1258,6 +1296,9 @@ export default class Mod {
         lock: boolean = false,
         array: boolean = false
     ): Promise<false | null | this | TModRow> {
+        if (this._sql.getError()) {
+            return false;
+        }
         this._sql.limit(1);
         if (lock) {
             this._sql.lock();
@@ -1372,6 +1413,9 @@ export default class Mod {
     public async all<TExtra extends object>(key: string): Promise<false | Record<string, this & TExtra>>;
     public async all(key?: string): Promise<false | Rows<this> | Record<string, this>> {
         this._total.length = 0;
+        if (this._sql.getError()) {
+            return false;
+        }
         if (this._index && this._index.length > 1) {
             // --- 多表 ---
             let sql = this._sql.getSql();
@@ -1564,6 +1608,9 @@ export default class Mod {
         Record<string, TModRow>
     > {
         this._total.length = 0;
+        if (this._sql.getError()) {
+            return false;
+        }
         if (this._index && this._index.length > 1) {
             // --- 多表 ---
             let sql = this._sql.getSql();
@@ -1685,6 +1732,9 @@ export default class Mod {
      * @param all 是否获取完全的情况，默认不获取，只返回扫描情况
      */
     public async explain(all: boolean = false): Promise<false | string | Record<string, any>> {
+        if (this._sql.getError()) {
+            return false;
+        }
         const r = await this._db.query('EXPLAIN ' + this._sql.getSql(), this._sql.getData(), { 'read': this._read });
         if (r.rows === null) {
             lCore.log(this._ctr ?? {}, '[MOD][explain] ' + (lText.stringifyJson(r.error?.message ?? '').slice(1, -1) + ' - ' + this._sql.format()).replaceAll('"', '""'), '-error');
@@ -1737,6 +1787,9 @@ export default class Mod {
      * --- 获取总条数，自动抛弃 LIMIT，仅用于获取数据的情况（select） ---
      */
     public async total(f: string = '*'): Promise<number> {
+        if (this._sql.getError()) {
+            return 0;
+        }
         if (this._total.length) {
             let count = 0;
             for (const item of this._total) {
@@ -1808,16 +1861,21 @@ export default class Mod {
         'cursor'?: lSql.TCursorValue[];
         'before'?: boolean;
     }): Promise<ICursorPage<T> | false> {
+        if (this._sql.getError()) {
+            return false;
+        }
         // --- 校验分页与游标参数 ---
         if (!Number.isSafeInteger(count) || count < 1 || count >= Number.MAX_SAFE_INTEGER ||
             this._index !== null || this._contain || (opt.before && !opt.cursor) ||
             (opt.order !== undefined && !['ASC', 'DESC'].includes(opt.order))) {
-            throw new Error('Invalid cursor page options; framework sharding and contain are unsupported');
+            lCore.log(this._ctr ?? {}, '[MOD][allCursor] Invalid cursor page options; framework sharding and contain are unsupported', '-error');
+            return false;
         }
         const fields = typeof opt.by === 'string' ? [opt.by] : opt.by;
         const keys = opt.keys ?? fields.map(field => field.split('.').pop()!);
         if (keys.length !== fields.length || new Set(keys).size !== keys.length) {
-            throw new Error('Cursor result keys must match ordering fields');
+            lCore.log(this._ctr ?? {}, '[MOD][allCursor] Cursor result keys must match ordering fields', '-error');
+            return false;
         }
 
         // --- 构造游标查询（多取 1 条判断 hasMore） ---
@@ -1825,6 +1883,9 @@ export default class Mod {
         const direction = opt.before ? (order === 'DESC' ? 'ASC' : 'DESC') : order;
         const sql = this._sql.copy(undefined, { 'order': false, 'limit': false });
         sql.seek(fields, opt.cursor, direction).limit(count + 1);
+        if (sql.getError()) {
+            return false;
+        }
         const result = await this._db.query(sql.getSql(), sql.getData(), { 'read': this._read });
         if (result.rows === null) {
             lCore.log(this._ctr ?? {}, '[MOD][allCursor] Query failed', '-error');
@@ -1837,19 +1898,37 @@ export default class Mod {
         if (opt.before) {
             list.reverse();
         }
-        const boundary = (row: Record<string, unknown>): lSql.TCursorValue[] => keys.map(key => {
-            const value = row[key];
-            if ((typeof value !== 'string' && typeof value !== 'number') ||
-                (typeof value === 'number' && (!Number.isFinite(value) || (Number.isInteger(value) && !Number.isSafeInteger(value))))) {
-                throw new Error('Cursor columns must be non-null strings or safe numbers');
+        const readBoundary = (row: Record<string, unknown>): lSql.TCursorValue[] | null => {
+            const values: lSql.TCursorValue[] = [];
+            for (const key of keys) {
+                const val = row[key];
+                if ((typeof val !== 'string' && typeof val !== 'number') ||
+                    (typeof val === 'number' && (!Number.isFinite(val) || (Number.isInteger(val) && !Number.isSafeInteger(val))))) {
+                    return null;
+                }
+                values.push(val);
             }
-            return value;
-        });
+            return values;
+        };
+        if (!list.length) {
+            return {
+                'list': [],
+                'hasMore': false,
+                'next': null,
+                'previous': null,
+            };
+        }
+        const next = readBoundary(list[list.length - 1]);
+        const previous = readBoundary(list[0]);
+        if (next === null || previous === null) {
+            lCore.log(this._ctr ?? {}, '[MOD][allCursor] Cursor columns must be non-null strings or safe numbers', '-error');
+            return false;
+        }
         return {
             'list': list as T[],
             'hasMore': hasMore,
-            'next': list.length ? boundary(list[list.length - 1]) : null,
-            'previous': list.length ? boundary(list[0]) : null,
+            'next': next,
+            'previous': previous,
         };
     }
 
@@ -1857,6 +1936,9 @@ export default class Mod {
      * --- 根据当前条件，筛选出当前条目该有的数据条数 ---
      */
     public async count(): Promise<number> {
+        if (this._sql.getError()) {
+            return 0;
+        }
         const sql: string = this._sql.getSql()
             .replace(/SELECT .+? FROM/is, this._db.getService() === lDb.ESERVICE.MYSQL ?
                 'SELECT COUNT(0) AS `count` FROM' :
@@ -2039,25 +2121,49 @@ export default class Mod {
 
     /**
      * --- LIMIT ---
-     * @param a 起始
-     * @param b 长度
+     * @param a 起始（offset）或仅传单参时的长度（limit）
+     * @param b 长度（limit）
      */
     public limit(a: number, b: number = 0): this {
-        this._sql.limit(a, b);
-        this._limit = [a, b];
+        const first = lText.parseSafeInt(a, { 'min': 0 });
+        const second = lText.parseSafeInt(b, { 'min': 0 });
+        if (first === null || second === null) {
+            this._sql.limit(Number.NaN);
+            this._limit = [0, 0];
+            return this;
+        }
+        this._sql.limit(first, second);
+        this._limit = [first, second];
         return this;
     }
 
     /**
      * --- 分页 ---
      * @param count 每页条数
-     * @param page 当前页数
+     * @param page 当前页数（从 1 开始）
      */
     public page(count: number, page: number = 1): this {
-        const a = count * (page - 1);
-        this._sql.limit(a, count);
-        this._limit = [a, count];
+        const size = lText.parseSafeInt(count, { 'min': 0 });
+        const cur = lText.parseSafeInt(page, { 'min': 1 });
+        if (size === null || cur === null) {
+            this._sql.limit(Number.NaN);
+            this._limit = [0, 0];
+            return this;
+        }
+        const offset = size * (cur - 1);
+        if (!Number.isSafeInteger(offset)) {
+            this._sql.limit(Number.NaN);
+            this._limit = [0, 0];
+            return this;
+        }
+        this._sql.limit(offset, size);
+        this._limit = [offset, size];
         return this;
+    }
+
+    /** --- 获取当前 SQL 构建错误，正常时为空字符串 --- */
+    public getError(): string {
+        return this._sql.getError();
     }
 
     /**

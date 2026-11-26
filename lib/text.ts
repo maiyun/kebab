@@ -11,6 +11,45 @@ import * as lFs from './fs.js';
 import * as lCore from './core.js';
 
 /**
+ * --- 将数字或纯整数字符串严格解析为安全整数，支持可选范围边界 ---
+ * @param val 待解析的值（number 或十进制整数字符串，允许前后空白和可选负号）
+ * @param opt 可选范围限制（min 最小值、max 最大值）
+ * @returns 规范化后的安全整数，不合法或超出范围返回 null
+ */
+export function parseSafeInt(val: unknown, opt: {
+    'min'?: number;
+    'max'?: number;
+} = {}): number | null {
+    let num: number;
+    if (typeof val === 'number') {
+        num = val;
+    }
+    else if (typeof val === 'string') {
+        const str = val.trim();
+        if (!/^-?\d+$/.test(str)) {
+            return null;
+        }
+        num = Number(str);
+    }
+    else {
+        return null;
+    }
+    if (!Number.isSafeInteger(num)) {
+        return null;
+    }
+    if (num === 0) {
+        num = 0;
+    }
+    if (opt.min !== undefined && num < opt.min) {
+        return null;
+    }
+    if (opt.max !== undefined && num > opt.max) {
+        return null;
+    }
+    return num;
+}
+
+/**
  * --- 解析三段正式发行版本 X.Y.Z，不接受前导零、预发行和构建后缀 ---
  * @param value 待解析的版本
  * @returns 三段安全整数，无效时返回 null

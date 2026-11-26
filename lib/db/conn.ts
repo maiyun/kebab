@@ -211,6 +211,17 @@ export class Connection {
             'error': null,
             'result': 1,
         };
+        if (!sql?.trim()) {
+            rtn.error = {
+                'message': 'Empty SQL',
+                'errno': 0,
+            };
+            rtn.result = -500;
+            if (!this._transaction) {
+                this._using = false;
+            }
+            return rtn;
+        }
         try {
             values = lSqlValue.serializeList(values);
             this.refreshLast();
@@ -270,6 +281,17 @@ export class Connection {
             'error': null,
             'result': 1,
         };
+        if (!sql?.trim()) {
+            rtn.error = {
+                'message': 'Empty SQL',
+                'errno': 0,
+            };
+            rtn.result = -500;
+            if (!this._transaction) {
+                this._using = false;
+            }
+            return rtn;
+        }
         try {
             values = lSqlValue.serializeList(values);
             this.refreshLast();
