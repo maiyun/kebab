@@ -8,7 +8,7 @@
 
 > **op**(`operator`, `value`): [`IWhereValue`](../interfaces/IWhereValue.md)
 
-Defined in: [lib/sql.ts:1893](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L1893)
+Defined in: [lib/sql.ts:1888](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L1888)
 
 创建对象筛选条件的显式操作符值，如 { 'price': op('<', 0) }
 

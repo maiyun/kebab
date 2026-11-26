@@ -759,10 +759,9 @@ export class Sql {
     /**
      * --- 筛选器 ---
      * --- 等值条件：'city': 'bj'；字符串、数字、布尔值、bigint、Date 和 Buffer 均作为单个参数 ---
-     * --- null 生成 IS NULL。普通数组和 Set 生成 IN 条件 ---
-     * --- 对象条件的两项数组以受支持的操作符开头时，等同于三元组条件 ---
-     * --- { 'price': ['<', 0] }、{ 'price': op('<', 0) } 和 [['price', '<', 0]] 等效 ---
-     * --- 集合条件：{ 'type': ['not in', ['1', '2']] } 或 { 'type': new Set(['1', '2']) } ---
+     * --- null 生成 IS NULL。数组和 Set 生成 IN 条件 ---
+     * --- 对象条件使用显式操作符：{ 'price': op('<', 0) }，与 [['price', '<', 0]] 等效 ---
+     * --- 集合条件：{ 'type': op('not in', ['1', '2']) } 或 { 'type': new Set(['1', '2']) } ---
      * --- IN 和 NOT IN 均接受数组和 Set。空集合的 IN 不匹配任何行，NOT IN 匹配所有行。 ---
      * --- 逻辑分组：'$or': [{'city': 'bj'}, {'city': 'sh'}, [['age', '>', '10']]] ---
      * --- 字段比较：'city_in': column('city_out') ---
@@ -958,10 +957,6 @@ export class Sql {
         }
         if (val && typeof val === 'object' && val[whereSymbol] === true) {
             return this._whereArrayItem([key, val.operator, val.value], data);
-        }
-        if (Array.isArray(val) && val.length === 2 &&
-            (parseWhereOp(val[0]) !== null || parseWhereJsonOp(val[0]) !== null)) {
-            return this._whereArrayItem([key, val[0], val[1]], data);
         }
         if (Array.isArray(val) || val instanceof Set) {
             return `${this._whereList(key, 'IN', val, data)} AND `;

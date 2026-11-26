@@ -28,6 +28,8 @@ for (const service of [ESERVICE.PGSQL, ESERVICE.MYSQL]) {
         ['null', null, 'IS NULL', []],
         ['list', [1, 2], `IN (${param(1)}, ${param(2)})`, [1, 2]],
         ['string list', ['ready', 'done'], `IN (${param(1)}, ${param(2)})`, ['ready', 'done']],
+        ['two-item list starting with an operator', ['<', 0], `IN (${param(1)}, ${param(2)})`, ['<', 0]],
+        ['two-item list with NOT IN', ['NOT IN', 'done'], `IN (${param(1)}, ${param(2)})`, ['NOT IN', 'done']],
         ['list starting with an operator', ['LIKE', 'ready', 'done'], `IN (${param(1)}, ${param(2)}, ${param(3)})`, ['LIKE', 'ready', 'done']],
         ['empty list', [], 'IN (NULL)', []],
         ['set', new Set(['a.pdf', 'b.pdf', 'a.pdf']), `IN (${param(1)}, ${param(2)})`, ['a.pdf', 'b.pdf']],
@@ -65,9 +67,8 @@ for (const service of [ESERVICE.PGSQL, ESERVICE.MYSQL]) {
             ? [['first', 'second']]
             : ['$.first', '$.second']],
     ]) {
-        test(`${service}: ${operator.trim()} works in object shorthand, helpers and explicit tuples`, () => {
+        test(`${service}: ${operator.trim()} works in op helpers and explicit tuples`, () => {
             for (const where of [
-                { value: [operator, value] },
                 { value: op(operator, value) },
                 { value: RecordMod.op(operator, value) },
                 [['value', operator, value]],
@@ -97,9 +98,9 @@ for (const service of [ESERVICE.PGSQL, ESERVICE.MYSQL]) {
         assert.equal(sql.getSql(), `${prefix}(${quote('enabled')} = ${param(1)} OR ${quote('created')} = ${param(2)}) AND ${quote('id')} IN (${param(3)}, ${param(4)})`);
         assert.deepEqual(sql.getData(), [false, date, 1, 2]);
     });
-    test(`${service}: grouped shorthand keeps predicates and parameter order`, () => {
+    test(`${service}: grouped op helpers keep predicates and parameter order`, () => {
         const sql = build({
-            '$or': [{ score: ['>=', 7], state: 'ready' }, { name: op('LIKE', 'demo%') }],
+            '$or': [{ score: RecordMod.op('>=', 7), state: 'ready' }, { name: op('LIKE', 'demo%') }],
             id: [1, 2],
         });
         assert.equal(sql.getSql(), `${prefix}((${quote('score')} >= ${param(1)} AND ${quote('state')} = ${param(2)}) OR ${quote('name')} LIKE ${param(3)}) AND ${quote('id')} IN (${param(4)}, ${param(5)})`);
@@ -112,9 +113,8 @@ for (const service of [ESERVICE.PGSQL, ESERVICE.MYSQL]) {
     });
     test(`${service}: invalid operator conditions fail closed`, () => {
         for (const where of [
-            { value: ['>=', undefined] },
-            { value: ['==', 7] },
             { value: op('>=', undefined) },
+            { value: op('==', 7) },
             { value: op('unsupported', 7) },
             [['value', '>=', undefined]],
         ]) {
@@ -124,7 +124,7 @@ for (const service of [ESERVICE.PGSQL, ESERVICE.MYSQL]) {
             assert.deepEqual(sql.getData(), []);
         }
     });
-    test(`${service}: Mod.one and update builder accept shorthand and both helpers`, async () => {
+    test(`${service}: Mod.one and update builder accept both op helpers`, async () => {
         const db = {
             getService: () => service,
             query: async (sql, data) => {
@@ -133,7 +133,7 @@ for (const service of [ESERVICE.PGSQL, ESERVICE.MYSQL]) {
                 return { rows: [{ value: 7 }] };
             },
         };
-        for (const value of [['>=', 7], op('>=', 7), RecordMod.op('>=', 7)]) {
+        for (const value of [op('>=', 7), RecordMod.op('>=', 7)]) {
             const record = await RecordMod.one(db, { value });
             assert.ok(record instanceof RecordMod);
             assert.equal(record.value, 7);
@@ -143,7 +143,7 @@ for (const service of [ESERVICE.PGSQL, ESERVICE.MYSQL]) {
             assert.equal(update.getSql(), `UPDATE ${quote('records')} SET ${quote('state')} = ${param(1)} WHERE ${valueField} >= ${param(2)}`);
             assert.deepEqual(update.getData(), ['done', 7]);
         }
-        const invalid = { value: ['>=', undefined] };
+        const invalid = { value: op('>=', undefined) };
         assert.equal(await RecordMod.one(db, invalid), false);
         const update = RecordMod.updateByWhereSql(db, { state: 'done' }, invalid);
         assert.ok(update.getError());

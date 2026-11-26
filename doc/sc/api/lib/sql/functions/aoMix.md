@@ -8,7 +8,7 @@
 
 > **aoMix**(`arr`): `Record`\<`string`, `string` \| `number` \| [`Json`](../../../index/type-aliases/Json.md)\>
 
-Defined in: [lib/sql.ts:1813](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L1813)
+Defined in: [lib/sql.ts:1808](https://github.com/maiyunnet/kebab/blob/master/lib/sql.ts#L1808)
 
 将数组兑换为组合的对象（Array/Object mix）
 

@@ -3954,19 +3954,19 @@ Result:<pre id="result">Nothing.</pre>`);
 <b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
 <b>format() :</b> ${sql.format(s, sd)}<hr>`);
 
-                // --- 对象条件操作符简写、lSql.op() 与 Mod.op() ---
+                // --- 对象条件显式操作符：lSql.op() 与 Mod.op() ---
                 s = sql.select('*', 'product').where({
-                    'price': ['<', 0],
+                    'price': lSql.op('<', 0),
                     'stock': lSql.op('>=', 10),
                     'status': mTest.op('NOT IN', ['draft', 'archived']),
-                    'name': ['LIKE', '%kebab%'],
+                    'name': mTest.op('LIKE', '%kebab%'),
                 }).getSql();
                 sd = sql.getData();
                 echo.push(`<pre>sql.select('*', 'product').where({
-    'price': ['&lt;', 0],
+    'price': lSql.op('&lt;', 0),
     'stock': lSql.op('&gt;=', 10),
     'status': mTest.op('NOT IN', ['draft', 'archived']),
-    'name': ['LIKE', '%kebab%'],
+    'name': mTest.op('LIKE', '%kebab%'),
 });</pre>
 <b>getSql() :</b> ${lText.htmlescape(s)}<br>
 <b>getData():</b> <pre>${lText.htmlescape(lText.stringifyJson(sd, 4))}</pre>
