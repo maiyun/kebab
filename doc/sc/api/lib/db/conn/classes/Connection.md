@@ -38,7 +38,7 @@ Defined in: [lib/db/conn.ts:64](https://github.com/maiyunnet/kebab/blob/master/l
 
 > **beginTransaction**(`logError?`): `Promise`\<`boolean`\>
 
-Defined in: [lib/db/conn.ts:357](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L357)
+Defined in: [lib/db/conn.ts:379](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L379)
 
 开启事务，只能在独占连接中使用
 
@@ -62,7 +62,7 @@ Defined in: [lib/db/conn.ts:357](https://github.com/maiyunnet/kebab/blob/master/
 
 > **commit**(): `Promise`\<`boolean`\>
 
-Defined in: [lib/db/conn.ts:387](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L387)
+Defined in: [lib/db/conn.ts:409](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L409)
 
 #### Returns
 
@@ -74,7 +74,7 @@ Defined in: [lib/db/conn.ts:387](https://github.com/maiyunnet/kebab/blob/master/
 
 > **end**(): `Promise`\<`boolean`\>
 
-Defined in: [lib/db/conn.ts:340](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L340)
+Defined in: [lib/db/conn.ts:362](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L362)
 
 关闭连接，一般情况下不使用
 
@@ -88,7 +88,7 @@ Defined in: [lib/db/conn.ts:340](https://github.com/maiyunnet/kebab/blob/master/
 
 > **execute**(`sql`, `values?`): `Promise`\<[`IPacket`](../../interfaces/IPacket.md)\>
 
-Defined in: [lib/db/conn.ts:266](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L266)
+Defined in: [lib/db/conn.ts:277](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L277)
 
 执行一条 SQL 并获得影响行数对象 packet
 
@@ -330,7 +330,7 @@ Defined in: [lib/db/conn.ts:156](https://github.com/maiyunnet/kebab/blob/master/
 
 > **rollback**(): `Promise`\<`boolean`\>
 
-Defined in: [lib/db/conn.ts:407](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L407)
+Defined in: [lib/db/conn.ts:429](https://github.com/maiyunnet/kebab/blob/master/lib/db/conn.ts#L429)
 
 #### Returns
 

@@ -8,6 +8,6 @@
 
 > `const` **REGEXP\_DOMAIN**: `RegExp`
 
-Defined in: [lib/text.ts:320](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L320)
+Defined in: [lib/text.ts:359](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L359)
 
 无回溯域名格式正则（支持 Punycode 顶级域，禁止空白/控制字符）

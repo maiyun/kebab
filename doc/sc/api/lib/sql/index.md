@@ -15,6 +15,10 @@
 
 - [Sql](classes/Sql.md)
 
+## Interfaces
+
+- [IRawValue](interfaces/IRawValue.md)
+
 ## Type Aliases
 
 - [TCursorValue](type-aliases/TCursorValue.md)
@@ -26,4 +30,5 @@
 - [format](functions/format.md)
 - [get](functions/get.md)
 - [json](functions/json.md)
+- [raw](functions/raw.md)
 - [value](functions/value.md)

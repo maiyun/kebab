@@ -6,7 +6,7 @@
 
 # Interface: IJsonObject
 
-Defined in: [lib/text.ts:687](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L687)
+Defined in: [lib/text.ts:726](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L726)
 
 字符串键和 JSON 值组成的对象
 

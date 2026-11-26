@@ -10,7 +10,7 @@
 
 > **parseJson**(`str`): `any`
 
-Defined in: [lib/text.ts:671](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L671)
+Defined in: [lib/text.ts:710](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L710)
 
 解析 JSON，未指定类型时返回动态值
 
@@ -32,7 +32,7 @@ Defined in: [lib/text.ts:671](https://github.com/maiyunnet/kebab/blob/master/lib
 
 > **parseJson**\<`T`\>(`str`): `false` \| `T`
 
-Defined in: [lib/text.ts:678](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L678)
+Defined in: [lib/text.ts:717](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L717)
 
 解析 JSON，按调用方指定的类型返回结果
 

@@ -49,6 +49,7 @@
 - [parseDomain](functions/parseDomain.md)
 - [parseHost](functions/parseHost.md)
 - [parseJson](functions/parseJson.md)
+- [parseSafeInt](functions/parseSafeInt.md)
 - [parseUrl](functions/parseUrl.md)
 - [parseVersion](functions/parseVersion.md)
 - [queryParse](functions/queryParse.md)

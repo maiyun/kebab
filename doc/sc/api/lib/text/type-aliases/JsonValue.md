@@ -8,6 +8,6 @@
 
 > **JsonValue** = `string` \| `number` \| `boolean` \| `null` \| `JsonValue`[] \| [`IJsonObject`](../interfaces/IJsonObject.md)
 
-Defined in: [lib/text.ts:684](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L684)
+Defined in: [lib/text.ts:723](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L723)
 
 严格 JSON 对象的字段值

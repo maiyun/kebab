@@ -8,7 +8,7 @@
 
 > **stringifyJson**(`obj`, `space?`): `string`
 
-Defined in: [lib/text.ts:706](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L706)
+Defined in: [lib/text.ts:745](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L745)
 
 将对象转换为 JSON 字符串，BigInt 输出为整数字面量
 

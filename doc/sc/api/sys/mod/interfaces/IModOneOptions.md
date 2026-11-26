@@ -14,7 +14,7 @@ Defined in: [sys/mod.ts:23](https://github.com/maiyunnet/kebab/blob/master/sys/m
 
 ### by?
 
-> `optional` **by?**: \[`string` \| `string`[], `"DESC"` \| `"ASC"`\]
+> `optional` **by?**: \[`string` \| `string`[], `"ASC"` \| `"DESC"`\]
 
 Defined in: [sys/mod.ts:35](https://github.com/maiyunnet/kebab/blob/master/sys/mod.ts#L35)
 

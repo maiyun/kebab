@@ -8,7 +8,7 @@
 
 > **isSameOrigin**(`from`, `to`): `boolean`
 
-Defined in: [lib/text.ts:174](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L174)
+Defined in: [lib/text.ts:213](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L213)
 
 判断两个 URL 是否属于同源地址
 

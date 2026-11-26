@@ -8,7 +8,7 @@
 
 > **urlAtom**(`url`): `string`
 
-Defined in: [lib/text.ts:289](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L289)
+Defined in: [lib/text.ts:328](https://github.com/maiyunnet/kebab/blob/master/lib/text.ts#L328)
 
 将路径中的 ../ ./ 都按规范妥善处理
 
