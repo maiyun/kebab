@@ -1,4 +1,5 @@
 import type * as lDb from '#kebab/lib/db.js';
+import { EJSON, op } from '#kebab/lib/sql.js';
 import Mod from '#kebab/sys/mod.js';
 
 class TestMod extends Mod {
@@ -16,12 +17,17 @@ interface IQueryRow extends IQueryExtra {
 }
 
 export async function checkModQueryTypes(db: lDb.Pool): Promise<void> {
-    const query = TestMod.select<TestMod>(db, ['uid', '1 custom_value']).where({ 'uid': 'test' });
+    const query = TestMod.select<TestMod>(db, ['uid', '1 custom_value']).where({
+        'uid': TestMod.op('IN', new Set(['test'])),
+        'properties': op(EJSON.CONTAINS, { 'enabled': true }),
+    });
     query.by('uid', 'ASC');
     // @ts-expect-error 查询对象只暴露已声明的方法。
     query.order('uid');
     // @ts-expect-error where() 返回的查询对象也拒绝未定义的方法。
     TestMod.where<TestMod>(db, { 'uid': 'test' }).order('uid');
+    // @ts-expect-error 条件辅助方法只接受已声明的操作符。
+    TestMod.op('unsupported', 'test');
 
     const first = await query.first();
     if (first) {

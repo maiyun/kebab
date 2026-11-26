@@ -46,6 +46,16 @@ const valueSymbol: unique symbol = Symbol('kebab.sql.value');
 /** --- raw() 内部私有标记，防止通过外部 JSON 伪造原始 SQL 表达式 --- */
 const rawSymbol: unique symbol = Symbol('kebab.sql.raw');
 
+/** --- op() 内部私有标记，用于区分显式条件和普通值 --- */
+const whereSymbol: unique symbol = Symbol('kebab.sql.where');
+
+/** --- 对象条件中显式指定的操作符和右值 --- */
+export interface IWhereValue {
+    readonly [whereSymbol]: true;
+    readonly 'operator': TWhereOperator;
+    readonly 'value': unknown;
+}
+
 /** --- 显式标记的原始 SQL 表达式及其绑定参数 --- */
 export interface IRawValue {
     readonly [rawSymbol]: true;
@@ -54,8 +64,23 @@ export interface IRawValue {
     readonly 'invalid'?: string;
 }
 
+/** --- WHERE 条件支持的操作符（SQL 运算符、JSON 操作符及 NULL 比较别名） --- */
+export type TWhereOperator =
+    | '=' | '!=' | '<>' | '>' | '>=' | '<' | '<=' | '<=>'
+    | 'LIKE' | 'NOT LIKE' | 'ILIKE' | 'NOT ILIKE'
+    | 'IN' | 'NOT IN' | 'IS' | 'IS NOT' | 'IS DISTINCT FROM' | 'IS NOT DISTINCT FROM'
+    | 'REGEXP' | 'NOT REGEXP' | 'RLIKE' | 'NOT RLIKE'
+    | '~' | '~*' | '!~' | '!~*'
+    | '@>' | '<@' | '&&' | '?' | '?|' | '?&'
+    | '&' | '|' | '^' | '<<' | '>>'
+    | 'like' | 'not like' | 'ilike' | 'not ilike'
+    | 'in' | 'not in' | 'is' | 'is not' | 'is distinct from' | 'is not distinct from'
+    | 'regexp' | 'not regexp' | 'rlike' | 'not rlike'
+    | `${EJSON}` | Uppercase<`${EJSON}`>
+    | '==' | '===' | '!==';
+
 /** --- 允许的 WHERE 运算符白名单 --- */
-const WHERE_OPERATORS = new Set([
+const WHERE_OPERATORS: ReadonlySet<string> = new Set<TWhereOperator>([
     '=', '!=', '<>', '>', '>=', '<', '<=', '<=>',
     'LIKE', 'NOT LIKE', 'ILIKE', 'NOT ILIKE',
     'IN', 'NOT IN', 'IS', 'IS NOT', 'IS DISTINCT FROM', 'IS NOT DISTINCT FROM',
@@ -64,6 +89,19 @@ const WHERE_OPERATORS = new Set([
     '@>', '<@', '&&', '?', '?|', '?&',
     '&', '|', '^', '<<', '>>',
 ]);
+
+/** --- NULL 比较时的运算符映射，兼容 == / === / !== 别名 --- */
+const WHERE_NULL_OPERATORS: ReadonlyMap<string, string> = new Map([
+    ['=', 'IS'],
+    ['==', 'IS'],
+    ['===', 'IS'],
+    ['!=', 'IS NOT'],
+    ['!==', 'IS NOT'],
+    ['<>', 'IS NOT'],
+]);
+
+/** --- 允许的 JSON 查询操作符白名单 --- */
+const WHERE_JSON_OPERATORS: ReadonlySet<string> = new Set(Object.values(EJSON));
 
 /** --- 允许的 UPDATE 赋值运算符白名单 --- */
 const UPDATE_OPERATORS = new Set([
@@ -105,7 +143,20 @@ function parseWhereOp(op: unknown): string | null {
         return null;
     }
     const val = op.trim().replace(/\s+/g, ' ').toUpperCase();
-    return WHERE_OPERATORS.has(val) ? val : null;
+    return WHERE_OPERATORS.has(val) || WHERE_NULL_OPERATORS.has(val) ? val : null;
+}
+
+/**
+ * --- 校验并规范化 JSON 查询操作符 ---
+ * @param op 运算符
+ * @returns 小写 JSON 操作符，不合法返回 null
+ */
+function parseWhereJsonOp(op: unknown): string | null {
+    if (typeof op !== 'string') {
+        return null;
+    }
+    const val = op.trim().toLowerCase();
+    return WHERE_JSON_OPERATORS.has(val) ? val : null;
 }
 
 /**
@@ -708,9 +759,10 @@ export class Sql {
     /**
      * --- 筛选器 ---
      * --- 等值条件：'city': 'bj'；字符串、数字、布尔值、bigint、Date 和 Buffer 均作为单个参数 ---
-     * --- null 生成 IS NULL，数组和 Set 生成 IN 条件 ---
-     * --- 运算符条件：['type', '>', '1'] ---
-     * --- 集合条件：['type', 'in', ['1', '2']] 或 'type': new Set(['1', '2']) ---
+     * --- null 生成 IS NULL。普通数组和 Set 生成 IN 条件 ---
+     * --- 对象条件的两项数组以受支持的操作符开头时，等同于三元组条件 ---
+     * --- { 'price': ['<', 0] }、{ 'price': op('<', 0) } 和 [['price', '<', 0]] 等效 ---
+     * --- 集合条件：{ 'type': ['not in', ['1', '2']] } 或 { 'type': new Set(['1', '2']) } ---
      * --- IN 和 NOT IN 均接受数组和 Set。空集合的 IN 不匹配任何行，NOT IN 匹配所有行。 ---
      * --- 逻辑分组：'$or': [{'city': 'bj'}, {'city': 'sh'}, [['age', '>', '10']]] ---
      * --- 字段比较：'city_in': column('city_out') ---
@@ -783,29 +835,33 @@ export class Sql {
      */
     private _whereArrayItem(item: kebab.Json[], data: kebab.DbValue[]): string {
         // --- 原始 SQL 条件及参数 ---
-        if (item[2] === undefined) {
+        if (item.length < 3) {
             if (item[1] !== undefined) {
                 data.push(...item[1]);
             }
             return `${this.field(item[0])} AND `;
         }
+        if (item[2] === undefined) {
+            this._setError('Missing SQL WHERE operand');
+            return '';
+        }
         // --- JSON 操作符条件 ---
-        if (typeof item[1] === 'string' && ['json', 'json_in', 'json_key', 'json_any', 'json_all', 'json_overlaps'].includes(item[1].toLowerCase())) {
-            const op = item[1].toLowerCase();
+        const jsonOp = parseWhereJsonOp(item[1]);
+        if (jsonOp !== null) {
             const val = lSqlValue.unwrapJson(item[2]);
-            if (op === 'json') {
+            if (jsonOp === EJSON.CONTAINS) {
                 data.push(lText.stringifyJson(val));
                 return this._service === ESERVICE.MYSQL ?
                     `JSON_CONTAINS(${this.field(item[0])}, ${this._placeholder()}) AND ` :
                     `${this.field(item[0])} @> ${this._placeholder()} AND `;
             }
-            if (op === 'json_in') {
+            if (jsonOp === EJSON.CONTAINED_BY) {
                 data.push(lText.stringifyJson(val));
                 return this._service === ESERVICE.MYSQL ?
                     `JSON_CONTAINS(${this._placeholder()}, ${this.field(item[0])}) AND ` :
                     `${this.field(item[0])} <@ ${this._placeholder()} AND `;
             }
-            if (op === 'json_overlaps') {
+            if (jsonOp === EJSON.OVERLAPS) {
                 if (this._service === ESERVICE.MYSQL) {
                     data.push(lText.stringifyJson(val));
                     return `JSON_OVERLAPS(${this.field(item[0])}, ${this._placeholder()}) AND `;
@@ -816,7 +872,7 @@ export class Sql {
             // --- json_key, json_any, json_all ---
             const keys: string[] = Array.isArray(val) ? val : [val];
             if (this._service === ESERVICE.MYSQL) {
-                const mode = op === 'json_all' ? 'all' : 'one';
+                const mode = jsonOp === EJSON.HAS_ALL_KEYS ? 'all' : 'one';
                 let pathSql = '';
                 for (const key of keys) {
                     pathSql += `, ${this._placeholder()}`;
@@ -824,48 +880,27 @@ export class Sql {
                 }
                 return `JSON_CONTAINS_PATH(${this.field(item[0])}, '${mode}'${pathSql}) AND `;
             }
-            if (op === 'json_key' && keys.length === 1) {
+            if (jsonOp === EJSON.HAS_KEY && keys.length === 1) {
                 data.push(keys[0]);
                 return `${this.field(item[0])} ? ${this._placeholder()} AND `;
             }
-            const pgOp = op === 'json_all' ? '?&' : '?|';
+            const pgOp = jsonOp === EJSON.HAS_ALL_KEYS ? '?&' : '?|';
             data.push(keys);
             return `${this.field(item[0])} ${pgOp} ${this._placeholder()} AND `;
         }
-        // --- NULL 比较 ---
-        if (item[2] === null) {
-            let op: string | null;
-            if (item[1] === '!=' || item[1] === '!==' || item[1] === '<>') {
-                op = 'IS NOT';
-            }
-            else if (item[1] === '=' || item[1] === '==' || item[1] === '===') {
-                op = 'IS';
-            }
-            else {
-                op = parseWhereOp(item[1]);
-            }
-            if (op === null) {
-                this._setError(`Invalid SQL WHERE operator: ${String(item[1])}`);
-                return '';
-            }
-            return `${this.field(item[0])} ${op} NULL AND `;
-        }
-        // --- 集合比较 ---
-        if (Array.isArray(item[2]) || (item[2] instanceof Set && typeof item[1] === 'string' && /^(?:NOT )?IN$/i.test(item[1]))) {
-            const op = parseWhereOp(item[1]);
-            if (op === null) {
-                this._setError(`Invalid SQL WHERE operator: ${String(item[1])}`);
-                return '';
-            }
-            return `${this._whereList(item[0], op, item[2], data)} AND `;
-        }
-        // --- 普通运算符或字段比较 ---
+        const val = item[2];
         const op = parseWhereOp(item[1]);
-        if (op === null) {
+        if (op === null || (val !== null && !WHERE_OPERATORS.has(op))) {
             this._setError(`Invalid SQL WHERE operator: ${String(item[1])}`);
             return '';
         }
-        const val = item[2];
+        if (val === null) {
+            return `${this.field(item[0])} ${WHERE_NULL_OPERATORS.get(op) ?? op} NULL AND `;
+        }
+        if (Array.isArray(val) || (val instanceof Set && (op === 'IN' || op === 'NOT IN'))) {
+            return `${this._whereList(item[0], op, val, data)} AND `;
+        }
+        // --- 普通运算符或字段比较 ---
         // --- item[0] 也可以是 value() 包裹的字面量值 ---
         const isVal0 = this._isValue(item[0]);
         const leftSql = isVal0 ? this._placeholder() : this.field(item[0]);
@@ -920,6 +955,13 @@ export class Sql {
         }
         if (this._isField(val)) {
             return `${this.field(key)} = ${this.field(val.value)} AND `;
+        }
+        if (val && typeof val === 'object' && val[whereSymbol] === true) {
+            return this._whereArrayItem([key, val.operator, val.value], data);
+        }
+        if (Array.isArray(val) && val.length === 2 &&
+            (parseWhereOp(val[0]) !== null || parseWhereJsonOp(val[0]) !== null)) {
+            return this._whereArrayItem([key, val[0], val[1]], data);
         }
         if (Array.isArray(val) || val instanceof Set) {
             return `${this._whereList(key, 'IN', val, data)} AND `;
@@ -1840,6 +1882,20 @@ export function value(val: kebab.DbValue): {
  */
 export function json<T>(obj: T): T {
     return lSqlValue.json(obj) as T;
+}
+
+/**
+ * --- 创建对象筛选条件的显式操作符值，如 { 'price': op('<', 0) } ---
+ * @param operator SQL 或 JSON 查询操作符
+ * @param value 比较右值，必须提供，可传 null
+ * @returns 条件值。构建 SQL 时，操作符无效或缺少右值会记录构建错误
+ */
+export function op(operator: TWhereOperator, value: unknown): IWhereValue {
+    return {
+        [whereSymbol]: true,
+        'operator': operator,
+        'value': value,
+    };
 }
 
 /**

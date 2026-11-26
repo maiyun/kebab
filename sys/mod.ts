@@ -251,6 +251,16 @@ export default class Mod {
         return lSql.json(obj);
     }
 
+    /**
+     * --- 创建对象筛选条件的显式操作符值，如 { 'price': Mod.op('<', 0) } ---
+     * @param operator SQL 或 JSON 查询操作符
+     * @param value 比较右值，必须提供，可传 null
+     * @returns 条件值。构建 SQL 时，操作符无效或缺少右值会记录构建错误
+     */
+    public static op(operator: lSql.TWhereOperator, value: unknown): lSql.IWhereValue {
+        return lSql.op(operator, value);
+    }
+
     /** --- 创建显式 SQL 表达式值，用于写入函数或 CASE 等原生表达式 --- */
     public static raw(sql: string, params: kebab.DbValue[] = []): lSql.IRawValue {
         return lSql.raw(sql, params);
