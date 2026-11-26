@@ -174,10 +174,13 @@ export class Sql {
             }
             // --- INSERT INTO xx (id, name) VALUES (?, ?) ---
             // --- INSERT INTO xx (id, name) VALUES (?, ?), (?, ?) ---
+            let row = 0;
             for (const v of vs as kebab.DbValue[][]) {
+                ++row;
                 sql += '(';
-                for (const v1 of v) {
-                    const result = this._processValue(v1);
+                let ci = 0;
+                for (const value of v) {
+                    const result = this._processValue(value, cs[ci++], row);
                     sql += result.sql + ', ';
                     if (result.data !== undefined) {
                         this._data.push(...result.data);
@@ -194,8 +197,7 @@ export class Sql {
             for (const k in cs) {
                 const v = cs[k];
                 sql += this.field(k) + ', ';
-                // --- 使用 _processValue 处理普通值 ---
-                const result = this._processValue(v);
+                const result = this._processValue(v, k);
                 values += result.sql + ', ';
                 if (result.data !== undefined) {
                     this._data.push(...result.data);
@@ -271,7 +273,7 @@ export class Sql {
             for (let ri = 0; ri < rows.length; ri++) {
                 const row = rows[ri];
                 const parts = row.map((v, ci) => {
-                    const result = this._processValue(v);
+                    const result = this._processValue(v, allCols[ci], ri + 1, quotedTable);
                     if (result.data.length > 0) {
                         this._data.push(...result.data);
                     }
@@ -288,9 +290,11 @@ export class Sql {
             const valueParts: string[] = [];
             const typeParts = allCols.map(c => `(NULL::${quotedTable}).${this.field(c)}`);
             valueParts.push(`(${typeParts.join(', ')})`);
+            let ri = 0;
             for (const row of rows) {
-                const parts = row.map(v => {
-                    const result = this._processValue(v);
+                ++ri;
+                const parts = row.map((v, ci) => {
+                    const result = this._processValue(v, allCols[ci], ri, quotedTable);
                     if (result.data.length > 0) {
                         this._data.push(...result.data);
                     }
@@ -354,12 +358,19 @@ export class Sql {
     public update(f: string, s: kebab.Json): this {
         this._data = [];
         this._placeholderCounter = 1;
-        const sql = `UPDATE ${this.field(f, this._pre)} SET ${this._updateSub(s)}`;
+        const table = this.field(f, this._pre);
+        const sql = `UPDATE ${table} SET ${this._updateSub(s, table)}`;
         this._sql = [sql];
         return this;
     }
 
-    private _updateSub(s: kebab.Json): string {
+    /**
+     * --- 生成更新字段列表及其绑定参数 ---
+     * @param s 更新值
+     * @param table 已格式化的目标表名，UPSERT 从 INSERT 前导取表名
+     * @returns SET 子句中的赋值列表
+     */
+    private _updateSub(s: kebab.Json, table?: string): string {
         /*
         [
             ['total', '+', '1'],
@@ -408,7 +419,7 @@ export class Sql {
             else {
                 // --- 对象赋值式：{字段: 值} ---
                 sql += this.field(k) + ' = ';
-                const result = this._processValue(v);
+                const result = this._processValue(v, k, undefined, table);
                 sql += result.sql + ', ';
                 if (result.data !== undefined) {
                     this._data.push(...result.data);
@@ -1316,16 +1327,35 @@ export class Sql {
     }
 
     /**
-     * --- 处理单个值,检测数据类型并返回 SQL 和 data ---
+     * --- 生成单个值的 SQL 片段和绑定参数 ---
      * @param v 要处理的值
+     * @param field 写入字段名
+     * @param row 批量写入行号，从 1 开始
+     * @param table 已格式化的 UPDATE 目标表名，INSERT 从前导取表名
+     * @param parameter SQL 表达式内的参数位置，从 1 开始，嵌套时逐级记录
+     * @returns SQL 片段和绑定参数，异常值沿用空字符串
      */
-    private _processValue(v: any): {
+    private _processValue(v: kebab.Json, field?: string, row?: number, table?: string, parameter?: string): {
         'sql': string;
         'data': any[];
     } {
         if (v === undefined || Number.isNaN(v)) {
-            // --- 异常情况 ---
-            lCore.log({}, '[SQL][_processValue] value error', '-error');
+            // --- INSERT 的第一段只有写入前导，后续片段可能包含业务值 ---
+            table ??= /^INSERT (?:IGNORE )?INTO ([\w`".]+)(?: AS [\w`".]+)?$/.exec(this._sql[0] ?? '')?.[1];
+            const route = this._ctr?.getPrototype('_config')?.const;
+            const stack = new Error().stack;
+            const detail = lText.stringifyJson({
+                'value': v === undefined ? 'undefined' : 'NaN',
+                'table': table,
+                'field': field,
+                'row': row,
+                'parameter': parameter,
+                'stack': typeof stack === 'string' ? stack.split('\n').slice(1, 11) : undefined,
+            });
+            lCore.log({
+                'urlFull': route?.urlFull,
+                'path': route?.path,
+            }, `[SQL][_processValue] value error ${detail}`, '-error');
             return { 'sql': "''", 'data': [] };
         }
         else if (v === null) {
@@ -1362,7 +1392,7 @@ export class Sql {
                 const ds: any[] = [];
 
                 for (const p of ps) {
-                    const res = this._processValue(p);
+                    const res = this._processValue(p, field, row, table, `${parameter ?? ''}[${sqls.length + 1}]`);
                     sqls.push(res.sql);
                     ds.push(...res.data);
                 }
