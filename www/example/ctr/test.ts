@@ -3952,7 +3952,25 @@ Result:<pre id="result">Nothing.</pre>`);
 ]);</pre>
 <b>getSql() :</b> ${s}<br>
 <b>getData():</b> <pre>${JSON.stringify(sd, undefined, 4)}</pre>
-<b>format() :</b> ${sql.format(s, sd)}`);
+<b>format() :</b> ${sql.format(s, sd)}<hr>`);
+
+                // --- 对象条件操作符简写、lSql.op() 与 Mod.op() ---
+                s = sql.select('*', 'product').where({
+                    'price': ['<', 0],
+                    'stock': lSql.op('>=', 10),
+                    'status': mTest.op('NOT IN', ['draft', 'archived']),
+                    'name': ['LIKE', '%kebab%'],
+                }).getSql();
+                sd = sql.getData();
+                echo.push(`<pre>sql.select('*', 'product').where({
+    'price': ['&lt;', 0],
+    'stock': lSql.op('&gt;=', 10),
+    'status': mTest.op('NOT IN', ['draft', 'archived']),
+    'name': ['LIKE', '%kebab%'],
+});</pre>
+<b>getSql() :</b> ${lText.htmlescape(s)}<br>
+<b>getData():</b> <pre>${lText.htmlescape(lText.stringifyJson(sd, 4))}</pre>
+<b>format() :</b> ${lText.htmlescape(sql.format(s, sd))}`);
                 break;
             }
             case 'having': {
