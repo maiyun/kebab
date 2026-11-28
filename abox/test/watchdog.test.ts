@@ -8,6 +8,8 @@ import * as timers from 'node:timers/promises';
 import * as workerThreads from 'node:worker_threads';
 import type { ISnapshot } from '#kebab/sys/monitor.js';
 
+const watchdogUrl = new URL(import.meta.resolve('#kebab/sys/monitor/watchdog.js'));
+
 /** --- Worker 返回的实际诊断结果 --- */
 interface IDiagnostic {
     'heartbeat': number;
@@ -38,7 +40,7 @@ for (const format of [undefined, 'jsonl', 'csv'] as const) {
         Atomics.store(view, 0, process.hrtime.bigint() / 1_000_000n);
         // --- 跳过 Inspector；只验证主线程阻塞时 Worker 独立写日志 ---
         Atomics.store(view, 2, 1n);
-        const worker = new workerThreads.Worker(new URL('../sys/monitor/watchdog.js', import.meta.url), {
+        const worker = new workerThreads.Worker(watchdogUrl, {
             'workerData': {
                 buffer, 'logDir': directory, 'logFormat': format, 'pid': process.pid,
                 'threshold': 100, 'interval': 20, 'cooldown': 30, 'profileDuration': 100, 'requests': [],
@@ -125,7 +127,7 @@ await nodeTest.test('watchdog captures real blocking work and a second event wit
     const view = new BigInt64Array(buffer);
     Atomics.store(view, 0, process.hrtime.bigint() / 1_000_000n);
     const diagnostics: IDiagnostic[] = [];
-    const worker = new workerThreads.Worker(new URL('../sys/monitor/watchdog.js', import.meta.url), {
+    const worker = new workerThreads.Worker(watchdogUrl, {
         'workerData': {
             buffer, 'logDir': directory, 'pid': process.pid, 'threshold': 150, 'interval': 25,
             'cooldown': 30, 'profileDuration': 200, 'requests': [[
@@ -199,7 +201,7 @@ await nodeTest.test('Inspector timeout releases the watchdog and preserves a fai
     const view = new BigInt64Array(buffer);
     Atomics.store(view, 0, process.hrtime.bigint() / 1_000_000n);
     const diagnostics: IDiagnostic[] = [];
-    const url = new URL('../sys/monitor/watchdog.js', import.meta.url).href;
+    const url = watchdogUrl.href;
     // --- 首个 Inspector 会话永久等待 SDK 回应，后续会话恢复；执行的是实际 Worker 源码 ---
     const code = `
         const events = require('node:events');
@@ -265,7 +267,7 @@ await nodeTest.test('requested CPU profile stops and saves while the main thread
     const view = new BigInt64Array(buffer);
     Atomics.store(view, 0, process.hrtime.bigint() / 1_000_000n);
     const results: Array<{ 'type': string; 'saved': boolean; 'recorded': boolean; 'errors': string[]; }> = [];
-    const worker = new workerThreads.Worker(new URL('../sys/monitor/watchdog.js', import.meta.url), {
+    const worker = new workerThreads.Worker(watchdogUrl, {
         'workerData': {
             buffer, 'logDir': directory, 'pid': process.pid, 'threshold': 5_000, 'interval': 25,
             'cooldown': 30, 'profileDuration': 200, 'requests': [],

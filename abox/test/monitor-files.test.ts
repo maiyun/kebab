@@ -22,7 +22,7 @@ import ExampleCtr from '#kebab/www/example/ctr/test.js';
  * @returns master 及端口；启动失败返回 false
  */
 async function startMaster(directory: string): Promise<{ 'child': cp.ChildProcess; 'port': number; } | false> {
-    const master = new URL('../sys/master.js', import.meta.url).href;
+    const master = import.meta.resolve('#kebab/sys/master.js');
     const code = `
         const http = await import('node:http');
         const listen = http.Server.prototype.listen;
@@ -247,9 +247,13 @@ await nodeTest.test('monitor APIs read real master RPC data and serve previews a
         });
         await test.test('RPC authentication failures are not mistaken for successful file downloads', async () => {
             lCore.globalConfig.rpcSecret = 'n'.repeat(32);
-            assert.equal(await lCore.getMonitorFile({ 'path': reportPath }), false);
-            assert.equal(await lCore.getMonitorEvents(), false);
-            lCore.globalConfig.rpcSecret = secret;
+            try {
+                assert.equal(await lCore.getMonitorFile({ 'path': reportPath }), false);
+                assert.equal(await lCore.getMonitorEvents(), false);
+            }
+            finally {
+                lCore.globalConfig.rpcSecret = secret;
+            }
         });
         await test.test('test.ts demonstrates usable preview/download links and rejects unconfigured hosts', async () => {
             const demo = http.createServer((req, res) => {

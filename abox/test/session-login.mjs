@@ -1,11 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import net from 'node:net';
-import { once } from 'node:events';
 import { createHash, randomBytes } from 'node:crypto';
 import { Login } from '../../lib/session.js';
 import { Ctr } from '../../sys/ctr.js';
 import { Kv } from '../../lib/kv.js';
+import { createMockRedis } from './fixtures/redis.mjs';
 
 const token = () => randomBytes(32).toString('hex');
 const uid = '0123456789abcdef0123456789abcdef';
@@ -22,53 +21,15 @@ test('all login operations report unavailable storage', async () => {
 });
 
 test('login reads and renewals reuse one Redis command client after a command error', async () => {
-    const sockets = new Set();
-    const commands = [];
     let fail = false;
-    const server = net.createServer(socket => {
-        sockets.add(socket);
-        let buf = '';
-        socket.on('data', chunk => {
-            buf += chunk.toString('utf8');
-            while (buf.length > 0) {
-                const nl = buf.indexOf('\r\n');
-                if (nl === -1) return;
-                const count = Number.parseInt(buf.slice(1, nl), 10);
-                let pos = nl + 2;
-                const args = [];
-                let complete = true;
-                for (let i = 0; i < count; ++i) {
-                    const lenEnd = buf.indexOf('\r\n', pos);
-                    if (lenEnd === -1) { complete = false; break; }
-                    const byteLen = Number.parseInt(buf.slice(pos + 1, lenEnd), 10);
-                    const valStart = lenEnd + 2;
-                    const valEnd = valStart + byteLen;
-                    if (buf.length < valEnd + 2) { complete = false; break; }
-                    args.push(buf.slice(valStart, valEnd));
-                    pos = valEnd + 2;
-                }
-                if (!complete) return;
-                buf = buf.slice(pos);
-                const cmd = args[0].toUpperCase();
-                commands.push(cmd);
-                if (cmd === 'EVAL') {
-                    if (fail) {
-                        socket.write('-ERR Redis command failed\r\n');
-                        continue;
-                    }
-                    assert.equal(args[3], 'test:TEST:login:');
-                    socket.write(args[4] === 'touch' ? ':1\r\n' : '$-1\r\n');
-                }
-                else {
-                    socket.write('+OK\r\n');
-                }
-            }
-        });
+    const server = await createMockRedis(args => {
+        const command = args[0].toUpperCase();
+        assert.ok(command === 'EVAL' || command === 'EVALSHA', command);
+        assert.equal(args[3], 'test:TEST:login:');
+        if (fail) return new Error('ERR Redis command failed');
+        return args[4] === 'touch' ? 1 : null;
     });
-    server.listen(0, '127.0.0.1');
-    await once(server, 'listening');
-    const port = server.address().port;
-    const credentials = { host: '127.0.0.1', port, index: 0, pre: 'test:', user: '', pwd: '' };
+    const credentials = { host: '127.0.0.1', port: server.port, index: 0, pre: 'test:', user: '', pwd: '' };
     const kv1 = new Kv(credentials);
     const kv2 = new Kv(credentials);
     try {
@@ -80,14 +41,11 @@ test('login reads and renewals reuse one Redis command client after a command er
         assert.equal(await first.get(), false);
         fail = false;
         assert.equal(await second.get(), null);
-        assert.deepEqual(commands, ['EVAL', 'EVAL', 'EVAL', 'EVAL']);
-        assert.equal(sockets.size, 1);
+        assert.equal(server.connections.length, 1);
+        assert.deepEqual(server.connections[0].history.map(([command]) => command), ['EVAL', 'EVALSHA', 'EVALSHA', 'EVALSHA']);
     }
     finally {
-        const client = await kv1.getClient();
-        client?.destroy();
-        for (const s of sockets) s.destroy();
-        await new Promise(resolve => server.close(resolve));
+        await server.close([await kv1.getClient()]);
     }
 });
 
@@ -198,6 +156,8 @@ test('isolated Redis login lifecycle', { skip: !host && 'set KEBAB_LOGIN_REDIS_H
     const kv = new Kv({ host, port: Number(process.env.KEBAB_LOGIN_REDIS_PORT ?? 6379), index: Number(process.env.KEBAB_LOGIN_REDIS_INDEX ?? 0), user: process.env.KEBAB_LOGIN_REDIS_USER ?? '', pwd: process.env.KEBAB_LOGIN_REDIS_PASSWORD ?? '', pre });
     const login = (token => new Login(kv, token, { name: 'TEST', ttl: 60 }));
     const a = token(), b = token(), c = token(), other = token();
+    const client = await kv.getClient();
+    assert.ok(client, 'Redis connection');
     try {
         assert.equal(await kv.ping(), 'PONG', 'Redis connection');
         const now = Math.floor(Date.now() / 1000);
@@ -419,7 +379,12 @@ test('isolated Redis login lifecycle', { skip: !host && 'set KEBAB_LOGIN_REDIS_H
         assert.equal(await login(other).remove(outsider.uid), null);
     }
     finally {
-        const keys = await kv.keys('*');
-        if (Array.isArray(keys) && keys.length) assert.equal(await kv.del(keys), true, 'remove only isolated test keys');
+        try {
+            const keys = await kv.keys('*');
+            if (Array.isArray(keys) && keys.length) assert.equal(await kv.del(keys), true, 'remove only isolated test keys');
+        }
+        finally {
+            client.destroy();
+        }
     }
 });

@@ -80,19 +80,21 @@ await nodeTest.test('keepAliveTimeout caps the idle reuse time despite a longer 
     }
 });
 
-await nodeTest.test('reuseTimeout retires an aged connection before the idle timeout', async () => {
+await nodeTest.test('reuseTimeout retires an aged connection before the idle timeout', async (test) => {
     const { server, url, ports } = await listen();
+    const now = Date.now();
+    test.mock.timers.enable({ 'apis': ['Date'], 'now': now });
     try {
         const opt = {
-            'keepAliveTimeout': 1,
+            'keepAliveTimeout': 5,
             'reuseTimeout': 0.1,
         };
         await request(url, opt);
         /** --- 等待响应连接完成回池，避免同一事件循环内并行创建新连接 --- */
-        await timers.setTimeout(20);
+        await timers.setImmediate();
         await request(url, opt);
         assert.strictEqual(ports[0], ports[1]);
-        await timers.setTimeout(150);
+        test.mock.timers.setTime(now + 150);
         await request(url, opt);
         assert.notStrictEqual(ports[1], ports[2]);
     }
@@ -104,11 +106,14 @@ await nodeTest.test('reuseTimeout retires an aged connection before the idle tim
 await nodeTest.test('invalid reuse timeouts fall back to Undici defaults', async () => {
     const { server, url, ports } = await listen();
     try {
+        await request(url, {});
+        await timers.setImmediate();
         await request(url, {
             'keepAliveTimeout': Number.NaN,
             'reuseTimeout': 0,
         });
-        assert.strictEqual(ports.length, 1);
+        assert.strictEqual(ports.length, 2);
+        assert.strictEqual(ports[0], ports[1]);
     }
     finally {
         await close(server);

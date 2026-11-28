@@ -13,6 +13,7 @@
   "license": "Apache-2.0",
   "types": "./index.d.ts",
   "scripts": {
+    "test": "tsc && node utils/run-tests.mjs",
     "build-doc": "bash ./utils/build-doc.sh",
     "test:formdata": "node abox/test/formdata.mjs",
     "test:session": "node abox/test/session.mjs",

@@ -6,7 +6,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import test from 'node:test';
 import { setTimeout as delay } from 'node:timers/promises';
-import { createClient } from 'redis';
+import { createClient } from '@redis/client';
 import { check, checkFixed } from '../../lib/ratelimit.js';
 
 test('rate limit key construction, option normalization, script compatibility and unavailable fallback', async () => {
@@ -47,7 +47,8 @@ test('rate limit key construction, option normalization, script compatibility an
 test('rate limiting on an isolated Redis server', { timeout: 10000 }, async (t) => {
     const dir = await mkdtemp(join(tmpdir(), 'kebab-rate-'));
     const socket = join(dir, 'redis.sock');
-    const server = spawn(process.env.KEBAB_TEST_REDIS_SERVER || 'redis-server', [
+    const binary = process.env.KEBAB_TEST_REDIS_SERVER;
+    const server = spawn(binary || 'redis-server', [
         '--port', '0', '--unixsocket', socket, '--unixsocketperm', '700',
         '--dir', dir, '--save', '', '--appendonly', 'no',
     ]);
@@ -71,7 +72,16 @@ test('rate limiting on an isolated Redis server', { timeout: 10000 }, async (t) 
         }
         await rm(dir, { recursive: true, force: true });
     });
-    await ready;
+    try {
+        await ready;
+    }
+    catch (error) {
+        if (!binary && error.code === 'ENOENT') {
+            t.skip('redis-server is unavailable; set KEBAB_TEST_REDIS_SERVER to run the integration test');
+            return;
+        }
+        throw error;
+    }
     await access(socket);
     await client.connect();
 

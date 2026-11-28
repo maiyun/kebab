@@ -7,7 +7,7 @@
 import * as crypto from 'node:crypto';
 import type * as tls from 'node:tls';
 // --- 第三方 ---
-import * as redis from 'redis';
+import * as redis from '@redis/client';
 // --- 库和定义 ---
 import * as kebab from '#kebab/index.js';
 import * as lText from '#kebab/lib/text.js';
