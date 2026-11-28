@@ -50,11 +50,10 @@
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
     "react-router-dom": "^7.18.5",
-    "redis": "^6.4.0",
+    "@redis/client": "^6.4.0",
     "ssh2": "^1.17.0",
     "svg-captcha": "^1.4.0",
     "tailwind-merge": "^3.7.0",
-    "tencentcloud-sdk-nodejs": "^4.1.338",
     "undici": "^8.12.3",
     "valibot": "^1.5.0",
     "ws": "^8.22.1"
@@ -74,7 +73,7 @@
   "allowScripts": {
     "esbuild": true,
     "@parcel/watcher": true,
-    "cpu-features": true,
-    "ssh2": true
+    "cpu-features": false,
+    "ssh2": false
   }
 }
