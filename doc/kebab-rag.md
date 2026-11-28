@@ -1945,7 +1945,7 @@ index/variables/VER.md
 
 # Variable: VER
 
-> `const` **VER**: `"11.1.0"` = `'11.1.0'`
+> `const` **VER**: `"11.1.1"` = `'11.1.1'`
 
 Defined in: [index.ts:10](https://github.com/maiyunnet/kebab/blob/master/index.ts#L10)
 
@@ -2172,7 +2172,7 @@ Defined in: [lib/ai.ts:266](https://github.com/maiyunnet/kebab/blob/master/lib/a
 
 ### poll()
 
-> **poll**(`opt`): `Promise`\<`false` \| \{ `add?`: `number`; `end?`: `number`; `error?`: `string`; `start?`: `number`; `status`: `"PENDING"` \| `"RUNNING"` \| `"SUCCEEDED"` \| `"FAILED"` \| `"CANCELED"` \| `"UNKNOWN"`; `task`: `string`; `url?`: `string`; \}\>
+> **poll**(`opt`): `Promise`\<`false` \| \{ `add?`: `number`; `end?`: `number`; `error?`: `string`; `start?`: `number`; `status`: `"FAILED"` \| `"PENDING"` \| `"RUNNING"` \| `"SUCCEEDED"` \| `"CANCELED"` \| `"UNKNOWN"`; `task`: `string`; `url?`: `string`; \}\>
 
 Defined in: [lib/ai.ts:631](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L631)
 
@@ -2192,7 +2192,7 @@ Defined in: [lib/ai.ts:631](https://github.com/maiyunnet/kebab/blob/master/lib/a
 
 #### Returns
 
-`Promise`\<`false` \| \{ `add?`: `number`; `end?`: `number`; `error?`: `string`; `start?`: `number`; `status`: `"PENDING"` \| `"RUNNING"` \| `"SUCCEEDED"` \| `"FAILED"` \| `"CANCELED"` \| `"UNKNOWN"`; `task`: `string`; `url?`: `string`; \}\>
+`Promise`\<`false` \| \{ `add?`: `number`; `end?`: `number`; `error?`: `string`; `start?`: `number`; `status`: `"FAILED"` \| `"PENDING"` \| `"RUNNING"` \| `"SUCCEEDED"` \| `"CANCELED"` \| `"UNKNOWN"`; `task`: `string`; `url?`: `string`; \}\>
 
 ***
 
@@ -2240,7 +2240,7 @@ Defined in: [lib/ai.ts:228](https://github.com/maiyunnet/kebab/blob/master/lib/a
 
 ### video()
 
-> **video**(`opt`): `Promise`\<`false` \| \{ `request`: `string`; `seed`: `number`; `status`: `"PENDING"` \| `"RUNNING"` \| `"SUCCEEDED"` \| `"FAILED"` \| `"CANCELED"` \| `"UNKNOWN"`; `task`: `string`; \}\>
+> **video**(`opt`): `Promise`\<`false` \| \{ `request`: `string`; `seed`: `number`; `status`: `"FAILED"` \| `"PENDING"` \| `"RUNNING"` \| `"SUCCEEDED"` \| `"CANCELED"` \| `"UNKNOWN"`; `task`: `string`; \}\>
 
 Defined in: [lib/ai.ts:457](https://github.com/maiyunnet/kebab/blob/master/lib/ai.ts#L457)
 
@@ -2322,7 +2322,7 @@ Defined in: [lib/ai.ts:457](https://github.com/maiyunnet/kebab/blob/master/lib/a
 
 #### Returns
 
-`Promise`\<`false` \| \{ `request`: `string`; `seed`: `number`; `status`: `"PENDING"` \| `"RUNNING"` \| `"SUCCEEDED"` \| `"FAILED"` \| `"CANCELED"` \| `"UNKNOWN"`; `task`: `string`; \}\>
+`Promise`\<`false` \| \{ `request`: `string`; `seed`: `number`; `status`: `"FAILED"` \| `"PENDING"` \| `"RUNNING"` \| `"SUCCEEDED"` \| `"CANCELED"` \| `"UNKNOWN"`; `task`: `string`; \}\>
 
 lib/ai/enumerations/ESERVICE.md
 ---
@@ -130819,7 +130819,7 @@ lib/turnstile/enumerations/EFACTORY.md
 
 # Enumeration: EFACTORY
 
-Defined in: [lib/turnstile.ts:19](https://github.com/maiyunnet/kebab/blob/master/lib/turnstile.ts#L19)
+Defined in: [lib/turnstile.ts:18](https://github.com/maiyunnet/kebab/blob/master/lib/turnstile.ts#L18)
 
 厂家
 
@@ -130829,7 +130829,7 @@ Defined in: [lib/turnstile.ts:19](https://github.com/maiyunnet/kebab/blob/master
 
 > **CLOUDFLARE**: `0`
 
-Defined in: [lib/turnstile.ts:20](https://github.com/maiyunnet/kebab/blob/master/lib/turnstile.ts#L20)
+Defined in: [lib/turnstile.ts:19](https://github.com/maiyunnet/kebab/blob/master/lib/turnstile.ts#L19)
 
 ***
 
@@ -130837,7 +130837,7 @@ Defined in: [lib/turnstile.ts:20](https://github.com/maiyunnet/kebab/blob/master
 
 > **TENCENT**: `1`
 
-Defined in: [lib/turnstile.ts:21](https://github.com/maiyunnet/kebab/blob/master/lib/turnstile.ts#L21)
+Defined in: [lib/turnstile.ts:20](https://github.com/maiyunnet/kebab/blob/master/lib/turnstile.ts#L20)
 
 lib/turnstile/functions/verify.md
 ---
@@ -130852,7 +130852,7 @@ lib/turnstile/functions/verify.md
 
 > **verify**(`ctr`, `opt`): `Promise`\<`boolean`\>
 
-Defined in: [lib/turnstile.ts:30](https://github.com/maiyunnet/kebab/blob/master/lib/turnstile.ts#L30)
+Defined in: [lib/turnstile.ts:29](https://github.com/maiyunnet/kebab/blob/master/lib/turnstile.ts#L29)
 
 校验人机验证令牌
 
@@ -130884,7 +130884,7 @@ Defined in: [lib/turnstile.ts:30](https://github.com/maiyunnet/kebab/blob/master
 
 `Promise`\<`boolean`\>
 
-是否通过验证
+票据通过返回 true，校验未通过或请求失败返回 false
 
 lib/turnstile/index.md
 ---

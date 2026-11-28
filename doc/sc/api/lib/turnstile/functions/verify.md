@@ -8,7 +8,7 @@
 
 > **verify**(`ctr`, `opt`): `Promise`\<`boolean`\>
 
-Defined in: [lib/turnstile.ts:30](https://github.com/maiyunnet/kebab/blob/master/lib/turnstile.ts#L30)
+Defined in: [lib/turnstile.ts:29](https://github.com/maiyunnet/kebab/blob/master/lib/turnstile.ts#L29)
 
 校验人机验证令牌
 
@@ -40,4 +40,4 @@ Defined in: [lib/turnstile.ts:30](https://github.com/maiyunnet/kebab/blob/master
 
 `Promise`\<`boolean`\>
 
-是否通过验证
+票据通过返回 true，校验未通过或请求失败返回 false

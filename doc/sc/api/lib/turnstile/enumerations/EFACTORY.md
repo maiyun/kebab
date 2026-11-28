@@ -6,7 +6,7 @@
 
 # Enumeration: EFACTORY
 
-Defined in: [lib/turnstile.ts:19](https://github.com/maiyunnet/kebab/blob/master/lib/turnstile.ts#L19)
+Defined in: [lib/turnstile.ts:18](https://github.com/maiyunnet/kebab/blob/master/lib/turnstile.ts#L18)
 
 厂家
 
@@ -16,7 +16,7 @@ Defined in: [lib/turnstile.ts:19](https://github.com/maiyunnet/kebab/blob/master
 
 > **CLOUDFLARE**: `0`
 
-Defined in: [lib/turnstile.ts:20](https://github.com/maiyunnet/kebab/blob/master/lib/turnstile.ts#L20)
+Defined in: [lib/turnstile.ts:19](https://github.com/maiyunnet/kebab/blob/master/lib/turnstile.ts#L19)
 
 ***
 
@@ -24,4 +24,4 @@ Defined in: [lib/turnstile.ts:20](https://github.com/maiyunnet/kebab/blob/master
 
 > **TENCENT**: `1`
 
-Defined in: [lib/turnstile.ts:21](https://github.com/maiyunnet/kebab/blob/master/lib/turnstile.ts#L21)
+Defined in: [lib/turnstile.ts:20](https://github.com/maiyunnet/kebab/blob/master/lib/turnstile.ts#L20)
